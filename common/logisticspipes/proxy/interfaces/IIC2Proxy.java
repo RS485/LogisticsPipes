@@ -2,8 +2,9 @@ package logisticspipes.proxy.interfaces;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
+
+import logisticspipes.recipes.CraftingParts;
 
 public interface IIC2Proxy {
 
@@ -17,7 +18,7 @@ public interface IIC2Proxy {
 
 	public abstract boolean isPartiallyCharged(ItemStack stack);
 
-	public abstract void addCraftingRecipes(ICraftingParts parts);
+	public abstract void addCraftingRecipes(CraftingParts parts);
 
 	public abstract boolean hasIC2();
 

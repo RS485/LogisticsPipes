@@ -1,16 +1,13 @@
 package logisticspipes.network.guis.module.inpipe;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.gui.modules.GuiFluidSupplier;
 import logisticspipes.modules.ModuleFluidSupplier;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
 
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public class FluidSupplierSlot extends ModuleCoordinatesGuiProvider {
 
 	public FluidSupplierSlot(int id) {

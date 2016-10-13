@@ -1,16 +1,14 @@
 package logisticspipes.renderer.state;
 
-import java.io.IOException;
-
-import logisticspipes.config.Configs;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-
 import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
+
+import logisticspipes.config.Configs;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class TextureMatrix {
 
@@ -58,16 +56,16 @@ public class TextureMatrix {
 		if (isRouted) {
 			CoreRoutedPipe cPipe = (CoreRoutedPipe) pipe;
 			for (int i = 0; i < 6; i++) {
-				if (isRoutedInDir[i] != cPipe.getRouter().isRoutedExit(EnumFacing.getOrientation(i))) {
+				if (isRoutedInDir[i] != cPipe.getRouter().isRoutedExit(EnumFacing.getFront(i))) {
 					dirty = true;
 				}
-				isRoutedInDir[i] = cPipe.getRouter().isRoutedExit(EnumFacing.getOrientation(i));
+				isRoutedInDir[i] = cPipe.getRouter().isRoutedExit(EnumFacing.getFront(i));
 			}
 			for (int i = 0; i < 6; i++) {
-				if (isSubPowerInDir[i] != cPipe.getRouter().isSubPoweredExit(EnumFacing.getOrientation(i))) {
+				if (isSubPowerInDir[i] != cPipe.getRouter().isSubPoweredExit(EnumFacing.getFront(i))) {
 					dirty = true;
 				}
-				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(EnumFacing.getOrientation(i));
+				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(EnumFacing.getFront(i));
 			}
 			if (hasPowerUpgrade != (cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0)) {
 				dirty = true;
@@ -112,35 +110,35 @@ public class TextureMatrix {
 		dirty = false;
 	}
 
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) {
 		for (int iconIndexe : iconIndexes) {
-			data.writeByte(iconIndexe);
+			output.writeByte(iconIndexe);
 		}
-		data.writeInt(textureIndex);
-		data.writeBoolean(isRouted);
-		data.writeBooleanArray(isRoutedInDir);
-		data.writeBooleanArray(isSubPowerInDir);
-		data.writeBoolean(hasPowerUpgrade);
-		data.writeBoolean(hasPower);
-		data.writeBoolean(isFluid);
-		data.writeEnumFacing(pointedOrientation);
+		output.writeInt(textureIndex);
+		output.writeBoolean(isRouted);
+		output.writeBooleanArray(isRoutedInDir);
+		output.writeBooleanArray(isSubPowerInDir);
+		output.writeBoolean(hasPowerUpgrade);
+		output.writeBoolean(hasPower);
+		output.writeBoolean(isFluid);
+		output.writeFacing(pointedOrientation);
 	}
 
-	public void readData(LPDataInputStream data) throws IOException {
+	public void readData(LPDataInput input) {
 		for (int i = 0; i < iconIndexes.length; i++) {
-			int icon = data.readByte();
+			int icon = input.readByte();
 			if (iconIndexes[i] != icon) {
 				iconIndexes[i] = icon;
 				dirty = true;
 			}
 		}
-		textureIndex = data.readInt();
-		isRouted = data.readBoolean();
-		isRoutedInDir = data.readBooleanArray();
-		isSubPowerInDir = data.readBooleanArray();
-		hasPowerUpgrade = data.readBoolean();
-		hasPower = data.readBoolean();
-		isFluid = data.readBoolean();
-		pointedOrientation = data.readEnumFacing();
+		textureIndex = input.readInt();
+		isRouted = input.readBoolean();
+		isRoutedInDir = input.readBooleanArray();
+		isSubPowerInDir = input.readBooleanArray();
+		hasPowerUpgrade = input.readBoolean();
+		hasPower = input.readBoolean();
+		isFluid = input.readBoolean();
+		pointedOrientation = input.readFacing();
 	}
 }

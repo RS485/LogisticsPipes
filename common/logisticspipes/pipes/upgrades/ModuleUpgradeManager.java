@@ -1,19 +1,19 @@
 package logisticspipes.pipes.upgrades;
 
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+
+import lombok.Getter;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.SimpleStackInventory;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraft.util.EnumFacing;
-
-import lombok.Getter;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager {
 
@@ -88,6 +88,16 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	@Override
 	public boolean hasOwnSneakyUpgrade() {
 		return sneakyOrientation != null;
+	}
+
+	@Override
+	public IPipeUpgrade getUpgrade(int slot) {
+		return upgrades[slot];
+	}
+
+	@Override
+	public DoubleCoordinates getPipePosition() {
+		return pipe.getLPPosition();
 	}
 
 	@Override

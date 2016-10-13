@@ -1,19 +1,16 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.NewGuiHandler;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import net.minecraftforge.common.util.FakePlayer;
 
-@Accessors(chain = true)
+import lombok.Getter;
+
+import logisticspipes.network.NewGuiHandler;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public abstract class GuiProvider {
 
 	@Getter
@@ -23,9 +20,9 @@ public abstract class GuiProvider {
 		this.id = id;
 	}
 
-	public void writeData(LPDataOutputStream data) throws IOException {}
+	public void writeData(LPDataOutput output) {}
 
-	public void readData(LPDataInputStream data) throws IOException {}
+	public void readData(LPDataInput input) {}
 
 	/**
 	 * @return LogisticsBaseGuiScreen
@@ -37,7 +34,7 @@ public abstract class GuiProvider {
 	public abstract GuiProvider template();
 
 	public final void open(EntityPlayer player) {
-		if(player instanceof FakePlayer) return;
+		if (player instanceof FakePlayer) return;
 		NewGuiHandler.openGui(this, player);
 	}
 }

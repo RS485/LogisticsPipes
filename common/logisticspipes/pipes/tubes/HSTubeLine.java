@@ -1,9 +1,18 @@
 package logisticspipes.pipes.tubes;
 
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+
+import lombok.Getter;
+
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.interfaces.ITubeRenderOrientation;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
@@ -11,69 +20,12 @@ import logisticspipes.renderer.newpipe.tube.LineTubeRenderer;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.IPositionRotateble;
 import logisticspipes.utils.LPPositionSet;
-import lombok.Getter;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
-import java.io.IOException;
-import java.util.List;
-
 public class HSTubeLine extends CoreMultiBlockPipe {
-
-	public enum TubeLineOrientation implements ITubeOrientation {
-		NORTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH),
-		SOUTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.SOUTH),
-		EAST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST),
-		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.WEST)
-		;
-
-		@Getter
-		TubeLineRenderOrientation renderOrientation;
-		@Getter
-		DoubleCoordinates offset;
-		@Getter
-		EnumFacing dir;
-
-		TubeLineOrientation(TubeLineRenderOrientation render, DoubleCoordinates off, EnumFacing dir) {
-			renderOrientation = render;
-			offset = off;
-			this.dir = dir;
-		}
-
-		@Override
-		public void rotatePositions(IPositionRotateble set) {
-			renderOrientation.rotateOrientation(set);
-		}
-
-		@Override
-		public void setOnPipe(CoreMultiBlockPipe pipe) {
-			((HSTubeLine)pipe).orientation = this;
-		}
-	}
-
-	public enum TubeLineRenderOrientation implements ITubeRenderOrientation {
-		NORTH_SOUTH(EnumFacing.NORTH),
-		EAST_WEST(EnumFacing.EAST);
-
-		@Getter
-		private EnumFacing dir;
-
-		TubeLineRenderOrientation(EnumFacing dir) {
-			this.dir = dir;
-		}
-
-		public void rotateOrientation(IPositionRotateble set) {
-			if(this == EAST_WEST) {
-				set.rotateLeft();
-			}
-		}
-	}
 
 	@Getter
 	private TubeLineOrientation orientation;
@@ -83,19 +35,19 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) {
 		if (orientation == null) {
-			data.writeBoolean(false);
+			output.writeBoolean(false);
 		} else {
-			data.writeBoolean(true);
-			data.writeEnum(orientation);
+			output.writeBoolean(true);
+			output.writeEnum(orientation);
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		if (data.readBoolean()) {
-			orientation = data.readEnum(TubeLineOrientation.class);
+	public void readData(LPDataInput input) {
+		if (input.readBoolean()) {
+			orientation = input.readEnum(TubeLineOrientation.class);
 		}
 	}
 
@@ -181,7 +133,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 
 	@Override
 	public TileEntity getConnectedEndTile(EnumFacing output) {
-		if(output == this.orientation.dir || output.getOpposite() == this.orientation.dir) {
+		if (output == this.orientation.dir || output.getOpposite() == this.orientation.dir) {
 			return container.getTile(output);
 		}
 		return null;
@@ -215,5 +167,53 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	@Override
 	public boolean isHSTube() {
 		return true;
+	}
+
+	public enum TubeLineOrientation implements ITubeOrientation {
+		NORTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH),
+		SOUTH(TubeLineRenderOrientation.NORTH_SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.SOUTH),
+		EAST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST),
+		WEST(TubeLineRenderOrientation.EAST_WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.WEST);
+
+		@Getter
+		TubeLineRenderOrientation renderOrientation;
+		@Getter
+		DoubleCoordinates offset;
+		@Getter
+		EnumFacing dir;
+
+		TubeLineOrientation(TubeLineRenderOrientation render, DoubleCoordinates off, EnumFacing dir) {
+			renderOrientation = render;
+			offset = off;
+			this.dir = dir;
+		}
+
+		@Override
+		public void rotatePositions(IPositionRotateble set) {
+			renderOrientation.rotateOrientation(set);
+		}
+
+		@Override
+		public void setOnPipe(CoreMultiBlockPipe pipe) {
+			((HSTubeLine) pipe).orientation = this;
+		}
+	}
+
+	public enum TubeLineRenderOrientation implements ITubeRenderOrientation {
+		NORTH_SOUTH(EnumFacing.NORTH),
+		EAST_WEST(EnumFacing.EAST);
+
+		@Getter
+		private EnumFacing dir;
+
+		TubeLineRenderOrientation(EnumFacing dir) {
+			this.dir = dir;
+		}
+
+		public void rotateOrientation(IPositionRotateble set) {
+			if (this == EAST_WEST) {
+				set.rotateLeft();
+			}
+		}
 	}
 }

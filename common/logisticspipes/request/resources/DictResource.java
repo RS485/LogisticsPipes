@@ -1,23 +1,23 @@
 package logisticspipes.request.resources;
 
-import java.io.IOException;
 import java.util.BitSet;
 
+import net.minecraft.item.ItemStack;
+
+import com.google.common.base.Objects;
+
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-
-import net.minecraft.item.ItemStack;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class DictResource implements IResource {
 
-	public ItemIdentifierStack stack;
 	private final IRequestItems requester;
-
+	public ItemIdentifierStack stack;
 	//match all items with same oredict name
 	public boolean use_od = false;
 	//match all items with same id
@@ -26,16 +26,17 @@ public class DictResource implements IResource {
 	public boolean ignore_nbt = false;
 	//match all items with same oredict prefix
 	public boolean use_category = false;
+	private Object ccObject;
 
 	public DictResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
 		this.requester = requester;
 	}
 
-	public DictResource(LPDataInputStream data) throws IOException {
-		stack = data.readItemIdentifierStack();
+	public DictResource(LPDataInput input) {
+		stack = input.readItemIdentifierStack();
 		requester = null;
-		BitSet bits = data.readBitSet();
+		BitSet bits = input.readBitSet();
 		use_od = bits.get(0);
 		ignore_dmg = bits.get(1);
 		ignore_nbt = bits.get(2);
@@ -43,14 +44,14 @@ public class DictResource implements IResource {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeItemIdentifierStack(stack);
+	public void writeData(LPDataOutput output) {
+		output.writeItemIdentifierStack(stack);
 		BitSet bits = new BitSet();
 		bits.set(0, use_od);
 		bits.set(1, ignore_dmg);
 		bits.set(2, ignore_nbt);
 		bits.set(3, use_category);
-		data.writeBitSet(bits);
+		output.writeBitSet(bits);
 	}
 
 	@Override
@@ -93,10 +94,7 @@ public class DictResource implements IResource {
 		if (!stack_n.hasTagCompound() && !other_n.hasTagCompound()) {
 			return true;
 		}
-		if (ItemStack.areItemStackTagsEqual(stack_n, other_n)) {
-			return true;
-		}
-		return false;
+		return ItemStack.areItemStackTagsEqual(stack_n, other_n);
 	}
 
 	@Override
@@ -109,6 +107,15 @@ public class DictResource implements IResource {
 		ItemIdentifierStack stack = this.stack.clone();
 		stack.setStackSize(stack.getStackSize() * multiplier);
 		DictResource clone = new DictResource(stack, requester);
+		clone.use_od = use_od;
+		clone.ignore_dmg = ignore_dmg;
+		clone.ignore_nbt = ignore_nbt;
+		clone.use_category = use_category;
+		return clone;
+	}
+
+	public DictResource clone() {
+		DictResource clone = new DictResource(this.stack.clone(), requester);
 		clone.use_od = use_od;
 		clone.ignore_dmg = ignore_dmg;
 		clone.ignore_nbt = ignore_nbt;
@@ -131,7 +138,9 @@ public class DictResource implements IResource {
 	@Override
 	public boolean mergeForDisplay(IResource resource, int withAmount) {
 		if (resource instanceof DictResource) {
-			if (((DictResource) resource).use_od == use_od && ((DictResource) resource).ignore_dmg == ignore_dmg && ((DictResource) resource).ignore_nbt == ignore_nbt && ((DictResource) resource).use_category == use_category && ((DictResource) resource).getItem().equals(getItem())) {
+			if (((DictResource) resource).use_od == use_od && ((DictResource) resource).ignore_dmg == ignore_dmg
+					&& ((DictResource) resource).ignore_nbt == ignore_nbt && ((DictResource) resource).use_category == use_category && ((DictResource) resource)
+					.getItem().equals(getItem())) {
 				stack.setStackSize(stack.getStackSize() + withAmount);
 				return true;
 			}
@@ -151,16 +160,14 @@ public class DictResource implements IResource {
 		return clone;
 	}
 
-	private Object ccObject;
+	@Override
+	public Object getCCType() {
+		return ccObject;
+	}
 
 	@Override
 	public void setCCType(Object type) {
 		ccObject = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
 	}
 
 	@Override
@@ -199,11 +206,12 @@ public class DictResource implements IResource {
 		return stack;
 	}
 
-	public void loadFromBitSet(BitSet bits) {
+	public DictResource loadFromBitSet(BitSet bits) {
 		use_od = bits.get(0);
 		ignore_dmg = bits.get(1);
 		ignore_nbt = bits.get(2);
 		use_category = bits.get(3);
+		return this;
 	}
 
 	public BitSet getBitSet() {
@@ -213,5 +221,34 @@ public class DictResource implements IResource {
 		bits.set(2, ignore_nbt);
 		bits.set(3, use_category);
 		return bits;
+	}
+
+	public Identifier getIdentifier() {
+		return new Identifier();
+	}
+
+	public class Identifier {
+
+		private ItemIdentifier getItem() {
+			return stack.getItem();
+		}
+
+		private BitSet getBitSet() {
+			return DictResource.this.getBitSet();
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(getItem(), getBitSet());
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Identifier) {
+				Identifier id = (Identifier) obj;
+				return id.getItem().equals(getItem()) && id.getBitSet().equals(getBitSet());
+			}
+			return false;
+		}
 	}
 }

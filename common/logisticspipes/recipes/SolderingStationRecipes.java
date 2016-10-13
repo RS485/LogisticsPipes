@@ -3,17 +3,10 @@ package logisticspipes.recipes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
-import logisticspipes.interfaces.ICraftingResultHandler;
-import logisticspipes.proxy.interfaces.ICraftingParts;
-
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+
+import logisticspipes.interfaces.ICraftingResultHandler;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -33,7 +26,7 @@ public class SolderingStationRecipes {
 
 	private static final ArrayList<SolderingStationRecipe> recipes = new ArrayList<>();
 
-	public static void loadRecipe(ICraftingParts parts) {
+	public static void loadRecipe(CraftingParts parts) {
 		/*
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[] {
 				parts.getChipTear1(),

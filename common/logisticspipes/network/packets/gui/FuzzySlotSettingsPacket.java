@@ -1,18 +1,17 @@
 package logisticspipes.network.packets.gui;
 
-import logisticspipes.interfaces.IFuzzySlot;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayer;
-
-import java.io.IOException;
 import java.util.BitSet;
 
-@Accessors(chain = true)
+import net.minecraft.entity.player.EntityPlayer;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import logisticspipes.interfaces.IFuzzySlot;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class FuzzySlotSettingsPacket extends ModernPacket {
 
 	@Getter
@@ -28,22 +27,22 @@ public class FuzzySlotSettingsPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		slotNumber = data.readInt();
-		flags = data.readBitSet();
+	public void readData(LPDataInput input) {
+		slotNumber = input.readInt();
+		flags = input.readBitSet();
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(player.openContainer != null && player.openContainer.getSlot(slotNumber) instanceof IFuzzySlot) {
+		if (player.openContainer != null && player.openContainer.getSlot(slotNumber) instanceof IFuzzySlot) {
 			((IFuzzySlot) player.openContainer.getSlot(slotNumber)).getFuzzyFlags().loadFromBitSet(flags);
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(slotNumber);
-		data.writeBitSet(flags);
+	public void writeData(LPDataOutput output) {
+		output.writeInt(slotNumber);
+		output.writeBitSet(flags);
 	}
 
 	@Override

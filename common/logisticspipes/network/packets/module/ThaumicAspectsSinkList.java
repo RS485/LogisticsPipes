@@ -1,15 +1,12 @@
 package logisticspipes.network.packets.module;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public class ThaumicAspectsSinkList extends NBTModuleCoordinatesPacket {
 
 	public ThaumicAspectsSinkList(int id) {

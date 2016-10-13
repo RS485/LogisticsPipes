@@ -1,9 +1,29 @@
 package logisticspipes.gui.orderer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -12,7 +32,6 @@ import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;
 import logisticspipes.interfaces.IChainAddList;
 import logisticspipes.interfaces.IDiskProvider;
-import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.ClearCraftingGridPacket;
@@ -44,19 +63,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer, IDiskProvider {
 
@@ -268,10 +274,17 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						GL11.glEnable(GL11.GL_LIGHTING);
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						RenderHelper.enableGUIStandardItemLighting();
-						ItemStack stack = entry.getValue().getValue1().getDisplayItem().makeNormalStack();
-						GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
-						GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
-						String s = StringUtils.getFormatedStackSize(stack.stackSize, false);
+						ItemStack stack = null;
+						IResource resource = entry.getValue().getValue1();
+						String s = null;
+						if(resource != null) {
+							stack = resource.getDisplayItem().makeNormalStack();
+							GuiScreen.itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
+							GuiScreen.itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+							s = StringUtils.getFormatedStackSize(stack.stackSize, false);
+						} else {
+							s = "List";
+						}
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
 						GuiScreen.itemRender.zLevel = 0.0F;
@@ -382,12 +395,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order
 										.getRouterId());
 								GuiGraphics.displayItemToolTip(new Object[]{xPos - 10, yPos, order
-										.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false, false);
+										.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false);
 							});
 						} else {
 							List<String> list = new ArrayList<>();
 							list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
-							GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false, false);
+							GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false);
 						}
 					}
 				});

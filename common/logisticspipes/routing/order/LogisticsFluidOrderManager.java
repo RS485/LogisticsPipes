@@ -8,14 +8,26 @@ import logisticspipes.routing.FluidLogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.FluidIdentifier;
 
-public class LogisticsFluidOrderManager extends LogisticsOrderManager<LogisticsFluidOrder> {
+public class LogisticsFluidOrderManager extends LogisticsOrderManager<LogisticsFluidOrder, FluidIdentifier> {
+
+	private static class IC implements LogisticsOrderLinkedList.IIdentityProvider<LogisticsFluidOrder, FluidIdentifier> {
+		@Override
+		public FluidIdentifier getIdentity(LogisticsFluidOrder o) {
+			return o.getFluid();
+		}
+
+		@Override
+		public boolean isExtra(LogisticsFluidOrder o) {
+			return false;
+		}
+	}
 
 	public LogisticsFluidOrderManager(ILPPositionProvider pos) {
-		super(pos);
+		super(new LogisticsOrderLinkedList<LogisticsFluidOrder, FluidIdentifier>(new IC()), pos);
 	}
 
 	public LogisticsFluidOrderManager(IChangeListener listener, ILPPositionProvider pos) {
-		super(listener, pos);
+		super(listener, pos, new LogisticsOrderLinkedList<LogisticsFluidOrder, FluidIdentifier>(new IC()));
 	}
 
 	@Override

@@ -1,28 +1,21 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class PipeContentPacket extends ModernPacket {
-
-	public PipeContentPacket(int id) {
-		super(id);
-	}
 
 	@Getter
 	@Setter
@@ -31,10 +24,14 @@ public class PipeContentPacket extends ModernPacket {
 	@Setter
 	private int travelId;
 
+	public PipeContentPacket(int id) {
+		super(id);
+	}
+
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		item = data.readItemIdentifierStack();
-		travelId = data.readInt();
+	public void readData(LPDataInput input) {
+		item = input.readItemIdentifierStack();
+		travelId = input.readInt();
 	}
 
 	@Override
@@ -56,9 +53,9 @@ public class PipeContentPacket extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeItemIdentifierStack(item);
-		data.writeInt(travelId);
+	public void writeData(LPDataOutput output) {
+		output.writeItemIdentifierStack(item);
+		output.writeInt(travelId);
 	}
 
 	@Override

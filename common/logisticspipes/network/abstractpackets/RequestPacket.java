@@ -1,17 +1,13 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.packets.orderer.RequestSubmitPacket;
-import logisticspipes.utils.item.ItemIdentifierStack;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.network.packets.orderer.RequestSubmitPacket;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public abstract class RequestPacket extends CoordinatesPacket {
 
 	@Getter
@@ -32,16 +28,16 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeItemIdentifierStack(stack);
-		data.writeInt(dimension);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeItemIdentifierStack(stack);
+		output.writeInt(dimension);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		stack = data.readItemIdentifierStack();
-		dimension = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		stack = input.readItemIdentifierStack();
+		dimension = input.readInt();
 	}
 }

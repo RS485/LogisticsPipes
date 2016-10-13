@@ -20,8 +20,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.te.ILPTEInformation;
@@ -42,12 +44,8 @@ import logisticspipes.routing.pathfinder.IRouteProvider.RouteInfo;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 /**
  * Examines all pipe connections and their forks to locate all connected routers
@@ -254,7 +252,7 @@ public class PathFinder {
 				}
 			}
 
-			if (tile instanceof IInventory && startPipe.isRoutingPipe() && startPipe.getRoutingPipe() instanceof IDirectRoutingConnection) {
+			if (tile instanceof IInventory && startPipe.isRoutingPipe() && startPipe.getRoutingPipe() instanceof IDirectRoutingConnection && startPipe.canConnect(tile, direction, false)) {
 				if (SimpleServiceLocator.connectionManager.hasDirectConnection(startPipe.getRoutingPipe().getRouter())) {
 					CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(startPipe.getRoutingPipe().getRouter());
 					if (CRP != null) {

@@ -4,6 +4,8 @@ import java.util.List;
 
 import net.minecraft.tileentity.TileEntity;
 
+import logisticspipes.recipes.CraftingParts;
+
 public interface IThermalExpansionProxy {
 
 	public boolean isTesseract(TileEntity tile);
@@ -12,5 +14,5 @@ public interface IThermalExpansionProxy {
 
 	public boolean isTE();
 
-	public ICraftingParts getRecipeParts();
+	public CraftingParts getRecipeParts();
 }

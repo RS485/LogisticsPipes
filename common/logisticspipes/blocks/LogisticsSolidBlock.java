@@ -1,8 +1,5 @@
 package logisticspipes.blocks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,10 +14,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
@@ -33,6 +29,8 @@ import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.proxy.MainProxy;
 
 public class LogisticsSolidBlock extends BlockContainer {
+
+	public static final int LOGISTICS_BLOCK_FRAME = 15;
 
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
@@ -179,6 +177,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_STATISTICS_TABLE:
 			case LOGISTICS_RF_POWERPROVIDER:
 			case LOGISTICS_IC2_POWERPROVIDER:
+			case LOGISTICS_BLOCK_FRAME:
 				return par1;
 		}
 		return super.damageDropped(par1);
@@ -332,6 +331,13 @@ public class LogisticsSolidBlock extends BlockContainer {
 						return LogisticsSolidBlock.icons[5];
 					default: //Front
 						return LogisticsSolidBlock.icons[6];
+				}
+			case LOGISTICS_BLOCK_FRAME:
+				switch (side) {
+					case 1: //TOP
+						return LogisticsSolidBlock.icons[10];
+					default:
+						return LogisticsSolidBlock.icons[2];
 				}
 			default:
 				return LogisticsSolidBlock.icons[0];

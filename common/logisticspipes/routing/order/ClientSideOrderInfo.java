@@ -2,13 +2,16 @@ package logisticspipes.routing.order;
 
 import java.util.List;
 
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import lombok.Getter;
 
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
+@SideOnly(Side.CLIENT)
 public class ClientSideOrderInfo implements IOrderInfoProvider {
 
 	@Getter
@@ -32,16 +35,16 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 	@Getter
 	private final ItemIdentifier targetType;
 
-	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, ResourceType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress, DoubleCoordinates pos, ItemIdentifier targetType) {
-		asDisplayItem = item;
-		this.isFinished = isFinished;
-		this.type = type;
-		this.inProgress = inProgress;
-		this.routerId = routerId;
-		this.progresses = progresses;
-		this.machineProgress = machineProgress;
-		targetPosition = pos;
-		this.targetType = targetType;
+	public ClientSideOrderInfo(LPDataInput input) {
+		asDisplayItem = input.readItemIdentifierStack();
+		routerId = input.readInt();
+		isFinished = input.readBoolean();
+		inProgress = input.readBoolean();
+		type = input.readEnum(IOrderInfoProvider.ResourceType.class);
+		progresses = input.readArrayList(LPDataInput::readFloat);
+		machineProgress = input.readByte();
+		targetPosition = new DoubleCoordinates(input);
+		targetType = input.readItemIdentifier();
 	}
 
 	//Ignore this call

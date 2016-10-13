@@ -1,7 +1,5 @@
 package logisticspipes.gui.popup;
 
-import javax.imageio.ImageIO;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +9,24 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.imageio.ImageIO;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.routing.order.IOrderInfoProvider;
@@ -22,23 +38,6 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.init.Blocks;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class RequestMonitorPopup extends SubGuiScreen {
 
@@ -131,7 +130,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	@Override
 	protected void renderToolTips(int mouseX, int mouseY, float par3) {
 		if (tooltip != null) {
-			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, false, true);
+			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, true);
 		}
 	}
 

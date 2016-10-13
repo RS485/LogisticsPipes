@@ -12,6 +12,36 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
+import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IItemAdvancedExistance;
@@ -32,39 +62,7 @@ import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
-
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
-
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
-import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
-import net.minecraftforge.event.world.WorldEvent;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 public class LogisticsEventListener {
 
@@ -199,7 +197,9 @@ public class LogisticsEventListener {
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
 		PlayerIdentifier ident = PlayerIdentifier.get(event.player);
 		PlayerConfig config = LogisticsEventListener.getPlayerConfig(ident);
-		config.writeToFile();
+		if (config != null) {
+			config.writeToFile();
+		}
 		LogisticsEventListener.playerConfigs.remove(ident);
 	}
 

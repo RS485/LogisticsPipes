@@ -17,9 +17,19 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import logisticspipes.utils.EnumFacingUtil;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.fml.client.FMLClientHandler;
+
+import lombok.Getter;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -75,26 +85,14 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
+import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
-
-import lombok.Getter;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @CCType(name = "LogisticsChassiePipe")
 public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
@@ -728,7 +726,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
-		if (slot != ModulePositionType.SLOT || positionInt > _upgradeManagers.length) {
+		if (slot != ModulePositionType.SLOT || positionInt >= _upgradeManagers.length) {
 			if (LPConstants.DEBUG) {
 				new UnsupportedOperationException("Position info arn't for a chassi pipe. (" + slot + "/" + positionInt + ")").printStackTrace();
 			}

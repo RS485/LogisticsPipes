@@ -1,22 +1,19 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.List;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+
+import lombok.Setter;
+
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.routing.ExitRoute;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public class StatUpdate extends CoordinatesPacket {
 
 	@Setter
@@ -77,27 +74,27 @@ public class StatUpdate extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) {
 		initData();
-		super.writeData(data);
-		data.writeInt(stat_session_sent);
-		data.writeInt(stat_session_recieved);
-		data.writeInt(stat_session_relayed);
-		data.writeLong(stat_lifetime_sent);
-		data.writeLong(stat_lifetime_recieved);
-		data.writeLong(stat_lifetime_relayed);
-		data.writeInt(server_routing_table_size);
+		super.writeData(output);
+		output.writeInt(stat_session_sent);
+		output.writeInt(stat_session_recieved);
+		output.writeInt(stat_session_relayed);
+		output.writeLong(stat_lifetime_sent);
+		output.writeLong(stat_lifetime_recieved);
+		output.writeLong(stat_lifetime_relayed);
+		output.writeInt(server_routing_table_size);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		stat_session_sent = data.readInt();
-		stat_session_recieved = data.readInt();
-		stat_session_relayed = data.readInt();
-		stat_lifetime_sent = data.readLong();
-		stat_lifetime_recieved = data.readLong();
-		stat_lifetime_relayed = data.readLong();
-		server_routing_table_size = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		stat_session_sent = input.readInt();
+		stat_session_recieved = input.readInt();
+		stat_session_relayed = input.readInt();
+		stat_lifetime_sent = input.readLong();
+		stat_lifetime_recieved = input.readLong();
+		stat_lifetime_relayed = input.readLong();
+		server_routing_table_size = input.readInt();
 	}
 }

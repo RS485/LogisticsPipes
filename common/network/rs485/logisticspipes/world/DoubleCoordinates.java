@@ -1,29 +1,41 @@
 /*
- * Copyright (c) 2015  RS485
+ * Copyright (c) 2016  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
  * https://github.com/RS485/LogisticsPipes/blob/dev/LICENSE.md
  *
- * This file can instead be distributed under the license terms of the MIT license:
+ * This file can instead be distributed under the license terms of the
+ * MIT license:
  *
- * Copyright (c) 2015  RS485
+ * Copyright (c) 2016  RS485
  *
- * This MIT license was reworded to only match this file. If you use the regular MIT license in your project, replace this copyright notice (this line and any lines below and NOT the copyright line above) with the lines from the original MIT license located here: http://opensource.org/licenses/MIT
+ * This MIT license was reworded to only match this file. If you use the regular
+ * MIT license in your project, replace this copyright notice (this line and any
+ * lines below and NOT the copyright line above) with the lines from the original
+ * MIT license located here: http://opensource.org/licenses/MIT
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this file and associated documentation files (the "Source Code"), to deal in the Source Code without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Source Code, and to permit persons to whom the Source Code is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this file and associated documentation files (the "Source Code"), to deal in
+ * the Source Code without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Source Code, and to permit persons to whom the Source Code is furnished
+ * to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Source Code, which also can be distributed under the MIT.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Source Code, which also can be
+ * distributed under the MIT.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package network.rs485.logisticspipes.world;
-
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.utils.IPositionRotateble;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -34,12 +46,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraft.util.EnumFacing;
-
 import lombok.Data;
 
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.utils.IPositionRotateble;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.util.LPSerializable;
+
 @Data
-public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
+public class DoubleCoordinates implements IPositionRotateble, ICoordinates, LPSerializable {
 
 	private double xCoord;
 	private double yCoord;
@@ -55,6 +73,10 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 		setXCoord(xCoord);
 		setYCoord(yCoord);
 		setZCoord(zCoord);
+	}
+
+	public DoubleCoordinates(LPDataInput input) {
+		read(input);
 	}
 
 	public DoubleCoordinates(ICoordinates coords) {
@@ -208,5 +230,19 @@ public class DoubleCoordinates implements IPositionRotateble, ICoordinates {
 
 	public double getLength() {
 		return Math.sqrt(getXDouble() * getXDouble() + getYDouble() * getYDouble() + getZDouble() * getZDouble());
+	}
+
+	@Override
+	public void read(LPDataInput input) {
+		xCoord = input.readDouble();
+		yCoord = input.readDouble();
+		zCoord = input.readDouble();
+	}
+
+	@Override
+	public void write(LPDataOutput output) {
+		output.writeDouble(xCoord);
+		output.writeDouble(yCoord);
+		output.writeDouble(zCoord);
 	}
 }

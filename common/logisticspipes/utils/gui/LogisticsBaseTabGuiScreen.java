@@ -12,7 +12,10 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 
 	private int current_Tab;
 
+	private int buttonNextFreeId = 0;
+
 	private final List<TabSubGui> tabList = new ArrayList<>();
+	private final List<Slot> hiddenSlots = new ArrayList<>();
 
 	public LogisticsBaseTabGuiScreen(int xSize, int ySize) {
 		super(xSize, ySize, 0, 0);
@@ -23,6 +26,10 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		super.initGui();
 		buttonList.clear();
 		tabList.forEach(TabSubGui::initTab);
+	}
+
+	protected int getFreeButtonId() {
+		return buttonNextFreeId++;
 	}
 
 	@Override
@@ -60,6 +67,10 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		if (par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
 			par1 -= guiLeft + 3;
 			int select = Math.max(0, Math.min(par1 / 25, tabList.size() - 1));
+			if(current_Tab != select) {
+				tabList.get(current_Tab).leavingTab();
+				tabList.get(select).enteringTab();
+			}
 			current_Tab = select;
 		} else {
 			for (int i = 0; i < tabList.size(); i++) {
@@ -100,9 +111,10 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void func_146977_a(Slot slot) {
+		if(hiddenSlots.contains(slot)) return;
 		for (int i = 0; i < tabList.size(); i++) {
 			if (tabList.get(i).isSlotForTab(slot)) {
-				if (current_Tab != i) {
+				if (current_Tab != i || !tabList.get(i).showSlot(slot)) {
 					return;
 				}
 			}
@@ -115,9 +127,10 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		if (!super.isMouseOverSlot(slot, par2, par3)) {
 			return false;
 		}
+		if(hiddenSlots.contains(slot)) return false;
 		for (int i = 0; i < tabList.size(); i++) {
 			if (tabList.get(i).isSlotForTab(slot)) {
-				if (current_Tab != i) {
+				if (current_Tab != i || !tabList.get(i).showSlot(slot)) {
 					return false;
 				}
 			}
@@ -140,6 +153,11 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 
 	protected void addTab(TabSubGui gui) {
 		tabList.add(gui);
+	}
+
+	protected Slot addHiddenSlot(Slot slot) {
+		hiddenSlots.add(slot);
+		return slot;
 	}
 
 	protected abstract class TabSubGui {
@@ -190,5 +208,13 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		}
 
 		public void guiClose() {}
+
+		public boolean showSlot(Slot slot) {
+			return true;
+		}
+
+		public void leavingTab() {}
+
+		public void enteringTab() {}
 	}
 }

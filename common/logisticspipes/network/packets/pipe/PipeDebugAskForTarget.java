@@ -1,29 +1,23 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
-
+import cpw.mods.fml.client.FMLClientHandler;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 public class PipeDebugAskForTarget extends ModernPacket {
 
 	@Setter
@@ -35,8 +29,8 @@ public class PipeDebugAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		isServer = data.readBoolean();
+	public void readData(LPDataInput input) {
+		isServer = input.readBoolean();
 	}
 
 	@Override
@@ -60,8 +54,8 @@ public class PipeDebugAskForTarget extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeBoolean(isServer);
+	public void writeData(LPDataOutput output) {
+		output.writeBoolean(isServer);
 	}
 
 	@Override

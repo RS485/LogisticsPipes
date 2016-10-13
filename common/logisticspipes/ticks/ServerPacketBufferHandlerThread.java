@@ -2,7 +2,6 @@ package logisticspipes.ticks;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,23 +9,84 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 public class ServerPacketBufferHandlerThread {
+
+	private final ServerCompressorThread serverCompressorThread = new ServerCompressorThread();
+	private final ServerDecompressorThread serverDecompressorThread = new ServerDecompressorThread();
+
+	public ServerPacketBufferHandlerThread() {}
+
+	private static byte[] compress(byte[] content) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		try {
+			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+			gzipOutputStream.write(content);
+			gzipOutputStream.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return byteArrayOutputStream.toByteArray();
+	}
+
+	private static byte[] decompress(byte[] contentBytes) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(contentBytes));
+			int buffer = 0;
+			while ((buffer = gzip.read()) != -1) {
+				out.write(buffer);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return out.toByteArray();
+	}
+
+	public void serverTick(ServerTickEvent event) {
+		if (event.phase != Phase.END) {
+			return;
+		}
+		serverDecompressorThread.serverTickEnd();
+	}
+
+	public void setPause(boolean flag) {
+		serverCompressorThread.setPause(flag);
+	}
+
+	public void addPacketToCompressor(ModernPacket packet, EntityPlayer player) {
+		serverCompressorThread.addPacketToCompressor(packet, player);
+	}
+
+	public void handlePacket(byte[] content, EntityPlayer player) {
+		serverDecompressorThread.handlePacket(content, player);
+	}
+
+	public void clear(final EntityPlayer player) {
+		new Thread() {
+
+			@Override
+			public void run() {
+				serverCompressorThread.clear(player);
+				serverDecompressorThread.clear(player);
+			}
+		}.start();
+	}
 
 	private class ServerCompressorThread extends Thread {
 
@@ -48,52 +108,51 @@ public class ServerPacketBufferHandlerThread {
 		@Override
 		public void run() {
 			while (true) {
-				try {
-					synchronized (serverList) {
-						if (!pause) {
-							for (Entry<EntityPlayer, LinkedList<ModernPacket>> player : serverList.entrySet()) {
-								ByteArrayOutputStream out = new ByteArrayOutputStream();
-								DataOutputStream data = new DataOutputStream(out);
-								byte[] towrite = serverBuffer.get(player.getKey());
-								if (towrite != null) {
-									data.write(towrite);
+				synchronized (serverList) {
+					if (!pause) {
+						for (Entry<EntityPlayer, LinkedList<ModernPacket>> playerPacketEntry : serverList.entrySet()) {
+							EntityPlayer player = playerPacketEntry.getKey();
+							serverBuffer.put(player, LPDataIOWrapper.collectData(output -> {
+								if (serverBuffer.containsKey(player)) {
+									output.writeBytes(serverBuffer.get(player));
 								}
-								LinkedList<ModernPacket> packets = player.getValue();
-								for (ModernPacket packet : packets) {
-									LPDataOutputStream t = new LPDataOutputStream();
-									t.writeShort(packet.getId());
-									t.writeInt(packet.getDebugId());
-									packet.writeData(t);
-									data.writeInt(t.size());
-									data.write(t.toByteArray());
+
+								LinkedList<ModernPacket> packets = playerPacketEntry.getValue();
+								try {
+									for (ModernPacket packet : packets) {
+										output.writeByteArray(LPDataIOWrapper.collectData(dataOutput -> {
+											dataOutput.writeShort(packet.getId());
+											dataOutput.writeInt(packet.getDebugId());
+											packet.writeData(dataOutput);
+										}));
+									}
+								} finally {
+									packets.clear();
 								}
-								serverBuffer.put(player.getKey(), out.toByteArray());
-							}
-							serverList.clear();
+							}));
 						}
+						serverList.clear();
 					}
-					//Send Content
-					for (Entry<EntityPlayer, byte[]> player : serverBuffer.entrySet()) {
-						while (player.getValue().length > 32 * 1024) {
-							byte[] sendbuffer = Arrays.copyOf(player.getValue(), 1024 * 32);
-							byte[] newbuffer = Arrays.copyOfRange(player.getValue(), 1024 * 32, player.getValue().length);
-							player.setValue(newbuffer);
-							byte[] compressed = ServerPacketBufferHandlerThread.compress(sendbuffer);
-							MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed), player.getKey());
-						}
-						byte[] sendbuffer = player.getValue();
+				}
+				//Send Content
+				for (Entry<EntityPlayer, byte[]> player : serverBuffer.entrySet()) {
+					while (player.getValue().length > 32 * 1024) {
+						byte[] sendbuffer = Arrays.copyOf(player.getValue(), 1024 * 32);
+						byte[] newbuffer = Arrays.copyOfRange(player.getValue(), 1024 * 32, player.getValue().length);
+						player.setValue(newbuffer);
 						byte[] compressed = ServerPacketBufferHandlerThread.compress(sendbuffer);
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed), player.getKey());
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
+					byte[] sendbuffer = player.getValue();
+					byte[] compressed = ServerPacketBufferHandlerThread.compress(sendbuffer);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed), player.getKey());
 				}
 				serverBuffer.clear();
 				synchronized (serverList) {
 					while (pause || serverList.size() == 0) {
 						try {
 							serverList.wait();
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException ignored) { }
 					}
 				}
 				synchronized (playersToClear) {
@@ -141,8 +200,6 @@ public class ServerPacketBufferHandlerThread {
 		}
 	}
 
-	private final ServerCompressorThread serverCompressorThread = new ServerCompressorThread();
-
 	private class ServerDecompressorThread extends Thread {
 
 		//Map of Player to received compressed C->S data
@@ -151,6 +208,7 @@ public class ServerPacketBufferHandlerThread {
 		private final HashMap<EntityPlayer, byte[]> ByteBuffer = new HashMap<>();
 		//FIFO for deserialized C->S packets, decompressor adds, tickEnd removes
 		private final LinkedList<Pair<EntityPlayer, byte[]>> PacketBuffer = new LinkedList<>();
+		private final ReentrantLock packetBufferLock = new ReentrantLock();
 		//Clear content on next tick
 		private Queue<EntityPlayer> playersToClear = new LinkedList<>();
 
@@ -160,25 +218,31 @@ public class ServerPacketBufferHandlerThread {
 			start();
 		}
 
+		private void handlePacketData(final Pair<EntityPlayer, byte[]> playerDataPair) {
+			LPDataIOWrapper.provideData(playerDataPair.getValue2(), input -> {
+				PacketHandler.onPacketData(input, playerDataPair.getValue1());
+			});
+		}
+
 		public void serverTickEnd() {
-			boolean flag = false;
-			do {
-				flag = false;
-				Pair<EntityPlayer, byte[]> part = null;
-				synchronized (PacketBuffer) {
+			Pair<EntityPlayer, byte[]> part;
+			while (true) {
+				part = null;
+				packetBufferLock.lock();
+				try {
 					if (PacketBuffer.size() > 0) {
-						flag = true;
 						part = PacketBuffer.pop();
 					}
+				} finally {
+					packetBufferLock.unlock();
 				}
-				if (flag) {
-					try {
-						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+
+				if (part == null) {
+					break;
 				}
-			} while (flag);
+
+				handlePacketData(part);
+			}
 		}
 
 		@Override
@@ -233,8 +297,11 @@ public class ServerPacketBufferHandlerThread {
 						byte[] packet = Arrays.copyOfRange(ByteBufferForPlayer, 4, size + 4);
 						ByteBufferForPlayer = Arrays.copyOfRange(ByteBufferForPlayer, size + 4, ByteBufferForPlayer.length);
 						player.setValue(ByteBufferForPlayer);
-						synchronized (PacketBuffer) {
+						packetBufferLock.lock();
+						try {
 							PacketBuffer.add(new Pair<>(player.getKey(), packet));
+						} finally {
+							packetBufferLock.unlock();
 						}
 					}
 				}
@@ -249,7 +316,7 @@ public class ServerPacketBufferHandlerThread {
 					while (queue.size() == 0) {
 						try {
 							queue.wait();
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException ignored) { }
 					}
 				}
 				synchronized (playersToClear) {
@@ -284,65 +351,5 @@ public class ServerPacketBufferHandlerThread {
 				playersToClear.add(player);
 			}
 		}
-	}
-
-	private final ServerDecompressorThread serverDecompressorThread = new ServerDecompressorThread();
-
-	public ServerPacketBufferHandlerThread() {}
-
-	public void serverTick(ServerTickEvent event) {
-		if (event.phase != Phase.END) {
-			return;
-		}
-		serverDecompressorThread.serverTickEnd();
-	}
-
-	public void setPause(boolean flag) {
-		serverCompressorThread.setPause(flag);
-	}
-
-	public void addPacketToCompressor(ModernPacket packet, EntityPlayer player) {
-		serverCompressorThread.addPacketToCompressor(packet, player);
-	}
-
-	public void handlePacket(byte[] content, EntityPlayer player) {
-		serverDecompressorThread.handlePacket(content, player);
-	}
-
-	private static byte[] compress(byte[] content) {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		try {
-			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-			gzipOutputStream.write(content);
-			gzipOutputStream.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return byteArrayOutputStream.toByteArray();
-	}
-
-	private static byte[] decompress(byte[] contentBytes) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try {
-			GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(contentBytes));
-			int buffer = 0;
-			while ((buffer = gzip.read()) != -1) {
-				out.write(buffer);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return out.toByteArray();
-	}
-
-	public void clear(final EntityPlayer player) {
-		new Thread() {
-
-			@Override
-			public void run() {
-				serverCompressorThread.clear(player);
-				serverDecompressorThread.clear(player);
-			}
-		}.start();
 	}
 }

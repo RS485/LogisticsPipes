@@ -16,8 +16,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+
+import buildcraft.transport.TravelingItem;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -61,20 +71,8 @@ import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-
-import net.minecraft.util.EnumFacing;
-
-import buildcraft.transport.TravelingItem;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeTransportLogistics {
 
@@ -552,7 +550,7 @@ public class PipeTransportLogistics {
 					if (slotManager.hasSneakyUpgrade()) {
 						insertion = slotManager.getSneakyOrientation();
 					}
-					ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
+					ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 
 					arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
 
@@ -584,7 +582,7 @@ public class PipeTransportLogistics {
 						if (insertion == null) {
 							continue;
 						}
-						ItemStack added = InventoryHelper.getTransactorFor(tile, dir.getOpposite()).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
+						ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 
 						arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
 						if (added.stackSize > 0) {

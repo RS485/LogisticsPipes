@@ -1,20 +1,16 @@
 package logisticspipes.network.packets.cpipe;
 
-import java.io.IOException;
-
-import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class CPipeSatelliteId extends ModuleCoordinatesPacket {
 
 	@Getter
@@ -31,15 +27,15 @@ public class CPipeSatelliteId extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(pipeId);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeInt(pipeId);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		pipeId = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		pipeId = input.readInt();
 	}
 
 	@Override

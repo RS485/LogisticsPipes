@@ -1,9 +1,20 @@
 package logisticspipes.pipes.tubes;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+
+import lombok.Getter;
+
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.interfaces.ITubeRenderOrientation;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
@@ -13,82 +24,15 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.IPositionRotateble;
 import logisticspipes.utils.LPPositionSet;
-import lombok.Getter;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class HSTubeGain extends CoreMultiBlockPipe {
-
-	public enum TubeGainOrientation implements ITubeOrientation {
-		NORTH(TubeGainRenderOrientation.NORTH, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH),
-		SOUTH(TubeGainRenderOrientation.SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.SOUTH),
-		EAST(TubeGainRenderOrientation.EAST, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST),
-		WEST(TubeGainRenderOrientation.WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.WEST)
-		;
-
-		@Getter
-		TubeGainRenderOrientation renderOrientation;
-		@Getter
-		DoubleCoordinates offset;
-		@Getter
-		EnumFacing dir;
-
-		TubeGainOrientation(TubeGainRenderOrientation render, DoubleCoordinates off, EnumFacing dir) {
-			renderOrientation = render;
-			offset = off;
-			this.dir = dir;
-		}
-
-		@Override
-		public void rotatePositions(IPositionRotateble set) {
-			renderOrientation.rotateOrientation(set);
-		}
-
-		@Override
-		public void setOnPipe(CoreMultiBlockPipe pipe) {
-			((HSTubeGain)pipe).orientation = this;
-		}
-	}
-
-	public enum TubeGainRenderOrientation implements ITubeRenderOrientation {
-		NORTH(EnumFacing.NORTH),
-		SOUTH(EnumFacing.SOUTH),
-		WEST(EnumFacing.WEST),
-		EAST(EnumFacing.EAST);
-
-		@Getter
-		private EnumFacing dir;
-
-		TubeGainRenderOrientation(EnumFacing dir) {
-			this.dir = dir;
-		}
-
-		public void rotateOrientation(IPositionRotateble set) {
-			if(this == EAST) {
-				set.rotateRight();
-			} else if(this == WEST) {
-				set.rotateLeft();
-			} else if(this == SOUTH) {
-				set.rotateLeft();
-				set.rotateLeft();
-			}
-		}
-	}
 
 	@Getter
 	private TubeGainOrientation orientation;
-
 	private List<AxisAlignedBB> boxes = null;
 
 	public HSTubeGain(Item item) {
@@ -96,19 +40,19 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
+	public void writeData(LPDataOutput output) {
 		if (orientation == null) {
-			data.writeBoolean(false);
+			output.writeBoolean(false);
 		} else {
-			data.writeBoolean(true);
-			data.writeEnum(orientation);
+			output.writeBoolean(true);
+			output.writeEnum(orientation);
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		if (data.readBoolean()) {
-			orientation = data.readEnum(TubeGainOrientation.class);
+	public void readData(LPDataInput input) {
+		if (input.readBoolean()) {
+			orientation = input.readEnum(TubeGainOrientation.class);
 		}
 	}
 
@@ -183,12 +127,16 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 					zOne -= 1;
 					zTwo += 2;
 				}
-				AxisAlignedBB box = GainTubeRenderer.getObjectBoundsAt(AxisAlignedBB.getBoundingBox(Math.min(xOne, xTwo), Math.min(yOne, yTwo), Math.min(zOne, zTwo), Math.max(xOne, xTwo), Math.max(yOne, yTwo), Math.max(zOne, zTwo)).getOffsetBoundingBox(-x, -y, -z), orientation);
+				AxisAlignedBB box = GainTubeRenderer.getObjectBoundsAt(AxisAlignedBB
+						.getBoundingBox(Math.min(xOne, xTwo), Math.min(yOne, yTwo), Math.min(zOne, zTwo), Math.max(xOne, xTwo), Math.max(yOne, yTwo),
+								Math.max(zOne, zTwo)).getOffsetBoundingBox(-x, -y, -z), orientation);
 				if (box != null) {
 					LPPositionSet<DoubleCoordinates> lpBox = new LPPositionSet<>(DoubleCoordinates.class);
 					lpBox.addFrom(box);
 					DoubleCoordinates center = lpBox.getCenter();
-					box = AxisAlignedBB.getBoundingBox(center.getXCoord() - 0.3D, center.getYCoord() - 0.3D, center.getZCoord() - 0.3D, center.getXCoord() + 0.3D, center.getYCoord() + 0.3D, center.getZCoord() + 0.3D);
+					box = AxisAlignedBB
+							.getBoundingBox(center.getXCoord() - 0.3D, center.getYCoord() - 0.3D, center.getZCoord() - 0.3D, center.getXCoord() + 0.3D,
+									center.getYCoord() + 0.3D, center.getZCoord() + 0.3D);
 					if (box != null) {
 						AxisAlignedBB cBox = getCompleteBox();
 						if (box.minX < cBox.minX) {
@@ -314,7 +262,7 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 
 	@Override
 	public DoubleCoordinates getItemRenderPos(float fPos, LPTravelingItem travelItem) {
-		if((orientation.getDir().getOpposite() == travelItem.input) == (orientation.getOffset().getLength() != 0)) {
+		if ((orientation.getDir().getOpposite() == travelItem.input) == (orientation.getOffset().getLength() != 0)) {
 			fPos = transport.getPipeLength() - fPos;
 		}
 
@@ -326,28 +274,32 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 			z += 3.5F;
 			y -= 0F;
 			double a = fPos / transport.getPipeLength() * 3;
-			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
+			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math
+					.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
 			y += b * transport.getPipeLength() / 3;
 		} else if (orientation.getRenderOrientation() == TubeGainRenderOrientation.NORTH) {
 			z += fPos;
 			z -= 3.5F;
 			x -= 0F;
 			double a = fPos / transport.getPipeLength() * 3;
-			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
+			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math
+					.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
 			y += b * transport.getPipeLength() / 3;
 		} else if (orientation.getRenderOrientation() == TubeGainRenderOrientation.WEST) {
 			x += fPos;
 			x -= 3.5F;
 			z -= 0F;
 			double a = fPos / transport.getPipeLength() * 3;
-			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
+			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math
+					.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
 			y += b * transport.getPipeLength() / 3;
 		} else if (orientation.getRenderOrientation() == TubeGainRenderOrientation.EAST) {
 			x -= fPos;
 			x += 3.5F;
 			z += 0F;
 			double a = fPos / transport.getPipeLength() * 3;
-			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
+			double b = -0.030238483815369 * Math.pow(a, 5) + 0.225914176523007 * Math.pow(a, 4) - 0.502711673373567 * Math.pow(a, 3) + 0.233256545765967 * Math
+					.pow(a, 2) - 0.074807924321475 * a + 0.000099653425518;
 			y += b * transport.getPipeLength() / 3;
 		}
 		return new DoubleCoordinates(x, y, z);
@@ -355,27 +307,32 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 
 	@Override
 	public double getItemRenderYaw(float fPos, LPTravelingItem travelItem) {
-		return orientation.getRenderOrientation() == TubeGainRenderOrientation.NORTH || orientation.getRenderOrientation() == TubeGainRenderOrientation.SOUTH ? 0 : 90;
+		boolean condition = ((orientation.getRenderOrientation() == TubeGainRenderOrientation.NORTH)
+				|| (orientation.getRenderOrientation() == TubeGainRenderOrientation.SOUTH));
+		return condition ? 0 : 90;
 	}
 
 	@Override
 	public double getItemRenderPitch(float fPos, LPTravelingItem travelItem) {
-		if((orientation.getDir().getOpposite() == travelItem.input) == (orientation.getOffset().getLength() != 0)) {
+		if ((orientation.getDir().getOpposite() == travelItem.input) == (orientation.getOffset().getLength() != 0)) {
 			fPos = transport.getPipeLength() - fPos;
 		}
 		double b = 0;
 		if (fPos < 0.5) {
 			double a = 0.5 / transport.getPipeLength() * 3;
-			b = -0.15119241907684 * Math.pow(a, 4) + 0.903656706092028 * Math.pow(a, 3) - 1.50813502012070 * Math.pow(a, 2) + 0.466513091531934 * a - 0.074807924321475;
+			b = -0.15119241907684 * Math.pow(a, 4) + 0.903656706092028 * Math.pow(a, 3) - 1.50813502012070 * Math.pow(a, 2) + 0.466513091531934 * a
+					- 0.074807924321475;
 			b = b * transport.getPipeLength() * -13;
 			b = b * fPos / 0.5;
 		} else if (fPos < 3.5) {
 			double a = fPos / transport.getPipeLength() * 3;
-			b = -0.15119241907684 * Math.pow(a, 4) + 0.903656706092028 * Math.pow(a, 3) - 1.50813502012070 * Math.pow(a, 2) + 0.466513091531934 * a - 0.074807924321475;
+			b = -0.15119241907684 * Math.pow(a, 4) + 0.903656706092028 * Math.pow(a, 3) - 1.50813502012070 * Math.pow(a, 2) + 0.466513091531934 * a
+					- 0.074807924321475;
 			b = b * transport.getPipeLength() * -13;
 		} else {
 			double a = 3.5 / transport.getPipeLength() * 3;
-			b = -0.15119241907684 * Math.pow(a, 4) + 0.903656706092028 * Math.pow(a, 3) - 1.50813502012070 * Math.pow(a, 2) + 0.466513091531934 * a - 0.074807924321475;
+			b = -0.15119241907684 * Math.pow(a, 4) + 0.903656706092028 * Math.pow(a, 3) - 1.50813502012070 * Math.pow(a, 2) + 0.466513091531934 * a
+					- 0.074807924321475;
 			b = b * transport.getPipeLength() * -13;
 			b = b * (transport.getPipeLength() - fPos) / (transport.getPipeLength() - 3.5);
 		}
@@ -399,5 +356,60 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 	@Override
 	public boolean isHSTube() {
 		return true;
+	}
+
+	public enum TubeGainOrientation implements ITubeOrientation {
+		NORTH(TubeGainRenderOrientation.NORTH, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH),
+		SOUTH(TubeGainRenderOrientation.SOUTH, new DoubleCoordinates(0, 0, 0), EnumFacing.SOUTH),
+		EAST(TubeGainRenderOrientation.EAST, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST),
+		WEST(TubeGainRenderOrientation.WEST, new DoubleCoordinates(0, 0, 0), EnumFacing.WEST);
+
+		@Getter
+		TubeGainRenderOrientation renderOrientation;
+		@Getter
+		DoubleCoordinates offset;
+		@Getter
+		EnumFacing dir;
+
+		TubeGainOrientation(TubeGainRenderOrientation render, DoubleCoordinates off, EnumFacing dir) {
+			renderOrientation = render;
+			offset = off;
+			this.dir = dir;
+		}
+
+		@Override
+		public void rotatePositions(IPositionRotateble set) {
+			renderOrientation.rotateOrientation(set);
+		}
+
+		@Override
+		public void setOnPipe(CoreMultiBlockPipe pipe) {
+			((HSTubeGain) pipe).orientation = this;
+		}
+	}
+
+	public enum TubeGainRenderOrientation implements ITubeRenderOrientation {
+		NORTH(EnumFacing.NORTH),
+		SOUTH(EnumFacing.SOUTH),
+		WEST(EnumFacing.WEST),
+		EAST(EnumFacing.EAST);
+
+		@Getter
+		private EnumFacing dir;
+
+		TubeGainRenderOrientation(EnumFacing dir) {
+			this.dir = dir;
+		}
+
+		public void rotateOrientation(IPositionRotateble set) {
+			if (this == EAST) {
+				set.rotateRight();
+			} else if (this == WEST) {
+				set.rotateLeft();
+			} else if (this == SOUTH) {
+				set.rotateLeft();
+				set.rotateLeft();
+			}
+		}
 	}
 }

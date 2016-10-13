@@ -1,23 +1,19 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import java.io.IOException;
-
-import logisticspipes.gui.GuiCraftingPipe;
-import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.DummyContainer;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.gui.GuiCraftingPipe;
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 
 	@Getter
@@ -58,7 +54,8 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		return new GuiCraftingPipe(player, module.getDummyInventory(), module, isAdvancedSat, liquidCrafter, amount, hasByproductExtractor, isFuzzy, cleanupSize, cleanupExclude);
+		return new GuiCraftingPipe(player, module.getDummyInventory(), module, isAdvancedSat, liquidCrafter, amount, hasByproductExtractor, isFuzzy,
+				cleanupSize, cleanupExclude);
 	}
 
 	@Override
@@ -102,26 +99,26 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(isAdvancedSat);
-		data.writeInt(liquidCrafter);
-		data.writeIntegerArray(amount);
-		data.writeBoolean(hasByproductExtractor);
-		data.writeBoolean(isFuzzy);
-		data.writeInt(cleanupSize);
-		data.writeBoolean(cleanupExclude);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeBoolean(isAdvancedSat);
+		output.writeInt(liquidCrafter);
+		output.writeIntArray(amount);
+		output.writeBoolean(hasByproductExtractor);
+		output.writeBoolean(isFuzzy);
+		output.writeInt(cleanupSize);
+		output.writeBoolean(cleanupExclude);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		isAdvancedSat = data.readBoolean();
-		liquidCrafter = data.readInt();
-		amount = data.readIntegerArray();
-		hasByproductExtractor = data.readBoolean();
-		isFuzzy = data.readBoolean();
-		cleanupSize = data.readInt();
-		cleanupExclude = data.readBoolean();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		isAdvancedSat = input.readBoolean();
+		liquidCrafter = input.readInt();
+		amount = input.readIntArray();
+		hasByproductExtractor = input.readBoolean();
+		isFuzzy = input.readBoolean();
+		cleanupSize = input.readInt();
+		cleanupExclude = input.readBoolean();
 	}
 }

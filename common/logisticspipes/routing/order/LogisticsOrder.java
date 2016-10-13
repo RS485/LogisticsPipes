@@ -3,15 +3,14 @@ package logisticspipes.routing.order;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.routing.IRouter;
-import logisticspipes.utils.item.ItemIdentifier;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
+import logisticspipes.routing.IRouter;
+import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @Accessors(chain = true)
 public abstract class LogisticsOrder implements IOrderInfoProvider {
@@ -49,6 +48,9 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public int getRouterId() {
+		if(getRouter() == null) {
+			return -1;
+		}
 		return getRouter().getSimpleID();
 	}
 
@@ -92,11 +94,17 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public ItemIdentifier getTargetType() {
+		if(getRouter() == null) {
+			return null;
+		}
 		return ItemIdentifier.get(getRouter().getPipe().item, 0, null);
 	}
 
 	@Override
 	public DoubleCoordinates getTargetPosition() {
+		if(getRouter() == null) {
+			return null;
+		}
 		return getRouter().getLPPosition();
 	}
 }

@@ -1,14 +1,16 @@
 package logisticspipes.asm.enderio;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import logisticspipes.LPConstants;
-import logisticspipes.asm.util.ASMHelper;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import logisticspipes.LPConstants;
+import logisticspipes.asm.util.ASMHelper;
 
 public class ClassNetworkedInventoryHandler {
 	public static byte[] handleNetworkedInventoryClass(byte[] bytes) {
@@ -44,7 +46,9 @@ public class ClassNetworkedInventoryHandler {
 								this.visitFieldInsn(Opcodes.GETFIELD, "crazypants/enderio/conduit/item/NetworkedInventory", "inv", "Lnet/minecraft/inventory/ISidedInventory;");
 								this.visitVarInsn(Opcodes.ALOAD, 1);
 								this.visitVarInsn(Opcodes.ALOAD, 0);
+								// TODO MC 1.10 HAS TO BE FIXED (EnumFacing)
 								this.visitFieldInsn(Opcodes.GETFIELD, "crazypants/enderio/conduit/item/NetworkedInventory", "conDir", "Lnet/minecraftforge/common/util/ForgeDirection;");
+								// TODO MC 1.10 HAS TO BE FIXED (EnumFacing)
 								this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/enderio/EnderIOHooks", "handleUpdateInventoryNetworkedInventory", "(Lnet/minecraft/inventory/ISidedInventory;Lnet/minecraft/tileentity/TileEntity;Lnet/minecraftforge/common/util/ForgeDirection;)Lnet/minecraft/inventory/ISidedInventory;", false);
 								this.visitFieldInsn(Opcodes.PUTFIELD, "crazypants/enderio/conduit/item/NetworkedInventory", "inv", "Lnet/minecraft/inventory/ISidedInventory;");
 								this.visitLabel(new Label());

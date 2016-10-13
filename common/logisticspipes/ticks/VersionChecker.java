@@ -10,10 +10,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.DevEnvHelper;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.fml.common.Loader;
@@ -22,6 +18,10 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import lombok.Data;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.DevEnvHelper;
 
 public final class VersionChecker implements Callable<VersionChecker.VersionInfo> {
 
@@ -167,7 +167,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 			NBTTagCompound tag = new NBTTagCompound();
 			tag.setString("oldVersion", LPConstants.VERSION);
 			tag.setString("newVersion", versionInfo.getNewestBuild());
-			tag.setString("updateUrl", "http://ci.thezorro266.com/view/Logistics%20Pipes/");
+			tag.setString("updateUrl", "http://ci.rs485.network/view/Logistics%20Pipes/");
 			tag.setBoolean("isDirectLink", false);
 
 			StringBuilder stringBuilder = new StringBuilder();

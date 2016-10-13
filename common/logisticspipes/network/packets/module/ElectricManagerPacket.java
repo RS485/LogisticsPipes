@@ -1,14 +1,11 @@
 package logisticspipes.network.packets.module;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.abstractpackets.BooleanModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public class ElectricManagerPacket extends BooleanModuleCoordinatesPacket {
 
 	public ElectricManagerPacket(int id) {

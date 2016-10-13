@@ -1,24 +1,19 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import java.io.IOException;
-
-import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
 import net.minecraft.entity.player.EntityPlayer;
-
 import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.gui.modules.GuiExtractor;
+import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 
 	@Getter
@@ -30,15 +25,15 @@ public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeEnumFacing(sneakyOrientation);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeFacing(sneakyOrientation);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		sneakyOrientation = data.readEnumFacing();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		sneakyOrientation = input.readFacing();
 	}
 
 	@Override

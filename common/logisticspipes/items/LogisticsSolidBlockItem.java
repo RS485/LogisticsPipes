@@ -2,17 +2,17 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsSolidBlockItem extends ItemBlock {
 
@@ -41,6 +41,8 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				return "tile.logisticstepowerprovider";
 			case LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER:
 				return "tile.logisticsic2powerprovider";
+			case LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME:
+				return "tile.logisticsblankblock";
 		}
 		return super.getUnlocalizedName(stack);
 	}
@@ -63,6 +65,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.SOLDERING_STATION));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));

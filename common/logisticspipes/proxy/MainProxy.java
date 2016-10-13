@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
@@ -243,15 +244,12 @@ public class MainProxy {
 		}
 	}
 
-	//XXX do we still need this?
 	private static boolean needsToBeCompressed(ModernPacket packet) {
-		/*
 		if(packet.getData() != null) {
 			if(packet.getData().length > 32767) {
 				return true; // Packet is to big
 			}
 		}
-		 */
 		return false;
 	}
 

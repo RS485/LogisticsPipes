@@ -4,9 +4,44 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import buildcraft.BuildCraftTransport;
+import buildcraft.api.boards.RedstoneBoardRegistry;
+import buildcraft.api.boards.RedstoneBoardRobotNBT;
+import buildcraft.api.core.BCLog;
+import buildcraft.api.events.RobotEvent;
+import buildcraft.api.robots.DockingStation;
+import buildcraft.api.robots.RobotManager;
+import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.ITriggerExternal;
+import buildcraft.api.statements.ITriggerInternal;
+import buildcraft.api.statements.StatementManager;
+import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipeTile;
+import buildcraft.api.transport.IPipeTile.PipeType;
+import buildcraft.core.ItemMapLocation;
+import buildcraft.core.lib.ITileBufferHolder;
+import buildcraft.robotics.EntityRobot;
+import buildcraft.robotics.ItemRobot;
+import buildcraft.robotics.RobotStationPluggable;
 import buildcraft.transport.*;
+import buildcraft.transport.PipeTransportFluids;
+import buildcraft.transport.render.PipeRendererTESR;
 import buildcraft.transport.render.PipeTransportItemsRenderer;
 import buildcraft.transport.render.PipeTransportRenderer;
+import lombok.SneakyThrows;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -34,48 +69,10 @@ import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCPipeTransportsItems;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCTileGenericPipe;
 import logisticspipes.proxy.interfaces.IBCProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.ReflectionHelper;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fml.common.FMLCommonHandler;
-
-import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
-import buildcraft.api.boards.RedstoneBoardRegistry;
-import buildcraft.api.boards.RedstoneBoardRobotNBT;
-import buildcraft.api.core.BCLog;
-import buildcraft.api.events.RobotPlacementEvent;
-import buildcraft.api.robots.DockingStation;
-import buildcraft.api.robots.RobotManager;
-import buildcraft.api.statements.IActionInternal;
-import buildcraft.api.statements.ITriggerExternal;
-import buildcraft.api.statements.ITriggerInternal;
-import buildcraft.api.statements.StatementManager;
-import buildcraft.api.transport.IPipeConnection;
-import buildcraft.api.transport.IPipeTile;
-import buildcraft.api.transport.IPipeTile.PipeType;
-import buildcraft.core.ItemMapLocation;
-import buildcraft.core.lib.ITileBufferHolder;
-import buildcraft.robotics.EntityRobot;
-import buildcraft.robotics.ItemRobot;
-import buildcraft.robotics.RobotStationPluggable;
-import buildcraft.transport.PipeTransportFluids;
-import buildcraft.transport.render.PipeRendererTESR;
-import lombok.SneakyThrows;
 
 public class BuildCraftProxy implements IBCProxy {
 
@@ -285,83 +282,12 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
-	public ICraftingParts getRecipeParts() {
-		return new ICraftingParts() {
-
-			@Override
-			public ItemStack getChipTear1() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1);
-			}
-
-			@Override
-			public ItemStack getChipTear2() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2);
-			}
-
-			@Override
-			public ItemStack getChipTear3() {
-				return new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3);
-			}
-
-			@Override
-			public Object getGearTear1() {
-				return "gearIron";
-			}
-
-			@Override
-			public Object getGearTear2() {
-				return "gearGold";
-			}
-
-			@Override
-			public Object getGearTear3() {
-				return "gearDiamond";
-			}
-
-			@Override
-			public Object getSortingLogic() {
-				return BuildCraftTransport.pipeItemsDiamond;
-			}
-
-			@Override
-			public Object getBasicTransport() {
-				return BuildCraftTransport.pipeItemsCobblestone;
-			}
-
-			@Override
-			public Object getWaterProof() {
-				return BuildCraftTransport.pipeWaterproof;
-			}
-
-			@Override
-			public Object getExtractorItem() {
-				return BuildCraftTransport.pipeItemsWood;
-			}
-
-			@Override
-			public Object getExtractorFluid() {
-				return BuildCraftTransport.pipeFluidsWood;
-			}
-
-			@Override
-			public Object getBlockDynamo() {
-				return new ItemStack(BuildCraftCore.engineBlock, 1, 2);
-			}
-
-			@Override
-			public Object getPowerCoilSilver() {
-				return getChipTear1();
-			}
-
-			@Override
-			public Object getPowerCoilGold() {
-				return getChipTear2();
-			}
-		};
+	public CraftingParts getRecipeParts() {
+		return null;
 	}
 
 	@Override
-	public void addCraftingRecipes(ICraftingParts parts) {}
+	public void addCraftingRecipes(CraftingParts parts) {}
 
 	@Override
 	public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {
@@ -445,12 +371,15 @@ public class BuildCraftProxy implements IBCProxy {
 					if (robotNBT == RedstoneBoardRegistry.instance.getEmptyRobotBoard()) {
 						return true;
 					}
-					RobotPlacementEvent robotEvent = new RobotPlacementEvent(player, robotNBT.getID());
+
+					EntityRobot robot = ((ItemRobot) currentItem.getItem())
+							.createRobot(currentItem, world);
+
+					RobotEvent.Place robotEvent = new RobotEvent.Place(robot, player);
 					FMLCommonHandler.instance().bus().post(robotEvent);
 					if (robotEvent.isCanceled()) {
 						return true;
 					}
-					EntityRobot robot = ((ItemRobot) currentItem.getItem()).createRobot(currentItem, world);
 
 					if (robot != null && robot.getRegistry() != null) {
 						robot.setUniqueRobotId(robot.getRegistry().getNextRobotId());

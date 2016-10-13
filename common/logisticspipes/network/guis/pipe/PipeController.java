@@ -2,10 +2,11 @@ package logisticspipes.network.guis.pipe;
 
 import java.util.UUID;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiPipeController;
 import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -13,11 +14,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgrade;
+import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.DummyContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 
 public class PipeController extends CoordinatesGuiProvider {
 
@@ -57,7 +56,7 @@ public class PipeController extends CoordinatesGuiProvider {
 		dummy.addNormalSlotsForPlayerInventory(0, 0);
 		// TAB_1 SLOTS
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getInv(), 8 + pipeSlot * 18, 18, itemStack -> {
+			dummy.addUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot, 8 + pipeSlot * 18, 18, itemStack -> {
 				if (itemStack == null) {
 					return false;
 				}
@@ -72,13 +71,13 @@ public class PipeController extends CoordinatesGuiProvider {
 			});
 		}
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			dummy.addRestrictedSlot(pipeSlot, pipe.getOriginalUpgradeManager().getSneakyInv(), 8 + pipeSlot * 18, 48, itemStack -> {
+			dummy.addSneakyUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot + 9, 8 + pipeSlot * 18, 48, itemStack -> {
 				if (itemStack == null) {
 					return false;
 				}
 				if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
 					IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
-					if (!(upgrade instanceof SneakyUpgrade)) {
+					if (!(upgrade instanceof SneakyUpgrade) && !(upgrade instanceof SneakyUpgradeConfig)) {
 						return false;
 					}
 					if (!upgrade.isAllowedForPipe(pipe)) {

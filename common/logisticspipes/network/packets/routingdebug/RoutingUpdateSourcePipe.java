@@ -1,21 +1,16 @@
 package logisticspipes.network.packets.routingdebug;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.debug.ClientViewController;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.debug.ClientViewController;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class RoutingUpdateSourcePipe extends ModernPacket {
 
 	@Getter
@@ -42,12 +37,12 @@ public class RoutingUpdateSourcePipe extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		exitRoute = data.readExitRoute(MainProxy.getClientMainWorld());
+	public void readData(LPDataInput input) {
+		exitRoute = new ExitRoute(input);
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeExitRoute(exitRoute);
+	public void writeData(LPDataOutput output) {
+		exitRoute.write(output);
 	}
 }

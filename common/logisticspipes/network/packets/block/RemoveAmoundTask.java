@@ -1,23 +1,20 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
 import java.util.Iterator;
-
-import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
-import logisticspipes.blocks.stats.TrackingTask;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
+import logisticspipes.blocks.stats.TrackingTask;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class RemoveAmoundTask extends CoordinatesPacket {
 
 	@Setter
@@ -42,15 +39,15 @@ public class RemoveAmoundTask extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeItemIdentifier(item);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeItemIdentifier(item);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		item = data.readItemIdentifier();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		item = input.readItemIdentifier();
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package logisticspipes.ticks;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -11,20 +10,78 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
+import net.minecraft.entity.player.EntityPlayer;
+
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 public class ClientPacketBufferHandlerThread {
+
+	private final ClientCompressorThread clientCompressorThread = new ClientCompressorThread();
+	private final ClientDecompressorThread clientDecompressorThread = new ClientDecompressorThread();
+
+	public ClientPacketBufferHandlerThread() {}
+
+	private static byte[] compress(byte[] content) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		try {
+			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+			gzipOutputStream.write(content);
+			gzipOutputStream.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return byteArrayOutputStream.toByteArray();
+	}
+
+	private static byte[] decompress(byte[] contentBytes) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(contentBytes));
+			int buffer = 0;
+			while ((buffer = gzip.read()) != -1) {
+				out.write(buffer);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return out.toByteArray();
+	}
+
+	public void clientTick(ClientTickEvent event) {
+		if (event.phase != Phase.END) {
+			return;
+		}
+		clientDecompressorThread.clientTickEnd();
+	}
+
+	public void setPause(boolean flag) {
+		clientCompressorThread.setPause(flag);
+	}
+
+	public void addPacketToCompressor(ModernPacket packet) {
+		clientCompressorThread.addPacketToCompressor(packet);
+	}
+
+	public void handlePacket(byte[] content) {
+		clientDecompressorThread.handlePacket(content);
+	}
+
+	public void clear() {
+		clientCompressorThread.clear();
+		clientDecompressorThread.clear();
+	}
+
+	public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
+		clientDecompressorThread.queueFailedPacket(packet, player);
+	}
 
 	private class ClientCompressorThread extends Thread {
 
@@ -48,48 +105,44 @@ public class ClientPacketBufferHandlerThread {
 		@Override
 		public void run() {
 			while (true) {
-				try {
-					synchronized (clientList) {
-						if (!pause && clientList.size() > 0) {
-							ByteArrayOutputStream out = new ByteArrayOutputStream();
-							DataOutputStream data = new DataOutputStream(out);
-							data.write(clientBuffer);
-							LinkedList<ModernPacket> packets = clientList;
+				synchronized (clientList) {
+					if (!pause && clientList.size() > 0) {
+						clientBuffer = LPDataIOWrapper.collectData(output -> {
+							output.writeBytes(clientBuffer);
 							clearLock.lock();
-							for (ModernPacket packet : packets) {
-								LPDataOutputStream t = new LPDataOutputStream();
-								t.writeShort(packet.getId());
-								t.writeInt(packet.getDebugId());
-								packet.writeData(t);
-								data.writeInt(t.size());
-								data.write(t.toByteArray());
+							try {
+								for (ModernPacket packet : clientList) {
+									output.writeByteArray(LPDataIOWrapper.collectData(dataOutput -> {
+										dataOutput.writeShort(packet.getId());
+										dataOutput.writeInt(packet.getDebugId());
+										packet.writeData(dataOutput);
+									}));
+								}
+							} finally {
+								clientList.clear();
+								clearLock.unlock();
 							}
-							packets.clear();
-							clearLock.unlock();
-							clientBuffer = out.toByteArray();
-						}
+						});
 					}
-					//Send Content
-					if (clientBuffer.length > 0) {
-						while (clientBuffer.length > 1024 * 32) {
-							byte[] sendbuffer = Arrays.copyOf(clientBuffer, 1024 * 32);
-							clientBuffer = Arrays.copyOfRange(clientBuffer, 1024 * 32, clientBuffer.length);
-							byte[] compressed = ClientPacketBufferHandlerThread.compress(sendbuffer);
-							MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed));
-						}
-						byte[] sendbuffer = clientBuffer;
-						clientBuffer = new byte[] {};
+				}
+				//Send Content
+				if (clientBuffer.length > 0) {
+					while (clientBuffer.length > 1024 * 32) {
+						byte[] sendbuffer = Arrays.copyOf(clientBuffer, 1024 * 32);
+						clientBuffer = Arrays.copyOfRange(clientBuffer, 1024 * 32, clientBuffer.length);
 						byte[] compressed = ClientPacketBufferHandlerThread.compress(sendbuffer);
 						MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed));
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
+					byte[] sendbuffer = clientBuffer;
+					clientBuffer = new byte[] {};
+					byte[] compressed = ClientPacketBufferHandlerThread.compress(sendbuffer);
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed));
 				}
 				synchronized (clientList) {
 					while (pause || clientList.size() == 0) {
 						try {
 							clientList.wait();
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException ignored) { }
 					}
 				}
 				if (clear) {
@@ -131,18 +184,17 @@ public class ClientPacketBufferHandlerThread {
 		}
 	}
 
-	private final ClientCompressorThread clientCompressorThread = new ClientCompressorThread();
-
 	private class ClientDecompressorThread extends Thread {
 
 		//Received compressed S->C data
 		private final LinkedList<byte[]> queue = new LinkedList<>();
-		//decompressed serialized S->C data
-		private byte[] ByteBuffer = new byte[] {};
 		//FIFO for deserialized S->C packets, decompressor adds, tickEnd removes
 		private final LinkedList<Pair<EntityPlayer, byte[]>> PacketBuffer = new LinkedList<>();
+		private final ReentrantLock packetBufferLock = new ReentrantLock();
 		//List of packets that that should be reattempted to apply in the next tick
 		private final LinkedList<Pair<EntityPlayer, ModernPacket>> retryPackets = new LinkedList<>();
+		//decompressed serialized S->C data
+		private byte[] ByteBuffer = new byte[] {};
 		//Clear content on next tick
 		private boolean clear = false;
 
@@ -152,31 +204,37 @@ public class ClientPacketBufferHandlerThread {
 			start();
 		}
 
+		private void handlePacketData(final Pair<EntityPlayer, byte[]> playerDataPair) {
+			LPDataIOWrapper.provideData(playerDataPair.getValue2(), input -> {
+				PacketHandler.onPacketData(input, playerDataPair.getValue1());
+			});
+		}
+
 		public void clientTickEnd() {
-			boolean flag = false;
-			do {
-				flag = false;
-				Pair<EntityPlayer, byte[]> part = null;
-				synchronized (PacketBuffer) {
+			Pair<EntityPlayer, byte[]> part;
+			while (true) {
+				part = null;
+				packetBufferLock.lock();
+				try {
 					if (PacketBuffer.size() > 0) {
-						flag = true;
 						part = PacketBuffer.pop();
 					}
+				} finally {
+					packetBufferLock.unlock();
 				}
-				if (flag) {
-					try {
-						PacketHandler.onPacketData(new LPDataInputStream(part.getValue2()), part.getValue1());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+
+				if (part == null) {
+					break;
 				}
-			} while (flag);
+
+				handlePacketData(part);
+			}
 		}
 
 		@Override
 		public void run() {
 			while (true) {
-				boolean flag = false;
+				boolean flag;
 				do {
 					flag = false;
 					byte[] buffer = null;
@@ -203,15 +261,18 @@ public class ClientPacketBufferHandlerThread {
 					}
 					byte[] packet = Arrays.copyOfRange(ByteBuffer, 4, size + 4);
 					ByteBuffer = Arrays.copyOfRange(ByteBuffer, size + 4, ByteBuffer.length);
-					synchronized (PacketBuffer) {
+					packetBufferLock.lock();
+					try {
 						PacketBuffer.add(new Pair<>(MainProxy.proxy.getClientPlayer(), packet));
+					} finally {
+						packetBufferLock.unlock();
 					}
 				}
 				synchronized (queue) {
 					while (queue.size() == 0) {
 						try {
 							queue.wait();
-						} catch (InterruptedException e) {}
+						} catch (InterruptedException ignored) { }
 					}
 				}
 				if (clear) {
@@ -237,63 +298,5 @@ public class ClientPacketBufferHandlerThread {
 		public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
 			retryPackets.add(new Pair<>(player, packet));
 		}
-	}
-
-	private final ClientDecompressorThread clientDecompressorThread = new ClientDecompressorThread();
-
-	public ClientPacketBufferHandlerThread() {}
-
-	public void clientTick(ClientTickEvent event) {
-		if (event.phase != Phase.END) {
-			return;
-		}
-		clientDecompressorThread.clientTickEnd();
-	}
-
-	public void setPause(boolean flag) {
-		clientCompressorThread.setPause(flag);
-	}
-
-	public void addPacketToCompressor(ModernPacket packet) {
-		clientCompressorThread.addPacketToCompressor(packet);
-	}
-
-	public void handlePacket(byte[] content) {
-		clientDecompressorThread.handlePacket(content);
-	}
-
-	private static byte[] compress(byte[] content) {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		try {
-			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-			gzipOutputStream.write(content);
-			gzipOutputStream.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return byteArrayOutputStream.toByteArray();
-	}
-
-	private static byte[] decompress(byte[] contentBytes) {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try {
-			GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(contentBytes));
-			int buffer = 0;
-			while ((buffer = gzip.read()) != -1) {
-				out.write(buffer);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return out.toByteArray();
-	}
-
-	public void clear() {
-		clientCompressorThread.clear();
-		clientDecompressorThread.clear();
-	}
-
-	public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
-		clientDecompressorThread.queueFailedPacket(packet, player);
 	}
 }

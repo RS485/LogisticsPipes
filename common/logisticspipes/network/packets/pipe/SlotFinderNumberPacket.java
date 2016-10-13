@@ -1,17 +1,6 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
 import java.util.List;
-
-import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -22,13 +11,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
 
-import net.minecraft.util.EnumFacing;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.modules.ModuleActiveSupplier;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
+import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 
 	@Getter
@@ -130,22 +125,22 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(inventorySlot);
-		data.writeInt(slot);
-		data.writeInt(pipePosX);
-		data.writeInt(pipePosY);
-		data.writeInt(pipePosZ);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeInt(inventorySlot);
+		output.writeInt(slot);
+		output.writeInt(pipePosX);
+		output.writeInt(pipePosY);
+		output.writeInt(pipePosZ);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		inventorySlot = data.readInt();
-		slot = data.readInt();
-		pipePosX = data.readInt();
-		pipePosY = data.readInt();
-		pipePosZ = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		inventorySlot = input.readInt();
+		slot = input.readInt();
+		pipePosX = input.readInt();
+		pipePosY = input.readInt();
+		pipePosZ = input.readInt();
 	}
 }

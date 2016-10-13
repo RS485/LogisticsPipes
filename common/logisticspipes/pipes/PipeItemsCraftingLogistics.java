@@ -14,6 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -36,7 +41,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.request.ICraftingTemplate;
 import logisticspipes.request.IPromise;
 import logisticspipes.request.RequestTree;
@@ -52,13 +56,6 @@ import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 @CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
@@ -89,7 +86,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void onAllowedRemoval() {
-		while (_orderItemManager.hasOrders(ResourceType.CRAFTING)) {
+		while (_orderItemManager.hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 			_orderItemManager.sendFailed();
 		}
 	}

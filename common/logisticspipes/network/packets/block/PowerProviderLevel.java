@@ -1,18 +1,13 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
-
-import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
-import lombok.experimental.Accessors;
+import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
-@Accessors(chain = true)
 public class PowerProviderLevel extends CoordinatesPacket {
 
 	private Double aDouble;
@@ -31,15 +26,15 @@ public class PowerProviderLevel extends CoordinatesPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		setDouble(data.readDouble());
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		setDouble(input.readDouble());
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeDouble(getDouble());
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeDouble(getDouble());
 	}
 
 	@Override

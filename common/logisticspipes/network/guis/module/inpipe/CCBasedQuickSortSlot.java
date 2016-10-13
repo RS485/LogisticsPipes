@@ -1,22 +1,18 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import java.io.IOException;
-
-import logisticspipes.gui.modules.GuiCCBasedQuickSort;
-import logisticspipes.modules.ModuleCCBasedQuickSort;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.gui.modules.GuiCCBasedQuickSort;
+import logisticspipes.modules.ModuleCCBasedQuickSort;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class CCBasedQuickSortSlot extends ModuleCoordinatesGuiProvider {
 
 	@Getter
@@ -52,14 +48,14 @@ public class CCBasedQuickSortSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(timeOut);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeInt(timeOut);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		timeOut = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		timeOut = input.readInt();
 	}
 }

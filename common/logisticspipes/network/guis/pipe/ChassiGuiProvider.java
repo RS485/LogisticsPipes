@@ -1,8 +1,11 @@
 package logisticspipes.network.guis.pipe;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.BooleanModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -10,10 +13,6 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.utils.gui.DummyContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 
 public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 
@@ -67,12 +66,8 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 				final int fI = i;
 				ModuleUpgradeManager upgradeManager = _chassiPipe.getModuleUpgradeManager(i);
-				dummy.addRestrictedSlot(0, upgradeManager.getInv(), 145, 9 + i * 20, itemStack -> {
-					return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
-				});
-				dummy.addRestrictedSlot(1, upgradeManager.getInv(), 165, 9 + i * 20, itemStack -> {
-					return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
-				});
+				dummy.addUpgradeSlot(0, upgradeManager, 0, 145, 9 + i * 20, itemStack -> ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI));
+				dummy.addUpgradeSlot(1, upgradeManager, 1, 165, 9 + i * 20, itemStack -> ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI));
 			}
 		}
 		return dummy;

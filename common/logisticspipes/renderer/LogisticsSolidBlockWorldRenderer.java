@@ -1,17 +1,18 @@
 package logisticspipes.renderer;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
 import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.config.PlayerConfig;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
 
 public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHandler {
 
@@ -39,7 +40,7 @@ public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHa
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile instanceof LogisticsSolidTileEntity) {
 			if (config.isUseNewRenderer()) {
-				newRenderer.renderWorldBlock((LogisticsSolidTileEntity) tile, renderer, x, y, z);
+				newRenderer.renderWorldBlock(world, (LogisticsSolidTileEntity) tile, renderer, x, y, z);
 				return true;
 			} else {
 				block.setBlockBounds(0, 0, 0, 1, 1, 1);
@@ -58,6 +59,17 @@ public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHa
 						renderer.uvRotateTop = 3;
 						break;
 				}
+				renderer.renderStandardBlock(block, x, y, z);
+				renderer.uvRotateTop = 0;
+				return true;
+			}
+		} else if(world.getBlockMetadata(x, y, z) == LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME) {
+			if (config.isUseNewRenderer()) {
+				newRenderer.renderWorldBlock(world, null, renderer, x, y, z);
+				return true;
+			} else {
+				block.setBlockBounds(0, 0, 0, 1, 1, 1);
+				renderer.setRenderBoundsFromBlock(block);
 				renderer.renderStandardBlock(block, x, y, z);
 				renderer.uvRotateTop = 0;
 				return true;

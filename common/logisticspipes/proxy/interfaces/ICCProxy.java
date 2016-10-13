@@ -1,8 +1,9 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.tileentity.TileEntity;
+
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.recipes.CraftingParts;
 
 public interface ICCProxy {
 
@@ -24,7 +25,7 @@ public interface ICCProxy {
 
 	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId);
 
-	public void addCraftingRecipes(ICraftingParts parts);
+	public void addCraftingRecipes(CraftingParts parts);
 
 	public Object getAnswer(Object object);
 }

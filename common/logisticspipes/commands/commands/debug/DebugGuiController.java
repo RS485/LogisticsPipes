@@ -1,5 +1,19 @@
 package logisticspipes.commands.commands.debug;
 
+import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+
+import lombok.AllArgsConstructor;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.exception.DelayPacketException;
 import logisticspipes.network.packets.debuggui.DebugDataPacket;
@@ -7,27 +21,14 @@ import logisticspipes.network.packets.debuggui.DebugPanelOpen;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import lombok.AllArgsConstructor;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraft.world.World;
-import net.minecraft.util.EnumFacing;
 import network.rs485.debuggui.api.IDataConnection;
 import network.rs485.debuggui.api.IDebugGuiEntry;
 import network.rs485.debuggui.api.IObjectIdentification;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 public class DebugGuiController {
 
 	static {
-		Launch.classLoader.addClassLoaderExclusion("com.trolltech.qt.");
+		Launch.classLoader.addTransformerExclusion("com.trolltech.qt.");
 		Launch.classLoader.addTransformerExclusion("network.rs485.debuggui.");
 	}
 

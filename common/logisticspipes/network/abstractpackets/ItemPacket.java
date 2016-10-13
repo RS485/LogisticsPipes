@@ -1,18 +1,14 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public abstract class ItemPacket extends CoordinatesPacket {
 
 	@Getter
@@ -24,28 +20,28 @@ public abstract class ItemPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
 		if (getStack() != null) {
-			data.writeInt(Item.getIdFromItem(getStack().getItem()));
-			data.writeInt(getStack().stackSize);
-			data.writeInt(getStack().getItemDamage());
-			data.writeNBTTagCompound(getStack().getTagCompound());
+			output.writeInt(Item.getIdFromItem(getStack().getItem()));
+			output.writeInt(getStack().stackSize);
+			output.writeInt(getStack().getItemDamage());
+			output.writeNBTTagCompound(getStack().getTagCompound());
 		} else {
-			data.writeInt(0);
+			output.writeInt(0);
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
+	public void readData(LPDataInput input) {
+		super.readData(input);
 
-		final int itemID = data.readInt();
+		final int itemID = input.readInt();
 		if (itemID != 0) {
-			int stackSize = data.readInt();
-			int damage = data.readInt();
+			int stackSize = input.readInt();
+			int damage = input.readInt();
 			setStack(new ItemStack(Item.getItemById(itemID), stackSize, damage));
-			getStack().setTagCompound(data.readNBTTagCompound());
+			getStack().setTagCompound(input.readNBTTagCompound());
 		} else {
 			setStack(null);
 		}

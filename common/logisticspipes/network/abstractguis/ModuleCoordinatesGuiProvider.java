@@ -1,50 +1,45 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
+import net.minecraft.world.World;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
-import net.minecraft.world.World;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvider {
+
+	@Getter
+	@Setter
+	private ModulePositionType slot;
+	@Getter
+	@Setter
+	private int positionInt;
 
 	public ModuleCoordinatesGuiProvider(int id) {
 		super(id);
 	}
 
-	@Getter
-	@Setter
-	private ModulePositionType slot;
-
-	@Getter
-	@Setter
-	private int positionInt;
-
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeEnum(slot);
-		data.writeInt(positionInt);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeEnum(slot);
+		output.writeInt(positionInt);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		slot = data.readEnum(ModulePositionType.class);
-		positionInt = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		slot = input.readEnum(ModulePositionType.class);
+		positionInt = input.readInt();
 	}
 
 	@SuppressWarnings("unchecked")

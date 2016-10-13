@@ -1,31 +1,26 @@
 package logisticspipes.network.packets.orderer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
+
+import cpw.mods.fml.client.FMLClientHandler;
+import lombok.Getter;
+import lombok.Setter;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
-import logisticspipes.network.IReadListObject;
-import logisticspipes.network.IWriteListObject;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.request.resources.ResourceNetwork;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public class ComponentList extends ModernPacket {
 
 	@Getter
@@ -49,9 +44,11 @@ public class ComponentList extends ModernPacket {
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen)
+					.handleSimulateAnswer(used, missing, (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
-			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen)
+					.handleSimulateAnswer(used, missing, (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
 			for (IResource item : used) {
 				player.addChatComponentMessage(new ChatComponentText("Component: " + item.getDisplayText(ColorCode.SUCCESS)));
@@ -63,15 +60,14 @@ public class ComponentList extends ModernPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeCollection(used, LPDataOutputStream::writeIResource);
-		data.writeCollection(missing, LPDataOutputStream::writeIResource);
-		data.write(0);
+	public void writeData(LPDataOutput output) {
+		output.writeCollection(used);
+		output.writeCollection(missing);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		used = data.readList(LPDataInputStream::readIResource);
-		missing = data.readList(LPDataInputStream::readIResource);
+	public void readData(LPDataInput input) {
+		used = input.readArrayList(ResourceNetwork::readResource);
+		missing = input.readArrayList(ResourceNetwork::readResource);
 	}
 }

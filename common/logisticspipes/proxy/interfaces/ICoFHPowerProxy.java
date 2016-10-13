@@ -1,9 +1,10 @@
 package logisticspipes.proxy.interfaces;
 
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
-
-import net.minecraft.tileentity.TileEntity;
+import logisticspipes.recipes.CraftingParts;
 
 public interface ICoFHPowerProxy {
 
@@ -11,7 +12,7 @@ public interface ICoFHPowerProxy {
 
 	public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile);
 
-	public void addCraftingRecipes(ICraftingParts parts);
+	public void addCraftingRecipes(CraftingParts parts);
 
 	public ICoFHEnergyStorage getEnergyStorage(int i);
 

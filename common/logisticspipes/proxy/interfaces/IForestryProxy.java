@@ -1,15 +1,16 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.utils.item.ItemIdentifier;
-
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import logisticspipes.recipes.CraftingParts;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IForestryProxy {
 
@@ -69,7 +70,7 @@ public interface IForestryProxy {
 	@SideOnly(Side.CLIENT)
 	public abstract TextureAtlasSprite getIconFromTextureManager(String name);
 
-	public abstract void addCraftingRecipes(ICraftingParts parts);
+	public abstract void addCraftingRecipes(CraftingParts parts);
 
 	public abstract void syncTracker(World world, EntityPlayer player);
 }

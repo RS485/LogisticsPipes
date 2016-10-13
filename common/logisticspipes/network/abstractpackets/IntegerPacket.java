@@ -1,15 +1,11 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public abstract class IntegerPacket extends ModernPacket {
 
 	@Getter
@@ -21,12 +17,12 @@ public abstract class IntegerPacket extends ModernPacket {
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		setInteger(data.readInt());
+	public void readData(LPDataInput input) {
+		setInteger(input.readInt());
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(getInteger());
+	public void writeData(LPDataOutput output) {
+		output.writeInt(getInteger());
 	}
 }

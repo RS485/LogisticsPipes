@@ -8,9 +8,13 @@
 
 package logisticspipes.routing.order;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.ILPPositionProvider;
@@ -22,34 +26,47 @@ import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
+public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> implements Iterable<T> {
 
-public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements Iterable<T> {
+	protected final LogisticsOrderLinkedList<T, I> _orders;
+	protected IChangeListener listener = null;
+	protected PlayerCollectionList watchingPlayers = new PlayerCollectionList();
+	private ILPPositionProvider pos = null;
 
-	public LogisticsOrderManager(ILPPositionProvider pos) {
+	public LogisticsOrderManager(LogisticsOrderLinkedList<T, I> orders, ILPPositionProvider pos) {
+		_orders = orders;
 		this.pos = pos;
 	}
 
-	public LogisticsOrderManager(IChangeListener listener, ILPPositionProvider pos) {
-		this(pos);
+	public LogisticsOrderManager(IChangeListener listener, ILPPositionProvider pos, LogisticsOrderLinkedList<T, I> orders) {
+		this(orders, pos);
 		this.listener = listener;
 	}
 
-	private LinkedList<T> oldOrders = new LinkedList<>();
-
-	protected LinkedList<T> _orders = new LinkedList<>();
-	protected IChangeListener listener = null;
-
-	protected PlayerCollectionList watchingPlayers = new PlayerCollectionList();
-
-	private ILPPositionProvider pos = null;
+	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
+		for (ItemIdentifierStack ident : list) {
+			if (ident.getItem().equals(stack.getItem())) {
+				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
+				return;
+			}
+		}
+		list.addLast(stack.clone());
+	}
 
 	protected void listen() {
 		changed();
 		if (listener != null) {
 			listener.listenedChanged();
 		}
+	}
+
+	public void dump() {
+		StringBuilder sb = new StringBuilder(" ############################################# ").append(System.getProperty("line.separator"));
+		for (T s : _orders) {
+			sb.append(s.getAsDisplayItem() + " / " + s.getAmount() + " / " + s.getType().name()).append(System.getProperty("line.separator"));
+		}
+		System.out.print(sb.append(" ############################################# ").toString());
+		System.out.println();
 	}
 
 	public LinkedList<ItemIdentifierStack> getContentList(World world) {
@@ -63,29 +80,20 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 		return list;
 	}
 
-	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
-		for (ItemIdentifierStack ident : list) {
-			if (ident.getItem().equals(stack.getItem())) {
-				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
-				return;
-			}
-		}
-		list.addLast(stack.clone());
-	}
-
-	public boolean hasOrders(ResourceType type) {
+	public boolean hasOrders(ResourceType... type) {
 		return peekAtTopRequest(type) != null;
 	}
 
 	/* only multi-access SAFE when type is null; all other access patterns may change the state of the stack so the returned element is on top*/
 	@SuppressWarnings("unchecked")
-	public T peekAtTopRequest(ResourceType type) {
+	public T peekAtTopRequest(ResourceType... type) {
+		List<ResourceType> typeList = Arrays.asList(type);
 		if (_orders.size() == 0) {
 			return null;
 		}
 		T top = (T) _orders.getFirst().setInProgress(true);
 		int loopCount = 0;
-		while (type != null & top.getType() != type) {
+		while (!typeList.contains(top.getType())) {
 			loopCount++;
 			if (loopCount > _orders.size()) {
 				return null;
@@ -99,7 +107,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 	@SuppressWarnings("unchecked")
 	public void sendSuccessfull(int number, boolean defersend, IRoutedItem item) {
 		_orders.getFirst().reduceAmountBy(number);
-		if (_orders.getFirst().isWatched()) {
+		if (_orders.getFirst().isWatched() && item != null) {
 			IDistanceTracker tracker = new DistanceTracker();
 			item.setDistanceTracker(tracker);
 			_orders.getFirst().addDistanceTracker(tracker);
@@ -113,12 +121,12 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 		if (!_orders.isEmpty()) {
 			LogisticsOrder start = _orders.getFirst();
 			if (defersend && destination == start.getRouterId()) {
-				_orders.add((T) _orders.removeFirst().setInProgress(false));
+				_orders.addLast((T) _orders.removeFirst().setInProgress(false));
 				while (start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
-					_orders.add(_orders.removeFirst());
+					_orders.addLast(_orders.removeFirst());
 				}
 				if (start == _orders.getFirst()) {
-					_orders.add(_orders.removeFirst());
+					_orders.addLast(_orders.removeFirst());
 				}
 				_orders.getFirst().setInProgress(true);
 			}
@@ -140,15 +148,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 
 	@SuppressWarnings("unchecked")
 	public void deferSend() {
-		int destination = _orders.getFirst().getRouterId();
-		LogisticsOrder start = _orders.getFirst();
-		_orders.add((T) _orders.removeFirst().setInProgress(false));
-		while (start != _orders.getFirst() && destination == _orders.getFirst().getRouterId()) {
-			_orders.add(_orders.removeFirst());
-		}
-		if (start == _orders.getFirst()) {
-			_orders.add(_orders.removeFirst());
-		}
+		_orders.addLast((T) _orders.removeFirst().setInProgress(false));
 		_orders.getFirst().setInProgress(true);
 		listen();
 	}
@@ -185,6 +185,10 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 		watchingPlayers.remove(player);
 	}
 
+	public boolean hasExtras() {
+		return _orders.hasExtras();
+	}
+
 	private void changed() {
 		if (watchingPlayers.isEmpty()) {
 			return;
@@ -201,6 +205,10 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder> implements
 	 */
 	@Override
 	public Iterator<T> iterator() {
-		return Collections.unmodifiableList(this._orders).iterator();
+		return this._orders.iterator();
+	}
+
+	public int size() {
+		return _orders.size();
 	}
 }

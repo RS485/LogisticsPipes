@@ -1,14 +1,11 @@
 package logisticspipes.network.packets.block;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringListPacket;
 import logisticspipes.proxy.SimpleServiceLocator;
 
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public class SecurityStationAuthorizedList extends StringListPacket {
 
 	public SecurityStationAuthorizedList(int id) {

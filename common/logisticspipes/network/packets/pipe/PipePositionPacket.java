@@ -1,22 +1,17 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
-
 import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class PipePositionPacket extends CoordinatesPacket {
 
 	@Getter
@@ -52,25 +47,25 @@ public class PipePositionPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(travelId);
-		data.writeFloat(speed);
-		data.writeFloat(position);
-		data.writeEnumFacing(input);
-		data.writeEnumFacing(output);
-		data.writeFloat(yaw);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeInt(travelId);
+		output.writeFloat(speed);
+		output.writeFloat(position);
+		output.writeFacing(input);
+		output.writeFacing(this.output);
+		output.writeFloat(yaw);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		travelId = data.readInt();
-		speed = data.readFloat();
-		position = data.readFloat();
-		input = data.readEnumFacing();
-		output = data.readEnumFacing();
-		yaw = data.readFloat();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		travelId = input.readInt();
+		speed = input.readFloat();
+		position = input.readFloat();
+		this.input = input.readFacing();
+		output = input.readFacing();
+		yaw = input.readFloat();
 	}
 
 	@Override

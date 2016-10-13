@@ -1,32 +1,28 @@
 package logisticspipes.network.packets.block;
 
-import java.io.IOException;
-
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class CraftingCycleRecipe extends CoordinatesPacket {
-
-	public CraftingCycleRecipe(int id) {
-		super(id);
-	}
 
 	@Getter
 	@Setter
 	private boolean down;
+
+	public CraftingCycleRecipe(int id) {
+		super(id);
+	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
@@ -44,14 +40,14 @@ public class CraftingCycleRecipe extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(down);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeBoolean(down);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		down = data.readBoolean();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		down = input.readBoolean();
 	}
 }

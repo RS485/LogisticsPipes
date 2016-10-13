@@ -61,7 +61,7 @@ minecraft {
 
 jar {
     manifest {
-        attributes('FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
+        attributes('FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
                    'FMLCorePluginContainsFMLMod': 'true',
                    'Implementation-Vendor': 'RS485',
                    'Implementation-Title': 'LogisticsPipes',
@@ -86,6 +86,17 @@ sourceSets {
             srcDir 'api'
         }
     }
+    test {
+        java {
+            srcDir 'test'
+        }
+    }
+}
+
+test {
+    reports {
+        html.enabled = true
+    }
 }
 
 processResources {
@@ -96,11 +107,11 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
@@ -108,27 +119,31 @@ processResources {
 }
 
 dependencies {
-    //compile files("build/download/buildcraft-7.1.5-dev.jar")
-    compile 'org.projectlombok:lombok:1.16.4'
-    compile 'codechicken:CodeChickenLib:1.10.2-2.3.1.88:deobf'
+    //compile files("build/download/buildcraft-7.1.16-dev.jar")
+    compile 'org.projectlombok:lombok:1.16.8'
     //compile 'codechicken:NotEnoughItems:1.8-1.0.5.104:dev'
     //compile 'codechicken:CodeChickenCore:1.8-1.0.5.36:dev'
+    compile 'codechicken:CodeChickenLib:1.10.2-2.3.1.88:deobf'
     //compile 'codechicken:EnderStorage:1.7.10-1.4.7.36:dev'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
+    testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
 }
 
 task deobfJar(type: Jar, dependsOn: 'jar') {
     from sourceSets.main.output
     classifier = 'dev'
-	manifest {
-        attributes(	'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader', 
-					'FMLCorePluginContainsFMLMod': 'true',
-					'Implementation-Vendor': 'RS485',
-					'Implementation-Title': 'LogisticsPipes',
-					'Implementation-Version': version,
-					'Built-By': buildby )
+    manifest {
+        attributes(
+            'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'Implementation-Vendor': 'RS485',
+            'Implementation-Title': 'LogisticsPipes',
+            'Implementation-Version': version,
+            'Built-By': buildby)
     }
 }
-//
+
 //task sourceJar(type: Jar, dependsOn: 'jar') {
 //    from sourceSets.main.allSource
 //    classifier = 'src'
@@ -136,7 +151,7 @@ task deobfJar(type: Jar, dependsOn: 'jar') {
 
 //curse {
 //    displayName = 'Logistics Pipes 0.10.0 (BC7) build ' + System.getenv().BUILD_NUMBER
-//    
+//
 //    projectId = '232838'
 //    apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
 //    releaseType = 'release'
@@ -154,4 +169,3 @@ tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
 tasks.processResources.dependsOn('integrateLang')
 tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')
-

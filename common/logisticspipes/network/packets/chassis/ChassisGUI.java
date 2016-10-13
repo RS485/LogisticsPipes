@@ -1,22 +1,18 @@
 package logisticspipes.network.packets.chassis;
 
-import java.io.IOException;
-
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class ChassisGUI extends CoordinatesPacket {
 
 	@Getter
@@ -28,15 +24,15 @@ public class ChassisGUI extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		data.writeInt(buttonID);
-		super.writeData(data);
+	public void writeData(LPDataOutput output) {
+		output.writeInt(buttonID);
+		super.writeData(output);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		buttonID = data.readInt();
-		super.readData(data);
+	public void readData(LPDataInput input) {
+		buttonID = input.readInt();
+		super.readData(input);
 	}
 
 	@Override
@@ -52,7 +48,8 @@ public class ChassisGUI extends CoordinatesPacket {
 			return;
 		}
 
-		((LogisticsGuiModule) chassisPipe.getLogisticsModule().getSubModule(getButtonID())).getPipeGuiProviderForModule().setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
+		((LogisticsGuiModule) chassisPipe.getLogisticsModule().getSubModule(getButtonID())).getPipeGuiProviderForModule().setPosX(getPosX()).setPosY(getPosY())
+				.setPosZ(getPosZ()).open(player);
 	}
 
 	@Override

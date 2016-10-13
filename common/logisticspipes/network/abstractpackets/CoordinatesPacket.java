@@ -1,7 +1,5 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -9,27 +7,15 @@ import net.minecraft.world.World;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-@Accessors(chain = true)
 @ToString
 public abstract class CoordinatesPacket extends ModernPacket {
-
-	public enum LTGPCompletionCheck {
-		NONE,
-		PIPE,
-		TRANSPORT;
-	}
-
-	public CoordinatesPacket(int id) {
-		super(id);
-	}
 
 	@Getter
 	@Setter
@@ -41,20 +27,24 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	@Setter
 	private int posZ;
 
-	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-
-		data.writeInt(posX);
-		data.writeInt(posY);
-		data.writeInt(posZ);
+	public CoordinatesPacket(int id) {
+		super(id);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
+	public void writeData(LPDataOutput output) {
 
-		posX = data.readInt();
-		posY = data.readInt();
-		posZ = data.readInt();
+		output.writeInt(posX);
+		output.writeInt(posY);
+		output.writeInt(posZ);
+	}
+
+	@Override
+	public void readData(LPDataInput input) {
+
+		posX = input.readInt();
+		posY = input.readInt();
+		posZ = input.readInt();
 
 	}
 
@@ -160,6 +150,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 * @param world
 	 * @return
 	 */
+	@Deprecated
 	public LogisticsTileGenericPipe getPipe(World world) {
 		return getPipe(world, LTGPCompletionCheck.NONE);
 	}
@@ -181,5 +172,11 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	protected void targetNotFound(String message) {
 		throw new TargetNotFoundException(message, this);
+	}
+
+	public enum LTGPCompletionCheck {
+		NONE,
+		PIPE,
+		TRANSPORT
 	}
 }

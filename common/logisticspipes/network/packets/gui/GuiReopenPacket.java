@@ -1,40 +1,36 @@
 package logisticspipes.network.packets.gui;
 
-import java.io.IOException;
-
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.LogisticsPipes;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class GuiReopenPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
 	private int guiID;
 
-	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeInt(getGuiID());
-	}
-
-	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		guiID = data.readInt();
-	}
-
 	public GuiReopenPacket(int id) {
 		super(id);
+	}
+
+	@Override
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeInt(getGuiID());
+	}
+
+	@Override
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		guiID = input.readInt();
 	}
 
 	@Override

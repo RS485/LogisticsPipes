@@ -1,24 +1,22 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.utils.item.ItemIdentifierStack;
-
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinatesPacket {
+
+	private static final byte STACK_MARKER = 0;
+	private static final byte IDENT_MARKER = 1;
 
 	@Setter
 	private IInventory inventory;
@@ -39,97 +37,40 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+
 		if (inventory != null) {
-			data.writeByte(0);
+			output.writeByte(STACK_MARKER);
+			output.writeInt(inventory.getSizeInventory());
 			for (int i = 0; i < inventory.getSizeInventory(); i++) {
-				data.writeByte(i);
-				sendItemStack(inventory.getStackInSlot(i), data);
+				output.writeItemStack(inventory.getStackInSlot(i));
 			}
-			data.writeByte(-1); // mark packet end
 		} else if (stackList != null) {
-			data.writeByte(0);
-			for (int i = 0; i < stackList.size(); i++) {
-				data.writeByte(i);
-				sendItemStack(stackList.get(i), data);
-			}
-			data.writeByte(-1); // mark packet end
+			output.writeByte(STACK_MARKER);
+			output.writeCollection(stackList, LPDataOutput::writeItemStack);
 		} else if (identList != null) {
-			data.writeByte(1);
-			for (ItemIdentifierStack stack : identList) {
-				if (stack == null) {
-					data.writeByte(0);
-					continue;
-				}
-				data.writeByte(1);
-				data.writeItemIdentifierStack(stack);
-			}
-			data.writeByte(-1);
+			output.writeByte(IDENT_MARKER);
+			output.writeCollection(identList, LPDataOutput::writeItemIdentifierStack);
 		} else if (identSet != null) {
-			data.writeByte(1);
-			for (ItemIdentifierStack stack : identSet) {
-				if (stack == null) {
-					data.writeByte(0);
-					continue;
-				}
-				data.writeByte(1);
-				data.writeItemIdentifierStack(stack);
-			}
-			data.writeByte(-1);
+			output.writeByte(IDENT_MARKER);
+			output.writeCollection(identSet, LPDataOutput::writeItemIdentifierStack);
 		} else {
-			throw new UnsupportedOperationException("Can't send this Packet without content");
+			throw new IllegalStateException("Wont send packet without content");
 		}
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		byte mode = data.readByte();
-		if (mode == 0) {
-			stackList = new LinkedList<>();
-			byte index = data.readByte();
-			while (index != -1) { // read until the end
-				((LinkedList<ItemStack>) stackList).addLast(readItemStack(data));
-				index = data.readByte(); // read the next slot
-			}
-		} else if (mode == 1) {
-			identList = new LinkedList<>();
-			byte index = data.readByte();
-			while (index != -1) { // read until the end
-				if (index == 0) {
-					((LinkedList<ItemIdentifierStack>) identList).addLast(null);
-				} else {
-					((LinkedList<ItemIdentifierStack>) identList).addLast(data.readItemIdentifierStack());
-				}
-				index = data.readByte(); // read the next slot
-			}
-		} else {
-			throw new UnsupportedOperationException("Unknown receive mode: " + mode);
-		}
-	}
+	public void readData(LPDataInput input) {
+		super.readData(input);
 
-	private void sendItemStack(ItemStack itemstack, LPDataOutputStream data) throws IOException {
-		if (itemstack != null) {
-			data.writeInt(Item.getIdFromItem(itemstack.getItem()));
-			data.writeInt(itemstack.stackSize);
-			data.writeInt(itemstack.getItemDamage());
-			data.writeNBTTagCompound(itemstack.getTagCompound());
+		byte marker = input.readByte();
+		if (marker == STACK_MARKER) {
+			stackList = input.readLinkedList(LPDataInput::readItemStack);
+		} else if (marker == IDENT_MARKER) {
+			identList = input.readLinkedList(LPDataInput::readItemIdentifierStack);
 		} else {
-			data.writeInt(0);
-		}
-	}
-
-	private ItemStack readItemStack(LPDataInputStream data) throws IOException {
-		final int itemID = data.readInt();
-		if (itemID == 0) {
-			return null;
-		} else {
-			int stackSize = data.readInt();
-			int damage = data.readInt();
-			ItemStack stack = new ItemStack(Item.getItemById(itemID), stackSize, damage);
-			stack.setTagCompound(data.readNBTTagCompound());
-			return stack;
+			throw new UnsupportedOperationException("Unknown marker: " + marker);
 		}
 	}
 }

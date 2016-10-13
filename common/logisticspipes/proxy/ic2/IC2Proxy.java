@@ -1,29 +1,20 @@
 package logisticspipes.proxy.ic2;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.config.Configs;
-import logisticspipes.items.ItemModule;
-import logisticspipes.items.ItemUpgrade;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
-import logisticspipes.proxy.interfaces.IIC2Proxy;
-
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraft.util.EnumFacing;
 
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergyTile;
-import ic2.api.item.IC2Items;
 import ic2.api.item.IElectricItem;
-import ic2.api.recipe.Recipes;
+
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.recipes.CraftingParts;
 
 public class IC2Proxy implements IIC2Proxy {
 
@@ -141,7 +132,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 * Adds crafting recipes to "IC2 Crafting"
 	 */
 	@Override
-	public void addCraftingRecipes(ICraftingParts parts) {
+	public void addCraftingRecipes(CraftingParts parts) {
 		/*
 		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { "CGC", "rBr", "CrC", Character.valueOf('C'), IC2Items.getItem("advancedCircuit"), Character.valueOf('G'), parts.getGearTear2(), Character.valueOf('r'), Items.redstone, Character.valueOf('B'),
 				new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });

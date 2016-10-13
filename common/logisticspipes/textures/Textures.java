@@ -1,16 +1,16 @@
 package logisticspipes.textures;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
 import logisticspipes.LPConstants;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
 import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Textures {
 
@@ -113,6 +113,7 @@ public class Textures {
 	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_ICONINDEX;
 	public static TextureAtlasSprite LOGISTICSITEMS_ITEMHUD_ICON;
 	public static TextureAtlasSprite LOGISTICSITEMTEXTURE_FOR_DISK;
+	public static TextureAtlasSprite LOGISTICS_SIDE_SELECTION;
 
 	// Standalone pipes
 	public static String LOGISTICSPIPE_TEXTURE_FILE = "pipes/basic";
@@ -259,6 +260,7 @@ public class Textures {
 			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = par1IIconRegister.registerIcon("logisticspipes:requesttable/routed");
 			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = par1IIconRegister.registerIcon("logisticspipes:requesttable/unrouted");
 			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = par1IIconRegister.registerIcon("logisticspipes:empty");
+			Textures.LOGISTICS_SIDE_SELECTION = par1IIconRegister.registerIcon("logisticspipes:sideSelection");
 		}
 
 		if (LPConstants.DEBUG) {

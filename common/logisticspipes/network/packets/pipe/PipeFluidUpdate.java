@@ -1,62 +1,58 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.BitSet;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.transport.PipeFluidTransportLogistics;
-
 import net.minecraft.entity.player.EntityPlayer;
-
 import net.minecraft.util.EnumFacing;
+
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.transport.PipeFluidTransportLogistics;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class PipeFluidUpdate extends CoordinatesPacket {
+
+	@Getter(value = AccessLevel.PRIVATE)
+	@Setter
+	private FluidStack[] renderCache = new FluidStack[EnumFacing.VALUES.length];
+	private BitSet bits = new BitSet();
 
 	public PipeFluidUpdate(int id) {
 		super(id);
 	}
 
-	@Getter(value = AccessLevel.PRIVATE)
-	@Setter
-	private FluidStack[] renderCache = new FluidStack[EnumFacing.values().length];
-
-	private BitSet bits = new BitSet();
-
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		bits = data.readBitSet();
-		for(int i=0;i < renderCache.length;i++) {
-			if(bits.get(i)) {
-				renderCache[i] = new FluidStack(FluidRegistry.getFluid(data.readInt()), data.readInt());
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		bits = input.readBitSet();
+		for (int i = 0; i < renderCache.length; i++) {
+			if (bits.get(i)) {
+				renderCache[i] = new FluidStack(FluidRegistry.getFluid(input.readInt()), input.readInt(), input.readNBTTagCompound());
 			}
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		for(int i=0;i < renderCache.length;i++) {
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		for (int i = 0; i < renderCache.length; i++) {
 			bits.set(i, renderCache[i] != null);
 		}
-		data.writeBitSet(bits);
+		output.writeBitSet(bits);
 		for (FluidStack aRenderCache : renderCache) {
 			if (aRenderCache != null) {
-				data.writeInt(FluidRegistry.getFluidID(aRenderCache.getFluid()));
-				data.writeInt(aRenderCache.amount);
+				output.writeInt(FluidRegistry.getFluidID(aRenderCache.getFluid()));
+				output.writeInt(aRenderCache.amount);
+				output.writeNBTTagCompound(aRenderCache.tag);
 			}
 		}
 	}

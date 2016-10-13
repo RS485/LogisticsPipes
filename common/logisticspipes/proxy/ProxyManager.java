@@ -1,6 +1,5 @@
 package logisticspipes.proxy;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,11 +8,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.LPConstants;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.binnie.BinnieProxy;
@@ -47,7 +64,6 @@ import logisticspipes.proxy.interfaces.IBinnieProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
-import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
@@ -65,11 +81,11 @@ import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IBounds;
-import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IRenderState;
 import logisticspipes.proxy.object3d.interfaces.ITranslation;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.OpenComputersProxy;
@@ -78,29 +94,11 @@ import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -135,8 +133,8 @@ public class ProxyManager {
 			@Override public boolean isInstalled() {return false;}
 			@Override public Object getLPPipeType() {return null;}
 			@Override public void registerTrigger() {}
-			@Override public ICraftingParts getRecipeParts() {return null;}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public CraftingParts getRecipeParts() {return null;}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {return null;}
 			@Override public void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, EnumFacing o) {}
 			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe) {
@@ -154,10 +152,10 @@ public class ProxyManager {
 						return new IBCRenderState() {
 							@Override public boolean needsRenderUpdate() {return false;}
 							@Override public boolean isDirty() {return false;}
-							@Override public void writeData_LP(LPDataOutputStream data) throws IOException {
-								data.writeBoolean(false);
+							@Override public void writeData_LP(LPDataOutput output)  {
+								output.writeBoolean(false);
 							}
-							@Override public void readData_LP(LPDataInputStream data) {}
+							@Override public void readData_LP(LPDataInput input) {}
 							@Override public void clean() {}
 						};
 					}
@@ -174,8 +172,8 @@ public class ProxyManager {
 					}
 					@Override public IBCPluggableState getBCPlugableState() {
 						return new IBCPluggableState() {
-							@Override public void writeData(LPDataOutputStream data) throws IOException {}
-							@Override public void readData(LPDataInputStream data) throws IOException {}
+							@Override public void writeData(LPDataOutput output)  {}
+							@Override public void readData(LPDataInput input)  {}
 							@Override public boolean isDirty(boolean clean) {return false;}
 						};
 					}
@@ -240,7 +238,7 @@ public class ProxyManager {
 			@Override @SideOnly(Side.CLIENT) public TextureAtlasSprite getIconIndexForAlleleId(String id, int phase) {return null;}
 			@Override @SideOnly(Side.CLIENT) public int getColorForAlleleId(String id, int phase) {return 16777215;}
 			@Override @SideOnly(Side.CLIENT) public int getRenderPassesForAlleleId(String id) {return 0;}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public String getNextAlleleId(String uid, World world) {return "";}
 			@Override public String getPrevAlleleId(String uid, World world) {return "";}
 			@Override @SideOnly(Side.CLIENT) public TextureAtlasSprite getIconFromTextureManager(String name) {return null;}
@@ -253,7 +251,7 @@ public class ProxyManager {
 			@Override public boolean isFullyCharged(ItemStack stack) {return false;}
 			@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
 			@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public boolean hasIC2() {return false;}
 			@Override public void registerToEneryNet(TileEntity tile) {}
 			@Override public void unregisterToEneryNet(TileEntity tile) {}
@@ -273,7 +271,7 @@ public class ProxyManager {
 			@Override public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
 			@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 			@Override public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public Object getAnswer(Object object) {return object;}
 		}));
 
@@ -282,14 +280,14 @@ public class ProxyManager {
 			@Override public List<String> getListOfTagsForStack(ItemStack stack) {return null;}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
 			@Override @SideOnly(Side.CLIENT) public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui) {}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 		}));
 
 		SimpleServiceLocator.setThermalExpansionProxy(ProxyManager.getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
 			@Override public boolean isTesseract(TileEntity tile) {return false;}
 			@Override public boolean isTE() {return false;}
 			@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<>(0);}
-			@Override public ICraftingParts getRecipeParts() {return null;}
+			@Override public CraftingParts getRecipeParts() {return null;}
 		}));
 
 		SimpleServiceLocator.setBetterStorageProxy(ProxyManager.getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
@@ -308,6 +306,8 @@ public class ProxyManager {
 
 		SimpleServiceLocator.setNEIProxy(ProxyManager.getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<>(0);}
+			@Override @SideOnly(Side.CLIENT) public boolean renderItemToolTip(int posX, int posY, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack) {return false;}
+			@Override @SideOnly(Side.CLIENT) public List<String> getItemToolTip(ItemStack stack, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen) {return stack.getTooltip(thePlayer, advancedItemTooltips);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
 		}));
 
@@ -364,7 +364,7 @@ public class ProxyManager {
 					@Override public int receiveEnergy(EnumFacing opposite, int i, boolean b) {return 0;}
 				};
 			}
-			@Override public void addCraftingRecipes(ICraftingParts parts) {}
+			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public ICoFHEnergyStorage getEnergyStorage(int i) {
 				return new ICoFHEnergyStorage() {
 					@Override public int extractEnergy(int space, boolean b) {return 0;}

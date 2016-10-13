@@ -5,8 +5,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.InvSysConContentRequest;
@@ -22,14 +29,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 
@@ -119,7 +118,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 			int mouseY = height - Mouse.getY() * height / mc.displayHeight - 1;
 
 			if (x < mouseX && mouseX < x + 18 && y < mouseY && mouseY < y + 18) {
-				GuiGraphics.displayItemToolTip(new Object[] { mouseX, mouseY, st, true }, zLevel, guiLeft, guiTop, false, false);
+				GuiGraphics.displayItemToolTip(new Object[] { mouseX, mouseY, st, true }, zLevel, guiLeft, guiTop, false);
 			}
 
 			column++;

@@ -1,13 +1,15 @@
 package logisticspipes.routing;
 
+import lombok.Getter;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.request.IExtraPromise;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
-import lombok.Getter;
 
 public class LogisticsDictPromise extends LogisticsPromise {
 
@@ -19,6 +21,13 @@ public class LogisticsDictPromise extends LogisticsPromise {
 		this.resource = item;
 		this.resource.stack = this.resource.stack.clone();
 		this.resource.stack.setStackSize(stackSize);
+	}
+
+	@Override
+	public IExtraPromise split(int more) {
+		numberOfItems -= more;
+		this.resource.stack.setStackSize(numberOfItems);
+		return new LogisticsExtraDictPromise(getResource().clone(), more, sender, false);
 	}
 
 	@Override

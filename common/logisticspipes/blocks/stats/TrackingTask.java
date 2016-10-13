@@ -1,16 +1,14 @@
 package logisticspipes.blocks.stats;
 
-import java.io.IOException;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class TrackingTask {
 
@@ -59,15 +57,15 @@ public class TrackingTask {
 		item.makeNormalStack(1).writeToNBT(nbt);
 	}
 
-	public void writeToLPData(LPDataOutputStream data) throws IOException {
-		data.writeLongArray(amountRecorded);
-		data.writeInt(arrayPos);
-		data.writeItemIdentifier(item);
+	public void writeToLPData(LPDataOutput output) {
+		output.writeLongArray(amountRecorded);
+		output.writeInt(arrayPos);
+		output.writeItemIdentifier(item);
 	}
 
-	public void readFromLPData(LPDataInputStream data) throws IOException {
-		amountRecorded = data.readLongArray();
-		arrayPos = data.readInt();
-		item = data.readItemIdentifier();
+	public void readFromLPData(LPDataInput input) {
+		amountRecorded = input.readLongArray();
+		arrayPos = input.readInt();
+		item = input.readItemIdentifier();
 	}
 }

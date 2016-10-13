@@ -1,17 +1,13 @@
 package logisticspipes.network.abstractpackets;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinatesPacket {
 
 	@Getter
@@ -23,14 +19,14 @@ public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinates
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeEnumFacing(direction);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeFacing(direction);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		direction = data.readEnumFacing();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		direction = input.readFacing();
 	}
 }

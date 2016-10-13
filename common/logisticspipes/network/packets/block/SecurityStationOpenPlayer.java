@@ -1,20 +1,17 @@
 package logisticspipes.network.packets.block;
 
-import logisticspipes.gui.GuiSecurityStation;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.security.SecuritySettings;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import lombok.experimental.Accessors;
+import logisticspipes.gui.GuiSecurityStation;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.security.SecuritySettings;
 
-@Accessors(chain = true)
 public class SecurityStationOpenPlayer extends NBTCoordinatesPacket {
 
 	public SecurityStationOpenPlayer(int id) {

@@ -1,32 +1,10 @@
 package logisticspipes.renderer;
 
-import java.util.*;
-
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
-import logisticspipes.pipes.signs.IPipeSign;
-import logisticspipes.pipes.signs.IPipeSignData;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
-import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
-import logisticspipes.renderer.newpipe.GLRenderList;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
-import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.state.PipeRenderState;
-import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.item.ItemStackRenderer;
-
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-import logisticspipes.utils.tuples.Pair;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -39,25 +17,50 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.config.PlayerConfig;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.signs.IPipeSign;
+import logisticspipes.pipes.signs.IPipeSignData;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
+import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
+import logisticspipes.renderer.newpipe.GLRenderList;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.transport.PipeFluidTransportLogistics;
+import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
@@ -74,7 +77,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
-	private HashMap<Integer, DisplayFluidList> displayFluidLists = new HashMap<>();
+	private static final IntHashMap displayFluidLists = new IntHashMap();
 	private ModelSign modelSign;
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
@@ -517,6 +520,9 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 		GL11.glTranslatef((float) x, (float) y, (float) z);
 
+		int skylight = pipe.container.getWorld().getSkyBlockTypeBrightness(EnumSkyBlock.Sky, pipe.getX(), pipe.getY(), pipe.getZ());
+		int blocklight = pipe.container.getWorld().getSkyBlockTypeBrightness(EnumSkyBlock.Block, pipe.getX(), pipe.getY(), pipe.getZ());
+
 		// sides
 
 		boolean sides = false, above = false;
@@ -525,7 +531,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			FluidStack fluidStack = trans.renderCache[i];
 
 			if (fluidStack != null && fluidStack.amount > 0) {
-				DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorld());
+				DisplayFluidList d = getListFromBuffer(fluidStack, skylight, blocklight, fluidStack.getFluid().getLuminosity(fluidStack), pipe.container.getWorldObj());
 
 				if (d == null) {
 					continue;
@@ -533,6 +539,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 				// XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));
 				int stage = (int) ((float) fluidStack.amount / (float) (trans.getSideCapacity()) * (LogisticsRenderPipe.LIQUID_STAGES - 1));
+
+				if(stage >= LogisticsRenderPipe.LIQUID_STAGES) {
+					stage = LogisticsRenderPipe.LIQUID_STAGES - 1;
+				}
+				if(stage < 0) {
+					stage = 0;
+				}
 
 				GL11.glPushMatrix();
 				int list = 0;
@@ -570,7 +583,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		FluidStack fluidStack = trans.renderCache[6 /* Center */];
 
 		if (fluidStack != null && fluidStack.amount > 0) {
-			DisplayFluidList d = getListFromBuffer(fluidStack, pipe.container.getWorld());
+			DisplayFluidList d = getListFromBuffer(fluidStack, skylight, blocklight, fluidStack.getFluid().getLuminosity(fluidStack), pipe.container.getWorldObj());
 
 			if (d != null) {
 				// XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));
@@ -595,7 +608,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	}
 
 	// BC copy
-	private DisplayFluidList getListFromBuffer(FluidStack stack, World world) {
+	private DisplayFluidList getListFromBuffer(FluidStack stack, int skylight, int blocklight, int flags, World world) {
 
 		int liquidId = stack.getFluidID();
 
@@ -603,27 +616,37 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			return null;
 		}
 
-		return getDisplayFluidLists(liquidId, world);
+		return getDisplayFluidLists(liquidId, skylight, blocklight, flags, world);
 	}
 
 	// BC copy
-	private DisplayFluidList getDisplayFluidLists(int liquidId, World world) {
-		if (displayFluidLists.containsKey(liquidId)) {
-			return displayFluidLists.get(liquidId);
+	private DisplayFluidList getDisplayFluidLists(int liquidId, int skylight, int blocklight, int flags, World world) {
+		int finalBlockLight = Math.max(flags & 31, blocklight);
+		int listId = (liquidId & 0x3FFFF) << 13 | (flags & 0xE0 | finalBlockLight) << 5 | (skylight & 31);
+
+		if (displayFluidLists.containsItem(listId)) {
+			return (DisplayFluidList) displayFluidLists.lookup(listId);
+		}
+
+		Fluid fluid = FluidRegistry.getFluid(liquidId);
+
+		if (fluid == null) {
+			return null;
 		}
 
 		DisplayFluidList d = new DisplayFluidList();
-		displayFluidLists.put(liquidId, d);
+		displayFluidLists.addKey(listId, d);
 
 		RenderInfo block = new RenderInfo();
 
-		Fluid fluid = FluidRegistry.getFluid(liquidId);
-		block.baseBlock = fluid.getBlock();
-		block.texture = fluid.getStillIcon();
-		
-		if(block.baseBlock == null) {
-			return d;
+		if (fluid.getBlock() != null) {
+			block.baseBlock = fluid.getBlock();
+		} else {
+			block.baseBlock = Blocks.water;
 		}
+
+		block.texture = fluid.getStillIcon();
+		block.brightness = skylight << 16 | finalBlockLight;
 
 		float size = LPConstants.BC_PIPE_MAX_POS - LPConstants.BC_PIPE_MIN_POS;
 
@@ -635,12 +658,12 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			// SIDE HORIZONTAL
 
 			d.sideHorizontal[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.sideHorizontal[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.sideHorizontal[s], GL11.GL_COMPILE);
 
 			block.minX = 0.0F;
 			block.minZ = LPConstants.BC_PIPE_MIN_POS + 0.01F;
 
-			block.maxX = block.minX + 0.2F + 0.01F;
+			block.maxX = block.minX + size / 2F + 0.01F;
 			block.maxZ = block.minZ + size - 0.02F;
 
 			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01F;
@@ -653,9 +676,9 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			// SIDE VERTICAL
 
 			d.sideVertical[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.sideVertical[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.sideVertical[s], GL11.GL_COMPILE);
 
-			block.minY = LPConstants.PIPE_MAX_POS - 0.01;
+			block.minY = LPConstants.BC_PIPE_MAX_POS - 0.01;
 			block.maxY = 1;
 
 			block.minX = 0.5 - (size / 2 - 0.01) * ratio;
@@ -671,7 +694,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			// CENTER HORIZONTAL
 
 			d.centerHorizontal[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.centerHorizontal[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.centerHorizontal[s], GL11.GL_COMPILE);
 
 			block.minX = LPConstants.BC_PIPE_MIN_POS + 0.01;
 			block.minZ = LPConstants.BC_PIPE_MIN_POS + 0.01;
@@ -689,7 +712,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			// CENTER VERTICAL
 
 			d.centerVertical[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.centerVertical[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.centerVertical[s], GL11.GL_COMPILE);
 
 			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01;
 			block.maxY = LPConstants.BC_PIPE_MAX_POS - 0.01;

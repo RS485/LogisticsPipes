@@ -4,8 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.IBlockAccess;
+
+import lombok.Getter;
+import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
@@ -13,22 +20,14 @@ import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.operation.LPRotation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.object3d.operation.LPUVScale;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
-
-import lombok.Getter;
-import org.lwjgl.opengl.GL11;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsNewSolidBlockWorldRenderer {
 
@@ -163,37 +162,46 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		return map;
 	}
 
-	public void renderWorldBlock(LogisticsSolidTileEntity blockTile, RenderBlocks renderer, int x, int y, int z) {
+	public void renderWorldBlock(IBlockAccess world, LogisticsSolidTileEntity blockTile, RenderBlocks renderer, int x, int y, int z) {
 		Tessellator tess = Tessellator.instance;
 		SimpleServiceLocator.cclProxy.getRenderState().reset();
 		SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 		SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
-		BlockRotation rotation = BlockRotation.getRotation(blockTile.getRotation());
+		BlockRotation rotation = BlockRotation.ZERO;
+		int brightness = 0;
+		IIconTransformation icon;
+		if(blockTile != null) {
+			BlockRotation.getRotation(blockTile.getRotation());
+			brightness = new DoubleCoordinates(blockTile).getBlock(world).getMixedBrightnessForBlock(world, blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
+			icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(world, blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
+		} else {
+			brightness = LogisticsPipes.LogisticsSolidBlock.getMixedBrightnessForBlock(world, x, y, z);
+			icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(world, x, y, z));
+		}
 
-		int brightness = new DoubleCoordinates(blockTile).getBlock(blockTile.getWorld()).getMixedBrightnessForBlock(blockTile.getWorld(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord);
 
 		tess.setColorOpaque_F(1F, 1F, 1F);
 		tess.setBrightness(brightness);
 
-		TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(blockTile.getWorld(), blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
-
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
-		DoubleCoordinates pos = new DoubleCoordinates(blockTile);
-		for (CoverSides side : CoverSides.values()) {
-			boolean render = true;
-			DoubleCoordinates newPos = CoordinateUtils.sum(pos, side.getDir(rotation));
-			TileEntity sideTile = newPos.getTileEntity(blockTile.getWorld());
-			if (sideTile instanceof LogisticsTileGenericPipe) {
-				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
-				if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation).getOpposite())) {
-					render = false;
+		if(blockTile != null) {
+			DoubleCoordinates pos = new DoubleCoordinates(blockTile);
+			for (CoverSides side : CoverSides.values()) {
+				boolean render = true;
+				DoubleCoordinates newPos = CoordinateUtils.sum(pos, side.getDir(rotation));
+				TileEntity sideTile = newPos.getTileEntity(blockTile.getWorldObj());
+				if (sideTile instanceof LogisticsTileGenericPipe) {
+					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
+					if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation).getOpposite())) {
+						render = false;
+					}
 				}
-			}
-			if (render) {
-				LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
-				LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
+				if (render) {
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[]{new LPTranslation(x, y, z), icon});
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new I3DOperation[]{new LPTranslation(x, y, z), icon});
+				}
 			}
 		}
 
@@ -217,8 +225,10 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		//Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });
-		for (CoverSides side : CoverSides.values()) {
-			LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { icon });
+		if(metadata != LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME) {
+			for (CoverSides side : CoverSides.values()) {
+				LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[]{icon});
+			}
 		}
 		tess.draw();
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);

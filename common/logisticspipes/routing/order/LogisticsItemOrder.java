@@ -1,13 +1,12 @@
 package logisticspipes.routing.order;
 
+import lombok.Getter;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import lombok.Getter;
 
 public class LogisticsItemOrder extends LogisticsOrder {
 
@@ -27,11 +26,17 @@ public class LogisticsItemOrder extends LogisticsOrder {
 
 	@Override
 	public IRouter getRouter() {
+		if(destination == null) {
+			return null;
+		}
 		return destination.getRouter();
 	}
 
 	@Override
 	public void sendFailed() {
+		if(destination == null) {
+			return;
+		}
 		destination.itemCouldNotBeSend(getResource().stack, getInformation());
 	}
 

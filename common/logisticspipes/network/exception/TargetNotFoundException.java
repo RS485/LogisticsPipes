@@ -6,6 +6,7 @@ import java.util.List;
 
 import logisticspipes.LPConstants;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractpackets.ModernPacket;
 
 public class TargetNotFoundException extends DelayPacketException {
@@ -37,5 +38,34 @@ public class TargetNotFoundException extends DelayPacketException {
 			runtime.setStackTrace(list.toArray(new StackTraceElement[list.size()]));
 			initCause(runtime);
 		}
+	}
+
+	public TargetNotFoundException(String message, GuiProvider packet) {
+		super(message);
+		/*
+		if (!LPConstants.DEBUG) {
+			return;
+		}
+		StackTraceElement[] astacktraceelement = PacketHandler.debugMap.get(packet.getDebugId());
+		if (astacktraceelement != null) {
+			List<StackTraceElement> list = new ArrayList<>();
+			for (StackTraceElement element : getStackTrace()) {
+				list.add(element);
+				if (element.getClassName().equals("logisticspipes.network.PacketHandler")) {
+					break;
+				}
+			}
+			list.remove(0);
+			setStackTrace(list.toArray(new StackTraceElement[list.size()]));
+			list = new ArrayList<>(Arrays.asList(astacktraceelement));
+			if (list.size() > 2) {
+				list.remove(0);
+				list.remove(0);
+			}
+			RuntimeException runtime = new RuntimeException("Packet was send from: ");
+			runtime.setStackTrace(list.toArray(new StackTraceElement[list.size()]));
+			initCause(runtime);
+		}
+		*/
 	}
 }

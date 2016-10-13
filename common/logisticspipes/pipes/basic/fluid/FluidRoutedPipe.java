@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
+
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -25,14 +33,6 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.IFluidHandler;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
@@ -308,7 +308,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public LogisticsOrderManager<?> getOrderManager() {
+	public LogisticsOrderManager<?, ?> getOrderManager() {
 		return getFluidOrderManager();
 	}
 }

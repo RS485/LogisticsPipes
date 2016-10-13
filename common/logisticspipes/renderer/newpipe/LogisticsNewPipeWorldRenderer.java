@@ -4,18 +4,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.IBlockAccess;
+
+import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.renderer.IIconProvider;
@@ -24,16 +29,8 @@ import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.Block
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
@@ -64,12 +61,6 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 				}
 			}
 
-			renderState.currentTexture = icons.getIcon(renderState.textureMatrix.getTextureIndex(null));
-			((LogisticsBlockGenericPipe) block).setRenderAllSides();
-			block.setBlockBounds(0, 0, 0, 1, 1, 1);
-			renderer.setRenderBoundsFromBlock(block);
-			renderer.renderStandardBlock(block, x, y, z);
-
 			SimpleServiceLocator.cclProxy.getRenderState().reset();
 			SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 			SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
@@ -95,6 +86,8 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			return true;
 		}
 
+		boolean hasRendered = false;
+
 		tess.addTranslation(0.00002F, 0.00002F, 0.00002F);
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
@@ -102,6 +95,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			if (pipeTile.tilePart.hasPipePluggable(dir)) {
 				IBCPipePluggable p = pipeTile.tilePart.getBCPipePluggable(dir);
 				p.renderPluggable(renderer, dir, LogisticsPipeWorldRenderer.renderPass, x, y, z);
+				hasRendered = true;
 			}
 		}
 		tess.addTranslation(-0.00002F, -0.00002F, -0.00002F);
@@ -120,12 +114,14 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 			renderState.cachedRenderer = null;
 		}
 
-		block.setBlockBounds(0, 0, 0, 0, 0, 0);
-		renderer.setRenderBoundsFromBlock(block);
-		renderer.renderStandardBlock(block, x, y, z);
+		if(hasRendered) {
+			block.setBlockBounds(0, 0, 0, 0, 0, 0);
+			renderer.setRenderBoundsFromBlock(block);
+			renderer.renderStandardBlock(block, x, y, z);
 
-		block.setBlockBounds(0, 0, 0, 1, 1, 1);
-		return true;
+			block.setBlockBounds(0, 0, 0, 1, 1, 1);
+		}
+		return hasRendered;
 	}
 
 	@Override

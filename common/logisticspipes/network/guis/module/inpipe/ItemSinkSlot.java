@@ -1,23 +1,20 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import java.io.IOException;
 import java.util.BitSet;
-
-import logisticspipes.gui.modules.GuiItemSink;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.gui.modules.GuiItemSink;
+import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
+import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 
 	@Getter
@@ -41,21 +38,21 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeBoolean(isDefaultRoute);
-		data.writeBoolean(hasFuzzyUpgrade);
-		data.writeBitSet(ignoreData);
-		data.writeBitSet(ignoreNBT);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeBoolean(isDefaultRoute);
+		output.writeBoolean(hasFuzzyUpgrade);
+		output.writeBitSet(ignoreData);
+		output.writeBitSet(ignoreNBT);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		isDefaultRoute = data.readBoolean();
-		hasFuzzyUpgrade = data.readBoolean();
-		ignoreData = data.readBitSet();
-		ignoreNBT = data.readBitSet();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		isDefaultRoute = input.readBoolean();
+		hasFuzzyUpgrade = input.readBoolean();
+		ignoreData = input.readBitSet();
+		ignoreNBT = input.readBitSet();
 	}
 
 	@Override

@@ -1,22 +1,17 @@
 package logisticspipes.renderer.state;
 
-import java.io.IOException;
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.interfaces.IClientState;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.renderer.newpipe.RenderEntry;
-
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class PipeRenderState implements IClientState {
 
@@ -26,7 +21,7 @@ public class PipeRenderState implements IClientState {
 
 	public List<RenderEntry> cachedRenderer = null;
 	public boolean forceRenderOldPipe = false;
-	public boolean solidSidesCache[] = new boolean[6];
+	public boolean[] solidSidesCache = new boolean[6];
 
 	public int[] buffer = null;
 	public GLRenderList renderList;
@@ -61,16 +56,16 @@ public class PipeRenderState implements IClientState {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		pipeConnectionMatrix.writeData(data);
-		textureMatrix.writeData(data);
-		bcRenderState.writeData_LP(data); //Always needs to be last. Different length depending on proxy loading state.
+	public void writeData(LPDataOutput output) {
+		pipeConnectionMatrix.writeData(output);
+		textureMatrix.writeData(output);
+		bcRenderState.writeData_LP(output); //Always needs to be last. Different length depending on proxy loading state.
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		pipeConnectionMatrix.readData(data);
-		textureMatrix.readData(data);
-		bcRenderState.readData_LP(data); //Always needs to be last. Different length depending on proxy loading state.
+	public void readData(LPDataInput input) {
+		pipeConnectionMatrix.readData(input);
+		textureMatrix.readData(input);
+		bcRenderState.readData_LP(input); //Always needs to be last. Different length depending on proxy loading state.
 	}
 }

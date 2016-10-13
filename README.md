@@ -7,7 +7,7 @@ We advise anyone who is not a developer to go there.
 
 You are free to use this mod in your modpack without asking or noticing us.
 
-If you want to understand the sheer amount of changes we have made to the source, you can use [Gource](https://code.google.com/p/gource/)
+If you want to understand the sheer amount of changes we have made to the source, you can use [Gource](http://gource.io/)
 
 Credits for the code goes to all [contributors](https://github.com/RS485/LogisticsPipes/contributors).
 Credits for the idea and basic code goes to Krapht.
@@ -18,7 +18,7 @@ See [this repo](https://github.com/RS485/LogisticsPipes-Language) for translatio
 
 ##Builds
 
-See our [Jenkins](http://ci.thezorro266.com/view/Logistics Pipes/).
+See our [Jenkins](http://ci.rs485.network/).
 
 ##Contact
 

@@ -29,12 +29,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-import com.google.common.io.Resources;
-import logisticspipes.LPConstants;
-import logisticspipes.asm.DevEnvHelper.MappingLoader_MCP.CantLoadMCPMappingException;
-import logisticspipes.asm.DevEnvHelper.MinecraftNameSet.Side;
-
-import lombok.SneakyThrows;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -47,7 +41,9 @@ import net.minecraftforge.fml.relauncher.FileListHelper;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ObjectArrays;
+import com.google.common.io.Resources;
 import com.google.common.primitives.Ints;
+import lombok.SneakyThrows;
 import org.apache.logging.log4j.Level;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -65,8 +61,11 @@ import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.MultiANewArrayInsnNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.TypeInsnNode;
+
+import logisticspipes.LPConstants;
+import logisticspipes.asm.DevEnvHelper.MappingLoader_MCP.CantLoadMCPMappingException;
+import logisticspipes.asm.DevEnvHelper.MinecraftNameSet.Side;
 
 public class DevEnvHelper {
 
@@ -550,6 +549,9 @@ public class DevEnvHelper {
 	// returns actual owner of field
 	// or null if the field could not be resolved
 	private static String resolveField(String owner, String name, String desc, Mapping m) throws IOException {
+		if (owner == null) {
+			return null;
+		}
 		byte[] bytes = Launch.classLoader.getClassBytes(owner);
 		if (bytes == null) {
 			return null;
@@ -582,6 +584,9 @@ public class DevEnvHelper {
 	// returns [realOwner, realDesc]
 	// or null if the method could not be resolved
 	private static String[] resolveMethod(String owner, String name, String desc, Mapping m) throws IOException {
+		if (owner == null) {
+			return null;
+		}
 		byte[] bytes = Launch.classLoader.getClassBytes(owner);
 		if (bytes == null) {
 			return null;
@@ -617,6 +622,10 @@ public class DevEnvHelper {
 
 			while (true) {
 
+				if(owner == null) {
+					break;
+				}
+
 				bytes = Launch.classLoader.getClassBytes(owner);
 				if (bytes == null) {
 					break;
@@ -638,6 +647,9 @@ public class DevEnvHelper {
 			owner = originalOwner;
 
 			while (true) {
+				if (owner == null) {
+					break;
+				}
 				bytes = Launch.classLoader.getClassBytes(owner);
 				if (bytes == null) {
 					break;

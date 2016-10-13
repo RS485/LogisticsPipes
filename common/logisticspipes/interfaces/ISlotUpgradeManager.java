@@ -1,6 +1,9 @@
 package logisticspipes.interfaces;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.inventory.IInventory;
+
+import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface ISlotUpgradeManager {
 
@@ -21,4 +24,10 @@ public interface ISlotUpgradeManager {
 	EnumFacing getSneakyOrientation();
 
 	boolean hasOwnSneakyUpgrade();
+
+	IInventory getInv();
+
+	IPipeUpgrade getUpgrade(int slot);
+
+	DoubleCoordinates getPipePosition();
 }

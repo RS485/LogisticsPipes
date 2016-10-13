@@ -4,33 +4,39 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.packets.gui.GUIPacket;
-import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import lombok.SneakyThrows;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.network.abstractguis.PopupGuiProvider;
+import logisticspipes.network.exception.TargetNotFoundException;
+import logisticspipes.network.packets.gui.GUIPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.gui.SubGuiScreen;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 public class NewGuiHandler {
 
 	public static List<GuiProvider> guilist;
 	public static Map<Class<? extends GuiProvider>, GuiProvider> guimap;
+
+	private NewGuiHandler() { }
 
 	@SuppressWarnings("unchecked")
 	// Suppressed because this cast should never fail.
@@ -60,7 +66,6 @@ public class NewGuiHandler {
 		}
 	}
 
-	@SneakyThrows(IOException.class)
 	public static void openGui(GuiProvider guiProvider, EntityPlayer oPlayer) {
 		if (!(oPlayer instanceof EntityPlayerMP)) {
 			throw new UnsupportedOperationException("Gui can only be opened on the server side");
@@ -68,6 +73,13 @@ public class NewGuiHandler {
 		EntityPlayerMP player = (EntityPlayerMP) oPlayer;
 		Container container = guiProvider.getContainer(player);
 		if (container == null) {
+			if (guiProvider instanceof PopupGuiProvider) {
+				GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
+				packet.setGuiID(guiProvider.getId());
+				packet.setWindowID(-2);
+				packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
+				MainProxy.sendPacketToPlayer(packet, player);
+			}
 			return;
 		}
 		player.getNextWindowId();
@@ -75,11 +87,9 @@ public class NewGuiHandler {
 		int windowId = player.currentWindowId;
 
 		GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
-		LPDataOutputStream data = new LPDataOutputStream();
-		guiProvider.writeData(data);
 		packet.setGuiID(guiProvider.getId());
 		packet.setWindowID(windowId);
-		packet.setGuiData(data.toByteArray());
+		packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
 		MainProxy.sendPacketToPlayer(packet, player);
 
 		player.openContainer = container;
@@ -87,21 +97,50 @@ public class NewGuiHandler {
 		player.openContainer.onCraftGuiOpened(player);
 	}
 
-	@SneakyThrows(IOException.class)
 	@SideOnly(Side.CLIENT)
 	public static void openGui(GUIPacket packet, EntityPlayer player) {
 		int guiID = packet.getGuiID();
 		GuiProvider provider = NewGuiHandler.guilist.get(guiID).template();
-		provider.readData(new LPDataInputStream(packet.getGuiData()));
-		GuiContainer screen;
-		try {
-			screen = (GuiContainer) provider.getClientGui(player);
-		} catch (Exception e) {
-			LogisticsPipes.log.error(packet.getClass().getName());
-			LogisticsPipes.log.error(packet.toString());
-			throw new RuntimeException(e);
+		LPDataIOWrapper.provideData(packet.getGuiData(), provider::readData);
+		
+		if (provider instanceof PopupGuiProvider && packet.getWindowID() == -2) {
+			if (FMLClientHandler.instance().getClient().currentScreen instanceof LogisticsBaseGuiScreen) {
+				LogisticsBaseGuiScreen baseGUI = (LogisticsBaseGuiScreen) FMLClientHandler.instance().getClient().currentScreen;
+				SubGuiScreen newSub;
+				try {
+					newSub = (SubGuiScreen) provider.getClientGui(player);
+				} catch (TargetNotFoundException e) {
+					throw e;
+				} catch (Exception e) {
+					LogisticsPipes.log.error(packet.getClass().getName());
+					LogisticsPipes.log.error(packet.toString());
+					throw new RuntimeException(e);
+				}
+				if (newSub != null) {
+					if (!baseGUI.hasSubGui()) {
+						baseGUI.setSubGui(newSub);
+					} else {
+						SubGuiScreen canidate = baseGUI.getSubGui();
+						while (canidate.hasSubGui()) {
+							canidate = canidate.getSubGui();
+						}
+						canidate.setSubGui(newSub);
+					}
+				}
+			}
+		} else {
+			GuiContainer screen;
+			try {
+				screen = (GuiContainer) provider.getClientGui(player);
+			} catch (TargetNotFoundException e) {
+				throw e;
+			} catch (Exception e) {
+				LogisticsPipes.log.error(packet.getClass().getName());
+				LogisticsPipes.log.error(packet.toString());
+				throw new RuntimeException(e);
+			}
+			screen.inventorySlots.windowId = packet.getWindowID();
+			FMLCommonHandler.instance().showGuiScreen(screen);
 		}
-		screen.inventorySlots.windowId = packet.getWindowID();
-		FMLCommonHandler.instance().showGuiScreen(screen);
 	}
 }

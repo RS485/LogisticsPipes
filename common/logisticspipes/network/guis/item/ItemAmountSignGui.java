@@ -1,26 +1,21 @@
 package logisticspipes.network.guis.item;
 
-import java.io.IOException;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import logisticspipes.gui.ItemAmountSignCreationGui;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
-import net.minecraft.entity.player.EntityPlayer;
-
-import net.minecraft.util.EnumFacing;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
-@Accessors(chain = true)
 public class ItemAmountSignGui extends CoordinatesGuiProvider {
 
 	@Getter
@@ -54,15 +49,15 @@ public class ItemAmountSignGui extends CoordinatesGuiProvider {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeEnumFacing(dir);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeFacing(dir);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		dir = data.readEnumFacing();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		dir = input.readFacing();
 	}
 
 	@Override

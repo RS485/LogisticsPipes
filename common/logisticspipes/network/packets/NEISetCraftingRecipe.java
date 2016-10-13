@@ -1,15 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.io.IOException;
-
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,9 +7,15 @@ import net.minecraft.tileentity.TileEntity;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class NEISetCraftingRecipe extends CoordinatesPacket {
 
 	@Getter
@@ -46,41 +42,41 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
 
-		data.writeInt(content.length);
+		output.writeInt(content.length);
 
 		for (int i = 0; i < content.length; i++) {
 			final ItemStack itemstack = content[i];
 
 			if (itemstack != null) {
-				data.writeByte(i);
-				data.writeInt(Item.getIdFromItem(itemstack.getItem()));
-				data.writeInt(itemstack.stackSize);
-				data.writeInt(itemstack.getItemDamage());
-				data.writeNBTTagCompound(itemstack.getTagCompound());
+				output.writeByte(i);
+				output.writeInt(Item.getIdFromItem(itemstack.getItem()));
+				output.writeInt(itemstack.stackSize);
+				output.writeInt(itemstack.getItemDamage());
+				output.writeNBTTagCompound(itemstack.getTagCompound());
 			}
 		}
-		data.writeByte(-1); // mark packet end
+		output.writeByte(-1); // mark packet end
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
+	public void readData(LPDataInput input) {
+		super.readData(input);
 
-		content = new ItemStack[data.readInt()];
+		content = new ItemStack[input.readInt()];
 
-		byte index = data.readByte();
+		byte index = input.readByte();
 
 		while (index != -1) { // read until the end
-			final int itemID = data.readInt();
-			int stackSize = data.readInt();
-			int damage = data.readInt();
+			final int itemID = input.readInt();
+			int stackSize = input.readInt();
+			int damage = input.readInt();
 			ItemStack stack = new ItemStack(Item.getItemById(itemID), stackSize, damage);
-			stack.setTagCompound(data.readNBTTagCompound());
+			stack.setTagCompound(input.readNBTTagCompound());
 			content[index] = stack;
-			index = data.readByte(); // read the next slot
+			index = input.readByte(); // read the next slot
 		}
 	}
 }

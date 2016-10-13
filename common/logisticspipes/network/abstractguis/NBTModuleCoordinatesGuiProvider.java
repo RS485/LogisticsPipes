@@ -1,17 +1,13 @@
 package logisticspipes.network.abstractguis;
 
-import java.io.IOException;
-
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public abstract class NBTModuleCoordinatesGuiProvider extends ModuleCoordinatesGuiProvider {
 
 	@Getter
@@ -23,14 +19,14 @@ public abstract class NBTModuleCoordinatesGuiProvider extends ModuleCoordinatesG
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeNBTTagCompound(nbt);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeNBTTagCompound(nbt);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		nbt = data.readNBTTagCompound();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		nbt = input.readNBTTagCompound();
 	}
 }

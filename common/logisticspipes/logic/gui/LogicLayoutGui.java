@@ -3,6 +3,21 @@ package logisticspipes.logic.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import logisticspipes.logic.LogicController;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
@@ -14,21 +29,6 @@ import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
@@ -140,7 +140,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 100.0F);
 		if (tooltip != null) {
-			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, false, true);
+			GuiGraphics.displayItemToolTip(tooltip, zLevel, guiLeft, guiTop, true);
 		}
 	}
 

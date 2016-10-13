@@ -10,6 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ChatComponentTranslation;
+
 import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.network.PacketHandler;
@@ -25,12 +31,6 @@ import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentTranslation;
 
 public class RequestHandler {
 
@@ -118,7 +118,7 @@ public class RequestHandler {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), player);
 	}
 
-	public static void requestList(final EntityPlayer player, final List<ItemIdentifierStack> list, CoreRoutedPipe pipe) {
+	public static void requestList(final EntityPlayer player, final List<ItemIdentifierStack> list, final CoreRoutedPipe pipe) {
 		if (!pipe.useEnergy(5)) {
 			player.addChatMessage(new ChatComponentTranslation("lp.misc.noenergy"));
 			return;
@@ -136,6 +136,9 @@ public class RequestHandler {
 			@Override
 			public void handleSucessfullRequestOfList(List<IResource> resources, LinkedLogisticsOrderList parts) {
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(resources).setFlag(false), player);
+				if (pipe instanceof IRequestWatcher) {
+					((IRequestWatcher) pipe).handleOrderList(null, parts);
+				}
 			}
 		}, RequestTree.defaultRequestFlags, null);
 	}
@@ -170,7 +173,7 @@ public class RequestHandler {
 			public void handleSucessfullRequestOfList(List<IResource> resources, LinkedLogisticsOrderList parts) {
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(resources).setFlag(false), player);
 				if (requester instanceof IRequestWatcher) {
-					((IRequestWatcher) requester).handleOrderList(resources.get(0), parts);
+					((IRequestWatcher) requester).handleOrderList(null, parts);
 				}
 			}
 		}, RequestTree.defaultRequestFlags, null);

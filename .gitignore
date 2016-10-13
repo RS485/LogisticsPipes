@@ -1,6 +1,7 @@
 /*
 
 !/common
+!/test
 !/dummy
 !/gradle
 !/resources
@@ -21,3 +22,4 @@
 !/gradlew.bat
 !/build-ant.xml
 !/build-bc61.gradle
+!lombok.config

@@ -1,20 +1,17 @@
 package logisticspipes.network.packets.block;
 
-import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.gui.GuiSecurityStation;
-import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import lombok.experimental.Accessors;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.gui.GuiSecurityStation;
+import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.MainProxy;
 
-@Accessors(chain = true)
 public class SecurityStationAutoDestroy extends IntegerCoordinatesPacket {
 
 	public SecurityStationAutoDestroy(int id) {

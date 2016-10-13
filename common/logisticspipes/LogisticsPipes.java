@@ -8,12 +8,38 @@
 package logisticspipes;
 
 import java.lang.reflect.Field;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.launchwrapper.LaunchClassLoader;
+
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
@@ -24,6 +50,7 @@ import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
+import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
@@ -75,7 +102,11 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericSubMultiBlock;
-import logisticspipes.pipes.tubes.*;
+import logisticspipes.pipes.tubes.HSTubeCurve;
+import logisticspipes.pipes.tubes.HSTubeGain;
+import logisticspipes.pipes.tubes.HSTubeLine;
+import logisticspipes.pipes.tubes.HSTubeSCurve;
+import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
@@ -87,7 +118,6 @@ import logisticspipes.proxy.endercore.EnderCoreProgressProvider;
 import logisticspipes.proxy.enderio.EnderIOProgressProvider;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
-import logisticspipes.proxy.interfaces.ICraftingParts;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
@@ -103,9 +133,13 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
+import logisticspipes.recipes.ChipCraftingRecipes;
+import logisticspipes.recipes.CraftingPartRecipes;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.recipes.CraftingPermissionManager;
+import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.SolderingStationRecipes;
+import logisticspipes.recipes.Recipes;
 import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;
@@ -124,36 +158,6 @@ import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
-
-import net.minecraft.block.Block;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-
-import org.apache.logging.log4j.Logger;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -189,7 +193,7 @@ public class LogisticsPipes {
 			if (LPConstants.DEBUG) {
 				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 			} else {
-				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. Your download seems to be corrupt/modified. Please redownload LP from our Jenkins [http://ci.thezorro266.com/] and move it into your mods folder.");
+				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. Your download seems to be corrupt/modified. Please redownload LP from our Jenkins [http://ci.rs485.network] and move it into your mods folder.");
 			}
 		}
 		try {
@@ -283,6 +287,7 @@ public class LogisticsPipes {
 	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
 	public static Item LogisticsPipeControllerItem;
+	public static Item LogisticsChips;
 
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
@@ -492,11 +497,16 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
 		GameRegistry.registerBlock(LogisticsPipes.LogisticsSubMultiBlock, "logisticsSubMultiBlock");
 
+		LogisticsChips = new ItemLogisticsChips();
+		LogisticsChips.setUnlocalizedName("logisticsChips");
+		GameRegistry.registerItem(LogisticsChips, LogisticsChips.getUnlocalizedName());
+
 		registerPipes(side);
 	}
 
 	private void registerRecipes() {
-		ICraftingParts parts = SimpleServiceLocator.buildCraftProxy.getRecipeParts();
+		/*
+		CraftingParts parts = SimpleServiceLocator.buildCraftProxy.getRecipeParts();
 		//NO BC => NO RECIPES (for now)
 		if (parts != null) {
 			SimpleServiceLocator.IC2Proxy.addCraftingRecipes(parts);
@@ -507,12 +517,23 @@ public class LogisticsPipes {
 			SimpleServiceLocator.buildCraftProxy.addCraftingRecipes(parts);
 
 			SolderingStationRecipes.loadRecipe(parts);
-			RecipeManager.loadRecipes(parts);
+			RecipeManager.loadRecipes();
 		}
 		parts = SimpleServiceLocator.thermalExpansionProxy.getRecipeParts();
 		if (parts != null) {
 			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 		}
+		*/
+		if(true) { // TODO: Add Config Option
+			CraftingPartRecipes.craftingPartList.add(new CraftingParts(
+					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_FPGA),
+					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_BASIC),
+					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_ADVANCED)));
+			RecipeManager.recipeProvider.add(new LPChipRecipes());
+		}
+		RecipeManager.recipeProvider.add(new ChipCraftingRecipes());
+		RecipeManager.recipeProvider.add(new Recipes());
+		RecipeManager.loadRecipes();
 	}
 
 	private void loadClasses() {
@@ -613,13 +634,11 @@ public class LogisticsPipes {
 
 		LogisticsPipes.BasicTransportPipe = createPipe(PipeItemsBasicTransport.class, "Basic Transport Pipe", side);
 
-		if (LPConstants.DEBUG) {
-			LogisticsPipes.HSTubeCurve = createPipe(HSTubeCurve.class, "High Speed Tube Curve", side);
-			LogisticsPipes.HSTubeSpeedup = createPipe(HSTubeSpeedup.class, "High Speed Tube Speedup", side);
-			LogisticsPipes.HSTubeSCurve = createPipe(HSTubeSCurve.class, "High Speed Tube S-Curve", side);
-			LogisticsPipes.HSTubeLine = createPipe(HSTubeLine.class, "High Speed Tube Line", side);
-			LogisticsPipes.HSTubeGain = createPipe(HSTubeGain.class, "High Speed Tube Gain", side);
-		}
+		LogisticsPipes.HSTubeCurve = createPipe(HSTubeCurve.class, "High Speed Tube Curve", side);
+		LogisticsPipes.HSTubeSpeedup = createPipe(HSTubeSpeedup.class, "High Speed Tube Speedup", side);
+		LogisticsPipes.HSTubeSCurve = createPipe(HSTubeSCurve.class, "High Speed Tube S-Curve", side);
+		LogisticsPipes.HSTubeLine = createPipe(HSTubeLine.class, "High Speed Tube Line", side);
+		LogisticsPipes.HSTubeGain = createPipe(HSTubeGain.class, "High Speed Tube Gain", side);
 	}
 
 	protected Item createPipe(Class<? extends CoreUnroutedPipe> clas, String descr, Side side) {

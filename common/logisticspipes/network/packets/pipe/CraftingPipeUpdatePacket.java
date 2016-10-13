@@ -1,21 +1,17 @@
 package logisticspipes.network.packets.pipe;
 
-import java.io.IOException;
-
-import logisticspipes.items.ItemUpgrade;
-import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.network.LPDataInputStream;
-import logisticspipes.network.LPDataOutputStream;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(chain = true)
+import logisticspipes.items.ItemUpgrade;
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
+
 public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 
 	@Getter
@@ -56,25 +52,25 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	public void writeData(LPDataOutputStream data) throws IOException {
-		super.writeData(data);
-		data.writeIntegerArray(amount);
-		data.writeIntegerArray(liquidSatelliteIdArray);
-		data.writeInt(liquidSatelliteId);
-		data.writeInt(satelliteId);
-		data.writeIntegerArray(advancedSatelliteIdArray);
-		data.writeInt(priority);
+	public void writeData(LPDataOutput output) {
+		super.writeData(output);
+		output.writeIntArray(amount);
+		output.writeIntArray(liquidSatelliteIdArray);
+		output.writeInt(liquidSatelliteId);
+		output.writeInt(satelliteId);
+		output.writeIntArray(advancedSatelliteIdArray);
+		output.writeInt(priority);
 	}
 
 	@Override
-	public void readData(LPDataInputStream data) throws IOException {
-		super.readData(data);
-		amount = data.readIntegerArray();
-		liquidSatelliteIdArray = data.readIntegerArray();
-		liquidSatelliteId = data.readInt();
-		satelliteId = data.readInt();
-		advancedSatelliteIdArray = data.readIntegerArray();
-		priority = data.readInt();
+	public void readData(LPDataInput input) {
+		super.readData(input);
+		amount = input.readIntArray();
+		liquidSatelliteIdArray = input.readIntArray();
+		liquidSatelliteId = input.readInt();
+		satelliteId = input.readInt();
+		advancedSatelliteIdArray = input.readIntArray();
+		priority = input.readInt();
 	}
 
 	@Override

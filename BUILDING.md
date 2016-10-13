@@ -55,13 +55,18 @@ that with gradle you only have two options:
 
 Then after opening the newly created project files with your IDE you need to add
 the folders `api` and `dummy` to your list of source folders. You may need to
-specify your Java JDK in the IDE as well. Right now we use Java 8 for
-development with Java 6 compliance.
+specify your Java JDK in the IDE as well. Logistics Pipes 0.10+ requires Java 8.
 
+<strike>
 Finally to use the predefined run/debug configurations with GradleStart you need
 to add `--noCoreSearch` to the list of program arguments in both server and
 client configurations. You can also set your ingame username by adding
 `--username <name>` to the program arguments of the client config as well.
+</strike>
+
+Right now there is no official way on how to start Minecraft from your developer
+environment. The striked paragraph above might still work for you though. This
+might change with the switch to Minecraft 1.8+, because of ForgeGradle 2.0.
 
 This should have set you up to build and run Minecraft with Logistics Pipes and
 some included mods from your IDE. If something didn't work that well for you,

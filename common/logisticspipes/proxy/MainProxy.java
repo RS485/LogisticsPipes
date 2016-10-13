@@ -4,19 +4,6 @@ import java.io.File;
 import java.util.EnumMap;
 import java.util.WeakHashMap;
 
-import logisticspipes.LogisticsEventListener;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.crafting.FakePlayer;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.PacketInboundHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.interfaces.IProxy;
-import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.ticks.RoutingTableUpdateThread;
-import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.PlayerCollectionList;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -33,8 +20,20 @@ import cpw.mods.fml.common.network.FMLOutboundHandler;
 import cpw.mods.fml.common.network.FMLOutboundHandler.OutboundTarget;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
-
 import lombok.Getter;
+
+import logisticspipes.LogisticsEventListener;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.crafting.FakePlayer;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.PacketInboundHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.utils.OrientationsUtil;
+import logisticspipes.utils.PlayerCollectionList;
 
 public class MainProxy {
 

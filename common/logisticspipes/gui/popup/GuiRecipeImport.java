@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.NEISetCraftingRecipe;
 import logisticspipes.network.packets.pipe.FindMostLikelyRecipeComponents;
 import logisticspipes.proxy.MainProxy;
@@ -18,12 +22,6 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 
 public class GuiRecipeImport extends SubGuiScreen {
 

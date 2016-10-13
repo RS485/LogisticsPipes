@@ -1,5 +1,7 @@
 package logisticspipes.routing;
 
+import lombok.Getter;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -8,7 +10,6 @@ import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
-import lombok.Getter;
 
 public class LogisticsDictPromise extends LogisticsPromise {
 

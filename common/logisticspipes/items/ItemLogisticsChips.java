@@ -1,12 +1,12 @@
 package logisticspipes.items;
 
+import java.util.List;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-
-import java.util.List;
 
 public class ItemLogisticsChips extends LogisticsItem {
 

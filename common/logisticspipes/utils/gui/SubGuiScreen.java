@@ -2,13 +2,11 @@ package logisticspipes.utils.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-
-import java.util.List;
 
 public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 
@@ -22,10 +20,8 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 	protected int ySize;
 	protected int xCenterOffset;
 	protected int yCenterOffset;
-
-	private SubGuiScreen subGui;
-
 	protected ISubGuiControler controler;
+	private SubGuiScreen subGui;
 
 	public SubGuiScreen(int xSize, int ySize, int xOffset, int yOffset) {
 		this.xSize = xSize;
@@ -132,16 +128,6 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 	}
 
 	@Override
-	public void setSubGui(SubGuiScreen gui) {
-		if (subGui == null) {
-			subGui = gui;
-			subGui.register(this);
-			subGui.setWorldAndResolution(mc, width, height);
-			subGui.initGui();
-		}
-	}
-
-	@Override
 	public void setWorldAndResolution(Minecraft mc, int width, int height) {
 		super.setWorldAndResolution(mc, width, height);
 		if (subGui != null) {
@@ -162,6 +148,16 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 	@Override
 	public SubGuiScreen getSubGui() {
 		return subGui;
+	}
+
+	@Override
+	public void setSubGui(SubGuiScreen gui) {
+		if (subGui == null) {
+			subGui = gui;
+			subGui.register(this);
+			subGui.setWorldAndResolution(mc, width, height);
+			subGui.initGui();
+		}
 	}
 
 	@Override

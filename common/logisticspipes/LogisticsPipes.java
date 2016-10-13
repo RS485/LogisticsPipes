@@ -15,7 +15,6 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import logisticspipes.recipes.*;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -24,9 +23,11 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -41,7 +42,6 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
-
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -136,6 +136,13 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
+import logisticspipes.recipes.ChipCraftingRecipes;
+import logisticspipes.recipes.CraftingPartRecipes;
+import logisticspipes.recipes.CraftingParts;
+import logisticspipes.recipes.CraftingPermissionManager;
+import logisticspipes.recipes.LPChipRecipes;
+import logisticspipes.recipes.RecipeManager;
+import logisticspipes.recipes.Recipes;
 import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.LogisticsPipeItemRenderer;

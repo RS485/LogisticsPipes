@@ -6,6 +6,21 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.client.GuiIngameForge;
+
+import cpw.mods.fml.client.FMLClientHandler;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
@@ -19,27 +34,11 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.utils.math.Vector3d;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+import logisticspipes.utils.math.Vector3d;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.client.GuiIngameForge;
-
-import cpw.mods.fml.client.FMLClientHandler;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 public class LogisticsHUDRenderer {
 

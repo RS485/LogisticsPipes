@@ -1,6 +1,7 @@
 package logisticspipes.network.guis.module.inpipe;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;

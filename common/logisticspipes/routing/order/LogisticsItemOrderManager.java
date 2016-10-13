@@ -1,20 +1,17 @@
 package logisticspipes.routing.order;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsItemOrder, DictResource.Identifier> {
 

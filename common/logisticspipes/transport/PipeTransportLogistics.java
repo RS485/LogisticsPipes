@@ -16,8 +16,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import buildcraft.transport.TravelingItem;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -61,20 +72,8 @@ import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import buildcraft.transport.TravelingItem;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeTransportLogistics {
 
@@ -558,7 +557,7 @@ public class PipeTransportLogistics {
 
 					if (added.stackSize > 0 && arrivingItem instanceof IRoutedItem) {
 						tookSome = true;
-						((IRoutedItem) arrivingItem).setBufferCounter(0);
+						arrivingItem.setBufferCounter(0);
 					}
 
 					ItemRoutingInformation info;
@@ -589,7 +588,7 @@ public class PipeTransportLogistics {
 						arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
 						if (added.stackSize > 0) {
 							tookSome = true;
-							((IRoutedItem) arrivingItem).setBufferCounter(0);
+							arrivingItem.setBufferCounter(0);
 						}
 						ItemRoutingInformation info;
 
@@ -649,10 +648,7 @@ public class PipeTransportLogistics {
 			if (tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
 				ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
 				if (ori != null && ori != ForgeDirection.UNKNOWN) {
-					if ((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori)) {
-						return false;
-					}
-					return true;
+					return !((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori));
 				}
 			}
 			if (SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)

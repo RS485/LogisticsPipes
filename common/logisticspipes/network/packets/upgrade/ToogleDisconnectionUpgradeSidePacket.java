@@ -3,6 +3,7 @@ package logisticspipes.network.packets.upgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;

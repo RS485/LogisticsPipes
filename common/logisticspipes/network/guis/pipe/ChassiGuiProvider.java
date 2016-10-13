@@ -1,8 +1,11 @@
 package logisticspipes.network.guis.pipe;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.BooleanModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -10,10 +13,6 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.utils.gui.DummyContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 
 public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 
@@ -85,10 +84,7 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return false;
 		}
-		if (!LogisticsPipes.UpgradeItem.getUpgradeForItem(stack, null).isAllowedForModule(module)) {
-			return false;
-		}
-		return true;
+		return LogisticsPipes.UpgradeItem.getUpgradeForItem(stack, null).isAllowedForModule(module);
 	}
 
 	@Override

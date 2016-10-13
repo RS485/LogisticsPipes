@@ -2,10 +2,11 @@ package logisticspipes.network.guis.pipe;
 
 import java.util.UUID;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiPipeController;
 import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -16,9 +17,6 @@ import logisticspipes.pipes.upgrades.SneakyUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.DummyContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 
 public class PipeController extends CoordinatesGuiProvider {
 
@@ -102,10 +100,7 @@ public class PipeController extends CoordinatesGuiProvider {
 			if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
 				return false;
 			}
-			if (!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
-				return false;
-			}
-			return true;
+			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
 		}, 1);
 		dummy.addRestrictedSlot(0, tile.logicController.diskInv, 14, 36, LogisticsPipes.LogisticsItemDisk);
 		return dummy;

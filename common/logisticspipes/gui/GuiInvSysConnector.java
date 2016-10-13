@@ -4,8 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.InvSysConContentRequest;
@@ -21,14 +28,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 
@@ -50,10 +49,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 			if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
 				return false;
 			}
-			if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
-				return false;
-			}
-			return true;
+			return itemStack.getItemDamage() == LogisticsItemCard.FREQ_CARD;
 		});
 
 		dummy.addNormalSlotsForPlayerInventory(10, 115);

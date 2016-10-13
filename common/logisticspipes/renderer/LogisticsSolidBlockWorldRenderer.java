@@ -1,18 +1,18 @@
 package logisticspipes.renderer;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.config.PlayerConfig;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
 
 public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHandler {
 

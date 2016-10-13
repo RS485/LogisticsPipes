@@ -1,7 +1,5 @@
 package logisticspipes.gui.popup;
 
-import javax.imageio.ImageIO;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,17 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.routing.order.IOrderInfoProvider;
-import logisticspipes.routing.order.LinkedLogisticsOrderList;
-import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.SimpleGraphics;
-import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtils;
+import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -39,56 +27,23 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.routing.order.IOrderInfoProvider;
+import logisticspipes.routing.order.LinkedLogisticsOrderList;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.SimpleGraphics;
+import logisticspipes.utils.gui.SubGuiScreen;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.ChatColor;
+import logisticspipes.utils.string.StringUtils;
+
 public class RequestMonitorPopup extends SubGuiScreen {
 
-	private enum ZOOM_LEVEL {
-		NORMAL(1, 165, 224, 1, 0, 0, 0),
-		LEVEL_1(0.5F, 330, 465, 1, 50, -200, 100),
-		LEVEL_2(0.25F, 660, 950, 2, 100, -400, -100);
-
-		private ZOOM_LEVEL(float zoom, int bottom, int right, int line, int moveY, int maxX, int maxY) {
-			this.zoom = zoom;
-			bottomRenderBorder = bottom;
-			rightRenderBorder = right;
-			this.line = line;
-			this.moveY = moveY;
-			this.maxX = maxX;
-			this.maxY = maxY;
-		}
-
-		final float zoom;
-		final int bottomRenderBorder;
-		final int rightRenderBorder;
-		final int line;
-		final int moveY;
-		final int maxX;
-		final int maxY;
-
-		ZOOM_LEVEL next() {
-			int id = ordinal();
-			if (id + 1 >= ZOOM_LEVEL.values().length) {
-				return this;
-			} else {
-				return ZOOM_LEVEL.values()[id + 1];
-			}
-		}
-
-		ZOOM_LEVEL prev() {
-			int id = ordinal();
-			if (id - 1 < 0) {
-				return this;
-			} else {
-				return ZOOM_LEVEL.values()[id - 1];
-			}
-		}
-	}
-
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
-
 	private final PipeBlockRequestTable _table;
 	private final int orderId;
 	private final RenderItem renderitem = new RenderItem();
-
 	private int isMouseButtonDown;
 	private int mouseX;
 	private int mouseY;
@@ -99,7 +54,6 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	private int minX = -800;
 	private int maxX = 800;
 	private ZOOM_LEVEL zoom = ZOOM_LEVEL.NORMAL;
-
 	private Object[] tooltip = null;
 
 	public RequestMonitorPopup(PipeBlockRequestTable table, int orderId) {
@@ -108,6 +62,17 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		this.orderId = orderId;
 		guiMapY = -200;
 		Mouse.getDWheel(); // Reset DWheel on GUI open
+	}
+
+	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
+		int[] aint1 = new int[width];
+		int k = height / 2;
+
+		for (int l = 0; l < k; ++l) {
+			System.arraycopy(par0ArrayOfInteger, l * width, aint1, 0, width);
+			System.arraycopy(par0ArrayOfInteger, (height - 1 - l) * width, par0ArrayOfInteger, l * width, width);
+			System.arraycopy(aint1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
+		}
 	}
 
 	@Override
@@ -283,17 +248,6 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				return;
 			}
 			++i;
-		}
-	}
-
-	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
-		int[] aint1 = new int[width];
-		int k = height / 2;
-
-		for (int l = 0; l < k; ++l) {
-			System.arraycopy(par0ArrayOfInteger, l * width, aint1, 0, width);
-			System.arraycopy(par0ArrayOfInteger, (height - 1 - l) * width, par0ArrayOfInteger, l * width, width);
-			System.arraycopy(aint1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
 		}
 	}
 
@@ -599,5 +553,46 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	protected void drawProgressPoint(int x, int y, int color) {
 		int line = zoom.line + 1;
 		Gui.drawRect(x - line + 1, y - line + 1, x + line, y + line, color);
+	}
+
+	private enum ZOOM_LEVEL {
+		NORMAL(1, 165, 224, 1, 0, 0, 0),
+		LEVEL_1(0.5F, 330, 465, 1, 50, -200, 100),
+		LEVEL_2(0.25F, 660, 950, 2, 100, -400, -100);
+
+		final float zoom;
+		final int bottomRenderBorder;
+		final int rightRenderBorder;
+		final int line;
+		final int moveY;
+		final int maxX;
+		final int maxY;
+		ZOOM_LEVEL(float zoom, int bottom, int right, int line, int moveY, int maxX, int maxY) {
+			this.zoom = zoom;
+			bottomRenderBorder = bottom;
+			rightRenderBorder = right;
+			this.line = line;
+			this.moveY = moveY;
+			this.maxX = maxX;
+			this.maxY = maxY;
+		}
+
+		ZOOM_LEVEL next() {
+			int id = ordinal();
+			if (id + 1 >= ZOOM_LEVEL.values().length) {
+				return this;
+			} else {
+				return ZOOM_LEVEL.values()[id + 1];
+			}
+		}
+
+		ZOOM_LEVEL prev() {
+			int id = ordinal();
+			if (id - 1 < 0) {
+				return this;
+			} else {
+				return ZOOM_LEVEL.values()[id - 1];
+			}
+		}
 	}
 }

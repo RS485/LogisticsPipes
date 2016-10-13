@@ -1,22 +1,19 @@
 package logisticspipes.network.guis.upgrade;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.gui.popup.SneakyConfigurationPopup;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.gui.UpgradeSlot;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.tileentity.TileEntity;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-import sun.java2d.pipe.SpanShapeRenderer;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SneakyUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvider {
 

@@ -1,10 +1,11 @@
 package logisticspipes.interfaces;
 
-import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import net.minecraft.inventory.IInventory;
+
 import net.minecraftforge.common.util.ForgeDirection;
+
+import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 public interface ISlotUpgradeManager {
 

@@ -1,32 +1,10 @@
 package logisticspipes.renderer;
 
-import java.util.*;
-
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
-import logisticspipes.pipes.signs.IPipeSign;
-import logisticspipes.pipes.signs.IPipeSignData;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
-import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
-import logisticspipes.renderer.newpipe.GLRenderList;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
-import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.state.PipeRenderState;
-import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.item.ItemStackRenderer;
-
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-import logisticspipes.utils.tuples.Pair;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -62,22 +40,43 @@ import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.config.PlayerConfig;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.signs.IPipeSign;
+import logisticspipes.pipes.signs.IPipeSignData;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
+import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
+import logisticspipes.renderer.newpipe.GLRenderList;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.transport.PipeFluidTransportLogistics;
+import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 	private static final int LIQUID_STAGES = 40;
 	private static final int MAX_ITEMS_TO_RENDER = 10;
 	private static final ResourceLocation SIGN = new ResourceLocation("textures/entity/sign.png");
-
+	private static final IntHashMap displayFluidLists = new IntHashMap();
 	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static PlayerConfig config;
 	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false, false);
 	private static Map<IPipeSignData, GLRenderList> pipeSignRenderListMap = new HashMap<IPipeSignData, GLRenderList>();
 	private static int localItemTestRenderList = -1;
-
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
-	private static final IntHashMap displayFluidLists = new IntHashMap();
 	private ModelSign modelSign;
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
@@ -322,7 +321,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 						}
 						break;
 					default:
-						;
 				}
 				renderSign(pipe, pair.getValue2(), partialTickTime);
 				GL11.glPopMatrix();

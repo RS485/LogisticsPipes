@@ -8,12 +8,12 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPED;
 import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS;
 
@@ -97,7 +97,7 @@ public class RecipeManager {
 
 		@SuppressWarnings("unchecked")
 		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
-			craftingManager.getRecipeList().add(new ShapelessOrdererRecipe(stack, new Object[]{dye, orderer}));
+			craftingManager.getRecipeList().add(new ShapelessOrdererRecipe(stack, dye, orderer));
 		}
 
 		@SuppressWarnings("unchecked")

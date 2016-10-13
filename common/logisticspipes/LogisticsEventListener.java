@@ -12,29 +12,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import logisticspipes.config.Configs;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.interfaces.IItemAdvancedExistance;
-import logisticspipes.modules.ModuleQuickSort;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.PlayerConfigToClientPacket;
-import logisticspipes.network.packets.chassis.ChestGuiClosed;
-import logisticspipes.network.packets.chassis.ChestGuiOpened;
-import logisticspipes.network.packets.gui.GuiReopenPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.LogisticsGuiOverrenderer;
-import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.ticks.VersionChecker;
-import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.PlayerIdentifier;
-import logisticspipes.utils.QuickSortChestMarkerStorage;
-
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
@@ -62,10 +39,31 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
+import logisticspipes.config.Configs;
+import logisticspipes.config.PlayerConfig;
+import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.modules.ModuleQuickSort;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.PlayerConfigToClientPacket;
+import logisticspipes.network.packets.chassis.ChestGuiClosed;
+import logisticspipes.network.packets.chassis.ChestGuiOpened;
+import logisticspipes.network.packets.gui.GuiReopenPacket;
+import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.renderer.LogisticsGuiOverrenderer;
+import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.ticks.VersionChecker;
+import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.PlayerIdentifier;
+import logisticspipes.utils.QuickSortChestMarkerStorage;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
 

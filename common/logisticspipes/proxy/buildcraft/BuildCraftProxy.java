@@ -4,10 +4,50 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import buildcraft.BuildCraftTransport;
+import buildcraft.api.boards.RedstoneBoardRegistry;
+import buildcraft.api.boards.RedstoneBoardRobotNBT;
+import buildcraft.api.core.BCLog;
 import buildcraft.api.events.RobotEvent;
-import buildcraft.transport.*;
+import buildcraft.api.robots.DockingStation;
+import buildcraft.api.robots.RobotManager;
+import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.ITriggerExternal;
+import buildcraft.api.statements.ITriggerInternal;
+import buildcraft.api.statements.StatementManager;
+import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipeTile;
+import buildcraft.api.transport.IPipeTile.PipeType;
+import buildcraft.core.ItemMapLocation;
+import buildcraft.core.lib.ITileBufferHolder;
+import buildcraft.robotics.EntityRobot;
+import buildcraft.robotics.ItemRobot;
+import buildcraft.robotics.RobotStationPluggable;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.ItemGateCopier;
+import buildcraft.transport.ItemPipe;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeEventBus;
+import buildcraft.transport.PipeTransportFluids;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.render.PipeRendererTESR;
 import buildcraft.transport.render.PipeTransportItemsRenderer;
 import buildcraft.transport.render.PipeTransportRenderer;
+import cpw.mods.fml.common.FMLCommonHandler;
+import lombok.SneakyThrows;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -35,47 +75,10 @@ import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCPipeTransportsItems;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCTileGenericPipe;
 import logisticspipes.proxy.interfaces.IBCProxy;
-import logisticspipes.recipes.CraftingParts;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.recipes.CraftingParts;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.ReflectionHelper;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-
-import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
-import buildcraft.api.boards.RedstoneBoardRegistry;
-import buildcraft.api.boards.RedstoneBoardRobotNBT;
-import buildcraft.api.core.BCLog;
-import buildcraft.api.robots.DockingStation;
-import buildcraft.api.robots.RobotManager;
-import buildcraft.api.statements.IActionInternal;
-import buildcraft.api.statements.ITriggerExternal;
-import buildcraft.api.statements.ITriggerInternal;
-import buildcraft.api.statements.StatementManager;
-import buildcraft.api.transport.IPipeConnection;
-import buildcraft.api.transport.IPipeTile;
-import buildcraft.api.transport.IPipeTile.PipeType;
-import buildcraft.core.ItemMapLocation;
-import buildcraft.core.lib.ITileBufferHolder;
-import buildcraft.robotics.EntityRobot;
-import buildcraft.robotics.ItemRobot;
-import buildcraft.robotics.RobotStationPluggable;
-import buildcraft.transport.PipeTransportFluids;
-import buildcraft.transport.render.PipeRendererTESR;
-import lombok.SneakyThrows;
 
 public class BuildCraftProxy implements IBCProxy {
 
@@ -85,10 +88,8 @@ public class BuildCraftProxy implements IBCProxy {
 	public static ITriggerInternal LogisticsHasDestinationTrigger;
 	public static IActionInternal LogisticsDisableAction;
 	public static IActionInternal LogisticsRobotRoutingAction;
-
-	private Method canPipeConnect;
-
 	public PipeType logisticsPipeType;
+	private Method canPipeConnect;
 
 	public BuildCraftProxy() {
 		String BCVersion = null;
@@ -142,7 +143,7 @@ public class BuildCraftProxy implements IBCProxy {
 		}
 
 		try {
-			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[] { TileEntity.class, ForgeDirection.class });
+			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", TileEntity.class, ForgeDirection.class);
 			canPipeConnect.setAccessible(true);
 		} catch (Exception e) {
 			e.printStackTrace();

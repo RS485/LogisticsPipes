@@ -7,8 +7,35 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.LPConstants;
-import logisticspipes.pipes.upgrades.*;
+import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
+import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
+import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
+import logisticspipes.pipes.upgrades.ConnectionUpgradeConfig;
+import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
+import logisticspipes.pipes.upgrades.CraftingCleanupUpgrade;
+import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
+import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
+import logisticspipes.pipes.upgrades.FuzzyUpgrade;
+import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import logisticspipes.pipes.upgrades.LogicControllerUpgrade;
+import logisticspipes.pipes.upgrades.OpaqueUpgrade;
+import logisticspipes.pipes.upgrades.PatternUpgrade;
+import logisticspipes.pipes.upgrades.PowerTransportationUpgrade;
+import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
+import logisticspipes.pipes.upgrades.SpeedUpgrade;
+import logisticspipes.pipes.upgrades.UpgradeModuleUpgrade;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
@@ -27,18 +54,6 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import org.lwjgl.input.Keyboard;
 
 public class ItemUpgrade extends LogisticsItem {
 
@@ -119,7 +134,7 @@ public class ItemUpgrade extends LogisticsItem {
 				return null;
 			}
 			try {
-				return upgradeClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
+				return upgradeClass.getConstructor(new Class[] {}).newInstance();
 			} catch (IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
 				e.printStackTrace();
 			}

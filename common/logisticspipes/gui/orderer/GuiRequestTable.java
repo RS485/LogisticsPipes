@@ -1,8 +1,28 @@
 package logisticspipes.gui.orderer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -11,7 +31,6 @@ import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.gui.popup.RequestMonitorPopup;
 import logisticspipes.interfaces.IChainAddList;
 import logisticspipes.interfaces.IDiskProvider;
-import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.ClearCraftingGridPacket;
@@ -44,50 +63,25 @@ import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer, IDiskProvider {
 
-	private enum DisplayOptions {
-		Both,
-		SupplyOnly,
-		CraftOnly,
-	}
-
-	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	public final PipeBlockRequestTable _table;
-	private SmallGuiButton Macrobutton;
-
 	public final EntityPlayer _entityPlayer;
-	public ItemDisplay itemDisplay;
-	private SearchBar search;
-
 	protected final String _title = "Request items";
-
+	public ItemDisplay itemDisplay;
 	public int dimension;
+	protected DisplayOptions displayOptions = DisplayOptions.Both;
+	private SmallGuiButton Macrobutton;
+	private SearchBar search;
 	private boolean showRequest = true;
 	private int startLeft;
 	private int startXSize;
-
 	private BitSet handledExtention = new BitSet();
 	private int orderIdForButton;
-
 	private GuiButton[] sycleButtons = new GuiButton[2];
 	private IChainAddList<GuiButton> moveWhileSmall = new ChainAddArrayList<>();
 	private IChainAddList<GuiButton> hideWhileSmall = new ChainAddArrayList<>();
 	private GuiButton hideShowButton;
-
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(410, 240, 0, 0);
 		_table = table;
@@ -688,5 +682,11 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	@Override
 	public ItemDisplay getItemDisplay() {
 		return itemDisplay;
+	}
+
+	private enum DisplayOptions {
+		Both,
+		SupplyOnly,
+		CraftOnly,
 	}
 }

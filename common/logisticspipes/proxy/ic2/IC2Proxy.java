@@ -1,9 +1,5 @@
 package logisticspipes.proxy.ic2;
 
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.recipes.CraftingParts;
-import logisticspipes.proxy.interfaces.IIC2Proxy;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
@@ -15,6 +11,10 @@ import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.item.IElectricItem;
+
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.recipes.CraftingParts;
 
 public class IC2Proxy implements IIC2Proxy {
 
@@ -44,10 +44,7 @@ public class IC2Proxy implements IIC2Proxy {
 		if (((IElectricItem) template.getItem()).getEmptyItem(stack) == stack.getItem()) {
 			return true;
 		}
-		if (((IElectricItem) template.getItem()).getChargedItem(stack) == stack.getItem()) {
-			return true;
-		}
-		return false;
+		return ((IElectricItem) template.getItem()).getChargedItem(stack) == stack.getItem();
 	}
 
 	/**

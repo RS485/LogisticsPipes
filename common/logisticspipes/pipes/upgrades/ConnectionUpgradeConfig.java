@@ -1,25 +1,22 @@
 package logisticspipes.pipes.upgrades;
 
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.modules.ModuleModBasedItemSink;
-import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.modules.ModulePolymorphicItemSink;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.network.guis.upgrade.DisconnectionUpgradeConfigGuiProvider;
-import logisticspipes.network.guis.upgrade.SneakyUpgradeConfigGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public class ConnectionUpgradeConfig implements IConfigPipeUpgrade {
 

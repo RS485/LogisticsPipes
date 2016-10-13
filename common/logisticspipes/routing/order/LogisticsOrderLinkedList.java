@@ -1,9 +1,11 @@
 package logisticspipes.routing.order;
 
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class LogisticsOrderLinkedList<E extends LogisticsOrder, I> implements Iterable<E> {
 
@@ -89,7 +91,7 @@ public class LogisticsOrderLinkedList<E extends LogisticsOrder, I> implements It
 		return list.isEmpty();
 	}
 
-	public static interface IIdentityProvider<A, B> {
+	public interface IIdentityProvider<A, B> {
 		B getIdentity(A o);
 		boolean isExtra(A o);
 	}

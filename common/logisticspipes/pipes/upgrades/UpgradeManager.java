@@ -3,23 +3,6 @@ package logisticspipes.pipes.upgrades;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.IPipeUpgradeManager;
-import logisticspipes.interfaces.ISlotUpgradeManager;
-import logisticspipes.items.ItemUpgrade;
-import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.NewGuiHandler;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
-import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.item.SimpleStackInventory;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -29,8 +12,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IPipeUpgradeManager;
+import logisticspipes.interfaces.ISlotUpgradeManager;
+import logisticspipes.items.ItemUpgrade;
+import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
+import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.item.SimpleStackInventory;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager, IPipeUpgradeManager {
 

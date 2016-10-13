@@ -1,6 +1,7 @@
 package logisticspipes.network.packets.block;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;

@@ -1,7 +1,9 @@
 package logisticspipes.recipes;
 
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.oredict.OreDictionary;
+
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import logisticspipes.LogisticsPipes;

@@ -43,6 +43,7 @@ import java.util.EnumSet;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import io.netty.buffer.ByteBuf;

@@ -2,6 +2,7 @@ package logisticspipes.network.abstractguis;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+
 import net.minecraftforge.common.util.FakePlayer;
 
 import lombok.Getter;

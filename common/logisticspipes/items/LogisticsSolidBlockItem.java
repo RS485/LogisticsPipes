@@ -2,17 +2,17 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsSolidBlockItem extends ItemBlock {
 

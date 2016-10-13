@@ -1,9 +1,14 @@
 package logisticspipes.gui.popup;
 
+import java.awt.Rectangle;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ScaledResolution;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.upgrade.SneakyUpgradeSidePacket;
-import logisticspipes.network.packets.upgrade.ToogleDisconnectionUpgradeSidePacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -11,13 +16,7 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.gui.UpgradeSlot;
 import logisticspipes.utils.gui.sideconfig.SideConfigDisplay;
 import logisticspipes.utils.string.StringUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.ScaledResolution;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import java.awt.Rectangle;
-import java.util.List;
 
 public class SneakyConfigurationPopup extends SubGuiScreen {
 
@@ -59,7 +58,7 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY, float partialTick) {
-		this.drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
+		drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
 
 		Minecraft mc = Minecraft.getMinecraft();
 		ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);

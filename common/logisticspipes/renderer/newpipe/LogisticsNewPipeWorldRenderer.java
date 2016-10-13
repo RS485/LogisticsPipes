@@ -4,16 +4,21 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 import logisticspipes.LPConstants;
 import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IIconTransformation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.operation.LPScale;
@@ -24,16 +29,8 @@ import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.Block
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer.CoverSides;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandler {
 
@@ -77,12 +74,12 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 
 			IIconTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
-			requestBlock.get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
+			requestBlock.get(rotation).render(new LPTranslation(x, y, z), icon);
 
 			for (CoverSides side : CoverSides.values()) {
 				if (!pipeTile.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation))) {
-					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
-					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new I3DOperation[] { new LPTranslation(x, y, z), icon });
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new LPTranslation(x, y, z), icon);
+					LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation).render(new LPTranslation(x, y, z), icon);
 				}
 			}
 

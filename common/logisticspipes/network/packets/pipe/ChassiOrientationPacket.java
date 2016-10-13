@@ -1,17 +1,16 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 public class ChassiOrientationPacket extends CoordinatesPacket {
 

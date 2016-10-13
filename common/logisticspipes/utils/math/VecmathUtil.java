@@ -1,6 +1,6 @@
 package logisticspipes.utils.math;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class VecmathUtil {
 

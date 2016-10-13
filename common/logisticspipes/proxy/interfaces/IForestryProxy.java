@@ -1,8 +1,5 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.recipes.CraftingParts;
-import logisticspipes.utils.item.ItemIdentifier;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -12,65 +9,68 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+import logisticspipes.recipes.CraftingParts;
+import logisticspipes.utils.item.ItemIdentifier;
+
 public interface IForestryProxy {
 
-	public abstract boolean isBee(ItemStack item);
+	boolean isBee(ItemStack item);
 
-	public abstract boolean isBee(ItemIdentifier item);
+	boolean isBee(ItemIdentifier item);
 
-	public abstract boolean isAnalysedBee(ItemStack item);
+	boolean isAnalysedBee(ItemStack item);
 
-	public abstract boolean isAnalysedBee(ItemIdentifier item);
+	boolean isAnalysedBee(ItemIdentifier item);
 
-	public abstract boolean isKnownAlleleId(String uid, World world);
+	boolean isKnownAlleleId(String uid, World world);
 
-	public abstract String getAlleleName(String uid);
+	String getAlleleName(String uid);
 
-	public abstract boolean isTileAnalyser(TileEntity tile);
+	boolean isTileAnalyser(TileEntity tile);
 
-	public abstract String getFirstAlleleId(ItemStack bee);
+	String getFirstAlleleId(ItemStack bee);
 
-	public abstract String getSecondAlleleId(ItemStack bee);
+	String getSecondAlleleId(ItemStack bee);
 
-	public abstract String getNextAlleleId(String uid, World world);
+	String getNextAlleleId(String uid, World world);
 
-	public abstract String getPrevAlleleId(String uid, World world);
+	String getPrevAlleleId(String uid, World world);
 
-	public abstract boolean isDrone(ItemStack bee);
+	boolean isDrone(ItemStack bee);
 
-	public abstract boolean isFlyer(ItemStack bee);
+	boolean isFlyer(ItemStack bee);
 
-	public abstract boolean isPrincess(ItemStack bee);
+	boolean isPrincess(ItemStack bee);
 
-	public abstract boolean isQueen(ItemStack bee);
+	boolean isQueen(ItemStack bee);
 
-	public abstract boolean isPurebred(ItemStack bee);
+	boolean isPurebred(ItemStack bee);
 
-	public abstract boolean isNocturnal(ItemStack bee);
+	boolean isNocturnal(ItemStack bee);
 
-	public abstract boolean isPureNocturnal(ItemStack bee);
+	boolean isPureNocturnal(ItemStack bee);
 
-	public abstract boolean isPureFlyer(ItemStack bee);
+	boolean isPureFlyer(ItemStack bee);
 
-	public abstract boolean isCave(ItemStack bee);
+	boolean isCave(ItemStack bee);
 
-	public abstract boolean isPureCave(ItemStack bee);
+	boolean isPureCave(ItemStack bee);
 
-	public abstract String getForestryTranslation(String input);
-
-	@SideOnly(Side.CLIENT)
-	public abstract IIcon getIconIndexForAlleleId(String uid, int phase);
+	String getForestryTranslation(String input);
 
 	@SideOnly(Side.CLIENT)
-	public abstract int getColorForAlleleId(String uid, int phase);
+	IIcon getIconIndexForAlleleId(String uid, int phase);
 
 	@SideOnly(Side.CLIENT)
-	public abstract int getRenderPassesForAlleleId(String uid);
+	int getColorForAlleleId(String uid, int phase);
 
 	@SideOnly(Side.CLIENT)
-	public abstract IIcon getIconFromTextureManager(String name);
+	int getRenderPassesForAlleleId(String uid);
 
-	public abstract void addCraftingRecipes(CraftingParts parts);
+	@SideOnly(Side.CLIENT)
+	IIcon getIconFromTextureManager(String name);
 
-	public abstract void syncTracker(World world, EntityPlayer player);
+	void addCraftingRecipes(CraftingParts parts);
+
+	void syncTracker(World world, EntityPlayer player);
 }

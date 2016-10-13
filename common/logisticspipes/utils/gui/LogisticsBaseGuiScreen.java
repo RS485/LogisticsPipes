@@ -9,22 +9,12 @@
 package logisticspipes.utils.gui;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
-import logisticspipes.LPConstants;
-import logisticspipes.asm.ModDependentInterface;
-import logisticspipes.asm.ModDependentMethod;
-import logisticspipes.interfaces.IFuzzySlot;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.gui.DummyContainerSlotClick;
-import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.extention.GuiExtentionController;
-import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
-
-import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -41,6 +31,20 @@ import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.LPConstants;
+import logisticspipes.asm.ModDependentInterface;
+import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.interfaces.IFuzzySlot;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.DummyContainerSlotClick;
+import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.resources.DictResource;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.extention.GuiExtentionController;
+import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
+import logisticspipes.utils.string.StringUtils;
 
 @ModDependentInterface(modId = { "NotEnoughItems" }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
 public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler {

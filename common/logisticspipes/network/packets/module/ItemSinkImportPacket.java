@@ -1,12 +1,10 @@
 package logisticspipes.network.packets.module;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.experimental.Accessors;
 
 public class ItemSinkImportPacket extends ModuleCoordinatesPacket {
 

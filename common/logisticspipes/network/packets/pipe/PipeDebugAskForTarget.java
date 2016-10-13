@@ -5,8 +5,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import cpw.mods.fml.client.FMLClientHandler;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import lombok.Getter;
 import lombok.Setter;
 

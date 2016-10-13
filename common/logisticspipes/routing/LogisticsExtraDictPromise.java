@@ -1,11 +1,12 @@
 package logisticspipes.routing;
 
+import lombok.Getter;
+
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.request.IExtraPromise;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
-import lombok.Getter;
 
 public class LogisticsExtraDictPromise extends LogisticsDictPromise implements IExtraPromise {
 

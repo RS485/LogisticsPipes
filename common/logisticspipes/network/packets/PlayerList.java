@@ -1,14 +1,12 @@
 package logisticspipes.network.packets;
 
-import logisticspipes.interfaces.PlayerListReciver;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.StringListPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
-import lombok.experimental.Accessors;
+import logisticspipes.interfaces.PlayerListReciver;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.StringListPacket;
 
 public class PlayerList extends StringListPacket {
 

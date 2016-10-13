@@ -29,25 +29,20 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-import com.google.common.io.Resources;
-import logisticspipes.LPConstants;
-import logisticspipes.asm.DevEnvHelper.MappingLoader_MCP.CantLoadMCPMappingException;
-import logisticspipes.asm.DevEnvHelper.MinecraftNameSet.Side;
-
-import lombok.SneakyThrows;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ObjectArrays;
+import com.google.common.io.Resources;
+import com.google.common.primitives.Ints;
 import cpw.mods.fml.common.asm.transformers.AccessTransformer;
 import cpw.mods.fml.common.asm.transformers.ModAccessTransformer;
 import cpw.mods.fml.relauncher.CoreModManager;
 import cpw.mods.fml.relauncher.FMLRelaunchLog;
 import cpw.mods.fml.relauncher.FileListHelper;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ObjectArrays;
-import com.google.common.primitives.Ints;
+import lombok.SneakyThrows;
 import org.apache.logging.log4j.Level;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -65,8 +60,11 @@ import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.MultiANewArrayInsnNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.TypeInsnNode;
+
+import logisticspipes.LPConstants;
+import logisticspipes.asm.DevEnvHelper.MappingLoader_MCP.CantLoadMCPMappingException;
+import logisticspipes.asm.DevEnvHelper.MinecraftNameSet.Side;
 
 public class DevEnvHelper {
 
@@ -747,7 +745,7 @@ public class DevEnvHelper {
 
 		public List<String> getExceptions(String clazz, String method, String desc) {
 			List<String> ret = exceptions.get(clazz + "/" + method + desc);
-			return ret == null ? Collections.<String> emptyList() : ret;
+			return ret == null ? Collections.emptyList() : ret;
 		}
 
 		public void addPrefix(String old, String new_) {
@@ -823,13 +821,13 @@ public class DevEnvHelper {
 
 	public static class MinecraftNameSet extends NameSet {
 
-		public static enum Type {
+		public enum Type {
 			OBF,
 			SRG,
 			MCP
 		}
 
-		public static enum Side {
+		public enum Side {
 			UNIVERSAL,
 			CLIENT,
 			SERVER

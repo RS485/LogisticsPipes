@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import logisticspipes.interfaces.ICraftingResultHandler;
-
 import net.minecraft.item.ItemStack;
+
+import logisticspipes.interfaces.ICraftingResultHandler;
 
 //@formatter:off
 //CHECKSTYLE:OFF

@@ -4,6 +4,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.interfaces.IDiskProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.DiscContent;
@@ -17,16 +27,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-
-import org.lwjgl.input.Keyboard;
 
 public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 

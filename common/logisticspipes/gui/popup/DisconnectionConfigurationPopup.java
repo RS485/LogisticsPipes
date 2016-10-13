@@ -1,23 +1,20 @@
 package logisticspipes.gui.popup;
 
+import java.awt.Rectangle;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.ScaledResolution;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.upgrade.ToogleDisconnectionUpgradeSidePacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.*;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.gui.UpgradeSlot;
 import logisticspipes.utils.gui.sideconfig.SideConfigDisplay;
 import logisticspipes.utils.string.StringUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-
-import java.awt.*;
-import java.awt.Color;
 
 public class DisconnectionConfigurationPopup extends SubGuiScreen {
 
@@ -59,7 +56,7 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY, float partialTick) {
-		this.drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
+		drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
 
 		Minecraft mc = Minecraft.getMinecraft();
 		ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);

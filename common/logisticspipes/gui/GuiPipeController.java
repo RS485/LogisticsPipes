@@ -6,9 +6,20 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.gui.popup.DisconnectionConfigurationPopup;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
@@ -23,24 +34,16 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.*;
+import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.ItemDisplay;
+import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
+import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
@@ -211,11 +214,8 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 						if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
 							return false;
 						}
-						if (!SimpleServiceLocator.securityStationManager
-								.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) {
-							return false;
-						}
-						return true;
+						return SimpleServiceLocator.securityStationManager
+								.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
 					}, 1));
 		}
 

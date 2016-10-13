@@ -20,8 +20,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import net.minecraftforge.common.util.ForgeDirection;
 
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.te.ILPTEInformation;
@@ -42,12 +45,8 @@ import logisticspipes.routing.pathfinder.IRouteProvider.RouteInfo;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 /**
  * Examines all pipe connections and their forks to locate all connected routers

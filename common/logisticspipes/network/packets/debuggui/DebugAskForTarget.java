@@ -2,6 +2,7 @@ package logisticspipes.network.packets.debuggui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
 import logisticspipes.network.PacketHandler;

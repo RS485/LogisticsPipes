@@ -1,10 +1,11 @@
 package logisticspipes.utils.math;
 
-import net.minecraftforge.common.util.ForgeDirection;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class BoundingBox {
 

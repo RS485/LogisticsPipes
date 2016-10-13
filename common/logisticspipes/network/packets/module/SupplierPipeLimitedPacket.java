@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.module;
 
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.client.FMLClientHandler;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import lombok.Getter;
 import lombok.Setter;
 

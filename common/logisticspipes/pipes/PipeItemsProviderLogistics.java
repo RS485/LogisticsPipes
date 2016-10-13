@@ -20,6 +20,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChangeListener;
@@ -71,15 +79,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 

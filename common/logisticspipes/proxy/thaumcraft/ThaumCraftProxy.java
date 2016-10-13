@@ -3,9 +3,6 @@ package logisticspipes.proxy.thaumcraft;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.recipes.CraftingParts;
-import logisticspipes.proxy.interfaces.IThaumCraftProxy;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
@@ -14,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
 import org.lwjgl.opengl.GL11;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
@@ -23,11 +19,14 @@ import thaumcraft.client.lib.UtilsFX;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.lib.research.ScanManager;
 
+import logisticspipes.proxy.interfaces.IThaumCraftProxy;
+import logisticspipes.recipes.CraftingParts;
+
 public class ThaumCraftProxy implements IThaumCraftProxy {
 
 	public ThaumCraftProxy() throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		Class<?> tcConfig = Class.forName("thaumcraft.common.config.ConfigItems");
-		itemShard = (Item) tcConfig.getField("itemShard").get((Object) null);
+		itemShard = (Item) tcConfig.getField("itemShard").get(null);
 	}
 
 	/**

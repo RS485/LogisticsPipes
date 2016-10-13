@@ -1,13 +1,13 @@
 package logisticspipes.network.guis.upgrade;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.gui.popup.DisconnectionConfigurationPopup;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.gui.UpgradeSlot;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class DisconnectionUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvider {
 

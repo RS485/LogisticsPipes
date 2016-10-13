@@ -2,14 +2,34 @@ package logisticspipes.modules;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.DelayQueue;
 import java.util.stream.Collectors;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
+
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import lombok.Getter;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -69,12 +89,23 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
-import logisticspipes.request.*;
+import logisticspipes.request.DictCraftingTemplate;
+import logisticspipes.request.ICraftingTemplate;
+import logisticspipes.request.IPromise;
+import logisticspipes.request.IReqCraftingTemplate;
+import logisticspipes.request.ItemCraftingTemplate;
+import logisticspipes.request.RequestTree;
+import logisticspipes.request.RequestTreeNode;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.FluidResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
-import logisticspipes.routing.*;
+import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsDictPromise;
+import logisticspipes.routing.LogisticsExtraDictPromise;
+import logisticspipes.routing.LogisticsExtraPromise;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
@@ -93,61 +124,33 @@ import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import lombok.Getter;
-
 public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver {
 
-	private PipeItemsCraftingLogistics _pipe;
-
-	private IRequestItems _invRequester;
+	// for reliable transport
+	protected final DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue<>();
+	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	//private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
-
 	public int satelliteId = 0;
 	public int[] advancedSatelliteIdArray = new int[9];
 	public DictResource[] fuzzyCraftingFlagArray = new DictResource[9];
 	public DictResource outputFuzzyFlags = new DictResource(null, null);
 	public int priority = 0;
-
+	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
+	public int liquidSatelliteId = 0;
+	public boolean[] craftingSigns = new boolean[6];
+	public boolean waitingForCraft = false;
+	public boolean cleanupModeIsExclude = true;
 	// from PipeItemsCraftingLogistics
 	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
 	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
 	protected ItemIdentifierInventory _cleanupInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filer Items", 1);
-
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	public int liquidSatelliteId = 0;
-
-	public boolean[] craftingSigns = new boolean[6];
-	public boolean waitingForCraft = false;
-
+	protected SinkReply _sinkReply;
+	private PipeItemsCraftingLogistics _pipe;
+	private IRequestItems _invRequester;
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
-
-	public boolean cleanupModeIsExclude = true;
-	// for reliable transport
-	protected final DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue<>();
-
-	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private boolean cachedAreAllOrderesToBuffer;
+	private List<AdjacentTileEntity> cachedCrafters = null;
 
 	public ModuleCrafter() {
 		for(int i=0;i < fuzzyCraftingFlagArray.length;i++) {
@@ -174,8 +177,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		super.registerHandler(world, service);
 		_invRequester = (IRequestItems) service;
 	}
-
-	protected SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
@@ -229,6 +230,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public int getPriority() {
 		return priority;
+	}
+
+	public void setPriority(int amount) {
+		priority = amount;
 	}
 
 	@Override
@@ -975,10 +980,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 	}
 
-	public void setPriority(int amount) {
-		priority = amount;
-	}
-
 	public ItemIdentifierStack getByproductItem() {
 		return _dummyInventory.getIDStackInSlot(10);
 	}
@@ -1053,12 +1054,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 	}
 
-	public void setFluidAmount(int[] amount) {
-		if (MainProxy.isClient(getWorld())) {
-			this.amount = amount;
-		}
-	}
-
 	public void defineFluidAmount(int integer, int slot) {
 		if (MainProxy.isClient(getWorld())) {
 			amount[slot] = integer;
@@ -1067,6 +1062,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public int[] getFluidAmount() {
 		return amount;
+	}
+
+	public void setFluidAmount(int[] amount) {
+		if (MainProxy.isClient(getWorld())) {
+			this.amount = amount;
+		}
 	}
 
 	public void setFluidSatelliteId(int integer, int slot) {
@@ -1105,9 +1106,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public void openAttachedGui(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
 			if (player instanceof EntityPlayerMP) {
-				((EntityPlayerMP) player).closeScreen();
+				player.closeScreen();
 			} else if (player instanceof EntityPlayerSP) {
-				((EntityPlayerSP) player).closeScreen();
+				player.closeScreen();
 			}
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setModulePos(this));
 			return;
@@ -1303,8 +1304,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		return nextOrder.getResource().getItem().equals(extractedID) || (this.getUpgradeManager().isFuzzyUpgrade() && nextOrder.getResource().getBitSet().nextSetBit(0) != -1 && nextOrder.getResource().matches(extractedID, IResource.MatchSettings.NORMAL));
 	}
 
-	private boolean cachedAreAllOrderesToBuffer;
-
 	public boolean areAllOrderesToBuffer() {
 		return cachedAreAllOrderesToBuffer;
 	}
@@ -1479,8 +1478,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	protected int stacksToExtract() {
 		return 1;
 	}
-
-	private List<AdjacentTileEntity> cachedCrafters = null;
 
 	public List<AdjacentTileEntity> locateCrafters() {
 		if (cachedCrafters == null) {

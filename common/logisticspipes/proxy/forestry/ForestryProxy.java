@@ -3,11 +3,6 @@ package logisticspipes.proxy.forestry;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.recipes.CraftingParts;
-import logisticspipes.proxy.interfaces.IForestryProxy;
-import logisticspipes.utils.item.ItemIdentifier;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,7 +16,6 @@ import net.minecraftforge.fluids.FluidStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IAlleleBeeSpecies;
@@ -31,18 +25,12 @@ import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
 
-public class ForestryProxy implements IForestryProxy {
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.recipes.CraftingParts;
+import logisticspipes.utils.item.ItemIdentifier;
 
-	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
-		analyserClass = Class.forName("forestry.core.tiles.TileAnalyzer");
-		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
-		localize = stringUtil.getDeclaredMethod("localize", new Class[] { String.class });
-		localize.setAccessible(true);
-		propolis = GameRegistry.findItem("Forestry", "propolis");
-		pollen = GameRegistry.findItem("Forestry", "pollen");
-		honey = FluidRegistry.getFluidStack("for.honey", 1500);
-		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
-	}
+public class ForestryProxy implements IForestryProxy {
 
 	private Class<?> analyserClass;
 	private Method localize;
@@ -50,6 +38,16 @@ public class ForestryProxy implements IForestryProxy {
 	private Item pollen;
 	private FluidStack honey;
 	private IBeeRoot root;
+	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+		analyserClass = Class.forName("forestry.core.tiles.TileAnalyzer");
+		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
+		localize = stringUtil.getDeclaredMethod("localize", String.class);
+		localize.setAccessible(true);
+		propolis = GameRegistry.findItem("Forestry", "propolis");
+		pollen = GameRegistry.findItem("Forestry", "pollen");
+		honey = FluidRegistry.getFluidStack("for.honey", 1500);
+		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
+	}
 
 	/**
 	 * Checks if item is bee via ItemIdentifier.
@@ -155,7 +153,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) {
 			return "";
 		}
-		return ((IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid)).getName();
+		return AlleleManager.alleleRegistry.getAllele(uid).getName();
 	}
 
 	/**
@@ -307,10 +305,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (isQueen(bee)) {
 			return false;
 		}
-		if (isDrone(bee)) {
-			return false;
-		}
-		return true;
+		return !isDrone(bee);
 	}
 
 	/**

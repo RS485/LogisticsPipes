@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.AllArgsConstructor;

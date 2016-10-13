@@ -3,15 +3,14 @@ package logisticspipes.routing.order;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.routing.IRouter;
-import logisticspipes.utils.item.ItemIdentifier;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
+import logisticspipes.routing.IRouter;
+import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @Accessors(chain = true)
 public abstract class LogisticsOrder implements IOrderInfoProvider {

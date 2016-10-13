@@ -1,12 +1,5 @@
 package logisticspipes.pipes.upgrades;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.ISlotUpgradeManager;
-import logisticspipes.items.ItemUpgrade;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.item.SimpleStackInventory;
-
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,18 +7,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ISlotUpgradeManager;
+import logisticspipes.items.ItemUpgrade;
+import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.item.SimpleStackInventory;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager {
 
+	private final UpgradeManager parent;
 	@Getter
 	private SimpleStackInventory inv = new SimpleStackInventory(2, "UpgradeInventory", 16);
-
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[2];
 	private PipeLogisticsChassi pipe;
-
-	private final UpgradeManager parent;
-
 	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
 	private boolean isAdvancedCrafter = false;
 	private boolean isFuzzyUpgrade = false;
@@ -42,17 +39,17 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean hasPatternUpgrade() {
-		return hasPatternUpgrade ? true : parent.hasPatternUpgrade();
+		return hasPatternUpgrade || parent.hasPatternUpgrade();
 	}
 
 	@Override
 	public boolean isAdvancedSatelliteCrafter() {
-		return isAdvancedCrafter ? true : parent.isAdvancedSatelliteCrafter();
+		return isAdvancedCrafter || parent.isAdvancedSatelliteCrafter();
 	}
 
 	@Override
 	public boolean hasByproductExtractor() {
-		return hasByproductExtractor ? true : parent.hasByproductExtractor();
+		return hasByproductExtractor || parent.hasByproductExtractor();
 	}
 
 	@Override
@@ -62,7 +59,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	@Override
 	public boolean isFuzzyUpgrade() {
-		return isFuzzyUpgrade ? true : parent.isFuzzyUpgrade();
+		return isFuzzyUpgrade || parent.isFuzzyUpgrade();
 	}
 
 	@Override

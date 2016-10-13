@@ -1,20 +1,12 @@
 package logisticspipes.proxy.nei;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import codechicken.lib.gui.GuiDraw;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.guihook.IContainerTooltipHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import logisticspipes.proxy.interfaces.INEIProxy;
-
-import logisticspipes.utils.ReflectionHelper;
-import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,7 +14,16 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
+import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.api.ItemInfo;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.guihook.IContainerTooltipHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import lombok.SneakyThrows;
+
+import logisticspipes.proxy.interfaces.INEIProxy;
+import logisticspipes.utils.ReflectionHelper;
 
 public class NEIProxy implements INEIProxy {
 
@@ -57,7 +58,7 @@ public class NEIProxy implements INEIProxy {
 			}
 		}
 		if (tooltip.size() > 0) {
-			tooltip.set(0, (String) tooltip.get(0) + "§h");
+			tooltip.set(0, tooltip.get(0) + "§h");
 		}
 		GuiDraw.drawMultilineTip(font, mousex + 12, mousey - 12, tooltip);
 		return true;

@@ -3,19 +3,22 @@ package logisticspipes.utils.gui.sideconfig;
 import java.awt.Rectangle;
 import java.lang.reflect.Field;
 import java.nio.FloatBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
-import logisticspipes.textures.Textures;
-import logisticspipes.utils.LPPositionSet;
-import logisticspipes.utils.math.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.init.Blocks;
@@ -27,20 +30,33 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
+import logisticspipes.textures.Textures;
+import logisticspipes.utils.LPPositionSet;
+import logisticspipes.utils.math.BoundingBox;
+import logisticspipes.utils.math.Camera;
+import logisticspipes.utils.math.Matrix4d;
+import logisticspipes.utils.math.VecmathUtil;
+import logisticspipes.utils.math.Vector2d;
+import logisticspipes.utils.math.Vector3d;
+import logisticspipes.utils.math.Vertex;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 //Based on: https://github.com/SleepyTrousers/EnderIO/blob/master/src/main/java/crazypants/enderio/machine/gui/GuiOverlayIoConfig.java
 public abstract class SideConfigDisplay {
@@ -290,7 +306,7 @@ public abstract class SideConfigDisplay {
 				double d0 = origin.x - eye.x;
 				double d1 = origin.y - eye.y;
 				double d2 = origin.z - eye.z;
-				mc.renderGlobal.drawOutlinedBoundingBox(block.getSelectedBoundingBoxFromPool(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ).expand((double)f1, (double)f1, (double)f1).getOffsetBoundingBox(-d0, -d1, -d2), -1);
+				RenderGlobal.drawOutlinedBoundingBox(block.getSelectedBoundingBoxFromPool(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ).expand((double)f1, (double)f1, (double)f1).getOffsetBoundingBox(-d0, -d1, -d2), -1);
 				if(block instanceof LogisticsBlockGenericPipe) {
 					LogisticsBlockGenericPipe.bypassPlayerTrace = null;
 				}

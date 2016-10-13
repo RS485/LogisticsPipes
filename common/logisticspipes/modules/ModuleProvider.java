@@ -8,6 +8,18 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IIcon;
+
+import net.minecraftforge.common.util.ForgeDirection;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -57,40 +69,22 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
-
-import net.minecraftforge.common.util.ForgeDirection;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 @CCType(name = "Provider Module")
 public class ModuleProvider extends LogisticsSneakyDirectionModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 
-	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
-	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
-
-	private boolean isActive = false;
-
+	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
 	protected final int ticksToActiveAction = 6;
 	protected final int ticksToPassiveAction = 100;
+	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
+	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<>();
+	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<>();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	protected int currentTick = 0;
-
 	protected boolean isExcludeFilter = false;
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
-
-	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<>();
-	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
-	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<>();
-
+	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
+	private boolean isActive = false;
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
-
-	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	public ModuleProvider() {}
 
@@ -236,7 +230,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 			if (inv != null) {
 				Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 				possible.addAll(currentInv.keySet().stream()
-						.filter(item -> ((DictResource) tree.getRequestType()).matches(item, IResource.MatchSettings.NORMAL))
+						.filter(item -> tree.getRequestType().matches(item, IResource.MatchSettings.NORMAL))
 						.collect(Collectors.toList()));
 			}
 		}

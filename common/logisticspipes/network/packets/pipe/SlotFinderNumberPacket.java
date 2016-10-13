@@ -10,6 +10,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 import lombok.Getter;

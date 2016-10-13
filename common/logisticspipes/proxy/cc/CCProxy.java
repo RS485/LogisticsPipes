@@ -2,28 +2,18 @@ package logisticspipes.proxy.cc;
 
 import java.lang.reflect.Field;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.items.ItemModule;
-import logisticspipes.items.ItemUpgrade;
+import net.minecraft.tileentity.TileEntity;
+
+import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.shared.computer.blocks.TileComputer;
+import dan200.computercraft.shared.turtle.blocks.TileTurtle;
+
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.cc.wrapper.CCCommandWrapper;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.recipes.CraftingParts;
-import logisticspipes.recipes.CraftingDependency;
-import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
-
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-
-import dan200.computercraft.ComputerCraft;
-import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.peripheral.IComputerAccess;
-import dan200.computercraft.shared.computer.blocks.TileComputer;
-import dan200.computercraft.shared.turtle.blocks.TileTurtle;
 
 public class CCProxy implements ICCProxy {
 

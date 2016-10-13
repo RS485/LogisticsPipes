@@ -1,15 +1,13 @@
 package logisticspipes.network.packets.module;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.DirectionModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.experimental.Accessors;
 
 public class ExtractorModuleDirectionPacket extends DirectionModuleCoordinatesPacket {
 

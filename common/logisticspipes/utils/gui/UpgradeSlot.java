@@ -1,10 +1,12 @@
 package logisticspipes.utils.gui;
 
+import net.minecraft.inventory.IInventory;
+
+import lombok.Getter;
+
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
-import lombok.Getter;
-import net.minecraft.inventory.IInventory;
 
 public class UpgradeSlot extends RestrictedSlot {
 	@Getter

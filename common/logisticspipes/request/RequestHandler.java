@@ -10,6 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ChatComponentTranslation;
+
 import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.network.PacketHandler;
@@ -26,18 +32,12 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentTranslation;
-
 public class RequestHandler {
 
 	public enum DisplayOptions {
 		Both,
 		SupplyOnly,
-		CraftOnly;
+		CraftOnly
 	}
 
 	public static void request(final EntityPlayer player, final ItemIdentifierStack stack, final CoreRoutedPipe pipe) {

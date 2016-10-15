@@ -201,6 +201,13 @@ public class TickExecutor extends AbstractExecutorService implements ScheduledEx
 		shuttingDown = true;
 	}
 
+	private void shutdownCleanup() {
+		taskQueue = null;
+		scheduledTaskList.forEach(tickScheduledTask -> tickScheduledTask.cancel(false));
+		scheduledTaskList = null;
+		terminationFuture.complete(null);
+	}
+
 	@Override
 	@Nonnull
 	public List<Runnable> shutdownNow() {
@@ -211,11 +218,7 @@ public class TickExecutor extends AbstractExecutorService implements ScheduledEx
 
 			copy = new ArrayList<>(taskQueue);
 
-			// cleanup
-			taskQueue = null;
-			scheduledTaskList = null;
-
-			terminationFuture.complete(null);
+			shutdownCleanup();
 		} finally {
 			shutdownLock.writeLock().unlock();
 		}
@@ -315,9 +318,7 @@ public class TickExecutor extends AbstractExecutorService implements ScheduledEx
 		}
 
 		if (shuttingDown) {
-			taskQueue = null;
-			scheduledTaskList = null;
-			terminationFuture.complete(null);
+			shutdownCleanup();
 		}
 		currentTick++;
 	}

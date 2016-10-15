@@ -42,6 +42,7 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import lombok.Getter;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -161,6 +162,7 @@ import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
+import network.rs485.grow.TickExecutor;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -221,6 +223,9 @@ public class LogisticsPipes {
 
 	@Instance("LogisticsPipes")
 	public static LogisticsPipes instance;
+
+	@Getter
+	private static TickExecutor globalTickExecutor;
 
 	//Log Requests
 	public static boolean DisplayRequests;
@@ -571,6 +576,11 @@ public class LogisticsPipes {
 	}
 
 	@EventHandler
+	public void starting(FMLServerStartingEvent event) {
+		globalTickExecutor = new TickExecutor();
+	}
+
+	@EventHandler
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
 		QueuedTasks.clearAllTasks();
@@ -580,6 +590,9 @@ public class LogisticsPipes {
 		ServerRouter.cleanup();
 		if (event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();
+		}
+		if (globalTickExecutor != null) {
+			globalTickExecutor.shutdownNow();
 		}
 		LogisticsEventListener.serverShutdown();
 		SimpleServiceLocator.buildCraftProxy.cleanup();

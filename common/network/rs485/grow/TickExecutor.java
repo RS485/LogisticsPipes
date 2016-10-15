@@ -56,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -101,6 +102,20 @@ public class TickExecutor extends AbstractExecutorService implements ScheduledEx
 		if (shuttingDown || terminationFuture.isDone()) {
 			throw new IllegalStateException("Executor is shut down");
 		}
+	}
+
+	public <T> CompletableFuture<T> scheduleForCompletable(Supplier<T> supplier, long delay, TimeUnit unit) {
+		final CompletableFuture<Void> scheduledFuture = new CompletableFuture<>();
+		this.schedule(() -> scheduledFuture.complete(null), delay, unit);
+		return scheduledFuture.thenApply((Void) -> supplier.get());
+	}
+
+	public <T> CompletableFuture<T> submitForCompletable(Supplier<T> supplier) {
+		return CompletableFuture.supplyAsync(supplier, this);
+	}
+
+	public CompletableFuture<Void> submitForCompletable(Runnable runnable) {
+		return CompletableFuture.runAsync(runnable, this);
 	}
 
 	private <V> void scheduleUnsafe(TickScheduledTask<V> task) {
@@ -259,7 +274,10 @@ public class TickExecutor extends AbstractExecutorService implements ScheduledEx
 			final Iterator<Runnable> runnableIter = taskQueue.iterator();
 			while (runnableIter.hasNext()) {
 				Runnable r = runnableIter.next();
+
+				// exception safe, as exception is catched in the future
 				r.run();
+
 				runnableIter.remove();
 			}
 
@@ -271,7 +289,10 @@ public class TickExecutor extends AbstractExecutorService implements ScheduledEx
 					TickScheduledTask task = scheduledTaskList.peekFirst();
 					while (task != null && task.getExecutorScheduledTick() <= currentTick) {
 						task = scheduledTaskList.pollFirst();
+
+						// exception safe, as exception is catched in the future
 						task.run();
+
 						if (task.isPeriodic()) {
 							task.reschedule();
 							tasksToSchedule.add(task);

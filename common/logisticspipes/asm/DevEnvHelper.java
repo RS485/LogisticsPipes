@@ -216,7 +216,7 @@ public class DevEnvHelper {
 	}
 
 	@SneakyThrows
-	private static void insertTransformer(IClassTransformer transformer) {
+	private static void insertTransformer(IClassTransformer transformer) throws NoSuchFieldException, IllegalAccessException {
 		Field fTransformers = LaunchClassLoader.class.getDeclaredField("transformers");
 		fTransformers.setAccessible(true);
 		@SuppressWarnings("unchecked")

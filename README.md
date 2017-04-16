@@ -1,4 +1,4 @@
-#LogisticsPipes
+# LogisticsPipes
 
 Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.
 
@@ -12,14 +12,14 @@ If you want to understand the sheer amount of changes we have made to the source
 Credits for the code goes to all [contributors](https://github.com/RS485/LogisticsPipes/contributors).
 Credits for the idea and basic code goes to Krapht.
 
-##Translate
+## Translate
 
 See [this repo](https://github.com/RS485/LogisticsPipes-Language) for translations.
 
-##Builds
+## Builds
 
 See our [Jenkins](http://ci.thezorro266.com/view/Logistics Pipes/).
 
-##Contact
+## Contact
 
 Get in touch with us on IRC via esper.net and join #RS485

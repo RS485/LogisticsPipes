@@ -22,6 +22,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import logisticspipes.asm.addinfo.IAddInfo;
@@ -53,10 +56,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 /**
  * @author Krapht I have no bloody clue what different mods use to differate
@@ -473,11 +474,23 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public String getModName() {
 		if (modName == null) {
-			UniqueIdentifier ui = GameRegistry.findUniqueIdentifierFor(item);
-			if (ui == null) {
+			ResourceLocation resource = Item.REGISTRY.getNameForObject(item);
+			ModContainer container = null;
+			boolean isMC = resource.getResourceDomain().equals("minecraft"); // TODO: Is This Correct
+			if(!isMC) {
+				for (ModContainer mc : Loader.instance().getModList()) {
+					if (resource.getResourceDomain().toLowerCase().equals(mc.getModId().toLowerCase())) {
+						container = mc;
+						break;
+					}
+				}
+			}
+			if(isMC) {
+				modName = "Minecraft";
+			} else if (container == null) {
 				modName = "UNKNOWN";
 			} else {
-				modName = ui.modId;
+				modName = container.getName();
 			}
 		}
 		return modName;

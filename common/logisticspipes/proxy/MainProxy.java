@@ -3,14 +3,16 @@ package logisticspipes.proxy;
 import java.io.File;
 import java.util.EnumMap;
 import java.util.WeakHashMap;
+import java.util.stream.Stream;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -170,7 +172,7 @@ public class MainProxy {
 
 	// ignores dimension; more stringent check done inside sendPacketToAllWatching
 	public static boolean isAnyoneWatching(int X, int Z, int dimensionID) {
-		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
+		ChunkPos chunk = new ChunkPos(X >> 4, Z >> 4);
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
 		if (players == null) {
 			return false;
@@ -188,7 +190,7 @@ public class MainProxy {
 			new Exception().printStackTrace();
 			return;
 		}
-		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
+		ChunkPos chunk = new ChunkPos(X >> 4, Z >> 4);
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
 		if (players != null) {
 			for (EntityPlayer player : players.players()) {
@@ -222,6 +224,19 @@ public class MainProxy {
 			for (EntityPlayer player : players) {
 				MainProxy.sendPacketToPlayer(packet, player);
 			}
+		}
+	}
+
+	public static void sendToPlayerList(ModernPacket packet, Stream<EntityPlayer> players) {
+		if (!MainProxy.isServer()) {
+			System.err.println("sendToPlayerList called clientside !");
+			new Exception().printStackTrace();
+			return;
+		}
+		if (packet.isCompressable() || MainProxy.needsToBeCompressed(packet)) {
+			players.forEach(player -> SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player));
+		} else {
+			players.forEach(player -> MainProxy.sendPacketToPlayer(packet, player));
 		}
 	}
 
@@ -302,6 +317,6 @@ public class MainProxy {
 	}
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsPipeControllerItem;
+		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsPipeControllerItem;
 	}
 }

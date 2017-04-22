@@ -87,12 +87,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void textureHook(TextureStitchEvent.Pre event) throws IOException {
-		if (event.getMap().getTextureType() == 1) {
-			LogisticsPipes.textures.registerItemIcons(event.getMap());
-		}
-		if (event.getMap().getTextureType() == 0) {
-			LogisticsPipes.textures.registerBlockIcons(event.getMap());
-		}
+		LogisticsPipes.textures.registerBlockIcons(event.getMap());
 	}
 
 	@SubscribeEvent

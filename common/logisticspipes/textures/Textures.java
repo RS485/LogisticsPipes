@@ -2,6 +2,7 @@ package logisticspipes.textures;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
@@ -181,7 +182,7 @@ public class Textures {
 	}
 
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
-	public void registerBlockIcons(IIconRegister par1IIconRegister) {
+	public void registerBlockIcons(TextureMap par1IIconRegister) {
 		//Register Empty Texture for slot 0
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 0, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 1, "empty", "", true);
@@ -263,11 +264,11 @@ public class Textures {
 		}
 	}
 
-	public void registerItemIcons(IIconRegister par1IIconRegister) {
+	public void registerItemIcons(TextureMap par1IIconRegister) {
 		Textures.LPactionIconProvider.registerIcons(par1IIconRegister);
 	}
 
-	private TextureType registerTexture(IIconRegister par1IIconRegister, String fileName) {
+	private TextureType registerTexture(TextureMap par1IIconRegister, String fileName) {
 		return registerTexture(par1IIconRegister, fileName, 1);
 	}
 
@@ -281,7 +282,7 @@ public class Textures {
 	 *            with overlay
 	 */
 
-	private TextureType registerTexture(IIconRegister par1IIconRegister, String fileName, int flag) {
+	private TextureType registerTexture(TextureMap par1IIconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
 		texture.normal = index++;
 		texture.powered = texture.normal;
@@ -306,7 +307,7 @@ public class Textures {
 		return texture;
 	}
 
-	private SmallTextureType registerSmallTexture(IIconRegister par1IIconRegister, String fileName) {
+	private SmallTextureType registerSmallTexture(TextureMap par1IIconRegister, String fileName) {
 		SmallTextureType texture = new SmallTextureType();
 		texture.normal = index++;
 		texture.fileName = fileName;
@@ -319,7 +320,7 @@ public class Textures {
 		return texture;
 	}
 
-	private int registerSingleTexture(IIconRegister par1IIconRegister, String fileName) {
+	private int registerSingleTexture(TextureMap par1IIconRegister, String fileName) {
 		int texture = index++;
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture, fileName, Textures.LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE, true);

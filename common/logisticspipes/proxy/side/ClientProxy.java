@@ -53,12 +53,16 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -153,12 +157,12 @@ public class ClientProxy implements IProxy {
 	@Override
 	public int getDimensionForWorld(World world) {
 		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.dimensionId;
+			return ((WorldServer) world).provider.getDimension();
 		}
 		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.dimensionId;
+			return ((WorldClient) world).provider.getDimension();
 		}
-		return world.getWorldInfo().getVanillaDimension();
+		return 0;
 	}
 
 	@Override
@@ -192,14 +196,14 @@ public class ClientProxy implements IProxy {
 	// BuildCraft method end
 
 	@Override
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
+	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		if (par1IIconRegister != null) {
 			if ("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
-				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/new_texture/")));
+				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "pipes/new_texture/"))));
 			} else if (flag) {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1));
+				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1)));
 			} else {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", "")));
+				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
 			}
 		}
 	}
@@ -207,7 +211,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void sendBroadCast(String message) {
 		if (Minecraft.getMinecraft().thePlayer != null) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("[LP] Client: " + message));
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentString("[LP] Client: " + message));
 		}
 	}
 

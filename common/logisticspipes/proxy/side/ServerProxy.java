@@ -26,6 +26,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -34,6 +35,7 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -187,12 +189,12 @@ public class ServerProxy implements IProxy {
 	@Override
 	public int getDimensionForWorld(World world) {
 		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.dimensionId;
+			return ((WorldServer) world).provider.getDimension();
 		}
 		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.dimensionId;
+			return ((WorldClient) world).provider.getDimension();
 		}
-		return world.getWorldInfo().getVanillaDimension();
+		return 0;
 	}
 
 	@Override
@@ -228,7 +230,7 @@ public class ServerProxy implements IProxy {
 
 	// BuildCraft method end
 	@Override
-	public void addLogisticsPipesOverride(IIconRegister par1IIconRegister, int index, String override1, String override2, boolean flag) {
+	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		// TODO Auto-generated method stub
 
 	}
@@ -237,10 +239,10 @@ public class ServerProxy implements IProxy {
 	@SuppressWarnings("rawtypes")
 	public void sendBroadCast(String message) {
 		MinecraftServer server = FMLServerHandler.instance().getServer();
-		if (server != null && server.getConfigurationManager() != null) {
-			List list = server.getConfigurationManager().playerEntityList;
+		if (server != null && server.getPlayerList() != null) {
+			List<EntityPlayerMP> list = server.getPlayerList().getPlayerList();
 			if (list != null && !list.isEmpty()) {
-				list.stream().filter(obj -> obj instanceof EntityPlayerMP).forEach(obj -> ((EntityPlayerMP) obj).addChatMessage(new ChatComponentText("[LP] Server: " + message)));
+				list.forEach(obj -> ((EntityPlayerMP) obj).addChatMessage(new TextComponentString("[LP] Server: " + message)));
 			}
 		}
 	}

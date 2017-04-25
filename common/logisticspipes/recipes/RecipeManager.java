@@ -785,7 +785,7 @@ public class RecipeManager {
 				Character.valueOf('i'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 0), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_UP), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"srs",
 				"rCr",
@@ -796,7 +796,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 1), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_DOWN), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -807,7 +807,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 2), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_NORTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PsP",
 				"rCr",
@@ -818,7 +818,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 3), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_SOUTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -829,7 +829,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 4), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_EAST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"sCr",
@@ -840,7 +840,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 5), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_WEST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCs",
@@ -851,7 +851,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 6), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_COMBINATION), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -861,7 +861,7 @@ public class RecipeManager {
 				Character.valueOf('P'), Items.paper
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 20), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SPEED), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -871,7 +871,7 @@ public class RecipeManager {
 				Character.valueOf('P'), Items.paper
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 21), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.ADVANCED_SAT_CRAFTINGPIPE), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -881,7 +881,7 @@ public class RecipeManager {
 				Character.valueOf('P'), Items.paper
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 22), CraftingDependency.Active_Liquid, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.LIQUID_CRAFTING), CraftingDependency.Active_Liquid, new Object[] {
 				false,
 				"RbR",
 				"bCb",
@@ -891,7 +891,7 @@ public class RecipeManager {
 				Character.valueOf('b'), Items.glass_bottle,
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 23), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"RgR",
 				"gCg",
@@ -901,7 +901,7 @@ public class RecipeManager {
 				Character.valueOf('g'), "gearWood"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 10), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_UP), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"srs",
 				"rCr",
@@ -912,7 +912,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 11), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_DOWN), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -923,7 +923,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 12), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_NORTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PsP",
 				"rCr",
@@ -934,7 +934,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 13), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_SOUTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -945,7 +945,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 14), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_EAST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"sCr",
@@ -956,7 +956,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 15), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_WEST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCs",
@@ -967,7 +967,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 24), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SUPPLIER_PATTERN), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"Rhy",
 				"iCi",
@@ -980,7 +980,7 @@ public class RecipeManager {
 				Character.valueOf('i'), Items.iron_ingot,
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 25), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.FUZZY_CRAFTING), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1024,6 +1024,18 @@ public class RecipeManager {
 				Character.valueOf('R'), Items.redstone,
 				Character.valueOf('b'), "dyeWhite",
 			});
+			
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
+				false,
+				"RCR",
+				"bDb",
+				"RbR",
+				Character.valueOf('C'), parts.getChipTear1(),
+				Character.valueOf('R'), Items.redstone,
+				Character.valueOf('D'), "gemDiamond",
+				Character.valueOf('b'), "dyeRed",
+			});
+			
 
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidBasicPipe, 1), CraftingDependency.Basic_Liquid, new Object[] {
 				"w",
@@ -1609,7 +1621,7 @@ public class RecipeManager {
 				Character.valueOf('i'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 0), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_UP), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"srs",
 				"rCr",
@@ -1620,7 +1632,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 1), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_DOWN), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1631,7 +1643,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 2), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_NORTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PsP",
 				"rCr",
@@ -1642,7 +1654,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 3), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_SOUTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1653,7 +1665,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 4), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_EAST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"sCr",
@@ -1664,7 +1676,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 5), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_WEST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCs",
@@ -1675,7 +1687,7 @@ public class RecipeManager {
 				Character.valueOf('s'), "slimeball"
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 6), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_COMBINATION), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1685,7 +1697,7 @@ public class RecipeManager {
 				Character.valueOf('P'), Items.paper
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 20), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SPEED), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1695,7 +1707,7 @@ public class RecipeManager {
 				Character.valueOf('P'), Items.paper
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 21), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.ADVANCED_SAT_CRAFTINGPIPE), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1705,7 +1717,7 @@ public class RecipeManager {
 				Character.valueOf('P'), Items.paper
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 22), CraftingDependency.Active_Liquid, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.LIQUID_CRAFTING), CraftingDependency.Active_Liquid, new Object[] {
 				false,
 				"RbR",
 				"bCb",
@@ -1715,17 +1727,17 @@ public class RecipeManager {
 				Character.valueOf('b'), Items.glass_bottle,
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 23), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"RgR",
 				"gCg",
 				"RgR",
 				Character.valueOf('C'), expand,
 				Character.valueOf('R'), Items.redstone,
-				Character.valueOf('g'), "plankWood"
+				Character.valueOf('g'), "plankWood",
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 10), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_UP), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"srs",
 				"rCr",
@@ -1736,7 +1748,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 11), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_DOWN), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1747,7 +1759,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 12), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_NORTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PsP",
 				"rCr",
@@ -1758,7 +1770,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 13), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_SOUTH), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1769,7 +1781,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 14), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_WEST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"sCr",
@@ -1780,7 +1792,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 15), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CONNECTION_EAST), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCs",
@@ -1791,7 +1803,7 @@ public class RecipeManager {
 				Character.valueOf('s'), Items.iron_ingot
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 24), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SUPPLIER_PATTERN), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"Rhy",
 				"iCi",
@@ -1804,7 +1816,7 @@ public class RecipeManager {
 				Character.valueOf('i'), Items.iron_ingot,
 			});
 
-			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 25), CraftingDependency.Upgrades, new Object[] {
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.FUZZY_CRAFTING), CraftingDependency.Upgrades, new Object[] {
 				false,
 				"PrP",
 				"rCr",
@@ -1845,6 +1857,16 @@ public class RecipeManager {
 				" b ",
 				Character.valueOf('b'), "dyeWhite",
 				Character.valueOf('I'), Items.iron_ingot
+			});
+			
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
+				false,
+				"bEb",
+				"bDb",
+				" b ",
+				Character.valueOf('b'), "dyeRed",
+				Character.valueOf('E'), expand,
+				Character.valueOf('D'), "gemDiamond"
 			});
 
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidBasicPipe, 1), CraftingDependency.Basic_Liquid, new Object[] {

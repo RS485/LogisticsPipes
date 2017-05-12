@@ -1,5 +1,7 @@
 package logisticspipes.utils.gui;
 
+import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -106,7 +108,7 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 	protected abstract void renderGuiBackground(int par1, int par2);
 
 	@Override
-	public final void handleMouseInput() {
+	public final void handleMouseInput() throws IOException {
 		if (subGui != null) {
 			subGui.handleMouseInput();
 		} else {
@@ -114,12 +116,12 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 		}
 	}
 
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		super.handleMouseInput();
 	}
 
 	@Override
-	public final void handleKeyboardInput() {
+	public final void handleKeyboardInput() throws IOException {
 		if (subGui != null) {
 			subGui.handleKeyboardInput();
 		} else {

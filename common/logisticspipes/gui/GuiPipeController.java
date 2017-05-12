@@ -193,9 +193,9 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void renderForgroundContent() {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "upgrade"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "upgrade"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			if (pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
-				mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "sneakyUpgrades"), 10, 74, Color.getValue(Color.DARKER_GREY), false);
+				fontRendererObj.drawString(StringUtils.translate(PREFIX + "sneakyUpgrades"), 10, 74, Color.getValue(Color.DARKER_GREY), false);
 			}
 		}
 	}
@@ -231,17 +231,17 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void renderForgroundContent() {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			fontRendererObj.drawString(StringUtils.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
 			if (itemStack != null) {
 				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
-				mc.fontRendererObj.drawString("Id: ", 10, 68, Color.getValue(Color.DARKER_GREY), false);
+				fontRendererObj.drawString("Id: ", 10, 68, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glTranslated(10, 80, 0);
 				GL11.glScaled(0.75D, 0.75D, 1.0D);
-				mc.fontRendererObj.drawString(ChatColor.BLUE.toString() + id.toString(), 0, 0, Color.getValue(Color.DARKER_GREY), false);
+				fontRendererObj.drawString(ChatColor.BLUE.toString() + id.toString(), 0, 0, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glScaled(1 / 0.75D, 1 / 0.75D, 1.0D);
 				GL11.glTranslated(-10, -80, 0);
-				mc.fontRendererObj.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, Color.getValue(Color.DARKER_GREY), false);
+				fontRendererObj.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, Color.getValue(Color.DARKER_GREY), false);
 			}
 		}
 	}
@@ -368,7 +368,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			leftButton = addButton(new SmallGuiButton(1, guiLeft + 95, guiTop + 26, 10, 10, "<"));
 			rightButton = addButton(new SmallGuiButton(2, guiLeft + 165, guiTop + 26, 10, 10, ">"));
 			if (_itemDisplay_5 == null) {
-				_itemDisplay_5 = new ItemDisplay(null, mc.fontRenderer, GuiPipeController.this, null, 10, 40, 20, 60, new int[]{1, 1, 1, 1}, true);
+				_itemDisplay_5 = new ItemDisplay(null, fontRendererObj, GuiPipeController.this, null, 10, 40, 20, 60, new int[]{1, 1, 1, 1}, true);
 			}
 			_itemDisplay_5.reposition(10, 40, 20, 60);
 		}

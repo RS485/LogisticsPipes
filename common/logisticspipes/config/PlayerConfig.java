@@ -37,9 +37,9 @@ public class PlayerConfig {
 
 	private final PlayerIdentifier playerIdent;
 
-	private boolean useNewRenderer = true;
-	@Getter
-	private boolean useFallbackRenderer = true;
+	//private boolean useNewRenderer = true;
+	//@Getter
+	//private boolean useFallbackRenderer = true;
 	@Getter
 	private int renderPipeDistance = 48;
 	@Getter
@@ -56,9 +56,9 @@ public class PlayerConfig {
 		playerIdent = ident;
 	}
 
-	public void setUseFallbackRenderer(boolean flag) {
+	/*public void setUseFallbackRenderer(boolean flag) {
 		useFallbackRenderer = flag;
-	}
+	}*/
 
 	public void setRenderPipeDistance(int dist) {
 		renderPipeDistance = dist;
@@ -73,15 +73,15 @@ public class PlayerConfig {
 	}
 
 	public void writeData(LPDataOutput output) {
-		output.writeBoolean(useNewRenderer);
-		output.writeBoolean(useFallbackRenderer);
+		//output.writeBoolean(useNewRenderer);
+		//output.writeBoolean(useFallbackRenderer);
 		output.writeInt(renderPipeDistance);
 		output.writeInt(renderPipeContentDistance);
 	}
 
 	public void readData(LPDataInput input) {
-		useNewRenderer = input.readBoolean();
-		useFallbackRenderer = input.readBoolean();
+		//useNewRenderer = input.readBoolean();
+		//useFallbackRenderer = input.readBoolean();
 		renderPipeDistance = input.readInt();
 		renderPipeContentDistance = input.readInt();
 		isUninitialised = false;
@@ -141,10 +141,10 @@ public class PlayerConfig {
 		if (lpUserData == null) {
 			return;
 		}
-		useNewRenderer = lpUserData.getBoolean("useNewRenderer");
+		//useNewRenderer = lpUserData.getBoolean("useNewRenderer");
+		//useFallbackRenderer = lpUserData.getBoolean("useFallbackRenderer");
 		renderPipeDistance = lpUserData.getInteger("renderPipeDistance");
 		renderPipeContentDistance = lpUserData.getInteger("renderPipeContentDistance");
-		useFallbackRenderer = lpUserData.getBoolean("useFallbackRenderer");
 		isUninitialised = false;
 	}
 
@@ -159,8 +159,8 @@ public class PlayerConfig {
 		File lpData = new File(worldDir, "logisticspipes");
 		File lpNameLookup = new File(lpData, "names");
 		NBTTagCompound lpUserData = new NBTTagCompound();
-		lpUserData.setBoolean("useNewRenderer", useNewRenderer);
-		lpUserData.setBoolean("useFallbackRenderer", useFallbackRenderer);
+		//lpUserData.setBoolean("useNewRenderer", useNewRenderer);
+		//lpUserData.setBoolean("useFallbackRenderer", useFallbackRenderer);
 		lpUserData.setInteger("renderPipeDistance", renderPipeDistance);
 		lpUserData.setInteger("renderPipeContentDistance", renderPipeContentDistance);
 		if (playerIdent.getId() != null && playerIdent.getUsername() != null && !playerIdent.getUsername().isEmpty()) {
@@ -207,16 +207,18 @@ public class PlayerConfig {
 	public void applyTo(PlayerConfig playerConfig) {
 		playerConfig.renderPipeContentDistance = renderPipeContentDistance;
 		playerConfig.renderPipeDistance = renderPipeDistance;
-		playerConfig.useNewRenderer = useNewRenderer;
-		playerConfig.useFallbackRenderer = useFallbackRenderer;
+		//playerConfig.useNewRenderer = useNewRenderer;
+		//playerConfig.useFallbackRenderer = useFallbackRenderer;
 		playerConfig.isUninitialised = false;
 	}
 
-	public boolean isUseNewRenderer() {
+	/*public boolean isUseNewRenderer() {
 		return useNewRenderer && SimpleServiceLocator.cclProxy.isActivated();
-	}
+	}*/
 
+	/*
 	public void setUseNewRenderer(boolean flag) {
 		useNewRenderer = flag;
 	}
+	*/
 }

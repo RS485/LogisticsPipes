@@ -60,10 +60,11 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+		nbt = super.writeToNBT(nbt);
 		nbt.setInteger("rotation", rotation);
 		SimpleServiceLocator.openComputersProxy.handleWriteToNBT(this, nbt);
+		return nbt;
 	}
 
 	@Override

@@ -142,7 +142,7 @@ public class RequestTree extends RequestTreeNode {
 
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		Map<IResource, Integer> messages = new HashMap<>();
-		RequestTree tree = new RequestTree(new ItemResource(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.stone), 0, null), 0), requester), null, requestFlags, info);
+		RequestTree tree = new RequestTree(new ItemResource(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.STONE), 0, null), 0), requester), null, requestFlags, info);
 		boolean isDone = true;
 		for (ItemIdentifierStack stack : items) {
 			ItemIdentifier item = stack.getItem();

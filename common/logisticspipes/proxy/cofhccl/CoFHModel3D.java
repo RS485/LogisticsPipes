@@ -9,8 +9,8 @@ import logisticspipes.proxy.object3d.interfaces.IBounds;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
 
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 
 import cofh.repack.codechicken.lib.lighting.LightModel;
@@ -167,7 +167,7 @@ public class CoFHModel3D implements IModel3D {
 	public IBounds getBoundsInside(AxisAlignedBB boundingBox) {
 		Cuboid6 c = null;
 		for (Vertex5 v : model.verts) {
-			if (boundingBox.isVecInside(Vec3.createVectorHelper(v.vec.x, v.vec.y, v.vec.z))) {
+			if (boundingBox.isVecInside(new Vec3d(v.vec.x, v.vec.y, v.vec.z))) {
 				if (c == null) {
 					c = new Cuboid6(v.vec.copy(), v.vec.copy());
 				} else {

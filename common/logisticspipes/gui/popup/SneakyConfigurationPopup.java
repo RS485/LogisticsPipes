@@ -61,14 +61,14 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 		drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
 
 		Minecraft mc = Minecraft.getMinecraft();
-		ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+		ScaledResolution scaledresolution = new ScaledResolution(mc);
 
 		int vpx = bounds.x * scaledresolution.getScaleFactor();
 		int vpy = (bounds.y + 10) * scaledresolution.getScaleFactor();
 		int w = bounds.width * scaledresolution.getScaleFactor();
 		int h = (bounds.height - 1) * scaledresolution.getScaleFactor();
 
-		mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "sneakyTitle"), guiLeft + 8, guiTop + 8, Color.getValue(Color.DARKER_GREY), false);
+		fontRendererObj.drawString(StringUtils.translate(PREFIX + "sneakyTitle"), guiLeft + 8, guiTop + 8, Color.getValue(Color.DARKER_GREY), false);
 
 		configDisplay.drawScreen(mouseX, mouseY, partialTick, new Rectangle(vpx, vpy, w, h), bounds);
 	}

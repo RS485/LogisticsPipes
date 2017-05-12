@@ -64,6 +64,7 @@ import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
@@ -355,7 +356,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (worldObj == null) {
 			return null;
 		}
-		TileEntity tile = worldObj.getTileEntity(_xCoord, _yCoord, _zCoord);
+		TileEntity tile = worldObj.getTileEntity(new BlockPos(_xCoord, _yCoord, _zCoord));
 
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
@@ -524,7 +525,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (changed) {
 			CoreRoutedPipe pipe = getPipe();
 			if (pipe != null) {
-				pipe.getWorld().notifyBlocksOfNeighborChange(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().getBlock(pipe.getX(), pipe.getY(), pipe.getZ()));
+				pipe.getWorld().markAndNotifyBlock(pipe.getPos(), pipe.getWorld().getChunkFromBlockCoords(pipe.getPos()), pipe.getWorld().getBlockState(pipe.getPos()), pipe.getWorld().getBlockState(pipe.getPos()), 3);
 				pipe.refreshConnectionAndRender(false);
 			}
 			adjacentChanged = true;

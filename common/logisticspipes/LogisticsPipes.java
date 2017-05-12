@@ -440,13 +440,7 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
 		GameRegistry.registerItem(LogisticsPipes.LogisticsCraftingSignCreator, LogisticsPipes.LogisticsCraftingSignCreator.getUnlocalizedName());
 
-		int renderIndex;
-		if (isClient) {
-			renderIndex = RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD");
-		} else {
-			renderIndex = 0;
-		}
-		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor(renderIndex);
+		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor();
 		LogisticsPipes.LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		GameRegistry.registerItem(LogisticsPipes.LogisticsHUDArmor, LogisticsPipes.LogisticsHUDArmor.getUnlocalizedName());
 

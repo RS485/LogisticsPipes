@@ -779,13 +779,12 @@ public class PipeTransportLogistics {
 	}
 
 	private void sendItemPacket(LPTravelingItemServer item) {
-		if (MainProxy.isAnyoneWatching(container, MainProxy.getDimensionForWorld(getWorld()))) {
+		if (MainProxy.isAnyoneWatching(container.getPos(), MainProxy.getDimensionForWorld(getWorld()))) {
 			if (!LPTravelingItem.clientSideKnownIDs.get(item.getId())) {
-				MainProxy.sendPacketToAllWatchingChunk(container, MainProxy.getDimensionForWorld(getWorld()), (PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemIdentifierStack()).setTravelId(item.getId())));
+				MainProxy.sendPacketToAllWatchingChunk(container, (PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemIdentifierStack()).setTravelId(item.getId())));
 				LPTravelingItem.clientSideKnownIDs.set(item.getId());
 			}
-			MainProxy.sendPacketToAllWatchingChunk(container, MainProxy.getDimensionForWorld(getWorld()),
-					(PacketHandler.getPacket(PipePositionPacket.class).setSpeed(item.getSpeed()).setPosition(item.getPosition()).setInput(item.input).setOutput(item.output).setTravelId(item.getId()).setYaw(item.getYaw()).setTilePos(container)));
+			MainProxy.sendPacketToAllWatchingChunk(container, (PacketHandler.getPacket(PipePositionPacket.class).setSpeed(item.getSpeed()).setPosition(item.getPosition()).setInput(item.input).setOutput(item.output).setTravelId(item.getId()).setYaw(item.getYaw()).setTilePos(container)));
 		}
 	}
 

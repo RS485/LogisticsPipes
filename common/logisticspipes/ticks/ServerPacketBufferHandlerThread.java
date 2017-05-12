@@ -15,8 +15,7 @@ import java.util.zip.GZIPOutputStream;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -58,8 +57,8 @@ public class ServerPacketBufferHandlerThread {
 		return out.toByteArray();
 	}
 
-	public void serverTick(ServerTickEvent event) {
-		if (event.phase != Phase.END) {
+	public void serverTick(TickEvent.ServerTickEvent event) {
+		if (event.phase != TickEvent.Phase.END) {
 			return;
 		}
 		serverDecompressorThread.serverTickEnd();

@@ -2,6 +2,7 @@ package logisticspipes.blocks.powertile;
 
 import java.util.List;
 
+import cofh.api.energy.IEnergyReceiver;
 import ic2.api.energy.tile.IEnergyEmitter;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -43,7 +44,7 @@ import ic2.api.energy.tile.IEnergySink;
 
 @ModDependentInterface(modId = { "IC2", "CoFHAPI|energy", "BuildCraft|Transport" }, interfacePath = { "ic2.api.energy.tile.IEnergySink", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor" })
 @CCType(name = "LogisticsPowerJunction")
-public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyHandler {
+public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyReceiver {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 
@@ -138,10 +139,11 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		super.writeToNBT(par1nbtTagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
+		par1nbtTagCompound = super.writeToNBT(par1nbtTagCompound);
 		par1nbtTagCompound.setInteger("powerLevel", internalStorage);
 		par1nbtTagCompound.setBoolean("needMorePowerTriggerCheck", needMorePowerTriggerCheck);
+		return par1nbtTagCompound;
 	}
 
 	@Override
@@ -361,12 +363,6 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 			}
 		}
 		return RFtotake;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
-		return 0;
 	}
 
 	@Override

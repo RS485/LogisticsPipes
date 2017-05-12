@@ -62,7 +62,7 @@ public class Recipes implements IRecipeProvider {
 		}
 		RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, 0);
 
-		ItemStack logisticsBlockFrame = new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME);
+		ItemStack logisticsBlockFrame = new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME.getMeta());
 
 		RecipeManager.craftingManager.addRecipe(logisticsBlockFrame, CraftingDependency.Basic,
 				new RecipeManager.RecipeLayout(
@@ -73,27 +73,27 @@ public class Recipes implements IRecipeProvider {
 				new RecipeManager.RecipeIndex('r', "dustRedstone"),
 				new RecipeManager.RecipeIndex('w', "plankWood"));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.SOLDERING_STATION), CraftingDependency.Basic,
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.BlockType.SOLDERING_STATION.getMeta()), CraftingDependency.Basic,
 				new RecipeManager.RecipeLayout(
 						" c ",
 						"ifi",
 						"ibi"
 				),
-				new RecipeManager.RecipeIndex('c', Blocks.crafting_table),
+				new RecipeManager.RecipeIndex('c', Blocks.CRAFTING_TABLE),
 				new RecipeManager.RecipeIndex('i', "ingotIron"),
 				new RecipeManager.RecipeIndex('f', logisticsBlockFrame),
-				new RecipeManager.RecipeIndex('b', Items.blaze_powder));
+				new RecipeManager.RecipeIndex('b', Items.BLAZE_POWDER));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE), CraftingDependency.Basic,
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE.getMeta()), CraftingDependency.Basic,
 				new RecipeManager.RecipeLayout(
 						" c ",
 						"wfw",
 						" p "
 				),
-				new RecipeManager.RecipeIndex('c', Blocks.crafting_table),
+				new RecipeManager.RecipeIndex('c', Blocks.CRAFTING_TABLE),
 				new RecipeManager.RecipeIndex('w', "plankWood"),
 				new RecipeManager.RecipeIndex('f', logisticsBlockFrame),
-				new RecipeManager.RecipeIndex('p', Blocks.piston));
+				new RecipeManager.RecipeIndex('p', Blocks.PISTON));
 
 		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.BasicTransportPipe, 8), CraftingDependency.Basic,
 				new RecipeManager.RecipeLayout(

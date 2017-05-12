@@ -11,30 +11,41 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -51,14 +62,14 @@ import logisticspipes.utils.math.Camera;
 import logisticspipes.utils.math.Matrix4d;
 import logisticspipes.utils.math.VecmathUtil;
 import logisticspipes.utils.math.Vector2d;
+import logisticspipes.utils.math.Vector3d;
 import logisticspipes.utils.math.Vertex;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 //Based on: https://github.com/SleepyTrousers/EnderIO/blob/master/src/main/java/crazypants/enderio/machine/gui/GuiOverlayIoConfig.java
+@SideOnly(Side.CLIENT)
 public abstract class SideConfigDisplay {
-
-	protected static final RenderBlocks RB = new RenderBlocks();
 
 	private boolean draggingRotate = false;
 	private boolean draggingMove = false;
@@ -85,7 +96,7 @@ public abstract class SideConfigDisplay {
 
 	public boolean renderNeighbours = true;
 	private boolean inNeigButBounds = false;
-	private LogisticsBlockGenericPipe.RaytraceResult cachedLPBlockTrace;
+	private LogisticsBlockGenericPipe.InternalRayTraceResult cachedLPBlockTrace;
 
 	public SideConfigDisplay(CoreRoutedPipe configurables) {
 		this(Collections.singletonList(configurables.getLPPosition()));
@@ -140,7 +151,6 @@ public abstract class SideConfigDisplay {
 		}
 
 		world = mc.thePlayer.worldObj;
-		RB.blockAccess = new InnerBA();
 	}
 
 	public abstract void handleSelection(SelectedFace selection);
@@ -211,18 +221,19 @@ public abstract class SideConfigDisplay {
 	private void updateSelection(Vector3d start, Vector3d end) {
 		start.add(origin);
 		end.add(origin);
-		List<MovingObjectPosition> hits = new ArrayList<>();
+		List<RayTraceResult> hits = new ArrayList<>();
 
 		LogisticsBlockGenericPipe.ignoreSideRayTrace = true;
 		for (DoubleCoordinates bc : configurables) {
-			Block block = world.getBlock(bc.getXInt(), bc.getYInt(), bc.getZInt());
+			IBlockState bs = bc.getBlockState(world);
+			Block block = bs.getBlock();
 			if (block != null) {
 				if(block instanceof LogisticsBlockGenericPipe) {
-					cachedLPBlockTrace = LogisticsPipes.LogisticsPipeBlock.doRayTrace(world, bc.getXInt(), bc.getYInt(), bc.getZInt(), Vec3.createVectorHelper(start.x, start.y, start.z), Vec3.createVectorHelper(end.x, end.y, end.z));
+					cachedLPBlockTrace = LogisticsPipes.LogisticsPipeBlock.doRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
 				} else {
 					cachedLPBlockTrace = null;
 				}
-				MovingObjectPosition hit = block.collisionRayTrace(world, bc.getXInt(), bc.getYInt(), bc.getZInt(), Vec3.createVectorHelper(start.x, start.y, start.z), Vec3.createVectorHelper(end.x, end.y, end.z));
+				RayTraceResult hit = block.collisionRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
 				if (hit != null) {
 					hits.add(hit);
 				}
@@ -230,21 +241,20 @@ public abstract class SideConfigDisplay {
 		}
 		LogisticsBlockGenericPipe.ignoreSideRayTrace = false;
 		selection = null;
-		MovingObjectPosition hit = getClosestHit(Vec3.createVectorHelper(start.x, start.y, start.z), hits);
+		RayTraceResult hit = getClosestHit(new Vec3d(start.x, start.y, start.z), hits);
 		if (hit != null) {
-			TileEntity te = world.getTileEntity(hit.blockX, hit.blockY, hit.blockZ);
+			TileEntity te = world.getTileEntity(hit.getBlockPos());
 			if(te != null) {
-				EnumFacing face = EnumFacing.getFront(hit.sideHit);
-				selection = new SelectedFace(te, face, hit);
+				selection = new SelectedFace(te, hit.sideHit, hit);
 			}
 		}
 	}
 
-	public static MovingObjectPosition getClosestHit(Vec3 origin, Collection<MovingObjectPosition> candidates) {
+	public static RayTraceResult getClosestHit(Vec3d origin, Collection<RayTraceResult> candidates) {
 		double minLengthSquared = Double.POSITIVE_INFINITY;
-		MovingObjectPosition closest = null;
+		RayTraceResult closest = null;
 
-		for (MovingObjectPosition hit : candidates) {
+		for (RayTraceResult hit : candidates) {
 			if (hit != null) {
 				double lengthSquared = hit.hitVec.squareDistanceTo(origin);
 				if (lengthSquared < minLengthSquared) {
@@ -261,81 +271,38 @@ public abstract class SideConfigDisplay {
 		if (!updateCamera(partialTick, vp.x, vp.y, vp.width, vp.height)) {
 			return;
 		}
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		applyCamera(partialTick);
-		renderScene(false);
-		renderScene(true);
+		renderScene();
 		renderSelection();
 
 		renderOverlay(par1, par2);
-		GL11.glPopAttrib();
 	}
 
 	private void renderSelection() {
 		if (selection == null) {
 			return;
 		}
-		GL11.glPushMatrix();
-		GL11.glShadeModel(GL11.GL_FLAT);
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPopMatrix();
-
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		if (selection.hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
-		{
-			GL11.glEnable(GL11.GL_BLEND);
-			OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-			GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
-			GL11.glLineWidth(2.0F);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glDepthMask(false);
-			float f1 = 0.002F;
-			Block block = mc.theWorld.getBlock(selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ);
-
-			if (block.getMaterial() != Material.air)
-			{
-				if(block instanceof LogisticsBlockGenericPipe) {
-					LogisticsBlockGenericPipe.bypassPlayerTrace = cachedLPBlockTrace;
-				}
-				block.setBlockBoundsBasedOnState(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ);
-				double d0 = origin.x - eye.x;
-				double d1 = origin.y - eye.y;
-				double d2 = origin.z - eye.z;
-				RenderGlobal.drawOutlinedBoundingBox(block.getSelectedBoundingBoxFromPool(mc.theWorld, selection.hit.blockX, selection.hit.blockY, selection.hit.blockZ).expand((double)f1, (double)f1, (double)f1).getOffsetBoundingBox(-d0, -d1, -d2), -1);
-				if(block instanceof LogisticsBlockGenericPipe) {
-					LogisticsBlockGenericPipe.bypassPlayerTrace = null;
-				}
-			}
-
-			GL11.glDepthMask(true);
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glDisable(GL11.GL_BLEND);
-		}
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-
 		BoundingBox bb = new BoundingBox(new DoubleCoordinates(selection.config));
 
-		IIcon icon = Textures.LOGISTICS_SIDE_SELECTION;
+		TextureAtlasSprite icon = Textures.LOGISTICS_SIDE_SELECTION;
 		List<Vertex> corners = bb.getCornersWithUvForFace(selection.face, icon.getMinU(), icon.getMaxU(), icon.getMinV(), icon.getMaxV());
 
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		GlStateManager.disableDepth();
+		GlStateManager.disableLighting();
+
 		RenderUtil.bindBlockTexture();
-		GL11.glColor3f(1, 1, 1);
-		Tessellator.instance.startDrawingQuads();
-		Tessellator.instance.setColorOpaque_F(1, 1, 1);
+		VertexBuffer tes = Tessellator.getInstance().getBuffer();
+		GlStateManager.color(1, 1, 1);
 		Vector3d trans = new Vector3d((-origin.x) + eye.x, (-origin.y) + eye.y, (-origin.z) + eye.z);
-		Tessellator.instance.setTranslation(trans.x, trans.y, trans.z);
-		RenderUtil.addVerticesToTesselator(corners);
-		Tessellator.instance.draw();
-		Tessellator.instance.setTranslation(0, 0, 0);
+		tes.setTranslation(trans.x, trans.y, trans.z);
+		RenderUtil.addVerticesToTessellator(corners, DefaultVertexFormats.POSITION_TEX, true);
+		Tessellator.getInstance().draw();
+		tes.setTranslation(0, 0, 0);
 	}
 
 	private void renderOverlay(int mx, int my) {
 		Rectangle vp = camera.getViewport();
-		ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+		ScaledResolution scaledresolution = new ScaledResolution(mc);
 
 		int vpx = vp.x / scaledresolution.getScaleFactor();
 		int vph = vp.height / scaledresolution.getScaleFactor();
@@ -351,130 +318,156 @@ public abstract class SideConfigDisplay {
 		GL11.glLoadIdentity();
 		GL11.glTranslatef(vpx, vpy, -2000.0F);
 
-		GL11.glDisable(GL11.GL_LIGHTING);
+		GlStateManager.disableLighting();
 	}
 
-	private void renderScene(boolean tryNeighbours) {
-		if(tryNeighbours && !renderNeighbours) return;
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+	private void renderScene() {
+		GlStateManager.enableCull();
+		GlStateManager.enableRescaleNormal();
 
 		RenderHelper.disableStandardItemLighting();
-		mc.entityRenderer.disableLightmap(0);
+		mc.entityRenderer.disableLightmap();
 		RenderUtil.bindBlockTexture();
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
+
+		GlStateManager.disableLighting();
+		GlStateManager.enableTexture2D();
+		GlStateManager.enableAlpha();
 
 		Vector3d trans = new Vector3d((-origin.x) + eye.x, (-origin.y) + eye.y, (-origin.z) + eye.z);
-		for (int pass = 0; pass < 1; pass++) {
-			if(!tryNeighbours) {
-				setGlStateForPass(pass, false);
-				doWorldRenderPass(trans, configurables, pass);
-			} else if (renderNeighbours) {
-				setGlStateForPass(pass, true);
-				doWorldRenderPass(trans, neighbours, pass);
+
+		BlockRenderLayer renderLayer = MinecraftForgeClient.getRenderLayer();
+		try {
+			for (BlockRenderLayer layer : BlockRenderLayer.values()) {
+				ForgeHooksClient.setRenderLayer(layer);
+				setGlStateForPass(layer, false);
+				doWorldRenderPass(trans, configurables, layer);
 			}
+
+			if (renderNeighbours) {
+				for (BlockRenderLayer layer : BlockRenderLayer.values()) {
+					ForgeHooksClient.setRenderLayer(layer);
+					setGlStateForPass(layer, true);
+					doWorldRenderPass(trans, neighbours, layer);
+				}
+			}
+		} finally {
+			ForgeHooksClient.setRenderLayer(renderLayer);
 		}
 
 		RenderHelper.enableStandardItemLighting();
-		GL11.glEnable(GL11.GL_LIGHTING);
-		TileEntityRendererDispatcher.instance.field_147558_l = origin.x - eye.x;
-		TileEntityRendererDispatcher.instance.field_147560_j = origin.y - eye.y;
-		TileEntityRendererDispatcher.instance.field_147561_k = origin.z - eye.z;
+		GlStateManager.enableLighting();
+		TileEntityRendererDispatcher.instance.entityX = origin.x - eye.x;
+		TileEntityRendererDispatcher.instance.entityY = origin.y - eye.y;
+		TileEntityRendererDispatcher.instance.entityZ = origin.z - eye.z;
 		TileEntityRendererDispatcher.staticPlayerX = origin.x - eye.x;
 		TileEntityRendererDispatcher.staticPlayerY = origin.y - eye.y;
 		TileEntityRendererDispatcher.staticPlayerZ = origin.z - eye.z;
 
 		for (int pass = 0; pass < 2; pass++) {
-			if(!tryNeighbours) {
-				setGlStateForPass(pass, false);
-				doTileEntityRenderPass(configurables, pass);
-			} else if (renderNeighbours) {
+			ForgeHooksClient.setRenderPass(pass);
+			setGlStateForPass(pass, false);
+			doTileEntityRenderPass(configurables, pass);
+			if (renderNeighbours) {
 				setGlStateForPass(pass, true);
 				doTileEntityRenderPass(neighbours, pass);
 			}
 		}
+		ForgeHooksClient.setRenderPass(-1);
 		setGlStateForPass(0, false);
 	}
 
 	private void doTileEntityRenderPass(List<DoubleCoordinates> blocks, int pass) {
-		RenderPassHelper.setEntityRenderPass(pass);
 		for (DoubleCoordinates bc : blocks) {
-			TileEntity tile = world.getTileEntity(bc.getXInt(), bc.getYInt(), bc.getZInt());
+			TileEntity tile = world.getTileEntity(bc.getBlockPos());
 			if (tile != null) {
-				Vector3d at = new Vector3d(eye.x, eye.y, eye.z);
-				at.x += bc.getXDouble() - origin.x;
-				at.y += bc.getYDouble() - origin.y;
-				at.z += bc.getZDouble() - origin.z;
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				TileEntityRendererDispatcher.instance.renderTileEntityAt(tile, at.x, at.y, at.z, 0);
-				GL11.glPopAttrib();
-			}
-		}
-		RenderPassHelper.clearEntityRenderPass();
-	}
-
-	private void doWorldRenderPass(Vector3d trans, List<DoubleCoordinates> blocks, int pass) {
-		RenderPassHelper.setBlockRenderPass(pass);
-
-		Tessellator.instance.startDrawingQuads();
-		Tessellator.instance.setTranslation(trans.x, trans.y, trans.z);
-		Tessellator.instance.setBrightness(15 << 20 | 15 << 4);
-
-		for (DoubleCoordinates bc : blocks) {
-			Block block = world.getBlock(bc.getXInt(), bc.getYInt(), bc.getZInt());
-			if (block != null) {
-				if (block.canRenderInPass(pass)) {
-					RB.renderAllFaces = true;
-					RB.setRenderAllFaces(true);
-					RB.setRenderBounds(0, 0, 0, 1, 1, 1);
-					try {
-						RB.renderBlockByRenderType(block, bc.getXInt(), bc.getYInt(), bc.getZInt());
-					} catch (Exception e) {
-						//Ignore, things might blow up in rendering due to the modified block access
-						//but this is about as good as we can do
+				if (tile.shouldRenderInPass(pass)) {
+					Vector3d at = new Vector3d(eye.x, eye.y, eye.z);
+					at.x += bc.getXCoord() - origin.x;
+					at.y += bc.getYCoord() - origin.y;
+					at.z += bc.getZCoord() - origin.z;
+					if(tile.getClass() == TileEntityChest.class) {
+						TileEntityChest chest = (TileEntityChest)tile;
+						if(chest.adjacentChestXNeg != null) {
+							tile = chest.adjacentChestXNeg;
+							at.x--;
+						}  else if(chest.adjacentChestZNeg != null) {
+							tile = chest.adjacentChestZNeg;
+							at.z--;
+						}
 					}
+					TileEntityRendererDispatcher.instance.renderTileEntityAt(tile, at.x, at.y, at.z, 0);
 				}
 			}
 		}
-
-		Tessellator.instance.draw();
-		Tessellator.instance.setTranslation(0, 0, 0);
-		RenderPassHelper.clearBlockRenderPass();
 	}
 
-	private void setGlStateForPass(int pass, boolean isNeighbour) {
+	private void doWorldRenderPass(Vector3d trans, List<DoubleCoordinates> blocks, BlockRenderLayer layer) {
 
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		if(isNeighbour) {
+		VertexBuffer wr = Tessellator.getInstance().getBuffer();
+		wr.begin(7, DefaultVertexFormats.BLOCK);
 
-			float alpha = 0.8f;
-			if(pass == 0) {
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glEnable(GL11.GL_BLEND);
-				GL11.glEnable(GL11.GL_CULL_FACE);
-				GL11.glBlendFunc(GL11.GL_CONSTANT_ALPHA, GL11.GL_CONSTANT_COLOR);
-				GL14.glBlendColor(1.0f, 1.0f, 1.0f, alpha);
-				GL11.glDepthMask(true);
-			} else {
-				GL11.glEnable(GL11.GL_BLEND);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_CONSTANT_COLOR);
-				GL14.glBlendColor(1.0f, 1.0f, 1.0f, 0.8f);
-				GL14.glBlendColor(1.0f, 1.0f, 1.0f, alpha);
-				GL11.glDepthMask(false);
+		Tessellator.getInstance().getBuffer().setTranslation(trans.x, trans.y, trans.z);
+
+		for (DoubleCoordinates bc : blocks) {
+
+			IBlockState bs = world.getBlockState(bc.getBlockPos());
+			Block block = bs.getBlock();
+			bs = bs.getActualState(world, bc.getBlockPos());
+			if (block.canRenderInLayer(bs, layer)) {
+				renderBlock(bs, bc.getBlockPos(), world, Tessellator.getInstance().getBuffer());
 			}
+		}
+
+		Tessellator.getInstance().draw();
+		Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
+	}
+
+	public void renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, VertexBuffer worldRendererIn) {
+
+		try {
+			BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
+			EnumBlockRenderType type = state.getRenderType();
+			if (type != EnumBlockRenderType.MODEL) {
+				blockrendererdispatcher.renderBlock(state, pos, blockAccess, worldRendererIn);
+				return;
+			}
+
+			IBakedModel ibakedmodel = blockrendererdispatcher.getModelForState(state);
+			state = state.getBlock().getExtendedState(state, world, pos);
+			blockrendererdispatcher.getBlockModelRenderer().renderModel(blockAccess, ibakedmodel, state, pos, worldRendererIn, false);
+
+		} catch (Throwable throwable) {
+		}
+	}
+	private void setGlStateForPass(BlockRenderLayer layer, boolean isNeighbour) {
+		int pass = layer == BlockRenderLayer.TRANSLUCENT ? 1 : 0;
+		setGlStateForPass(pass, isNeighbour);
+	}
+
+	private void setGlStateForPass(int layer, boolean isNeighbour) {
+
+		GlStateManager.color(1, 1, 1);
+		if (isNeighbour) {
+
+			GlStateManager.enableDepth();
+			GlStateManager.enableBlend();
+			float alpha = 1f;
+			float col = 1f;
+
+			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_CONSTANT_COLOR);
+			GL14.glBlendColor(col, col, col, alpha);
 			return;
 		}
 
-		if(pass == 0) {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glDepthMask(true);
+		if (layer == 0) {
+			GlStateManager.enableDepth();
+			GlStateManager.disableBlend();
+			GlStateManager.depthMask(true);
 		} else {
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GL11.glDepthMask(false);
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GlStateManager.depthMask(false);
+
 		}
 
 	}
@@ -510,9 +503,9 @@ public abstract class SideConfigDisplay {
 
 		public TileEntity config;
 		public EnumFacing face;
-		public MovingObjectPosition hit;
+		public RayTraceResult hit;
 
-		public SelectedFace(TileEntity config, EnumFacing face, MovingObjectPosition hit) {
+		public SelectedFace(TileEntity config, EnumFacing face, RayTraceResult hit) {
 			super();
 			this.config = config;
 			this.face = face;
@@ -520,80 +513,7 @@ public abstract class SideConfigDisplay {
 		}
 	}
 
-	private class InnerBA implements IBlockAccess {
-
-		protected IBlockAccess wrapped;
-
-		InnerBA() {
-			wrapped = world;
-		}
-
-		@Override
-		public boolean isSideSolid(int x, int y, int z, EnumFacing side, boolean _default) {
-			return false;
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public int getLightBrightnessForSkyBlocks(int var1, int var2, int var3, int var4) {
-			return 15 << 20 | 15 << 4;
-		}
-
-		@Override
-		public int isBlockProvidingPowerTo(int var1, int var2, int var3, int var4) {
-			return wrapped.isBlockProvidingPowerTo(var1, var2, var3, var4);
-		}
-
-		@Override
-		public boolean isAirBlock(int var1, int var2, int var3) {
-			if(!configurables.contains(new DoubleCoordinates(var1,var2,var3))) {
-				return false;
-			}
-			return wrapped.isAirBlock(var1, var2, var3);
-		}
-
-		@Override
-		public TileEntity getTileEntity(int var1, int var2, int var3) {
-			if (var2 >= 0 && var2 < 256) {
-				return wrapped.getTileEntity(var1, var2, var3);
-			} else {
-				return null;
-			}
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public int getHeight() {
-			return wrapped.getHeight();
-		}
-
-		@Override
-		public int getBlockMetadata(int var1, int var2, int var3) {
-			return wrapped.getBlockMetadata(var1, var2, var3);
-		}
-
-		@Override
-		public Block getBlock(int var1, int var2, int var3) {
-			if(!configurables.contains(new DoubleCoordinates(var1,var2,var3))) {
-				return Blocks.air;
-			}
-			return wrapped.getBlock(var1, var2, var3);
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public BiomeGenBase getBiomeGenForCoords(int var1, int var2) {
-
-			return wrapped.getBiomeGenForCoords(var1, var2);
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public boolean extendedLevelsInChunkCache() {
-			return wrapped.extendedLevelsInChunkCache();
-		}
-	}
-
+	/*
 	private static class RenderPassHelper {
 		private static Field worldRenderPass = null;
 		private static int savedWorldRenderPass = -1;
@@ -641,12 +561,12 @@ public abstract class SideConfigDisplay {
 			ForgeHooksClient.setRenderPass(pass);
 		}
 	}
-
+*/
 	private static class RenderUtil {
 		public static final Vector3d UP_V = new Vector3d(0, 1, 0);
 		public static final Vector3d ZERO_V = new Vector3d(0, 0, 0);
 		private static final FloatBuffer MATRIX_BUFFER = GLAllocation.createDirectFloatBuffer(16);
-		public static final ResourceLocation BLOCK_TEX = TextureMap.locationBlocksTexture;
+		public static final ResourceLocation BLOCK_TEX = TextureMap.LOCATION_BLOCKS_TEXTURE;
 
 		public static void loadMatrix(Matrix4d mat) {
 			MATRIX_BUFFER.rewind();
@@ -674,19 +594,48 @@ public abstract class SideConfigDisplay {
 			Minecraft.getMinecraft().renderEngine.bindTexture(BLOCK_TEX);
 		}
 
-		public static void addVerticesToTesselator(List<Vertex> vertices) {
-			addVerticesToTessellator(vertices, Tessellator.instance);
-		}
+		public static void addVerticesToTessellator(List<Vertex> vertices, VertexFormat format, boolean doBegin) {
+			if (vertices == null || vertices.isEmpty()) {
+				return;
+			}
 
-		public static void addVerticesToTessellator(List<Vertex> vertices, Tessellator tes) {
+			List<Vertex> newV = vertices;
+
+			Tessellator tessellator = Tessellator.getInstance();
+			VertexBuffer tes = tessellator.getBuffer();
+			if (doBegin) {
+				tes.begin(GL11.GL_QUADS, format);
+			}
+
 			for (Vertex v : vertices) {
-				if (v.uv != null) {
-					tes.setTextureUV(v.u(), v.v());
+				for (VertexFormatElement el : format.getElements()) {
+					switch (el.getUsage()) {
+						case COLOR:
+							if (el.getType() == VertexFormatElement.EnumType.FLOAT) {
+								tes.color(v.r(), v.g(), v.b(), v.a());
+							}
+							break;
+						case NORMAL:
+							tes.normal(v.nx(), v.ny(), v.nz());
+							break;
+						case POSITION:
+							tes.pos(v.x(), v.y(), v.z());
+							break;
+						case UV:
+							if (el.getType() == VertexFormatElement.EnumType.FLOAT && v.uv != null) {
+								tes.tex(v.u(), v.v());
+							}
+							break;
+						case GENERIC:
+							break;
+						case PADDING:
+							break;
+						default:
+							break;
+
+					}
 				}
-				if (v.normal != null) {
-					tes.setNormal(v.nx(), v.ny(), v.nz());
-				}
-				tes.addVertex(v.x(), v.y(), v.z());
+				tes.endVertex();
 			}
 		}
 	}

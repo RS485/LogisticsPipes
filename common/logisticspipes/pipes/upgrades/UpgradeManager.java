@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -307,11 +308,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	public boolean tryIserting(World world, EntityPlayer entityplayer) {
-		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.UpgradeItem) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.UpgradeItem) {
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
-			IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getCurrentEquippedItem(), null);
+			IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), null);
 			if (upgrade.isAllowedForPipe(pipe)) {
 				if (isCombinedSneakyUpgrade) {
 					if (upgrade instanceof SneakyUpgrade) {
@@ -325,12 +326,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				}
 			}
 		}
-		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsItemCard && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsItemCard && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage() == LogisticsItemCard.SEC_CARD) {
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
 			if (secInv.getStackInSlot(0) == null) {
-				ItemStack newItem = entityplayer.getCurrentEquippedItem().splitStack(1);
+				ItemStack newItem = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1);
 				secInv.setInventorySlotContents(0, newItem);
 				InventoryChanged(secInv);
 				return true;
@@ -343,13 +344,13 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if (item == null) {
-				inv.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
+				inv.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(inv);
 				return true;
-			} else if (item.getItemDamage() == entityplayer.getCurrentEquippedItem().getItemDamage()) {
+			} else if (item.getItemDamage() == entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage()) {
 				if (item.stackSize < inv.getInventoryStackLimit()) {
 					item.stackSize++;
-					entityplayer.getCurrentEquippedItem().splitStack(1);
+					entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1);
 					inv.setInventorySlotContents(i, item);
 					InventoryChanged(inv);
 					return true;

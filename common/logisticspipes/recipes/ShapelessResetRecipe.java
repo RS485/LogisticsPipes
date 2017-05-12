@@ -55,4 +55,9 @@ public class ShapelessResetRecipe implements IRecipe {
 	public ItemStack getRecipeOutput() {
 		return output;
 	}
+
+	@Override
+	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+		return new ItemStack[inv.getSizeInventory()];
+	}
 }

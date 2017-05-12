@@ -8,8 +8,6 @@ import net.minecraft.util.EnumFacing;
 
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class BoundingBox {

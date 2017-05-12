@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -73,7 +74,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
 
 	private final LogicController controller;
-	private final RenderItem renderitem = new RenderItem();
+	private final ItemRenderer renderitem = new ItemRenderer(mc);
 
 	private int isMouseButtonDown;
 	private int mouseX;
@@ -160,8 +161,8 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 	private void drawMap(int par1, int par2) {
 		tooltip = null;
-		int mapX = MathHelper.floor_double(guiMapX);
-		int mapY = MathHelper.floor_double(guiMapY - zoom.moveY);
+		int mapX = (int)Math.floor(guiMapX);
+		int mapY = (int)Math.floor(guiMapY - zoom.moveY);
 		int leftSide = ((width - xSize) / 2);
 		int topSide = ((height - ySize) / 2);
 
@@ -198,8 +199,8 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
-				TextureAtlasSprite icon = Blocks.stone.getIcon(0, 0);
-				mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+				TextureAtlasSprite icon = Blocks.STONE.getIcon(0, 0);
+				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
 		}

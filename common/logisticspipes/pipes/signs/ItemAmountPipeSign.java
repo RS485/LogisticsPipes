@@ -169,7 +169,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer) {
-		FontRenderer var17 = renderer.func_147498_b();
+		FontRenderer var17 = renderer.getFontRenderer();
 		if (pipe != null) {
 			String name = "";
 			if (itemTypeInv != null && itemTypeInv.getIDStackInSlot(0) != null) {

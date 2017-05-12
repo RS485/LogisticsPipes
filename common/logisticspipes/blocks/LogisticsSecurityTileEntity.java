@@ -40,7 +40,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -166,8 +167,8 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		super.writeToNBT(par1nbtTagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
+		par1nbtTagCompound = super.writeToNBT(par1nbtTagCompound);
 		par1nbtTagCompound.setString("UUID", getSecId().toString());
 		par1nbtTagCompound.setBoolean("allowCC", allowCC);
 		par1nbtTagCompound.setBoolean("allowAutoDestroy", allowAutoDestroy);
@@ -187,6 +188,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 			list.appendTag(new NBTTagInt(i));
 		}
 		par1nbtTagCompound.setTag("excludedCC", list);
+		return par1nbtTagCompound;
 	}
 
 	public void buttonFreqCard(int integer, EntityPlayer player) {
@@ -199,7 +201,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				break;
 			case 2: //+
 				if (!useEnergy(10)) {
-					player.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
+					player.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
 				if (inv.getStackInSlot(0) == null) {
@@ -219,7 +221,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				break;
 			case 3: //++
 				if (!useEnergy(640)) {
-					player.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
+					player.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
 				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
@@ -255,7 +257,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 			return LogisticsSecurityTileEntity.allowAll;
 		}
 		if (usePower && !useEnergy(10)) {
-			entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.misc.noenergy"));
+			entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return new SecuritySettings("No Energy");
 		}
 		SecuritySettings setting = settingsList.get(entityplayer.getDisplayNameString());

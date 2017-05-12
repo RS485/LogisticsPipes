@@ -16,6 +16,7 @@ import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -28,7 +29,7 @@ import net.minecraft.util.EnumFacing;
 
 import java.util.*;
 
-public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISubMultiBlockPipeInformationProvider {
+public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISubMultiBlockPipeInformationProvider, ITickable {
 
 	private Set<DoubleCoordinates> mainPipePos = new HashSet<>();
 	private List<LogisticsTileGenericPipe> mainPipe;
@@ -68,7 +69,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 			}
 		}
 		if (mainPipe.isEmpty() || allInvalid) {
-			getWorld().setBlockToAir(xCoord, yCoord, zCoord);
+			getWorld().setBlockToAir(getPos());
 		}
 		if(mainPipe != null) {
 			return mainPipe;
@@ -81,7 +82,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 	}
 
 	@Override
-	public void updateEntity() {
+	public void update() {
 		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
@@ -89,11 +90,6 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 		for (LogisticsTileGenericPipe pipe:pipes) {
 			pipe.subMultiBlock.add(new DoubleCoordinates((TileEntity) this));
 		}
-	}
-
-	@Override
-	public boolean canUpdate() {
-		return true;
 	}
 
 	@Override
@@ -130,8 +126,8 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+		nbt = super.writeToNBT(nbt);
 		NBTTagList nbtList = new NBTTagList();
 		for(DoubleCoordinates pos: mainPipePos) {
 			NBTTagCompound compound = new NBTTagCompound();
@@ -145,6 +141,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 			nbtTypeList.appendTag(new NBTTagString(type.name()));
 		}
 		nbt.setTag("SubTypeList", nbtTypeList);
+		return nbt;
 	}
 
 	@Override
@@ -202,7 +199,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 
 	public TileBuffer[] getTileCache() {
 		if (tileBuffer == null) {
-			tileBuffer = TileBuffer.makeBuffer(worldObj, xCoord, yCoord, zCoord, true);
+			tileBuffer = TileBuffer.makeBuffer(worldObj, getPos(), true);
 		}
 		return tileBuffer;
 	}

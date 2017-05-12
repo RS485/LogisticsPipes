@@ -8,7 +8,7 @@ public class FinalNBTTagCompound extends NBTTagCompound {
 
 	public FinalNBTTagCompound(NBTTagCompound base) {
 		super();
-		tagMap = base.tagMap;
+		tagMap.putAll(base.tagMap); //TODO Does this work as intended ???
 		hashcode = super.hashCode();
 	}
 

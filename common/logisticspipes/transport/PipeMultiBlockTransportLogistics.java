@@ -105,9 +105,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 				return;
 			}
 		}
-		Explosion explosion = new Explosion(this.getWorld(), null, this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ(), 4.0F);
-		explosion.isFlaming = false;
-		explosion.isSmoking = true;
+		Explosion explosion = new Explosion(this.getWorld(), null, this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ(), 4.0F, false, true);
 		explosion.doExplosionB(true);
 	}
 
@@ -126,9 +124,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 				return;
 			}
 		}
-		Explosion explosion = new Explosion(this.getWorld(), null, this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ(), 4.0F);
-		explosion.isFlaming = false;
-		explosion.isSmoking = true;
+		Explosion explosion = new Explosion(this.getWorld(), null, this.getPipe().getX(), this.getPipe().getY(), this.getPipe().getZ(), 4.0F, false, true);
 		explosion.doExplosionB(true);
 	}
 

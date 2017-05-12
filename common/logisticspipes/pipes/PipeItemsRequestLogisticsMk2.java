@@ -9,10 +9,11 @@ import logisticspipes.textures.Textures.TextureType;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
@@ -32,7 +33,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 			if (settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+				entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;
@@ -42,9 +43,9 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if (disk == null) {
-			if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
-				disk = entityplayer.getCurrentEquippedItem();
-				entityplayer.destroyCurrentEquippedItem();
+			if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+				disk = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+				entityplayer.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, null);
 				flag = false;
 			}
 		}

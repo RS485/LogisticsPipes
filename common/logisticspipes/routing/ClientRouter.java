@@ -19,6 +19,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -94,7 +95,7 @@ public class ClientRouter implements IRouter {
 		if (worldObj == null) {
 			return null;
 		}
-		TileEntity tile = worldObj.getTileEntity(_xCoord, _yCoord, _zCoord);
+		TileEntity tile = worldObj.getTileEntity(new BlockPos(_xCoord, _yCoord, _zCoord));
 
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;

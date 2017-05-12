@@ -53,7 +53,7 @@ public class LPItemDuct extends TileItemDuct {
 			info.setItem(ItemIdentifierStack.getFromStack(item.stack));
 			LPTravelingItemServer lpItem = new LPTravelingItemServer(info);
 			lpItem.setSpeed(info._transportMode == TransportMode.Active ? 0.3F : 0.2F);
-			pipe.pipe.transport.injectItem(lpItem, EnumFacing.getOrientation(item.direction));
+			pipe.pipe.transport.injectItem(lpItem, EnumFacing.getFront(item.direction));
 		} else if (item.stack != null) {
 			int consumed = pipe.injectItem(item.stack, true, dir);
 			item.stack.stackSize -= consumed;
@@ -70,7 +70,7 @@ public class LPItemDuct extends TileItemDuct {
 	}
 
 	public boolean isLPBlockedSide(int paramInt, boolean ignoreSystemDisconnect) {
-		EnumFacing dir = EnumFacing.getOrientation(paramInt);
+		EnumFacing dir = EnumFacing.getFront(paramInt);
 		if (pipe.tilePart.hasBlockingPluggable(dir)) {
 			return true;
 		}
@@ -96,7 +96,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public IMultiBlock getConnectedSide(byte paramByte) {
-		if (EnumFacing.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getFront(paramByte) != dir) {
 			return null;
 		}
 		return super.getConnectedSide(paramByte);
@@ -104,7 +104,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public NeighborTypes getCachedSideType(byte paramByte) {
-		if (EnumFacing.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getFront(paramByte) != dir) {
 			return null;
 		}
 		return super.getCachedSideType(paramByte);
@@ -112,7 +112,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public ConnectionTypes getConnectionType(byte paramByte) {
-		if (EnumFacing.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getFront(paramByte) != dir) {
 			return null;
 		}
 		return super.getConnectionType(paramByte);
@@ -120,7 +120,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public IMultiBlock getCachedTile(byte paramByte) {
-		if (EnumFacing.getOrientation(paramByte) != dir) {
+		if (EnumFacing.getFront(paramByte) != dir) {
 			return null;
 		}
 		return super.getCachedTile(paramByte);
@@ -128,7 +128,7 @@ public class LPItemDuct extends TileItemDuct {
 
 	@Override
 	public TileEntity getAdjTileEntitySafe(int ordinal) {
-		if (EnumFacing.getOrientation(ordinal) != dir) {
+		if (EnumFacing.getFront(ordinal) != dir) {
 			return null;
 		}
 		return super.getAdjTileEntitySafe(ordinal);

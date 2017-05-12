@@ -18,7 +18,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -51,7 +50,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 		drawRect(right - 37, bottom - 45, right - 21, bottom - 29, Color.DARKER_GREY);
 
 		if (pipe.getDisk() != null) {
-			GuiScreen.renderItem.renderItemIntoGUI(fontRendererObj, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
+			GuiScreen.itemRender.renderItemIntoGUI(fontRendererObj, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
 			Macrobutton.enabled = true;
 		} else {
 			Macrobutton.enabled = false;

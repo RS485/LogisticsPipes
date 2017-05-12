@@ -8,11 +8,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -120,15 +121,13 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 					zOne -= 1;
 					zTwo += 2;
 				}
-				AxisAlignedBB box = SCurveTubeRenderer.getObjectBoundsAt(AxisAlignedBB
-						.getBoundingBox(Math.min(xOne, xTwo), Math.min(yOne, yTwo), Math.min(zOne, zTwo), Math.max(xOne, xTwo), Math.max(yOne, yTwo),
-								Math.max(zOne, zTwo)).getOffsetBoundingBox(-x, -y, -z), orientation);
+				AxisAlignedBB box = SCurveTubeRenderer.getObjectBoundsAt(new AxisAlignedBB(Math.min(xOne, xTwo), Math.min(yOne, yTwo), Math.min(zOne, zTwo), Math.max(xOne, xTwo), Math.max(yOne, yTwo),
+								Math.max(zOne, zTwo)).offset(-x, -y, -z), orientation);
 				if (box != null) {
 					LPPositionSet<DoubleCoordinates> lpBox = new LPPositionSet<>(DoubleCoordinates.class);
 					lpBox.addFrom(box);
 					DoubleCoordinates center = lpBox.getCenter();
-					box = AxisAlignedBB
-							.getBoundingBox(center.getXCoord() - 0.3D, center.getYCoord() - 0.3D, center.getZCoord() - 0.3D, center.getXCoord() + 0.3D,
+					box = new AxisAlignedBB(center.getXCoord() - 0.3D, center.getYCoord() - 0.3D, center.getZCoord() - 0.3D, center.getXCoord() + 0.3D,
 									center.getYCoord() + 0.3D, center.getZCoord() + 0.3D);
 					if (box != null) {
 						AxisAlignedBB cBox = getCompleteBox();

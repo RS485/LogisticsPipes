@@ -1,10 +1,12 @@
 package logisticspipes.textures;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPConstants;
 import logisticspipes.proxy.MainProxy;
@@ -182,6 +184,7 @@ public class Textures {
 	}
 
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
+	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(TextureMap par1IIconRegister) {
 		//Register Empty Texture for slot 0
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 0, "empty", "", true);
@@ -250,13 +253,13 @@ public class Textures {
 		if (MainProxy.isClient() && par1IIconRegister != null) {
 			Textures.LOGISTICS_REQUEST_TABLE = new TextureAtlasSprite[5];
 			for (int i = 0; i < 5; i++) {
-				Textures.LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerIcon("logisticspipes:requesttable/" + i);
+				Textures.LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/" + i));
 			}
-			Textures.LOGISTICS_REQUEST_TABLE_NEW = par1IIconRegister.registerIcon("logisticspipes:requesttable/requestTexture");
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = par1IIconRegister.registerIcon("logisticspipes:requesttable/routed");
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = par1IIconRegister.registerIcon("logisticspipes:requesttable/unrouted");
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = par1IIconRegister.registerIcon("logisticspipes:empty");
-			Textures.LOGISTICS_SIDE_SELECTION = par1IIconRegister.registerIcon("logisticspipes:sideSelection");
+			Textures.LOGISTICS_REQUEST_TABLE_NEW = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/requestTexture"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/routed"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/unrouted"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:empty"));
+			Textures.LOGISTICS_SIDE_SELECTION = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:sideSelection"));
 		}
 
 		if (LPConstants.DEBUG) {
@@ -264,8 +267,8 @@ public class Textures {
 		}
 	}
 
-	public void registerItemIcons(TextureMap par1IIconRegister) {
-		Textures.LPactionIconProvider.registerIcons(par1IIconRegister);
+	public void registerItemIcons(TextureMap textureMap) {
+		Textures.LPactionIconProvider.registerIcons(textureMap);
 	}
 
 	private TextureType registerTexture(TextureMap par1IIconRegister, String fileName) {

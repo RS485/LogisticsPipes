@@ -69,7 +69,7 @@ public class LPTickHandler {
 		if (info == null) {
 			info = new LPWorldInfo();
 			LPTickHandler.worldInfo.put(world, info);
-			world.addWorldAccess(new LPWorldAccess(world, info));
+			world.addEventListener(new LPWorldAccess(world, info));
 		}
 		return info;
 	}

@@ -1,6 +1,7 @@
 package logisticspipes.interfaces;
 
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.EnumFacing;
 
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import network.rs485.logisticspipes.world.DoubleCoordinates;

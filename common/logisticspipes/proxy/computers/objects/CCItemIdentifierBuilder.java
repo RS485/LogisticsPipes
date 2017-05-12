@@ -3,6 +3,7 @@ package logisticspipes.proxy.computers.objects;
 import java.util.List;
 
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
@@ -52,7 +53,7 @@ public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 	public ItemIdentifier build() {
 		Item item = null;
 		if(itemIDName != null) {
-			item = (Item) Item.itemRegistry.getObject(itemIDName);
+			item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemIDName));
 		} else {
 			item = Item.getItemById(itemID);
 		}

@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.BufferUtils;
@@ -72,8 +71,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				return ZOOM_LEVEL.values()[id + 1];
 			}
 		}
-
-public class RequestMonitorPopup extends SubGuiScreen {
+	}
 
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
 	private final PipeBlockRequestTable _table;

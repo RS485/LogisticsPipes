@@ -81,7 +81,7 @@ public class CraftingPipeSign implements IPipeSign {
 	@SideOnly(Side.CLIENT)
 	public void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer) {
 		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics) pipe;
-		FontRenderer var17 = renderer.func_147498_b();
+		FontRenderer var17 = renderer.getFontRenderer();
 		if (cpipe != null) {
 			List<ItemIdentifierStack> craftables = cpipe.getCraftedItems();
 

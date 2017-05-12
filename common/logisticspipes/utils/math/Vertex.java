@@ -43,4 +43,20 @@ public class Vertex {
 		return uv.y;
 	}
 
+	public float r() {
+		return 1;
+	}
+
+	public float g() {
+		return 1;
+	}
+
+	public float b() {
+		return 1;
+	}
+
+	public float a() {
+		return 0;
+	}
+
 }

@@ -13,7 +13,7 @@ import logisticspipes.utils.FluidIdentifier;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IRequestFluid {
 
@@ -32,7 +32,7 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 				if (settings == null || settings.openRequest) {
 					openGui(entityplayer);
 				} else {
-					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
+					entityplayer.addChatMessage(new TextComponentString("Permission denied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());

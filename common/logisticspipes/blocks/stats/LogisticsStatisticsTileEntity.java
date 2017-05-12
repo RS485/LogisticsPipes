@@ -28,7 +28,7 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 	}
 
 	@Override
-	public void updateEntity() {
+	public void update() {
 		if (MainProxy.isClient(worldObj)) {
 			return;
 		}
@@ -54,8 +54,8 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+		nbt = super.writeToNBT(nbt);
 		nbt.setInteger("taskSize", tasks.size());
 		int count = 0;
 		for (TrackingTask task : tasks) {
@@ -64,6 +64,7 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 			nbt.setTag("Task_" + count, tag);
 			count++;
 		}
+		return nbt;
 	}
 
 	@Override

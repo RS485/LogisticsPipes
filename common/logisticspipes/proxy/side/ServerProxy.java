@@ -35,6 +35,7 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -216,11 +217,11 @@ public class ServerProxy implements IProxy {
 		if (world == null) {
 			return null;
 		}
-		if (!world.blockExists(x, y, z)) {
+		if (world.isAirBlock(new BlockPos(x, y, z))) {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(x, y, z);
+		final TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}

@@ -68,7 +68,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	@Override
 	public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
 		if (sideTanks[from.ordinal()].getFluid() == null || !(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource))) {
-			return new FluidStack(resource.getFluidID(), 0);
+			return new FluidStack(resource.getFluid(), 0);
 		}
 		return drain(from, resource.amount, doDrain);
 	}
@@ -169,7 +169,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 			}
 			ModernPacket packet = computeFluidUpdate(init, true);
 			if (packet != null) {
-				MainProxy.sendPacketToAllWatchingChunk(container.xCoord, container.zCoord, MainProxy.getDimensionForWorld(getWorld()), packet);
+				MainProxy.sendPacketToAllWatchingChunk(container.getPos().getX(), container.getPos().getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
 			}
 		}
 	}
@@ -221,7 +221,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 				continue;
 			}
 
-			if (prev.getFluidID() != current.getFluidID() || initPacket) {
+			if (prev.getFluid() != current.getFluid() || initPacket) {
 				changed = true;
 				renderCache[dir.ordinal()] = new FluidStack(current.getFluid(), renderCache[dir.ordinal()].amount);
 			}
@@ -237,7 +237,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		}
 
 		if (changed || initPacket) {
-			return PacketHandler.getPacket(PipeFluidUpdate.class).setRenderCache(renderCache).setPosX(container.xCoord).setPosY(container.yCoord).setPosZ(container.zCoord).setChunkDataPacket(initPacket);
+			return PacketHandler.getPacket(PipeFluidUpdate.class).setRenderCache(renderCache).setTilePos(container).setChunkDataPacket(initPacket);
 		}
 
 		return null;

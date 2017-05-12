@@ -18,14 +18,15 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -413,7 +414,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 			ItemStack item = _moduleInventory.getStackInSlot(i);
 			if (item == null) {
-				_moduleInventory.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
+				_moduleInventory.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(_moduleInventory);
 				return true;
 			}
@@ -423,7 +424,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (entityplayer.getCurrentEquippedItem() == null) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == null) {
 			return false;
 		}
 
@@ -432,19 +433,19 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi) container.pipe).nextOrientation();
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
 			return true;
 		}
 
-		if (!entityplayer.isSneaking() && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.ModuleItem && entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
+		if (!entityplayer.isSneaking() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.ModuleItem && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage() != ItemModule.BLANK) {
 			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;

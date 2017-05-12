@@ -34,9 +34,7 @@ public class TDPart implements ITDPart {
 					TickHandler.addMultiBlockToCalculate(duct);
 				}
 				duct.setWorldObj(pipe.getWorld());
-				duct.xCoord = pipe.xCoord;
-				duct.yCoord = pipe.yCoord;
-				duct.zCoord = pipe.zCoord;
+				duct.setPos(pipe.getPos());
 				duct.validate();
 				DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipe), opposite);
 				duct.onNeighborTileChange(pos.getXInt(), pos.getYInt(), pos.getZInt());
@@ -51,9 +49,7 @@ public class TDPart implements ITDPart {
 		for (int i = 0; i < 6; i++) {
 			if (thermalDynamicsDucts[i] != null) {
 				thermalDynamicsDucts[i].setWorldObj(world);
-				thermalDynamicsDucts[i].xCoord = pipe.xCoord;
-				thermalDynamicsDucts[i].yCoord = pipe.yCoord;
-				thermalDynamicsDucts[i].zCoord = pipe.zCoord;
+				thermalDynamicsDucts[i].setPos(pipe.getPos());
 			}
 		}
 	}

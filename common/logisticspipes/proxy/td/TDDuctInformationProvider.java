@@ -49,17 +49,17 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 
 	@Override
 	public int getX() {
-		return duct.xCoord;
+		return duct.getPos().getX();
 	}
 
 	@Override
 	public int getY() {
-		return duct.yCoord;
+		return duct.getPos().getY();
 	}
 
 	@Override
 	public int getZ() {
-		return duct.zCoord;
+		return duct.getPos().getZ();
 	}
 
 	@Override
@@ -183,7 +183,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				}
 				visited.add(pos);
 
-				double distance = lpDuct.pipe.getDistanceTo(destinationint, EnumFacing.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
+				double distance = lpDuct.pipe.getDistanceTo(destinationint, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
 
 				visited.remove(pos);
 
@@ -241,7 +241,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 						}
 						visited.add(pos);
 
-						double distance = lpDuct.pipe.getDistanceTo(id, EnumFacing.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max,
+						double distance = lpDuct.pipe.getDistanceTo(id, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max,
 								visited);
 
 						visited.remove(pos);
@@ -296,7 +296,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 		for (Route localRoute1 : paramIterable) {
 			if (localRoute1.endPoint instanceof LPItemDuct) {
 				LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
-				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight, EnumFacing.getOrientation(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
+				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
 			}
 		}
 		return list;

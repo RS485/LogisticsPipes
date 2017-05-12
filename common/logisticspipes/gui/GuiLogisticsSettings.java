@@ -54,8 +54,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 				contentRenderDistance.searchinput1 = config.getRenderPipeContentDistance() + "";
 			}
 			contentRenderDistance.reposition(15, 110, 30, 15);
-			useNewRendererButton = (GuiCheckBox) addButton(new GuiCheckBox(0, guiLeft + 15, guiTop + 30, 16, 16, config.isUseNewRenderer()));
-			useFallbackRendererButton = (GuiCheckBox) addButton(new GuiCheckBox(0, guiLeft + 15, guiTop + 50, 16, 16, config.isUseFallbackRenderer()));
+			//useNewRendererButton = (GuiCheckBox) addButton(new GuiCheckBox(0, guiLeft + 15, guiTop + 30, 16, 16, config.isUseNewRenderer()));
+			//useFallbackRendererButton = (GuiCheckBox) addButton(new GuiCheckBox(0, guiLeft + 15, guiTop + 50, 16, 16, config.isUseFallbackRenderer()));
 		}
 
 		@Override
@@ -89,8 +89,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void renderForgroundContent() {
 			renderDistance.renderSearchBar();
 			contentRenderDistance.renderSearchBar();
-			fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
-			fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
+			//fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
+			//fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
 			fontRendererObj.drawString(StringUtils.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
 			fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipecontentrenderdistance"), 10, 100, 0x404040);
 		}
@@ -116,8 +116,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			config.setUseNewRenderer(useNewRendererButton.getState());
-			config.setUseFallbackRenderer(useFallbackRendererButton.getState());
+			//config.setUseNewRenderer(useNewRendererButton.getState());
+			//config.setUseFallbackRenderer(useFallbackRendererButton.getState());
 			config.sendUpdate();
 		}
 	}

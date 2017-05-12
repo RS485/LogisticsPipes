@@ -16,23 +16,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import buildcraft.api.transport.IPipe;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import cofh.api.transport.IItemDuct;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -91,7 +91,7 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 		"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
 		"buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection" })
 public class LogisticsTileGenericPipe extends TileEntity
-		implements IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile,
+		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile,
 		ILogicControllerTile, IPipeConnection {
 
 	public final PipeRenderState renderState;
@@ -103,7 +103,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public Set<DoubleCoordinates> subMultiBlock = new HashSet<>();
 	public boolean[] turtleConnect = new boolean[7];
 	@ModDependentField(modId = LPConstants.computerCraftModID)
-	public HashMap<IComputerAccess, ForgeDirection> connections;
+	public HashMap<IComputerAccess, EnumFacing> connections;
 	@ModDependentField(modId = LPConstants.computerCraftModID)
 	public IComputerAccess currentPC;
 	@ModDependentField(modId = LPConstants.openComputersModID)
@@ -321,8 +321,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 	/* IPipeInformationProvider */
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+		nbt = super.writeToNBT(nbt);
 
 		/*
 		for (int i = 0; i < EnumFacing.VALUES.length; i++) {
@@ -332,7 +332,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		 */
 
 		if (pipe != null) {
-			nbt.setInteger("pipeId", Item.itemRegistry.getIDForObject(pipe.item));
+			nbt.setInteger("pipeId", Item.REGISTRY.getIDForObject(pipe.item));
 			pipe.writeToNBT(nbt);
 		} else {
 			nbt.setInteger("pipeId", coreState.pipeId);
@@ -347,6 +347,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		NBTTagCompound logicNBT = new NBTTagCompound();
 		logicController.writeToNBT(logicNBT);
 		nbt.setTag("logicController", logicNBT);
+		return nbt;
 	}
 
 	@Override
@@ -372,7 +373,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		if (pipe != null) {
 			pipe.readFromNBT(nbt);
 		} else {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at {0},{1},{2}", xCoord, yCoord, zCoord);
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at {0},{1},{2}", getPos().getX(), getPos().getY(), getPos().getZ());
 			deletePipe = true;
 		}
 
@@ -646,13 +647,13 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public boolean canConnect(ForgeDirection dir) {
+	public boolean canConnect(EnumFacing dir) {
 		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe) && !(this.getTile(dir) instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Node sidedNode(ForgeDirection dir) {
+	public Node sidedNode(EnumFacing dir) {
 		if (this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
 			return null;
 		} else {
@@ -669,8 +670,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 		blockType = getBlockType();
 
 		if (pipe == null) {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", xCoord, yCoord, zCoord);
-			worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", getPos().getX(), getPos().getY(), getPos().getZ());
+			worldObj.setBlockToAir(getPos());
 			return;
 		}
 
@@ -725,7 +726,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	public void afterStateUpdated() {
 		if (pipe == null && coreState.pipeId != 0) {
-			initialize(LogisticsBlockGenericPipe.createPipe((Item) Item.itemRegistry.getObjectById(coreState.pipeId)));
+			initialize(LogisticsBlockGenericPipe.createPipe((Item) Item.REGISTRY.getObjectById(coreState.pipeId)));
 		}
 
 		if (pipe == null) {
@@ -760,7 +761,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	@Override
-	public TileEntity getNextConnectedTile(ForgeDirection to) {
+	public TileEntity getNextConnectedTile(EnumFacing to) {
 		if (this.pipe.isMultiBlock()) {
 			return ((CoreMultiBlockPipe) this.pipe).getConnectedEndTile(to);
 		}
@@ -897,10 +898,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 		return getBlockType();
 	}
 
-	@Override
-	public World getWorld() {
-		return worldObj;
-	}
 
 	public boolean isUseableByPlayer(EntityPlayer player) {
 		return worldObj.getTileEntity(pos) == this;
@@ -932,7 +929,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean canInjectItems(ForgeDirection from) {
+	public boolean canInjectItems(EnumFacing from) {
 		return isPipeConnected(from);
 	}
 
@@ -956,19 +953,19 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public Block getNeighborBlock(ForgeDirection dir) {
+	public Block getNeighborBlock(EnumFacing dir) {
 		return getBlock(dir);
 	}
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public TileEntity getNeighborTile(ForgeDirection dir) {
+	public TileEntity getNeighborTile(EnumFacing dir) {
 		return getTile(dir);
 	}
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public IPipe getNeighborPipe(ForgeDirection dir) {
+	public IPipe getNeighborPipe(EnumFacing dir) {
 		if (getTile(dir) instanceof IPipeTile) {
 			return ((IPipeTile) getTile(dir)).getPipe();
 		}
@@ -983,7 +980,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public PipePluggable getPipePluggable(ForgeDirection direction) {
+	public PipePluggable getPipePluggable(EnumFacing direction) {
 		if (tilePart.getBCPipePluggable(direction) == null) {
 			return null;
 		}
@@ -992,13 +989,13 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean hasPipePluggable(ForgeDirection direction) {
+	public boolean hasPipePluggable(EnumFacing direction) {
 		return tilePart.getBCPipePluggable(direction) != null;
 	}
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean hasBlockingPluggable(ForgeDirection direction) {
+	public boolean hasBlockingPluggable(EnumFacing direction) {
 		if (tilePart.getBCPipePluggable(direction) == null) {
 			return false;
 		}
@@ -1007,7 +1004,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public ConnectOverride overridePipeConnection(PipeType pipeType, ForgeDirection forgeDirection) {
+	public ConnectOverride overridePipeConnection(PipeType pipeType, EnumFacing forgeDirection) {
 		if (this.pipe != null && this.pipe.isFluidPipe()) {
 			if (pipeType == PipeType.FLUID) {
 				return ConnectOverride.CONNECT;
@@ -1037,16 +1034,15 @@ public class LogisticsTileGenericPipe extends TileEntity
 		} else {
 			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> set = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
 			set.addToAll(pipe.getLPPosition());
-			set.add(new DoubleCoordinatesType<>(xCoord, yCoord, zCoord, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
-			set.add(new DoubleCoordinatesType<>(xCoord + 1, yCoord + 1, zCoord + 1, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
-			renderBox = AxisAlignedBB
-					.getBoundingBox(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
+			set.add(new DoubleCoordinatesType<>(getPos(), CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
+			set.add(new DoubleCoordinatesType<>(getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
+			renderBox = new AxisAlignedBB(set.getMinXD() - 1, set.getMinYD() - 1, set.getMinZD() - 1, set.getMaxXD() + 1, set.getMaxYD() + 1, set.getMaxZD() + 1);
 		}
 		return renderBox;
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, ForgeDirection ignore, ItemIdentifier ident, boolean isActive, double traveled, double max,
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double traveled, double max,
 			List<DoubleCoordinates> visited) {
 		if (pipe == null || traveled > max) {
 			return Integer.MAX_VALUE;

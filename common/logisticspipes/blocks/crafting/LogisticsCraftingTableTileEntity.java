@@ -346,8 +346,8 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		super.writeToNBT(par1nbtTagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
+		par1nbtTagCompound = super.writeToNBT(par1nbtTagCompound);
 		inv.writeToNBT(par1nbtTagCompound, "inv");
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
 		if (placedBy != null) {
@@ -378,6 +378,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		} else {
 			par1nbtTagCompound.removeTag("targetType");
 		}
+		return par1nbtTagCompound;
 	}
 
 	@Override
@@ -463,7 +464,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	public boolean isFuzzy() {
-		return worldObj.getBlockMetadata(xCoord, yCoord, zCoord) == LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE;
+		return worldObj.getBlockState(pos).getValue(LogisticsSolidBlock.metaProperty) == LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE;
 	}
 
 	@Override

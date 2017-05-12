@@ -42,7 +42,7 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {
@@ -74,7 +74,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 				if (settings == null || settings.openRequest) {
 					openGui(entityplayer);
 				} else {
-					entityplayer.addChatMessage(new ChatComponentText("Permission denied"));
+					entityplayer.addChatMessage(new TextComponentString("Permission denied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());

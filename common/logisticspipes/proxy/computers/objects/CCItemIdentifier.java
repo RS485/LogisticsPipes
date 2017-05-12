@@ -34,7 +34,7 @@ public class CCItemIdentifier implements ILPCCTypeDefinition {
 
 		@CCCommand(description = "Returns the itemID (String) of this ItemIdentifier")
 		public String getIdName() {
-			return Item.itemRegistry.getNameForObject(ident.item);
+			return Item.REGISTRY.getNameForObject(ident.item).toString();
 		}
 
 		@CCCommand(description = "Returns the data/damage of this ItemIdentifier")

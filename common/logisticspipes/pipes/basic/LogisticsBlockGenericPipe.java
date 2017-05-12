@@ -13,6 +13,7 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
@@ -23,6 +24,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
@@ -60,8 +62,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class LogisticsBlockGenericPipe extends BlockContainer {
 
-	private static final ForgeDirection[] DIR_VALUES = ForgeDirection.values();
-	public static RaytraceResult bypassPlayerTrace = null;
+	public static InternalRayTraceResult bypassPlayerTrace = null;
 	public static boolean ignoreSideRayTrace = false;
 	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<>();
 	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<>();
@@ -75,18 +76,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		setRenderAllSides();
 	}
 
-	public static IIcon getRequestTableTextureFromSide(int l) {
-		ForgeDirection dir = ForgeDirection.getOrientation(l);
-		switch (dir) {
-			case UP:
-				return Textures.LOGISTICS_REQUEST_TABLE[0];
-			case DOWN:
-				return Textures.LOGISTICS_REQUEST_TABLE[1];
-			default:
-				return Textures.LOGISTICS_REQUEST_TABLE[4];
-		}
-	}
-
 	public static void removePipe(CoreUnroutedPipe pipe) {
 		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
 			return;
@@ -98,14 +87,14 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			LogisticsBlockGenericPipe.cacheTileToPreventRemoval(pipe);
 		}
 
-		World world = pipe.container.getWorldObj();
+		World world = pipe.container.getWorld();
 
 		if (pipe.isMultiBlock()) {
 			if (pipe.preventRemove()) {
 				throw new UnsupportedOperationException("A multi block can't be protected against removal.");
 			}
 			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> list = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
-			list.stream().forEach(pos -> pos.add(new DoubleCoordinates(pipe)));
+			list.forEach(pos -> pos.add(new DoubleCoordinates(pipe)));
 			for (DoubleCoordinates pos : pipe.container.subMultiBlock) {
 				TileEntity tile = pos.getTileEntity(world);
 				if(tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -126,17 +115,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return;
 		}
 
-		int x = pipe.container.xCoord;
-		int y = pipe.container.yCoord;
-		int z = pipe.container.zCoord;
+		BlockPos pos = pipe.container.getPos();
 
 		if (LogisticsBlockGenericPipe.lastRemovedDate != world.getTotalWorldTime()) {
 			LogisticsBlockGenericPipe.lastRemovedDate = world.getTotalWorldTime();
 			LogisticsBlockGenericPipe.pipeRemoved.clear();
 		}
 
-		LogisticsBlockGenericPipe.pipeRemoved.put(new DoubleCoordinates(x, y, z), pipe);
-		world.removeTileEntity(x, y, z);
+		LogisticsBlockGenericPipe.pipeRemoved.put(new DoubleCoordinates(pos), pipe);
+		world.removeTileEntity(pos);
 	}
 
 	/* Registration ******************************************************** */
@@ -176,19 +163,20 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return null;
 	}
 
-	public static boolean placePipe(CoreUnroutedPipe pipe, World world, int i, int j, int k, Block block, int meta) {
-		return LogisticsBlockGenericPipe.placePipe(pipe, world, i, j, k, block, meta, null);
+	public static boolean placePipe(CoreUnroutedPipe pipe, World world, BlockPos blockPos, Block block) {
+		return LogisticsBlockGenericPipe.placePipe(pipe, world, blockPos, block, null);
 	}
 
-	public static boolean placePipe(CoreUnroutedPipe pipe, World world, int i, int j, int k, Block block, int meta, ITubeOrientation orientation) {
+	public static boolean placePipe(CoreUnroutedPipe pipe, World world, BlockPos blockPos, Block block, ITubeOrientation orientation) {
 		if (world.isRemote) {
 			return true;
 		}
 
-		boolean placed = world.setBlock(i, j, k, block, meta, 2);
+		IBlockState oldBlockState = world.getBlockState(blockPos);
+		boolean placed = world.setBlockState(blockPos, block.getDefaultState(), 0);
 
 		if (placed) {
-			TileEntity tile = world.getTileEntity(i, j, k);
+			TileEntity tile = world.getTileEntity(blockPos);
 			if (tile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
 				if (pipe instanceof CoreMultiBlockPipe) {
@@ -197,39 +185,40 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					}
 					CoreMultiBlockPipe mPipe = (CoreMultiBlockPipe) pipe;
 					orientation.setOnPipe(mPipe);
-					DoubleCoordinates placeAt = new DoubleCoordinates(i, j, k);
+					DoubleCoordinates placeAt = new DoubleCoordinates(blockPos);
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = placeAt;
 					LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = ((CoreMultiBlockPipe) pipe).getSubBlocks();
 					orientation.rotatePositions(positions);
 					for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : positions) {
 						pos.add(placeAt);
-						TileEntity subTile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+						TileEntity subTile = world.getTileEntity(pos.getBlockPos());
+						IBlockState oldSubBlockState = world.getBlockState(pos.getBlockPos());
 						if(subTile instanceof LogisticsTileGenericSubMultiBlock) {
 							((LogisticsTileGenericSubMultiBlock) subTile).addMultiBlockMainPos(placeAt);
 							((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
 							MainProxy.sendPacketToAllWatchingChunk(subTile, ((LogisticsTileGenericSubMultiBlock) subTile).getLPDescriptionPacket());
 						} else {
-							world.setBlock(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock, 0, 2);
-							subTile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+							world.setBlockState(pos.getBlockPos(), LogisticsPipes.LogisticsSubMultiBlock.getDefaultState(), 0);
+							subTile = world.getTileEntity(pos.getBlockPos());
 							if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
 								((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
 							}
 						}
-						world.notifyBlockChange(pos.getXInt(), pos.getYInt(), pos.getZInt(), LogisticsPipes.LogisticsSubMultiBlock);
+						world.markAndNotifyBlock(pos.getBlockPos(), world.getChunkFromBlockCoords(pos.getBlockPos()), oldSubBlockState, world.getBlockState(pos.getBlockPos()), 3);
 					}
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
 				}
 				tilePipe.initialize(pipe);
 				tilePipe.sendUpdateToClient();
 			}
-			world.notifyBlockChange(i, j, k, block);
+			world.markAndNotifyBlock(blockPos, world.getChunkFromBlockCoords(blockPos), oldBlockState, world.getBlockState(blockPos), 3);
 		}
 
 		return placed;
 	}
 
-	public static CoreUnroutedPipe getPipe(IBlockAccess blockAccess, int i, int j, int k) {
-		TileEntity tile = blockAccess.getTileEntity(i, j, k);
+	public static CoreUnroutedPipe getPipe(IBlockAccess blockAccess, BlockPos pos) {
+		TileEntity tile = blockAccess.getTileEntity(pos);
 
 		if (!(tile instanceof LogisticsTileGenericPipe) || tile.isInvalid()) {
 			return null;
@@ -248,9 +237,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {
 		final World worldCache = pipe.getWorld();
-		final int xCache = pipe.getX();
-		final int yCache = pipe.getY();
-		final int zCache = pipe.getZ();
+		final BlockPos posCache = pipe.getPos();
 		final TileEntity tileCache = pipe.container;
 		final CoreUnroutedPipe fPipe = pipe;
 		fPipe.setPreventRemove(true);
@@ -259,16 +246,16 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return null;
 			}
 			boolean changed = false;
-			if (worldCache.getBlock(xCache, yCache, zCache) != LogisticsPipes.LogisticsPipeBlock) {
-				worldCache.setBlock(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
+			if (worldCache.getBlockState(posCache) != null || worldCache.getBlockState(posCache).getBlock() != LogisticsPipes.LogisticsPipeBlock) {
+				worldCache.setBlockState(posCache, LogisticsPipes.LogisticsPipeBlock.getDefaultState());
 				changed = true;
 			}
-			if (worldCache.getTileEntity(xCache, yCache, zCache) != tileCache) {
-				worldCache.setTileEntity(xCache, yCache, zCache, tileCache);
+			if (worldCache.getTileEntity(posCache) != tileCache) {
+				worldCache.setTileEntity(posCache, tileCache);
 				changed = true;
 			}
 			if (changed) {
-				worldCache.notifyBlockChange(xCache, yCache, zCache, LogisticsPipes.LogisticsPipeBlock);
+				worldCache.markAndNotifyBlock(posCache, worldCache.getChunkFromBlockCoords(posCache), worldCache.getBlockState(posCache), worldCache.getBlockState(posCache), 3);
 			}
 			fPipe.setPreventRemove(false);
 			return null;
@@ -402,9 +389,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			return new AxisAlignedBB((double) pos.getX() + 0, (double) pos.getY() + 0, (double) pos.getZ() + 0,
 					(double) pos.getX() + 1, (double) pos.getY() + 1, (double) pos.getZ() + 1);
 		}
-		RaytraceResult rayTraceResult = null;
+		InternalRayTraceResult rayTraceResult = null;
 		if(bypassPlayerTrace == null) {
-			rayTraceResult = doRayTrace(world, x, y, z, Minecraft.getMinecraft().thePlayer);
+			rayTraceResult = doRayTrace(state, world, pos, Minecraft.getMinecraft().thePlayer);
 		} else {
 			rayTraceResult = bypassPlayerTrace;
 		}
@@ -429,7 +416,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-
 	public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
@@ -462,8 +448,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return doRayTrace(state, world, pos, origin, direction);
 	}
 
-	public RaytraceResult doRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
-		TileEntity pipeTileEntity = world.getTileEntity(x, y, z);
+	public InternalRayTraceResult doRayTrace(IBlockState state, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
+		TileEntity pipeTileEntity = world.getTileEntity(pos);
 
 		LogisticsTileGenericPipe tileG = null;
 		if (pipeTileEntity instanceof LogisticsTileGenericPipe) {
@@ -517,28 +503,25 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		Arrays.fill(sideHit, null);
 
 		// pipe
-		for (int i = 0; i < DIR_VALUES.length; i++) {
-			EnumFacing side = DIR_VALUES[i];
+		for (EnumFacing side : LogisticsBlockGenericPipe.DIR_VALUES) {
 			if (side == null || tileG.isPipeConnected(side)) {
 				if(side != null && ignoreSideRayTrace) continue;
 				AxisAlignedBB bb = getPipeBoundingBox(side);
-				boxes[i] = bb;
-				hits[i] = super.collisionRayTrace(tileG.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
-				sideHit[i] = side;
+				boxes[side.ordinal()] = bb;
+				hits[side.ordinal()] = super.collisionRayTrace(new BoundingBoxDelegateBlockState(bb, state), tileG.getWorld(), tileG.getPos(), origin, direction);
+				sideHit[side.ordinal()] = side;
 			}
 		}
 
 		// pluggables
 
-		for (int i = 0; i < DIR_VALUES.length; i++) {
-			EnumFacing side = DIR_VALUES[i];
+		for (EnumFacing side : EnumFacing.VALUES) {
 			if (tileG.getPipePluggable(side) != null) {
 				if(side != null && ignoreSideRayTrace) continue;
 				AxisAlignedBB bb = tileG.getPipePluggable(side).getBoundingBox(side);
-				boxes[7 + i] = bb;
-				hits[7 + i] = super.collisionRayTrace(tileG
-						.getWorldObj(), tileG.xCoord, tileG.yCoord, tileG.zCoord, origin, direction);
-				sideHit[7 + i] = side;
+				boxes[7 + side.ordinal()] = bb;
+				hits[7 + side.ordinal()] = super.collisionRayTrace(new BoundingBoxDelegateBlockState(bb, state), tileG.getWorld(), tileG.getPos(), origin, direction);
+				sideHit[7 + side.ordinal()] = side;
 			}
 		}
 
@@ -661,27 +644,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return new AxisAlignedBB(bounds[0][0], bounds[1][0], bounds[2][0], bounds[0][1], bounds[1][1], bounds[2][1]);
 	}
 
-	public static TextureAtlasSprite getRequestTableTextureFromSide(int l) {
-		EnumFacing dir = EnumFacing.getFront(l);
-		switch (dir) {
-			case UP:
-				return Textures.LOGISTICS_REQUEST_TABLE[0];
-			case DOWN:
-				return Textures.LOGISTICS_REQUEST_TABLE[1];
-			default:
-				return Textures.LOGISTICS_REQUEST_TABLE[4];
-		}
-	}
-
 	@Override
 	public TileEntity createNewTileEntity(World world, int metadata) {
 		return new LogisticsTileGenericPipeCompat();
 	}
-
-	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<>();
-	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<>();
-
-	private static long lastRemovedDate = -1;
 
 	public static enum Part {
 		Pipe,
@@ -714,9 +680,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		DIR_VALUES[0] = null;
 		System.arraycopy(EnumFacing.VALUES, 0, DIR_VALUES, 1, EnumFacing.VALUES.length);
 	}
-	private boolean skippedFirstIconRegister;
-	private int renderMask = 0;
-	protected final Random rand = new Random();
 
 	@Override
 	public float getBlockHardness(IBlockState state, World par1World, BlockPos pos) {
@@ -724,8 +687,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public int getRenderType(IBlockState state) {
-		return 3;
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+		return EnumBlockRenderType.MODEL; // TODO or is it: EnumBlockRenderType.INVISIBLE ???
 	}
 
 	@Override
@@ -777,56 +740,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@Override
 	public boolean isNormalCube(IBlockState state) {
 		return false;
-	}
-
-	public static void removePipe(CoreUnroutedPipe pipe) {
-		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
-			return;
-		}
-
-		if (pipe.canBeDestroyed() || pipe.destroyByPlayer()) {
-			pipe.onBlockRemoval();
-		} else if (pipe.preventRemove()) {
-			LogisticsBlockGenericPipe.cacheTileToPreventRemoval(pipe);
-		}
-
-		World world = pipe.container.getWorld();
-
-		if (pipe.isMultiBlock()) {
-			if (pipe.preventRemove()) {
-				throw new UnsupportedOperationException("A multi block can't be protected against removal.");
-			}
-			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> list = ((CoreMultiBlockPipe) pipe).getRotatedSubBlocks();
-			list.stream().forEach(pos -> pos.add(new DoubleCoordinates(pipe)));
-			for (DoubleCoordinates pos : pipe.container.subMultiBlock) {
-				TileEntity tile = pos.getTileEntity(world);
-				if(tile instanceof LogisticsTileGenericSubMultiBlock) {
-					DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> equ = list.findClosest(pos);
-					if(equ != null) {
-						((LogisticsTileGenericSubMultiBlock) tile).removeSubType(equ.getType());
-					}
-					if(((LogisticsTileGenericSubMultiBlock) tile).removeMainPipe(new DoubleCoordinates(pipe))) {
-						pos.setBlockToAir(world);
-					} else {
-						MainProxy.sendPacketToAllWatchingChunk(tile, ((LogisticsTileGenericSubMultiBlock) tile).getLPDescriptionPacket());
-					}
-				}
-			}
-		}
-
-		if (world == null) {
-			return;
-		}
-
-		BlockPos pos = pipe.container.getPos();
-
-		if (LogisticsBlockGenericPipe.lastRemovedDate != world.getTotalWorldTime()) {
-			LogisticsBlockGenericPipe.lastRemovedDate = world.getTotalWorldTime();
-			LogisticsBlockGenericPipe.pipeRemoved.clear();
-		}
-
-		LogisticsBlockGenericPipe.pipeRemoved.put(new DoubleCoordinates(pos), pipe);
-		world.removeTileEntity(pos);
 	}
 
 	@Override
@@ -1027,113 +940,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 	}
 
-	/* Registration ******************************************************** */
-	public static ItemLogisticsPipe registerPipe(Class<? extends CoreUnroutedPipe> clas) {
-		ItemLogisticsPipe item = new ItemLogisticsPipe();
-		item.setUnlocalizedName(clas.getSimpleName());
-		GameRegistry.registerItem(item, item.getUnlocalizedName());
-
-		LogisticsBlockGenericPipe.pipes.put(item, clas);
-
-		CoreUnroutedPipe dummyPipe = LogisticsBlockGenericPipe.createPipe(item);
-		if (dummyPipe != null) {
-			item.setPipeIconIndex(dummyPipe.getIconIndexForItem(), dummyPipe.getTextureIndex());
-			MainProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
-			item.setDummyPipe(dummyPipe);
-		}
-
-		return item;
-	}
-
-	public static boolean isPipeRegistered(int key) {
-		return LogisticsBlockGenericPipe.pipes.containsKey(key);
-	}
-
-	public static CoreUnroutedPipe createPipe(Item key) {
-		Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
-		if (pipe != null) {
-			try {
-				return pipe.getConstructor(Item.class).newInstance(key);
-			} catch (ReflectiveOperationException e) {
-				LogisticsPipes.log.error("Could not construct class " + pipe.getSimpleName() + " for key " + key, e);
-			}
-		} else {
-			LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). Did you remove a buildcraft addon?");
-		}
-
-		return null;
-	}
-
-	public static boolean placePipe(CoreUnroutedPipe pipe, World world, BlockPos pos, Block block) {
-		return LogisticsBlockGenericPipe.placePipe(pipe, world, pos, block, null);
-	}
-
-	public static boolean placePipe(CoreUnroutedPipe pipe, World world, BlockPos blockPos, Block block, ITubeOrientation orientation) {
-		if (world.isRemote) {
-			return true;
-		}
-
-		boolean placed = world.setBlockState(blockPos, block.getDefaultState(), 2);
-
-		if (placed) {
-			TileEntity tile = world.getTileEntity(blockPos);
-			if (tile instanceof LogisticsTileGenericPipe) {
-				LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) tile;
-				if (pipe instanceof CoreMultiBlockPipe) {
-					if (orientation == null) {
-						throw new NullPointerException();
-					}
-					CoreMultiBlockPipe mPipe = (CoreMultiBlockPipe) pipe;
-					orientation.setOnPipe(mPipe);
-					DoubleCoordinates placeAt = new DoubleCoordinates(blockPos);
-					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = placeAt;
-					LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = ((CoreMultiBlockPipe) pipe).getSubBlocks();
-					orientation.rotatePositions(positions);
-					for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : positions) {
-						pos.add(placeAt);
-						TileEntity subTile = world.getTileEntity(pos.getBlockPos());
-						if(subTile instanceof LogisticsTileGenericSubMultiBlock) {
-							((LogisticsTileGenericSubMultiBlock) subTile).addMultiBlockMainPos(placeAt);
-							((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
-							MainProxy.sendPacketToAllWatchingChunk(subTile, ((LogisticsTileGenericSubMultiBlock) subTile).getLPDescriptionPacket());
-						} else {
-							world.setBlockState(pos.getBlockPos(), LogisticsPipes.LogisticsSubMultiBlock.getDefaultState(), 2);
-							subTile = world.getTileEntity(pos.getBlockPos());
-							if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
-								((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
-							}
-						}
-						world.notifyNeighborsOfStateChange(pos.getBlockPos(), LogisticsPipes.LogisticsSubMultiBlock);
-					}
-					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
-				}
-				tilePipe.initialize(pipe);
-				tilePipe.sendUpdateToClient();
-			}
-			world.notifyNeighborsOfStateChange(blockPos, block);
-		}
-
-		return placed;
-	}
-
-	public static CoreUnroutedPipe getPipe(IBlockAccess blockAccess, BlockPos pos) {
-		TileEntity tile = blockAccess.getTileEntity(pos);
-
-		if (!(tile instanceof LogisticsTileGenericPipe) || tile.isInvalid()) {
-			return null;
-		} else {
-			return ((LogisticsTileGenericPipe) tile).pipe;
-		}
-	}
-
-	public static boolean isFullyDefined(CoreUnroutedPipe pipe) {
-		return pipe != null && pipe.transport != null && pipe.container != null;
-	}
-
-	public static boolean isValid(CoreUnroutedPipe pipe) {
-		return LogisticsBlockGenericPipe.isFullyDefined(pipe);
-	}
-
 	@Override
 	public String getUnlocalizedName() {
 		return "LogisticsPipes Pipe Block";
@@ -1221,8 +1027,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			px = target.hitVec.xCoord + state.getBoundingBox(worldObj, pos).maxX + b;
 		}
 
-		EntityFX fx = effectRenderer.spawnEffectParticle(EnumParticleTypes.BLOCK_CRACK.getParticleID(), px, py, pz, 0.0D, 0.0D, 0.0D, Block.getStateId(worldObj.getBlockState(target.getBlockPos())));
-		fx.setParticleIcon(icon);
+		Particle fx = effectRenderer.spawnEffectParticle(EnumParticleTypes.BLOCK_CRACK.getParticleID(), px, py, pz, 0.0D, 0.0D, 0.0D, Block.getStateId(worldObj.getBlockState(target.getBlockPos())));
+		fx.setParticleTexture(icon);
 		effectRenderer.addEffect(fx.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
 		return true;
 	}
@@ -1295,35 +1101,5 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 		*/
 		return true;
-	}
-
-	private static void cacheTileToPreventRemoval(CoreUnroutedPipe pipe) {
-		final World worldCache = pipe.getWorld();
-		final int xCache = pipe.getX();
-		final int yCache = pipe.getY();
-		final int zCache = pipe.getZ();
-		final BlockPos posCache = pipe.getPos();
-		final TileEntity tileCache = pipe.container;
-		final CoreUnroutedPipe fPipe = pipe;
-		fPipe.setPreventRemove(true);
-		QueuedTasks.queueTask(() -> {
-			if (!fPipe.preventRemove()) {
-				return null;
-			}
-			boolean changed = false;
-			if (worldCache.getBlockState(posCache).getBlock() != LogisticsPipes.LogisticsPipeBlock) {
-				worldCache.setBlockState(posCache, LogisticsPipes.LogisticsPipeBlock.getDefaultState());
-				changed = true;
-			}
-			if (worldCache.getTileEntity(posCache) != tileCache) {
-				worldCache.setTileEntity(posCache, tileCache);
-				changed = true;
-			}
-			if (changed) {
-				worldCache.notifyNeighborsOfStateChange(posCache, LogisticsPipes.LogisticsPipeBlock);
-			}
-			fPipe.setPreventRemove(false);
-			return null;
-		});
 	}
 }

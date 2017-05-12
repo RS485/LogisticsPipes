@@ -16,6 +16,8 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
+import lombok.SneakyThrows;
+
 public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	private int slot;
@@ -33,7 +35,8 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initGui() throws IOException {
+	@SneakyThrows(IOException.class)
+	public void initGui() {
 		super.initGui();
 		if (player.inventory.getStackInSlot(slot) != null) {
 			IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));

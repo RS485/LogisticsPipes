@@ -3,6 +3,8 @@ package logisticspipes.utils.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -27,20 +29,18 @@ public class GuiCheckBox extends GuiButton {
 			//GL11.glBindTexture(GL11.GL_TEXTURE_2D, minecraft.renderEngine.getTexture("/logisticspipes/gui/checkbox-" + (state?"on":"out") + "" + (var6 == 2?"-mouse":"") + ".png"));
 			minecraft.renderEngine.bindTexture(new ResourceLocation("logisticspipes", "textures/gui/checkbox-" + (state ? "on" : "out") + "" + (var6 == 2 ? "-mouse" : "") + ".png"));
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			Tessellator var9 = Tessellator.instance;
-			var9.startDrawingQuads();
-			var9.addVertexWithUV(xPosition, yPosition + height, zLevel, 0, 1);
-			var9.addVertexWithUV(xPosition + width, yPosition + height, zLevel, 1, 1);
-			var9.addVertexWithUV(xPosition + width, yPosition, zLevel, 1, 0);
-			var9.addVertexWithUV(xPosition, yPosition, zLevel, 0, 0);
-			var9.draw();
-			/*
-			            drawTexturedModalRect(xPosition  			, yPosition				, 0		, 0 ,0);
-			            drawTexturedModalRect(xPosition + width / 2	, yPosition				, 0		, 1, 0);
 
-			            drawTexturedModalRect(xPosition  			, yPosition + height / 2, 0		, 0 ,1);
-			            drawTexturedModalRect(xPosition + width / 2	, yPosition + height / 2, 0		, 1, 1);
-			 */
+			Tessellator tessellator = Tessellator.getInstance();
+			VertexBuffer vertexbuffer = tessellator.getBuffer();
+			vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+			vertexbuffer.pos(xPosition, yPosition + height, zLevel)				.tex(0, 1).endVertex();
+			vertexbuffer.pos(xPosition + width, yPosition + height, zLevel)	.tex(1, 1).endVertex();
+			vertexbuffer.pos(xPosition + width, 	yPosition, zLevel)				.tex(1, 0).endVertex();
+			vertexbuffer.pos(xPosition, yPosition, zLevel)							.tex(0, 0).endVertex();
+
+			tessellator.draw();
+
 			mouseDragged(minecraft, par2, par3);
 		}
 	}

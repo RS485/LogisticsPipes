@@ -1,5 +1,6 @@
 package logisticspipes.utils.gui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3) {
+	protected void mouseClicked(int par1, int par2, int par3) throws IOException {
 		if (par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
 			par1 -= guiLeft + 3;
 			int select = Math.max(0, Math.min(par1 / 25, tabList.size() - 1));
@@ -85,7 +86,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void keyTyped(char p_73869_1_, int p_73869_2_) {
+	protected void keyTyped(char p_73869_1_, int p_73869_2_) throws IOException {
 		for (int i = 0; i < tabList.size(); i++) {
 			if (current_Tab == i) {
 				if (tabList.get(i).handleKey(p_73869_2_, p_73869_1_)) {

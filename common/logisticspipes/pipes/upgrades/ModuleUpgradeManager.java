@@ -23,8 +23,6 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[2];
 	private PipeLogisticsChassi pipe;
 
-	private final UpgradeManager parent;
-
 	private EnumFacing sneakyOrientation = null;
 	private boolean isAdvancedCrafter = false;
 	private boolean isFuzzyUpgrade = false;

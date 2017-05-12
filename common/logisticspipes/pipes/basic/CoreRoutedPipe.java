@@ -24,17 +24,19 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fluids.FluidStack;
@@ -856,7 +858,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				if (settings == null || settings.openNetworkMonitor) {
 					NewGuiHandler.getGui(PipeController.class).setTilePos(container).open(entityplayer);
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
@@ -866,7 +868,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (entityplayer.getCurrentEquippedItem() == null) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == null) {
 			if (!entityplayer.isSneaking()) {
 				return false;
 			}
@@ -885,12 +887,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if (MainProxy.isServer(entityplayer.worldObj)) {
 				if (settings == null || settings.openRequest) {
 					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
@@ -906,7 +908,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 						onWrenchClicked(entityplayer);
 					}
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());

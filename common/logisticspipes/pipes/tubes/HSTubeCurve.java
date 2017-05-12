@@ -6,11 +6,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -132,8 +133,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 			zOne += (2 + addOne) * Math.cos(angle + (2 * Math.PI / 200 * (i + 2)));
 			xTwo += (2 + addTwo) * Math.sin(angle + (2 * Math.PI / 200 * (i + 1)));
 			zTwo += (2 + addTwo) * Math.cos(angle + (2 * Math.PI / 200 * (i)));
-			AxisAlignedBB box = AxisAlignedBB
-					.getBoundingBox(Math.min(xOne, xTwo), yMin, Math.min(zOne, zTwo), Math.max(xOne, xTwo), yMax, Math.max(zOne, zTwo));
+			AxisAlignedBB box = new AxisAlignedBB(Math.min(xOne, xTwo), yMin, Math.min(zOne, zTwo), Math.max(xOne, xTwo), yMax, Math.max(zOne, zTwo));
 			if (box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box))) {
 				arraylist.add(box);
 			}

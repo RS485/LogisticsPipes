@@ -34,7 +34,7 @@ import logisticspipes.ticks.QueuedTasks;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 public class DebugController implements IRoutingDebugAdapter {
 
@@ -76,7 +76,7 @@ public class DebugController implements IRoutingDebugAdapter {
 
 				@Override
 				public void run() {
-					while (LPChatListener.existTaskFor(sender.getCommandSenderName())) {
+					while (LPChatListener.existTaskFor(sender.getDisplayName().getUnformattedText())) {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {
@@ -107,7 +107,7 @@ public class DebugController implements IRoutingDebugAdapter {
 	}
 
 	private void sendMsg(String message) {
-		sender.addChatMessage(new ChatComponentText(message));
+		sender.addChatMessage(new TextComponentString(message));
 	}
 
 	private synchronized void wait(final String reson, boolean flag) {
@@ -116,7 +116,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		}
 		state = DebugWaitState.LOOP;
 		QueuedTasks.queueTask(() -> {
-			sender.addChatMessage(new ChatComponentText(reson));
+			sender.addChatMessage(new TextComponentString(reson));
 			LPChatListener.addTask(() -> {
 				state = DebugWaitState.CONTINUE;
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
@@ -126,7 +126,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		});
 		boolean exist = false;
 		while (state == DebugWaitState.LOOP) {
-			if (LPChatListener.existTaskFor(sender.getCommandSenderName())) {
+			if (LPChatListener.existTaskFor(sender.getDisplayName().getUnformattedText())) {
 				exist = true;
 			} else {
 				if (exist) {

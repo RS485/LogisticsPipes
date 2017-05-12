@@ -1,7 +1,14 @@
 package logisticspipes.blocks;
 
+import java.util.Arrays;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,12 +18,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import lombok.Getter;
+import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
@@ -27,21 +38,40 @@ import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.StreamHelper;
 
 public class LogisticsSolidBlock extends BlockContainer {
 
-	public static final int LOGISTICS_BLOCK_FRAME = 15;
 
-	public static final int SOLDERING_STATION = 0;
-	public static final int LOGISTICS_POWER_JUNCTION = 1;
-	public static final int LOGISTICS_SECURITY_STATION = 2;
-	public static final int LOGISTICS_AUTOCRAFTING_TABLE = 3;
-	public static final int LOGISTICS_FUZZYCRAFTING_TABLE = 4;
-	public static final int LOGISTICS_STATISTICS_TABLE = 5;
+	public static final PropertyEnum<BlockType> metaProperty = PropertyEnum.create("BlockSubType", BlockType.class);
 
-	//Power Provider
-	public static final int LOGISTICS_RF_POWERPROVIDER = 11;
-	public static final int LOGISTICS_IC2_POWERPROVIDER = 12;
+	public enum BlockType implements IStringSerializable {
+		SOLDERING_STATION("SOLDERING_STATION", 0),
+		LOGISTICS_POWER_JUNCTION("LOGISTICS_POWER_JUNCTION", 1),
+		LOGISTICS_SECURITY_STATION("LOGISTICS_SECURITY_STATION", 2),
+		LOGISTICS_AUTOCRAFTING_TABLE("LOGISTICS_AUTOCRAFTING_TABLE", 3),
+		LOGISTICS_FUZZYCRAFTING_TABLE("LOGISTICS_FUZZYCRAFTING_TABLE", 4),
+		LOGISTICS_STATISTICS_TABLE("LOGISTICS_STATISTICS_TABLE", 5),
+
+		//Power Provider
+		LOGISTICS_RF_POWERPROVIDER("LOGISTICS_RF_POWERPROVIDER", 10),
+		LOGISTICS_IC2_POWERPROVIDER("LOGISTICS_IC2_POWERPROVIDER", 11),
+
+		LOGISTICS_BLOCK_FRAME("LOGISTICS_BLOCK_FRAME", 15);
+
+		@Getter
+		String name;
+		@Getter
+		int meta;
+		private BlockType(String name, int meta) {
+			this.name = name;
+			this.meta = meta;
+		}
+
+		public static BlockType getForMeta(int meta) {
+			return Arrays.stream(values()).filter(value -> value.meta == meta).collect(StreamHelper.singletonCollector());
+		}
+	}
 
 	private static final TextureAtlasSprite[] icons = new TextureAtlasSprite[18];
 	private static final TextureAtlasSprite[] newTextures = new TextureAtlasSprite[10];
@@ -60,6 +90,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		super(Material.IRON);
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
 		setHardness(6.0F);
+		setDefaultState(this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION));
 	}
 
 	@Override
@@ -137,15 +168,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 		return ENTITYBLOCK_ANIMATED;
 	}
 
-	@Override
+	/*@Override
 	public TextureAtlasSprite getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
+	*/
 
 	@Override
-	@Nonnull
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
-		switch (metadata) {
+	public TileEntity createNewTileEntity(World world, int meta) {
+		switch (BlockType.getForMeta(meta)) {
 			case SOLDERING_STATION:
 				return new LogisticsSolderingTileEntity();
 			case LOGISTICS_POWER_JUNCTION:
@@ -167,8 +198,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public int damageDropped(int par1) {
-		switch (par1) {
+	public int damageDropped(IBlockState state) {
+		switch (state.getValue(metaProperty)) {
 			case SOLDERING_STATION:
 			case LOGISTICS_POWER_JUNCTION:
 			case LOGISTICS_SECURITY_STATION:
@@ -178,11 +209,12 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_RF_POWERPROVIDER:
 			case LOGISTICS_IC2_POWERPROVIDER:
 			case LOGISTICS_BLOCK_FRAME:
-				return par1;
+				return state.getValue(metaProperty).meta;
 		}
-		return super.damageDropped(par1);
+		return super.damageDropped(state);
 	}
 
+	/*
 	@Override
 	@SideOnly(Side.CLIENT)
 	public TextureAtlasSprite getIcon(IBlockAccess access, int x, int y, int z, int side) {
@@ -207,14 +239,14 @@ public class LogisticsSolidBlock extends BlockContainer {
 		LogisticsSolidBlock.newTextures[2] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerTexture"); // LOGISTICS_POWER_JUNCTION
 		LogisticsSolidBlock.newTextures[3] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/securityTexture"); // LOGISTICS_SECURITY_STATION
 		LogisticsSolidBlock.newTextures[4] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/craftingTexture"); // LOGISTICS_AUTOCRAFTING_TABLE
-		LogisticsSolidBlock.newTextures[5] = par1IIconRegister
-				.registerIcon("logisticspipes:lpsolidblock/fuzzycraftingTexture"); // LOGISTICS_FUZZYCRAFTING_TABLE
+		LogisticsSolidBlock.newTextures[5] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/fuzzycraftingTexture"); // LOGISTICS_FUZZYCRAFTING_TABLE
 		LogisticsSolidBlock.newTextures[6] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/statisticsTexture"); // LOGISTICS_STATISTICS_TABLE
 		LogisticsSolidBlock.newTextures[7] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerRFTexture"); // LOGISTICS_RF_POWERPROVIDER
 		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerIC2Texture"); // LOGISTICS_IC2_POWERPROVIDER
 	}
+	*/
 
-	private TextureAtlasSprite getRotatedTexture(int meta, int side, int rotation, int front) {
+	private TextureAtlasSprite getRotatedTexture(BlockType meta, int side, int rotation, int front) {
 		switch (meta) {
 			case SOLDERING_STATION:
 				if (front == 0) {
@@ -344,10 +376,11 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 
-	public static TextureAtlasSprite getNewIcon(IBlockAccess access, int x, int y, int z) {
-		int meta = access.getBlockMetadata(x, y, z);
-		if (meta == LogisticsSolidBlock.SOLDERING_STATION) {
-			TileEntity tile = access.getTileEntity(x, y, z);
+	public static TextureAtlasSprite getNewIcon(IBlockAccess access, BlockPos pos) {
+		IBlockState state = access.getBlockState(pos);
+		BlockType meta = state.getValue(metaProperty);
+		if (meta == BlockType.SOLDERING_STATION) {
+			TileEntity tile = access.getTileEntity(pos);
 			if (tile instanceof IRotationProvider) {
 				if (((IRotationProvider) tile).getFrontTexture() == 3) {
 					return LogisticsSolidBlock.newTextures[9];
@@ -357,7 +390,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		return LogisticsSolidBlock.getNewIcon(meta);
 	}
 
-	public static TextureAtlasSprite getNewIcon(int meta) {
+	public static TextureAtlasSprite getNewIcon(BlockType meta) {
 		switch (meta) {
 			case SOLDERING_STATION:
 				return LogisticsSolidBlock.newTextures[1];
@@ -378,5 +411,20 @@ public class LogisticsSolidBlock extends BlockContainer {
 			default:
 				return LogisticsSolidBlock.newTextures[0];
 		}
+	}
+
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, metaProperty);
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		return this.getDefaultState().withProperty(metaProperty, BlockType.getForMeta(meta));
+	}
+
+	@Override
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(metaProperty).meta;
 	}
 }

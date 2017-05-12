@@ -1,6 +1,6 @@
 package cofh.repack.codechicken.lib.vec;
 
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class Cuboid6 {
 

@@ -264,10 +264,11 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+		nbt = super.writeToNBT(nbt);
 		nbt.setDouble("internalStorageDouble", internalStorage);
 		nbt.setInteger("maxMode", maxMode);
+		return nbt;
 	}
 
 	@Override

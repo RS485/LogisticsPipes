@@ -28,9 +28,8 @@ import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 

@@ -2,8 +2,9 @@ package logisticspipes.textures.provider;
 
 import logisticspipes.renderer.IIconProvider;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,13 +36,13 @@ public class LPActionTriggerIconProvider implements IIconProvider {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister) {
-		icons[LPActionTriggerIconProvider.actionDisablePipeIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/DisablePipe");
-		icons[LPActionTriggerIconProvider.triggerCraftingIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/CraftingWaiting");
-		icons[LPActionTriggerIconProvider.triggerPowerDischargingIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/PowerDischarging");
-		icons[LPActionTriggerIconProvider.triggerPowerNeededIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/PowerNeeded");
-		icons[LPActionTriggerIconProvider.triggerSupplierFailedIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger1");
-		icons[LPActionTriggerIconProvider.triggerHasDestinationIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger17");
-		icons[LPActionTriggerIconProvider.actionRobotRoutingIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/RobotRouting");
+	public void registerIcons(TextureMap iconRegister) {
+		icons[LPActionTriggerIconProvider.actionDisablePipeIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/DisablePipe"));
+		icons[LPActionTriggerIconProvider.triggerCraftingIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/CraftingWaiting"));
+		icons[LPActionTriggerIconProvider.triggerPowerDischargingIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/PowerDischarging"));
+		icons[LPActionTriggerIconProvider.triggerPowerNeededIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/PowerNeeded"));
+		icons[LPActionTriggerIconProvider.triggerSupplierFailedIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/ActionTrigger1"));
+		icons[LPActionTriggerIconProvider.triggerHasDestinationIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/ActionTrigger17"));
+		icons[LPActionTriggerIconProvider.actionRobotRoutingIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/RobotRouting"));
 	}
 }

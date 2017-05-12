@@ -29,4 +29,9 @@ public class FakePlayer extends EntityPlayer {
 	public boolean isSpectator() {
 		return false;
 	}
+
+	@Override
+	public boolean isCreative() {
+		return false;
+	}
 }

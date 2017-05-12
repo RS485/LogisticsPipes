@@ -98,9 +98,9 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	@Override
 	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRendererObj.renderString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
+		fontRendererObj.drawString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
 		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
-		fontRendererObj.renderString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
+		fontRendererObj.drawString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
 		int x = 0;
 		int y = -page * 10;
 		for (ItemIdentifierStack stack : canidate) {

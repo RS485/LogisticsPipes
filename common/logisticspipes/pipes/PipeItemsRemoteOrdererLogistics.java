@@ -11,9 +11,10 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
 
@@ -28,14 +29,14 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openRequest) {
-					ItemStack orderer = entityplayer.getCurrentEquippedItem();
+					ItemStack orderer = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 					RemoteOrderer.connectToPipe(orderer, this);
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.connectedtopipe"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.connectedtopipe"));
 				} else {
-					entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;

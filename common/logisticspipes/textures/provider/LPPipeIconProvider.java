@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import logisticspipes.renderer.IIconProvider;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,5 +28,5 @@ public class LPPipeIconProvider implements IIconProvider {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister) {}
+	public void registerIcons(TextureMap iconRegister) {}
 }

@@ -3,7 +3,10 @@ package logisticspipes.ticks;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsRenderPipe;
+
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -27,6 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -36,11 +40,11 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import codechicken.lib.render.CCRenderState;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import org.lwjgl.opengl.GL11;
-import tv.twitch.Core;
 
 public class RenderTickHandler {
 
@@ -76,13 +80,14 @@ public class RenderTickHandler {
 	//private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/White.png");
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void renderWorldLast(RenderWorldLastEvent worldEvent) {
-		if (LogisticsRenderPipe.config.isUseNewRenderer()) {
+		//if (LogisticsRenderPipe.config.isUseNewRenderer()) {
 			if (displayPipeGhost()) {
 				Minecraft mc = Minecraft.getMinecraft();
 				EntityPlayer player = mc.thePlayer;
-				MovingObjectPosition box = mc.objectMouseOver;
-				if (box != null && box.typeOfHit == MovingObjectType.BLOCK) {
+				RayTraceResult box = mc.objectMouseOver;
+				if (box != null && box.typeOfHit == RayTraceResult.Type.BLOCK) {
 					ItemStack stack = FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem];
 					CoreUnroutedPipe pipe = ((ItemLogisticsPipe) stack.getItem()).getDummyPipe();
 
@@ -165,13 +170,13 @@ public class RenderTickHandler {
 						double y;
 						double z;
 						if (orientation != null) {
-							x = xCoord + orientation.getOffset().getXInt() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.partialTicks);
-							y = yCoord + orientation.getOffset().getYInt() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.partialTicks);
-							z = zCoord + orientation.getOffset().getZInt() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.partialTicks);
+							x = xCoord + orientation.getOffset().getXInt() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.getPartialTicks());
+							y = yCoord + orientation.getOffset().getYInt() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.getPartialTicks());
+							z = zCoord + orientation.getOffset().getZInt() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.getPartialTicks());
 						} else {
-							x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.partialTicks);
-							y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.partialTicks);
-							z = zCoord - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.partialTicks);
+							x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.getPartialTicks());
+							y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.getPartialTicks());
+							z = zCoord - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.getPartialTicks());
 						}
 						GL11.glTranslated(x + 0.001, y + 0.001, z + 0.001);
 
@@ -181,30 +186,28 @@ public class RenderTickHandler {
 						GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 						mc.renderEngine.bindTexture(new ResourceLocation("logisticspipes", "textures/blocks/pipes/White.png"));
-						Tessellator tess = Tessellator.instance;
-						CCRenderState.reset();
-						CCRenderState.useNormals = true;
-						CCRenderState.alphaOverride = 0xff;
+
+						SimpleServiceLocator.cclProxy.getRenderState().reset();
+						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 						GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-						CCRenderState.alphaOverride = 0x50;
-						CCRenderState.useNormals = true;
+						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0x50);
 						CCRenderState.hasBrightness = false;
-						CCRenderState.startDrawing();
+						SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
 						pipe.getHighlightRenderer().renderHighlight(orientation);
 
-						tess.draw();
+						SimpleServiceLocator.cclProxy.getRenderState().draw();
 
-						CCRenderState.alphaOverride = 0xff;
+						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 						GL11.glDisable(GL11.GL_BLEND);
 						GL11.glDepthMask(true);
 						GL11.glPopMatrix();
 					}
 				}
 			}
-		}
+		//}
 	}
 
 	private boolean displayPipeGhost() {

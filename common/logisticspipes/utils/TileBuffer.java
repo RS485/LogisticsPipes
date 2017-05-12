@@ -97,12 +97,12 @@ public final class TileBuffer {
 		return blockState != null && blockState.getBlock() != null;
 	}
 
-	public static TileBuffer[] makeBuffer(World world, int x, int y, int z, boolean loadUnloaded) {
+	public static TileBuffer[] makeBuffer(World world, BlockPos pos, boolean loadUnloaded) {
 		TileBuffer[] buffer = new TileBuffer[6];
 
 		for (int i = 0; i < 6; i++) {
 			EnumFacing d = EnumFacing.getFront(i);
-			buffer[i] = new TileBuffer(world, x + d.getFrontOffsetX(), y + d.getFrontOffsetY(), z + d.getFrontOffsetZ(), loadUnloaded);
+			buffer[i] = new TileBuffer(world, pos.getX() + d.getFrontOffsetX(), pos.getY() + d.getFrontOffsetY(), pos.getZ() + d.getFrontOffsetZ(), loadUnloaded);
 		}
 
 		return buffer;

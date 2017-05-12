@@ -12,9 +12,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyReceiver;
 
 @ModDependentInterface(modId = { "CoFHAPI|energy" }, interfacePath = { "cofh.api.energy.IEnergyHandler" })
-public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IEnergyHandler {
+public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IEnergyReceiver {
 
 	public static final int MAX_STORAGE = 10000000;
 	public static final int MAX_MAXMODE = 8;
@@ -54,8 +55,8 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		if (MainProxy.isServer(worldObj)) {
 			if (freeSpace() > 0) {
 				addStoredRF();
@@ -67,12 +68,6 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@ModDependentMethod(modId = "CoFHAPI|energy")
 	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 		return storage.receiveEnergy(maxReceive, simulate);
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
-		return storage.extractEnergy(maxExtract, simulate);
 	}
 
 	@Override
@@ -106,9 +101,10 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+		nbt = super.writeToNBT(nbt);
 		storage.writeToNBT(nbt);
+		return nbt;
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.proxy.object3d.operation.LPScale;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 
 import cofh.repack.codechicken.lib.render.CCModel;
 import cofh.repack.codechicken.lib.render.CCRenderState;
@@ -95,7 +96,7 @@ public class CoFHCCLProxy implements ICCLProxy {
 			}
 
 			@Override
-			public void startDrawing() {
+			public void startDrawing(int mode, VertexFormat format) {
 				CCRenderState.startDrawing();
 			}
 

@@ -23,6 +23,12 @@ import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.proxy.object3d.operation.LPScale;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import codechicken.lib.render.ColourMultiplier;
 
@@ -77,11 +83,6 @@ public class CCLProxy implements ICCLProxy {
 			}
 
 			@Override
-			public void setUseNormals(boolean b) {
-				CCRenderState.useNormals = b;
-			}
-
-			@Override
 			public void setAlphaOverride(int i) {
 				CCRenderState.alphaOverride = i;
 			}
@@ -92,13 +93,14 @@ public class CCLProxy implements ICCLProxy {
 			}
 
 			@Override
-			public void setBrightness(int brightness) {
-				CCRenderState.setBrightness(brightness);
+			public void setBrightness(IBlockAccess world, BlockPos pos) {
+				CCRenderState.setBrightness(world, pos);
 			}
 
 			@Override
-			public void startDrawing() {
-				CCRenderState.startDrawing();
+			@SideOnly(Side.CLIENT)
+			public void startDrawing(int mode, VertexFormat format) {
+				CCRenderState.startDrawing(mode, format);
 			}
 
 		};

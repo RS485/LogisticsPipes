@@ -1,17 +1,23 @@
 package logisticspipes.proxy.object3d.interfaces;
 
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public interface IRenderState {
 
 	void reset();
-
-	void setUseNormals(boolean b);
 
 	void setAlphaOverride(int i);
 
 	void draw();
 
-	void setBrightness(int brightness);
+	void setBrightness(IBlockAccess world, BlockPos pos);
 
-	void startDrawing();
+	@SideOnly(Side.CLIENT)
+	void startDrawing(int mode, VertexFormat format);
 
 }

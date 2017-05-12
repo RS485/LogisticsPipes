@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -448,7 +449,7 @@ public class ProxyManager {
 					@Override public void setAlphaOverride(int i) {}
 					@Override public void draw() {}
 					@Override public void setBrightness(int brightness) {}
-					@Override public void startDrawing() {}
+					@Override public void startDrawing(int mode, VertexFormat format) {}
 				};
 			}
 			@Override public Map<String, IModel3D> parseObjModels(InputStream resourceAsStream, int i, LPScale scale) {return new HashMap<>();}

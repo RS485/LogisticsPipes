@@ -24,21 +24,19 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -216,7 +214,7 @@ public class LogisticsPipes {
 		NewGuiHandler.initialize();
 	}
 
-	@Instance("LogisticsPipes")
+	@Mod.Instance("LogisticsPipes")
 	public static LogisticsPipes instance;
 
 	//Log Requests
@@ -306,7 +304,7 @@ public class LogisticsPipes {
 	private static LPGlobalCCAccess generalAccess;
 	private static PlayerConfig playerConfig;
 
-	@EventHandler
+	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 
 		//Register Network channels
@@ -353,7 +351,7 @@ public class LogisticsPipes {
 		registerRecipes();
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
 		LogisticsPipes.log = evt.getModLog();
 		loadClasses();
@@ -373,7 +371,7 @@ public class LogisticsPipes {
 		initItems(evt.getSide());
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		postInitRun.forEach(Runnable::run);
 		postInitRun = null;
@@ -558,7 +556,7 @@ public class LogisticsPipes {
 		} catch (Exception ignore) {}
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
 		QueuedTasks.clearAllTasks();
@@ -573,12 +571,12 @@ public class LogisticsPipes {
 		SimpleServiceLocator.buildCraftProxy.cleanup();
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
 	}
 
-	@EventHandler
+	@Mod.EventHandler
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
 		if (!LPConstants.DEBUG) {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");

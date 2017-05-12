@@ -20,7 +20,7 @@ public class ThermalDynamicsHooks {
 		if (source instanceof TileItemDuct) {
 			if (tile instanceof LogisticsTileGenericPipe) {
 				LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;
-				return pipe.tdPart.getInternalDuctForSide(EnumFacing.getOrientation(side).getOpposite());
+				return pipe.tdPart.getInternalDuctForSide(EnumFacing.getFront(side).getOpposite());
 			}
 		}
 		return tile;

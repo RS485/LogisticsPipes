@@ -1,27 +1,31 @@
 package com.enderio.core.common.util;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.ITextComponent;
 
 public class InventoryWrapper implements ISidedInventory {
-	public InventoryWrapper(IInventory inv) {
+
+	public static ISidedInventory asSidedInventory(IInventory inv) {
+		if (inv == null) {
+			return null;
+		}
+		if (inv instanceof ISidedInventory) {
+			return (ISidedInventory) inv;
+		}
+		return new InventoryWrapper(inv);
 	}
 
-	@Override
-	public int[] getAccessibleSlotsFromSide(int p_94128_1_) {
-		return new int[0];
+	public InventoryWrapper(IInventory inventory) {
 	}
 
-	@Override
-	public boolean canInsertItem(int p_102007_1_, ItemStack p_102007_2_, int p_102007_3_) {
-		return false;
-	}
-
-	@Override
-	public boolean canExtractItem(int p_102008_1_, ItemStack p_102008_2_, int p_102008_3_) {
-		return false;
+	public IInventory getWrappedInv() {
+		return null;
 	}
 
 	@Override
@@ -30,33 +34,18 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int p_70301_1_) {
+	public ItemStack getStackInSlot(int slot) {
 		return null;
 	}
 
 	@Override
-	public ItemStack decrStackSize(int p_70298_1_, int p_70298_2_) {
+	public ItemStack decrStackSize(int slot, int amount) {
 		return null;
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int p_70304_1_) {
-		return null;
-	}
+	public void setInventorySlotContents(int slot, @Nullable ItemStack itemStack) {
 
-	@Override
-	public void setInventorySlotContents(int p_70299_1_, ItemStack p_70299_2_) {
-
-	}
-
-	@Override
-	public String getInventoryName() {
-		return null;
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
 	}
 
 	@Override
@@ -66,26 +55,79 @@ public class InventoryWrapper implements ISidedInventory {
 
 	@Override
 	public void markDirty() {
-
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
+	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
 		return false;
 	}
 
 	@Override
-	public void openInventory() {
-
-	}
-
-	@Override
-	public void closeInventory() {
-
-	}
-
-	@Override
-	public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
+	public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
 		return false;
 	}
+
+	@Override
+	public int[] getSlotsForFace(EnumFacing side) {
+		int[] slots = new int[0];
+		return slots;
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack itemStack, EnumFacing side) {
+		return isItemValidForSlot(slot, itemStack);
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack itemStack, EnumFacing side) {
+		return slot >= 0 && slot < getSizeInventory();
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		return null;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+	}
+
+	@Override
+	public String getName() {
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return false;
+	}
+
+	@Override
+	public ITextComponent getDisplayName() {
+		return null;
+	}
+
 }

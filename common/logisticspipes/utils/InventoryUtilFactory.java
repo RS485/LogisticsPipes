@@ -19,6 +19,8 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
 
+import net.minecraftforge.items.IItemHandler;
+
 public class InventoryUtilFactory {
 
 	private final LinkedList<SpecialInventoryHandler> handler = new LinkedList<>();

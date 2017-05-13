@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.util.Arrays;
@@ -37,3 +38,4 @@ public class LPBCPluggableState extends PipePluggableState implements IBCPluggab
 		return result;
 	}
 }
+*/

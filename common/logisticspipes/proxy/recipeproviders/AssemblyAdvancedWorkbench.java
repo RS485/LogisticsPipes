@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -77,3 +78,4 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 		return true;
 	}
 }
+*/

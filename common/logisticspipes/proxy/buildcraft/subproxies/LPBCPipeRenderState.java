@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.subproxies;
 
 import buildcraft.transport.PipeRenderState;
@@ -25,3 +26,4 @@ public class LPBCPipeRenderState extends PipeRenderState implements IBCRenderSta
 		}
 	}
 }
+*/

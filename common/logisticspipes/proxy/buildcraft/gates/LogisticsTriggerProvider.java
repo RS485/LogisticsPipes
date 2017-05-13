@@ -1,15 +1,10 @@
-/**
- * Copyright (c) Krapht, 2011
- *
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
- * License 1.0, or MMPL. Please check the contents of the license located in
- * http://www.mod-buildcraft.com/MMPL-1.0.txt
- */
-
+/*
 package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.Collection;
 import java.util.LinkedList;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -17,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import buildcraft.api.statements.IStatementContainer;
 import buildcraft.api.statements.ITriggerExternal;
 import buildcraft.api.statements.ITriggerInternal;
+import buildcraft.api.statements.ITriggerInternalSided;
 import buildcraft.api.statements.ITriggerProvider;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -32,10 +28,9 @@ import logisticspipes.proxy.buildcraft.subproxies.LPBCTileGenericPipe;
 public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
-	public Collection<ITriggerInternal> getInternalTriggers(IStatementContainer pipe) {
+	public void addInternalTriggers(Collection<ITriggerInternal> triggers, IStatementContainer pipe) {
 		if (pipe.getTile() instanceof LPBCTileGenericPipe) {
-			LogisticsTileGenericPipe lPipe = ((LPBCTileGenericPipe) pipe.getTile()).getLpPipe();
-			LinkedList<ITriggerInternal> triggers = new LinkedList<>();
+			LogisticsTileGenericPipe lPipe = ((LPBCTileGenericPipe) pipe.getTile()).getLpPipe();;
 			if (lPipe.pipe instanceof PipeItemsSupplierLogistics || lPipe.pipe instanceof PipeItemsFluidSupplier) {
 				triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
 			}
@@ -46,20 +41,19 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 				//Only show this conditional on Gates that can accept parameters
 				triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
 			}
-			if (!triggers.isEmpty()) {
-				return triggers;
-			}
 		}
-		return null;
 	}
 
 	@Override
-	public Collection<ITriggerExternal> getExternalTriggers(EnumFacing paramEnumFacing, TileEntity tile) {
+	public void addInternalSidedTriggers(Collection<ITriggerInternalSided> triggers, IStatementContainer container, @Nonnull EnumFacing side) {
+
+	}
+
+	@Override
+	public void addExternalTriggers(Collection<ITriggerExternal> triggers, @Nonnull EnumFacing side, TileEntity tile) {
 		if (tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof LogisticsSolderingTileEntity) {
-			LinkedList<ITriggerExternal> triggers = new LinkedList<>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
-			return triggers;
 		}
-		return null;
 	}
 }
+*/

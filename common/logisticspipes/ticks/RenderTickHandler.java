@@ -6,6 +6,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsRenderPipe;
 
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
@@ -44,6 +45,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
+
+import codechicken.lib.render.CCRenderState;
 import org.lwjgl.opengl.GL11;
 
 public class RenderTickHandler {
@@ -165,7 +168,7 @@ public class RenderTickHandler {
 						}
 					}
 					if (isFreeSpace) {
-						GL11.glPushMatrix();
+						GlStateManager.pushMatrix();
 						double x;
 						double y;
 						double z;
@@ -180,9 +183,9 @@ public class RenderTickHandler {
 						}
 						GL11.glTranslated(x + 0.001, y + 0.001, z + 0.001);
 
-						GL11.glEnable(GL11.GL_BLEND);
+						GlStateManager.enableBlend();
 						//GL11.glDepthMask(false);
-						GL11.glDisable(GL11.GL_TEXTURE_2D);
+						GlStateManager.disableTexture2D();
 						GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 						mc.renderEngine.bindTexture(new ResourceLocation("logisticspipes", "textures/blocks/pipes/White.png"));
@@ -190,10 +193,9 @@ public class RenderTickHandler {
 						SimpleServiceLocator.cclProxy.getRenderState().reset();
 						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
-						GL11.glEnable(GL11.GL_TEXTURE_2D);
+						GlStateManager.enableTexture2D();
 
 						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0x50);
-						CCRenderState.hasBrightness = false;
 						SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
 						pipe.getHighlightRenderer().renderHighlight(orientation);
@@ -201,9 +203,9 @@ public class RenderTickHandler {
 						SimpleServiceLocator.cclProxy.getRenderState().draw();
 
 						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-						GL11.glDisable(GL11.GL_BLEND);
-						GL11.glDepthMask(true);
-						GL11.glPopMatrix();
+						GlStateManager.disableBlend();
+						GlStateManager.depthMask(true);
+						GlStateManager.popMatrix();
 					}
 				}
 			}

@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.specialtankhandler;
 
 import java.util.ArrayList;
@@ -67,3 +68,4 @@ public class BuildCraftTankHandler implements ISpecialTankAccessHandler {
 		return ((IFluidHandler) tile).drain(null, ident.makeFluidStack(amount), drain);
 	}
 }
+*/

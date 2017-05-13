@@ -1,10 +1,13 @@
 package logisticspipes.proxy.enderio;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.ITextComponent;
 
 public class LogisticsInsertionInventory implements IInventory {
 	private final LogisticsTileGenericPipe pipe;
@@ -30,24 +33,13 @@ public class LogisticsInsertionInventory implements IInventory {
 		return null;
 	}
 
+	@Nullable
 	@Override
-	public ItemStack getStackInSlotOnClosing(int slot) {
-		return null;
-	}
+	public ItemStack removeStackFromSlot(int index) {return null;}
 
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		pipe.insertItem(from, stack);
-	}
-
-	@Override
-	public String getInventoryName() {
-		return "LogisticsInsertionInventory";
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return true;
 	}
 
 	@Override
@@ -66,13 +58,40 @@ public class LogisticsInsertionInventory implements IInventory {
 	}
 
 	@Override
-	public void openInventory() {}
+	public void openInventory(EntityPlayer player) {
+
+	}
 
 	@Override
-	public void closeInventory() {}
+	public void closeInventory(EntityPlayer player) {
+
+	}
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		return true;
 	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {}
+
+	@Override
+	public int getFieldCount() {return 0;}
+
+	@Override
+	public void clear() {}
+
+	@Override
+	public String getName() {return "LogisticsInsertionInventory";}
+
+	@Override
+	public boolean hasCustomName() {return false;}
+
+	@Override
+	public ITextComponent getDisplayName() {return null;}
 }

@@ -37,7 +37,7 @@ public class DiskDropPacket extends CoordinatesPacket {
 				}
 			}
 			((PipeItemsRequestLogisticsMk2) pipe.pipe).dropDisk();
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk()).setBlockPos(pipe.getPos()), player);
 		}
 	}
 }

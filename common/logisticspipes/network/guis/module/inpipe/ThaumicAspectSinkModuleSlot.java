@@ -1,6 +1,5 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import logisticspipes.gui.modules.GuiThaumicAspectSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.NBTModuleCoordinatesGuiProvider;
@@ -22,7 +21,7 @@ public class ThaumicAspectSinkModuleSlot extends NBTModuleCoordinatesGuiProvider
 			return null;
 		}
 		module.readFromNBT(getNbt());
-		return new GuiThaumicAspectSink(player.inventory, module);
+		return null;//new GuiThaumicAspectSink(player.inventory, module);
 	}
 
 	@Override
@@ -34,7 +33,7 @@ public class ThaumicAspectSinkModuleSlot extends NBTModuleCoordinatesGuiProvider
 		DummyContainer dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
 		dummy.addDummySlot(0, 0, 0);
 		dummy.addNormalSlotsForPlayerInventory(0, 0);
-		return dummy;
+		return null;//dummy;
 	}
 
 	@Override

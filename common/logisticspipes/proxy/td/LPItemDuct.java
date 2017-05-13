@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.td;
 
 import java.util.ArrayList;
@@ -134,3 +135,4 @@ public class LPItemDuct extends TileItemDuct {
 		return super.getAdjTileEntitySafe(ordinal);
 	}
 }
+*/

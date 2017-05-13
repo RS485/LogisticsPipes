@@ -66,10 +66,10 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
 			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1);
-			GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+			itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GuiScreen.itemRender.zLevel = 0.0F;
+			itemRender.zLevel = 0.0F;
 		}
 
 		@Override

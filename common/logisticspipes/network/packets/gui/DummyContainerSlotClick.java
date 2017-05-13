@@ -2,6 +2,7 @@ package logisticspipes.network.packets.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -48,7 +49,7 @@ public class DummyContainerSlotClick extends ModernPacket {
 			DummyContainer container = (DummyContainer) ((EntityPlayerMP) player).openContainer;
 			Slot slot = (Slot) container.inventorySlots.get(slotId);
 			if (slot instanceof DummySlot || slot instanceof ColorSlot || slot instanceof FluidSlot) {
-				container.handleDummyClick(slot, slotId, stack, button, 0, player);
+				container.handleDummyClick(slot, slotId, stack, button, ClickType.PICKUP, player);
 			}
 		}
 	}

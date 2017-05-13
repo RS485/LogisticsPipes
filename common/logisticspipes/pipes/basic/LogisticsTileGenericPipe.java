@@ -28,11 +28,11 @@ import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import buildcraft.api.transport.IPipe;
-import buildcraft.api.transport.IPipeConnection;
-import buildcraft.api.transport.IPipeTile;
+import buildcraft.api.transport.pipe.IPipe;
+import buildcraft.api.transport.pipe.IPipeConnection;
+import buildcraft.api.transport.pipe.IPipeTile;
 import buildcraft.api.transport.pluggable.PipePluggable;
-import cofh.api.transport.IItemDuct;
+import cofh.api.tileentity.IItemDuct;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -748,7 +748,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	public TileBuffer[] getTileCache() {
 		if (tileBuffer == null && pipe != null) {
-			tileBuffer = TileBuffer.makeBuffer(worldObj, pos.getX(), pos.getY(), pos.getZ(), pipe.transport.delveIntoUnloadedChunks());
+			tileBuffer = TileBuffer.makeBuffer(worldObj, pos, pipe.transport.delveIntoUnloadedChunks());
 		}
 		return tileBuffer;
 	}

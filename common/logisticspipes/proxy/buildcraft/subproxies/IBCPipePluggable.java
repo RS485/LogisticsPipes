@@ -1,6 +1,5 @@
 package logisticspipes.proxy.buildcraft.subproxies;
 
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
 
 import net.minecraft.util.EnumFacing;
@@ -21,11 +20,9 @@ public interface IBCPipePluggable {
 	Object getOriginal();
 
 	@SideOnly(Side.CLIENT)
-	void renderPluggable(RenderBlocks renderblocks, EnumFacing dir, int renderPass, int x, int y, int z);
+	void renderPluggable(EnumFacing dir, int renderPass, int x, int y, int z);
 
 	boolean isAcceptingItems(LPTravelingItemServer arrivingItem);
 
 	LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem);
-
-	AxisAlignedBB getBoundingBox(EnumFacing side);
 }

@@ -13,9 +13,9 @@ import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.proxy.buildcraft.subproxies.LPBCPipe;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 
+import buildcraft.api.statements.IStatementContainer;
 import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.statements.ITriggerInternal;
-import buildcraft.transport.Pipe;
 
 public class TriggerSupplierFailed extends LPTrigger implements ITriggerInternal {
 
@@ -34,7 +34,7 @@ public class TriggerSupplierFailed extends LPTrigger implements ITriggerInternal
 	}
 
 	@Override
-	public boolean isTriggerActive(Pipe pipe, IStatementParameter parameter) {
+	public boolean isTriggerActive(IStatementContainer pipe, IStatementParameter[] parameters) {
 		if (pipe instanceof LPBCPipe) {
 			if (((LPBCPipe) pipe).pipe.pipe instanceof PipeItemsSupplierLogistics) {
 				PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) ((LPBCPipe) pipe).pipe.pipe;

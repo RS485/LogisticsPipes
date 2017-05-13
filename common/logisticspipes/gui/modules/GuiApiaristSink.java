@@ -14,9 +14,12 @@ import logisticspipes.utils.gui.ISmallColorRenderSlot;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -43,10 +46,10 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 	public void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
 		GL11.glDisable(GL11.GL_LIGHTING);
-		mc.renderEngine.bindTexture(TextureMap.locationItemsTexture);
 
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
 			TextureAtlasSprite icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			mc.renderEngine.bindTexture(new ResourceLocation(icon.getIconName()));
 			if (icon == null) {
 				continue;
 			}
@@ -58,13 +61,14 @@ public class GuiApiaristSink extends ModuleBaseGui {
 			GL11.glColor4f(colorR, colorG, colorB, 1.0F);
 
 			// Render icon
-			Tessellator var9 = Tessellator.instance;
-			var9.startDrawingQuads();
-			var9.addVertexWithUV(x, y + 16, zLevel, icon.getMinU(), icon.getMaxV());
-			var9.addVertexWithUV(x + 16, y + 16, zLevel, icon.getMaxU(), icon.getMaxV());
-			var9.addVertexWithUV(x + 16, y, zLevel, icon.getMaxU(), icon.getMinV());
-			var9.addVertexWithUV(x, y, zLevel, icon.getMinU(), icon.getMinV());
-			var9.draw();
+			Tessellator tess = Tessellator.getInstance();
+			VertexBuffer buf = tess.getBuffer();
+			buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+			buf.pos(x, y + 16, zLevel).tex(icon.getMinU(), icon.getMaxV());
+			buf.pos(x + 16, y + 16, zLevel).tex(icon.getMaxU(), icon.getMaxV());
+			buf.pos(x + 16, y, zLevel).tex(icon.getMaxU(), icon.getMinV());
+			buf.pos(x, y, zLevel).tex(icon.getMinU(), icon.getMinV());
+			tess.draw();
 		}
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}

@@ -14,7 +14,6 @@ import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
@@ -68,9 +67,9 @@ public class SelectItemOutOfList extends SubGuiScreen {
 					font = fontRendererObj;
 				}
 
-				GuiScreen.itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
+				itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
 				// With empty string, because damage value indicator struggles with the depth
-				GuiScreen.itemRender.renderItemOverlayIntoGUI(font, mc.renderEngine, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
+				itemRender.renderItemOverlayIntoGUI(font, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
 
 				if (guiLeft + 5 + x * 18 < mouseX && mouseX < guiLeft + 5 + x * 18 + 16 && guiTop + 17 + y * 18 < mouseY && mouseY < guiTop + 17 + y * 18 + 16 && !hasSubGui()) {
 					GL11.glDisable(GL11.GL_LIGHTING);

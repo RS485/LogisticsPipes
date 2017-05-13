@@ -7,6 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +24,8 @@ import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.IntegerCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
@@ -88,9 +93,10 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 
 			if (found) {
 				Block block = adjacent.tileEntity.getBlockType();
-				int xCoord = adjacent.tileEntity.xCoord;
-				int yCoord = adjacent.tileEntity.yCoord;
-				int zCoord = adjacent.tileEntity.zCoord;
+				DoubleCoordinates pos = new DoubleCoordinates(adjacent.tileEntity.getPos());
+				int xCoord = adjacent.tileEntity.getPos().getX();
+				int yCoord = adjacent.tileEntity.getPos().getY();
+				int zCoord = adjacent.tileEntity.getPos().getZ();
 
 				if (SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, xCoord, yCoord, zCoord, player);
@@ -101,7 +107,8 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 				}
 
 				if (block != null) {
-					if (block.onBlockActivated(player.worldObj, xCoord, yCoord, zCoord, player, 0, 0, 0, 0)) {
+					if (block.onBlockActivated(player.worldObj, pos.getBlockPos(), pos.getBlockState(player.worldObj), player, EnumHand.MAIN_HAND, null,
+							EnumFacing.UP, 0, 0, 0)) {
 						//@formatter:off
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
 								.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);

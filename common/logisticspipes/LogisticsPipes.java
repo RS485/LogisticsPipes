@@ -113,12 +113,9 @@ import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
 import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.endercore.EnderCoreProgressProvider;
-import logisticspipes.proxy.enderio.EnderIOProgressProvider;
 import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
-import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
-import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
 import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
@@ -127,7 +124,6 @@ import logisticspipes.proxy.specialconnection.EnderIOHyperCubeConnection;
 import logisticspipes.proxy.specialconnection.EnderIOTransceiverConnection;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
-import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
@@ -161,7 +157,7 @@ import logisticspipes.utils.RoutedItemHelper;
 //CHECKSTYLE:OFF
 
 @Mod(
-		modid = "LogisticsPipes",
+		modid = "logisticspipes",
 		name = "Logistics Pipes",
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
@@ -214,7 +210,7 @@ public class LogisticsPipes {
 		NewGuiHandler.initialize();
 	}
 
-	@Mod.Instance("LogisticsPipes")
+	@Mod.Instance("logisticspipes")
 	public static LogisticsPipes instance;
 
 	//Log Requests
@@ -383,13 +379,13 @@ public class LogisticsPipes {
 		SimpleServiceLocator.buildCraftProxy.initProxy();
 		SimpleServiceLocator.thermalDynamicsProxy.registerPipeInformationProvider();
 
-		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
+		//SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOTransceiverConnection());
 
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
+		//SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
+		//SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));
 		if (SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
 			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
 		}
@@ -401,7 +397,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("Forestry", "Generic", ForestryProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("EnderIO", "Generic", EnderIOProgressProvider.class));
+		//SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("EnderIO", "Generic", EnderIOProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("endercore", "Generic", EnderCoreProgressProvider.class));
 
 		MainProxy.proxy.registerTileEntities();
@@ -421,14 +417,14 @@ public class LogisticsPipes {
 
 		Object renderer = null;
 		if (isClient) {
-			renderer = new FluidContainerRenderer();
+			//renderer = new FluidContainerRenderer();
 		}
 
 		LogisticsPipes.LogisticsItemCard = new LogisticsItemCard();
 		LogisticsPipes.LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		GameRegistry.registerItem(LogisticsPipes.LogisticsItemCard, LogisticsPipes.LogisticsItemCard.getUnlocalizedName());
 		if (isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsPipes.LogisticsItemCard, (FluidContainerRenderer) renderer);
+			//MinecraftForgeClient.registerItemRenderer(LogisticsPipes.LogisticsItemCard, (FluidContainerRenderer) renderer);
 		}
 
 		LogisticsPipes.LogisticsRemoteOrderer = new RemoteOrderer();
@@ -467,7 +463,7 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsPipes.LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
 		if (isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsPipes.LogisticsFluidContainer, (FluidContainerRenderer) renderer);
+			//MinecraftForgeClient.registerItemRenderer(LogisticsPipes.LogisticsFluidContainer, (FluidContainerRenderer) renderer);
 		}
 		GameRegistry.registerItem(LogisticsPipes.LogisticsFluidContainer, LogisticsPipes.LogisticsFluidContainer.getUnlocalizedName());
 
@@ -644,9 +640,9 @@ public class LogisticsPipes {
 
 		if (side.isClient()) {
 			if (pipe instanceof PipeBlockRequestTable) {
-				MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
+				//MinecraftForgeClient.registerItemRenderer(res, new LogisticsPipeItemRenderer(true));
 			} else {
-				MinecraftForgeClient.registerItemRenderer(res, MainProxy.proxy.getPipeItemRenderer());
+				//MinecraftForgeClient.registerItemRenderer(res, MainProxy.proxy.getPipeItemRenderer());
 			}
 		}
 		if (clas != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(clas)) {

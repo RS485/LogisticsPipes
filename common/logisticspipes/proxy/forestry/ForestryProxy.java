@@ -350,7 +350,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).getGenome().getNocturnal();
+		return root.getMember(bee).getGenome().getNeverSleeps();
 	}
 
 	/**
@@ -366,7 +366,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).getGenome().getNocturnal() && root.getMember(bee).isPureBred(EnumBeeChromosome.NOCTURNAL);
+		return root.getMember(bee).getGenome().getNeverSleeps() && root.getMember(bee).isPureBred(EnumBeeChromosome.NEVER_SLEEPS);
 	}
 
 	/**

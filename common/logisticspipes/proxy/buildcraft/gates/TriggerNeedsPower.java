@@ -8,6 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
 
+import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementContainer;
 import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.statements.ITriggerExternal;
@@ -49,4 +50,5 @@ public class TriggerNeedsPower extends LPTrigger implements ITriggerExternal {
 	public boolean requiresParameter() {
 		return false;
 	}
+
 }

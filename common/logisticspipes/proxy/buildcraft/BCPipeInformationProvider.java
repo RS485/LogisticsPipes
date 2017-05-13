@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft;
 
 import java.util.List;
@@ -238,3 +239,4 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 		return Stream.empty();
 	}
 }
+*/

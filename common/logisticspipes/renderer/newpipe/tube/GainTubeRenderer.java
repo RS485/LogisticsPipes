@@ -95,7 +95,7 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
-		GainTubeRenderer.tubeGain.get(orientation.getRenderOrientation()).copy().render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF) });
+		GainTubeRenderer.tubeGain.get(orientation.getRenderOrientation()).copy().render(new I3DOperation[] { 0xFFFFFFFF) });
 	}
 
 	public static AxisAlignedBB getObjectBoundsAt(AxisAlignedBB boundingBox, ITubeOrientation orientation) {

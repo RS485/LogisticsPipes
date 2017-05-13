@@ -27,8 +27,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
-import buildcraft.transport.TravelingItem;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -58,7 +56,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.LPRoutedBCTravelingItem;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
@@ -720,7 +717,7 @@ public class PipeTransportLogistics {
 
 	/**
 	 * Accept items from BC
-	 */
+	 */ /*
 	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public void injectItem(TravelingItem item, EnumFacing inputOrientation) {
 		if (MainProxy.isServer(getWorld())) {
@@ -745,6 +742,7 @@ public class PipeTransportLogistics {
 			}
 		}
 	}
+	*/
 
 	private void dropItem(LPTravelingItemServer item) {
 		if (MainProxy.isClient(container.getWorld())) {

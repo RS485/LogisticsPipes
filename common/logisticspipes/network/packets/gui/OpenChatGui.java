@@ -3,7 +3,7 @@ package logisticspipes.network.packets.gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.entity.player.EntityPlayer;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.network.abstractpackets.ModernPacket;

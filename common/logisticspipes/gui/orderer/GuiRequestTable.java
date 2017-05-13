@@ -267,15 +267,15 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						String s = null;
 						if(resource != null) {
 							stack = resource.getDisplayItem().makeNormalStack();
-							GuiScreen.itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5);
-							GuiScreen.itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, getMC().renderEngine, stack, left + 5, top + 5, "");
+							itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
+							itemRender.renderItemOverlayIntoGUI(mc.fontRendererObj, stack, left + 5, top + 5, "");
 							s = StringUtils.getFormatedStackSize(stack.stackSize, false);
 						} else {
 							s = "List";
 						}
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
-						GuiScreen.itemRender.zLevel = 0.0F;
+						itemRender.zLevel = 0.0F;
 
 						// Draw number
 						mc.fontRendererObj.drawStringWithShadow(s, left + 22 - mc.fontRendererObj.getStringWidth(s), top + 14, 16777215);
@@ -302,12 +302,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								GL11.glEnable(GL11.GL_LIGHTING);
 								GL11.glEnable(GL11.GL_DEPTH_TEST);
 								RenderHelper.enableGUIStandardItemLighting();
-								GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, x, y);
-								GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, x, y, "");
+								itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+								itemRender.renderItemOverlayIntoGUI(fontRendererObj, stack, x, y, "");
 								s = StringUtils.getFormatedStackSize(stack.stackSize, false);
 								GL11.glDisable(GL11.GL_LIGHTING);
 								GL11.glDisable(GL11.GL_DEPTH_TEST);
-								GuiScreen.itemRender.zLevel = 0.0F;
+								itemRender.zLevel = 0.0F;
 
 								// Draw number
 								mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);

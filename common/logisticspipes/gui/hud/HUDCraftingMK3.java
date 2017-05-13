@@ -71,15 +71,15 @@ public class HUDCraftingMK3 extends BasicHUDGui {
 			list.add(craftables.get(0));
 		}
 		if (pipe.displayList.size() > 0 && pipe.getMk3Module().bufferList.size() == 0) {
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS,  false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 		} else if (pipe.getMk3Module().bufferList.size() > 0) {
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, -17, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.getMk3Module().bufferList, null, 0, -35, 0, 4, 16, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.getMk3Module().bufferList, null, 0, -35, 0, 4, 16, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 		} else {
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 		}
 	}
 

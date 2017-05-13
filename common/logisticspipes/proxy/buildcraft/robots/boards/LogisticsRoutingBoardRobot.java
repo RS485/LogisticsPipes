@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.robots.boards;
 
 import java.util.HashSet;
@@ -79,7 +80,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		if (dock == null) {
 			return;
 		}
-		DoubleCoordinates pos = new DoubleCoordinates(dock.x(), dock.y(), dock.z());
+		DoubleCoordinates pos = new DoubleCoordinates(dock.getPos());
 		LPRobotConnectionControl.instance.addRobot(robot.worldObj, pos, dock.side());
 		init = true;
 	}
@@ -356,3 +357,4 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 		return new DoubleCoordinates(robot.getLinkedStation().x(), robot.getLinkedStation().y(), robot.getLinkedStation().z());
 	}
 }
+*/

@@ -37,7 +37,7 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 					}
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk()).setBlockPos(pipe.getPos()), player);
 		}
 		if (pipe.pipe instanceof PipeBlockRequestTable) {
 			if (((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0) != null) {
@@ -47,7 +47,7 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 					}
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0)).setBlockPos(pipe.getPos()), player);
 		}
 	}
 }

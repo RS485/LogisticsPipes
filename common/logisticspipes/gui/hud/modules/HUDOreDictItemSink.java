@@ -26,7 +26,7 @@ public class HUDOreDictItemSink implements IHUDModuleRenderer {
 	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.00001F);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(itemSink.getHudItemList(), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, true, false, shifted);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(itemSink.getHudItemList(), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, false, shifted);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 	}
 

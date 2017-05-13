@@ -123,7 +123,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			if (LPConstants.DEBUG) {
 				log.log("Size: " + connectedRouters.size());
 			}
-			lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
+			lasers.add(new LaserData(pipe.getX(), pipe.getY(), pipe.getZ(), dir, connectionType).setStartPipe(firstPipe));
 			firstPipe = false;
 			HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, (worldObj, laser) -> {
 				if (pipe.getWorld() == worldObj) {

@@ -8,13 +8,14 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -78,15 +79,14 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	protected final int ticksToActiveAction = 6;
 	protected final int ticksToPassiveAction = 100;
-	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
 	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<>();
+	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
 	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<>();
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+
 	protected int currentTick = 0;
 	protected boolean isExcludeFilter = false;
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
-	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
-	private boolean isActive = false;
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
 	public ModuleProvider() {}
@@ -502,7 +502,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleProvider");
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
+		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleProvider"));
 	}
 }

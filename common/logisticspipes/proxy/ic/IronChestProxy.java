@@ -8,8 +8,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import net.minecraftforge.ironchest.TileEntityIronChest;
-import net.minecraftforge.ironchest.client.GUIChest;
+import cpw.mods.ironchest.TileEntityIronChest;
+import cpw.mods.ironchest.client.GUIChest;
 
 public class IronChestProxy implements IIronChestProxy {
 

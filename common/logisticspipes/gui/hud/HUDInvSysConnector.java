@@ -39,7 +39,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 		mc.fontRendererObj.drawString(message, -28, -25, 0);
 		GL11.glScalef(0.8F, 0.8F, -1F);
 
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, 100.0F, DisplayAmount.ALWAYS, true, false, shifted);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 	}
 
 	@Override

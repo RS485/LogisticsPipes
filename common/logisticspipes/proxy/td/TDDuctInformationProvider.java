@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.td;
 
 import java.util.ArrayList;
@@ -259,7 +260,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getObject() != null) {
 					((ILPTEInformation) duct).getObject().getCacheHolder().setCache(CacheTypes.Routing, key, route);
 				}
-				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct, route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 /* Speed */);
+				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct, route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 / * Speed * / );
 				travelItem.lpRoutingInformation = serverItem.getInfo();
 				duct.insertNewItem(travelItem);
 				return true;
@@ -302,3 +303,4 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 		return list;
 	}
 }
+*/

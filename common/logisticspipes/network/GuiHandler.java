@@ -43,6 +43,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.network.IGuiHandler;
@@ -54,7 +55,7 @@ public class GuiHandler implements IGuiHandler {
 
 		TileEntity tile = null;
 		if (y != -1) {
-			tile = world.getTileEntity(x, y, z);
+			tile = world.getTileEntity(new BlockPos(x, y, z));
 		}
 		LogisticsTileGenericPipe pipe = null;
 		if (tile instanceof LogisticsTileGenericPipe) {
@@ -94,7 +95,7 @@ public class GuiHandler implements IGuiHandler {
 						}
 					}
 
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeItemsFluidSupplier) pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeItemsFluidSupplier) pipe.pipe).isRequestingPartials() ? 1 : 0)).setBlockPos(pipe.getPos()), player);
 					return dummy;
 
 				case GuiIDs.GUI_FluidSupplier_MK2_ID:
@@ -105,8 +106,8 @@ public class GuiHandler implements IGuiHandler {
 					dummy.addNormalSlotsForPlayerInventory(18, 97);
 					dummy.addFluidSlot(0, ((PipeFluidSupplierMk2) pipe.pipe).getDummyInventory(), 0, 0);
 
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeFluidSupplierMk2) pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMinMode.class).setInteger(((PipeFluidSupplierMk2) pipe.pipe).getMinMode().ordinal()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeFluidSupplierMk2) pipe.pipe).isRequestingPartials() ? 1 : 0)).setBlockPos(pipe.getPos()), player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMinMode.class).setInteger(((PipeFluidSupplierMk2) pipe.pipe).getMinMode().ordinal()).setBlockPos(pipe.getPos()), player);
 					return dummy;
 
 				case GuiIDs.GUI_ProviderPipe_ID:
@@ -173,7 +174,7 @@ public class GuiHandler implements IGuiHandler {
 
 					dummy.addNormalSlotsForPlayerInventory(0, 50);
 
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector) pipe.pipe).resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector) pipe.pipe).resistance).setBlockPos(pipe.getPos()), player);
 
 					return dummy;
 
@@ -278,7 +279,7 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
 
-		TileEntity tile = world.getTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
 		LogisticsTileGenericPipe pipe = null;
 		if (tile instanceof LogisticsTileGenericPipe) {
 			pipe = (LogisticsTileGenericPipe) tile;

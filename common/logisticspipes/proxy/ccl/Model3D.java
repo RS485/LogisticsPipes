@@ -10,9 +10,11 @@ import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IBounds;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.EnumFacing;
@@ -24,14 +26,15 @@ import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import codechicken.lib.render.Vertex5;
+import codechicken.lib.model.bakery.CCModelBakery;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.CCRenderState.IVertexOperation;
-import codechicken.lib.render.uv.UVTransformation;
+import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Vertex5;
+import codechicken.lib.vec.uv.UVTransformation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -52,17 +55,21 @@ public class Model3D implements IModel3D {
 		for (I3DOperation op : i3dOperations) {
 			list.add((IVertexOperation) op.getOriginal());
 		}
-		model.render(list.toArray(new IVertexOperation[list.size()]));
+		model.render(CCRenderState.instance(), list.toArray(new IVertexOperation[list.size()]));
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> renderToQuads(VertexFormat format, I3DOperation... i3dOperations) {
 		List<IVertexOperation> list = new ArrayList<>();
-		ArrayList<BakedQuad> quads = Lists.newArrayList();
+
 		for (I3DOperation op : i3dOperations) {
 			list.add((IVertexOperation) op.getOriginal());
 		}
+
+		return CCModelBakery.bakeModel(model, format, list.toArray(new IVertexOperation[0]));
+		/*
+		ArrayList<BakedQuad> quads = Lists.newArrayList();
 
 		CCRenderState.setPipeline(model, 0, model.verts.length, list.toArray(new IVertexOperation[list.size()]));
 		Vertex5[] verts = CCRenderState.model.getVertices();
@@ -85,7 +92,7 @@ public class Model3D implements IModel3D {
 				a.normalize();
 				faceNormal = a;
 				//builder.setContractUVs(true);
-				//builder.setTexture(sprite);
+				builder.setTexture(sprite);
 				builder.setQuadOrientation(EnumFacing.getFacingFromVector(faceNormal.x, faceNormal.y, faceNormal.z));
 			}
 			CCRenderState.model.prepareVertex();
@@ -98,8 +105,9 @@ public class Model3D implements IModel3D {
 		}
 		quads.add(builder.build());
 		return ImmutableList.copyOf(quads);
+		*/
 	}
-
+/*
 	@SideOnly(Side.CLIENT)
 	public static void writeVert(UnpackedBakedQuad.Builder builder) {
 		for (int e = 0; e < CCRenderState.fmt.getElementCount(); e++) {
@@ -128,7 +136,7 @@ public class Model3D implements IModel3D {
 			}
 		}
 	}
-
+*/
 	/*
 	private final void putVertexData(UnpackedBakedQuad.Builder builder, OBJModel.Vertex v, OBJModel.Normal faceNormal, OBJModel.TextureCoordinate defUV, TextureAtlasSprite sprite)
 	{

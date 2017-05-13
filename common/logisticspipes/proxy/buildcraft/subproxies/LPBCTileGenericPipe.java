@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.lang.reflect.InvocationTargetException;
@@ -405,3 +406,4 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 		return super.setPluggable(direction, pluggable, player);
 	}
 }
+*/

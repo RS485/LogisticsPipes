@@ -9,7 +9,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +71,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			}
 		}
 		if (result == null) {
-			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
+			player.addChatComponentMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		}
 		int resultIndex = -1;
 		if (resultIndex == -1) {
@@ -84,7 +84,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 					}
 				}
 			} else {
-				ItemStack dummyStack = new ItemStack(Blocks.stone, 0, 0);
+				ItemStack dummyStack = new ItemStack(Blocks.STONE, 0, 0);
 				NBTTagCompound nbt = new NBTTagCompound();
 				nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
 				dummyStack.setTagCompound(nbt);
@@ -111,7 +111,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			}
 		}
 		if (resultIndex == -1) {
-			player.addChatComponentMessage(new ChatComponentTranslation("lp.chat.slotnotfound"));
+			player.addChatComponentMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		} else {
 			//Copy pipe to coordinates to use the getPipe method
 			setPosX(getPipePosX());

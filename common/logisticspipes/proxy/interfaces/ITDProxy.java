@@ -3,8 +3,7 @@ package logisticspipes.proxy.interfaces;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
@@ -23,10 +22,10 @@ public interface ITDProxy {
 	boolean isItemDuct(TileEntity tile);
 
 	@SideOnly(Side.CLIENT)
-	void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer);
+	void renderPipeConnections(LogisticsTileGenericPipe pipeTile);
 
 	@SideOnly(Side.CLIENT)
-	void registerTextures(IIconRegister iconRegister);
+	void registerTextures(TextureMap iconRegister);
 
 	boolean isBlockedSide(TileEntity with, EnumFacing opposite);
 }

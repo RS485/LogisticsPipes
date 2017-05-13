@@ -174,6 +174,6 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	private boolean isTileAnalyser(TileEntity tile) {
-		return SimpleServiceLocator.forestryProxy.isTileAnalyser(tile) || SimpleServiceLocator.binnieProxy.isTileAnalyser(tile);
+		return SimpleServiceLocator.forestryProxy.isTileAnalyser(tile);
 	}
 }

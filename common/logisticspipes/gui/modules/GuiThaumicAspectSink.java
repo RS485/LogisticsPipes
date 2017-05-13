@@ -1,3 +1,4 @@
+/*
 package logisticspipes.gui.modules;
 
 import java.io.IOException;
@@ -147,3 +148,4 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		}
 	}
 }
+*/

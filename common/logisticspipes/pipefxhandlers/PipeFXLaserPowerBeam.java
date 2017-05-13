@@ -5,12 +5,14 @@ import java.util.Random;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -22,7 +24,7 @@ import lombok.experimental.Accessors;
 import org.lwjgl.opengl.GL11;
 
 @Accessors(chain = true)
-public class PipeFXLaserPowerBeam extends EntityFX {
+public class PipeFXLaserPowerBeam extends Particle {
 
 	private static final ResourceLocation beam = new ResourceLocation("logisticspipes", "textures/particles/laserBeam.png");
 	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
@@ -44,7 +46,7 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 		particleRed = ((float) ((color & 0xff0000) >> 16)) / 0xff;
 		particleGreen = ((float) ((color & 0x00ff00) >> 8)) / 0xff;
 		particleBlue = ((float) ((color & 0x0000ff) >> 0)) / 0xff;
-		noClip = true;
+		canCollide = false;
 		motionX = 0.0D;
 		motionY = 0.0D;
 		motionZ = 0.0D;
@@ -54,28 +56,28 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 		this.length = length;
 		random = PipeFXLaserPowerBeam.RAND.nextFloat() * PipeFXLaserPowerBeam.RAND.nextInt(10);
 		dir = dir.getOpposite();
-		yaw = ((float) (Math.atan2(dir.offsetX, dir.offsetZ) * 180.0D / Math.PI));
-		pitch = ((float) (Math.atan2(dir.offsetY, MathHelper.sqrt_double(dir.offsetX * dir.offsetX + dir.offsetZ * dir.offsetZ)) * 180.0D / Math.PI));
+		yaw = ((float) (Math.atan2(dir.getDirectionVec().getX(), dir.getDirectionVec().getZ()) * 180.0D / Math.PI));
+		pitch = ((float) (Math.atan2(dir.getDirectionVec().getY(), MathHelper.sqrt_double(dir.getDirectionVec().getX() * dir.getDirectionVec().getX() + dir.getDirectionVec().getZ() * dir.getDirectionVec().getZ())) * 180.0D / Math.PI));
 		particleMaxAge = 0;
-		EntityLivingBase renderentity = FMLClientHandler.instance().getClient().renderViewEntity;
+		Entity renderentity = FMLClientHandler.instance().getClient().getRenderViewEntity();
 		int visibleDistance = 50;
 		if (!FMLClientHandler.instance().getClient().gameSettings.fancyGraphics) {
 			visibleDistance = 25;
 		}
 		if (renderentity.getDistance(posX, posY, posZ) > visibleDistance) {
-			setDead();
+			setExpired();
 		}
 	}
 
 	@Override
 	public void onUpdate() {
 		if (tile.isInvalid()) {
-			setDead();
+			setExpired();
 		}
 	}
 
 	@Override
-	public void renderParticle(Tessellator tessellator, float f, float f1, float f2, float f3, float f4, float f5) {
+	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		tessellator.draw();
 		GL11.glPushMatrix();
 		float slide = worldObj.getTotalWorldTime() + random;
@@ -86,7 +88,7 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 
 		GL11.glDisable(GL11.GL_CULL_FACE);
 
-		float partSlide = slide + f;
+		float partSlide = slide + partialTicks;
 		if (reverse) {
 			partSlide *= -1.0F;
 		}
@@ -96,9 +98,9 @@ public class PipeFXLaserPowerBeam extends EntityFX {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDepthMask(false);
 
-		double x = posX - EntityFX.interpPosX;
-		double y = posY - EntityFX.interpPosY;
-		double z = posZ - EntityFX.interpPosZ;
+		double x = posX - Particle.interpPosX;
+		double y = posY - Particle.interpPosY;
+		double z = posZ - Particle.interpPosZ;
 		GL11.glTranslated(x, y, z);
 
 		GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);

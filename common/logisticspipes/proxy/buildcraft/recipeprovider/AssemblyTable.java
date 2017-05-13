@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.recipeprovider;
 
 import java.util.List;
@@ -145,3 +146,4 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 		return true;
 	}
 }
+*/

@@ -164,10 +164,10 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
 			ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_COMBINATION);
-			GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack, x, y);
+			itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GuiScreen.itemRender.zLevel = 0.0F;
+			itemRender.zLevel = 0.0F;
 		}
 
 		@Override
@@ -320,11 +320,11 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
-			ItemStack stack2 = new ItemStack(Blocks.redstone_torch);
-			GuiScreen.itemRender.renderItemAndEffectIntoGUI(fontRendererObj, getMC().renderEngine, stack2, x, y);
+			ItemStack stack2 = new ItemStack(Blocks.REDSTONE_TORCH);
+			itemRender.renderItemAndEffectIntoGUI(stack2, x, y);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GuiScreen.itemRender.zLevel = 0.0F;
+			itemRender.zLevel = 0.0F;
 		}
 
 		@Override

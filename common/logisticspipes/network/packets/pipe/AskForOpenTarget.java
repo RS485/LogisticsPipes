@@ -1,10 +1,9 @@
 package logisticspipes.network.packets.pipe;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.math.RayTraceResult;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -23,10 +22,9 @@ public class AskForOpenTarget extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
-		if (box.typeOfHit == MovingObjectType.BLOCK) {
-			MainProxy.sendPacketToServer(
-					PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(box.blockX).setTagetPosY(box.blockY).setTagetPosZ(box.blockZ));
+		RayTraceResult box = FMLClientHandler.instance().getClient().objectMouseOver;
+		if (box.typeOfHit == RayTraceResult.Type.BLOCK) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(box.getBlockPos().getX()).setTagetPosY(box.getBlockPos().getY()).setTagetPosZ(box.getBlockPos().getZ()));
 		}
 	}
 

@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.specialconnection;
 
 import java.lang.reflect.Method;
@@ -19,7 +20,7 @@ import net.minecraft.util.EnumFacing;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 
-/** Support for teleport pipes **/
+// Support for teleport pipes
 public class TeleportPipes implements ISpecialPipedConnection {
 
 	private static Class<? extends Pipe> PipeItemTeleport;
@@ -87,3 +88,4 @@ public class TeleportPipes implements ISpecialPipedConnection {
 		return list;
 	}
 }
+*/

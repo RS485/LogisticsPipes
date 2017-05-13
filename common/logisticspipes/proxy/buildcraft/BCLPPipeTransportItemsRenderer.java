@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft;
 
 import buildcraft.api.core.EnumColor;
@@ -18,3 +19,4 @@ public class BCLPPipeTransportItemsRenderer extends PipeTransportItemsRenderer {
 		super.doRenderItem(travellingItem, x, y, z, light, color);
 	}
 }
+*/

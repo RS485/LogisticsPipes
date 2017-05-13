@@ -71,6 +71,15 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				return ZOOM_LEVEL.values()[id + 1];
 			}
 		}
+
+		ZOOM_LEVEL prev() {
+			int id = ordinal();
+			if (id - 1 < 0) {
+				return this;
+			} else {
+				return ZOOM_LEVEL.values()[id - 1];
+			}
+		}
 	}
 
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
@@ -349,8 +358,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 
 	private void drawMap(int par1, int par2) {
 		tooltip = null;
-		int mapX = MathHelper.floor_double(guiMapX);
-		int mapY = MathHelper.floor_double(guiMapY - zoom.moveY);
+		int mapX = (int) Math.floor(guiMapX);
+		int mapY = (int) Math.floor(guiMapY - zoom.moveY);
 		int leftSide = ((width - xSize) / 2);
 		int topSide = ((height - ySize) / 2);
 
@@ -569,13 +578,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	}
 
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
-		GuiScreen.itemRender.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
+		itemRender.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, mc.renderEngine, item.makeNormalStack(), x, y, "");
+			itemRender.renderItemOverlayIntoGUI(fontRendererObj, item.makeNormalStack(), x, y, "");
 			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GuiScreen.itemRender.zLevel = 0.0F;
+			itemRender.zLevel = 0.0F;
 			// Draw number
 			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);

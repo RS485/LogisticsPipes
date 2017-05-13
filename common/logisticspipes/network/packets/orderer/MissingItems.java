@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,13 +53,13 @@ public class MissingItems extends ModernPacket {
 					.handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (isFlag()) {
 			for (IResource item : items) {
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.RED + "Missing: " + item.getDisplayText(ColorCode.MISSING)));
+				player.addChatComponentMessage(new TextComponentString(ChatColor.RED + "Missing: " + item.getDisplayText(ColorCode.MISSING)));
 			}
 		} else {
 			for (IResource item : items) {
-				player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Requested: " + item.getDisplayText(ColorCode.SUCCESS)));
+				player.addChatComponentMessage(new TextComponentString(ChatColor.GREEN + "Requested: " + item.getDisplayText(ColorCode.SUCCESS)));
 			}
-			player.addChatComponentMessage(new ChatComponentText(ChatColor.GREEN + "Request successful!"));
+			player.addChatComponentMessage(new TextComponentString(ChatColor.GREEN + "Request successful!"));
 		}
 	}
 

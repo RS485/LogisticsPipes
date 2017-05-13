@@ -151,10 +151,10 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		RenderHelper.enableGUIStandardItemLighting();
 		ItemStack stack = new ItemStack(Blocks.CRAFTING_TABLE, 0);
-		GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, guiLeft + 31, guiTop + 3);
+		itemRender.renderItemAndEffectIntoGUI(stack, guiLeft + 31, guiTop + 3);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GuiScreen.itemRender.zLevel = 0.0F;
+		itemRender.zLevel = 0.0F;
 
 		if (current_Tab == 0) {
 			itemDisplay_1.renderItemArea(zLevel);
@@ -174,10 +174,10 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 					RenderHelper.enableGUIStandardItemLighting();
-					GuiScreen.itemRender.renderItemAndEffectIntoGUI(task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
+					itemRender.renderItemAndEffectIntoGUI(task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
-					GuiScreen.itemRender.zLevel = 0.0F;
+					itemRender.zLevel = 0.0F;
 					mc.fontRendererObj.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRendererObj), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
 
 					int xOrigo = xCenter - 68;

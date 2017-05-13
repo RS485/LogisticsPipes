@@ -1,9 +1,10 @@
 package crazypants.enderio.conduit;
 
+import net.minecraft.util.EnumFacing;
+
 import com.enderio.core.common.util.BlockCoord;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public interface IConduit {
-	ConnectionMode getConnectionMode(ForgeDirection dir);
+	ConnectionMode getConnectionMode(EnumFacing dir);
 	BlockCoord getLocation();
 }

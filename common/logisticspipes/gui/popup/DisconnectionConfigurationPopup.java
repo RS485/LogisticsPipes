@@ -1,6 +1,7 @@
 package logisticspipes.gui.popup;
 
 import java.awt.Rectangle;
+import java.io.IOException;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -59,14 +60,14 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 		drawRect(bounds.x, bounds.y, bounds.x + bounds.width, bounds.y + bounds.height, 0xff000000);
 
 		Minecraft mc = Minecraft.getMinecraft();
-		ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+		ScaledResolution scaledresolution = new ScaledResolution(mc);
 
 		int vpx = bounds.x * scaledresolution.getScaleFactor();
 		int vpy = (bounds.y + 10) * scaledresolution.getScaleFactor();
 		int w = bounds.width * scaledresolution.getScaleFactor();
 		int h = (bounds.height - 1) * scaledresolution.getScaleFactor();
 
-		mc.fontRenderer.drawString(StringUtils
+		mc.fontRendererObj.drawString(StringUtils
 				.translate(PREFIX + "disconnectTitle"), guiLeft + 8, guiTop + 8, logisticspipes.utils.Color
 				.getValue(logisticspipes.utils.Color.DARKER_GREY), false);
 
@@ -74,7 +75,7 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 	}
 
 	@Override
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		super.handleMouseInputSub();
 		configDisplay.handleMouseInput();
 	}

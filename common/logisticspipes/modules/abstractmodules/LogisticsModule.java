@@ -16,8 +16,8 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -108,7 +108,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	/**
 	 * Returns submodules. Normal modules don't have submodules
 	 * 
-	 * @param slotnumber
+	 * @param slot
 	 *            of the requested module
 	 * @return
 	 */
@@ -156,7 +156,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * @return
 	 */
 	@SideOnly(Side.CLIENT)
-	public abstract TextureAtlasSprite getIconTexture(IIconRegister register);
+	public abstract TextureAtlasSprite getIconTexture(TextureMap register);
 
 	/**
 	 * Returns whether the module should be displayed the effect when as an

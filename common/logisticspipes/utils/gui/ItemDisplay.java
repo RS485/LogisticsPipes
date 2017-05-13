@@ -23,6 +23,8 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
@@ -240,7 +242,7 @@ public class ItemDisplay {
 		int panelySize = 20;
 		int x = 2;
 		int y = 2;
-		ScaledResolution scaledresolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+		ScaledResolution scaledresolution = new ScaledResolution(mc);
 		int scaleX = scaledresolution.getScaledWidth();
 		int scaleY = scaledresolution.getScaledHeight();
 		int mouseX = Mouse.getX() * scaleX / mc.displayWidth - left;
@@ -253,15 +255,16 @@ public class ItemDisplay {
 			// GL11.glBindTexture(GL11.GL_TEXTURE_2D,
 			// this.mc.renderEngine.getTexture());
 			screen.getMC().renderEngine.bindTexture(ItemDisplay.TEXTURE);
-			Tessellator tesselator = Tessellator.instance;
-			tesselator.startDrawingQuads();
+			Tessellator tess = Tessellator.getInstance();
+			VertexBuffer buf = tess.getBuffer();
+			buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 			int xPosition = (width / 2) - 50;
 			int yPosition = 40;
-			tesselator.addVertexWithUV(xPosition, yPosition + 100, zLevel, 0.04, 0.72 + (graphic * 0.03125));
-			tesselator.addVertexWithUV(xPosition + 100, yPosition + 100, zLevel, 0.08, 0.72 + (graphic * 0.03125));
-			tesselator.addVertexWithUV(xPosition + 100, yPosition, zLevel, 0.08, 0.69 + (graphic * 0.03125));
-			tesselator.addVertexWithUV(xPosition, yPosition, zLevel, 0.04, 0.69 + (graphic * 0.03125));
-			tesselator.draw();
+			buf.pos(xPosition, yPosition + 100, zLevel).tex(0.04, 0.72 + (graphic * 0.03125)).endVertex();;
+			buf.pos(xPosition + 100, yPosition + 100, zLevel).tex(0.08, 0.72 + (graphic * 0.03125)).endVertex();;
+			buf.pos(xPosition + 100, yPosition, zLevel).tex(0.08, 0.69 + (graphic * 0.03125)).endVertex();;
+			buf.pos(xPosition, yPosition, zLevel).tex(0.04, 0.69 + (graphic * 0.03125)).endVertex();
+			tess.draw();
 		} else {
 			RenderHelper.enableGUIStandardItemLighting();
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -317,7 +320,7 @@ public class ItemDisplay {
 				}
 
 				// use GuiGraphics to render the ItemStacks
-				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, true, false, true);
+				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, false, true);
 				itemstackRenderer.setItemstack(itemstack).setDisplayAmount(DisplayAmount.HIDE_ONE);
 				itemstackRenderer.renderInGui();
 

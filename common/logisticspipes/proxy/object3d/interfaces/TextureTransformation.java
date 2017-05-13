@@ -6,4 +6,5 @@ public interface TextureTransformation extends I3DOperation {
 
 	void update(TextureAtlasSprite registerIcon);
 
+	TextureAtlasSprite getTexture();
 }

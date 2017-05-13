@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.subproxies;
 
 import java.util.ArrayList;
@@ -98,3 +99,4 @@ public class LPBCPipe extends Pipe<LPBCPipeTransportsItems> implements IBCPipePa
 		return pipe.canPipeConnect(tile, side);
 	}
 }
+*/

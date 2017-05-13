@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.robots.ai;
 
 import java.util.Iterator;
@@ -62,3 +63,4 @@ public class ItemInsertionAIRobot extends AIRobot {
 		return board.getItems().isEmpty();
 	}
 }
+*/

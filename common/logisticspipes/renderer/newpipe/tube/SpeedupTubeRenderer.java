@@ -85,7 +85,7 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
 		SpeedupDirection speedupDirection = (SpeedupDirection) orientation.getRenderOrientation();
-		SpeedupTubeRenderer.tubeSpeedup.get(speedupDirection).copy().render(LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF));
+		SpeedupTubeRenderer.tubeSpeedup.get(speedupDirection).copy().render(LPColourMultiplier.instance(0xFFFFFFFF));
 		LogisticsNewRenderPipe.renderBoxWithDir(((SpeedupDirection) orientation.getRenderOrientation()).getDir1());
 	}
 }

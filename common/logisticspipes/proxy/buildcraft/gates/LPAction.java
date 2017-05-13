@@ -11,13 +11,13 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.textures.Textures;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import buildcraft.api.statements.IActionInternal;
+import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementParameter;
 import buildcraft.api.statements.StatementManager;
 
@@ -51,11 +51,6 @@ public abstract class LPAction implements IActionInternal {
 	}
 
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
-		Textures.LPactionIconProvider.registerIcons(iconRegister);
-	}
-
-	@Override
 	public String getUniqueTag() {
 		return uniqueTag;
 	}
@@ -66,12 +61,17 @@ public abstract class LPAction implements IActionInternal {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIcon() {
+	public TextureAtlasSprite getGuiSprite() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
 
 	@Override
 	public IActionInternal rotateLeft() {
 		return this;
+	}
+
+	@Override
+	public IStatement[] getPossible() {
+		return new IStatement[]{this};
 	}
 }

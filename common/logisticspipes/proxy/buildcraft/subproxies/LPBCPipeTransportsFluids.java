@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.subproxies;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -13,3 +14,4 @@ public class LPBCPipeTransportsFluids extends PipeTransportFluids {
 	}
 
 }
+*/

@@ -400,12 +400,12 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.LIQUID_CRAFTING);
-				GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
-				GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
+				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
+				itemRender.renderItemOverlayIntoGUI(fontRendererObj, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 			}
-			GuiScreen.itemRender.zLevel = 0.0F;
+			itemRender.zLevel = 0.0F;
 
 			if (!isAdvancedSat && liquidCrafter > 1 && !isFullyExtended()) {
 				String s = Integer.toString(liquidCrafter);
@@ -508,11 +508,11 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR);
-				GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
-				GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
+				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
+				itemRender.renderItemOverlayIntoGUI(fontRendererObj, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				GuiScreen.itemRender.zLevel = 0.0F;
+				itemRender.zLevel = 0.0F;
 			} else {
 				GuiGraphics.drawBigSlotBackground(mc, left + 9, top + 20);
 				fontRendererObj.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Extra"), left + 9, top + 8, 0x404040);
@@ -541,11 +541,11 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
 				ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP);
-				GuiScreen.itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
-				GuiScreen.itemRender.renderItemOverlayIntoGUI(fontRendererObj, getMC().renderEngine, stack, left + 5, top + 5, "");
+				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
+				itemRender.renderItemOverlayIntoGUI(fontRendererObj, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				GuiScreen.itemRender.zLevel = 0.0F;
+				itemRender.zLevel = 0.0F;
 			} else {
 				for (int y = 0; y < cleanupSize; y++) {
 					for (int x = 0; x < 3; x++) {

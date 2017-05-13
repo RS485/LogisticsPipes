@@ -10,16 +10,17 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.api.ItemInfo;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerTooltipHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import lombok.SneakyThrows;
 
 import logisticspipes.proxy.interfaces.INEIProxy;
@@ -28,7 +29,7 @@ import logisticspipes.utils.ReflectionHelper;
 public class NEIProxy implements INEIProxy {
 
 	@Override
-	public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {
+	public List<String> getInfoForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {
 		List<ItemStack> items = ItemInfo.getIdentifierItems(world, player, objectMouseOver);
 		if (items.isEmpty()) {
 			return new ArrayList<>(0);
@@ -40,7 +41,7 @@ public class NEIProxy implements INEIProxy {
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SneakyThrows({NoSuchFieldException.class, IllegalAccessException.class})
-	public boolean renderItemToolTip(int mousex, int mousey, List<String> msg, EnumChatFormatting rarityColor, ItemStack stack) {
+	public boolean renderItemToolTip(int mousex, int mousey, List<String> msg, TextFormatting rarityColor, ItemStack stack) {
 		if (!(Minecraft.getMinecraft().currentScreen instanceof GuiContainer)) {
 			return false;
 		}
@@ -60,7 +61,7 @@ public class NEIProxy implements INEIProxy {
 		if (tooltip.size() > 0) {
 			tooltip.set(0, tooltip.get(0) + "§h");
 		}
-		GuiDraw.drawMultilineTip(font, mousex + 12, mousey - 12, tooltip);
+		GuiDraw.drawMultilineTip(mousex + 12, mousey - 12, tooltip);
 		return true;
 	}
 
@@ -71,7 +72,7 @@ public class NEIProxy implements INEIProxy {
 	}
 
 	@Override
-	public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {
+	public ItemStack getItemForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {
 		List<ItemStack> items = ItemInfo.getIdentifierItems(world, player, objectMouseOver);
 		if (items.isEmpty()) {
 			return null;

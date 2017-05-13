@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft;
 
 import java.lang.reflect.Field;
@@ -269,12 +270,12 @@ public class BuildCraftProxy implements IBCProxy {
 	public void registerTrigger() {
 		StatementManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		StatementManager.registerActionProvider(new LogisticsActionProvider());
-		/* Triggers */
+		// Triggers
 		BuildCraftProxy.LogisticsFailedTrigger = new TriggerSupplierFailed();
 		BuildCraftProxy.LogisticsNeedPowerTrigger = new TriggerNeedsPower();
 		BuildCraftProxy.LogisticsCraftingTrigger = new TriggerCrafting();
 		BuildCraftProxy.LogisticsHasDestinationTrigger = new TriggerHasDestination();
-		/* Actions */
+		// Actions
 		BuildCraftProxy.LogisticsDisableAction = new ActionDisableLogistics();
 		BuildCraftProxy.LogisticsRobotRoutingAction = new ActionRobotRoutingLogistics();
 	}
@@ -346,10 +347,10 @@ public class BuildCraftProxy implements IBCProxy {
 		};
 	}
 
-	/**
+	/* *
 	 * @see buildcraft.robotics.ItemRobot#onItemUse(ItemStack, EntityPlayer,
 	 *      World, int, int, int, int, float, float, float)
-	 */
+	 * /
 	private boolean checkRobot(World world, int x, int y, int z, EntityPlayer player, ItemStack currentItem) {
 		if (!world.isRemote) {
 			Pipe<?> bcPipe = BlockGenericPipe.getPipe(world, x, y, z);
@@ -448,3 +449,4 @@ public class BuildCraftProxy implements IBCProxy {
 		LPRobotConnectionControl.instance.cleanup();
 	}
 }
+*/

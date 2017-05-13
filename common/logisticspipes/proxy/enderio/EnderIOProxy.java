@@ -13,10 +13,6 @@ import logisticspipes.proxy.interfaces.IEnderIOProxy;
 
 import net.minecraft.tileentity.TileEntity;
 
-import crazypants.enderio.machine.hypercube.HyperCubeRegister;
-import crazypants.enderio.machine.hypercube.TileHyperCube;
-import crazypants.enderio.machine.hypercube.TileHyperCube.IoMode;
-import crazypants.enderio.machine.hypercube.TileHyperCube.SubChannel;
 import crazypants.enderio.machine.transceiver.Channel;
 import crazypants.enderio.machine.transceiver.ChannelType;
 import crazypants.enderio.machine.transceiver.ServerChannelRegister;
@@ -26,20 +22,8 @@ import net.minecraft.util.EnumFacing;
 public class EnderIOProxy implements IEnderIOProxy {
 
 	@Override
-	public boolean isHyperCube(TileEntity tile) {
-		return tile instanceof TileHyperCube;
-	}
-
-	@Override
 	public boolean isTransceiver(TileEntity tile) {
 		return tile instanceof TileTransceiver;
-	}
-
-	@Override
-	public List<TileEntity> getConnectedHyperCubes(TileEntity tile) {
-		List<TileHyperCube> cons = HyperCubeRegister.instance.getCubesForChannel(((TileHyperCube) tile).getChannel());
-		List<TileEntity> tiles = cons.stream().filter(cube -> cube != tile).collect(Collectors.toList());
-		return tiles;
 	}
 
 	@Override
@@ -62,9 +46,6 @@ public class EnderIOProxy implements IEnderIOProxy {
 
 	@Override
 	public boolean isSendAndReceive(TileEntity tile) {
-		if (tile instanceof TileHyperCube) {
-			return IoMode.BOTH == ((TileHyperCube) tile).getModeForChannel(SubChannel.ITEM);
-		}
 		if (tile instanceof TileTransceiver) {
 			Set<Channel> receiveChannels = ((TileTransceiver) tile).getRecieveChannels(ChannelType.ITEM);
 			Set<Channel> sendChannels = ((TileTransceiver) tile).getSendChannels(ChannelType.ITEM);

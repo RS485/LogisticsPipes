@@ -12,14 +12,24 @@ import logisticspipes.utils.Color;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
+import org.lwjgl.opencl.CL;
 import org.lwjgl.opengl.GL11;
 
 /**
  * Utils class for simple drawing methods.
  */
+@SideOnly(Side.CLIENT)
 public final class SimpleGraphics {
 
 	private SimpleGraphics() {}
@@ -134,21 +144,22 @@ public final class SimpleGraphics {
 			y2 = temp;
 		}
 
-		// no blend //GL11.glEnable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		// no blend //OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+		// no blend //GlStateManager.enableBlend();
+		GlStateManager.disableTexture2D();
+		// no blend //GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		GL11.glColor4f(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
 
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		tessellator.addVertex(x1, y2, zLevel);
-		tessellator.addVertex(x2, y2, zLevel);
-		tessellator.addVertex(x2, y1, zLevel);
-		tessellator.addVertex(x1, y1, zLevel);
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer buf = tessellator.getBuffer();
+		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+		buf.pos(x1, y2, zLevel).endVertex();
+		buf.pos(x2, y2, zLevel).endVertex();
+		buf.pos(x2, y1, zLevel).endVertex();
+		buf.pos(x1, y1, zLevel).endVertex();
 		tessellator.draw();
 
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		// no blend //GL11.glDisable(GL11.GL_BLEND);
+		GlStateManager.enableTexture2D();
+		// no blend //GlStateManager.disableBlend();
 	}
 
 	/**
@@ -180,29 +191,26 @@ public final class SimpleGraphics {
 	 * @see net.minecraft.client.gui.Gui#drawGradientRect(int, int, int, int,
 	 *      int, int)
 	 */
-	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) {
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
+	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) { // TODO
+		GlStateManager.disableTexture2D();
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlpha();
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.shadeModel(7425);
 
-		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-
-		GL11.glShadeModel(GL11.GL_SMOOTH);
-
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		tessellator.setColorRGBA_F(Color.getRed(colorA), Color.getGreen(colorA), Color.getBlue(colorA), Color.getAlpha(colorA));
-		tessellator.addVertex(x2, y1, zLevel);
-		tessellator.addVertex(x1, y1, zLevel);
-		tessellator.setColorRGBA_F(Color.getRed(colorB), Color.getGreen(colorB), Color.getBlue(colorB), Color.getAlpha(colorB));
-		tessellator.addVertex(x1, y2, zLevel);
-		tessellator.addVertex(x2, y2, zLevel);
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer buf = tessellator.getBuffer();
+		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+		buf.pos(x2, y1, zLevel).color(Color.getRed(colorA), Color.getGreen(colorA), Color.getBlue(colorA), Color.getAlpha(colorA)).endVertex();
+		buf.pos(x1, y1, zLevel).color(Color.getRed(colorA), Color.getGreen(colorA), Color.getBlue(colorA), Color.getAlpha(colorA)).endVertex();
+		buf.pos(x1, y2, zLevel).color(Color.getRed(colorB), Color.getGreen(colorB), Color.getBlue(colorB), Color.getAlpha(colorB)).endVertex();
+		buf.pos(x2, y2, zLevel).color(Color.getRed(colorB), Color.getGreen(colorB), Color.getBlue(colorB), Color.getAlpha(colorB)).endVertex();
 		tessellator.draw();
 
-		GL11.glShadeModel(GL11.GL_FLAT);
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GlStateManager.shadeModel(7424);
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlpha();
+		GlStateManager.enableTexture2D();
 	}
 
 	/**
@@ -229,12 +237,13 @@ public final class SimpleGraphics {
 		float f = 0.00390625F;
 		float f1 = 0.00390625F;
 
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV(x, y + height, zLevel, u * f, (v + height) * f1);
-		tessellator.addVertexWithUV(x + width, y + height, zLevel, (u + width) * f, (v + height) * f1);
-		tessellator.addVertexWithUV(x + width, y, zLevel, (u + width) * f, v * f1);
-		tessellator.addVertexWithUV(x, y, zLevel, u * f, v * f1);
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer buf = tessellator.getBuffer();
+		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		buf.pos(x, y + height, zLevel).tex( u * f, (v + height) * f1);
+		buf.pos(x + width, y + height, zLevel).tex( (u + width) * f, (v + height) * f1);
+		buf.pos(x + width, y, zLevel).tex( (u + width) * f, v * f1);
+		buf.pos(x, y, zLevel).tex( u * f, v * f1);
 		tessellator.draw();
 	}
 
@@ -301,12 +310,12 @@ public final class SimpleGraphics {
 	 *      int, int, int, int, int)
 	 */
 	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, int color, double zLevel) {
-		tessellator.startDrawingQuads();
-		tessellator.setColorOpaque_I(color);
-		tessellator.addVertex(x, y, zLevel);
-		tessellator.addVertex(x, y + height, zLevel);
-		tessellator.addVertex(x + width, y + height, zLevel);
-		tessellator.addVertex(x + width, y, zLevel);
+		VertexBuffer buf = tessellator.getBuffer();
+		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+		buf.pos(x, y, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+		buf.pos(x, y + height, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+		buf.pos(x + width, y + height, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+		buf.pos(x + width, y, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
 		tessellator.draw();
 	}
 }

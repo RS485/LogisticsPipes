@@ -10,6 +10,7 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 
+import buildcraft.api.statements.IStatement;
 import buildcraft.api.statements.IStatementContainer;
 import buildcraft.api.statements.IStatementParameter;
 
@@ -30,7 +31,5 @@ public class ActionDisableLogistics extends LPAction {
 	}
 
 	@Override
-	public void actionActivate(IStatementContainer paramIStatementContainer, IStatementParameter[] paramArrayOfIStatementParameter) {
-
-	}
+	public void actionActivate(IStatementContainer paramIStatementContainer, IStatementParameter[] paramArrayOfIStatementParameter) {}
 }

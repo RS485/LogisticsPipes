@@ -52,21 +52,18 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.DimensionManager;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -76,8 +73,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ClientProxy implements IProxy {
-
-	private IItemRenderer pipeRenderer;
 
 	@Override
 	public String getSide() {
@@ -101,15 +96,15 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericSubMultiBlock.class, "logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock");
 
-		LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
-		LPConstants.solidBlockModel = RenderingRegistry.getNextAvailableRenderId();
+		//LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
+		//LPConstants.solidBlockModel = RenderingRegistry.getNextAvailableRenderId();
 
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 
-		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
+		//RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
 
-		RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
+		//RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
 
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 
@@ -181,11 +176,11 @@ public class ClientProxy implements IProxy {
 	 * @return
 	 */
 	private static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
-		if (world == null || !world.blockExists(x, y, z)) {
+		if (world == null || world.isAirBlock(new BlockPos(x, y, z))) {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(x, y, z);
+		final TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -247,14 +242,6 @@ public class ClientProxy implements IProxy {
 			return ((GuiCraftingPipe) FMLClientHandler.instance().getClient().currentScreen).get_pipe();
 		}
 		return null;
-	}
-
-	@Override
-	public IItemRenderer getPipeItemRenderer() {
-		if (pipeRenderer == null) {
-			pipeRenderer = new LogisticsPipeItemRenderer(false);
-		}
-		return pipeRenderer;
 	}
 
 	@Override

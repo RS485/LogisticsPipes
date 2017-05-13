@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -48,3 +49,4 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 		return true;
 	}
 }
+*/

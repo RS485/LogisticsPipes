@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -597,9 +598,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 
 		if (distance > config.getRenderPipeDistance() * config.getRenderPipeDistance()) {
-			if (config.isUseFallbackRenderer()) {
+			/*if (config.isUseFallbackRenderer()) {
 				renderState.forceRenderOldPipe = true;
-			}
+			}*/
 		} else {
 			renderState.forceRenderOldPipe = false;
 			boolean recalculateList = false;
@@ -726,7 +727,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 					for (IModel3D model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
 						DoubleCoordinates coords = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
 						Block block = coords.getBlock(pipeTile.getWorld());
-						double[] bounds = { block.getBlockBoundsMinY(), block.getBlockBoundsMinZ(), block.getBlockBoundsMinX(), block.getBlockBoundsMaxY(), block.getBlockBoundsMaxZ(), block.getBlockBoundsMaxX() };
+						AxisAlignedBB bb = block.getCollisionBoundingBox(coords.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), coords.getBlockPos());
+						if(bb == null) bb = Block.FULL_BLOCK_AABB;
+						double[] bounds = { bb.minY, bb.minZ, bb.minX, bb.maxY, bb.maxZ, bb.maxX };
 						if(SimpleServiceLocator.enderIOProxy.isItemConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite()) || SimpleServiceLocator.enderIOProxy.isFluidConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite())) {
 							bounds = new double[]{0.0249D, 0.0249D, 0.0249D, 0.9751D, 0.9751D, 0.9751D};
 						}
@@ -1028,10 +1031,10 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 		for (int i = 2; i < 6; i++) {
 			EnumFacing dir = EnumFacing.getFront(i);
-			EnumFacing rot = dir.getRotation(EnumFacing.UP);
+			EnumFacing rot = dir.rotateY();
 			if (sides[dir.ordinal()] && sides[rot.ordinal()]) {
-				reduceToOnePerSide(mountCanidates, dir, dir.getRotation(EnumFacing.DOWN));
-				reduceToOnePerSide(mountCanidates, rot, rot.getRotation(EnumFacing.UP));
+				reduceToOnePerSide(mountCanidates, dir, dir.rotateYCCW());
+				reduceToOnePerSide(mountCanidates, rot, rot.rotateY());
 			}
 		}
 	}
@@ -1127,6 +1130,6 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
-		highlight.render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF) });
+		highlight.render(new I3DOperation[] { LPColourMultiplier.instance(0xFFFFFFFF) });
 	}
 }

@@ -111,7 +111,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void func_146977_a(Slot slot) {
+	protected void drawSlot(Slot slot) {
 		if(hiddenSlots.contains(slot)) return;
 		for (int i = 0; i < tabList.size(); i++) {
 			if (tabList.get(i).isSlotForTab(slot)) {
@@ -120,7 +120,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 				}
 			}
 		}
-		super.func_146977_a(slot);
+		super.drawSlot(slot);
 	}
 
 	@Override

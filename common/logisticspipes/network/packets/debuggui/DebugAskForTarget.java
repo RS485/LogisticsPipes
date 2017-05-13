@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.debuggui;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -22,13 +22,13 @@ public class DebugAskForTarget extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
+		RayTraceResult box = FMLClientHandler.instance().getClient().objectMouseOver;
 		if (box == null) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.None));
-		} else if (box.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+		} else if (box.typeOfHit == RayTraceResult.Type.BLOCK) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Block)
-					.setAdditions(new int[] { box.blockX, box.blockY, box.blockZ }));
-		} else if (box.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+					.setAdditions(new int[] { box.getBlockPos().getX(), box.getBlockPos().getY(), box.getBlockPos().getZ() }));
+		} else if (box.typeOfHit == RayTraceResult.Type.ENTITY) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(DebugTargetResponse.TargetMode.Entity)
 					.setAdditions(new int[] { box.entityHit.getEntityId() }));
 		}

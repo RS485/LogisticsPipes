@@ -7,11 +7,7 @@ import net.minecraft.util.EnumFacing;
 
 public interface IEnderIOProxy {
 
-	public boolean isHyperCube(TileEntity tile);
-
 	public boolean isTransceiver(TileEntity tile);
-
-	public List<TileEntity> getConnectedHyperCubes(TileEntity tile);
 
 	public List<TileEntity> getConnectedTransceivers(TileEntity tile);
 

@@ -6,16 +6,12 @@ import java.util.stream.Collectors;
 
 import net.minecraft.tileentity.TileEntity;
 
-import cofh.api.transport.IEnderItemHandler;
-import cofh.core.RegistryEnderAttuned;
-import cofh.lib.transport.EnderRegistry;
-import cofh.thermalexpansion.block.ender.TileTesseract;
-
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.recipes.CraftingParts;
 
 public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
+	/*
 	@Override
 	public boolean isTesseract(TileEntity tile) {
 		return tile instanceof TileTesseract;
@@ -35,6 +31,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 				.map(object -> (TileEntity) object).collect(Collectors.toList()));
 		return validOutputs;
 	}
+	*/
 
 	@Override
 	public boolean isTE() {

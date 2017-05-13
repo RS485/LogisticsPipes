@@ -21,13 +21,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
-import codechicken.nei.VisiblityData;
+import codechicken.nei.VisibilityData;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
 import org.lwjgl.input.Mouse;
@@ -206,7 +207,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 						if (slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
 							ArrayList<String> list = new ArrayList<>();
 							list.add(slot.getToolTipText());
-							GuiGraphics.drawToolTip(par1, par2, list, EnumChatFormatting.WHITE);
+							GuiGraphics.drawToolTip(par1, par2, list, TextFormatting.WHITE);
 						}
 					}
 				}
@@ -560,7 +561,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 			if (result != null) {
 				if (result instanceof DummySlot || result instanceof ColorSlot || result instanceof FluidSlot) {
-					((DummyContainer) gui.inventorySlots).handleDummyClick(result, pos, stack, button, 0, mc.thePlayer);
+					((DummyContainer) gui.inventorySlots).handleDummyClick(result, pos, stack, button, ClickType.PICKUP, mc.thePlayer);
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(pos).setStack(stack).setButton(button));
 					return true;
 				}
@@ -580,7 +581,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@Override
 	@ModDependentMethod(modId = "NotEnoughItems")
-	public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData currentVisibility) {
+	public VisibilityData modifyVisiblity(GuiContainer gui, VisibilityData currentVisibility) {
 		return null;
 	}
 }

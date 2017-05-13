@@ -428,7 +428,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			return false;
 		}
 
-		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, getX(), getY(), getZ())) {
+		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, getX(), getY(), getZ()
+		)) {
 			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi) container.pipe).nextOrientation();

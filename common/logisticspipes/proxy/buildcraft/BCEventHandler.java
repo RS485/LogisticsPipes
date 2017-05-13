@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft;
 
 import logisticspipes.routing.ItemRoutingInformation;
@@ -23,3 +24,4 @@ public class BCEventHandler {
 		}
 	}
 }
+*/

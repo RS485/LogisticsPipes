@@ -6,7 +6,10 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -18,7 +21,7 @@ import lombok.experimental.Accessors;
 import org.lwjgl.opengl.GL11;
 
 @Accessors(chain = true)
-public class PipeFXLaserPowerBall extends EntityFX {
+public class PipeFXLaserPowerBall extends Particle {
 
 	private static final ResourceLocation ball = new ResourceLocation("logisticspipes", "textures/particles/laserBall.png");
 	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
@@ -35,7 +38,7 @@ public class PipeFXLaserPowerBall extends EntityFX {
 		particleRed = ((float) ((color & 0xff0000) >> 16)) / 0xff;
 		particleGreen = ((float) ((color & 0x00ff00) >> 8)) / 0xff;
 		particleBlue = ((float) ((color & 0x0000ff) >> 0)) / 0xff;
-		noClip = true;
+		canCollide = false;
 		motionX = 0.0D;
 		motionY = 0.0D;
 		motionZ = 0.0D;
@@ -50,19 +53,19 @@ public class PipeFXLaserPowerBall extends EntityFX {
 			visibleDistance = 25;
 		}
 		if (renderentity.getDistance(posX, posY, posZ) > visibleDistance) {
-			setDead();
+			setExpired();
 		}
 	}
 
 	@Override
 	public void onUpdate() {
 		if (tile.isInvalid()) {
-			setDead();
+			setExpired();
 		}
 	}
 
 	@Override
-	public void renderParticle(Tessellator tessellator, float f, float f1, float f2, float f3, float f4, float f5) {
+	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		tessellator.draw();
 		GL11.glPushMatrix();
 		float rot = (worldObj.provider.getWorldTime() + random) % (360 / PipeFXLaserPowerBall.ROTATIONSPEED) * PipeFXLaserPowerBall.ROTATIONSPEED + PipeFXLaserPowerBall.ROTATIONSPEED * f;
@@ -74,9 +77,9 @@ public class PipeFXLaserPowerBall extends EntityFX {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDepthMask(false);
 
-		double x = posX - EntityFX.interpPosX;
-		double y = posY - EntityFX.interpPosY;
-		double z = posZ - EntityFX.interpPosZ;
+		double x = posX - Particle.interpPosX;
+		double y = posY - Particle.interpPosY;
+		double z = posZ - Particle.interpPosZ;
 		GL11.glTranslated(x, y, z);
 
 		GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);

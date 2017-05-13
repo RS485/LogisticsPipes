@@ -1,6 +1,5 @@
 package logisticspipes.network.guis.module.inhand;
 
-import logisticspipes.gui.modules.GuiThaumicAspectSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -23,7 +22,7 @@ public class ThaumicAspectSinkModuleInHand extends ModuleInHandGuiProvider {
 		if (!(module instanceof ModuleThaumicAspectSink)) {
 			return null;
 		}
-		return new GuiThaumicAspectSink(player.inventory, (ModuleThaumicAspectSink) module);
+		return null;//new GuiThaumicAspectSink(player.inventory, (ModuleThaumicAspectSink) module);
 	}
 
 	@Override
@@ -35,7 +34,7 @@ public class ThaumicAspectSinkModuleInHand extends ModuleInHandGuiProvider {
 		dummy.setInventory(new ItemIdentifierInventory(1, "TMP", 1));
 		dummy.addDummySlot(0, 0, 0);
 		dummy.addNormalSlotsForPlayerInventory(0, 0);
-		return dummy;
+		return null;//dummy;
 	}
 
 	@Override

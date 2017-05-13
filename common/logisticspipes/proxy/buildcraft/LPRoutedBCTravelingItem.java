@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
@@ -89,3 +90,4 @@ public class LPRoutedBCTravelingItem extends TravelingItem {
 		return true;
 	}
 }
+*/

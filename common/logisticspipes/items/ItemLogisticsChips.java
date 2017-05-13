@@ -3,6 +3,7 @@ package logisticspipes.items;
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,7 +27,7 @@ public class ItemLogisticsChips extends LogisticsItem {
 	}
 
 	@Override
-	public void registerIcons(IIconRegister iconreg) {
+	public void registerIcons(TextureMap iconreg) {
 		_icons = new IIcon[MAX_DMG];
 		for (int i = 0; i < MAX_DMG; i++) {
 			_icons[i] = iconreg.registerIcon("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "chips/"));
@@ -65,7 +66,7 @@ public class ItemLogisticsChips extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings("unchecked")

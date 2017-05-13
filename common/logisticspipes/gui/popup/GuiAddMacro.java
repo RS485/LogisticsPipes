@@ -129,7 +129,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		int wheel = org.lwjgl.input.Mouse.getDWheel() / 120;
 		if (wheel == 0) {
 			super.handleMouseInputSub();

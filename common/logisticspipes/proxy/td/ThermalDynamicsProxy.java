@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.td;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -88,3 +89,4 @@ public class ThermalDynamicsProxy implements ITDProxy {
 		return ((TileItemDuct) with).isBlockedSide(opposite.ordinal());
 	}
 }
+*/

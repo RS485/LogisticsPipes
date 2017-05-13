@@ -27,7 +27,7 @@ public class HUDElectricManager implements IHUDModuleRenderer {
 	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.000001F);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, true, false, shifted);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, false, shifted);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.000001F);
 		mc.fontRendererObj.drawString("Charge:", -29, 25, 0);
 		if (module.isDischargeMode()) {

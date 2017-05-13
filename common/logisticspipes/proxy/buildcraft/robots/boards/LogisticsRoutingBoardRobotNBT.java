@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.robots.boards;
 
 import java.util.List;
@@ -54,3 +55,4 @@ public class LogisticsRoutingBoardRobotNBT extends RedstoneBoardRobotNBT {
 		return icon;
 	}
 }
+*/

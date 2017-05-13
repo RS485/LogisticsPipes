@@ -50,7 +50,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 		drawRect(right - 37, bottom - 45, right - 21, bottom - 29, Color.DARKER_GREY);
 
 		if (pipe.getDisk() != null) {
-			GuiScreen.itemRender.renderItemIntoGUI(fontRendererObj, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
+			itemRender.renderItemIntoGUI(pipe.getDisk(), right - 37, bottom - 45);
 			Macrobutton.enabled = true;
 		} else {
 			Macrobutton.enabled = false;
@@ -83,11 +83,13 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 
 	@Override
 	public void specialItemRendering(ItemIdentifier item, int x, int y) {
+		/*
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		if (SimpleServiceLocator.thaumCraftProxy.isScannedObject(item.unsafeMakeNormalStack(1), mc.thePlayer.getName())) {
 			SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(item.unsafeMakeNormalStack(1), -20, 10, this);
 		}
 		GL11.glPopAttrib();
+		*/
 	}
 
 	@Override

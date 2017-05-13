@@ -16,14 +16,12 @@ import logisticspipes.logistics.ILogisticsFluidManager;
 import logisticspipes.logistics.ILogisticsManager;
 import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
-import logisticspipes.proxy.interfaces.IBinnieProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
-import logisticspipes.proxy.interfaces.IExtraCellsProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -31,7 +29,6 @@ import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.ITDProxy;
-import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
@@ -127,12 +124,6 @@ public final class SimpleServiceLocator {
 
 	public static void setSpecialConnectionHandler(final SpecialTileConnection special) {
 		SimpleServiceLocator.specialtileconnection = special;
-	}
-
-	public static IThaumCraftProxy thaumCraftProxy;
-
-	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
-		SimpleServiceLocator.thaumCraftProxy = proxy;
 	}
 
 	public static IThermalExpansionProxy thermalExpansionProxy;
@@ -237,12 +228,6 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.renderListHandler = handler;
 	}
 
-	public static IExtraCellsProxy extraCellsProxy;
-
-	public static void setExtraCellsProxy(IExtraCellsProxy proxy) {
-		SimpleServiceLocator.extraCellsProxy = proxy;
-	}
-
 	public static ICoFHPowerProxy cofhPowerProxy;
 
 	public static void setCoFHPowerProxy(ICoFHPowerProxy proxy) {
@@ -253,12 +238,6 @@ public final class SimpleServiceLocator {
 
 	public static void setThermalDynamicsProxy(ITDProxy proxy) {
 		SimpleServiceLocator.thermalDynamicsProxy = proxy;
-	}
-
-	public static IBinnieProxy binnieProxy;
-
-	public static void setBinnieProxy(IBinnieProxy proxy) {
-		SimpleServiceLocator.binnieProxy = proxy;
 	}
 
 	public static ICCLProxy cclProxy;

@@ -22,9 +22,9 @@ import net.minecraft.block.BlockPane;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.item.EntityItem;
@@ -34,6 +34,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -41,13 +43,14 @@ import org.lwjgl.opengl.GL11;
 
 @Data
 @Accessors(chain = true)
+@SideOnly(Side.CLIENT)
 public class ItemStackRenderer {
 
 	private RenderManager renderManager;
-	private RenderBlocks renderBlocks;
 	private RenderItem renderItem;
 	private TextureManager texManager;
 	private FontRenderer fontRenderer;
+	private RenderEntityItem itemEntityRenderer;
 
 	private ItemStack itemstack;
 	private int posX;
@@ -64,36 +67,35 @@ public class ItemStackRenderer {
 	private World worldObj;
 	private float partialTickTime;
 
-	public ItemStackRenderer(int posX, int posY, float zLevel, boolean renderEffects, boolean ignoreDepth, boolean renderInColor) {
+	public ItemStackRenderer(int posX, int posY, float zLevel, boolean renderEffects, boolean ignoreDepth) {
 		this.posX = posX;
 		this.posY = posY;
 		this.zLevel = zLevel;
 		this.renderEffects = renderEffects;
 		this.ignoreDepth = ignoreDepth;
-		this.renderInColor = renderInColor;
-		renderManager = RenderManager.instance;
+		renderManager = Minecraft.getMinecraft().getRenderManager();
 		fontRenderer = renderManager.getFontRenderer();
 		if (fontRenderer == null) {
-			fontRenderer = Minecraft.getMinecraft().fontRenderer;
+			fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 		}
 		worldObj = renderManager.worldObj;
 		texManager = renderManager.renderEngine;
 		if (texManager == null) {
 			texManager = Minecraft.getMinecraft().getTextureManager();
 		}
-		renderBlocks = RenderBlocks.getInstance();
-		renderItem = RenderItem.getInstance();
+		renderItem = Minecraft.getMinecraft().getRenderItem();
+		itemEntityRenderer = new RenderEntityItem(renderManager, renderItem);
 		scaleX = 1.0F;
 		scaleY = 1.0F;
 		scaleZ = 1.0F;
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount) {
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, displayAmount, true, true, false);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, zLevel, displayAmount, true, false);
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount, boolean renderInColor, boolean renderEffect, boolean ignoreDepth) {
-		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(0, 0, zLevel, renderEffect, ignoreDepth, renderInColor);
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, float zLevel, DisplayAmount displayAmount, boolean renderEffect, boolean ignoreDepth) {
+		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(0, 0, zLevel, renderEffect, ignoreDepth);
 		itemStackRenderer.setDisplayAmount(displayAmount);
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, itemStackRenderer);
 	}
@@ -145,7 +147,6 @@ public class ItemStackRenderer {
 	public void renderInGui() {
 		assert itemstack != null;
 		assert displayAmount != null;
-		assert renderBlocks != null;
 		assert renderItem != null;
 		assert texManager != null;
 		assert fontRenderer != null;
@@ -170,11 +171,13 @@ public class ItemStackRenderer {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 
-		if (!ForgeHooksClient.renderInventoryItem(renderBlocks, texManager, itemstack, renderInColor, zLevel, posX, posY)) {
-			renderItem.zLevel += zLevel;
-			renderItem.renderItemIntoGUI(fontRenderer, texManager, itemstack, posX, posY, renderEffects);
-			renderItem.zLevel -= zLevel;
+		renderItem.zLevel += zLevel;
+		if(renderEffects) {
+			renderItem.renderItemAndEffectIntoGUI(itemstack, posX, posY);
+		} else {
+			renderItem.renderItemIntoGUI(itemstack, posX, posY);
 		}
+		renderItem.zLevel -= zLevel;
 
 		// disable lightning
 		RenderHelper.disableStandardItemLighting();
@@ -236,14 +239,9 @@ public class ItemStackRenderer {
 			}
 		}
 
-		boolean changeColor = renderItem.renderWithColor != renderInColor;
-		if (changeColor) {
-			renderItem.renderWithColor = renderInColor;
-		}
-
 		Item item = itemstack.getItem();
 		if (item instanceof ItemBlock) {
-			Block block = ((ItemBlock) item).field_150939_a;
+			Block block = ((ItemBlock) item).block;
 			if (block instanceof BlockPane) {
 				GL11.glScalef(0.5F, 0.5F, 0.5F);
 			}
@@ -251,11 +249,7 @@ public class ItemStackRenderer {
 			GL11.glScalef(0.5F, 0.5F, 0.5F);
 		}
 
-		renderManager.renderEntityWithPosYaw(entityitem, posX, posY, zLevel, 0.0F, partialTickTime);
-
-		if (changeColor) {
-			renderItem.renderWithColor = !renderInColor;
-		}
+		itemEntityRenderer.doRender(entityitem, posX, posY, zLevel, 0.0F, partialTickTime);
 	}
 
 	public enum DisplayAmount {

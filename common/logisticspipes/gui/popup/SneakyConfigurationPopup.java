@@ -1,6 +1,7 @@
 package logisticspipes.gui.popup;
 
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -74,7 +75,7 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 	}
 
 	@Override
-	public void handleMouseInputSub() {
+	public void handleMouseInputSub() throws IOException {
 		super.handleMouseInputSub();
 		configDisplay.handleMouseInput();
 	}

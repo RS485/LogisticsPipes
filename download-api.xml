@@ -16,12 +16,12 @@
 	<property name="downloadserver.dir"   value="external/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
-	<property name="forestry.filename"     value="forestry_1.8.9-efd4a33-api.zip"/>
-	<property name="ic2.filename"          value="industrialcraft-2-2.3.237-ex18-api.jar"/>
-	<property name="cc.filename"           value="ComputerCraftAPI1.79.zip"/>
+	<property name="forestry.filename"     value="forestry_1.10.2-5.2.17.376-api.jar"/>
+	<property name="ic2.filename"          value="industrialcraft-2-2.6.210-ex110-api.jar"/>
+	<property name="cc.filename"           value="CC-API-TMP-1.10.zip"/>
 	<property name="thaumcraft.filename"   value="Thaumcraft-1.8.9-5.2.4-api.jar"/>
-	<property name="ocapi.filename"        value="OpenComputers-MC1.8.9-1.6.0.4-rc.1-api.jar"/>
-	<property name="appeng.filename"       value="appliedenergistics2-rv3-latest-17-api.jar"/>
+	<property name="ocapi.filename"        value="OpenComputers-MC1.10.2-1.6.2.7-api.jar"/>
+	<property name="appeng.filename"       value="appliedenergistics2-rv4-alpha-11-api.jar"/>
 	<property name="bc.filename"           value="buildcraft-7.2.6-dev.jar"/>
 
 	<target name="download">
@@ -82,42 +82,54 @@
 
 		<!-- Copy Forestry API source -->
 		<copy todir="${api.dir}">
-			<fileset dir="${forestry.dir}"/>
+			<fileset dir="${forestry.dir}">
+				<include name="**/*.java"/>
+			</fileset>
 		</copy>
 
 		<echo message="Copied Forestry API"/>
 
 		<!-- Copy IC2 API source -->
 		<copy todir="${api.dir}">
-			<fileset dir="${ic2.dir}"/>
+			<fileset dir="${ic2.dir}">
+				<include name="**/*.java"/>
+			</fileset>
 		</copy>
 
 		<echo message="Copied IC2 API"/>
 
 		<!-- Copy CC API source -->
 		<copy todir="${api.dir}">
-			<fileset dir="${cc.dir}"/>
+			<fileset dir="${cc.dir}">
+				<include name="**/*.java"/>
+			</fileset>
 		</copy>
 
-		<echo message="Copied CC API"/>
+		<!--<echo message="Copied CC API"/>-->
 
 		<!-- Copy ThaumCraft API source -->
+		<!--
 		<copy todir="${api.dir}">
 			<fileset dir="${thaumcraft.dir}"/>
 		</copy>
+		-->
 
 		<echo message="Copied ThaumCraft API"/>
 
 		<!-- Copy OpenComputers API source -->
 		<copy todir="${api.dir}">
-			<fileset dir="${ocapi.dir}"/>
+			<fileset dir="${ocapi.dir}">
+				<include name="**/*.java"/>
+			</fileset>
 		</copy>
 
 		<echo message="Copied OpenComputers API"/>
 
 		<!-- Copy Applied Energistics 2 API source -->
 		<copy todir="${api.dir}">
-			<fileset dir="${appeng.dir}"/>
+			<fileset dir="${appeng.dir}">
+				<include name="**/*.java"/>
+			</fileset>
 		</copy>
 
 		<echo message="Copied Applied Energistics 2 API"/>

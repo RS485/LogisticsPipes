@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,10 +52,10 @@ public class ComponentList extends ModernPacket {
 					.handleSimulateAnswer(used, missing, (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
 			for (IResource item : used) {
-				player.addChatComponentMessage(new ChatComponentText("Component: " + item.getDisplayText(ColorCode.SUCCESS)));
+				player.addChatComponentMessage(new TextComponentString("Component: " + item.getDisplayText(ColorCode.SUCCESS)));
 			}
 			for (IResource item : missing) {
-				player.addChatComponentMessage(new ChatComponentText("Missing: " + item.getDisplayText(ColorCode.MISSING)));
+				player.addChatComponentMessage(new TextComponentString("Missing: " + item.getDisplayText(ColorCode.MISSING)));
 			}
 		}
 	}

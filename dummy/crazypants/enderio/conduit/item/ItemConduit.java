@@ -1,14 +1,12 @@
 package crazypants.enderio.conduit.item;
 
-import com.enderio.core.common.util.BlockCoord;
-import crazypants.enderio.conduit.ConnectionMode;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
-public class ItemConduit implements IItemConduit {
-	@Override
-	public ConnectionMode getConnectionMode(ForgeDirection dir) {
-		return null;
-	}
+import com.enderio.core.common.util.BlockCoord;
+import crazypants.enderio.conduit.AbstractConduit;
+import crazypants.enderio.conduit.ConnectionMode;
+
+public class ItemConduit extends AbstractConduit implements IItemConduit {
 
 	@Override
 	public BlockCoord getLocation() {

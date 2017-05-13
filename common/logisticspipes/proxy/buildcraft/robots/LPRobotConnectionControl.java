@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.robots;
 
 import java.util.ArrayList;
@@ -273,3 +274,4 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 	private LPRobotConnectionControl() {}
 
 }
+*/

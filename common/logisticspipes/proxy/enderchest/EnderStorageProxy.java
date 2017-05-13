@@ -4,10 +4,11 @@ import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import codechicken.enderstorage.common.BlockEnderStorage;
-import codechicken.enderstorage.common.TileFrequencyOwner;
+import codechicken.enderstorage.block.BlockEnderStorage;
+import codechicken.enderstorage.tile.TileFrequencyOwner;
 
 public class EnderStorageProxy implements IEnderStorageProxy {
 
@@ -18,7 +19,7 @@ public class EnderStorageProxy implements IEnderStorageProxy {
 
 	@Override
 	public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {
-		TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
-		tile.activate(player, 0);
+		TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(new BlockPos(x, y, z));
+		tile.activate(player, 0, null);
 	}
 }

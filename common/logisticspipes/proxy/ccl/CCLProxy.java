@@ -30,20 +30,19 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import codechicken.lib.render.ColourMultiplier;
-
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.render.uv.UVScale;
-import codechicken.lib.render.uv.UVTransformation;
-import codechicken.lib.render.uv.UVTransformationList;
-import codechicken.lib.render.uv.UVTranslation;
+import codechicken.lib.render.pipeline.ColourMultiplier;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
+import codechicken.lib.vec.uv.IconTransformation;
+import codechicken.lib.vec.uv.UVScale;
+import codechicken.lib.vec.uv.UVTransformation;
+import codechicken.lib.vec.uv.UVTransformationList;
+import codechicken.lib.vec.uv.UVTranslation;
 
 public class CCLProxy implements ICCLProxy {
 
@@ -70,6 +69,11 @@ public class CCLProxy implements ICCLProxy {
 				icon.icon = registerIcon;
 			}
 
+			@Override
+			public TextureAtlasSprite getTexture() {
+				return icon.icon;
+			}
+
 		};
 	}
 
@@ -79,28 +83,28 @@ public class CCLProxy implements ICCLProxy {
 
 			@Override
 			public void reset() {
-				CCRenderState.reset();
+				CCRenderState.instance().reset();
 			}
 
 			@Override
 			public void setAlphaOverride(int i) {
-				CCRenderState.alphaOverride = i;
+				CCRenderState.instance().alphaOverride = i;
 			}
 
 			@Override
 			public void draw() {
-				CCRenderState.draw();
+				CCRenderState.instance().draw();
 			}
 
 			@Override
 			public void setBrightness(IBlockAccess world, BlockPos pos) {
-				CCRenderState.setBrightness(world, pos);
+				CCRenderState.instance().setBrightness(world, pos);
 			}
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			public void startDrawing(int mode, VertexFormat format) {
-				CCRenderState.startDrawing(mode, format);
+				CCRenderState.instance().startDrawing(mode, format);
 			}
 
 		};

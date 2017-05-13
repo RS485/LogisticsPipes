@@ -1,7 +1,7 @@
 package logisticspipes.pipefxhandlers;
 
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
 
 public interface ParticleProvider {
 
@@ -9,6 +9,6 @@ public interface ParticleProvider {
 	float green = 1;
 	float blue = 1;
 
-	public abstract EntityFX createGenericParticle(WorldClient world, double x, double y, double z, int amount);
+	Particle createGenericParticle(WorldClient world, double x, double y, double z, int amount);
 
 }

@@ -1,5 +1,7 @@
 package logisticspipes.proxy.buildcraft.subproxies;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.asm.IgnoreDisabledProxy;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,6 +39,7 @@ public interface IBCTilePart {
 
 	boolean hasEnabledFacade(ForgeDirection dir);
 
+	@Nullable
 	IBCPipePluggable getBCPipePluggable(ForgeDirection sideHit);
 
 	void readOldRedStone(NBTTagCompound nbt);

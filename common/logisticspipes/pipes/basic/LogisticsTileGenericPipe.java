@@ -599,8 +599,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 		return container.isPipeConnected(o);
 	}
 
-	//@Override
-	//@ModDependentMethod(modId="BuildCraft|Transport")
 	@Override
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnected(from)) {
@@ -838,7 +836,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public boolean isPipeConnected(ForgeDirection with) {
 		if (worldObj.isRemote) {
 			return renderState.pipeConnectionMatrix.isConnected(with);

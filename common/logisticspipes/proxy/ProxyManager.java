@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -181,16 +183,7 @@ public class ProxyManager {
 						};
 					}
 					@Override public boolean hasEnabledFacade(ForgeDirection dir) {return false;}
-					@Override public IBCPipePluggable getBCPipePluggable(ForgeDirection sideHit) {
-						return new IBCPipePluggable() {
-							@Override public ItemStack[] getDropItems(LogisticsTileGenericPipe container) {return new ItemStack[]{};}
-							@Override public boolean isBlocking() {return false;}
-							@Override public Object getOriginal() {return null;}
-							@Override @SideOnly(Side.CLIENT) public void renderPluggable(RenderBlocks renderblocks, ForgeDirection dir, int renderPass, int x, int y, int z) {}
-							@Override public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {return false;}
-							@Override public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {return arrivingItem;}
-						};
-					}
+					@Override @Nullable public IBCPipePluggable getBCPipePluggable(ForgeDirection sideHit) {return null;}
 					@Override public void readOldRedStone(NBTTagCompound nbt) {}
 					@Override public void afterStateUpdated() {}
 					@Override public Object getOriginal() {return null;}
@@ -214,6 +207,8 @@ public class ProxyManager {
 				};
 			}
 			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}
+			@Override public Object getPipeFromTGP(TileEntity tile) {return null;}
+			@Override public TileEntity getTileFromPipe(Object pipe) {return null;}
 			@Override public void cleanup() {}
 		}, IBCTilePart.class, IBCPipePart.class, IBCPipePluggable.class, IBCPluggableState.class, IBCRenderState.class, IBCRenderTESR.class));
 

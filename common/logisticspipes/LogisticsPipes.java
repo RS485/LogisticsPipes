@@ -173,10 +173,10 @@ import network.rs485.grow.TickExecutor;
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[10.12.1.1079,);" +
-				"required-after:BuildCraft|Core;" +
-				"required-after:BuildCraft|Transport;" +
-				"required-after:BuildCraft|Silicon;" +
-				"required-after:BuildCraft|Robotics;" +
+				"after:BuildCraft|Core;" +
+				"after:BuildCraft|Transport;" +
+				"after:BuildCraft|Silicon;" +
+				"after:BuildCraft|Robotics;" +
 				"after:IC2;" +
 				"after:Forestry;" +
 				"after:Thaumcraft;" +

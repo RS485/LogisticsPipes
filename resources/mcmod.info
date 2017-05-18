@@ -11,11 +11,7 @@
     "logoFile": "",
     "screenshots": [],
     "requiredMods": [
-        "Forge@[9.10.1.850,)",
-        "BuildCraft|Core",
-        "BuildCraft|Transport",
-        "BuildCraft|Silicon",
-        "BuildCraft|Robotics"
+        "Forge@[9.10.1.850,)"
     ],
     "dependencies": [
         "Forge@[9.10.1.850,)",

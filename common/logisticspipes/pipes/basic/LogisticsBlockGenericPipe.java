@@ -606,9 +606,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		// pluggables
 
 		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			if (tileG.getPipePluggable(side) != null) {
+			if (tileG.tilePart.getBCPipePluggable(side) != null) {
 				if(side != ForgeDirection.UNKNOWN && ignoreSideRayTrace) continue;
-				AxisAlignedBB bb = tileG.getPipePluggable(side).getBoundingBox(side);
+				AxisAlignedBB bb = tileG.tilePart.getBCPipePluggable(side).getBoundingBox(side);
 				setBlockBounds(bb);
 				boxes[7 + side.ordinal()] = bb;
 				hits[7 + side.ordinal()] = super.collisionRayTrace(tileG

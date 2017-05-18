@@ -450,6 +450,16 @@ public class BuildCraftProxy implements IBCProxy {
 	}
 
 	@Override
+	public Object getPipeFromTGP(TileEntity tile) {
+		return ((TileGenericPipe) tile).pipe;
+	}
+
+	@Override
+	public TileEntity getTileFromPipe(Object pipe) {
+		return ((Pipe<?>) pipe).container;
+	}
+
+	@Override
 	public void cleanup() {
 		LPRobotConnectionControl.instance.cleanup();
 	}

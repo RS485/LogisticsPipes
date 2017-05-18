@@ -2,6 +2,7 @@ package logisticspipes.proxy.buildcraft.subproxies;
 
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -26,4 +27,5 @@ public interface IBCPipePluggable {
 
 	LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem);
 
+	AxisAlignedBB getBoundingBox(ForgeDirection side);
 }

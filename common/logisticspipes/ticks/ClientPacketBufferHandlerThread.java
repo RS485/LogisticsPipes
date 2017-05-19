@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -60,7 +61,11 @@ public class ClientPacketBufferHandlerThread {
 								LPDataOutputStream t = new LPDataOutputStream();
 								t.writeShort(packet.getId());
 								t.writeInt(packet.getDebugId());
-								packet.writeData(t);
+								try {
+									packet.writeData(t);
+								} catch (ConcurrentModificationException e) {
+									throw new RuntimeException("LogisticsPipes error (please report): Method writeData is not thread-safe in packet " + packet.getClass().getSimpleName(), e);
+								}
 								data.writeInt(t.size());
 								data.write(t.toByteArray());
 							}

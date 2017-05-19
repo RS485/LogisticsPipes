@@ -29,9 +29,6 @@ public abstract class ModernPacket {
 	private final int id;
 
 	@Getter
-	private byte[] data = null;
-
-	@Getter
 	@Setter
 	private int debugId = 0;
 

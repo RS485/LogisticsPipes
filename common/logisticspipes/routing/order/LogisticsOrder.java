@@ -2,6 +2,7 @@ package logisticspipes.routing.order;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.routing.IRouter;
@@ -36,7 +37,7 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 	@Getter
 	@Setter
 	private byte machineProgress = 0;
-	private List<IDistanceTracker> trackers = new ArrayList<IDistanceTracker>();
+	private List<IDistanceTracker> trackers = new CopyOnWriteArrayList<IDistanceTracker>();
 
 	public LogisticsOrder(ResourceType type, IAdditionalTargetInformation info) {
 		if (type == null) {

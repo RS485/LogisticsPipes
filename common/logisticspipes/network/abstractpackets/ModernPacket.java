@@ -18,6 +18,10 @@ public abstract class ModernPacket {
 	@Setter
 	private boolean isChunkDataPacket;
 
+	/**
+	 * Usually means "to compress".
+	 * The getter {@link #isCompressable()} can be overridden to always disable/enable compression though.
+	 */
 	@Getter
 	@Setter
 	private boolean compressable;
@@ -27,9 +31,6 @@ public abstract class ModernPacket {
 	 */
 	@Getter
 	private final int id;
-
-	@Getter
-	private byte[] data = null;
 
 	@Getter
 	@Setter
@@ -67,11 +68,18 @@ public abstract class ModernPacket {
 		}
 	 */
 
-	public abstract void readData(LPDataInputStream data) throws IOException;
+	public abstract void readData(LPDataInputStream inStream) throws IOException;
 
 	public abstract void processPacket(EntityPlayer player);
 
-	public abstract void writeData(LPDataOutputStream data) throws IOException;
+	/**
+	 * Serializes packet out to the given stream.
+	 * Must be thread-safe to main thread for compressable packets!
+	 *
+	 * @param outStream the stream to write to
+	 * @throws IOException when there are problems with serializing
+	 */
+	public abstract void writeData(LPDataOutputStream outStream) throws IOException;
 
 	public abstract ModernPacket template();
 

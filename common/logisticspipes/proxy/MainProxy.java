@@ -133,7 +133,7 @@ public class MainProxy {
 			new Exception().printStackTrace();
 			return;
 		}
-		if (packet.isCompressable() || MainProxy.needsToBeCompressed(packet)) {
+		if (packet.isCompressable()) {
 			SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet);
 		} else {
 			MainProxy.channels.get(Side.CLIENT).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(OutboundTarget.TOSERVER);
@@ -147,7 +147,7 @@ public class MainProxy {
 			new Exception().printStackTrace();
 			return;
 		}
-		if (packet.isCompressable() || MainProxy.needsToBeCompressed(packet)) {
+		if (packet.isCompressable()) {
 			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
 		} else {
 			MainProxy.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
@@ -198,7 +198,7 @@ public class MainProxy {
 			new Exception().printStackTrace();
 			return;
 		}
-		if (packet.isCompressable() || MainProxy.needsToBeCompressed(packet)) {
+		if (packet.isCompressable()) {
 			for (EntityPlayer player : players) {
 				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
 			}
@@ -215,7 +215,7 @@ public class MainProxy {
 			new Exception().printStackTrace();
 			return;
 		}
-		if (packet.isCompressable() || MainProxy.needsToBeCompressed(packet)) {
+		if (packet.isCompressable()) {
 			for (World world : DimensionManager.getWorlds()) {
 				for (Object playerObject : world.playerEntities) {
 					EntityPlayer player = (EntityPlayer) playerObject;
@@ -226,15 +226,6 @@ public class MainProxy {
 			MainProxy.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALL);
 			MainProxy.channels.get(Side.SERVER).writeOutbound(packet);
 		}
-	}
-
-	private static boolean needsToBeCompressed(ModernPacket packet) {
-		if(packet.getData() != null) {
-			if(packet.getData().length > 32767) {
-				return true; // Packet is to big
-			}
-		}
-		return false;
 	}
 
 	public static EntityPlayer getFakePlayer(TileEntity tile) {

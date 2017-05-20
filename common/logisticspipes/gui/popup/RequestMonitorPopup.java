@@ -242,7 +242,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 				try {
 					ImageIO.write(bufferedimage, "png", canidate);
 					Minecraft.getMinecraft().thePlayer.sendChatMessage("Saved tree view as " + canidate.getName());
-				} catch (IOException e) {
+				} catch (IOException|NullPointerException e) {
 					e.printStackTrace();
 				}
 				return;

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.LPPosition;
@@ -95,17 +96,17 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public ItemIdentifier getTargetType() {
-		if(getRouter() == null) {
-			return null;
-		}
-		return ItemIdentifier.get(getRouter().getPipe().item, 0, null);
+		IRouter router = getRouter();
+		if (router == null) return null;
+		CoreRoutedPipe pipe = router.getPipe();
+		if (pipe == null) return null;
+		return ItemIdentifier.get(pipe.item, 0, null);
 	}
 
 	@Override
 	public LPPosition getTargetPosition() {
-		if(getRouter() == null) {
-			return null;
-		}
-		return getRouter().getLPPosition();
+		IRouter router = getRouter();
+		if(router == null) return null;
+		return router.getLPPosition();
 	}
 }

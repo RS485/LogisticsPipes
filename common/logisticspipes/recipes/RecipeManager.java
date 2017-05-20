@@ -1025,6 +1025,47 @@ public class RecipeManager {
 				Character.valueOf('b'), "dyeWhite",
 			});
 
+			/*
+			 * added by Chaos234  - Date: 20150620
+			 */
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[]{
+				false,
+				"rRr",
+				"PCP",
+				"rBr",
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('R'), "dyeRed",
+				Character.valueOf('P'), Items.paper,
+				Character.valueOf('C'), parts.getChipTear1(),
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK3)
+			});
+
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[]{
+				false,
+				"rRr",
+				"PCP",
+				"rBr",
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('R'), "dyeRed",
+				Character.valueOf('P'), Items.paper,
+				Character.valueOf('C'), parts.getChipTear2(),
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK2)
+			});
+
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[]{
+				false,
+				"rRr",
+				"PCP",
+				"rBr",
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('R'), "dyeRed",
+				Character.valueOf('P'), Items.paper,
+				Character.valueOf('C'), parts.getChipTear3(),
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR)
+			});
+
+			/* add end */
+
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidBasicPipe, 1), CraftingDependency.Basic_Liquid, new Object[] {
 				"w",
 				"B",
@@ -1846,6 +1887,47 @@ public class RecipeManager {
 				Character.valueOf('b'), "dyeWhite",
 				Character.valueOf('I'), Items.iron_ingot
 			});
+
+			/*
+			 * added by Chaos234  - Date: 20150620
+			 */
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
+				false,
+				"rRr",
+				"PCP",
+				"rBr",
+				'r', Items.redstone,
+				Character.valueOf('R'), "dyeRed",
+				Character.valueOf('P'), Items.paper,
+				Character.valueOf('C'), micserv,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK3)
+			});
+
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
+				false,
+				"rRr",
+				"PCP",
+				"rBr",
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('R'), "dyeRed",
+				Character.valueOf('P'), Items.paper,
+				Character.valueOf('C'), micserv,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR_MK2)
+			});
+
+			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.CRAFTING_CLEANUP), CraftingDependency.Upgrades, new Object[] {
+				false,
+				"rRr",
+				"PCP",
+				"rBr",
+				Character.valueOf('r'), Items.redstone,
+				Character.valueOf('R'), "dyeRed",
+				Character.valueOf('P'), Items.paper,
+				Character.valueOf('C'), micserv,
+				Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.EXTRACTOR)
+			});
+
+			/* add end */
 
 			RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidBasicPipe, 1), CraftingDependency.Basic_Liquid, new Object[] {
 				" l ",

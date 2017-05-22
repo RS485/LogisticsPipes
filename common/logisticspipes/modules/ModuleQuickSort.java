@@ -21,11 +21,12 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -294,8 +295,8 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleQuickSort");
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
+		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleQuickSort"));
 	}
 
 	public void addWatchingPlayer(EntityPlayer player) {

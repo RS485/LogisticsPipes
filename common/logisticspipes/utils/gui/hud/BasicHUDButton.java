@@ -106,7 +106,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 0.001F);
-		minecraft.renderEngine.bindTexture(TextureMap.locationItemsTexture);
+		minecraft.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 	}
 
 	@Override

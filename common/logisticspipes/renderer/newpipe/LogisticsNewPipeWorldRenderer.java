@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer.newpipe;
 
 import java.util.Arrays;
@@ -134,3 +135,4 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		return false;
 	}
 }
+*/

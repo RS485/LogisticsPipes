@@ -2,8 +2,9 @@ package logisticspipes.modules;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -36,7 +37,7 @@ public class ModuleAdvancedExtractorMK3 extends ModuleAdvancedExtractorMK2 {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleAdvancedExtractorMK3");
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
+		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleAdvancedExtractorMK3"));
 	}
 }

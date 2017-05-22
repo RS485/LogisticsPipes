@@ -9,14 +9,17 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.RayTraceResult;
 
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -180,7 +183,7 @@ public class LogisticsHUDRenderer {
 		}
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (displayHUD() && displayCross) {
-			ScaledResolution res = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+			ScaledResolution res = new ScaledResolution(mc);
 			int width = res.getScaledWidth();
 			int height = res.getScaledHeight();
 			if (GuiIngameForge.renderCrosshairs && mc.ingameGUI != null) {
@@ -192,6 +195,7 @@ public class LogisticsHUDRenderer {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public void renderWorldRelative(long renderTicks, float partialTick) {
 		if (!displayRenderer()) {
 			return;
@@ -313,8 +317,8 @@ public class LogisticsHUDRenderer {
 		}
 
 		GL11.glPushMatrix();
-		MovingObjectPosition box = mc.objectMouseOver;
-		if (box != null && box.typeOfHit == MovingObjectType.BLOCK) {
+		RayTraceResult box = mc.objectMouseOver;
+		if (box != null && box.typeOfHit == RayTraceResult.Type.BLOCK) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				progress = Math.min(progress + (2 * Math.max(1, (int) Math.floor((System.currentTimeMillis() - last) / 50.0D))), 100);
 			} else {
@@ -330,9 +334,9 @@ public class LogisticsHUDRenderer {
 					textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.worldObj, player, box);
 				}
 				if (!textData.isEmpty()) {
-					double xCoord = box.blockX + 0.5D;
-					double yCoord = box.blockY + 0.5D;
-					double zCoord = box.blockZ + 0.5D;
+					double xCoord = box.getBlockPos().getX() + 0.5D;
+					double yCoord = box.getBlockPos().getY() + 0.5D;
+					double zCoord = box.getBlockPos().getZ() + 0.5D;
 
 					double x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
 					double y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
@@ -377,7 +381,7 @@ public class LogisticsHUDRenderer {
 
 							GL11.glScalef(scaleX, scaleY, scaleZ);
 
-							ItemStackRenderer itemStackRenderer = new ItemStackRenderer(5, 6, 0.0F, false, true, true);
+							ItemStackRenderer itemStackRenderer = new ItemStackRenderer(5, 6, 0.0F, true, true);
 							itemStackRenderer.setItemstack(item).setDisplayAmount(DisplayAmount.NEVER);
 							itemStackRenderer.setScaleX(scaleX).setScaleY(scaleY).setScaleZ(scaleZ);
 
@@ -431,7 +435,7 @@ public class LogisticsHUDRenderer {
 
 			GL11.glScalef(0.01F, 0.01F, 0.01F);
 
-			Tessellator tessellator = Tessellator.instance;
+			Tessellator tessellator = Tessellator.getInstance();
 
 			for (float i = 0; i < 6 * data.getLength(); i++) {
 				setColor(i, data.getConnectionType());
@@ -442,52 +446,58 @@ public class LogisticsHUDRenderer {
 					start = -6.0f;
 				}
 
-				tessellator.startDrawingQuads();
-				tessellator.addVertex(19.7f + shift, 3.0f, -3.0f);
-				tessellator.addVertex(3.0f + shift + start, 3.0f, -3.0f);
-				tessellator.addVertex(3.0f + shift + start, 3.0f, 3.0f);
-				tessellator.addVertex(19.7f + shift, 3.0f, 3.0f);
+				VertexBuffer buffer = tessellator.getBuffer();
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+				buffer.pos(19.7f + shift, 3.0f, -3.0f);
+				buffer.pos(3.0f + shift + start, 3.0f, -3.0f);
+				buffer.pos(3.0f + shift + start, 3.0f, 3.0f);
+				buffer.pos(19.7f + shift, 3.0f, 3.0f);
 				tessellator.draw();
 
-				tessellator.startDrawingQuads();
-				tessellator.addVertex(19.7f + shift, -3.0f, 3.0f);
-				tessellator.addVertex(3.0f + shift + start, -3.0f, 3.0f);
-				tessellator.addVertex(3.0f + shift + start, -3.0f, -3.0f);
-				tessellator.addVertex(19.7f + shift, -3.0f, -3.0f);
+				buffer = tessellator.getBuffer();
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+				buffer.pos(19.7f + shift, -3.0f, 3.0f);
+				buffer.pos(3.0f + shift + start, -3.0f, 3.0f);
+				buffer.pos(3.0f + shift + start, -3.0f, -3.0f);
+				buffer.pos(19.7f + shift, -3.0f, -3.0f);
 				tessellator.draw();
 
-				tessellator.startDrawingQuads();
-				tessellator.addVertex(19.7f + shift, 3.0f, 3.0f);
-				tessellator.addVertex(3.0f + shift + start, 3.0f, 3.0f);
-				tessellator.addVertex(3.0f + shift + start, -3.0f, 3.0f);
-				tessellator.addVertex(19.7f + shift, -3.0f, 3.0f);
+				buffer = tessellator.getBuffer();
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+				buffer.pos(19.7f + shift, 3.0f, 3.0f);
+				buffer.pos(3.0f + shift + start, 3.0f, 3.0f);
+				buffer.pos(3.0f + shift + start, -3.0f, 3.0f);
+				buffer.pos(19.7f + shift, -3.0f, 3.0f);
 				tessellator.draw();
 
-				tessellator.startDrawingQuads();
-				tessellator.addVertex(19.7f + shift, -3.0f, -3.0f);
-				tessellator.addVertex(3.0f + shift + start, -3.0f, -3.0f);
-				tessellator.addVertex(3.0f + shift + start, 3.0f, -3.0f);
-				tessellator.addVertex(19.7f + shift, 3.0f, -3.0f);
+				buffer = tessellator.getBuffer();
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+				buffer.pos(19.7f + shift, -3.0f, -3.0f);
+				buffer.pos(3.0f + shift + start, -3.0f, -3.0f);
+				buffer.pos(3.0f + shift + start, 3.0f, -3.0f);
+				buffer.pos(19.7f + shift, 3.0f, -3.0f);
 				tessellator.draw();
 			}
 
 			if (data.isStartPipe()) {
 				setColor(0, data.getConnectionType());
-				tessellator.startDrawingQuads();
-				tessellator.addVertex(-3.0f, 3.0f, 3.0f);
-				tessellator.addVertex(-3.0f, 3.0f, -3.0f);
-				tessellator.addVertex(-3.0f, -3.0f, -3.0f);
-				tessellator.addVertex(-3.0f, -3.0f, 3.0f);
+				VertexBuffer buffer = tessellator.getBuffer();
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+				buffer.pos(-3.0f, 3.0f, 3.0f);
+				buffer.pos(-3.0f, 3.0f, -3.0f);
+				buffer.pos(-3.0f, -3.0f, -3.0f);
+				buffer.pos(-3.0f, -3.0f, 3.0f);
 				tessellator.draw();
 			}
 
 			if (data.isFinalPipe()) {
 				setColor(6 * data.getLength() - 1, data.getConnectionType());
-				tessellator.startDrawingQuads();
-				tessellator.addVertex(100.0f * data.getLength() + 3f, 3.0f, -3.0f);
-				tessellator.addVertex(100.0f * data.getLength() + 3f, 3.0f, 3.0f);
-				tessellator.addVertex(100.0f * data.getLength() + 3f, -3.0f, 3.0f);
-				tessellator.addVertex(100.0f * data.getLength() + 3f, -3.0f, -3.0f);
+				VertexBuffer buffer = tessellator.getBuffer();
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+				buffer.pos(100.0f * data.getLength() + 3f, 3.0f, -3.0f);
+				buffer.pos(100.0f * data.getLength() + 3f, 3.0f, 3.0f);
+				buffer.pos(100.0f * data.getLength() + 3f, -3.0f, 3.0f);
+				buffer.pos(100.0f * data.getLength() + 3f, -3.0f, -3.0f);
 				tessellator.draw();
 			}
 

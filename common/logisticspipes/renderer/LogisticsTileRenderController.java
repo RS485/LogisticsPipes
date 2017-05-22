@@ -78,13 +78,13 @@ public class LogisticsTileRenderController {
 
 		@Override
 		boolean isDeadEntity() {
-			return entity == null || entity.isDead;
+			return entity == null || !entity.isAlive();
 		}
 
 		@Override
 		void setDead() {
 			if (entity != null) {
-				entity.setDead();
+				entity.setExpired();
 			}
 		}
 
@@ -133,13 +133,13 @@ public class LogisticsTileRenderController {
 
 		@Override
 		boolean isDeadEntity() {
-			return entity == null || entity.isDead;
+			return entity == null || !entity.isAlive();
 		}
 
 		@Override
 		void setDead() {
 			if (entity != null) {
-				entity.setDead();
+				entity.setExpired();
 			}
 		}
 
@@ -231,7 +231,7 @@ public class LogisticsTileRenderController {
 			if (beam != null) {
 				beam.timeout = -1;
 				if (MainProxy.isClient(pipe.getWorld())) {
-					((LaserBeamDataClient) beam).entity.setDead();
+					((LaserBeamDataClient) beam).entity.setExpired();
 				}
 				powerLasersBeam.remove(key);
 			}
@@ -240,7 +240,7 @@ public class LogisticsTileRenderController {
 			if (ball != null) {
 				ball.timeout = -1;
 				if (MainProxy.isClient(pipe.getWorld())) {
-					((LaserBallDataClient) ball).entity.setDead();
+					((LaserBallDataClient) ball).entity.setExpired();
 				}
 				powerLasersBall.remove(color);
 			}

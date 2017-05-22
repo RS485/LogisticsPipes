@@ -8,9 +8,10 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -116,8 +117,8 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleEnchantmentSink");
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
+		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleEnchantmentSink"));
 	}
 
 	@Override

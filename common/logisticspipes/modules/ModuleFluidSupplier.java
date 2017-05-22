@@ -17,7 +17,7 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -117,7 +117,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
 		return null;
 	}
 }

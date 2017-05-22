@@ -78,7 +78,7 @@ public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightP
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
 		TubeLineRenderOrientation direction = (TubeLineRenderOrientation) orientation.getRenderOrientation();
-		LineTubeRenderer.tubeLine.get(direction).copy().render(LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF));
+		LineTubeRenderer.tubeLine.get(direction).copy().render(LPColourMultiplier.instance(0xFFFFFFFF));
 	}
 }
 

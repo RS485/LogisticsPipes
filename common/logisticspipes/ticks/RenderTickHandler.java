@@ -8,6 +8,7 @@ import logisticspipes.renderer.LogisticsRenderPipe;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -28,9 +29,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
@@ -94,59 +95,39 @@ public class RenderTickHandler {
 					ItemStack stack = FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem];
 					CoreUnroutedPipe pipe = ((ItemLogisticsPipe) stack.getItem()).getDummyPipe();
 
-					int i = box.blockX;
-					int j = box.blockY;
-					int k = box.blockZ;
 					World world = player.getEntityWorld();
-					int side = box.sideHit;
+					EnumFacing side = box.sideHit;
+					BlockPos bPos = box.getBlockPos();
 
-					Block worldBlock = world.getBlock(i, j, k);
+					Block block = world.getBlockState(bPos).getBlock();
 
-					if (worldBlock == Blocks.snow) {
-						side = 1;
-					} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush && (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
-						if (side == 0) {
-							j--;
-						}
-						if (side == 1) {
-							j++;
-						}
-						if (side == 2) {
-							k--;
-						}
-						if (side == 3) {
-							k++;
-						}
-						if (side == 4) {
-							i--;
-						}
-						if (side == 5) {
-							i++;
-						}
+					if (block == Blocks.SNOW_LAYER && block.isReplaceable(world, bPos))
+					{
+						side = EnumFacing.UP;
 					}
-
-					double xCoord = i;
-					double yCoord = j;
-					double zCoord = k;
+					else if (!block.isReplaceable(world, bPos))
+					{
+						bPos = bPos.offset(side);
+					}
 
 					boolean isFreeSpace = true;
 					ITubeOrientation orientation = null;
 
 					if (pipe instanceof CoreMultiBlockPipe) {
 						CoreMultiBlockPipe multipipe = (CoreMultiBlockPipe) pipe;
-						DoubleCoordinates placeAt = new DoubleCoordinates(xCoord, yCoord, zCoord);
+						DoubleCoordinates placeAt = new DoubleCoordinates(bPos);
 						LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> globalPos = new LPPositionSet<>(DoubleCoordinatesType.class);
 						globalPos.add(new DoubleCoordinatesType<>(placeAt, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
 						LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = multipipe.getSubBlocks();
-						orientation = multipipe.getTubeOrientation(player, (int) xCoord, (int) zCoord);
+						orientation = multipipe.getTubeOrientation(player, (int) bPos.getX(), (int) bPos.getZ());
 						if (orientation != null) {
 							orientation.rotatePositions(positions);
 							positions.stream().map(pos -> pos.add(placeAt)).forEach(globalPos::add);
 							globalPos.addToAll(orientation.getOffset());
 
 							for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
-								if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, player, stack)) {
-									TileEntity tile = player.getEntityWorld().getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+								if (!player.getEntityWorld().canBlockBePlaced(LogisticsPipes.LogisticsPipeBlock, pos.getBlockPos(), false, side, player, stack)) {
+									TileEntity tile = player.getEntityWorld().getTileEntity(pos.getBlockPos());
 									boolean canPlace = false;
 									if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 										if (CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), pos.getType())) {
@@ -163,7 +144,7 @@ public class RenderTickHandler {
 							return;
 						}
 					} else {
-						if (!player.getEntityWorld().canPlaceEntityOnSide(LogisticsPipes.LogisticsPipeBlock, i, j, k, false, side, player, stack)) {
+						if (!player.getEntityWorld().canBlockBePlaced(LogisticsPipes.LogisticsPipeBlock, bPos, false, side, player, stack)) {
 							isFreeSpace = false;
 						}
 					}
@@ -173,13 +154,13 @@ public class RenderTickHandler {
 						double y;
 						double z;
 						if (orientation != null) {
-							x = xCoord + orientation.getOffset().getXInt() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.getPartialTicks());
-							y = yCoord + orientation.getOffset().getYInt() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.getPartialTicks());
-							z = zCoord + orientation.getOffset().getZInt() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.getPartialTicks());
+							x = bPos.getX() + orientation.getOffset().getXInt() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.getPartialTicks());
+							y = bPos.getY() + orientation.getOffset().getYInt() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.getPartialTicks());
+							z = bPos.getZ() + orientation.getOffset().getZInt() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.getPartialTicks());
 						} else {
-							x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.getPartialTicks());
-							y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.getPartialTicks());
-							z = zCoord - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.getPartialTicks());
+							x = bPos.getX() - player.prevPosX - ((player.posX - player.prevPosX) * worldEvent.getPartialTicks());
+							y = bPos.getY() - player.prevPosY - ((player.posY - player.prevPosY) * worldEvent.getPartialTicks());
+							z = bPos.getZ() - player.prevPosZ - ((player.posZ - player.prevPosZ) * worldEvent.getPartialTicks());
 						}
 						GL11.glTranslated(x + 0.001, y + 0.001, z + 0.001);
 

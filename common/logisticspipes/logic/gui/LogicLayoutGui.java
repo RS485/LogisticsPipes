@@ -201,7 +201,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
 				TextureAtlasSprite icon = Blocks.STONE.getIcon(0, 0);
 				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
+				drawTexturedModalRect(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
 		}
 

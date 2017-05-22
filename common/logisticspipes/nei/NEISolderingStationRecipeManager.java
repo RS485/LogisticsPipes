@@ -12,9 +12,9 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
-import codechicken.nei.NEIServerUtils;
-import codechicken.nei.PositionedStack;
+import codechicken.nei.api.stack.PositionedStack;
 import codechicken.nei.recipe.ShapedRecipeHandler;
+import codechicken.nei.util.NEIServerUtils;
 
 public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 
@@ -30,7 +30,7 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 				shape.ingredients.add(stack);
 			}
 		}
-		PositionedStack stack = new PositionedStack(new ItemStack(Items.iron_ingot, 1), 102, 6);
+		PositionedStack stack = new PositionedStack(new ItemStack(Items.IRON_INGOT, 1), 102, 6);
 		stack.setMaxSize(1);
 		shape.ingredients.add(stack);
 		shape.result.relx = 136;

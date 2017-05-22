@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer;
 
 import net.minecraft.block.Block;
@@ -88,3 +89,4 @@ public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHa
 		return LPConstants.solidBlockModel;
 	}
 }
+*/

@@ -21,8 +21,8 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
+import codechicken.nei.api.stack.PositionedStack;
 import codechicken.nei.recipe.IRecipeHandler;
 
 public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
@@ -77,7 +77,7 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 		if (hasCanidates) {
 			gui.setSubGui(new GuiRecipeImport(tile, stacks));
 		} else {
-			MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(tile.xCoord).setPosY(tile.yCoord).setPosZ(tile.zCoord));
+			MainProxy.sendPacketToServer(packet.setContent(stack).setTilePos(tile));
 		}
 	}
 }

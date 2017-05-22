@@ -102,7 +102,7 @@ public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlace
 
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
-		SCurveTubeRenderer.tubeSCurve.get(orientation.getRenderOrientation()).render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF) });
+		SCurveTubeRenderer.tubeSCurve.get(orientation.getRenderOrientation()).render(new I3DOperation[] { LPColourMultiplier.instance(0xFFFFFFFF) });
 	}
 
 	public static AxisAlignedBB getObjectBoundsAt(AxisAlignedBB boundingBox, ITubeOrientation orientation) {

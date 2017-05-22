@@ -19,6 +19,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
@@ -169,6 +170,11 @@ public class ChassiModule extends LogisticsGuiModule {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
+		return null;
 	}
 
 	@Override

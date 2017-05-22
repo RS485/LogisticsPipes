@@ -14,7 +14,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -125,7 +125,7 @@ public class ModuleSatellite extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
 		return null;
 	}
 }

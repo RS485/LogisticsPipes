@@ -14,6 +14,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -21,6 +22,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
@@ -32,9 +35,9 @@ public class RemoteOrderer extends Item {
 	final static TextureAtlasSprite[] _icons = new TextureAtlasSprite[17];
 
 	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {
+	public void registerIcons(TextureMap par1IIconRegister) {
 		for (int i = 0; i < 17; i++) {
-			RemoteOrderer._icons[i] = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i);
+			RemoteOrderer._icons[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i));
 		}
 	}
 
@@ -61,7 +64,7 @@ public class RemoteOrderer extends Item {
 			}
 		}
 
-		if (itemstack.hasTagCompound() && itemstack.stackTagCompound.hasKey("connectedPipe-x")) {
+		if (itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey("connectedPipe-x")) {
 			list.add("\u00a77Has Remote Pipe");
 		}
 
@@ -95,10 +98,10 @@ public class RemoteOrderer extends Item {
 	}
 
 	public static void connectToPipe(ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {
-		stack.stackTagCompound = new NBTTagCompound();
-		stack.stackTagCompound.setInteger("connectedPipe-x", pipe.getX());
-		stack.stackTagCompound.setInteger("connectedPipe-y", pipe.getY());
-		stack.stackTagCompound.setInteger("connectedPipe-z", pipe.getZ());
+		stack.setTagCompound(new NBTTagCompound());
+		stack.getTagCompound().setInteger("connectedPipe-x", pipe.getX());
+		stack.getTagCompound().setInteger("connectedPipe-y", pipe.getY());
+		stack.getTagCompound().setInteger("connectedPipe-z", pipe.getZ());
 		int dimension = 0;
 		for (Integer dim : DimensionManager.getIDs()) {
 			if (pipe.getWorld().equals(DimensionManager.getWorld(dim.intValue()))) {
@@ -106,7 +109,7 @@ public class RemoteOrderer extends Item {
 				break;
 			}
 		}
-		stack.stackTagCompound.setInteger("connectedPipe-world-dim", dimension);
+		stack.getTagCompound().setInteger("connectedPipe-world-dim", dimension);
 	}
 
 	public static PipeItemsRemoteOrdererLogistics getPipe(ItemStack stack) {
@@ -116,18 +119,18 @@ public class RemoteOrderer extends Item {
 		if (!stack.hasTagCompound()) {
 			return null;
 		}
-		if (!stack.stackTagCompound.hasKey("connectedPipe-x") || !stack.stackTagCompound.hasKey("connectedPipe-y") || !stack.stackTagCompound.hasKey("connectedPipe-z")) {
+		if (!stack.getTagCompound().hasKey("connectedPipe-x") || !stack.getTagCompound().hasKey("connectedPipe-y") || !stack.getTagCompound().hasKey("connectedPipe-z")) {
 			return null;
 		}
-		if (!stack.stackTagCompound.hasKey("connectedPipe-world-dim")) {
+		if (!stack.getTagCompound().hasKey("connectedPipe-world-dim")) {
 			return null;
 		}
-		int dim = stack.stackTagCompound.getInteger("connectedPipe-world-dim");
+		int dim = stack.getTagCompound().getInteger("connectedPipe-world-dim");
 		World world = DimensionManager.getWorld(dim);
 		if (world == null) {
 			return null;
 		}
-		TileEntity tile = world.getTileEntity(stack.stackTagCompound.getInteger("connectedPipe-x"), stack.stackTagCompound.getInteger("connectedPipe-y"), stack.stackTagCompound.getInteger("connectedPipe-z"));
+		TileEntity tile = world.getTileEntity(new BlockPos(stack.getTagCompound().getInteger("connectedPipe-x"), stack.getTagCompound().getInteger("connectedPipe-y"), stack.getTagCompound().getInteger("connectedPipe-z")));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -140,7 +143,7 @@ public class RemoteOrderer extends Item {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabTools;
+		return CreativeTabs.TOOLS;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

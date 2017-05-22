@@ -120,11 +120,9 @@ import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
 import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
-import logisticspipes.proxy.specialconnection.EnderIOHyperCubeConnection;
 import logisticspipes.proxy.specialconnection.EnderIOTransceiverConnection;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
-import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
 import logisticspipes.recipes.ChipCraftingRecipes;
@@ -134,9 +132,7 @@ import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.Recipes;
-import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.renderer.LogisticsPipeItemRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
@@ -380,8 +376,8 @@ public class LogisticsPipes {
 		SimpleServiceLocator.thermalDynamicsProxy.registerPipeInformationProvider();
 
 		//SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
-		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
-		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
+		//SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
+		//SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOTransceiverConnection());
 
 		//SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));

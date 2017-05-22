@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
@@ -23,6 +23,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.Constants;
@@ -126,11 +128,9 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEn
 
 public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver {
 
-	private PipeItemsCraftingLogistics _pipe;
-
-	private IRequestItems _invRequester;
-	//private EnumFacing _sneakyDirection = null;
-
+	// for reliable transport
+	protected final DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue<>();
+	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public int satelliteId = 0;
 	public int[] advancedSatelliteIdArray = new int[9];
 	public DictResource[] fuzzyCraftingFlagArray = new DictResource[9];
@@ -324,8 +324,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleCrafter");
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
+		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleCrafter"));
 	}
 
 	@Override
@@ -1152,9 +1152,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 
 			if (found) {
-				Block block = getWorld().getBlock(adjacent.tileEntity.xCoord, adjacent.tileEntity.yCoord, adjacent.tileEntity.zCoord);
+				Block block = getWorld().getBlockState(adjacent.tileEntity.getPos()).getBlock();
 				if (block != null && block
-						.onBlockActivated(getWorld(), adjacent.tileEntity.xCoord, adjacent.tileEntity.yCoord, adjacent.tileEntity.zCoord, player, 0, 0, 0, 0)) {
+						.onBlockActivated(getWorld(), adjacent.tileEntity.getPos(), adjacent.tileEntity.getWorld().getBlockState(adjacent.tileEntity.getPos()), player,
+								EnumHand.MAIN_HAND, null, EnumFacing.UP, 0, 0, 0)) {
 					return true;
 				}
 			}

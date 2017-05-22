@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -51,11 +50,11 @@ public class LogisticsNewSolidBlockWorldRenderer {
 			EnumFacing result = dir;
 			switch (rot.getInteger()) {
 				case 0:
-					result = result.getRotation(EnumFacing.UP);
+					result = result.rotateY();
 				case 3:
-					result = result.getRotation(EnumFacing.UP);
+					result = result.rotateY();
 				case 1:
-					result = result.getRotation(EnumFacing.UP);
+					result = result.rotateY();
 				case 2:
 			}
 			return result;
@@ -161,7 +160,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		}
 		return map;
 	}
-
+/*
 	public void renderWorldBlock(IBlockAccess world, LogisticsSolidTileEntity blockTile, RenderBlocks renderer, int x, int y, int z) {
 		Tessellator tess = Tessellator.instance;
 		SimpleServiceLocator.cclProxy.getRenderState().reset();
@@ -234,6 +233,6 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
 		GL11.glPopAttrib(); // nicely leave the rendering how it was
-	}
+	}*/
 
 }

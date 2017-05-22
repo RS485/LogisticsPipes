@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer;
 
 import java.util.HashMap;
@@ -21,14 +22,14 @@ import org.lwjgl.opengl.GL11;
 public final class FluidRenderer {
 
 	public static final int DISPLAY_STAGES = 100;
-	private static final ResourceLocation BLOCK_TEXTURE = TextureMap.locationBlocksTexture;
+	//private static final ResourceLocation BLOCK_TEXTURE = TextureMap.locationBlocksTexture;
 	private static Map<Fluid, int[]> flowingRenderCache = new HashMap<>();
 	private static Map<Fluid, int[]> stillRenderCache = new HashMap<>();
 	private static final RenderInfo liquidBlock = new RenderInfo();
 
 	/**
 	 * Deactivate default constructor
-	 */
+	 * /
 	private FluidRenderer() {
 
 	}
@@ -110,7 +111,7 @@ public final class FluidRenderer {
 
 		for (int s = 0; s < FluidRenderer.DISPLAY_STAGES; ++s) {
 			diplayLists[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(diplayLists[s], 4864 /*GL_COMPILE*/);
+			GL11.glNewList(diplayLists[s], 4864 /*GL_COMPILE* /);
 
 			FluidRenderer.liquidBlock.minX = 0.01f;
 			FluidRenderer.liquidBlock.minY = 0;
@@ -133,3 +134,4 @@ public final class FluidRenderer {
 		return diplayLists;
 	}
 }
+*/

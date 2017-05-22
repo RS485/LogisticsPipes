@@ -5,19 +5,20 @@ import java.util.Map;
 
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.CustomBlockRenderer;
-import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
-import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 
@@ -29,6 +30,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 	private static final ResourceLocation BLOCKS = new ResourceLocation("textures/atlas/blocks.png");
 	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<>();
 
+	@SideOnly(Side.CLIENT)
 	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch, double yawForPitch) {
 		if(LogisticsNewRenderPipe.innerTransportBox == null) return;
 		GL11.glPushMatrix();
@@ -36,9 +38,10 @@ public class LogisticsNewPipeItemBoxRenderer {
 		if (renderList == -1) {
 			renderList = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(renderList, GL11.GL_COMPILE);
-			Tessellator tess = Tessellator.instance;
-			tess.startDrawingQuads();
-			LogisticsNewRenderPipe.innerTransportBox.render(LogisticsNewRenderPipe.innerBoxTexture);
+			Tessellator tess = Tessellator.getInstance();
+			VertexBuffer buffer = tess.getBuffer();
+			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+			LogisticsNewRenderPipe.innerTransportBox.render(buffer, LogisticsNewRenderPipe.innerBoxTexture);
 			tess.draw();
 			GL11.glEndList();
 		}
@@ -61,6 +64,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		if (itemstack != null && itemstack.getItem() instanceof LogisticsFluidContainer) {
 			FluidStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(itemstack));
 			if (f != null) {
+				/*
 				FluidContainerRenderer.skipNext = true;
 				int list = getRenderListFor(f);
 				GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
@@ -71,12 +75,13 @@ public class LogisticsNewPipeItemBoxRenderer {
 
 				GL11.glCallList(list);
 				GL11.glPopAttrib();
+				*/
 			}
 		}
 
 		GL11.glPopMatrix();
 	}
-
+/*
 	private int getRenderListFor(FluidStack fluid) {
 		FluidIdentifier ident = FluidIdentifier.get(fluid);
 		int[] array = LogisticsNewPipeItemBoxRenderer.renderLists.get(fluid);
@@ -98,7 +103,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		// CENTER HORIZONTAL
 
 		array[pos] = GLAllocation.generateDisplayLists(1);
-		GL11.glNewList(array[pos], 4864 /* GL_COMPILE */);
+		GL11.glNewList(array[pos], 4864 /* GL_COMPILE * /);
 
 		block.minX = 0.32;
 		block.maxX = 0.68;
@@ -113,5 +118,5 @@ public class LogisticsNewPipeItemBoxRenderer {
 
 		GL11.glEndList();
 		return array[pos];
-	}
+	}*/
 }

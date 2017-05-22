@@ -1,7 +1,8 @@
 package logisticspipes.modules;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,7 +25,7 @@ public class ModuleExtractorMk2 extends ModuleExtractor {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(IIconRegister register) {
-		return register.registerIcon("logisticspipes:itemModule/ModuleExtractorMk2");
+	public TextureAtlasSprite getIconTexture(TextureMap register) {
+		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleExtractorMk2"));
 	}
 }

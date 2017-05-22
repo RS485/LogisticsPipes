@@ -7,6 +7,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -42,7 +43,7 @@ public class EntitySparkleFX extends Particle {
 
 	@Override
 	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		tesselator.draw();
+		Tessellator.getInstance().draw();
 		GL11.glPushMatrix();
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -59,19 +60,19 @@ public class EntitySparkleFX extends Particle {
 		float var15 = (float) (prevPosY + (posY - prevPosY) * partialTicks - Particle.interpPosY);
 		float var16 = (float) (prevPosZ + (posZ - prevPosZ) * partialTicks - Particle.interpPosZ);
 		float var17 = 1.0F;
-		tesselator.startDrawingQuads();
-		tesselator.setBrightness(240);
-		tesselator.setColorRGBA_F(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F);
-		tesselator.addVertexWithUV(var14 - rotationX * var13 - rotationXY * var13, var15 - rotationZ * var13, var16 - rotationYZ * var13 - rotationXZ * var13, var10, var12);
-		tesselator.addVertexWithUV(var14 - rotationX * var13 + rotationXY * var13, var15 + rotationZ * var13, var16 - rotationYZ * var13 + rotationXZ * var13, var10, var11);
-		tesselator.addVertexWithUV(var14 + rotationX * var13 + rotationXY * var13, var15 + rotationZ * var13, var16 + rotationYZ * var13 + rotationXZ * var13, var9, var11);
-		tesselator.addVertexWithUV(var14 + rotationX * var13 - rotationXY * var13, var15 - rotationZ * var13, var16 + rotationYZ * var13 - rotationXZ * var13, var9, var12);
-		tesselator.draw();
+		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+		//tesselator.setBrightness(240);
+		buffer.pos(var14 - rotationX * var13 - rotationXY * var13, var15 - rotationZ * var13, var16 - rotationYZ * var13 - rotationXZ * var13).tex(var10, var12).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();
+		buffer.pos(var14 - rotationX * var13 + rotationXY * var13, var15 + rotationZ * var13, var16 - rotationYZ * var13 + rotationXZ * var13).tex(var10, var11).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();
+		buffer.pos(var14 + rotationX * var13 + rotationXY * var13, var15 + rotationZ * var13, var16 + rotationYZ * var13 + rotationXZ * var13).tex(var9, var11).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();
+		buffer.pos(var14 + rotationX * var13 - rotationXY * var13, var15 - rotationZ * var13, var16 + rotationYZ * var13 - rotationXZ * var13).tex(var9, var12).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();
+		Tessellator.getInstance().draw();
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDepthMask(true);
 		GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(EntitySparkleFX.field_110737_b);
-		tesselator.startDrawingQuads();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}
 
 	/**

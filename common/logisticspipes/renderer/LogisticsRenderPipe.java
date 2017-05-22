@@ -11,9 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -28,9 +26,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.IItemRenderer.ItemRenderType;
-import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -49,7 +44,6 @@ import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.signs.IPipeSignData;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
-import logisticspipes.renderer.CustomBlockRenderer.RenderInfo;
 import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
@@ -71,13 +65,12 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static PlayerConfig config;
-	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false, false);
+	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false);
 	private static Map<IPipeSignData, GLRenderList> pipeSignRenderListMap = new HashMap<IPipeSignData, GLRenderList>();
 	private static int localItemTestRenderList = -1;
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
 	private ModelSign modelSign;
-	private RenderBlocks renderBlocks = new RenderBlocks();
 	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
 
 	public LogisticsRenderPipe() {
@@ -86,20 +79,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		modelSign.signStick.showModel = false;
 
 		LogisticsRenderPipe.config = LogisticsPipes.getClientPlayerConfig();
-		RenderItem customRenderItem = new RenderItem() {
-
-			@Override
-			public boolean shouldBob() {
-				return false;
-			}
-
-			@Override
-			public boolean shouldSpreadItems() {
-				return false;
-			}
-		};
-		customRenderItem.setRenderManager(RenderManager.instance);
-		itemRenderer.setRenderItem(customRenderItem);
 	}
 
 	@Override
@@ -115,26 +94,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 				renderPipeSigns((CoreRoutedPipe) pipe.pipe, x, y, z, partialTickTime);
 			}
 
-			if (LogisticsRenderPipe.config.isUseNewRenderer()) {
-				LogisticsRenderPipe.secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe) tileentity, x, y, z, partialTickTime, distance);
-			}
-			if (LogisticsRenderPipe.config.getRenderPipeContentDistance() * LogisticsRenderPipe.config.getRenderPipeContentDistance() < distance) {
-				return;
-			}
-
-			bcRenderer.renderWires(pipe, x, y, z);
-
-			// dynamically render pluggables (like gates)
-			bcRenderer.dynamicRenderPluggables(pipe, x, y, z);
-
-			if (!pipe.isOpaque()) {
-				if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
-					renderFluids(pipe.pipe, x, y, z);
-				}
-				if (pipe.pipe.transport instanceof PipeTransportLogistics) {
-					renderSolids(pipe.pipe, x, y, z, partialTickTime);
-				}
-			}
+			LogisticsRenderPipe.secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe) tileentity, x, y, z, partialTickTime, distance);
 		}
 	}
 
@@ -228,9 +188,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	}
 
 	public void doRenderItem(ItemStack itemstack, World worldObj, double x, double y, double z, float light, float renderScale, double boxScale, double yaw, double pitch, double yawForPitch, float partialTickTime) {
-		if (LogisticsRenderPipe.config.isUseNewRenderer() && boxScale != 0) {
-			LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale, yaw, pitch, yawForPitch);
-		}
+		LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale, yaw, pitch, yawForPitch);
 
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
@@ -367,9 +325,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 
 		Item item = itemstack.getItem();
 
+		/*
 		IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 
-		Minecraft.getMinecraft().renderEngine.bindTexture(itemstack.getItemSpriteNumber() == 0 ? TextureMap.locationBlocksTexture : TextureMap.locationItemsTexture);
+		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
 		GL11.glPushMatrix();
 
@@ -451,10 +410,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		}
 
-		GL11.glPopMatrix();
+		GL11.glPopMatrix();*/
 	}
 
-	private void renderItem(TextureAtlasSprite par3Icon) {
+	/*private void renderItem(TextureAtlasSprite par3Icon) {
 		if (par3Icon == null) {
 			return;
 		}
@@ -473,7 +432,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		tessellator.addVertexWithUV(par1 + 0, par2 + 0, zLevel, par3Icon.getMinU(), par3Icon.getMinV());
 		tessellator.draw();
 		GL11.glPopMatrix();
-	}
+	}*/
 
 	public String cut(String name, FontRenderer renderer) {
 		if (renderer.getStringWidth(name) < 90) {
@@ -488,245 +447,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 			}
 		}
 		return sum.toString();
-	}
-
-	// BC copy, except where marked with XXX
-	private void renderFluids(CoreUnroutedPipe pipe, double x, double y, double z) {
-		// XXX PipeTransportFluids trans = pipe.transport;
-		PipeFluidTransportLogistics trans = (PipeFluidTransportLogistics) (pipe.transport);
-
-		boolean needsRender = false;
-		for (int i = 0; i < 7; ++i) {
-			FluidStack fluidStack = trans.renderCache[i];
-			if (fluidStack != null && fluidStack.amount > 0) {
-				needsRender = true;
-				break;
-			}
-		}
-
-		if (!needsRender) {
-			return;
-		}
-
-		GL11.glPushMatrix();
-		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-		GL11.glTranslatef((float) x, (float) y, (float) z);
-
-		int skylight = pipe.container.getWorld().getSkyBlockTypeBrightness(EnumSkyBlock.Sky, pipe.getX(), pipe.getY(), pipe.getZ());
-		int blocklight = pipe.container.getWorld().getSkyBlockTypeBrightness(EnumSkyBlock.Block, pipe.getX(), pipe.getY(), pipe.getZ());
-
-		// sides
-
-		boolean sides = false, above = false;
-
-		for (int i = 0; i < 6; ++i) {
-			FluidStack fluidStack = trans.renderCache[i];
-
-			if (fluidStack != null && fluidStack.amount > 0) {
-				DisplayFluidList d = getListFromBuffer(fluidStack, skylight, blocklight, fluidStack.getFluid().getLuminosity(fluidStack), pipe.container.getWorldObj());
-
-				if (d == null) {
-					continue;
-				}
-
-				// XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));
-				int stage = (int) ((float) fluidStack.amount / (float) (trans.getSideCapacity()) * (LogisticsRenderPipe.LIQUID_STAGES - 1));
-
-				if(stage >= LogisticsRenderPipe.LIQUID_STAGES) {
-					stage = LogisticsRenderPipe.LIQUID_STAGES - 1;
-				}
-				if(stage < 0) {
-					stage = 0;
-				}
-
-				GL11.glPushMatrix();
-				int list = 0;
-
-				switch (EnumFacing.VALUES[i]) {
-					case UP:
-						above = true;
-						list = d.sideVertical[stage];
-						break;
-					case DOWN:
-						GL11.glTranslatef(0, -0.75F, 0);
-						list = d.sideVertical[stage];
-						break;
-					case EAST:
-					case WEST:
-					case SOUTH:
-					case NORTH:
-						sides = true;
-						// Yes, this is kind of ugly, but was easier than transform the coordinates above.
-						GL11.glTranslatef(0.5F, 0.0F, 0.5F);
-						GL11.glRotatef(angleY[i], 0, 1, 0);
-						GL11.glRotatef(angleZ[i], 0, 0, 1);
-						GL11.glTranslatef(-0.5F, 0.0F, -0.5F);
-						list = d.sideHorizontal[stage];
-						break;
-					default:
-				}
-				bindTexture(TextureMap.locationBlocksTexture);
-				FluidRenderer.setColorForFluidStack(fluidStack);
-				GL11.glCallList(list);
-				GL11.glPopMatrix();
-			}
-		}
-		// CENTER
-		FluidStack fluidStack = trans.renderCache[6 /* Center */];
-
-		if (fluidStack != null && fluidStack.amount > 0) {
-			DisplayFluidList d = getListFromBuffer(fluidStack, skylight, blocklight, fluidStack.getFluid().getLuminosity(fluidStack), pipe.container.getWorldObj());
-
-			if (d != null) {
-				// XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));
-				int stage = (int) ((float) fluidStack.amount / (float) (trans.getInnerCapacity()) * (LogisticsRenderPipe.LIQUID_STAGES - 1));
-
-				bindTexture(TextureMap.locationBlocksTexture);
-				FluidRenderer.setColorForFluidStack(fluidStack);
-
-				if (above) {
-					GL11.glCallList(d.centerVertical[stage]);
-				}
-
-				if (!above || sides) {
-					GL11.glCallList(d.centerHorizontal[stage]);
-				}
-			}
-
-		}
-
-		GL11.glPopAttrib();
-		GL11.glPopMatrix();
-	}
-
-	// BC copy
-	private DisplayFluidList getListFromBuffer(FluidStack stack, int skylight, int blocklight, int flags, World world) {
-
-		int liquidId = stack.getFluidID();
-
-		if (liquidId == 0) {
-			return null;
-		}
-
-		return getDisplayFluidLists(liquidId, skylight, blocklight, flags, world);
-	}
-
-	// BC copy
-	private DisplayFluidList getDisplayFluidLists(int liquidId, int skylight, int blocklight, int flags, World world) {
-		int finalBlockLight = Math.max(flags & 31, blocklight);
-		int listId = (liquidId & 0x3FFFF) << 13 | (flags & 0xE0 | finalBlockLight) << 5 | (skylight & 31);
-
-		if (displayFluidLists.containsItem(listId)) {
-			return (DisplayFluidList) displayFluidLists.lookup(listId);
-		}
-
-		Fluid fluid = FluidRegistry.getFluid(liquidId);
-
-		if (fluid == null) {
-			return null;
-		}
-
-		DisplayFluidList d = new DisplayFluidList();
-		displayFluidLists.addKey(listId, d);
-
-		RenderInfo block = new RenderInfo();
-
-		if (fluid.getBlock() != null) {
-			block.baseBlock = fluid.getBlock();
-		} else {
-			block.baseBlock = Blocks.water;
-		}
-
-		block.texture = fluid.getStillIcon();
-		block.brightness = skylight << 16 | finalBlockLight;
-
-		float size = LPConstants.BC_PIPE_MAX_POS - LPConstants.BC_PIPE_MIN_POS;
-
-		// render size
-
-		for (int s = 0; s < LogisticsRenderPipe.LIQUID_STAGES; ++s) {
-			float ratio = (float) s / (float) LogisticsRenderPipe.LIQUID_STAGES;
-
-			// SIDE HORIZONTAL
-
-			d.sideHorizontal[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.sideHorizontal[s], GL11.GL_COMPILE);
-
-			block.minX = 0.0F;
-			block.minZ = LPConstants.BC_PIPE_MIN_POS + 0.01F;
-
-			block.maxX = block.minX + size / 2F + 0.01F;
-			block.maxZ = block.minZ + size - 0.02F;
-
-			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01F;
-			block.maxY = block.minY + (size - 0.02F) * ratio;
-
-			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
-
-			GL11.glEndList();
-
-			// SIDE VERTICAL
-
-			d.sideVertical[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.sideVertical[s], GL11.GL_COMPILE);
-
-			block.minY = LPConstants.BC_PIPE_MAX_POS - 0.01;
-			block.maxY = 1;
-
-			block.minX = 0.5 - (size / 2 - 0.01) * ratio;
-			block.maxX = 0.5 + (size / 2 - 0.01) * ratio;
-
-			block.minZ = 0.5 - (size / 2 - 0.01) * ratio;
-			block.maxZ = 0.5 + (size / 2 - 0.01) * ratio;
-
-			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
-
-			GL11.glEndList();
-
-			// CENTER HORIZONTAL
-
-			d.centerHorizontal[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.centerHorizontal[s], GL11.GL_COMPILE);
-
-			block.minX = LPConstants.BC_PIPE_MIN_POS + 0.01;
-			block.minZ = LPConstants.BC_PIPE_MIN_POS + 0.01;
-
-			block.maxX = block.minX + size - 0.02;
-			block.maxZ = block.minZ + size - 0.02;
-
-			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01;
-			block.maxY = block.minY + (size - 0.02F) * ratio;
-
-			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
-
-			GL11.glEndList();
-
-			// CENTER VERTICAL
-
-			d.centerVertical[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.centerVertical[s], GL11.GL_COMPILE);
-
-			block.minY = LPConstants.BC_PIPE_MIN_POS + 0.01;
-			block.maxY = LPConstants.BC_PIPE_MAX_POS - 0.01;
-
-			block.minX = 0.5 - (size / 2 - 0.02) * ratio;
-			block.maxX = 0.5 + (size / 2 - 0.02) * ratio;
-
-			block.minZ = 0.5 - (size / 2 - 0.02) * ratio;
-			block.maxZ = 0.5 + (size / 2 - 0.02) * ratio;
-
-			CustomBlockRenderer.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
-
-			GL11.glEndList();
-
-		}
-
-		return d;
 	}
 
 	public boolean isRenderListCompatible(ItemStack stack) {

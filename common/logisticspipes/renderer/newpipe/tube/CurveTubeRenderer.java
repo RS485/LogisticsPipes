@@ -99,6 +99,6 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
-		CurveTubeRenderer.tubeCurve.get(orientation.getRenderOrientation()).copy().render(new I3DOperation[] { LPColourMultiplier.instance(LogisticsPipes.LogisticsPipeBlock.getBlockColor() << 8 | 0xFF)  });
+		CurveTubeRenderer.tubeCurve.get(orientation.getRenderOrientation()).copy().render(new I3DOperation[] { LPColourMultiplier.instance(0xFFFFFFFF)  });
 	}
 }

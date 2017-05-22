@@ -2,6 +2,7 @@ package logisticspipes.proxy.object3d.interfaces;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.math.AxisAlignedBB;

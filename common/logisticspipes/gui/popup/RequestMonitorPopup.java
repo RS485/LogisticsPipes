@@ -305,7 +305,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			for (int xVar = 0; xVar * 16 < width; xVar++) {
 				TextureAtlasSprite icon = getTexture(Blocks.STONE);
 				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-				drawTexturedModelRectFromIcon(xVar * 16, yVar * 16, icon, 16, 16);
+				drawTexturedModalRect(xVar * 16, yVar * 16, icon, 16, 16);
 			}
 		}
 		GL11.glTranslated(0, 0, 600);
@@ -399,7 +399,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
 				TextureAtlasSprite icon = getTexture(Blocks.STONE);
 				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-				drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
+				drawTexturedModalRect(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
 		}
 

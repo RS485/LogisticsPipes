@@ -216,12 +216,6 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.openComputersProxy = proxy;
 	}
 
-	public static IToolWrenchProxy toolWrenchHandler;
-
-	public static void setToolWrenchProxy(IToolWrenchProxy handler) {
-		SimpleServiceLocator.toolWrenchHandler = handler;
-	}
-
 	public static GLRenderListHandler renderListHandler;
 
 	public static void setRenderListHandler(GLRenderListHandler handler) {

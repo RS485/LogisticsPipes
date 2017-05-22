@@ -92,13 +92,13 @@ public class DebugHelper implements IContainerTooltipHandler {
 		}
 		if (nbt instanceof NBTTagByte) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagByte");
-			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagByte) nbt).func_150290_f()));
+			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagByte) nbt).getByte()));
 			node.add(type);
 		} else if (nbt instanceof NBTTagByteArray) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagByteArray");
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 			int i = 0;
-			for (byte byt : ((NBTTagByteArray) nbt).func_150292_c()) {
+			for (byte byt : ((NBTTagByteArray) nbt).getByteArray()) {
 				content.add(new DefaultMutableTreeNode("[" + i + "]: " + Byte.toString(byt)));
 				i++;
 			}
@@ -106,21 +106,21 @@ public class DebugHelper implements IContainerTooltipHandler {
 			node.add(type);
 		} else if (nbt instanceof NBTTagDouble) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagDouble");
-			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagDouble) nbt).func_150286_g()));
+			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagDouble) nbt).getDouble()));
 			node.add(type);
 		} else if (nbt instanceof NBTTagFloat) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagFloat");
-			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagFloat) nbt).func_150288_h()));
+			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagFloat) nbt).getFloat()));
 			node.add(type);
 		} else if (nbt instanceof NBTTagInt) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagInt");
-			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagInt) nbt).func_150287_d()));
+			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagInt) nbt).getInt()));
 			node.add(type);
 		} else if (nbt instanceof NBTTagIntArray) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagIntArray");
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 			int i = 0;
-			for (int byt : ((NBTTagIntArray) nbt).func_150302_c()) {
+			for (int byt : ((NBTTagIntArray) nbt).getIntArray()) {
 				content.add(new DefaultMutableTreeNode("[" + i + "]: " + byt));
 				i++;
 			}
@@ -160,15 +160,15 @@ public class DebugHelper implements IContainerTooltipHandler {
 			node.add(type);
 		} else if (nbt instanceof NBTTagLong) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagLong");
-			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagLong) nbt).func_150291_c()));
+			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagLong) nbt).getLong()));
 			node.add(type);
 		} else if (nbt instanceof NBTTagShort) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagShort");
-			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagShort) nbt).func_150289_e()));
+			type.add(new DefaultMutableTreeNode("Data: " + ((NBTTagShort) nbt).getShort()));
 			node.add(type);
 		} else if (nbt instanceof NBTTagString) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagString");
-			type.add(new DefaultMutableTreeNode("Data: '" + ((NBTTagString) nbt).func_150285_a_() + "'"));
+			type.add(new DefaultMutableTreeNode("Data: '" + ((NBTTagString) nbt).getString() + "'"));
 			node.add(type);
 		} else {
 			throw new UnsupportedOperationException("Unsupported NBTBase of type:" + nbt.getClass().getName());

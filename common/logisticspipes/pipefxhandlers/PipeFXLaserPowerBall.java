@@ -5,10 +5,10 @@ import java.util.Random;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
@@ -47,7 +47,7 @@ public class PipeFXLaserPowerBall extends Particle {
 		prevPosZ = posZ;
 		particleMaxAge = 0;
 		random = PipeFXLaserPowerBall.RAND.nextFloat() * PipeFXLaserPowerBall.RAND.nextInt(360 / PipeFXLaserPowerBall.ROTATIONSPEED);
-		EntityLivingBase renderentity = FMLClientHandler.instance().getClient().renderViewEntity;
+		Entity renderentity = FMLClientHandler.instance().getClient().getRenderViewEntity();
 		int visibleDistance = 50;
 		if (!FMLClientHandler.instance().getClient().gameSettings.fancyGraphics) {
 			visibleDistance = 25;
@@ -66,9 +66,9 @@ public class PipeFXLaserPowerBall extends Particle {
 
 	@Override
 	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		tessellator.draw();
+		Tessellator.getInstance().draw();
 		GL11.glPushMatrix();
-		float rot = (worldObj.provider.getWorldTime() + random) % (360 / PipeFXLaserPowerBall.ROTATIONSPEED) * PipeFXLaserPowerBall.ROTATIONSPEED + PipeFXLaserPowerBall.ROTATIONSPEED * f;
+		float rot = (worldObj.provider.getWorldTime() + random) % (360 / PipeFXLaserPowerBall.ROTATIONSPEED) * PipeFXLaserPowerBall.ROTATIONSPEED + PipeFXLaserPowerBall.ROTATIONSPEED * partialTicks;
 
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 10497.0F);
@@ -93,15 +93,14 @@ public class PipeFXLaserPowerBall extends Particle {
 				GL11.glRotatef(rotate, 1.0F, 0.0F, 0.0F);
 				for (int v = 0; v < repeat; v++) {
 					GL11.glRotatef(rotate, 0.0F, 1.0F, 0.0F);
-					tessellator.startDrawingQuads();
-					tessellator.setBrightness(50);
-					tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, 0.8F);
+					VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 					double zoom = 0.25D;
-					tessellator.addVertexWithUV(zoom, zoom, 0.0D, 1.0D, 1.0D);
-					tessellator.addVertexWithUV(zoom, -zoom, 0.0D, 1.0D, 0.0D);
-					tessellator.addVertexWithUV(-zoom, -zoom, 0.0D, 0.0D, 0.0D);
-					tessellator.addVertexWithUV(-zoom, zoom, 0.0D, 0.0D, 1.0D);
-					tessellator.draw();
+					buffer.pos(zoom, zoom, 0.0D).tex(1.0D, 1.0D).color(particleRed, particleGreen, particleBlue, 0.8F).endVertex();
+					buffer.pos(zoom, -zoom, 0.0D).tex(1.0D, 0.0D).color(particleRed, particleGreen, particleBlue, 0.8F).endVertex();
+					buffer.pos(-zoom, -zoom, 0.0D).tex(0.0D, 0.0D).color(particleRed, particleGreen, particleBlue, 0.8F).endVertex();
+					buffer.pos(-zoom, zoom, 0.0D).tex(0.0D, 1.0D).color(particleRed, particleGreen, particleBlue, 0.8F).endVertex();
+					Tessellator.getInstance().draw();
 				}
 			}
 		}
@@ -111,6 +110,7 @@ public class PipeFXLaserPowerBall extends Particle {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(PipeFXLaserPowerBall.field_110737_b);
-		tessellator.startDrawingQuads();
+		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}
 }

@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer;
 
 import java.util.Arrays;
@@ -205,3 +206,4 @@ public final class CustomBlockRenderer {
 		tessellator.draw();
 	}
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer;
 
 import logisticspipes.LPConstants;
@@ -168,7 +169,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling
 	 * doesn't have any effect.
-	 */
+	 * /
 	private static void renderOneWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
@@ -180,7 +181,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling
 	 * doesn't have any effect.
-	 */
+	 * /
 	private static void renderTwoWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
@@ -228,3 +229,4 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 		return false;
 	}
 }
+*/

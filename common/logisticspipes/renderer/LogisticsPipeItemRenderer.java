@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer;
 
 import logisticspipes.LogisticsPipes;
@@ -131,7 +132,8 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 		}
 	}
 
-	/** IItemRenderer implementation **/
+	/** IItemRenderer implementation **
+	/
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -180,3 +182,4 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 		}
 	}
 }
+*/

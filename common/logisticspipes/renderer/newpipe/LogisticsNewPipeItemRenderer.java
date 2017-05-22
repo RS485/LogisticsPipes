@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer.newpipe;
 
 import java.util.ArrayList;
@@ -138,7 +139,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 	/**
 	 * IItemRenderer implementation
-	 **/
+	 ** /
 
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
@@ -196,3 +197,4 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		}
 	}
 }
+*/

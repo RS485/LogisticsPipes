@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
@@ -78,10 +79,10 @@ public class PipeFXLaserPowerBeam extends Particle {
 
 	@Override
 	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		tessellator.draw();
+		Tessellator.getInstance().draw();
 		GL11.glPushMatrix();
 		float slide = worldObj.getTotalWorldTime() + random;
-		float rot = worldObj.provider.getWorldTime() % (360 / PipeFXLaserPowerBeam.ROTATIONSPEED) * PipeFXLaserPowerBeam.ROTATIONSPEED + PipeFXLaserPowerBeam.ROTATIONSPEED * f;
+		float rot = worldObj.provider.getWorldTime() % (360 / PipeFXLaserPowerBeam.ROTATIONSPEED) * PipeFXLaserPowerBeam.ROTATIONSPEED + PipeFXLaserPowerBeam.ROTATIONSPEED * partialTicks;
 
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 10497.0F);
@@ -113,14 +114,13 @@ public class PipeFXLaserPowerBeam extends Particle {
 			for (int t = 0; t < 3; t++) {
 				double texturePos = -1.0F + globalTextureSlide + t / 3.0F;
 				GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
-				tessellator.startDrawingQuads();
-				tessellator.setBrightness(200);
-				tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, 0.5F);
-				tessellator.addVertexWithUV(-0.07D, length, 0.0D, 1.0D, length + texturePos);
-				tessellator.addVertexWithUV(-0.07D, 0.0D, 0.0D, 1.0D, texturePos);
-				tessellator.addVertexWithUV(0.07D, 0.0D, 0.0D, 0.0D, texturePos);
-				tessellator.addVertexWithUV(0.07D, length, 0.0D, 0.0D, length + texturePos);
-				tessellator.draw();
+				VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+				buffer.pos(-0.07D, length, 0.0D).tex(1.0D, length + texturePos).color(particleRed, particleGreen, particleBlue, 0.5F).endVertex();
+				buffer.pos(-0.07D, 0.0D, 0.0D).tex(1.0D, texturePos).color(particleRed, particleGreen, particleBlue, 0.5F).endVertex();
+				buffer.pos(0.07D, 0.0D, 0.0D).tex(0.0D, texturePos).color(particleRed, particleGreen, particleBlue, 0.5F).endVertex();
+				buffer.pos(0.07D, length, 0.0D).tex(0.0D, length + texturePos).color(particleRed, particleGreen, particleBlue, 0.5F).endVertex();
+				Tessellator.getInstance().draw();
 			}
 		}
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -129,6 +129,7 @@ public class PipeFXLaserPowerBeam extends Particle {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(PipeFXLaserPowerBeam.field_110737_b);
-		tessellator.startDrawingQuads();
+		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}
 }

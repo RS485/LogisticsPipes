@@ -1,3 +1,4 @@
+/*
 package logisticspipes.renderer;
 
 import logisticspipes.items.LogisticsFluidContainer;
@@ -193,3 +194,4 @@ public class FluidContainerRenderer implements IItemRenderer {
 		useThis = true;
 	}
 }
+*/

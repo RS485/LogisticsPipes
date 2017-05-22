@@ -5,10 +5,10 @@ import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -30,7 +30,7 @@ public class EntityModelFX extends Particle {
 
 	@Override
 	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		tess.draw();
+		Tessellator.getInstance().draw();
 		GL11.glPushMatrix();
 		double x = posX - Particle.interpPosX;
 		double y = posY - Particle.interpPosY;
@@ -38,16 +38,16 @@ public class EntityModelFX extends Particle {
 		GL11.glTranslated(x, y, z);
 
 		SimpleServiceLocator.cclProxy.getRenderState().reset();
-		SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
 		SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-		SimpleServiceLocator.cclProxy.getRenderState().startDrawing(mode, format);
+		SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 		model.render(operations);
 		SimpleServiceLocator.cclProxy.getRenderState().draw();
 
 		GL11.glPopMatrix();
-		tess.startDrawingQuads();
+		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}
 
 }

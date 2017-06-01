@@ -147,6 +147,9 @@ public class MainProxy {
 			new Exception().printStackTrace();
 			return;
 		}
+		if(player instanceof net.minecraftforge.common.util.FakePlayer) {
+			return;
+		}
 		if (packet.isCompressable()) {
 			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
 		} else {

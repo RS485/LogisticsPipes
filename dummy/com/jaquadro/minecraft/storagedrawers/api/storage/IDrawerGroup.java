@@ -1,5 +1,7 @@
 package com.jaquadro.minecraft.storagedrawers.api.storage;
 
+import com.jaquadro.minecraft.storagedrawers.api.inventory.IDrawerInventory;
+
 public interface IDrawerGroup
 {
     /**
@@ -17,7 +19,7 @@ public interface IDrawerGroup
      */
     boolean isDrawerEnabled (int slot);
 
-    //IDrawerInventory getDrawerInventory ();
+    IDrawerInventory getDrawerInventory ();
 
     boolean markDirtyIfNeeded ();
 }

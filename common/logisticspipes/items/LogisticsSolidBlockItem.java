@@ -3,7 +3,6 @@ package logisticspipes.items;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -24,24 +23,24 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		switch (stack.getItemDamage()) {
-			case LogisticsSolidBlock.SOLDERING_STATION:
+		switch (LogisticsSolidBlock.BlockType.getForMeta(stack.getItemDamage())) {
+			case SOLDERING_STATION:
 				return "tile.solderingstation";
-			case LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION:
+			case LOGISTICS_POWER_JUNCTION:
 				return "tile.logisticspowerjunction";
-			case LogisticsSolidBlock.LOGISTICS_SECURITY_STATION:
+			case LOGISTICS_SECURITY_STATION:
 				return "tile.logisticssecuritystation";
-			case LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE:
+			case LOGISTICS_AUTOCRAFTING_TABLE:
 				return "tile.logisticscraftingtable";
-			case LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE:
+			case LOGISTICS_FUZZYCRAFTING_TABLE:
 				return "tile.logisticsfuzzycraftingtable";
-			case LogisticsSolidBlock.LOGISTICS_STATISTICS_TABLE:
+			case LOGISTICS_STATISTICS_TABLE:
 				return "tile.logisticsstatisticstable";
-			case LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER:
+			case LOGISTICS_RF_POWERPROVIDER:
 				return "tile.logisticstepowerprovider";
-			case LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER:
+			case LOGISTICS_IC2_POWERPROVIDER:
 				return "tile.logisticsic2powerprovider";
-			case LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME:
+			case LOGISTICS_BLOCK_FRAME:
 				return "tile.logisticsblankblock";
 		}
 		return super.getUnlocalizedName(stack);
@@ -65,21 +64,18 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_BLOCK_FRAME));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.SOLDERING_STATION));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_STATISTICS_TABLE));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME.getMeta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.SOLDERING_STATION.getMeta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_POWER_JUNCTION.getMeta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_SECURITY_STATION.getMeta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE.getMeta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE.getMeta()));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_STATISTICS_TABLE.getMeta()));
 		if (SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
-			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER));
+			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_RF_POWERPROVIDER.getMeta()));
 		}
 		if (SimpleServiceLocator.IC2Proxy.hasIC2()) {
-			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER));
+			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER.getMeta()));
 		}
 	}
-
-	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {}
 }

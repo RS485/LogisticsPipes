@@ -30,7 +30,6 @@ import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.ITDProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
-import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;

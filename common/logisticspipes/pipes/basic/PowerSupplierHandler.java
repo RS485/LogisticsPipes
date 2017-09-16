@@ -168,7 +168,7 @@ public class PowerSupplierHandler {
 
 				if (SimpleServiceLocator.IC2Proxy.isEnergySink(adjacent.tileEntity)) {
 					if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
-						if (SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.tileEntity, pipe.container, adjacent.direction.getOpposite())) {
+						if (SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.tileEntity, pipe.container, adjacent.direction.getOpposite())) { // TODO pipe.container must be IEnergySource
 							globalNeed += need[i] = SimpleServiceLocator.IC2Proxy.demandedEnergyUnits(adjacent.tileEntity);
 						}
 					}
@@ -184,7 +184,7 @@ public class PowerSupplierHandler {
 					AdjacentTileEntity adjacent = adjacentIt.next();
 
 					if (SimpleServiceLocator.IC2Proxy.isEnergySink(adjacent.tileEntity) && pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)
-							&& SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.tileEntity, pipe.container, adjacent.direction.getOpposite())) {
+							&& SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.tileEntity, pipe.container, adjacent.direction.getOpposite())) { // TODO pipe.container must be IEnergySource
 						if (internalBufferIC2 + 1 < need[i] * fullfillable) {
 							return;
 						}

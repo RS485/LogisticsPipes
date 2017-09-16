@@ -128,13 +128,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public void updateEntity() {
 		transport.updateEntity();
-
-		if (MainProxy.isClient(getWorld())) {
-			if (oldRendererState != (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe)) {
-				oldRendererState = (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer() && !container.renderState.forceRenderOldPipe);
-				getWorld().markBlockForUpdate(getPos());
-			}
-		}
 	}
 
 	public void writeToNBT(NBTTagCompound data) {
@@ -193,7 +186,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	/**
 	 * If this pipe is open on one side, return it.
-	 */
+	 * /
 	public EnumFacing getOpenOrientation() {
 		int connectionsNum = 0;
 
@@ -215,7 +208,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		}
 
 		return targetOrientation.getOpposite();
-	}
+	} */
 
 	/**
 	 * Called when TileGenericPipe.invalidate() is called

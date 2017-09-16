@@ -8,6 +8,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.item.IElectricItem;
@@ -41,10 +42,12 @@ public class IC2Proxy implements IIC2Proxy {
 		if (stack == null || template == null || !isElectricItem(template)) {
 			return false;
 		}
-		if (((IElectricItem) template.getItem()).getEmptyItem(stack) == stack.getItem()) {
+		/*if (((IElectricItem) template.getItem()).getEmptyItem(stack) == stack.getItem()) {
 			return true;
 		}
 		return ((IElectricItem) template.getItem()).getChargedItem(stack) == stack.getItem();
+		*/
+		return true;
 	}
 
 	/**
@@ -82,9 +85,9 @@ public class IC2Proxy implements IIC2Proxy {
 		if (!isElectricItem(stack)) {
 			return false;
 		}
-		if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) {
+		/*if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) {
 			return false;
-		}
+		}*/
 		double charge = getCharge(stack);
 		double maxCharge = getMaxCharge(stack);
 		return charge == maxCharge;
@@ -100,9 +103,9 @@ public class IC2Proxy implements IIC2Proxy {
 		if (!isElectricItem(stack)) {
 			return false;
 		}
-		if (((IElectricItem) stack.getItem()).getEmptyItem(stack) != stack.getItem()) {
+		/*if (((IElectricItem) stack.getItem()).getEmptyItem(stack) != stack.getItem()) {
 			return false;
-		}
+		}*/
 		double charge = getCharge(stack);
 		return charge == 0;
 	}
@@ -117,9 +120,9 @@ public class IC2Proxy implements IIC2Proxy {
 		if (!isElectricItem(stack)) {
 			return false;
 		}
-		if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) {
+		/*if (((IElectricItem) stack.getItem()).getChargedItem(stack) != stack.getItem()) {
 			return false;
-		}
+		}*/
 		double charge = getCharge(stack);
 		double maxCharge = getMaxCharge(stack);
 		return charge != maxCharge;
@@ -181,7 +184,7 @@ public class IC2Proxy implements IIC2Proxy {
 	/**
 	 * Registers an TileEntity to the IC2 EnergyNet
 	 * 
-	 * @param has
+	 * @param tile
 	 *            to be an instance of IEnergyTile
 	 */
 	@Override
@@ -194,7 +197,7 @@ public class IC2Proxy implements IIC2Proxy {
 	/**
 	 * Removes an TileEntity from the IC2 EnergyNet
 	 * 
-	 * @param has
+	 * @param tile
 	 *            to be an instance of IEnergyTile
 	 */
 	@Override
@@ -214,7 +217,7 @@ public class IC2Proxy implements IIC2Proxy {
 
 	@Override
 	public boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile, EnumFacing opposite) {
-		return ((IEnergySink) energy).acceptsEnergyFrom(tile, opposite);
+		return tile instanceof IEnergyEmitter && energy instanceof IEnergySink && ((IEnergySink) energy).acceptsEnergyFrom((IEnergyEmitter) tile, opposite);
 	}
 
 	@Override

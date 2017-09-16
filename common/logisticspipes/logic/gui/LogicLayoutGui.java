@@ -7,12 +7,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
@@ -27,9 +22,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SimpleGraphics;
-import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtils;
 
 public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
@@ -199,9 +192,11 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
 			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
+				/*
 				TextureAtlasSprite icon = Blocks.STONE.getIcon(0, 0);
 				mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 				drawTexturedModalRect(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
+				*/
 			}
 		}
 
@@ -272,7 +267,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 			mc.getTextureManager().bindTexture(LogicLayoutGui.achievementTextures);
 			drawTexturedModalRect(startLeft - 5, yPos - 5, 0, 202, 26, 26);
 			GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
-			renderItemAt(aList.getAsDisplayItem(), startLeft, yPos);
+			//renderItemAt(aList.getAsDisplayItem(), startLeft, yPos);
 			if (aList.isInProgress() && aList.getMachineProgress() != 0) {
 				Gui.drawRect(startLeft - 4, yPos + 20, startLeft + 20, yPos + 24, 0xff000000);
 				Gui.drawRect(startLeft - 3, yPos + 21, startLeft + 19, yPos + 23, 0xffffffff);
@@ -374,21 +369,6 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 					newStartLeft += 30;
 				}
 			}
-		}
-	}
-
-	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
-		renderitem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), item.makeNormalStack(), x, y);
-		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			renderitem.renderItemOverlayIntoGUI(mc.fontRenderer, mc.renderEngine, item.makeNormalStack(), x, y, "");
-			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			renderitem.zLevel = 0.0F;
-			// Draw number
-			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}
 

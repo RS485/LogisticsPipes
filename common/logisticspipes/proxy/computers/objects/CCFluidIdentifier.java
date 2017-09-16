@@ -25,8 +25,8 @@ public class CCFluidIdentifier implements ILPCCTypeDefinition {
 			ident = ident2;
 		}
 
-		@CCCommand(description = "Returns the fluidID of this FluidIdentifier")
-		public int getId() {
+		@CCCommand(description = "Returns the fluidIdentifier of this FluidIdentifier")
+		public String getId() {
 			return ident.fluidID;
 		}
 

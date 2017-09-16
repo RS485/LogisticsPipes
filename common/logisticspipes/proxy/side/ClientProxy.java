@@ -38,10 +38,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
-import logisticspipes.renderer.LogisticsPipeItemRenderer;
-import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
-import logisticspipes.renderer.LogisticsSolidBlockWorldRenderer;
 import logisticspipes.renderer.newpipe.GLRenderListHandler;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
@@ -194,11 +191,11 @@ public class ClientProxy implements IProxy {
 	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		if (par1IIconRegister != null) {
 			if ("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
-				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "pipes/new_texture/"))));
+				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "blocks/pipes/new_texture/"))));
 			} else if (flag) {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1)));
+				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1)));
 			} else {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
+				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
 			}
 		}
 	}

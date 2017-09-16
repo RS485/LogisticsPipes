@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,12 +68,12 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	 * enumerates all ModernPackets, sets their IDs and populate packetlist/packetmap
 	 */
 	@SuppressWarnings("unchecked")
-	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, IllegalArgumentException.class, NoSuchMethodException.class, SecurityException.class })
+	@SneakyThrows({ IOException.class/*, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, IllegalArgumentException.class, NoSuchMethodException.class, SecurityException.class*/ })
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
 	public static final void initialize() {
 		final List<ClassInfo> classes = new ArrayList<>(ClassPath.from(PacketHandler.class.getClassLoader())
 				.getTopLevelClassesRecursive("logisticspipes.network.packets"));
-		Collections.sort(classes, (o1, o2) -> o1.getSimpleName().compareTo(o2.getSimpleName()));
+		classes.sort(Comparator.comparing(ClassInfo::getSimpleName));
 
 		PacketHandler.packetlist = new ArrayList<>(classes.size());
 		PacketHandler.packetmap = new HashMap<>(classes.size());
@@ -80,11 +81,15 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		int currentid = 0;
 
 		for (ClassInfo c : classes) {
-			final Class<?> cls = c.load();
-			final ModernPacket instance = (ModernPacket) cls.getConstructor(int.class).newInstance(currentid);
-			PacketHandler.packetlist.add(instance);
-			PacketHandler.packetmap.put((Class<? extends ModernPacket>) cls, instance);
-			currentid++;
+			try {
+				final Class<?> cls = c.load();
+				final ModernPacket instance = (ModernPacket) cls.getConstructor(int.class).newInstance(currentid);
+				PacketHandler.packetlist.add(instance);
+				PacketHandler.packetmap.put((Class<? extends ModernPacket>) cls, instance);
+				currentid++;
+			} catch(Throwable ignored) {
+				ignored.printStackTrace();
+			}
 		}
 	}
 

@@ -90,7 +90,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							continue;
 						}
 						FluidStack liquid;
-						if ((liquid = tank.fluid) != null && liquid.getFluidID() != 0) {
+						if ((liquid = tank.fluid) != null && liquid.getFluid() != null) {
 							if (order.getFluid().equals(FluidIdentifier.get(liquid))) {
 								int amount = Math.min(liquid.amount, amountToSend);
 								FluidStack drained = ((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), amount, false);
@@ -156,7 +156,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							continue;
 						}
 						FluidStack liquid;
-						if ((liquid = tank.fluid) != null && liquid.getFluidID() != 0) {
+						if ((liquid = tank.fluid) != null && liquid.getFluid() != null) {
 							FluidIdentifier ident = FluidIdentifier.get(liquid);
 							if (((IFluidHandler) pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
 								if (((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
@@ -226,7 +226,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							continue;
 						}
 						FluidStack liquid;
-						if ((liquid = tank.fluid) != null && liquid.getFluidID() != 0) {
+						if ((liquid = tank.fluid) != null && liquid.getFluid() != null) {
 							if (fluid.equals(FluidIdentifier.get(liquid))) {
 								if (((IFluidHandler) pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
 									if (((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
@@ -289,7 +289,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							continue;
 						}
 						FluidStack liquid;
-						if ((liquid = tank.fluid) != null && liquid.getFluidID() != 0) {
+						if ((liquid = tank.fluid) != null && liquid.getFluid() != null) {
 							if (((IFluidHandler) pair.getValue1()).canDrain(pair.getValue2().getOpposite(), liquid.getFluid())) {
 								if (((IFluidHandler) pair.getValue1()).drain(pair.getValue2().getOpposite(), 1, false) != null) {
 									FluidIdentifier ident = FluidIdentifier.get(liquid);

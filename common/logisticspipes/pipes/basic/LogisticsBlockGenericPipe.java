@@ -969,20 +969,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 	*/
 
-	/**
-	 * Spawn a digging particle effect in the world, this is a wrapper around
-	 * EffectRenderer.addBlockHitEffects to allow the block more control over
-	 * the particles. Useful when you have entirely different texture sheets for
-	 * different sides/locations in the world.
-	 *
-	 * @param worldObj
-	 *            The current world
-	 * @param target
-	 *            The target the player is looking at {x/y/z/side/sub}
-	 * @param effectRenderer
-	 *            A reference to the current effect renderer.
-	 * @return True to prevent vanilla digging particles form spawning.
-	 */
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean addHitEffects(IBlockState state, World worldObj, RayTraceResult target, ParticleManager effectRenderer) {
@@ -1033,26 +1019,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return true;
 	}
 
-	/**
-	 * Spawn particles for when the block is destroyed. Due to the nature of how
-	 * this is invoked, the x/y/z locations are not always guaranteed to host
-	 * your block. So be sure to do proper sanity checks before assuming that
-	 * the location is this block.
-	 *
-	 * @param worldObj
-	 *            The current world
-	 * @param x
-	 *            X position to spawn the particle
-	 * @param y
-	 *            Y position to spawn the particle
-	 * @param z
-	 *            Z position to spawn the particle
-	 * @param meta
-	 *            The metadata for the block before it was destroyed.
-	 * @param effectRenderer
-	 *            A reference to the current effect renderer.
-	 * @return True to prevent vanilla break particles from spawning.
-	 */
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean addDestroyEffects(World worldObj, BlockPos pos, ParticleManager effectRenderer) {

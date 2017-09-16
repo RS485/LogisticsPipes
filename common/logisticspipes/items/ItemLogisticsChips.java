@@ -2,12 +2,17 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemLogisticsChips extends LogisticsItem {
 
@@ -20,23 +25,25 @@ public class ItemLogisticsChips extends LogisticsItem {
 
 	public static final int MAX_DMG = 6;
 
-	private IIcon[] _icons;
+	//private IIcon[] _icons;
 
 	public ItemLogisticsChips() {
 		setHasSubtypes(true);
-	}
-
-	@Override
-	public void registerIcons(TextureMap iconreg) {
-		_icons = new IIcon[MAX_DMG];
-		for (int i = 0; i < MAX_DMG; i++) {
-			_icons[i] = iconreg.registerIcon("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "chips/"));
+		setUnlocalizedName("logisticsChips");
+		setRegistryName("logisticsChips");
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			ModelLoader.setCustomModelResourceLocation(this, 0,
+					new ModelResourceLocation("logisticspipes:" + "logisticsChips",
+							"inventory"));
 		}
 	}
 
-	@Override
-	public IIcon getIconFromDamage(int i) {
-		return _icons[i % MAX_DMG];
+	@SideOnly(Side.CLIENT)
+	public void registerIcons() {
+		ItemModelMesher mesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		for (int i = 0; i < MAX_DMG; i++) {
+			mesher.register(this, i, new ModelResourceLocation("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "items/chips/"), "inventory"));
+		}
 	}
 
 	@Override

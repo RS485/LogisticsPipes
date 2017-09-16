@@ -15,14 +15,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.ICustomModelLoader;
+import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -33,7 +39,9 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -361,6 +369,24 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 
 		initItems(evt.getSide());
+
+		ModelLoaderRegistry.registerLoader(new ICustomModelLoader() {
+
+			@Override
+			public boolean accepts(ResourceLocation modelLocation) {
+				return modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().replace("logisticspipes", "").contains("Pipe");
+			}
+
+			@Override
+			public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+				return ModelLoaderRegistry.getMissingModel();
+			}
+
+			@Override
+			public void onResourceManagerReload(IResourceManager resourceManager) {
+
+			}
+		});
 	}
 
 	@Mod.EventHandler
@@ -410,7 +436,7 @@ public class LogisticsPipes {
 	private void initItems(Side side) {
 
 		boolean isClient = side == Side.CLIENT;
-
+/*
 		Object renderer = null;
 		if (isClient) {
 			//renderer = new FluidContainerRenderer();
@@ -480,12 +506,22 @@ public class LogisticsPipes {
 
 		LogisticsPipes.LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
 		GameRegistry.registerBlock(LogisticsPipes.LogisticsSubMultiBlock, "logisticsSubMultiBlock");
-
+*/
 		LogisticsChips = new ItemLogisticsChips();
-		LogisticsChips.setUnlocalizedName("logisticsChips");
-		GameRegistry.registerItem(LogisticsChips, LogisticsChips.getUnlocalizedName());
+		ForgeRegistries.ITEMS.register(LogisticsChips);
+		//GameRegistry.registerItem(LogisticsChips, LogisticsChips.getUnlocalizedName());
 
-		registerPipes(side);
+		//registerPipes(side);
+	}
+
+	//@SubscribeEvent
+	@Mod.EventHandler
+	public void loadTextures(FMLInitializationEvent event) {
+
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			((ItemLogisticsChips)LogisticsChips).registerIcons();
+		}
+
 	}
 
 	private void registerRecipes() {
@@ -508,6 +544,7 @@ public class LogisticsPipes {
 			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 		}
 		*/
+		/*
 		if(true) { // TODO: Add Config Option
 			CraftingPartRecipes.craftingPartList.add(new CraftingParts(
 					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_FPGA),
@@ -518,6 +555,7 @@ public class LogisticsPipes {
 		RecipeManager.recipeProvider.add(new ChipCraftingRecipes());
 		RecipeManager.recipeProvider.add(new Recipes());
 		RecipeManager.loadRecipes();
+		*/
 	}
 
 	private void loadClasses() {

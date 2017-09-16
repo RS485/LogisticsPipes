@@ -149,7 +149,14 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 					.map(mainPipe -> LogisticsPipeBlock.collisionRayTrace(blockState, worldIn, mainPipe.getPos(), start, end))
 					.filter(Objects::nonNull)
 					.findFirst()
-					.map(result -> result.blockPos = pos)
+					.map(it -> {
+						RayTraceResult result = new RayTraceResult(it.typeOfHit, it.hitVec, it.sideHit, pos);
+						result.subHit = it.subHit;
+						result.hitVec = it.hitVec;
+						result.hitInfo = it.hitInfo;
+						result.entityHit = it.entityHit;
+						return result;
+					})
 					.orElse(null);
 		}
 		return null;

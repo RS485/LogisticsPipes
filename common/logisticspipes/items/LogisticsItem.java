@@ -13,8 +13,6 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -26,13 +24,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LogisticsItem extends Item {
 
-	public LogisticsItem() {}
-
-	public LogisticsItem(TextureAtlasSprite icon) {
-		itemIcon = icon;
+	public LogisticsItem() {
+		//itemIcon = icon;
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
 	}
 
+	/*
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons() {
@@ -40,6 +37,7 @@ public class LogisticsItem extends Item {
 		TextureAtlasSprite texture = new TextureHabitatLocator(iconName);
 		Minecraft.getMinecraft().getTextureMapBlocks().setTextureEntry(iconName, texture);
 	}
+	*/
 
 	@Override
 	public CreativeTabs[] getCreativeTabs() {

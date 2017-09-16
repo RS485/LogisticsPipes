@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -78,7 +77,6 @@ import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.ITDProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
-import logisticspipes.proxy.interfaces.IToolWrenchProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IBounds;
@@ -92,7 +90,6 @@ import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
-import logisticspipes.proxy.toolWrench.ToolWrenchProxy;
 import logisticspipes.recipes.CraftingParts;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -332,12 +329,12 @@ public class ProxyManager {
 			@Override public void addToNetwork(TileEntity tile) {}
 		}));
 
-		SimpleServiceLocator.setToolWrenchProxy(ProxyManager.getWrappedProxy("!IToolWrench", IToolWrenchProxy.class, ToolWrenchProxy.class, new IToolWrenchProxy() {
+/*		SimpleServiceLocator.setToolWrenchProxy(ProxyManager.getWrappedProxy("!IToolWrench", IToolWrenchProxy.class, ToolWrenchProxy.class, new IToolWrenchProxy() {
 			@Override public void wrenchUsed(EntityPlayer entityplayer, int x, int y, int z) {}
 			@Override public boolean isWrenchEquipped(EntityPlayer entityplayer) {return false;}
 			@Override public boolean canWrench(EntityPlayer entityplayer, int x, int y, int z) {return false;}
 			@Override public boolean isWrench(Item item) {return false;}
-		}));
+		}));*/
 
 		SimpleServiceLocator.setCoFHPowerProxy(ProxyManager.getWrappedProxy("CoFHAPI|energy", ICoFHPowerProxy.class, CoFHPowerProxy.class, new ICoFHPowerProxy() {
 			@Override public boolean isEnergyReceiver(TileEntity tile) {return false;}

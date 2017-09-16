@@ -192,7 +192,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(ItemModule.APIARISTTERMINUS, ModuleApiaristTerminus.class);
 		registerModule(ItemModule.MODBASEDITEMSINK, ModuleModBasedItemSink.class);
 		registerModule(ItemModule.OREDICTITEMSINK, ModuleOreDictItemSink.class);
-		registerModule(ItemModule.THAUMICASPECTSINK, ModuleThaumicAspectSink.class);
+//		registerModule(ItemModule.THAUMICASPECTSINK, ModuleThaumicAspectSink.class);
 		registerModule(ItemModule.ENCHANTMENTSINK, ModuleEnchantmentSink.class);
 		registerModule(ItemModule.ENCHANTMENTSINK_MK2, ModuleEnchantmentSinkMK2.class);
 		registerModule(ItemModule.CC_BASED_QUICKSORT, ModuleCCBasedQuickSort.class);
@@ -365,10 +365,10 @@ public class ItemModule extends LogisticsItem {
 					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);
 					for (int i = 0; i < nbttaglist.tagCount(); i++) {
 						Object nbttag = nbttaglist.tagList.get(i);
-						String data = ((NBTTagString) nbttag).func_150285_a_();
+						String data = ((NBTTagString) nbttag).getString();
 						if (data.equals("<inventory>") && i + 1 < nbttaglist.tagCount()) {
 							nbttag = nbttaglist.tagList.get(i + 1);
-							data = ((NBTTagString) nbttag).func_150285_a_();
+							data = ((NBTTagString) nbttag).getString();
 							if (data.startsWith("<that>")) {
 								String prefix = data.substring(6);
 								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");

@@ -179,7 +179,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
 			for (FluidTankInfo slot : result) {
-				if (slot == null || slot.fluid == null || slot.fluid.getFluidID() == 0 || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
+				if (slot == null || slot.fluid == null || slot.fluid.getFluid() == null || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
 					continue;
 				}
 				Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.fluid));

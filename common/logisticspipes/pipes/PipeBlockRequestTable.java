@@ -46,10 +46,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 
@@ -86,7 +86,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if (settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.addChatComponentMessage(new ChatComponentTranslation("lp.chat.permissiondenied"));
+				entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;
@@ -96,7 +96,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void ignoreDisableUpdateEntity() {
 		super.ignoreDisableUpdateEntity();
 		if (tick++ == 5) {
-			getWorld().func_147479_m(getX(), getY(), getZ());
+			getWorld().markBlockRangeForRenderUpdate(getX(), getY(), getZ(), getX(), getY(), getZ());
 		}
 		if (MainProxy.isClient(getWorld())) {
 			if (!init) {
@@ -177,8 +177,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if (diskInv.getStackInSlot(0) == null) {
-			if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
-				diskInv.setInventorySlotContents(0, entityplayer.getCurrentEquippedItem());
+			if (entityplayer.getHeldItemMainhand() != null && entityplayer.getHeldItemMainhand().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+				diskInv.setInventorySlotContents(0, entityplayer.getHeldItemMainhand());
 				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, null);
 				flag = false;
 			}
@@ -204,8 +204,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	public TextureAtlasSprite getTextureFor(int l) {
-		EnumFacing dir = EnumFacing.getOrientation(l);
-		if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
+		EnumFacing dir = EnumFacing.getFront(l);
+		//if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			switch (dir) {
 				case UP:
 				case DOWN:
@@ -221,7 +221,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 						return Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY;
 					}
 			}
-		} else {
+		/*} else {
 			switch (dir) {
 				case UP:
 					return Textures.LOGISTICS_REQUEST_TABLE[0];
@@ -238,7 +238,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 						return Textures.LOGISTICS_REQUEST_TABLE[4];
 					}
 			}
-		}
+		}*/
 	}
 
 	@Override

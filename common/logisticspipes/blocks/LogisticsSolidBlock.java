@@ -43,21 +43,21 @@ import logisticspipes.utils.StreamHelper;
 public class LogisticsSolidBlock extends BlockContainer {
 
 
-	public static final PropertyEnum<BlockType> metaProperty = PropertyEnum.create("BlockSubType", BlockType.class);
+	public static final PropertyEnum<BlockType> metaProperty = PropertyEnum.create("block_sub_type", BlockType.class);
 
 	public enum BlockType implements IStringSerializable {
-		SOLDERING_STATION("SOLDERING_STATION", 0),
-		LOGISTICS_POWER_JUNCTION("LOGISTICS_POWER_JUNCTION", 1),
-		LOGISTICS_SECURITY_STATION("LOGISTICS_SECURITY_STATION", 2),
-		LOGISTICS_AUTOCRAFTING_TABLE("LOGISTICS_AUTOCRAFTING_TABLE", 3),
-		LOGISTICS_FUZZYCRAFTING_TABLE("LOGISTICS_FUZZYCRAFTING_TABLE", 4),
-		LOGISTICS_STATISTICS_TABLE("LOGISTICS_STATISTICS_TABLE", 5),
+		SOLDERING_STATION("soldering_station", 0),
+		LOGISTICS_POWER_JUNCTION("logistics_power_junction", 1),
+		LOGISTICS_SECURITY_STATION("logistics_security_station", 2),
+		LOGISTICS_AUTOCRAFTING_TABLE("logistics_autocrafting_table", 3),
+		LOGISTICS_FUZZYCRAFTING_TABLE("logistics_fuzzycrafting_table", 4),
+		LOGISTICS_STATISTICS_TABLE("logistics_statistics_table", 5),
 
 		//Power Provider
-		LOGISTICS_RF_POWERPROVIDER("LOGISTICS_RF_POWERPROVIDER", 10),
-		LOGISTICS_IC2_POWERPROVIDER("LOGISTICS_IC2_POWERPROVIDER", 11),
+		LOGISTICS_RF_POWERPROVIDER("logistics_rf_powerprovider", 10),
+		LOGISTICS_IC2_POWERPROVIDER("logistics_ic2_powerprovider", 11),
 
-		LOGISTICS_BLOCK_FRAME("LOGISTICS_BLOCK_FRAME", 15);
+		LOGISTICS_BLOCK_FRAME("logistics_block_frame", 15);
 
 		@Getter
 		String name;

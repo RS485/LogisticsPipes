@@ -161,7 +161,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 							if (inv instanceof ITransactor) {
 								((ITransactor) inv).add(toSend, dir.getOpposite(), true);
 							} else {
-								container.getWorld().spawnEntityInWorld(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.xCoord, container.yCoord, container.zCoord));
+								container.getWorld().spawnEntityInWorld(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.getX(), container.getY(), container.getZ()));
 							}
 							new UnsupportedOperationException("The extracted amount didn't match the requested one. (" + inv + ")").printStackTrace();
 							return contentchanged;

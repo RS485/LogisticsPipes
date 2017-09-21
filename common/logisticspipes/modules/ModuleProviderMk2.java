@@ -33,7 +33,7 @@ public class ModuleProviderMk2 extends ModuleProvider {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleProviderMk2"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleProviderMk2";
 	}
 }

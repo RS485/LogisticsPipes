@@ -1,6 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -52,4 +53,6 @@ public interface IProxy {
 	public boolean checkSinglePlayerOwner(String commandSenderName);
 
 	public void openFluidSelectGui(int slotId);
+
+	void registerModels(LogisticsItem logisticsItem);
 }

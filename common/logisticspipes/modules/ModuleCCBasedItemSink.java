@@ -97,7 +97,7 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleCCBasedItemSink"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleCCBasedItemSink";
 	}
 }

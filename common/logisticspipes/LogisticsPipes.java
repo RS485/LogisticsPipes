@@ -65,6 +65,7 @@ import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsFluidContainer;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
@@ -462,16 +463,12 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		GameRegistry.registerItem(LogisticsPipes.LogisticsHUDArmor, LogisticsPipes.LogisticsHUDArmor.getUnlocalizedName());
 
-		LogisticsPipes.LogisticsParts = new ItemParts();
-		LogisticsPipes.LogisticsParts.setUnlocalizedName("logisticsParts");
-		GameRegistry.registerItem(LogisticsPipes.LogisticsParts, LogisticsPipes.LogisticsParts.getUnlocalizedName());
+		LogisticsPipes.LogisticsParts = registerItem(new ItemParts());
 
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 
-		LogisticsPipes.ModuleItem = new ItemModule();
-		LogisticsPipes.ModuleItem.setUnlocalizedName("itemModule");
+		LogisticsPipes.ModuleItem = registerItem(new ItemModule());
 		LogisticsPipes.ModuleItem.loadModules();
-		GameRegistry.registerItem(LogisticsPipes.ModuleItem, LogisticsPipes.ModuleItem.getUnlocalizedName());
 
 		LogisticsPipes.LogisticsItemDisk = new ItemDisk();
 		LogisticsPipes.LogisticsItemDisk.setUnlocalizedName("itemDisk");
@@ -507,11 +504,15 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
 		GameRegistry.registerBlock(LogisticsPipes.LogisticsSubMultiBlock, "logisticsSubMultiBlock");
 
-		LogisticsChips = new ItemLogisticsChips();
-		ForgeRegistries.ITEMS.register(LogisticsChips);
-		//GameRegistry.registerItem(LogisticsChips, LogisticsChips.getUnlocalizedName());
+		LogisticsChips = registerItem(new ItemLogisticsChips());
 
-		//registerPipes(side);
+		registerPipes(side);
+	}
+
+	private <T extends LogisticsItem> T registerItem(T item) {
+		MainProxy.proxy.registerModels(item);
+		ForgeRegistries.ITEMS.register(item);
+		return item;
 	}
 
 	private void registerRecipes() {

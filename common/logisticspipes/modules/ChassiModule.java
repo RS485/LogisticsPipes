@@ -23,6 +23,9 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class ChassiModule extends LogisticsGuiModule {
 
 	private final LogisticsModule[] modules;
@@ -173,7 +176,8 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
+	@SideOnly(Side.CLIENT)
+	public String getModuleModelPath() {
 		return null;
 	}
 

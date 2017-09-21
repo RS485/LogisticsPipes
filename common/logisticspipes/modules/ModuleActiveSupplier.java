@@ -156,8 +156,8 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleActiveSupplier"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleActiveSupplier";
 	}
 
 	/* TRIGGER INTERFACE */

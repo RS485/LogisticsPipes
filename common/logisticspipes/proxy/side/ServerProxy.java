@@ -12,6 +12,7 @@ import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
@@ -276,4 +277,9 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void openFluidSelectGui(int slotId) {}
+
+	@Override
+	public void registerModels(LogisticsItem logisticsItem) {
+
+	}
 }

@@ -19,8 +19,8 @@ public class ModuleCrafterMK2 extends ModuleCrafter {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleCrafterMK2"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleCrafterMK2";
 	}
 
 	@Override

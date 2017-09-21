@@ -2,31 +2,30 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemParts extends LogisticsItem {
 
-	private TextureAtlasSprite[] _icons;
-
 	public ItemParts() {
+		super();
 		setHasSubtypes(true);
+		setUnlocalizedName("logisticsParts");
+		setRegistryName("logisticsParts");
 	}
 
 	@Override
-	public void registerIcons(IIconRegister iconreg) {
-		_icons = new TextureAtlasSprite[4];
+	@SideOnly(Side.CLIENT)
+	public void registerModels() {
 		for (int i = 0; i < 4; i++) {
-			_icons[i] = iconreg.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i);
+			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i, "inventory"));
 		}
-	}
-
-	@Override
-	public TextureAtlasSprite getIconFromDamage(int par1) {
-		return _icons[par1 % 4];
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class ItemParts extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

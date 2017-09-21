@@ -184,8 +184,8 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsSimpleFilterModule implem
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleEnchantmentSinkMK2"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleEnchantmentSinkMK2";
 	}
 
 	@Override

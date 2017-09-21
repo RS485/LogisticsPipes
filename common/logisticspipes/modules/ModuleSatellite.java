@@ -125,7 +125,7 @@ public class ModuleSatellite extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
+	public String getModuleModelPath() {
 		return null;
 	}
 }

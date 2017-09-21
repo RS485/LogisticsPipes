@@ -133,7 +133,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleElectricBuffer"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleElectricBuffer";
 	}
 }

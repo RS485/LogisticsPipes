@@ -116,8 +116,8 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleCrafterMK3"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleCrafterMK3";
 	}
 
 	@Override

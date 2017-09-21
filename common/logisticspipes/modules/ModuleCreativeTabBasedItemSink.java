@@ -191,8 +191,8 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsGuiModule implement
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleCreativeTabBasedItemSink"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleCreativeTabBasedItemSink";
 	}
 
 	@Override

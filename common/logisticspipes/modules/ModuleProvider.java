@@ -502,7 +502,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleProvider"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleProvider";
 	}
 }

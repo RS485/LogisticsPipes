@@ -37,7 +37,7 @@ public class ModuleAdvancedExtractorMK3 extends ModuleAdvancedExtractorMK2 {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleAdvancedExtractorMK3"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleAdvancedExtractorMK3";
 	}
 }

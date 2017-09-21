@@ -17,6 +17,7 @@ import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
@@ -68,7 +69,10 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class ClientProxy implements IProxy {
 
 	@Override
@@ -270,5 +274,10 @@ public class ClientProxy implements IProxy {
 		} else {
 			throw new UnsupportedOperationException(String.valueOf(Minecraft.getMinecraft().currentScreen));
 		}
+	}
+
+	@Override
+	public void registerModels(LogisticsItem logisticsItem) {
+		logisticsItem.registerModels();
 	}
 }

@@ -191,8 +191,8 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleModBasedItemSink"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleModBasedItemSink";
 	}
 
 	@Override

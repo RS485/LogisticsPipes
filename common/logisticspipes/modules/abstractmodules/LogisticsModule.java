@@ -151,12 +151,12 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	public abstract boolean recievePassive();
 
 	/**
-	 * get The Icon for this Module Class
-	 * 
+	 * get The Model path for this Module Class
+	 *
 	 * @return
 	 */
 	@SideOnly(Side.CLIENT)
-	public abstract TextureAtlasSprite getIconTexture(TextureMap register);
+	public abstract String getModuleModelPath();
 
 	/**
 	 * Returns whether the module should be displayed the effect when as an

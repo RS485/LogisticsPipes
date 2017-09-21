@@ -11,14 +11,17 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -29,15 +32,10 @@ public class LogisticsItem extends Item {
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
 	}
 
-	/*
-	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons() {
-		String iconName = "logisticspipes:" + getUnlocalizedName().replace("item.", "");
-		TextureAtlasSprite texture = new TextureHabitatLocator(iconName);
-		Minecraft.getMinecraft().getTextureMapBlocks().setTextureEntry(iconName, texture);
+	public void registerModels() {
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName(), "inventory"));
 	}
-	*/
 
 	@Override
 	public CreativeTabs[] getCreativeTabs() {

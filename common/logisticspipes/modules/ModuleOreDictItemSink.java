@@ -243,7 +243,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleOreDictItemSink"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleOreDictItemSink";
 	}
 }

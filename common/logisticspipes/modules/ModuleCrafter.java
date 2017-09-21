@@ -324,8 +324,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleCrafter"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleCrafter";
 	}
 
 	@Override

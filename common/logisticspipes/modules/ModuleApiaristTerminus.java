@@ -105,7 +105,7 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleApiaristTerminus"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleApiaristTerminus";
 	}
 }

@@ -188,8 +188,8 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleApiaristAnalyser"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleApiaristAnalyser";
 	}
 
 	@Override

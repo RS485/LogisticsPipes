@@ -117,8 +117,8 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleEnchantmentSink"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleEnchantmentSink";
 	}
 
 	@Override

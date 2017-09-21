@@ -295,8 +295,8 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleQuickSort"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleQuickSort";
 	}
 
 	public void addWatchingPlayer(EntityPlayer player) {

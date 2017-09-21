@@ -1,5 +1,10 @@
 package logisticspipes.items;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +55,7 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -62,6 +68,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -119,7 +126,6 @@ public class ItemModule extends LogisticsItem {
 
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
-		private TextureAtlasSprite moduleIcon = null;
 
 		private Module(int id, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
@@ -146,18 +152,17 @@ public class ItemModule extends LogisticsItem {
 			return id;
 		}
 
-		private TextureAtlasSprite getIcon() {
-			return moduleIcon;
-		}
-
 		@SideOnly(Side.CLIENT)
-		private void registerModuleIcon(IIconRegister par1IIconRegister) {
+		private void registerModuleModel(Item item) {
 			if (moduleClass == null) {
-				moduleIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/blank");
+				ModelLoader.setCustomModelResourceLocation(item, getId(), new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/blank", "inventory"));
 			} else {
 				try {
 					LogisticsModule instance = moduleClass.newInstance();
-					moduleIcon = instance.getIconTexture(par1IIconRegister);
+					String path = instance.getModuleModelPath();
+					if(path != null) {
+						ModelLoader.setCustomModelResourceLocation(item, getId(), new ModelResourceLocation("logisticspipes:" + path, "inventory"));
+					}
 				} catch (InstantiationException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
@@ -166,10 +171,14 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	public ItemModule() {
-		hasSubtypes = true;
+		super();
+		setHasSubtypes(true);
+		setUnlocalizedName("itemModule");
+		setRegistryName("itemModule");
 	}
 
 	public void loadModules() {
+		if(!modules.isEmpty()) return;
 		registerModule(ItemModule.BLANK, null);
 		registerModule(ItemModule.ITEMSINK, ModuleItemSink.class);
 		registerModule(ItemModule.PASSIVE_SUPPLIER, ModulePassiveSupplier.class);
@@ -231,7 +240,7 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -333,26 +342,13 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IIconRegister) {
+	public void registerModels() {
 		if (modules.size() <= 0) {
-			return;
+			loadModules();
 		}
 		for (Module module : modules) {
-			module.registerModuleIcon(par1IIconRegister);
+			module.registerModuleModel(this);
 		}
-	}
-
-	@Override
-	public TextureAtlasSprite getIconFromDamage(int i) {
-		// should set and store TextureIndex with this object.
-		for (Module module : modules) {
-			if (module.getId() == i) {
-				if (module.getIcon() != null) {
-					return module.getIcon();
-				}
-			}
-		}
-		return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

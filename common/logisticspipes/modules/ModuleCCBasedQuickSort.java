@@ -268,8 +268,8 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleCCQuickSort"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleCCQuickSort";
 	}
 
 	@Override

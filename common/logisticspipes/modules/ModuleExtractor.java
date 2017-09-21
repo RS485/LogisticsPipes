@@ -264,7 +264,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
-		return register.registerSprite(new ResourceLocation("logisticspipes:itemModule/ModuleExtractor"));
+	public String getModuleModelPath() {
+		return "itemModule/ModuleExtractor";
 	}
 }

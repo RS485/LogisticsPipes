@@ -117,7 +117,8 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconTexture(TextureMap register) {
+	public String getModuleModelPath() {
 		return null;
 	}
+
 }

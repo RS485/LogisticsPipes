@@ -436,7 +436,7 @@ public class LogisticsPipes {
 	private void initItems(Side side) {
 
 		boolean isClient = side == Side.CLIENT;
-/*
+
 		Object renderer = null;
 		if (isClient) {
 			//renderer = new FluidContainerRenderer();
@@ -506,22 +506,12 @@ public class LogisticsPipes {
 
 		LogisticsPipes.LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
 		GameRegistry.registerBlock(LogisticsPipes.LogisticsSubMultiBlock, "logisticsSubMultiBlock");
-*/
+
 		LogisticsChips = new ItemLogisticsChips();
 		ForgeRegistries.ITEMS.register(LogisticsChips);
 		//GameRegistry.registerItem(LogisticsChips, LogisticsChips.getUnlocalizedName());
 
 		//registerPipes(side);
-	}
-
-	//@SubscribeEvent
-	@Mod.EventHandler
-	public void loadTextures(FMLInitializationEvent event) {
-
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-			((ItemLogisticsChips)LogisticsChips).registerIcons();
-		}
-
 	}
 
 	private void registerRecipes() {
@@ -544,7 +534,7 @@ public class LogisticsPipes {
 			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 		}
 		*/
-		/*
+
 		if(true) { // TODO: Add Config Option
 			CraftingPartRecipes.craftingPartList.add(new CraftingParts(
 					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_FPGA),
@@ -555,7 +545,7 @@ public class LogisticsPipes {
 		RecipeManager.recipeProvider.add(new ChipCraftingRecipes());
 		RecipeManager.recipeProvider.add(new Recipes());
 		RecipeManager.loadRecipes();
-		*/
+
 	}
 
 	private void loadClasses() {

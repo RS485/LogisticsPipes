@@ -32,17 +32,14 @@ public class ItemLogisticsChips extends LogisticsItem {
 		setUnlocalizedName("logisticsChips");
 		setRegistryName("logisticsChips");
 		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-			ModelLoader.setCustomModelResourceLocation(this, 0,
-					new ModelResourceLocation("logisticspipes:" + "logisticsChips",
-							"inventory"));
+			registerIcons();
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void registerIcons() {
-		ItemModelMesher mesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 		for (int i = 0; i < MAX_DMG; i++) {
-			mesher.register(this, i, new ModelResourceLocation("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "items/chips/"), "inventory"));
+			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "chips/"), "inventory"));
 		}
 	}
 

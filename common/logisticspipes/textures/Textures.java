@@ -186,6 +186,7 @@ public class Textures {
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(TextureMap par1IIconRegister) {
+		if(true) return; //TODO
 		//Register Empty Texture for slot 0
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 0, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 1, "empty", "", true);

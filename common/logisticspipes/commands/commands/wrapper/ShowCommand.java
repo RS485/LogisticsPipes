@@ -33,7 +33,7 @@ public class ShowCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		if (args.length != 1) {
-			sender.addChatMessage(new TextComponentString("Wrong amount of arguments"));
+			sender.sendMessage(new TextComponentString("Wrong amount of arguments"));
 			return;
 		}
 		String name = args[0];
@@ -53,23 +53,23 @@ public class ShowCommand implements ICommandHandler {
 			}
 		}
 		if (list.size() > 1) {
-			sender.addChatMessage(new TextComponentString("Possible: "));
+			sender.sendMessage(new TextComponentString("Possible: "));
 			for (AbstractWrapper can : list) {
-				sender.addChatMessage(new TextComponentString(can.getName() + can.getTypeName()));
+				sender.sendMessage(new TextComponentString(can.getName() + can.getTypeName()));
 			}
 		} else if (list.isEmpty()) {
-			sender.addChatMessage(new TextComponentString("No match found"));
+			sender.sendMessage(new TextComponentString("No match found"));
 		} else {
 			AbstractWrapper wrapper = list.get(0);
 			Throwable t = wrapper.getReason();
 			if (t == null) {
-				sender.addChatMessage(new TextComponentString("null"));
+				sender.sendMessage(new TextComponentString("null"));
 				return;
 			} else {
-				sender.addChatMessage(new TextComponentString("-----------------------------------------------------"));
-				sender.addChatMessage(new TextComponentString(t.toString()));
+				sender.sendMessage(new TextComponentString("-----------------------------------------------------"));
+				sender.sendMessage(new TextComponentString(t.toString()));
 				for (StackTraceElement s : t.getStackTrace()) {
-					sender.addChatMessage(new TextComponentString(" " + s.toString()));
+					sender.sendMessage(new TextComponentString(" " + s.toString()));
 				}
 				t.printStackTrace();
 			}

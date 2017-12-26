@@ -156,7 +156,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 			}
 		}
 		arraylist.addAll(boxes.stream()
-				.filter(box -> box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box)))
+				.filter(box -> box != null && (axisalignedbb == null || axisalignedbb.intersects(box)))
 				.collect(Collectors.toList()));
 	}
 

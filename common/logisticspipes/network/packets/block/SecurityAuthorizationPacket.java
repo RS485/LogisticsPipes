@@ -19,7 +19,7 @@ public class SecurityAuthorizationPacket extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
+		LogisticsSecurityTileEntity tile = this.getTile(player.world, LogisticsSecurityTileEntity.class);
 		if (tile != null) {
 			if (getInteger() == 1) {
 				tile.authorizeStation();

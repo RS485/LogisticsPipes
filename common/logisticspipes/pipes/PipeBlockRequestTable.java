@@ -86,7 +86,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if (settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+				entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;
@@ -382,7 +382,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 					}
 					ItemIdentifier withIdent = ItemIdentifier.get(item);
 					if (ident.equalsForCrafting(withIdent)) {
-						if (item.stackSize > used[j]) {
+						if (item.getCount() > used[j]) {
 							used[j]++;
 							toUse[i] = j;
 							continue outer;
@@ -390,7 +390,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 					}
 					if (oreDict) {
 						if (ident.getDictIdentifiers() != null && withIdent.getDictIdentifiers() != null && ident.getDictIdentifiers().canMatch(withIdent.getDictIdentifiers(), true, false)) {
-							if (item.stackSize > used[j]) {
+							if (item.getCount() > used[j]) {
 								used[j]++;
 								toUse[i] = j;
 								continue outer;
@@ -431,23 +431,23 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		}
 		result = result.copy();
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0);
-		craftingSlot.onPickupFromSlot(fake, result);
+		result = craftingSlot.onTake(fake, result);
 		for (int i = 0; i < 9; i++) {
 			ItemStack left = crafter.getStackInSlot(i);
-			crafter.setInventorySlotContents(i, null);
-			if (left != null) {
-				left.stackSize = inv.addCompressed(left, false);
-				if (left.stackSize > 0) {
+			crafter.setInventorySlotContents(i, ItemStack.EMPTY);
+			if (!left.isEmpty()) {
+				left.setCount(inv.addCompressed(left, false));
+				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
 			}
 		}
 		for (int i = 0; i < fake.inventory.getSizeInventory(); i++) {
 			ItemStack left = fake.inventory.getStackInSlot(i);
-			fake.inventory.setInventorySlotContents(i, null);
-			if (left != null) {
-				left.stackSize = inv.addCompressed(left, false);
-				if (left.stackSize > 0) {
+			fake.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+			if (!left.isEmpty()) {
+				left.setCount(inv.addCompressed(left, false));
+				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
 			}
@@ -463,11 +463,11 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		if (result == null) {
 			return null;
 		}
-		result.stackSize = inv.addCompressed(result, false);
-		if (result.stackSize > 0) {
+		result.setCount(inv.addCompressed(result, false));
+		if (result.getCount() > 0) {
 			return result;
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override

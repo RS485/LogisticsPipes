@@ -74,7 +74,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 								count++;
 							}
 						}
-						slotStack.stackSize = count;
+						slotStack.setCount(count);
 						inventory.setInventorySlotContents(slotCount, slotStack);
 						slotCount++;
 					}

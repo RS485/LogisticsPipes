@@ -192,10 +192,10 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 				return -1;
 			}
 			ItemStack removed = next.getValue1().getMultipleItems(item, wanted);
-			if (removed == null || removed.stackSize == 0) {
+			if (removed == null || removed.getCount() == 0) {
 				continue;
 			}
-			int sent = removed.stackSize;
+			int sent = removed.getCount();
 			useEnergy(sent * neededEnergy());
 
 			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(removed);

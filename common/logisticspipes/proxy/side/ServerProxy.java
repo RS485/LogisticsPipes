@@ -18,7 +18,6 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipeCompat;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -72,7 +71,7 @@ public class ServerProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsIC2PowerProviderTileEntity.class, "logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity");
 		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
-		GameRegistry.registerTileEntity(LogisticsTileGenericPipeCompat.class, LogisticsPipes.logisticsTileGenericPipeMapping);
+		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
 		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericSubMultiBlock.class, "logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock");
 	}
@@ -239,9 +238,9 @@ public class ServerProxy implements IProxy {
 	public void sendBroadCast(String message) {
 		MinecraftServer server = FMLServerHandler.instance().getServer();
 		if (server != null && server.getPlayerList() != null) {
-			List<EntityPlayerMP> list = server.getPlayerList().getPlayerList();
+			List<EntityPlayerMP> list = server.getPlayerList().getPlayers();
 			if (list != null && !list.isEmpty()) {
-				list.forEach(obj -> ((EntityPlayerMP) obj).addChatMessage(new TextComponentString("[LP] Server: " + message)));
+				list.forEach(obj -> ((EntityPlayerMP) obj).sendMessage(new TextComponentString("[LP] Server: " + message)));
 			}
 		}
 	}
@@ -257,7 +256,7 @@ public class ServerProxy implements IProxy {
 	@Override
 	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler) {
 		if (handler instanceof NetHandlerPlayServer) {
-			return ((NetHandlerPlayServer) handler).playerEntity;
+			return ((NetHandlerPlayServer) handler).player;
 		}
 		return null;
 	}

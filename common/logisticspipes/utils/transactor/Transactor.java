@@ -9,7 +9,7 @@ public abstract class Transactor implements ITransactor {
 	@Override
 	public ItemStack add(ItemStack stack, EnumFacing orientation, boolean doAdd) {
 		ItemStack added = stack.copy();
-		added.stackSize = inject(stack, orientation, doAdd);
+		added.setCount(inject(stack, orientation, doAdd));
 		return added;
 	}
 

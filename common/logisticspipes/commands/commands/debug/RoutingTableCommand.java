@@ -29,6 +29,6 @@ public class RoutingTableCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateAskForTarget.class), (EntityPlayer) sender);
-		sender.addChatMessage(new TextComponentString("Asking for Target."));
+		sender.sendMessage(new TextComponentString("Asking for Target."));
 	}
 }

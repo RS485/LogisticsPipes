@@ -11,7 +11,7 @@ public class ColorSlot extends Slot {
 	}
 
 	public ColorSlot(Slot slot) {
-		super(slot.inventory, slot.getSlotIndex(), slot.xDisplayPosition, slot.yDisplayPosition);
+		super(slot.inventory, slot.getSlotIndex(), slot.xPos, slot.yPos);
 	}
 
 	@Override

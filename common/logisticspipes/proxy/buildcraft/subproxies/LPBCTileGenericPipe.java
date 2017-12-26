@@ -196,10 +196,10 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 			}
 		}
 		if (recheckThisPipe) {
-			LPRobotConnectionControl.instance.checkAll(worldObj);
+			LPRobotConnectionControl.instance.checkAll(world);
 		}
 
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			if (resyncGateExpansions) {
 				ReflectionHelper.invokePrivateMethod(Object.class, TileGenericPipe.class, this, "syncGateExpansions", new Class[] {}, new Object[] {});
 			}
@@ -348,8 +348,8 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 
 	@Override
 	public void afterStateUpdated() {
-		if (worldObj == null) {
-			worldObj = lpPipe.getWorld();
+		if (world == null) {
+			world = lpPipe.getWorld();
 		}
 		this.afterStateUpdated((byte) 2);
 	}
@@ -379,8 +379,8 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	}
 
 	@Override
-	public void setWorldObj_LP(World world) {
-		setWorldObj(world);
+	public void setworld_LP(World world) {
+		setworld(world);
 		xCoord = lpPipe.xCoord;
 		yCoord = lpPipe.yCoord;
 		zCoord = lpPipe.zCoord;

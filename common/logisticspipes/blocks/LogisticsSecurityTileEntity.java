@@ -201,7 +201,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				break;
 			case 2: //+
 				if (!useEnergy(10)) {
-					player.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
+					player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
 				if (inv.getStackInSlot(0) == null) {
@@ -211,8 +211,8 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 					inv.setInventorySlotContents(0, stack);
 				} else {
 					ItemStack slot = inv.getStackInSlot(0);
-					if (slot.stackSize < 64) {
-						slot.stackSize++;
+					if (slot.getCount() < 64) {
+						slot.grow(1);
 						slot.setTagCompound(new NBTTagCompound());
 						slot.getTagCompound().setString("UUID", getSecId().toString());
 						inv.setInventorySlotContents(0, slot);
@@ -221,7 +221,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				break;
 			case 3: //++
 				if (!useEnergy(640)) {
-					player.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
+					player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
 				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
@@ -257,7 +257,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 			return LogisticsSecurityTileEntity.allowAll;
 		}
 		if (usePower && !useEnergy(10)) {
-			entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.misc.noenergy"));
+			entityplayer.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return new SecuritySettings("No Energy");
 		}
 		SecuritySettings setting = settingsList.get(entityplayer.getDisplayNameString());

@@ -29,10 +29,10 @@ public class BypassCommand implements ICommandHandler {
 	public void executeCommand(ICommandSender sender, String[] args) {
 		if (!LogisticsSecurityTileEntity.byPassed.contains((EntityPlayer) sender)) {
 			LogisticsSecurityTileEntity.byPassed.add((EntityPlayer) sender);
-			sender.addChatMessage(new TextComponentString("Enabled"));
+			sender.sendMessage(new TextComponentString("Enabled"));
 		} else {
 			LogisticsSecurityTileEntity.byPassed.remove((EntityPlayer) sender);
-			sender.addChatMessage(new TextComponentString("Disabled"));
+			sender.sendMessage(new TextComponentString("Disabled"));
 		}
 	}
 }

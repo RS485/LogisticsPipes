@@ -36,7 +36,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
 		GL11.glScalef(1.5F, 1.5F, 0.0001F);
 		String message = "Expected:";
-		mc.fontRendererObj.drawString(message, -28, -25, 0);
+		mc.fontRenderer.drawString(message, -28, -25, 0);
 		GL11.glScalef(0.8F, 0.8F, -1F);
 
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);

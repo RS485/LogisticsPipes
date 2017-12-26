@@ -25,7 +25,7 @@ public class SecurityStationOpenPlayer extends NBTCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			handleClientSide(player);
 		} else {
 

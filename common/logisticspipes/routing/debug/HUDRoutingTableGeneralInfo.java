@@ -105,26 +105,26 @@ public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDi
 			int left = -55;
 			for (PipeRoutingConnectionType flag : PipeRoutingConnectionType.values) {
 				if (route.closedSet.contains(flag)) {
-					mc.fontRendererObj.drawString("+", left, line, getColorForFlag(flag));
-					left += mc.fontRendererObj.getStringWidth("+");
+					mc.fontRenderer.drawString("+", left, line, getColorForFlag(flag));
+					left += mc.fontRenderer.getStringWidth("+");
 				} else {
-					mc.fontRendererObj.drawString("-", left, line, getColorForFlag(flag));
-					left += mc.fontRendererObj.getStringWidth("-");
+					mc.fontRenderer.drawString("-", left, line, getColorForFlag(flag));
+					left += mc.fontRenderer.getStringWidth("-");
 				}
 			}
 			line += 10;
 		}
 		if (route.routes != null) {
 			for (ExitRoute exit : route.routes) {
-				mc.fontRendererObj.drawString("Possible: ", -55, line, 0xffffff);
-				int left = -55 + mc.fontRendererObj.getStringWidth("Possible: ");
+				mc.fontRenderer.drawString("Possible: ", -55, line, 0xffffff);
+				int left = -55 + mc.fontRenderer.getStringWidth("Possible: ");
 				for (PipeRoutingConnectionType flag : PipeRoutingConnectionType.values) {
 					if (exit.containsFlag(flag)) {
-						mc.fontRendererObj.drawString("+", left, line, getColorForFlag(flag));
-						left += mc.fontRendererObj.getStringWidth("+");
+						mc.fontRenderer.drawString("+", left, line, getColorForFlag(flag));
+						left += mc.fontRenderer.getStringWidth("+");
 					} else {
-						mc.fontRendererObj.drawString("-", left, line, getColorForFlag(flag));
-						left += mc.fontRendererObj.getStringWidth("-");
+						mc.fontRenderer.drawString("-", left, line, getColorForFlag(flag));
+						left += mc.fontRenderer.getStringWidth("-");
 					}
 				}
 				line += 10;
@@ -149,7 +149,7 @@ public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDi
 	}
 
 	private void write(String data, Minecraft mc) {
-		mc.fontRendererObj.drawString(data, -55, line, 0xffffff);
+		mc.fontRenderer.drawString(data, -55, line, 0xffffff);
 		line += 10;
 	}
 

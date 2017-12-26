@@ -68,7 +68,7 @@ public class RenderTickHandler {
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				//Orientation
 				mc.entityRenderer.setupCameraTransform(event.renderTickTime, 1);
-				ActiveRenderInfo.updateRenderInfo(mc.thePlayer, mc.gameSettings.thirdPersonView == 2);
+				ActiveRenderInfo.updateRenderInfo(mc.player, mc.gameSettings.thirdPersonView == 2);
 				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks, event.renderTickTime);
 				mc.entityRenderer.setupOverlayRendering();
 				GL11.glPopMatrix();
@@ -89,10 +89,10 @@ public class RenderTickHandler {
 		//if (LogisticsRenderPipe.config.isUseNewRenderer()) {
 			if (displayPipeGhost()) {
 				Minecraft mc = Minecraft.getMinecraft();
-				EntityPlayer player = mc.thePlayer;
+				EntityPlayer player = mc.player;
 				RayTraceResult box = mc.objectMouseOver;
 				if (box != null && box.typeOfHit == RayTraceResult.Type.BLOCK) {
-					ItemStack stack = FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem];
+					ItemStack stack = FMLClientHandler.instance().getClient().player.inventory.mainInventory.get(FMLClientHandler.instance().getClient().player.inventory.currentItem);
 					CoreUnroutedPipe pipe = ((ItemLogisticsPipe) stack.getItem()).getDummyPipe();
 
 					World world = player.getEntityWorld();
@@ -126,7 +126,7 @@ public class RenderTickHandler {
 							globalPos.addToAll(orientation.getOffset());
 
 							for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
-								if (!player.getEntityWorld().canBlockBePlaced(LogisticsPipes.LogisticsPipeBlock, pos.getBlockPos(), false, side, player, stack)) {
+								if (!player.getEntityWorld().mayPlace(LogisticsPipes.LogisticsPipeBlock, pos.getBlockPos(), false, side, player)) {
 									TileEntity tile = player.getEntityWorld().getTileEntity(pos.getBlockPos());
 									boolean canPlace = false;
 									if (tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -144,7 +144,7 @@ public class RenderTickHandler {
 							return;
 						}
 					} else {
-						if (!player.getEntityWorld().canBlockBePlaced(LogisticsPipes.LogisticsPipeBlock, bPos, false, side, player, stack)) {
+						if (!player.getEntityWorld().mayPlace(LogisticsPipes.LogisticsPipeBlock, bPos, false, side, player)) {
 							isFreeSpace = false;
 						}
 					}
@@ -194,10 +194,10 @@ public class RenderTickHandler {
 	}
 
 	private boolean displayPipeGhost() {
-		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory != null
-				&& FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory.length > FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem
-				&& FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem] != null
-				&& checkItemStackForPipeGhost(FMLClientHandler.instance().getClient().thePlayer.inventory.mainInventory[FMLClientHandler.instance().getClient().thePlayer.inventory.currentItem]);
+		return FMLClientHandler.instance().getClient().player != null && FMLClientHandler.instance().getClient().player.inventory != null && FMLClientHandler.instance().getClient().player.inventory.mainInventory != null
+				&& FMLClientHandler.instance().getClient().player.inventory.mainInventory.size() > FMLClientHandler.instance().getClient().player.inventory.currentItem
+				&& !FMLClientHandler.instance().getClient().player.inventory.mainInventory.get(FMLClientHandler.instance().getClient().player.inventory.currentItem).isEmpty()
+				&& checkItemStackForPipeGhost(FMLClientHandler.instance().getClient().player.inventory.mainInventory.get(FMLClientHandler.instance().getClient().player.inventory.currentItem));
 	}
 
 	private boolean checkItemStackForPipeGhost(ItemStack stack) {

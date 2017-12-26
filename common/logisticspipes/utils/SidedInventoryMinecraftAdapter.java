@@ -87,6 +87,11 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return _sidedInventory.isEmpty();
+	}
+
+	@Override
 	public ItemStack getStackInSlot(int i) {
 		return _sidedInventory.getStackInSlot(getSlotMap()[i]);
 	}
@@ -117,8 +122,8 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return _sidedInventory.isUseableByPlayer(entityplayer);
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
+		return _sidedInventory.isUsableByPlayer(entityplayer);
 	}
 
 	@Override

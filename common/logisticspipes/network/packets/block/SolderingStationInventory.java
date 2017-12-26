@@ -20,7 +20,7 @@ public class SolderingStationInventory extends InventoryModuleCoordinatesPacket 
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsSolderingTileEntity tile = this.getTile(player.worldObj, LogisticsSolderingTileEntity.class);
+		final LogisticsSolderingTileEntity tile = this.getTile(player.world, LogisticsSolderingTileEntity.class);
 		if (tile != null) {
 			for (int i = 0; i < tile.getSizeInventory(); i++) {
 				if (i >= getStackList().size()) {

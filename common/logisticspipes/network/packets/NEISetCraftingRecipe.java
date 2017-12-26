@@ -28,7 +28,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileEntity tile = getTile(player.worldObj, TileEntity.class);
+		TileEntity tile = getTile(player.world, TileEntity.class);
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity) tile).handleNEIRecipePacket(getContent());
 		} else if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
@@ -53,7 +53,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 			if (itemstack != null) {
 				output.writeByte(i);
 				output.writeInt(Item.getIdFromItem(itemstack.getItem()));
-				output.writeInt(itemstack.stackSize);
+				output.writeInt(itemstack.getCount());
 				output.writeInt(itemstack.getItemDamage());
 				output.writeNBTTagCompound(itemstack.getTagCompound());
 			}

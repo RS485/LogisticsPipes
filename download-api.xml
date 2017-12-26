@@ -16,13 +16,13 @@
 	<property name="downloadserver.dir"   value="external/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
-	<property name="forestry.filename"     value="forestry_1.10.2-5.2.17.376-api.jar"/>
-	<property name="ic2.filename"          value="industrialcraft-2-2.6.210-ex110-api.jar"/>
-	<property name="cc.filename"           value="CC-API-TMP-1.10.zip"/>
-	<property name="thaumcraft.filename"   value="Thaumcraft-1.8.9-5.2.4-api.jar"/>
-	<property name="ocapi.filename"        value="OpenComputers-MC1.10.2-1.6.2.7-api.jar"/>
-	<property name="appeng.filename"       value="appliedenergistics2-rv4-alpha-11-api.jar"/>
-	<property name="bc.filename"           value="buildcraft-7.2.6-dev.jar"/>
+	<property name="forestry.filename"     value="forestry_1.12.2-5.7.0.218-api.jar"/>
+	<property name="ic2.filename"          value="industrialcraft-2-2.8.35-ex112-api.jar"/>
+	<property name="cc.filename"           value="ComputerCraftAPI-19e4c03d3a83e7367696937b7a702246490acca0.zip"/>
+	<!--<property name="thaumcraft.filename"   value="Thaumcraft-1.8.9-5.2.4-api.jar"/>-->
+	<property name="ocapi.filename"        value="OpenComputers-MC1.12.1-1.7.1.46-api.jar"/>
+	<property name="appeng.filename"       value="appliedenergistics2-rv5-stable-3-api.jar"/>
+	<!--<property name="bc.filename"           value="buildcraft-7.2.6-dev.jar"/>-->
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
@@ -30,10 +30,10 @@
 		<get src="${downloadserver.full}${forestry.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${ic2.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${cc.filename}" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}${thaumcraft.filename}" dest="${download.dir}" usetimestamp="True"/>
+		<!--<get src="${downloadserver.full}${thaumcraft.filename}" dest="${download.dir}" usetimestamp="True"/>-->
 		<get src="${downloadserver.full}${ocapi.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${appeng.filename}" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}${bc.filename}" dest="${download.dir}" usetimestamp="True"/>
+		<!--<get src="${downloadserver.full}${bc.filename}" dest="${download.dir}" usetimestamp="True"/>-->
 		<echo message="Download finished"/>
 	</target>
 
@@ -57,13 +57,13 @@
 				<include name="${cc.filename}"/>
 			</fileset>
 		</unzip>
-
+<!--
 		<unzip dest="${thaumcraft.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="${thaumcraft.filename}"/>
 			</fileset>
 		</unzip>
-
+-->
 		<unzip dest="${ocapi.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="${ocapi.filename}"/>
@@ -105,7 +105,7 @@
 			</fileset>
 		</copy>
 
-		<!--<echo message="Copied CC API"/>-->
+		<echo message="Copied CC API"/>
 
 		<!-- Copy ThaumCraft API source -->
 		<!--
@@ -114,7 +114,7 @@
 		</copy>
 		-->
 
-		<echo message="Copied ThaumCraft API"/>
+		<!--<echo message="Copied ThaumCraft API"/>-->
 
 		<!-- Copy OpenComputers API source -->
 		<copy todir="${api.dir}">

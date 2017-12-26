@@ -18,14 +18,6 @@ public class FakePlayer extends EntityPlayer {
 	}
 
 	@Override
-	public void addChatMessage(ITextComponent c) {}
-
-	@Override
-	public boolean canCommandSenderUseCommand(int i, String s) {
-		return false;
-	}
-
-	@Override
 	public boolean isSpectator() {
 		return false;
 	}

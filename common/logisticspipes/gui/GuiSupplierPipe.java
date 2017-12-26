@@ -74,12 +74,12 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 		} else {
 			name = StringUtils.translate(GuiSupplierPipe.PREFIX + "TargetInv");
 		}
-		mc.fontRendererObj.drawString(name, xSize / 2 - mc.fontRendererObj.getStringWidth(name) / 2, 6, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString(name, xSize / 2 - mc.fontRenderer.getStringWidth(name) / 2, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
 		if (hasPatternUpgrade) {
 			for (int i = 0; i < 9; i++) {
-				mc.fontRendererObj.drawString(Integer.toString(module.slotArray[i]), 22 + i * 18, 55, 0x404040);
+				mc.fontRenderer.drawString(Integer.toString(module.slotArray[i]), 22 + i * 18, 55, 0x404040);
 			}
 		}
 	}
@@ -100,7 +100,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 			for (int i = 0; i < 9; i++) {
 				GuiGraphics.drawSlotBackground(mc, 17 + i * 18, 19);
 				Slot slot = inventorySlots.getSlot(36 + i);
-				if (slot != null && slot.getHasStack() && slot.getStack().stackSize > 64) {
+				if (slot.getHasStack() && slot.getStack().getCount() > 64) {
 					drawRect(18 + i * 18, 20, 34 + i * 18, 36, Color.RED);
 				}
 			}

@@ -24,7 +24,7 @@ public class FluidCraftingAmount extends Integer2ModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			module.defineFluidAmount(getInteger(), getInteger2());
 		} else {
 			module.changeFluidAmount(getInteger(), getInteger2(), player);

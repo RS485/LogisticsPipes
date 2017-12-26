@@ -151,7 +151,7 @@ public class MainProxy {
 	}
 
 	public static void sendPacketToPlayer(ModernPacket packet, EntityPlayer player) {
-		if (!MainProxy.isServer(player.worldObj)) {
+		if (!MainProxy.isServer(player.world)) {
 			System.err.println("sendPacketToPlayer called clientside !");
 			new Exception().printStackTrace();
 			return;
@@ -194,7 +194,7 @@ public class MainProxy {
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
 		if (players != null) {
 			for (EntityPlayer player : players.players()) {
-				if (MainProxy.getDimensionForWorld(player.worldObj) == dimensionId) {
+				if (MainProxy.getDimensionForWorld(player.world) == dimensionId) {
 					MainProxy.sendPacketToPlayer(packet, player);
 				}
 			}
@@ -260,11 +260,11 @@ public class MainProxy {
 	}
 
 	private static boolean needsToBeCompressed(ModernPacket packet) {
-		if(packet.getData() != null) {
+		/*if(packet.getData() != null) {
 			if(packet.getData().length > 32767) {
 				return true; // Packet is to big
 			}
-		}
+		}*/
 		return false;
 	}
 
@@ -280,9 +280,9 @@ public class MainProxy {
 		MainProxy.globalTick++;
 	}
 
-	public static EntityItem dropItems(World worldObj, ItemStack stack, int xCoord, int yCoord, int zCoord) {
-		EntityItem item = new EntityItem(worldObj, xCoord, yCoord, zCoord, stack);
-		worldObj.spawnEntityInWorld(item);
+	public static EntityItem dropItems(World world, ItemStack stack, int xCoord, int yCoord, int zCoord) {
+		EntityItem item = new EntityItem(world, xCoord, yCoord, zCoord, stack);
+		world.spawnEntity(item);
 		return item;
 	}
 

@@ -29,7 +29,7 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 
 	@Override
 	public void update() {
-		if (MainProxy.isClient(worldObj)) {
+		if (MainProxy.isClient(world)) {
 			return;
 		}
 		tickCount++;

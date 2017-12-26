@@ -69,7 +69,7 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 		int w = bounds.width * scaledresolution.getScaleFactor();
 		int h = (bounds.height - 1) * scaledresolution.getScaleFactor();
 
-		fontRendererObj.drawString(StringUtils.translate(PREFIX + "sneakyTitle"), guiLeft + 8, guiTop + 8, Color.getValue(Color.DARKER_GREY), false);
+		fontRenderer.drawString(StringUtils.translate(PREFIX + "sneakyTitle"), guiLeft + 8, guiTop + 8, Color.getValue(Color.DARKER_GREY), false);
 
 		configDisplay.drawScreen(mouseX, mouseY, partialTick, new Rectangle(vpx, vpy, w, h), bounds);
 	}

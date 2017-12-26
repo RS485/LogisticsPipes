@@ -25,9 +25,9 @@ public class HUDExtractor implements IHUDModuleRenderer {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 
 		EnumFacing d = module.getSneakyDirection();
-		mc.fontRendererObj.drawString("Extract", -22, -22, 0);
-		mc.fontRendererObj.drawString("from:", -22, -9, 0);
-		mc.fontRendererObj.drawString(((d == null) ? "DEFAULT" : d.name()), -22, 18, 0);
+		mc.fontRenderer.drawString("Extract", -22, -22, 0);
+		mc.fontRenderer.drawString("from:", -22, -9, 0);
+		mc.fontRenderer.drawString(((d == null) ? "DEFAULT" : d.name()), -22, 18, 0);
 	}
 
 	@Override

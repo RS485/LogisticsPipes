@@ -356,7 +356,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (stillNeedReplace) {
 			stillNeedReplace = false;
 			IBlockState state = getWorld().getBlockState(getPos());
-			getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock());
+			getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
 			/* TravelingItems are just held by a pipe, they don't need to know their world
 			 * for(Triplet<IRoutedItem, EnumFacing, ItemSendMode> item : _sendQueue) {
 				//assign world to any entityitem we created in readfromnbt
@@ -371,7 +371,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				delayTo = System.currentTimeMillis() + 200;
 				repeatFor--;
 				IBlockState state = getWorld().getBlockState(getPos());
-				getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock());
+				getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
 			}
 		}
 
@@ -462,7 +462,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	private void doDebugStuff(EntityPlayer entityplayer) {
-		//entityplayer.worldObj.setWorldTime(4951);
+		//entityplayer.world.setWorldTime(4951);
 		IRouter r = getRouter();
 		if (!(r instanceof ServerRouter)) {
 			return;
@@ -846,7 +846,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Override
 	public final boolean blockActivated(EntityPlayer entityplayer) {
 		SecuritySettings settings = null;
-		if (MainProxy.isServer(entityplayer.worldObj)) {
+		if (MainProxy.isServer(entityplayer.world)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 			if (station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
@@ -854,11 +854,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 
 		if (MainProxy.isPipeControllerEquipped(entityplayer)) {
-			if (MainProxy.isServer(entityplayer.worldObj)) {
+			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openNetworkMonitor) {
 					NewGuiHandler.getGui(PipeController.class).setTilePos(container).open(entityplayer);
 				} else {
-					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
@@ -873,7 +873,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				return false;
 			}
 			/*
-			if (MainProxy.isClient(entityplayer.worldObj)) {
+			if (MainProxy.isClient(entityplayer.world)) {
 				if (!LogisticsHUDRenderer.instance().hasLasers()) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 				} else {
@@ -888,19 +888,19 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 
 		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
-			if (MainProxy.isServer(entityplayer.worldObj)) {
+			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openRequest) {
 					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
 				} else {
-					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;
 		}
 
 		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler
-				.canWrench(entityplayer, getX(), getY(), getZ())) {
-			if (MainProxy.isServer(entityplayer.worldObj)) {
+				.canWrench(entityplayer, getPos())) {
+			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
 						((LogisticsGuiModule) getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(container).open(entityplayer);
@@ -908,10 +908,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 						onWrenchClicked(entityplayer);
 					}
 				} else {
-					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
-			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
+			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getPos());
 			return true;
 		}
 
@@ -1041,7 +1041,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (container != null && !stillNeedReplace) {
 			container.scheduleNeighborChange();
 			IBlockState state = getWorld().getBlockState(getPos());
-			getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock());
+			getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
 		}
 	}
 

@@ -388,19 +388,19 @@ public abstract class BaseWrapperClass extends AbstractValue {
 				return null;
 			});
 		} else if (type.equals("CCItemIdentifierImplementation")) {
-			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
+			ItemStack stack = new ItemStack(nbt);
 			if (stack != null) {
 				object = new CCItemIdentifierImplementation(ItemIdentifier.get(stack));
 				checkType();
 			}
 		} else if (type.equals("CCItemIdentifierStackImplementation")) {
-			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
+			ItemStack stack = new ItemStack(nbt);
 			if (stack != null) {
 				object = new CCItemIdentifierStackImplementation(ItemIdentifierStack.getFromStack(stack));
 				checkType();
 			}
 		} else if (type.equals("CCItemIdentifierBuilder")) {
-			ItemStack stack = ItemStack.loadItemStackFromNBT(nbt);
+			ItemStack stack = new ItemStack(nbt);
 			if (stack != null) {
 				CCItemIdentifierBuilder builder = new CCItemIdentifierBuilder();
 				builder.setItemID(Double.valueOf(Item.getIdFromItem(stack.getItem())));

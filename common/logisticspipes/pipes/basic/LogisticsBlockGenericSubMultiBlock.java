@@ -90,7 +90,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			boolean notHandled = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
+					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.map(mainPipe -> worldIn.setBlockToAir(mainPipe.getPos()))
 					.count() == 0;
 
@@ -125,15 +125,14 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public void addCollisionBoxToList(IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox,
-			@Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn) {
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
 		TileEntity tile = worldIn.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.forEach(mainPipe -> LogisticsPipeBlock.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn));
+					.forEach(mainPipe -> LogisticsPipeBlock.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn, isActualState));
 		}
 	}
 
@@ -173,7 +172,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
+					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.map(mainPipe -> LogisticsPipeBlock.getSelectedBoundingBox(state, worldIn, mainPipe.getPos()))
 					.findFirst();
 		}
@@ -199,7 +198,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
+					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.map(mainPipe -> LogisticsPipeBlock.addDestroyEffects(world, mainPipe.getPos(), manager))
 					.findFirst();
 		}
@@ -229,11 +228,11 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		return result.orElse(super.getPickBlock(state, target, world, pos, player));
 	}
 
-	private void addHitEffects(LogisticsTileGenericPipe mainPipe, IBlockState state, World worldObj, RayTraceResult target, ParticleManager manager) {
+	private void addHitEffects(LogisticsTileGenericPipe mainPipe, IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
 		final TextureAtlasSprite icon = mainPipe.pipe.getIconProvider().getIcon(mainPipe.pipe.getIconIndexForItem());
 		final EnumFacing sideHit = target.sideHit;
 		final float b = 0.1F;
-		final AxisAlignedBB boundingBox = state.getBoundingBox(worldObj, target.getBlockPos());
+		final AxisAlignedBB boundingBox = state.getBoundingBox(world, target.getBlockPos());
 
 		double px = target.getBlockPos().getX() + rand.nextDouble() * (boundingBox.maxX - boundingBox.minX - (b * 2.0F)) + b + boundingBox.minX;
 		double py = target.getBlockPos().getY() + rand.nextDouble() * (boundingBox.maxY - boundingBox.minY - (b * 2.0F)) + b + boundingBox.minY;
@@ -264,28 +263,28 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		/*
 		particle type: EnumParticleTypes.BLOCK_CRACK
 
-		EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, 0.0D, 0.0D, 0.0D, block, sideHit, worldObj.getBlockMetadata(x, y, z));
+		EntityDiggingFX fx = new EntityDiggingFX(world, px, py, pz, 0.0D, 0.0D, 0.0D, block, sideHit, world.getBlockMetadata(x, y, z));
 		fx.setParticleIcon(icon);
 		manager.addEffect(fx.applyColourMultiplier(x, y, z).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
 		*/
 	}
 
 	@Override
-	public boolean addHitEffects(IBlockState state, World worldObj, RayTraceResult target, ParticleManager manager) {
-		TileEntity tile = worldObj.getTileEntity(target.getBlockPos());
+	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
+		TileEntity tile = world.getTileEntity(target.getBlockPos());
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			Optional<LogisticsTileGenericPipe> result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldObj, mainPipe.getPos(), Minecraft.getMinecraft().thePlayer)))
+					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.findFirst();
 
-			result.ifPresent(mainPipe -> addHitEffects(mainPipe, state, worldObj, target, manager));
+			result.ifPresent(mainPipe -> addHitEffects(mainPipe, state, world, target, manager));
 			if (result.isPresent()) {
 				return true;
 			}
 		}
-		return super.addHitEffects(state, worldObj, target, manager);
+		return super.addHitEffects(state, world, target, manager);
 	}
 }

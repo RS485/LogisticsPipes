@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -74,12 +75,12 @@ public class ItemLogisticsChips extends LogisticsItem {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2, @SuppressWarnings("rawtypes") List par3) {
-		par3.add(new ItemStack(this, 1, ITEM_CHIP_BASIC));
-		par3.add(new ItemStack(this, 1, ITEM_CHIP_BASIC_RAW));
-		par3.add(new ItemStack(this, 1, ITEM_CHIP_ADVANCED));
-		par3.add(new ItemStack(this, 1, ITEM_CHIP_ADVANCED_RAW));
-		par3.add(new ItemStack(this, 1, ITEM_CHIP_FPGA));
-		par3.add(new ItemStack(this, 1, ITEM_CHIP_FPGA_RAW));
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+		items.add(new ItemStack(this, 1, ITEM_CHIP_BASIC));
+		items.add(new ItemStack(this, 1, ITEM_CHIP_BASIC_RAW));
+		items.add(new ItemStack(this, 1, ITEM_CHIP_ADVANCED));
+		items.add(new ItemStack(this, 1, ITEM_CHIP_ADVANCED_RAW));
+		items.add(new ItemStack(this, 1, ITEM_CHIP_FPGA));
+		items.add(new ItemStack(this, 1, ITEM_CHIP_FPGA_RAW));
 	}
 }

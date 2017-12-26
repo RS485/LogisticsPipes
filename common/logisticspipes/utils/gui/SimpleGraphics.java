@@ -12,18 +12,14 @@ import logisticspipes.utils.Color;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory;
-import org.lwjgl.opencl.CL;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -150,7 +146,7 @@ public final class SimpleGraphics {
 		GL11.glColor4f(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
 
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer buf = tessellator.getBuffer();
+		BufferBuilder buf = tessellator.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 		buf.pos(x1, y2, zLevel).endVertex();
 		buf.pos(x2, y2, zLevel).endVertex();
@@ -199,7 +195,7 @@ public final class SimpleGraphics {
 		GlStateManager.shadeModel(7425);
 
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer buf = tessellator.getBuffer();
+		BufferBuilder buf = tessellator.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		buf.pos(x2, y1, zLevel).color(Color.getRed(colorA), Color.getGreen(colorA), Color.getBlue(colorA), Color.getAlpha(colorA)).endVertex();
 		buf.pos(x1, y1, zLevel).color(Color.getRed(colorA), Color.getGreen(colorA), Color.getBlue(colorA), Color.getAlpha(colorA)).endVertex();
@@ -238,7 +234,7 @@ public final class SimpleGraphics {
 		float f1 = 0.00390625F;
 
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer buf = tessellator.getBuffer();
+		BufferBuilder buf = tessellator.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		buf.pos(x, y + height, zLevel).tex( u * f, (v + height) * f1);
 		buf.pos(x + width, y + height, zLevel).tex( (u + width) * f, (v + height) * f1);
@@ -261,8 +257,6 @@ public final class SimpleGraphics {
 	 * @param color
 	 *            the color of the string
 	 * @return the stop x-coordinate of the drawn string
-	 * @see net.minecraft.client.gui.FontRenderer#drawString(String, int, int,
-	 *      int, boolean)
 	 */
 	public static int drawStringWithTranslatedShadow(FontRenderer fontRenderer, String s, int x, int y, int color) {
 		int endX;
@@ -306,11 +300,9 @@ public final class SimpleGraphics {
 	 *            the color of the quad
 	 * @param zLevel
 	 *            the z-level of the quad
-	 * @see net.minecraft.client.renderer.entity.RenderItem#renderQuad(Tessellator,
-	 *      int, int, int, int, int)
 	 */
 	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, int color, double zLevel) {
-		VertexBuffer buf = tessellator.getBuffer();
+		BufferBuilder buf = tessellator.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		buf.pos(x, y, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
 		buf.pos(x, y + height, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();

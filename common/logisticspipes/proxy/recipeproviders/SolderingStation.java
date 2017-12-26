@@ -45,7 +45,7 @@ public class SolderingStation implements ICraftingRecipeProvider {
 			if (inventory.getStackInSlot(i) != null) {
 				continue;
 			}
-			inventory.setInventorySlotContents(i, new ItemStack(Items.iron_ingot, 1));
+			inventory.setInventorySlotContents(i, new ItemStack(Items.IRON_INGOT, 1));
 			break;
 		}
 

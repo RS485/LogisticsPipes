@@ -8,15 +8,18 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import net.minecraftforge.registries.GameData;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPED;
 import static net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS;
 
+import logisticspipes.LPConstants;
 import logisticspipes.items.RemoteOrderer;
 
 public class RecipeManager {
@@ -25,7 +28,7 @@ public class RecipeManager {
 	public static final LocalCraftingManager craftingManager = new LocalCraftingManager();
 
 	public static void registerRecipeClasses() {
-		RecipeSorter
+		/*RecipeSorter
 				.register("logisticspipes:shapedore", LPShapedOreRecipe.class, SHAPED, "after:minecraft:shaped before:minecraft:shapeless");
 		RecipeSorter
 				.register("logisticspipes:shapelessore", LPShapelessOreRecipe.class, SHAPELESS, "after:minecraft:shapeless");
@@ -33,6 +36,7 @@ public class RecipeManager {
 				.register("logisticspipes:shapelessreset", ShapelessResetRecipe.class, SHAPELESS, "after:minecraft:shapeless");
 		RecipeSorter
 				.register("logisticspipes:shapelessorderer", LocalCraftingManager.ShapelessOrdererRecipe.class, SHAPELESS, "after:minecraft:shapeless");
+				*/
 	}
 
 	public static void loadRecipes() {
@@ -62,8 +66,6 @@ public class RecipeManager {
 	}
 
 	public static class LocalCraftingManager {
-		private CraftingManager craftingManager = CraftingManager.getInstance();
-
 		public LocalCraftingManager() {
 		}
 
@@ -92,27 +94,30 @@ public class RecipeManager {
 				}
 			});
 			if(!addRecipe[0]) return;
-			craftingManager.getRecipeList().add(new LPShapedOreRecipe(stack, dependent, result.toArray()));
+			GameData.register_impl(new LPShapedOreRecipe(getFreeRecipeResourceLocation(stack), stack, dependent, result.toArray()));
 		}
 
 		@SuppressWarnings("unchecked")
 		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
-			craftingManager.getRecipeList().add(new ShapelessOrdererRecipe(stack, dye, orderer));
+			GameData.register_impl(new ShapelessOrdererRecipe(getFreeRecipeResourceLocation(stack), stack, dye, orderer));
 		}
 
 		@SuppressWarnings("unchecked")
 		public void addShapelessRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
-			craftingManager.getRecipeList().add(new LPShapelessOreRecipe(stack, dependent, objects));
+			GameData.register_impl(new LPShapelessOreRecipe(getFreeRecipeResourceLocation(stack), stack, dependent, objects));
 		}
 
 		@SuppressWarnings("unchecked")
 		public void addShapelessResetRecipe(Item item, int meta) {
-			craftingManager.getRecipeList().add(new ShapelessResetRecipe(item, meta));
+			ShapelessResetRecipe value = new ShapelessResetRecipe(item, meta);
+			value.setRegistryName(getFreeRecipeResourceLocation(item));
+			GameData.register_impl(value);
 		}
 
 		public class ShapelessOrdererRecipe extends ShapelessOreRecipe {
-			public ShapelessOrdererRecipe(ItemStack result, Object... recipe) {
-				super(result, recipe);
+			public ShapelessOrdererRecipe(ResourceLocation registryName, ItemStack result, Object... recipe) {
+				super(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), result, recipe);
+				setRegistryName(registryName);
 			}
 
 			@Override
@@ -128,5 +133,20 @@ public class RecipeManager {
 				return result;
 			}
 		}
+	}
+
+	private static ResourceLocation getFreeRecipeResourceLocation(ItemStack stack) {
+		return getFreeRecipeResourceLocation(stack.getItem());
+	}
+
+	private static ResourceLocation getFreeRecipeResourceLocation(Item item) {
+		ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, item.getRegistryName().getResourcePath());
+		ResourceLocation recipeLoc = baseLoc;
+		int index = 0;
+		while (CraftingManager.REGISTRY.containsKey(recipeLoc)) {
+			index++;
+			recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
+		}
+		return recipeLoc;
 	}
 }

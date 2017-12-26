@@ -20,12 +20,12 @@ public class FuzzyDummySlot extends DummySlot implements IFuzzySlot {
 
 	@Override
 	public int getX() {
-		return xDisplayPosition;
+		return xPos;
 	}
 
 	@Override
 	public int getY() {
-		return yDisplayPosition;
+		return yPos;
 	}
 
 	@Override

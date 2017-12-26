@@ -36,7 +36,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 		bits = input.readBitSet();
 		for (int i = 0; i < renderCache.length; i++) {
 			if (bits.get(i)) {
-				renderCache[i] = new FluidStack(FluidRegistry.getFluid(input.readInt()), input.readInt(), input.readNBTTagCompound());
+				renderCache[i] = new FluidStack(FluidRegistry.getFluid(input.readUTF()), input.readInt(), input.readNBTTagCompound());
 			}
 		}
 	}
@@ -50,7 +50,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 		output.writeBitSet(bits);
 		for (FluidStack aRenderCache : renderCache) {
 			if (aRenderCache != null) {
-				output.writeInt(FluidRegistry.getFluidID(aRenderCache.getFluid()));
+				output.writeUTF(aRenderCache.getFluid().getName());
 				output.writeInt(aRenderCache.amount);
 				output.writeNBTTagCompound(aRenderCache.tag);
 			}
@@ -59,7 +59,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		LogisticsTileGenericPipe pipe = this.getPipe(player.world);
 		if (pipe == null || pipe.pipe == null) {
 			return;
 		}

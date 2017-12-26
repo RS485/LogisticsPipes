@@ -10,6 +10,8 @@ package logisticspipes.proxy;
 
 import java.util.LinkedList;
 
+import javax.tools.Tool;
+
 import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsFluidManager;
@@ -237,5 +239,11 @@ public final class SimpleServiceLocator {
 
 	public static void setCCLProxy(ICCLProxy proxy) {
 		SimpleServiceLocator.cclProxy = proxy;
+	}
+
+	public static ToolWrenchHandler toolWrenchHandler;
+
+	public static void setToolWrenchHandler(ToolWrenchHandler toolWrenchHandler) {
+		SimpleServiceLocator.toolWrenchHandler = toolWrenchHandler;
 	}
 }

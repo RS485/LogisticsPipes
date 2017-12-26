@@ -126,13 +126,13 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 			} else if (upgrade instanceof FuzzyUpgrade) {
 				isFuzzyUpgrade = true;
 			} else if (upgrade instanceof FluidCraftingUpgrade) {
-				liquidCrafter += inv.getStackInSlot(i).stackSize;
+				liquidCrafter += inv.getStackInSlot(i).getCount();
 			} else if (upgrade instanceof CraftingByproductUpgrade) {
 				hasByproductExtractor = true;
 			} else if (upgrade instanceof PatternUpgrade) {
 				hasPatternUpgrade = true;
 			} else if (upgrade instanceof CraftingCleanupUpgrade) {
-				craftingCleanup += inv.getStackInSlot(i).stackSize;
+				craftingCleanup += inv.getStackInSlot(i).getCount();
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);

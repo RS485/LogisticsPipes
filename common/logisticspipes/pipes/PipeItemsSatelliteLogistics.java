@@ -129,7 +129,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private void updateInv(boolean force) {
 		itemList.clear();
 		for (EnumFacing ori : EnumFacing.VALUES) {
-			if(!this.container.isPipeConnected(ori)) continue;
+			if(!this.container.isPipeConnectedCached(ori)) continue;
 			IInventory inv = getInventory(ori);
 			if (inv != null) {
 				for (int i = 0; i < inv.getSizeInventory(); i++) {
@@ -236,7 +236,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void setNextId(EntityPlayer player) {
 		satelliteId = findId(1);
 		ensureAllSatelliteStatus();
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else {
@@ -249,7 +249,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void setPrevId(EntityPlayer player) {
 		satelliteId = findId(-1);
 		ensureAllSatelliteStatus();
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipePrev.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else {

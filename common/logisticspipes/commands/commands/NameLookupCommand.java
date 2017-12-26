@@ -35,6 +35,6 @@ public class NameLookupCommand implements ICommandHandler {
 		int id = Integer.valueOf(idString);
 		int meta = Integer.valueOf(metaString);
 		ItemIdentifier item = ItemIdentifier.get(Item.getItemById(id), meta, null);
-		sender.addChatMessage(new TextComponentString("Name: " + item.getFriendlyNameCC()));
+		sender.sendMessage(new TextComponentString("Name: " + item.getFriendlyNameCC()));
 	}
 }

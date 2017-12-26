@@ -79,7 +79,7 @@ public class GuiExtractor extends ModuleBaseGui {
 
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
-		mc.fontRendererObj.drawString("Extract orientation", xSize / 2 - mc.fontRendererObj.getStringWidth("Extract orientation") / 2, 10, 0x404040);
+		mc.fontRenderer.drawString("Extract orientation", xSize / 2 - mc.fontRenderer.getStringWidth("Extract orientation") / 2, 10, 0x404040);
 	}
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/extractor.png");

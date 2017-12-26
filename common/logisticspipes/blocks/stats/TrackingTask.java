@@ -41,7 +41,7 @@ public class TrackingTask {
 			amountRecorded[i] = (((long) amountRecorded_B[i]) << 32) | amountRecorded_A[i];
 		}
 		arrayPos = nbt.getInteger("arrayPos");
-		item = ItemIdentifier.get(ItemStack.loadItemStackFromNBT(nbt));
+		item = ItemIdentifier.get(new ItemStack(nbt));
 	}
 
 	public void writeToNBT(NBTTagCompound nbt) {

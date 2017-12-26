@@ -14,10 +14,16 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.TileBuffer;
 
 import logisticspipes.utils.item.ItemIdentifier;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
+
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.block.Block;
@@ -28,6 +34,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import java.util.*;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISubMultiBlockPipeInformationProvider, ITickable {
 
@@ -145,13 +154,26 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		try {
-			return PacketHandler.toFMLPacket(getLPDescriptionPacket());
+			ModernPacket packet = getLPDescriptionPacket();
+			byte[] data = LPDataIOWrapper.collectData(packet::writeData);
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setByteArray("PacketData", data);
+			return new SPacketUpdateTileEntity(getPos(), 1, nbt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		byte[] data = pkt.getNbtCompound().getByteArray("PacketData");
+		if(data.length > 0) {
+			LPDataIOWrapper.provideData(data, dataInput -> PacketHandler.onPacketData(dataInput, Minecraft.getMinecraft().player));
+		}
 	}
 
 	public ModernPacket getLPDescriptionPacket() {
@@ -199,7 +221,7 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 
 	public TileBuffer[] getTileCache() {
 		if (tileBuffer == null) {
-			tileBuffer = TileBuffer.makeBuffer(worldObj, getPos(), true);
+			tileBuffer = TileBuffer.makeBuffer(world, getPos(), true);
 		}
 		return tileBuffer;
 	}

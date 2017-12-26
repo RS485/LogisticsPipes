@@ -10,8 +10,11 @@ import net.minecraftforge.fml.common.Mod;
 
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
+import codechicken.nei.api.NEIPlugin;
 import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.handler.NEIClientEventHandler;
 
+@NEIPlugin
 public class NEILogisticsPipesConfig implements IConfigureNEI {
 
 	public static boolean added = false;
@@ -20,11 +23,11 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 	public void loadConfig() {
 
 		if (Configs.TOOLTIP_INFO && !NEILogisticsPipesConfig.added) {
-			GuiContainerManager.addTooltipHandler(new DebugHelper());
+			NEIClientEventHandler.addTooltipHandler(new DebugHelper());
 			NEILogisticsPipesConfig.added = true;
 		}
 
-		GuiContainerManager.addDrawHandler(new DrawHandler());
+		NEIClientEventHandler.addDrawHandler(new DrawHandler());
 
 		/*
 		MultiItemRange main = new MultiItemRange();
@@ -48,11 +51,13 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		addSetRange("LogisticsPipes.Pipes.Chassi", pipesChassi);
 		 */
 
-		API.registerRecipeHandler(new NEISolderingStationRecipeManager());
+		//TODO: Uncomment
+/*		API.registerRecipeHandler(new NEISolderingStationRecipeManager());
 		API.registerUsageHandler(new NEISolderingStationRecipeManager());
 		API.registerGuiOverlay(GuiSolderingStation.class, "solderingstation");
 		API.registerGuiOverlayHandler(GuiLogisticsCraftingTable.class, new LogisticsCraftingOverlayHandler(), "crafting");
 		API.registerGuiOverlayHandler(GuiRequestTable.class, new LogisticsCraftingOverlayHandler(), "crafting");
+		*/
 	}
 
 	@Override

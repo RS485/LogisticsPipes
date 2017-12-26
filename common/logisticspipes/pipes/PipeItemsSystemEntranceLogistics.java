@@ -77,7 +77,7 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 			return;
 		}
 		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
-		getWorld().spawnEntityInWorld(item);
+		getWorld().spawnEntity(item);
 		inv.clearInventorySlotContents(0);
 	}
 

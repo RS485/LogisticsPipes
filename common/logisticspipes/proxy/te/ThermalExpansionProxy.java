@@ -4,7 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+
+import cofh.api.item.IToolHammer;
 
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.recipes.CraftingParts;
@@ -41,5 +47,20 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 	@Override
 	public CraftingParts getRecipeParts() {
 		return null;
+	}
+
+	@Override
+	public boolean isToolHammer(Item item) {
+		return item instanceof IToolHammer;
+	}
+
+	@Override
+	public boolean canHammer(ItemStack stack, EntityPlayer entityplayer, BlockPos pos) {
+		return isToolHammer(stack.getItem()) && ((IToolHammer)stack.getItem()).isUsable(stack, entityplayer, pos);
+	}
+
+	@Override
+	public void toolUsed(ItemStack stack, EntityPlayer entityplayer, BlockPos pos) {
+		if(isToolHammer(stack.getItem())) ((IToolHammer)stack.getItem()).toolUsed(stack, entityplayer, pos);
 	}
 }

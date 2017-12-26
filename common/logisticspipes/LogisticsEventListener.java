@@ -76,8 +76,8 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
-		if (event != null && event.getEntity() instanceof EntityItem && event.getEntity().worldObj != null && !event.getEntity().worldObj.isRemote) {
-			ItemStack stack = ((EntityItem) event.getEntity()).getEntityItem(); //Get ItemStack
+		if (event != null && event.getEntity() instanceof EntityItem && event.getEntity().world != null && !event.getEntity().world.isRemote) {
+			ItemStack stack = ((EntityItem) event.getEntity()).getItem(); //Get ItemStack
 			if (stack != null && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
 			}
@@ -95,15 +95,15 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void onPlayerLeftClickBlock(final PlayerInteractEvent.LeftClickBlock event) {
-		if (MainProxy.isServer(event.getEntityPlayer().worldObj)) {
-			final TileEntity tile = event.getEntityPlayer().worldObj.getTileEntity(event.getPos());
+		if (MainProxy.isServer(event.getEntityPlayer().world)) {
+			final TileEntity tile = event.getEntityPlayer().world.getTileEntity(event.getPos());
 			if (tile instanceof LogisticsTileGenericPipe) {
 				if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 					if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.getEntityPlayer())) {
 						event.setCanceled(true);
-						event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+						event.getEntityPlayer().sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 						((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
-						World world = event.getEntityPlayer().worldObj;
+						World world = event.getEntityPlayer().world;
 						BlockPos pos = tile.getPos();
 						IBlockState state = world.getBlockState(pos);
 						world.markAndNotifyBlock(tile.getPos(), world.getChunkFromBlockCoords(pos), state, state, 2);
@@ -118,8 +118,8 @@ public class LogisticsEventListener {
 	}
 
 	public void onPlayerLeftClickBlock(final PlayerInteractEvent.RightClickBlock event) {
-		if (MainProxy.isServer(event.getEntityPlayer().worldObj)) {
-			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().worldObj, event.getPos());
+		if (MainProxy.isServer(event.getEntityPlayer().world)) {
+			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().world, event.getPos());
 			TileEntity tileEntity = worldCoordinates.getTileEntity();
 			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
 				//@formatter:off
@@ -183,7 +183,7 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void onPlayerLogin(PlayerLoggedInEvent event) {
-		if (MainProxy.isServer(event.player.worldObj)) {
+		if (MainProxy.isServer(event.player.world)) {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(event.player);
 			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(event.player);
 		}
@@ -286,10 +286,10 @@ public class LogisticsEventListener {
 				String versionMessage = checker.getVersionCheckerStatus();
 
 				if (checker.isVersionCheckDone() && checker.getVersionInfo().isNewVersionAvailable() && !checker.getVersionInfo().isImcMessageSent()) {
-					playerEntity.addChatComponentMessage(new TextComponentString(versionMessage));
-					playerEntity.addChatComponentMessage(new TextComponentString("Use \"/logisticspipes changelog\" to see a changelog."));
+					playerEntity.sendMessage(new TextComponentString(versionMessage));
+					playerEntity.sendMessage(new TextComponentString("Use \"/logisticspipes changelog\" to see a changelog."));
 				} else if (!checker.isVersionCheckDone()) {
-					playerEntity.addChatComponentMessage(new TextComponentString(versionMessage));
+					playerEntity.sendMessage(new TextComponentString(versionMessage));
 				}
 			});
 		}

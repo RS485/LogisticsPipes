@@ -721,7 +721,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void setNextSatellite(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
@@ -742,7 +742,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void setPrevSatellite(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipePrevSatellite.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
@@ -965,18 +965,18 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public void priorityUp(EntityPlayer player) {
 		priority++;
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setModulePos(this));
-		} else if (player != null && MainProxy.isServer(player.worldObj)) {
+		} else if (player != null && MainProxy.isServer(player.world)) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), player);
 		}
 	}
 
 	public void priorityDown(EntityPlayer player) {
 		priority--;
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setModulePos(this));
-		} else if (player != null && MainProxy.isServer(player.worldObj)) {
+		} else if (player != null && MainProxy.isServer(player.world)) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setModulePos(this), player);
 		}
 	}
@@ -998,7 +998,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void setNextSatellite(EntityPlayer player, int i) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setModulePos(this));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(false, i);
@@ -1007,7 +1007,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void setPrevSatellite(EntityPlayer player, int i) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setModulePos(this));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(true, i);
@@ -1016,7 +1016,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void changeFluidAmount(int change, int slot, EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(change).setModulePos(this));
 		} else {
 			amount[slot] += change;
@@ -1028,7 +1028,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void setPrevFluidSatellite(EntityPlayer player, int i) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setModulePos(this));
 		} else {
 			if (i == -1) {
@@ -1042,7 +1042,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void setNextFluidSatellite(EntityPlayer player, int i) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatelliteNextPacket.class).setInteger(i).setModulePos(this));
 		} else {
 			if (i == -1) {
@@ -1105,7 +1105,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void openAttachedGui(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			if (player instanceof EntityPlayerMP) {
 				player.closeScreen();
 			} else if (player instanceof EntityPlayerSP) {
@@ -1155,7 +1155,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				Block block = getWorld().getBlockState(adjacent.tileEntity.getPos()).getBlock();
 				if (block != null && block
 						.onBlockActivated(getWorld(), adjacent.tileEntity.getPos(), adjacent.tileEntity.getWorld().getBlockState(adjacent.tileEntity.getPos()), player,
-								EnumHand.MAIN_HAND, null, EnumFacing.UP, 0, 0, 0)) {
+								EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0)) {
 					return true;
 				}
 			}
@@ -1193,11 +1193,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				ItemStack extracted = null;
 				for (AdjacentTileEntity adjacentCrafter : crafters) {
 					extracted = extractFiltered(adjacentCrafter, _cleanupInventory, cleanupModeIsExclude, getUpgradeManager().getCrafterCleanup() * 3);
-					if (extracted != null && extracted.stackSize > 0) {
+					if (extracted != null && extracted.getCount() > 0) {
 						break;
 					}
 				}
-				if (extracted != null && extracted.stackSize > 0) {
+				if (extracted != null && extracted.getCount() > 0) {
 					_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), EnumFacing.UP);
 					_service.getCacheHolder().trigger(CacheTypes.Inventory);
 				}
@@ -1234,11 +1234,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			for (AdjacentTileEntity adjacentCrafter : adjacentCrafters) {
 				adjacent = adjacentCrafter;
 				extracted = extract(adjacent, nextOrder.getResource(), maxtosend);
-				if (extracted != null && extracted.stackSize > 0) {
+				if (extracted != null && extracted.getCount() > 0) {
 					break;
 				}
 			}
-			if (extracted == null || extracted.stackSize == 0) {
+			if (extracted == null || extracted.getCount() == 0) {
 				_service.getItemOrderManager().deferSend();
 				break;
 			}
@@ -1246,7 +1246,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			lastAccessedCrafter = new WeakReference<>(adjacent.tileEntity);
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
-			while (extracted.stackSize > 0) {
+			while (extracted.getCount() > 0) {
 				if (!doesExtractionMatch(nextOrder, extractedID)) {
 					LogisticsItemOrder startOrder = nextOrder;
 					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
@@ -1256,7 +1256,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 						} while (!doesExtractionMatch(nextOrder, extractedID) && startOrder != nextOrder);
 					}
 					if (startOrder == nextOrder) {
-						int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
+						int numtosend = Math.min(extracted.getCount(), extractedID.getMaxStackSize());
 						if (numtosend == 0) {
 							break;
 						}
@@ -1269,7 +1269,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 						continue;
 					}
 				}
-				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
+				int numtosend = Math.min(extracted.getCount(), extractedID.getMaxStackSize());
 				numtosend = Math.min(numtosend, nextOrder.getResource().stack.getStackSize());
 				if (numtosend == 0) {
 					break;
@@ -1289,10 +1289,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					item.setTransportMode(TransportMode.Active);
 					item.setAdditionalTargetInformation(nextOrder.getInformation());
 					_service.queueRoutedItem(item, adjacent.direction);
-					_service.getItemOrderManager().sendSuccessfull(stackToSend.stackSize, defersend, item);
+					_service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), defersend, item);
 				} else {
 					_service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation());
-					_service.getItemOrderManager().sendSuccessfull(stackToSend.stackSize, false, null);
+					_service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), false, null);
 				}
 				if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 					nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
@@ -1437,7 +1437,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		ItemStack retstack = null;
 		while (count > 0) {
 			ItemStack stack = tile.getOutput(wanteditem, _service);
-			if (stack == null || stack.stackSize == 0) {
+			if (stack == null || stack.getCount() == 0) {
 				break;
 			}
 			if (retstack == null) {
@@ -1452,16 +1452,16 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					break;
 				}
 			}
-			if (!_service.useEnergy(neededEnergy() * stack.stackSize)) {
+			if (!_service.useEnergy(neededEnergy() * stack.getCount())) {
 				break;
 			}
 
 			if (retstack == null) {
 				retstack = stack;
 			} else {
-				retstack.stackSize += stack.stackSize;
+				retstack.grow(stack.getCount());
 			}
-			count -= stack.stackSize;
+			count -= stack.getCount();
 			if(getUpgradeManager().isFuzzyUpgrade()) {
 				break;
 			}

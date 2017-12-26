@@ -19,9 +19,9 @@ public class PipeDebugResponse extends CoordinatesPacket {
 		if (pipe != null && pipe.isInitialized()) {
 			pipe.pipe.debug.debugThisPipe = !pipe.pipe.debug.debugThisPipe;
 			if (pipe.pipe.debug.debugThisPipe) {
-				player.addChatComponentMessage(new TextComponentString("Debug enabled on Server"));
+				player.sendMessage(new TextComponentString("Debug enabled on Server"));
 			} else {
-				player.addChatComponentMessage(new TextComponentString("Debug disabled on Server"));
+				player.sendMessage(new TextComponentString("Debug disabled on Server"));
 			}
 		}
 	}

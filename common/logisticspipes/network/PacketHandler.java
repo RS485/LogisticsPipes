@@ -44,7 +44,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 
 	public static final Map<Integer, StackTraceElement[]> debugMap = new HashMap<>();
 	//TODO correct to work with WeakReference (See FML original)
-	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = new AttributeKey<>("lp:inboundpacket");
+	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = AttributeKey.newInstance("lp:inboundpacket");
 	public static List<ModernPacket> packetlist;
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 	private static int packetDebugID = 1;

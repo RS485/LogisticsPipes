@@ -51,9 +51,9 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRendererObj.getStringWidth(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv"), xSize / 2 - mc.fontRenderer.getStringWidth(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "TargetInv")) / 2, 6, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
 	}
 
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");

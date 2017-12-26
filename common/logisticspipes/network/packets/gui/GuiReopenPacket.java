@@ -35,7 +35,7 @@ public class GuiReopenPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		player.openGui(LogisticsPipes.instance, getGuiID(), player.worldObj, getPosX(), getPosY(), getPosZ());
+		player.openGui(LogisticsPipes.instance, getGuiID(), player.world, getPosX(), getPosY(), getPosZ());
 	}
 
 	@Override

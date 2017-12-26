@@ -157,11 +157,11 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 						if (toSend == null) {
 							return contentchanged;
 						}
-						if (toSend.stackSize != need.getItem().getStackSize()) {
+						if (toSend.getCount() != need.getItem().getStackSize()) {
 							if (inv instanceof ITransactor) {
 								((ITransactor) inv).add(toSend, dir.getOpposite(), true);
 							} else {
-								container.getWorld().spawnEntityInWorld(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.getX(), container.getY(), container.getZ()));
+								container.getWorld().spawnEntity(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.getX(), container.getY(), container.getZ()));
 							}
 							new UnsupportedOperationException("The extracted amount didn't match the requested one. (" + inv + ")").printStackTrace();
 							return contentchanged;
@@ -229,7 +229,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			return;
 		}
 		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
-		getWorld().spawnEntityInWorld(item);
+		getWorld().spawnEntity(item);
 		inv.clearInventorySlotContents(0);
 	}
 

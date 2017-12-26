@@ -2,6 +2,7 @@ package logisticspipes.utils;
 
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +18,11 @@ public class CardManagmentInventory implements IInventory {
 	@Override
 	public int getSizeInventory() {
 		return 10;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return inv.isEmpty();
 	}
 
 	@Override
@@ -127,7 +133,7 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
 		return true;
 	}
 
@@ -154,7 +160,7 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	public void close(EntityPlayer player, int x, int y, int z) {
-		inv.dropContents(player.worldObj, x, y, z);
+		inv.dropContents(player.world, x, y, z);
 	}
 
 	@Override

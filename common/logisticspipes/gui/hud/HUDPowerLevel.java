@@ -7,8 +7,8 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
@@ -44,9 +44,9 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(-49, -29 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
-		mc.fontRendererObj.drawString("Stored Energy:", -30, -15, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), -30, -5, 0x404040);
-		mc.fontRendererObj.drawString("/ " + StringUtils.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), -30, 5, 0x404040);
+		mc.fontRenderer.drawString("Stored Energy:", -30, -15, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.getStringWithSpacesFromInteger(junction.getDisplayPowerLevel()) + " " + junction.getBrand(), -30, -5, 0x404040);
+		mc.fontRenderer.drawString("/ " + StringUtils.getStringWithSpacesFromInteger(junction.getMaxStorage()) + " " + junction.getBrand(), -30, 5, 0x404040);
 		GL11.glTranslatef(0.0F, 0.0F, 0.0015F);
 	}
 
@@ -54,7 +54,7 @@ public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer
 		float var7 = 0.00390625F;
 		float var8 = 0.00390625F;
 		Tessellator var9 = Tessellator.getInstance();
-		VertexBuffer buffer = var9.getBuffer();
+		BufferBuilder buffer = var9.getBuffer();
 		buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		buffer.pos(par1 + 0, par2 + par6, 0).tex((par3 + 0) * var7, (par4 + par6) * var8).endVertex();
 		buffer.pos(par1 + par5, par2 + par6, 0).tex((par3 + par5) * var7, (par4 + par6) * var8).endVertex();

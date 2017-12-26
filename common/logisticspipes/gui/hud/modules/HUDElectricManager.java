@@ -29,11 +29,11 @@ public class HUDElectricManager implements IHUDModuleRenderer {
 		GL11.glScalef(1.0F, 1.0F, -0.000001F);
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, false, shifted);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.000001F);
-		mc.fontRendererObj.drawString("Charge:", -29, 25, 0);
+		mc.fontRenderer.drawString("Charge:", -29, 25, 0);
 		if (module.isDischargeMode()) {
-			mc.fontRendererObj.drawString("No", 15, 25, 0);
+			mc.fontRenderer.drawString("No", 15, 25, 0);
 		} else {
-			mc.fontRendererObj.drawString("Yes", 11, 25, 0);
+			mc.fontRenderer.drawString("Yes", 11, 25, 0);
 		}
 	}
 

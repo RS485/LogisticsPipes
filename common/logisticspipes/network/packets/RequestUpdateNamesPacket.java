@@ -9,6 +9,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -38,8 +39,8 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 		for (Item item : itemList) {
 			if (item != null) {
 				for (CreativeTabs tab : item.getCreativeTabs()) {
-					List<ItemStack> list = new ArrayList<>();
-					item.getSubItems(item, tab, list);
+					NonNullList<ItemStack> list = NonNullList.create();
+					item.getSubItems(tab, list);
 					if (list.size() > 0) {
 						identList.addAll(list.stream().map(ItemIdentifier::get).collect(Collectors.toList()));
 					} else {
@@ -53,7 +54,7 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(item).setName(item.getFriendlyName()));
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);
-		FMLClientHandler.instance().getClient().thePlayer.sendChatMessage("Names in send Queue");
+		FMLClientHandler.instance().getClient().player.sendChatMessage("Names in send Queue");
 	}
 
 	@Override

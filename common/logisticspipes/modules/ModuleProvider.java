@@ -333,11 +333,11 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		}
 
 		ItemStack removed = inv.getMultipleItems(item, wanted);
-		if (removed == null || removed.stackSize == 0) {
+		if (removed == null || removed.isEmpty()) {
 			_service.getItemOrderManager().sendFailed();
 			return 0;
 		}
-		int sent = removed.stackSize;
+		int sent = removed.getCount();
 		_service.useEnergy(sent * neededEnergy());
 
 		IRoutedItem sendedItem = _service.sendStack(removed, destination, itemSendMode(), info);

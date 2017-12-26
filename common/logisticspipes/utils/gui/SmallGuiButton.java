@@ -36,24 +36,24 @@ public class SmallGuiButton extends GuiButton {
 	}
 
 	@Override
-	public void drawButton(Minecraft minecraft, int i, int j) {
+	public void drawButton(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (!visible) {
 			return;
 		}
-		FontRenderer fontrenderer = minecraft.fontRendererObj;
+		FontRenderer fontrenderer = minecraft.fontRenderer;
 		minecraft.renderEngine.bindTexture(GuiButton.BUTTON_TEXTURES);
 		// GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture("/gui/gui.png"));
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		boolean flag = i >= xPosition && j >= yPosition && i < xPosition + width && j < yPosition + height;
+		boolean flag = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 		int k = getHoverState(flag);
 
-		drawTexturedModalRect(xPosition, yPosition, 0, 46 + k * 20, width / 2, height / 2);
-		drawTexturedModalRect(xPosition + width / 2, yPosition, 200 - width / 2, 46 + k * 20, width / 2, height / 2);
+		drawTexturedModalRect(x, y, 0, 46 + k * 20, width / 2, height / 2);
+		drawTexturedModalRect(x + width / 2, y, 200 - width / 2, 46 + k * 20, width / 2, height / 2);
 
-		drawTexturedModalRect(xPosition, yPosition + height / 2, 0, 46 + 25 - height + k * 20, width / 2, height / 2);
-		drawTexturedModalRect(xPosition + width / 2, yPosition + height / 2, 200 - width / 2, 46 + 25 - height + k * 20, width / 2, height / 2);
+		drawTexturedModalRect(x, y + height / 2, 0, 46 + 25 - height + k * 20, width / 2, height / 2);
+		drawTexturedModalRect(x + width / 2, y + height / 2, 200 - width / 2, 46 + 25 - height + k * 20, width / 2, height / 2);
 
-		mouseDragged(minecraft, i, j);
+		mouseDragged(minecraft, mouseX, mouseY);
 
 		int color = Color.getValue(Color.LIGHTER_GREY);
 		if (!enabled) {
@@ -61,7 +61,7 @@ public class SmallGuiButton extends GuiButton {
 		} else if (flag) {
 			color = Color.getValue(Color.LIGHT_YELLOW);
 		}
-		drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2 + stringOffset, color);
+		drawCenteredString(fontrenderer, displayString, x + width / 2, y + (height - 8) / 2 + stringOffset, color);
 	}
 
 }

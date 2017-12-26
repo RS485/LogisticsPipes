@@ -64,7 +64,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 				ItemStack itemStack = stack.makeNormalStack();
 				FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 				if (font == null) {
-					font = fontRendererObj;
+					font = fontRenderer;
 				}
 
 				itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
@@ -97,9 +97,9 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	@Override
 	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRendererObj.drawString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
+		fontRenderer.drawString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
 		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
-		fontRendererObj.drawString(pageString, guiLeft + 128 - (fontRendererObj.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
+		fontRenderer.drawString(pageString, guiLeft + 128 - (fontRenderer.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
 		int x = 0;
 		int y = -page * 10;
 		for (ItemIdentifierStack stack : canidate) {

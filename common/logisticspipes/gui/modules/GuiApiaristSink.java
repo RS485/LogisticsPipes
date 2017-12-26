@@ -13,9 +13,8 @@ import logisticspipes.utils.gui.IItemTextureRenderSlot;
 import logisticspipes.utils.gui.ISmallColorRenderSlot;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -62,7 +61,7 @@ public class GuiApiaristSink extends ModuleBaseGui {
 
 			// Render icon
 			Tessellator tess = Tessellator.getInstance();
-			VertexBuffer buf = tess.getBuffer();
+			BufferBuilder buf = tess.getBuffer();
 			buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 			buf.pos(x, y + 16, zLevel).tex(icon.getMinU(), icon.getMaxV());
 			buf.pos(x + 16, y + 16, zLevel).tex(icon.getMaxU(), icon.getMaxV());

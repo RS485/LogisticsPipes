@@ -2,6 +2,7 @@ package logisticspipes;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -13,8 +14,7 @@ public class CreativeTabLP extends CreativeTabs {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public Item getTabIconItem() {
-		return LogisticsPipes.LogisticsBasicPipe;
+	public ItemStack getTabIconItem() {
+		return new ItemStack(LogisticsPipes.LogisticsBasicPipe);
 	}
 }

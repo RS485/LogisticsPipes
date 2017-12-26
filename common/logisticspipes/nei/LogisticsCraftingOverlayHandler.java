@@ -21,10 +21,6 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
-import codechicken.nei.api.IOverlayHandler;
-import codechicken.nei.api.stack.PositionedStack;
-import codechicken.nei.recipe.IRecipeHandler;
-
 public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 
 	@Override

@@ -68,7 +68,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(player.worldObj, getPosX(), getPosY(), getPosZ());
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(player.world, getPosX(), getPosY(), getPosZ());
 		Iterator<AdjacentTileEntity> adjacentIt = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM).iterator();
 
 		boolean found = false;
@@ -99,7 +99,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 				int zCoord = adjacent.tileEntity.getPos().getZ();
 
 				if (SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
-					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, xCoord, yCoord, zCoord, player);
+					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.world, xCoord, yCoord, zCoord, player);
 					//@formatter:off
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
 							.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
@@ -107,8 +107,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 				}
 
 				if (block != null) {
-					if (block.onBlockActivated(player.worldObj, pos.getBlockPos(), pos.getBlockState(player.worldObj), player, EnumHand.MAIN_HAND, null,
-							EnumFacing.UP, 0, 0, 0)) {
+					if (block.onBlockActivated(player.world, pos.getBlockPos(), pos.getBlockState(player.world), player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0)) {
 						//@formatter:off
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
 								.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);

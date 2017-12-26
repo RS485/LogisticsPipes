@@ -14,9 +14,6 @@ import codechicken.nei.guihook.IContainerDrawHandler;
 public class DrawHandler implements IContainerDrawHandler {
 
 	@Override
-	public void onPreDraw(GuiContainer gui) {}
-
-	@Override
 	public void renderObjects(GuiContainer gui, int mousex, int mousey) {}
 
 	@Override
@@ -31,7 +28,7 @@ public class DrawHandler implements IContainerDrawHandler {
 						.filter(slot -> QuickSortChestMarkerStorage.getInstance().getMarker().contains(slot.slotNumber))
 						.forEach(slot -> {
 							Minecraft.getMinecraft().renderEngine.bindTexture(GuiGraphics.WIDGETS_TEXTURE);
-							gui.drawTexturedModalRect(slot.xDisplayPosition - 3, slot.yDisplayPosition - 3, 1, 23, 22, 22);
+							gui.drawTexturedModalRect(slot.xPos - 3, slot.yPos - 3, 1, 23, 22, 22);
 						});
 			}
 		}

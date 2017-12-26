@@ -38,6 +38,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.GameData;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -52,7 +53,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.textures.Textures;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.math.MatrixTranformations;
@@ -130,7 +130,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public static ItemLogisticsPipe registerPipe(Class<? extends CoreUnroutedPipe> clas) {
 		ItemLogisticsPipe item = new ItemLogisticsPipe();
 		item.setUnlocalizedName(clas.getSimpleName());
-		GameRegistry.registerItem(item, item.getUnlocalizedName());
+		item.setRegistryName(item.getUnlocalizedName());
+		GameData.register_impl(item);
 
 		LogisticsBlockGenericPipe.pipes.put(item, clas);
 
@@ -313,10 +314,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	@SuppressWarnings({ "rawtypes" })
-	public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB axisalignedbb, List<AxisAlignedBB> arraylist, @Nullable Entity par7Entity) {
+	public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB axisalignedbb, List<AxisAlignedBB> arraylist, @Nullable Entity par7Entity, boolean isActualState) {
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
-			super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0, 0, 0, 1, 1, 1, state), world, pos, axisalignedbb, arraylist, par7Entity);
+			super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0, 0, 0, 1, 1, 1, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			return;
 		}
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.isMultiBlock()) {
@@ -325,58 +326,58 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return;
 			}
 		}
-		super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity);
+		super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 		if (tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe tileG = (LogisticsTileGenericPipe) tile;
 
-			if (tileG.isPipeConnected(EnumFacing.WEST)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity);
+			if (tileG.isPipeConnectedCached(EnumFacing.WEST)) {
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
-			if (tileG.isPipeConnected(EnumFacing.EAST)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, 1.0F, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity);
+			if (tileG.isPipeConnectedCached(EnumFacing.EAST)) {
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, 1.0F, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
-			if (tileG.isPipeConnected(EnumFacing.DOWN)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, 0.0F, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity);
+			if (tileG.isPipeConnectedCached(EnumFacing.DOWN)) {
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, 0.0F, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
-			if (tileG.isPipeConnected(EnumFacing.UP)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, 1.0F, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity);
+			if (tileG.isPipeConnectedCached(EnumFacing.UP)) {
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, 1.0F, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
-			if (tileG.isPipeConnected(EnumFacing.NORTH)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, 0.0F, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity);
+			if (tileG.isPipeConnectedCached(EnumFacing.NORTH)) {
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, 0.0F, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
-			if (tileG.isPipeConnected(EnumFacing.SOUTH)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity);
+			if (tileG.isPipeConnectedCached(EnumFacing.SOUTH)) {
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
 			float facadeThickness = LPConstants.FACADE_THICKNESS;
 
 			if (tileG.tilePart.hasEnabledFacade(EnumFacing.EAST)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(1 - facadeThickness, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity);
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(1 - facadeThickness, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
 			if (tileG.tilePart.hasEnabledFacade(EnumFacing.WEST)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, facadeThickness, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity);
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, facadeThickness, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
 			if (tileG.tilePart.hasEnabledFacade(EnumFacing.UP)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 1 - facadeThickness, 0.0F, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity);
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 1 - facadeThickness, 0.0F, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
 			if (tileG.tilePart.hasEnabledFacade(EnumFacing.DOWN)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, 1.0F, facadeThickness, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity);
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, 1.0F, facadeThickness, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
 			if (tileG.tilePart.hasEnabledFacade(EnumFacing.SOUTH)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 1 - facadeThickness, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity);
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 1 - facadeThickness, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 
 			if (tileG.tilePart.hasEnabledFacade(EnumFacing.NORTH)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, facadeThickness, state), world, pos, axisalignedbb, arraylist, par7Entity);
+				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, facadeThickness, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
 		}
 	}
@@ -391,7 +392,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 		InternalRayTraceResult rayTraceResult = null;
 		if(bypassPlayerTrace == null) {
-			rayTraceResult = doRayTrace(state, world, pos, Minecraft.getMinecraft().thePlayer);
+			rayTraceResult = doRayTrace(state, world, pos, Minecraft.getMinecraft().player);
 		} else {
 			rayTraceResult = bypassPlayerTrace;
 		}
@@ -443,7 +444,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		double eyeHeight = world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight();
 		Vec3d lookVec = player.getLookVec();
 		Vec3d origin = new Vec3d(player.posX, player.posY + eyeHeight, player.posZ);
-		Vec3d direction = origin.addVector(lookVec.xCoord * reachDistance, lookVec.yCoord * reachDistance, lookVec.zCoord * reachDistance);
+		Vec3d direction = origin.addVector(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance);
 
 		return doRayTrace(state, world, pos, origin, direction);
 	}
@@ -504,7 +505,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		// pipe
 		for (EnumFacing side : LogisticsBlockGenericPipe.DIR_VALUES) {
-			if (side == null || tileG.isPipeConnected(side)) {
+			if (side == null || tileG.isPipeConnectedCached(side)) {
 				if(side != null && ignoreSideRayTrace) continue;
 				AxisAlignedBB bb = getPipeBoundingBox(side);
 				boxes[side.ordinal()] = bb;
@@ -515,6 +516,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		// pluggables
 
+		/*
 		for (EnumFacing side : EnumFacing.VALUES) {
 			if (tileG.getPipePluggable(side) != null) {
 				if(side != null && ignoreSideRayTrace) continue;
@@ -524,6 +526,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				sideHit[7 + side.ordinal()] = side;
 			}
 		}
+		*/
 
 		// TODO: check wires
 
@@ -646,7 +649,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int metadata) {
-		return new LogisticsTileGenericPipeCompat();
+		return new LogisticsTileGenericPipe();
 	}
 
 	public static enum Part {
@@ -823,8 +826,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		IBlockState state = super.onBlockPlaced(world, pos, side, hitX, hitY, hitZ, meta, placer);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
@@ -851,20 +854,20 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				}
 			}
 		}
-
-		return state;
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float xOffset, float yOffset, float zOffset) {
-		super.onBlockActivated(world, pos, state, player, hand, heldItem, side, xOffset, yOffset, zOffset);
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float xOffset, float yOffset, float zOffset) {
+		super.onBlockActivated(world, pos, state, player, hand, side, xOffset, yOffset, zOffset);
+
+		ItemStack heldItem = player.inventory.mainInventory.get(player.inventory.currentItem);
 
 		//world.notifyBlocksOfNeighborChange(pos, LogisticsPipes.LogisticsPipeBlock);
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 
-			if (heldItem == null) {
+			if (heldItem.isEmpty()) {
 				// Fall through the end of the test
 			} else if (heldItem.getItem() == Items.SIGN) {
 				// Sign will be placed anyway, so lets show the sign gui
@@ -971,10 +974,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean addHitEffects(IBlockState state, World worldObj, RayTraceResult target, ParticleManager effectRenderer) {
+	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager effectRenderer) {
 		BlockPos pos = target.getBlockPos();
 
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldObj, pos);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 		if (pipe == null) {
 			return false;
 		}
@@ -985,35 +988,35 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		Block block = LogisticsPipes.LogisticsPipeBlock;
 		float b = 0.1F;
-		double px = target.hitVec.xCoord + rand.nextDouble() * (state.getBoundingBox(worldObj, pos).maxX - state.getBoundingBox(worldObj, pos).minX - (b * 2.0F)) + b + state.getBoundingBox(worldObj, pos).minX;
-		double py = target.hitVec.yCoord + rand.nextDouble() * (state.getBoundingBox(worldObj, pos).maxY - state.getBoundingBox(worldObj, pos).minY - (b * 2.0F)) + b + state.getBoundingBox(worldObj, pos).minY;
-		double pz = target.hitVec.zCoord + rand.nextDouble() * (state.getBoundingBox(worldObj, pos).maxZ - state.getBoundingBox(worldObj, pos).minZ - (b * 2.0F)) + b + state.getBoundingBox(worldObj, pos).minZ;
+		double px = target.hitVec.x + rand.nextDouble() * (state.getBoundingBox(world, pos).maxX - state.getBoundingBox(world, pos).minX - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minX;
+		double py = target.hitVec.y + rand.nextDouble() * (state.getBoundingBox(world, pos).maxY - state.getBoundingBox(world, pos).minY - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minY;
+		double pz = target.hitVec.z + rand.nextDouble() * (state.getBoundingBox(world, pos).maxZ - state.getBoundingBox(world, pos).minZ - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minZ;
 
 		if (sideHit == EnumFacing.DOWN) {
-			py = target.hitVec.yCoord + state.getBoundingBox(worldObj, pos).minY - b;
+			py = target.hitVec.y + state.getBoundingBox(world, pos).minY - b;
 		}
 
 		if (sideHit == EnumFacing.UP) {
-			py = target.hitVec.yCoord + state.getBoundingBox(worldObj, pos).maxY + b;
+			py = target.hitVec.y + state.getBoundingBox(world, pos).maxY + b;
 		}
 
 		if (sideHit == EnumFacing.NORTH) {
-			pz = target.hitVec.zCoord + state.getBoundingBox(worldObj, pos).minZ - b;
+			pz = target.hitVec.z + state.getBoundingBox(world, pos).minZ - b;
 		}
 
 		if (sideHit == EnumFacing.SOUTH) {
-			pz = target.hitVec.zCoord + state.getBoundingBox(worldObj, pos).maxZ + b;
+			pz = target.hitVec.z + state.getBoundingBox(world, pos).maxZ + b;
 		}
 
 		if (sideHit == EnumFacing.EAST) {
-			px = target.hitVec.xCoord + state.getBoundingBox(worldObj, pos).minX - b;
+			px = target.hitVec.x + state.getBoundingBox(world, pos).minX - b;
 		}
 
 		if (sideHit == EnumFacing.WEST) {
-			px = target.hitVec.xCoord + state.getBoundingBox(worldObj, pos).maxX + b;
+			px = target.hitVec.x + state.getBoundingBox(world, pos).maxX + b;
 		}
 
-		Particle fx = effectRenderer.spawnEffectParticle(EnumParticleTypes.BLOCK_CRACK.getParticleID(), px, py, pz, 0.0D, 0.0D, 0.0D, Block.getStateId(worldObj.getBlockState(target.getBlockPos())));
+		Particle fx = effectRenderer.spawnEffectParticle(EnumParticleTypes.BLOCK_CRACK.getParticleID(), px, py, pz, 0.0D, 0.0D, 0.0D, Block.getStateId(world.getBlockState(target.getBlockPos())));
 		fx.setParticleTexture(icon);
 		effectRenderer.addEffect(fx.multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
 		return true;
@@ -1021,15 +1024,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean addDestroyEffects(World worldObj, BlockPos pos, ParticleManager effectRenderer) {
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldObj, pos);
+	public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager effectRenderer) {
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 		if (pipe == null) {
 			return false;
 		}
 
 		PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 		//if (config.isUseNewRenderer()) {
-			LogisticsNewRenderPipe.renderDestruction(pipe, worldObj, pos.getX(), pos.getY(), pos.getZ(), effectRenderer);
+			LogisticsNewRenderPipe.renderDestruction(pipe, world, pos.getX(), pos.getY(), pos.getZ(), effectRenderer);
 		/*} else {
 			TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());
 
@@ -1048,7 +1051,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 								double py = localy + (j + 0.5D) / its;
 								double pz = localz + (k + 0.5D) / its;
 								int random = rand.nextInt(6);
-								EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, px - localx - 0.5D, py - localy - 0.5D, pz - localz - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
+								EntityDiggingFX fx = new EntityDiggingFX(world, px, py, pz, px - localx - 0.5D, py - localy - 0.5D, pz - localz - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
 								fx.setParticleIcon(icon);
 								effectRenderer.addEffect(fx.applyColourMultiplier(pos));
 							}
@@ -1057,7 +1060,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 							double py = y + (j + 0.5D) / its;
 							double pz = z + (k + 0.5D) / its;
 							int random = rand.nextInt(6);
-							EntityDiggingFX fx = new EntityDiggingFX(worldObj, px, py, pz, px - x - 0.5D, py - y - 0.5D, pz - z - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
+							EntityDiggingFX fx = new EntityDiggingFX(world, px, py, pz, px - x - 0.5D, py - y - 0.5D, pz - z - 0.5D, LogisticsPipes.LogisticsPipeBlock, random, meta);
 							fx.setParticleIcon(icon);
 							effectRenderer.addEffect(fx.applyColourMultiplier(pos));
 						}

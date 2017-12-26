@@ -26,6 +26,6 @@ public class MeCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		DebugGuiController.instance().startWatchingOf(sender, (EntityPlayer) sender);
-		sender.addChatMessage(new TextComponentString("Starting SelfDebuging"));
+		sender.sendMessage(new TextComponentString("Starting SelfDebuging"));
 	}
 }

@@ -16,9 +16,11 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -188,7 +190,7 @@ public class ProxyManager {
 					@Override public void afterStateUpdated() {}
 					@Override public Object getOriginal() {return null;}
 					@Override public boolean hasPipePluggable(EnumFacing dir) {return false;}
-					@Override public void setWorldObj_LP(World world) {}
+					@Override public void setWorld_LP(World world) {}
 				};
 			}
 			@Override public IBCClickResult handleBCClickOnPipe(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe) {
@@ -274,6 +276,9 @@ public class ProxyManager {
 		SimpleServiceLocator.setThermalExpansionProxy(ProxyManager.getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
 			@Override public boolean isTE() {return false;}
 			@Override public CraftingParts getRecipeParts() {return null;}
+			@Override public boolean isToolHammer(Item stack) {return false;}
+			@Override public boolean canHammer(ItemStack stack, EntityPlayer entityplayer, BlockPos pos) {return false;}
+			@Override public void toolUsed(ItemStack stack, EntityPlayer entityplayer, BlockPos pos) {}
 		}));
 
 		SimpleServiceLocator.setBetterStorageProxy(ProxyManager.getWrappedProxy("betterstorage", IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
@@ -293,7 +298,7 @@ public class ProxyManager {
 		SimpleServiceLocator.setNEIProxy(ProxyManager.getWrappedProxy("NotEnoughItems", INEIProxy.class, NEIProxy.class, new INEIProxy() {
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {return new ArrayList<>(0);}
 			@Override @SideOnly(Side.CLIENT) public boolean renderItemToolTip(int posX, int posY, List<String> msg, TextFormatting rarityColor, ItemStack stack) {return false;}
-			@Override @SideOnly(Side.CLIENT) public List<String> getItemToolTip(ItemStack stack, EntityPlayer thePlayer, boolean advancedItemTooltips, GuiContainer screen) {return stack.getTooltip(thePlayer, advancedItemTooltips);}
+			@Override @SideOnly(Side.CLIENT) public List<String> getItemToolTip(ItemStack stack, EntityPlayer thePlayer, ITooltipFlag advancedItemTooltips, GuiContainer screen) {return stack.getTooltip(thePlayer, advancedItemTooltips);}
 			@Override public ItemStack getItemForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {return null;}
 		}));
 
@@ -364,7 +369,7 @@ public class ProxyManager {
 			@Override public ITDPart getTDPart(final LogisticsTileGenericPipe pipe) {
 				return new ITDPart() {
 					@Override public TileEntity getInternalDuctForSide(EnumFacing opposite) {return pipe;}
-					@Override public void setWorldObj_LP(World world) {}
+					@Override public void setWorld_LP(World world) {}
 					@Override public void invalidate() {}
 					@Override public void onChunkUnload() {}
 					@Override public void scheduleNeighborChange() {}
@@ -463,5 +468,6 @@ public class ProxyManager {
 		};
 		Class<?>[] cclSubWrapper = new Class<?>[] {TextureTransformation.class, IRenderState.class, IModel3D.class, ITranslation.class, IVec3.class, IBounds.class};
 		SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!CCLRender", ICCLProxy.class, CCLProxy.class, dummyCCLProxy, cclSubWrapper));
+		SimpleServiceLocator.setToolWrenchHandler(new ToolWrenchHandler());
 	}
 }

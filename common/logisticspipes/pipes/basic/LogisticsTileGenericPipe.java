@@ -1,6 +1,9 @@
 package logisticspipes.pipes.basic;
 
 import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,39 +11,30 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import buildcraft.api.transport.pipe.IPipe;
-import buildcraft.api.transport.pipe.IPipeConnection;
-import buildcraft.api.transport.pipe.IPipeTile;
-import buildcraft.api.transport.pluggable.PipePluggable;
-import cofh.api.tileentity.IItemDuct;
 import dan200.computercraft.api.peripheral.IComputerAccess;
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.network.Environment;
-import li.cil.oc.api.network.ManagedPeripheral;
-import li.cil.oc.api.network.Message;
+import io.netty.buffer.ByteBuf;
 import li.cil.oc.api.network.Node;
-import li.cil.oc.api.network.SidedEnvironment;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
 
@@ -50,12 +44,11 @@ import logisticspipes.api.ILPPipe;
 import logisticspipes.api.ILPPipeTile;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
-import logisticspipes.asm.ModDependentMethod;
-import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.LogicController;
 import logisticspipes.logic.interfaces.ILogicControllerTile;
+import logisticspipes.network.IWriteListObject;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeTileStatePacket;
@@ -65,34 +58,34 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPluggableState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
-import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.IOCTile;
-import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
+import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.util.LPDataIOWrapper;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-@ModDependentInterface(modId = { "CoFHCore", LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID,
-		"BuildCraft|Transport", "BuildCraft|Transport" }, interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral",
-		"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment",
-		"buildcraft.api.transport.IPipeTile", "buildcraft.api.transport.IPipeConnection" })
+@ModDependentInterface(modId = { "CoFHCore", LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID},
+		interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral",
+		"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", })
 public class LogisticsTileGenericPipe extends TileEntity
-		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, IFluidHandler, IPipeTile,
-		ILogicControllerTile, IPipeConnection {
+		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, */
+		ILogicControllerTile {
 
 	public final PipeRenderState renderState;
 	public final CoreState coreState = new CoreState();
@@ -186,9 +179,9 @@ public class LogisticsTileGenericPipe extends TileEntity
 			sendInitPacket = false;
 			getRenderController().sendInit();
 		}
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			if (deletePipe) {
-				worldObj.setBlockToAir(getPos());
+				world.setBlockToAir(getPos());
 			}
 
 			if (pipe == null) {
@@ -208,7 +201,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 		pipe.updateEntity();
 
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			debug.end();
 			return;
 		}
@@ -265,14 +258,27 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		sendInitPacket = true;
 		try {
-			return PacketHandler.toFMLPacket(getLPDescriptionPacket());
+			ModernPacket packet = getLPDescriptionPacket();
+			byte[] data = LPDataIOWrapper.collectData(packet::writeData);
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setByteArray("PacketData", data);
+			return new SPacketUpdateTileEntity(getPos(), 1, nbt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		byte[] data = pkt.getNbtCompound().getByteArray("PacketData");
+		if(data.length > 0) {
+			LPDataIOWrapper.provideData(data, dataInput -> PacketHandler.onPacketData(dataInput, Minecraft.getMinecraft().player));
+		}
 	}
 
 	@Override
@@ -387,7 +393,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	public boolean canPipeConnect(TileEntity with, EnumFacing side) {
-		if (MainProxy.isClient(worldObj)) {
+		if (MainProxy.isClient(world)) {
 			//XXX why is this ever called client side, its not *used* for anything.
 			return false;
 		}
@@ -460,11 +466,11 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	public ItemStack insertItem(EnumFacing dir, ItemStack stack) {
 		int used = injectItem(stack, true, dir);
-		if (used == stack.stackSize) {
+		if (used == stack.getCount()) {
 			return null;
 		} else {
 			stack = stack.copy();
-			stack.stackSize -= used;
+			stack.shrink(used);
 			return stack;
 		}
 	}
@@ -591,25 +597,30 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	public int injectItem(ItemStack payload, boolean doAdd, EnumFacing from) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnected(from)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnectedCached(from)) {
 			if (doAdd && MainProxy.isServer(getWorld())) {
 				ItemStack leftStack = payload.copy();
 				int lastIterLeft;
 				do {
-					lastIterLeft = leftStack.stackSize;
+					lastIterLeft = leftStack.getCount();
 					LPTravelingItem.LPTravelingItemServer travelingItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(leftStack);
-					leftStack.stackSize = pipe.transport.injectItem(travelingItem, from.getOpposite());
-				} while (leftStack.stackSize != lastIterLeft && leftStack.stackSize != 0);
-				return payload.stackSize - leftStack.stackSize;
+					leftStack.setCount(pipe.transport.injectItem(travelingItem, from.getOpposite()));
+				} while (leftStack.getCount() != lastIterLeft && leftStack.getCount() != 0);
+				return payload.getCount() - leftStack.getCount();
 			}
 		}
 		return 0;
+	}
+
+	public boolean isPipeConnectedCached(EnumFacing side) {
+		return pipeConnectionsBuffer[side.ordinal()];
 	}
 
 	public boolean isOpaque() {
 		return pipe.isOpaque();
 	}
 
+	/*
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Node node() {
@@ -660,10 +671,11 @@ public class LogisticsTileGenericPipe extends TileEntity
 			return node();
 		}
 	}
+	*/
 
 	@Override
 	public Object getOCNode() {
-		return node();
+		return node;
 	}
 
 	public void initialize(CoreUnroutedPipe pipe) {
@@ -671,7 +683,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 		if (pipe == null) {
 			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", getPos().getX(), getPos().getY(), getPos().getZ());
-			worldObj.setBlockToAir(getPos());
+			world.setBlockToAir(getPos());
 			return;
 		}
 
@@ -733,10 +745,10 @@ public class LogisticsTileGenericPipe extends TileEntity
 			return;
 		}
 
-		worldObj.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+		world.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 
 		if (renderState.needsRenderUpdate()) {
-			worldObj.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+			world.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 			renderState.clean();
 		}
 		tilePart.afterStateUpdated();
@@ -748,7 +760,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	public TileBuffer[] getTileCache() {
 		if (tileBuffer == null && pipe != null) {
-			tileBuffer = TileBuffer.makeBuffer(worldObj, pos, pipe.transport.delveIntoUnloadedChunks());
+			tileBuffer = TileBuffer.makeBuffer(world, pos, pipe.transport.delveIntoUnloadedChunks());
 		}
 		return tileBuffer;
 	}
@@ -819,57 +831,21 @@ public class LogisticsTileGenericPipe extends TileEntity
 		}
 	}
 
-	/**
-	 * ITankContainer implementation *
-	 */
 	@Override
-	public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasBlockingPluggable(from)) {
-			return ((IFluidHandler) pipe.transport).fill(from, resource, doFill);
-		} else {
-			return 0;
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && !tilePart.hasBlockingPluggable(facing)) {
+			if(((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
 		}
+		return super.hasCapability(capability, facing);
 	}
 
+	@Nullable
 	@Override
-	public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasBlockingPluggable(from)) {
-			return ((IFluidHandler) pipe.transport).drain(from, maxDrain, doDrain);
-		} else {
-			return null;
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && !tilePart.hasBlockingPluggable(facing)) {
+			return (T)((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing);
 		}
-	}
-
-	@Override
-	public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasBlockingPluggable(from)) {
-			return ((IFluidHandler) pipe.transport).drain(from, resource, doDrain);
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public boolean canFill(EnumFacing from, Fluid fluid) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasBlockingPluggable(from)) {
-			return ((IFluidHandler) pipe.transport).canFill(from, fluid);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean canDrain(EnumFacing from, Fluid fluid) {
-		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof IFluidHandler && !tilePart.hasBlockingPluggable(from)) {
-			return ((IFluidHandler) pipe.transport).canDrain(from, fluid);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public FluidTankInfo[] getTankInfo(EnumFacing from) {
-		return null;
+		return super.getCapability(capability, facing);
 	}
 
 	public void scheduleRenderUpdate() {
@@ -899,8 +875,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 
-	public boolean isUseableByPlayer(EntityPlayer player) {
-		return worldObj.getTileEntity(pos) == this;
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return world.getTileEntity(pos) == this;
 	}
 
 	@Override
@@ -920,7 +896,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public ILPPipe getLPPipe() {
 		return pipe;
 	}
-
+/*
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public IPipe getPipe() {
@@ -930,7 +906,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	@ModDependentMethod(modId = "BuildCraft|Transport")
 	public boolean canInjectItems(EnumFacing from) {
-		return isPipeConnected(from);
+		return isPipeConnectedCached(from);
 	}
 
 	@Override
@@ -1012,12 +988,12 @@ public class LogisticsTileGenericPipe extends TileEntity
 		}
 		return ConnectOverride.DEFAULT;
 	}
-
+*/
 	@Override
-	public void setWorldObj(World world) {
-		super.setWorldObj(world);
-		tilePart.setWorldObj_LP(world);
-		tdPart.setWorldObj_LP(world);
+	public void setWorld(World world) {
+		super.setWorld(world);
+		tilePart.setWorld_LP(world);
+		tdPart.setWorld_LP(world);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -1082,7 +1058,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	public Stream<TileEntity> getPartsOfPipe() {
-		return this.subMultiBlock.stream().map(pos -> pos.getTileEntity(worldObj));
+		return this.subMultiBlock.stream().map(pos -> pos.getTileEntity(world));
 	}
 
 	public class CoreState implements IClientState {

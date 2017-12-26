@@ -66,10 +66,8 @@ public class ItemRoutingInformation {
 		arrived = nbttagcompound.getBoolean("arrived");
 		bufferCounter = nbttagcompound.getInteger("bufferCounter");
 		_transportMode = TransportMode.values()[nbttagcompound.getInteger("transportMode")];
-		ItemStack stack = ItemStack.loadItemStackFromNBT(nbttagcompound.getCompoundTag("Item"));
-		if (stack != null) {
-			setItem(ItemIdentifierStack.getFromStack(stack));
-		}
+		ItemStack stack = new ItemStack(nbttagcompound.getCompoundTag("Item"));
+		setItem(ItemIdentifierStack.getFromStack(stack));
 	}
 
 	public void writeToNBT(NBTTagCompound nbttagcompound) {

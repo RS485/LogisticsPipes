@@ -44,35 +44,35 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 	@Override
 	public void processPacket(final EntityPlayer player) {
 		if (mode == TargetMode.None) {
-			player.addChatMessage(new TextComponentString(ChatColor.RED + "No Target Found"));
+			player.sendMessage(new TextComponentString(ChatColor.RED + "No Target Found"));
 		} else if (mode == TargetMode.Block) {
 			int x = additions[0];
 			int y = additions[1];
 			int z = additions[2];
-			player.addChatMessage(new TextComponentString("Checking Block at: x:" + x + " y:" + y + " z:" + z));
-			Block id = player.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
-			player.addChatMessage(new TextComponentString("Found Block with Id: " + Block.getIdFromBlock(id)));
-			final TileEntity tile = player.worldObj.getTileEntity(new BlockPos(x, y, z));
+			player.sendMessage(new TextComponentString("Checking Block at: x:" + x + " y:" + y + " z:" + z));
+			Block id = player.world.getBlockState(new BlockPos(x, y, z)).getBlock();
+			player.sendMessage(new TextComponentString("Found Block with Id: " + Block.getIdFromBlock(id)));
+			final TileEntity tile = player.world.getTileEntity(new BlockPos(x, y, z));
 			if (tile == null) {
-				player.addChatMessage(new TextComponentString(ChatColor.RED + "No TileEntity found"));
+				player.sendMessage(new TextComponentString(ChatColor.RED + "No TileEntity found"));
 			} else if (!(tile instanceof LogisticsTileGenericPipe)) {
-				player.addChatMessage(new TextComponentString(ChatColor.RED + "No LogisticsTileGenericPipe found"));
+				player.sendMessage(new TextComponentString(ChatColor.RED + "No LogisticsTileGenericPipe found"));
 			} else if (!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {
-				player.addChatMessage(new TextComponentString(ChatColor.RED + "No CoreRoutedPipe found"));
+				player.sendMessage(new TextComponentString(ChatColor.RED + "No CoreRoutedPipe found"));
 			} else {
 				LPChatListener.addTask(() -> {
-					player.addChatMessage(new TextComponentString(ChatColor.GREEN + "Starting RoutingTable debug update."));
+					player.sendMessage(new TextComponentString(ChatColor.GREEN + "Starting RoutingTable debug update."));
 					DebugController.instance(player).debug(((ServerRouter) ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter()));
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 					return true;
 				}, player);
-				player.addChatMessage(new TextComponentString(
+				player.sendMessage(new TextComponentString(
 						ChatColor.AQUA + "Start RoutingTable debug update ? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/"
 								+ ChatColor.RED + "no" + ChatColor.RESET + ">"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			}
 		} else if (mode == TargetMode.Entity) {
-			player.addChatMessage(new TextComponentString(ChatColor.RED + "Entity not allowed"));
+			player.sendMessage(new TextComponentString(ChatColor.RED + "Entity not allowed"));
 		}
 	}
 

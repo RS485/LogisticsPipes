@@ -25,9 +25,9 @@ public class SecurityStationAutoDestroy extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
+		LogisticsSecurityTileEntity tile = this.getTile(player.world, LogisticsSecurityTileEntity.class);
 		if (tile instanceof LogisticsSecurityTileEntity) {
-			if (MainProxy.isClient(player.worldObj)) {
+			if (MainProxy.isClient(player.world)) {
 				tile.setClientDestroy(getInteger() == 1);
 				handleClientSide(player);
 			} else {

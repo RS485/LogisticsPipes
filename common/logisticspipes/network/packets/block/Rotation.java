@@ -22,10 +22,10 @@ public class Rotation extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		IRotationProvider tile = this.getTileOrPipe(player.worldObj, IRotationProvider.class);
+		IRotationProvider tile = this.getTileOrPipe(player.world, IRotationProvider.class);
 		if (tile != null) {
 			tile.setRotation(getInteger());
-			player.worldObj.notifyNeighborsRespectDebug(new BlockPos(getPosX(), getPosY(), getPosZ()), player.worldObj.getBlockState(new BlockPos(getPosX(), getPosY(), getPosZ())).getBlock());
+			player.world.notifyNeighborsRespectDebug(new BlockPos(getPosX(), getPosY(), getPosZ()), player.world.getBlockState(new BlockPos(getPosX(), getPosY(), getPosZ())).getBlock(), true);
 		}
 	}
 }

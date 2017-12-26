@@ -104,7 +104,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 					return inv.decrStackSize(i, amount);
 				} else {
 					ItemStack extracted = inv.getStackInSlot(i).copy();
-					extracted.stackSize = amount;
+					extracted.setCount(amount);
 					return extracted;
 				}
 			}
@@ -114,9 +114,9 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 
 	private int addItem(ISidedInventory inv, ItemStack stack, EnumFacing dir) {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			if (inv.getStackInSlot(i) == null && inv.canInsertItem(i, stack, dir)) {
+			if (inv.getStackInSlot(i).isEmpty() && inv.canInsertItem(i, stack, dir)) {
 				inv.setInventorySlotContents(i, stack);
-				return stack.stackSize;
+				return stack.getCount();
 			}
 		}
 		return 0;

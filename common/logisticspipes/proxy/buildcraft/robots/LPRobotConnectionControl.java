@@ -99,7 +99,7 @@ public class LPRobotConnectionControl implements ISpecialPipedConnection {
 		Set<Pair<DoubleCoordinates, EnumFacing>> localConnectedRobots = new HashSet<>();
 		DoubleCoordinates sourceRobotPosition = CoordinateUtils.add(board.getLinkedStationPosition().center(), board.robot.getLinkedStation().side(), 0.5);
 		IZone zone = board.robot.getZoneToWork();
-		for (Pair<DoubleCoordinates, EnumFacing> canidatePos : globalAvailableRobots.get(board.robot.worldObj)) {
+		for (Pair<DoubleCoordinates, EnumFacing> canidatePos : globalAvailableRobots.get(board.robot.world)) {
 			DoubleCoordinates canidateRobotPosition = CoordinateUtils
 					.add(new DoubleCoordinates(canidatePos.getValue1()).center(), canidatePos.getValue2(), 0.5);
 			double distance = canidateRobotPosition.distanceTo(sourceRobotPosition);

@@ -6,11 +6,10 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -65,10 +64,10 @@ public class PipeFXLaserPowerBall extends Particle {
 	}
 
 	@Override
-	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		Tessellator.getInstance().draw();
 		GL11.glPushMatrix();
-		float rot = (worldObj.provider.getWorldTime() + random) % (360 / PipeFXLaserPowerBall.ROTATIONSPEED) * PipeFXLaserPowerBall.ROTATIONSPEED + PipeFXLaserPowerBall.ROTATIONSPEED * partialTicks;
+		float rot = (world.provider.getWorldTime() + random) % (360 / PipeFXLaserPowerBall.ROTATIONSPEED) * PipeFXLaserPowerBall.ROTATIONSPEED + PipeFXLaserPowerBall.ROTATIONSPEED * partialTicks;
 
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 10497.0F);
@@ -93,7 +92,7 @@ public class PipeFXLaserPowerBall extends Particle {
 				GL11.glRotatef(rotate, 1.0F, 0.0F, 0.0F);
 				for (int v = 0; v < repeat; v++) {
 					GL11.glRotatef(rotate, 0.0F, 1.0F, 0.0F);
-					VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+					BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 					double zoom = 0.25D;
 					buffer.pos(zoom, zoom, 0.0D).tex(1.0D, 1.0D).color(particleRed, particleGreen, particleBlue, 0.8F).endVertex();
@@ -110,7 +109,7 @@ public class PipeFXLaserPowerBall extends Particle {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(PipeFXLaserPowerBall.field_110737_b);
-		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+		BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}
 }

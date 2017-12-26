@@ -21,14 +21,14 @@ public class FluidSupplierAmount extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.world);
 		if (pipe == null) {
 			return;
 		}
 		if (!(pipe.pipe instanceof PipeFluidSupplierMk2)) {
 			return;
 		}
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			((PipeFluidSupplierMk2) pipe.pipe).setAmount(getInteger());
 		} else {
 			((PipeFluidSupplierMk2) pipe.pipe).changeFluidAmount(getInteger(), player);

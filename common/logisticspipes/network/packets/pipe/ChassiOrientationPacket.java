@@ -23,7 +23,7 @@ public class ChassiOrientationPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		LogisticsTileGenericPipe pipe = this.getPipe(player.world);
 		if (pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) {
 			return;
 		}

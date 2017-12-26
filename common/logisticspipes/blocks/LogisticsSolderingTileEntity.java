@@ -138,10 +138,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 						match = false;
 					} else {
 						if (remove && ((getTagetForRecipe(false) != null && itemEquals(getTagetForRecipe(false), recipe.result)) || removeThis)) {
-							inputStack.stackSize -= 1;
-							if (inputStack.stackSize <= 0) {
-								inputStack = null;
-							}
+							inputStack.shrink(1);
 							inv.setInventorySlotContents(i, inputStack);
 							removeThis = true;
 						}
@@ -308,10 +305,10 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 			if (!content.getItem().equals(toAdd)) {
 				return false;
 			}
-			if (content.getStackSize() + toAdd.stackSize > content.getItem().getMaxStackSize()) {
+			if (content.getStackSize() + toAdd.getCount() > content.getItem().getMaxStackSize()) {
 				return false;
 			}
-			toAdd.stackSize += content.getStackSize();
+			toAdd.grow(content.getStackSize());
 		}
 
 		//dummy
@@ -331,6 +328,11 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	@Override
 	public int getSizeInventory() {
 		return inv.getSizeInventory();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return inv.isEmpty();
 	}
 
 	@Override
@@ -364,8 +366,8 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer var1) {
-		return inv.isUseableByPlayer(var1);
+	public boolean isUsableByPlayer(EntityPlayer var1) {
+		return inv.isUsableByPlayer(var1);
 	}
 
 	@Override

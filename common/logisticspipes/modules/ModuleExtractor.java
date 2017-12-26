@@ -168,7 +168,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 			int itemsleft = itemsToExtract();
 			while (reply != null) {
-				int count = Math.min(itemsleft, slot.stackSize);
+				int count = Math.min(itemsleft, slot.getCount());
 				count = Math.min(count, slotitem.getMaxStackSize());
 				if (reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
@@ -184,10 +184,10 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 				}
 
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
-				if (stackToSend == null || stackToSend.stackSize == 0) {
+				if (stackToSend == null || stackToSend.getCount() == 0) {
 					break;
 				}
-				count = stackToSend.stackSize;
+				count = stackToSend.getCount();
 				_service.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if (itemsleft <= 0) {

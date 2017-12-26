@@ -47,5 +47,5 @@ public interface IBCTilePart {
 
 	boolean hasPipePluggable(EnumFacing dir);
 
-	void setWorldObj_LP(World world);
+	void setWorld_LP(World world);
 }

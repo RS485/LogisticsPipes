@@ -45,7 +45,7 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
+		LogisticsTileGenericPipe tile = this.getPipe(player.world);
 		if (tile.pipe instanceof IRequestWatcher) {
 			((IRequestWatcher) tile.pipe).handleClientSideListInfo(getInteger(), getStack(), getOrders());
 		}

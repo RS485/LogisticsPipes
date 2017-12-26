@@ -148,12 +148,12 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	protected void notifyBlockOfNeighborChange(EnumFacing side) {
-		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container.getPos()), side).getBlockPos(), LogisticsPipes.LogisticsPipeBlock);
+		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container.getPos()), side).getBlockPos(), LogisticsPipes.LogisticsPipeBlock, true);
 	}
 
 	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
-			container.getWorld().notifyNeighborsOfStateChange(container.getPos(), LogisticsPipes.LogisticsPipeBlock);
+			container.getWorld().notifyNeighborsOfStateChange(container.getPos(), LogisticsPipes.LogisticsPipeBlock, true);
 		}
 		for (EnumFacing side : EnumFacing.VALUES) {
 			notifyBlockOfNeighborChange(side);
@@ -193,7 +193,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		EnumFacing targetOrientation = null;
 
 		for (EnumFacing o : EnumFacing.VALUES) {
-			if (container.isPipeConnected(o)) {
+			if (container.isPipeConnectedCached(o)) {
 
 				connectionsNum++;
 

@@ -90,7 +90,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		}
 		if (_contents[slot].getStackSize() > count) {
 			ItemStack ret = _contents[slot].makeNormalStack();
-			ret.stackSize = count;
+			ret.setCount(count);
 			_contents[slot].setStackSize(_contents[slot].getStackSize() - count);
 			updateContents();
 			return ret;
@@ -121,7 +121,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		if (itemstack == null) {
+		if (itemstack == null || itemstack.isEmpty()) {
 			_contents[i] = null;
 		} else {
 			if (!isValidStack(itemstack)) {
@@ -164,7 +164,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
 		return true;
 	}
 
@@ -186,12 +186,10 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			NBTTagCompound nbttagcompound2 = nbttaglist.getCompoundTagAt(j);
 			int index = nbttagcompound2.getInteger("index");
 			if (index < _contents.length) {
-				ItemStack stack = ItemStack.loadItemStackFromNBT(nbttagcompound2);
-				if (stack != null) {
-					ItemIdentifierStack itemstack = ItemIdentifierStack.getFromStack(stack);
-					if (isValidStack(itemstack)) {
-						_contents[index] = itemstack;
-					}
+				ItemStack stack = new ItemStack(nbttagcompound2);
+				ItemIdentifierStack itemstack = ItemIdentifierStack.getFromStack(stack);
+				if (isValidStack(itemstack)) {
+					_contents[index] = itemstack;
 				}
 			} else {
 				LogisticsPipes.log.fatal("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
@@ -219,16 +217,16 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		nbttagcompound.setInteger(prefix + "itemsCount", _contents.length);
 	}
 
-	public void dropContents(World worldObj, BlockPos pos) {
-		dropContents(worldObj, pos.getX(), pos.getY(), pos.getZ());
+	public void dropContents(World world, BlockPos pos) {
+		dropContents(world, pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	public void dropContents(World worldObj, int posX, int posY, int posZ) {
-		if (MainProxy.isServer(worldObj)) {
+	public void dropContents(World world, int posX, int posY, int posZ) {
+		if (MainProxy.isServer(world)) {
 			for (int i = 0; i < _contents.length; i++) {
 				while (_contents[i] != null) {
 					ItemStack todrop = decrStackSize(i, _contents[i].getItem().getMaxStackSize());
-					ItemIdentifierInventory.dropItems(worldObj, todrop, posX, posY, posZ);
+					ItemIdentifierInventory.dropItems(world, todrop, posX, posY, posZ);
 				}
 			}
 			updateContents();
@@ -240,7 +238,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	}
 
 	public static void dropItems(World world, ItemStack stack, int i, int j, int k) {
-		if (stack.stackSize <= 0) {
+		if (stack.getCount() <= 0) {
 			return;
 		}
 		float f1 = 0.7F;
@@ -249,7 +247,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		double d2 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
 		EntityItem entityitem = new EntityItem(world, i + d, j + d1, k + d2, stack);
 		entityitem.setPickupDelay(10);
-		world.spawnEntityInWorld(entityitem);
+		world.spawnEntity(entityitem);
 	}
 
 	public void addListener(ISimpleInventoryEventHandler listner) {
@@ -304,13 +302,13 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
 		ItemIdentifier slotIdent = slot.getItem();
 		if (slotIdent.equals(stackIdent)) {
-			slot.setStackSize(slot.getStackSize() + stack.stackSize);
+			slot.setStackSize(slot.getStackSize() + stack.getCount());
 			if (slot.getStackSize() > realstacklimit) {
-				int ans = stack.stackSize - (slot.getStackSize() - realstacklimit);
+				int ans = stack.getCount() - (slot.getStackSize() - realstacklimit);
 				slot.setStackSize(realstacklimit);
 				return ans;
 			} else {
-				return stack.stackSize;
+				return stack.getCount();
 			}
 		} else {
 			return 0;
@@ -325,7 +323,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			if (LPConstants.DEBUG) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
-			return stack.stackSize;
+			return stack.getCount();
 		}
 		stack = stack.copy();
 
@@ -336,24 +334,24 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		}
 
 		for (int i = 0; i < _contents.length; i++) {
-			if (stack.stackSize <= 0) {
+			if (stack.getCount() <= 0) {
 				break;
 			}
 			if (_contents[i] == null) {
 				continue; //Skip Empty Slots on first attempt.
 			}
 			int added = tryAddToSlot(i, stack, stacklimit);
-			stack.stackSize -= added;
+			stack.setCount(stack.getCount() - added);
 		}
 		for (int i = 0; i < _contents.length; i++) {
-			if (stack.stackSize <= 0) {
+			if (stack.getCount() <= 0) {
 				break;
 			}
 			int added = tryAddToSlot(i, stack, stacklimit);
-			stack.stackSize -= added;
+			stack.setCount(stack.getCount() - added);
 		}
 		markDirty();
-		return stack.stackSize;
+		return stack.getCount();
 	}
 
 	/* InventoryUtil-like functions */

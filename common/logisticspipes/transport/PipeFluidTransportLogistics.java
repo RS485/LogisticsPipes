@@ -17,9 +17,10 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
-public class PipeFluidTransportLogistics extends PipeTransportLogistics implements IFluidHandler {
+public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 
 	public FluidTank[] sideTanks = new FluidTank[EnumFacing.VALUES.length];
 	public FluidTank internalTank = new FluidTank(getInnerCapacity());
@@ -33,54 +34,58 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		}
 	}
 
-	@Override
-	public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
-		if (from.ordinal() < EnumFacing.VALUES.length && getFluidPipe().canReceiveFluid()) {
-			return sideTanks[from.ordinal()].fill(resource, doFill);
-		} else {
-			return 0;
-		}
+	public IFluidHandler getIFluidHandler(EnumFacing face) {
+		return new FluidHandler(face);
 	}
 
 	private FluidRoutedPipe getFluidPipe() {
 		return (FluidRoutedPipe) getPipe();
 	}
 
-	@Override
-	public boolean canFill(EnumFacing from, Fluid fluid) {
-		return getPipe().isFluidPipe() && getFluidPipe().canReceiveFluid();
-	}
+	public class FluidHandler implements IFluidHandler {
 
-	@Override
-	public boolean canDrain(EnumFacing from, Fluid fluid) {
-		return false;
-	}
+		private EnumFacing from;
 
-	@Override
-	public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
-		if (from.ordinal() < EnumFacing.VALUES.length) {
-			return sideTanks[from.ordinal()].drain(maxDrain, doDrain);
-		} else {
-			return null;
+		FluidHandler(EnumFacing from) {
+			this.from = from;
+		}
+
+		@Override
+		public int fill(FluidStack resource, boolean doFill) {
+			if (from.ordinal() < EnumFacing.VALUES.length && getFluidPipe().canReceiveFluid()) {
+				return sideTanks[from.ordinal()].fill(resource, doFill);
+			} else {
+				return 0;
+			}
+		}
+
+		@Override
+		public FluidStack drain(int maxDrain, boolean doDrain) {
+			if (from.ordinal() < EnumFacing.VALUES.length) {
+				return sideTanks[from.ordinal()].drain(maxDrain, doDrain);
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public FluidStack drain(FluidStack resource, boolean doDrain) {
+			if (sideTanks[from.ordinal()].getFluid() == null || !(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource))) {
+				return new FluidStack(resource.getFluid(), 0);
+			}
+			return drain(resource.amount, doDrain);
+		}
+
+		@Override
+		public IFluidTankProperties[] getTankProperties() {
+			if (from.ordinal() < EnumFacing.VALUES.length) {
+				return sideTanks[from.ordinal()].getTankProperties();
+			} else {
+				return null;
+			}
 		}
 	}
 
-	@Override
-	public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
-		if (sideTanks[from.ordinal()].getFluid() == null || !(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource))) {
-			return new FluidStack(resource.getFluid(), 0);
-		}
-		return drain(from, resource.amount, doDrain);
-	}
-
-	@Override
-	public FluidTankInfo[] getTankInfo(EnumFacing from) {
-		if (from.ordinal() < EnumFacing.VALUES.length) {
-			return new FluidTankInfo[] { new FluidTankInfo(sideTanks[from.ordinal()]) };
-		} else {
-			return null;
-		}
-	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {

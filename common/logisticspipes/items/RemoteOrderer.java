@@ -81,9 +81,9 @@ public class RemoteOrderer extends Item {
 		}
 		PipeItemsRemoteOrdererLogistics pipe = RemoteOrderer.getPipe(par1ItemStack);
 		if (pipe != null) {
-			if (MainProxy.isServer(par3EntityPlayer.worldObj)) {
+			if (MainProxy.isServer(par3EntityPlayer.world)) {
 				int energyUse = 0;
-				if (pipe.getWorld() != par3EntityPlayer.worldObj) {
+				if (pipe.getWorld() != par3EntityPlayer.world) {
 					energyUse += 2500;
 				}
 				energyUse += Math.sqrt(Math.pow(pipe.getX() - par3EntityPlayer.posX, 2) + Math.pow(pipe.getY() - par3EntityPlayer.posY, 2) + Math.pow(pipe.getZ() - par3EntityPlayer.posZ, 2));

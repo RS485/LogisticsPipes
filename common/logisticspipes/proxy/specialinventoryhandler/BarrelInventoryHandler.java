@@ -96,7 +96,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 				}
 				BarrelInventoryHandler.setItemCount.invoke(_tile, new Object[] { value - count });
 				ItemStack ret = itemStack.copy();
-				ret.stackSize = count;
+				ret.setCount(count);
 				return ret;
 			}
 		} catch (IllegalArgumentException e) {
@@ -156,7 +156,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 				if (value > (_hideOnePerStack ? 1 : 0)) {
 					BarrelInventoryHandler.setItemCount.invoke(_tile, new Object[] { value - 1 });
 					ItemStack ret = itemStack.copy();
-					ret.stackSize = 1;
+					ret.setCount(1);
 					return ret;
 				}
 			}
@@ -218,14 +218,14 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
-		st.stackSize = 0;
+		st.setCount(0);
 		if (from != EnumFacing.UP) {
 			return st;
 		}
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack == null) {
-				st.stackSize = stack.stackSize;
+				st.setCount(stack.getCount());
 				if (doAdd) {
 					ItemStack tst = stack.copy();
 					((IInventory) _tile).setInventorySlotContents(0, tst);
@@ -237,9 +237,9 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 				int max = (Integer) BarrelInventoryHandler.getMaxSize.invoke(_tile, new Object[] {});
 				int value = (Integer) BarrelInventoryHandler.getItemCount.invoke(_tile, new Object[] {});
 				int room = max - value;
-				st.stackSize = Math.max(Math.min(room, stack.stackSize), 0);
-				if (doAdd && st.stackSize > 0) {
-					BarrelInventoryHandler.setItemCount.invoke(_tile, new Object[] { value + st.stackSize });
+				st.setCount(Math.max(Math.min(room, stack.getCount()), 0));
+				if (doAdd && st.getCount() > 0) {
+					BarrelInventoryHandler.setItemCount.invoke(_tile, new Object[] { value + st.getCount() });
 				}
 			}
 		} catch (IllegalArgumentException e) {
@@ -274,7 +274,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 				value -= _hideOnePerStack ? 1 : 0;
 				if (value > 0) {
 					ItemStack ret = itemStack.copy();
-					ret.stackSize = value;
+					ret.setCount(value);
 					return ret;
 				}
 			}
@@ -297,7 +297,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 			if (j > 0) {
 				BarrelInventoryHandler.setItemCount.invoke(_tile, new Object[] { value - j });
 				ItemStack ret = itemStack.copy();
-				ret.stackSize = j;
+				ret.setCount(j);
 				return ret;
 			}
 		} catch (IllegalAccessException e) {

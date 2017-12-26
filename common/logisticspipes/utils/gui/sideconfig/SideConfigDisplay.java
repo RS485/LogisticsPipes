@@ -1,7 +1,6 @@
 package logisticspipes.utils.gui.sideconfig;
 
 import java.awt.Rectangle;
-import java.lang.reflect.Field;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,17 +9,15 @@ import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -28,7 +25,6 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.BlockRenderLayer;
@@ -49,7 +45,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 
 import logisticspipes.LogisticsPipes;
@@ -79,7 +74,7 @@ public abstract class SideConfigDisplay {
 	private long initTime;
 
 	private Minecraft mc = Minecraft.getMinecraft();
-	private World world = mc.thePlayer.worldObj;
+	private World world = mc.player.world;
 
 	private final Vector3d origin = new Vector3d();
 	private final Vector3d eye = new Vector3d();
@@ -136,8 +131,8 @@ public abstract class SideConfigDisplay {
 		pitchRot.setIdentity();
 		yawRot.setIdentity();
 
-		pitch = -mc.thePlayer.rotationPitch;
-		yaw = 180 - mc.thePlayer.rotationYaw;
+		pitch = -mc.player.rotationPitch;
+		yaw = 180 - mc.player.rotationYaw;
 
 		distance = Math.max(Math.max(size.x, size.y), size.z) + 4;
 
@@ -150,7 +145,7 @@ public abstract class SideConfigDisplay {
 			}
 		}
 
-		world = mc.thePlayer.worldObj;
+		world = mc.player.world;
 	}
 
 	public abstract void handleSelection(SelectedFace selection);
@@ -291,7 +286,7 @@ public abstract class SideConfigDisplay {
 		GlStateManager.disableLighting();
 
 		RenderUtil.bindBlockTexture();
-		VertexBuffer tes = Tessellator.getInstance().getBuffer();
+		BufferBuilder tes = Tessellator.getInstance().getBuffer();
 		GlStateManager.color(1, 1, 1);
 		Vector3d trans = new Vector3d((-origin.x) + eye.x, (-origin.y) + eye.y, (-origin.z) + eye.z);
 		tes.setTranslation(trans.x, trans.y, trans.z);
@@ -395,7 +390,7 @@ public abstract class SideConfigDisplay {
 							at.z--;
 						}
 					}
-					TileEntityRendererDispatcher.instance.renderTileEntityAt(tile, at.x, at.y, at.z, 0);
+					TileEntityRendererDispatcher.instance.render(tile, at.x, at.y, at.z, 0, -1, 0);
 				}
 			}
 		}
@@ -403,7 +398,7 @@ public abstract class SideConfigDisplay {
 
 	private void doWorldRenderPass(Vector3d trans, List<DoubleCoordinates> blocks, BlockRenderLayer layer) {
 
-		VertexBuffer wr = Tessellator.getInstance().getBuffer();
+		BufferBuilder wr = Tessellator.getInstance().getBuffer();
 		wr.begin(7, DefaultVertexFormats.BLOCK);
 
 		Tessellator.getInstance().getBuffer().setTranslation(trans.x, trans.y, trans.z);
@@ -422,7 +417,7 @@ public abstract class SideConfigDisplay {
 		Tessellator.getInstance().getBuffer().setTranslation(0, 0, 0);
 	}
 
-	public void renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, VertexBuffer worldRendererIn) {
+	public void renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder worldRendererIn) {
 
 		try {
 			BlockRendererDispatcher blockrendererdispatcher = mc.getBlockRendererDispatcher();
@@ -602,7 +597,7 @@ public abstract class SideConfigDisplay {
 			List<Vertex> newV = vertices;
 
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer tes = tessellator.getBuffer();
+			BufferBuilder tes = tessellator.getBuffer();
 			if (doBegin) {
 				tes.begin(GL11.GL_QUADS, format);
 			}

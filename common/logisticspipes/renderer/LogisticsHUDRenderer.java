@@ -8,8 +8,8 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -101,7 +101,7 @@ public class LogisticsHUDRenderer {
 			if (!(pipe instanceof IHeadUpDisplayRendererProvider)) {
 				continue;
 			}
-			if (MainProxy.getDimensionForWorld(pipe.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
+			if (MainProxy.getDimensionForWorld(pipe.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().world)) {
 				double dis = Math.hypot(pipe.getX() - x + 0.5, Math.hypot(pipe.getY() - y + 0.5, pipe.getZ() - z + 0.5));
 				if (dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75) {
 					newList.add(new Pair<>(dis, (IHeadUpDisplayRendererProvider) pipe));
@@ -113,7 +113,7 @@ public class LogisticsHUDRenderer {
 		}
 
 		List<IHeadUpDisplayBlockRendererProvider> remove = new ArrayList<>();
-		providers.stream().filter(provider -> MainProxy.getDimensionForWorld(provider.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld))
+		providers.stream().filter(provider -> MainProxy.getDimensionForWorld(provider.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().world))
 				.forEach(provider -> {
 					double dis = Math.hypot(provider.getX() - x + 0.5, Math.hypot(provider.getY() - y + 0.5, provider.getZ() - z + 0.5));
 					if (dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isHUDInvalid() && provider.isHUDExistent()) {
@@ -161,8 +161,8 @@ public class LogisticsHUDRenderer {
 	}
 
 	private boolean playerWearsHUD() {
-		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null
-				&& checkItemStackForHUD(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		return FMLClientHandler.instance().getClient().player != null && FMLClientHandler.instance().getClient().player.inventory != null && FMLClientHandler.instance().getClient().player.inventory.armorInventory != null && !FMLClientHandler.instance().getClient().player.inventory.armorInventory.get(3).isEmpty()
+				&& checkItemStackForHUD(FMLClientHandler.instance().getClient().player.inventory.armorInventory.get(3));
 	}
 
 	private boolean checkItemStackForHUD(ItemStack stack) {
@@ -201,7 +201,7 @@ public class LogisticsHUDRenderer {
 			return;
 		}
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		EntityPlayer player = mc.thePlayer;
+		EntityPlayer player = mc.player;
 		if (list.size() == 0 || Math.hypot(lastXPos - player.posX, Math.hypot(lastYPos - player.posY, lastZPos - player.posZ)) > 0.5 || (renderTicks % 10 == 0 && (lastXPos != player.posX || lastYPos != player.posY || lastZPos != player.posZ)) || renderTicks % 600 == 0) {
 			refreshList(player.posX, player.posY, player.posZ);
 			lastXPos = player.posX;
@@ -212,7 +212,7 @@ public class LogisticsHUDRenderer {
 		displayCross = false;
 		IHUDConfig config;
 		if (debugHUD == null) {
-			config = new HUDConfig(mc.thePlayer.inventory.armorInventory[3]);
+			config = new HUDConfig(mc.player.inventory.armorInventory.get(3));
 		} else {
 			config = new IHUDConfig() {
 
@@ -290,7 +290,7 @@ public class LogisticsHUDRenderer {
 					if (pos.length == 2) {
 						if (renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
 							renderer.getRenderer().handleCursor(pos[0], pos[1]);
-							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().player.isSneaking()) {
 								thisIsLast = renderer;
 								displayCross = true;
 							}
@@ -331,7 +331,7 @@ public class LogisticsHUDRenderer {
 				//Insert debug code here
 
 				if (textData.isEmpty()) {
-					textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.worldObj, player, box);
+					textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.world, player, box);
 				}
 				if (!textData.isEmpty()) {
 					double xCoord = box.getBlockPos().getX() + 0.5D;
@@ -358,7 +358,7 @@ public class LogisticsHUDRenderer {
 					int heigth = Math.max(32, 10 * textData.size() + 15);
 					int width = 0;
 					for (String s : textData) {
-						width = Math.max(width, mc.fontRendererObj.getStringWidth(s) + 22);
+						width = Math.max(width, mc.fontRenderer.getStringWidth(s) + 22);
 					}
 					width = Math.max(32, width + 15);
 
@@ -369,10 +369,10 @@ public class LogisticsHUDRenderer {
 					if (progress == 100) {
 						GL11.glTranslated((int) ((-0.5 * (width - 32)) * dProgress) - 16, (int) ((-0.5 * (heigth - 32)) * dProgress) - 16, -0.0001D);
 						for (int i = 0; i < textData.size(); i++) {
-							mc.fontRendererObj.drawString(textData.get(i), 28, 8 + i * 10, 0x000000);
+							mc.fontRenderer.drawString(textData.get(i), 28, 8 + i * 10, 0x000000);
 						}
 
-						ItemStack item = SimpleServiceLocator.neiProxy.getItemForPosition(player.worldObj, player, box);
+						ItemStack item = SimpleServiceLocator.neiProxy.getItemForPosition(player.world, player, box);
 
 						if (item != null) {
 							float scaleX = 1.5F * 0.8F;
@@ -446,7 +446,7 @@ public class LogisticsHUDRenderer {
 					start = -6.0f;
 				}
 
-				VertexBuffer buffer = tessellator.getBuffer();
+				BufferBuilder buffer = tessellator.getBuffer();
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 				buffer.pos(19.7f + shift, 3.0f, -3.0f);
 				buffer.pos(3.0f + shift + start, 3.0f, -3.0f);
@@ -481,7 +481,7 @@ public class LogisticsHUDRenderer {
 
 			if (data.isStartPipe()) {
 				setColor(0, data.getConnectionType());
-				VertexBuffer buffer = tessellator.getBuffer();
+				BufferBuilder buffer = tessellator.getBuffer();
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 				buffer.pos(-3.0f, 3.0f, 3.0f);
 				buffer.pos(-3.0f, 3.0f, -3.0f);
@@ -492,7 +492,7 @@ public class LogisticsHUDRenderer {
 
 			if (data.isFinalPipe()) {
 				setColor(6 * data.getLength() - 1, data.getConnectionType());
-				VertexBuffer buffer = tessellator.getBuffer();
+				BufferBuilder buffer = tessellator.getBuffer();
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 				buffer.pos(100.0f * data.getLength() + 3f, 3.0f, -3.0f);
 				buffer.pos(100.0f * data.getLength() + 3f, 3.0f, 3.0f);
@@ -540,7 +540,7 @@ public class LogisticsHUDRenderer {
 
 	private void displayOneView(IHeadUpDisplayRendererProvider renderer, IHUDConfig config, float partialTick, boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		EntityPlayer player = mc.thePlayer;
+		EntityPlayer player = mc.player;
 		double x = renderer.getX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
 		double y = renderer.getY() + 0.5 - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
 		double z = renderer.getZ() + 0.5 - player.prevPosZ - ((player.posZ - player.prevPosZ) * partialTick);
@@ -570,7 +570,7 @@ public class LogisticsHUDRenderer {
 
 	private int[] getCursor(IHeadUpDisplayRendererProvider renderer) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		EntityPlayer player = mc.thePlayer;
+		EntityPlayer player = mc.player;
 
 		Vector3d playerView = Vector3d.getFromAngles((270 - player.rotationYaw) / 360 * -2 * Math.PI, (player.rotationPitch) / 360 * -2 * Math.PI);
 		Vector3d playerPos = new Vector3d();

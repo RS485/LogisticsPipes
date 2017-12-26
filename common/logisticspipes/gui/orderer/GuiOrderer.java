@@ -98,12 +98,12 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new SearchBar(fontRendererObj, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new SearchBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, fontRendererObj, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100);
 	}
@@ -117,13 +117,13 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		mc.fontRendererObj.drawString(_title, guiLeft + mc.fontRendererObj.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
+		mc.fontRenderer.drawString(_title, guiLeft + mc.fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		if (buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox) buttonList.get(9)).getState()) {
-			mc.fontRendererObj.drawString("Popup", guiLeft + 25, bottom - 56, 0x404040);
+			mc.fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, 0x404040);
 		} else {
-			mc.fontRendererObj.drawString("Popup", guiLeft + 25, bottom - 56, Color.getValue(Color.GREY));
+			mc.fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, Color.getValue(Color.GREY));
 		}
 
 		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());

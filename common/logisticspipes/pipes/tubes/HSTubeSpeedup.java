@@ -120,7 +120,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 		set.add(posMin);
 		set.add(posMax);
 		AxisAlignedBB box = set.toABB();
-		if (box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box))) {
+		if (box != null && (axisalignedbb == null || axisalignedbb.intersects(box))) {
 			arraylist.add(box);
 		}
 	}

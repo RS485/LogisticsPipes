@@ -107,7 +107,7 @@ public class DebugController implements IRoutingDebugAdapter {
 	}
 
 	private void sendMsg(String message) {
-		sender.addChatMessage(new TextComponentString(message));
+		sender.sendMessage(new TextComponentString(message));
 	}
 
 	private synchronized void wait(final String reson, boolean flag) {
@@ -116,7 +116,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		}
 		state = DebugWaitState.LOOP;
 		QueuedTasks.queueTask(() -> {
-			sender.addChatMessage(new TextComponentString(reson));
+			sender.sendMessage(new TextComponentString(reson));
 			LPChatListener.addTask(() -> {
 				state = DebugWaitState.CONTINUE;
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);

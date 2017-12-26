@@ -21,8 +21,8 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
-			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		if (MainProxy.isClient(player.world)) {
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.world);
 			if (pipe == null) {
 				return;
 			}
@@ -31,7 +31,7 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 				invCon.resistance = getInteger();
 			}
 		} else {
-			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.world);
 			if (pipe == null) {
 				return;
 			}

@@ -269,14 +269,14 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		result = result.copy();
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0);
-		craftingSlot.onPickupFromSlot(fake, result);
+		result = craftingSlot.onTake(fake, result);
 		for (int i = 0; i < 9; i++) {
 			ItemStack left = crafter.getStackInSlot(i);
 			crafter.setInventorySlotContents(i, null);
 			if (left != null) {
-				left.stackSize = inv.addCompressed(left, false);
-				if (left.stackSize > 0) {
-					ItemIdentifierInventory.dropItems(worldObj, left, getPos());
+				left.setCount(inv.addCompressed(left, false));
+				if (left.getCount() > 0) {
+					ItemIdentifierInventory.dropItems(world, left, getPos());
 				}
 			}
 		}
@@ -284,9 +284,9 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			ItemStack left = fake.inventory.getStackInSlot(i);
 			fake.inventory.setInventorySlotContents(i, null);
 			if (left != null) {
-				left.stackSize = inv.addCompressed(left, false);
-				if (left.stackSize > 0) {
-					ItemIdentifierInventory.dropItems(worldObj, left, getPos());
+				left.setCount(inv.addCompressed(left, false));
+				if (left.getCount() > 0) {
+					ItemIdentifierInventory.dropItems(world, left, getPos());
 				}
 			}
 		}
@@ -294,7 +294,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	public void onBlockBreak() {
-		inv.dropContents(worldObj, getPos());
+		inv.dropContents(world, getPos());
 	}
 
 	@Override
@@ -340,7 +340,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			outputFuzzyFlags.use_category = comp.getBoolean("use_category");
 		}
 		if (par1nbtTagCompound.hasKey("targetType")) {
-			targetType = ItemIdentifier.get(ItemStack.loadItemStackFromNBT(par1nbtTagCompound.getCompoundTag("targetType")));
+			targetType = ItemIdentifier.get(new ItemStack(par1nbtTagCompound.getCompoundTag("targetType")));
 		}
 		cacheRecipe();
 	}
@@ -387,6 +387,11 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return inv.isEmpty();
+	}
+
+	@Override
 	public ItemStack getStackInSlot(int i) {
 		return inv.getStackInSlot(i);
 	}
@@ -412,7 +417,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
 		return true;
 	}
 
@@ -464,7 +469,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	public boolean isFuzzy() {
-		return worldObj.getBlockState(pos).getValue(LogisticsSolidBlock.metaProperty) == LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE;
+		return world.getBlockState(pos).getValue(LogisticsSolidBlock.metaProperty) == LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE;
 	}
 
 	@Override

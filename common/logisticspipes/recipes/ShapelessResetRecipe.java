@@ -1,12 +1,18 @@
 package logisticspipes.recipes;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class ShapelessResetRecipe implements IRecipe {
+import net.minecraftforge.registries.IForgeRegistryEntry;
+
+public class ShapelessResetRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
 
 	private final Item item;
 	private final int meta;
@@ -47,8 +53,8 @@ public class ShapelessResetRecipe implements IRecipe {
 	}
 
 	@Override
-	public int getRecipeSize() {
-		return 1;
+	public boolean canFit(int width, int height) {
+		return true;
 	}
 
 	@Override
@@ -56,8 +62,4 @@ public class ShapelessResetRecipe implements IRecipe {
 		return output;
 	}
 
-	@Override
-	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-		return new ItemStack[inv.getSizeInventory()];
-	}
 }

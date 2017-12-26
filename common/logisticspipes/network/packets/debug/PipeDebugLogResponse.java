@@ -19,7 +19,7 @@ public class PipeDebugLogResponse extends CoordinatesPacket {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
 		if (tile != null) {
 			((CoreRoutedPipe) tile.pipe).debug.openForPlayer(player);
-			player.addChatComponentMessage(new TextComponentString("Debug log enabled."));
+			player.sendMessage(new TextComponentString("Debug log enabled."));
 		}
 	}
 

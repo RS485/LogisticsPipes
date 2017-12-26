@@ -21,8 +21,9 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class FluidIdentifier implements ILPCCTypeHolder {
 
@@ -215,25 +216,25 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 
 	public int getFreeSpaceInsideTank(IFluidHandler container, EnumFacing dir) {
 		int free = 0;
-		FluidTankInfo[] tanks = container.getTankInfo(dir);
+		IFluidTankProperties[] tanks = container.getTankProperties();
 		if (tanks != null && tanks.length > 0) {
-			for (FluidTankInfo tank : tanks) {
+			for (IFluidTankProperties tank : tanks) {
 				free += getFreeSpaceInsideTank(tank);
 			}
 		}
 		return free;
 	}
 
-	private int getFreeSpaceInsideTank(FluidTankInfo tanks) {
+	private int getFreeSpaceInsideTank(IFluidTankProperties tanks) {
 		if (tanks == null) {
 			return 0;
 		}
-		FluidStack liquid = tanks.fluid;
+		FluidStack liquid = tanks.getContents();
 		if (liquid == null || liquid.getFluid() != null) {
-			return tanks.capacity;
+			return tanks.getCapacity();
 		}
 		if (FluidIdentifier.get(liquid).equals(this)) {
-			return tanks.capacity - liquid.amount;
+			return tanks.getCapacity() - liquid.amount;
 		}
 		return 0;
 	}

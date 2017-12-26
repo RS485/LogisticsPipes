@@ -33,7 +33,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 			if (settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+				entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 			}
 		}
 		return true;
@@ -69,8 +69,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 		super.readFromNBT(nbttagcompound);
 		if (nbttagcompound.hasKey("Disk")) {
 			NBTTagCompound item = nbttagcompound.getCompoundTag("Disk");
-			disk = new ItemStack(LogisticsPipes.LogisticsItemDisk, 1);
-			disk.readFromNBT(item);
+			disk = new ItemStack(item);
 		}
 	}
 
@@ -93,7 +92,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	public void dropDisk() {
 		if (disk != null) {
 			EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), disk);
-			getWorld().spawnEntityInWorld(item);
+			getWorld().spawnEntity(item);
 			disk = null;
 		}
 	}

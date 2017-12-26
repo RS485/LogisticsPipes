@@ -129,19 +129,19 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 175);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 81, guiTop + 140);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
-		mc.fontRendererObj.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
+		mc.fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
 		if (SimpleServiceLocator.ccProxy.isCC() || LPConstants.DEBUG) {
-			mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
-			mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
 		}
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "pipeRemove") + ":", guiLeft + 10, guiTop + 78, 0x404040);
-		//mc.fontRendererObj.drawString("---------------------------------------------", guiLeft + 5, guiTop + 90, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "Player") + ":", guiLeft + 180, guiTop + 127, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "pipeRemove") + ":", guiLeft + 10, guiTop + 78, 0x404040);
+		//mc.fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 90, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "Player") + ":", guiLeft + 180, guiTop + 127, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
 
-		addition = (mc.fontRendererObj.getStringWidth(searchinput1 + searchinput2) - 82);
+		addition = (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) - 82);
 
 		if (addition < 0) {
 			addition = 0;
@@ -156,9 +156,9 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		}
 		drawRect(guiLeft + 182, bottom - 118, right - 10 + addition, bottom - 105, Color.DARKER_GREY);
 
-		mc.fontRendererObj.drawString(searchinput1 + searchinput2, guiLeft + 185, bottom - 115, 0xFFFFFF);
+		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 185, bottom - 115, 0xFFFFFF);
 		if (editsearch) {
-			int linex = guiLeft + 185 + mc.fontRendererObj.getStringWidth(searchinput1);
+			int linex = guiLeft + 185 + mc.fontRenderer.getStringWidth(searchinput1);
 			if (System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -186,7 +186,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		int pos = bottom - 95;
 		for (String player : players) {
 			if (player.contains(searchinput1 + searchinput2)) {
-				mc.fontRendererObj.drawString(player, guiLeft + 180, pos, 0x404040);
+				mc.fontRenderer.drawString(player, guiLeft + 180, pos, 0x404040);
 				pos += 11;
 			}
 			//Check mouse click
@@ -197,7 +197,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 				searchinput2 = "";
 			}
 			if (pos > bottom - 12) {
-				mc.fontRendererObj.drawString("...", guiLeft + 180, pos - 5, 0x404040);
+				mc.fontRenderer.drawString("...", guiLeft + 180, pos - 5, 0x404040);
 				break;
 			}
 		}
@@ -237,7 +237,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 				}
 				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (mc.fontRendererObj.getStringWidth(searchinput1 + c + searchinput2) <= GuiSecurityStation.searchWidth) {
+				if (mc.fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= GuiSecurityStation.searchWidth) {
 					searchinput1 += c;
 				}
 				return;

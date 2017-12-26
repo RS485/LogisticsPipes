@@ -22,11 +22,11 @@ public class FluidSupplierMode extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.world);
 		if (pipe == null) {
 			return;
 		}
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			if (pipe.pipe instanceof PipeItemsFluidSupplier && pipe.pipe instanceof PipeItemsFluidSupplier) {
 				((PipeItemsFluidSupplier) pipe.pipe).setRequestingPartials((getInteger() % 10) == 1);
 			}

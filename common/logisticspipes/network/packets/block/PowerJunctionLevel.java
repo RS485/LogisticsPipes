@@ -19,7 +19,7 @@ public class PowerJunctionLevel extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsPowerJunctionTileEntity tile = this.getTile(player.worldObj, LogisticsPowerJunctionTileEntity.class);
+		LogisticsPowerJunctionTileEntity tile = this.getTile(player.world, LogisticsPowerJunctionTileEntity.class);
 		if (tile != null) {
 			tile.handlePowerPacket(getInteger());
 		}

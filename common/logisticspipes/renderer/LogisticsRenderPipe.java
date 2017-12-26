@@ -56,7 +56,7 @@ import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
+public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTileGenericPipe> {
 
 	private static final int LIQUID_STAGES = 40;
 	private static final int MAX_ITEMS_TO_RENDER = 10;
@@ -82,20 +82,19 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float partialTickTime, int destroyStage) {
-		double distance = new DoubleCoordinates(tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().thePlayer));
-		if (tileentity instanceof LogisticsTileGenericPipe) {
-			LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
-			if (pipe.pipe == null) {
-				return;
-			}
+	public void render(LogisticsTileGenericPipe tileentity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
+		double distance = new DoubleCoordinates((TileEntity) tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().player));
 
-			if (pipe.pipe instanceof CoreRoutedPipe) {
-				renderPipeSigns((CoreRoutedPipe) pipe.pipe, x, y, z, partialTickTime);
-			}
-
-			LogisticsRenderPipe.secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe) tileentity, x, y, z, partialTickTime, distance);
+		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
+		if (pipe.pipe == null) {
+			return;
 		}
+
+		if (pipe.pipe instanceof CoreRoutedPipe) {
+			renderPipeSigns((CoreRoutedPipe) pipe.pipe, x, y, z, partialTicks);
+		}
+
+		LogisticsRenderPipe.secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe) tileentity, x, y, z, partialTicks, distance);
 	}
 
 	private void renderSolids(CoreUnroutedPipe pipe, double x, double y, double z, float partialTickTime) {
@@ -187,7 +186,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void doRenderItem(ItemStack itemstack, World worldObj, double x, double y, double z, float light, float renderScale, double boxScale, double yaw, double pitch, double yawForPitch, float partialTickTime) {
+	public void doRenderItem(ItemStack itemstack, World world, double x, double y, double z, float light, float renderScale, double boxScale, double yaw, double pitch, double yawForPitch, float partialTickTime) {
 		LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale, yaw, pitch, yawForPitch);
 
 		GL11.glPushMatrix();
@@ -198,7 +197,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer {
 		GL11.glRotated(-yawForPitch, 0, 1, 0);
 		GL11.glRotated(yaw, 0, 1, 0);
 		GL11.glTranslatef(0.0F, -0.1F, 0.0F);
-		itemRenderer.setItemstack(itemstack).setWorldObj(worldObj).setPartialTickTime(partialTickTime);
+		itemRenderer.setItemstack(itemstack).setWorld(world).setPartialTickTime(partialTickTime);
 		itemRenderer.renderInWorld();
 		GL11.glPopMatrix();
 	}

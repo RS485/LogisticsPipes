@@ -124,11 +124,11 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 						count = Math.min(count, reply.getValue2().maxNumberOfItems);
 					}
 					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
-					if (stackToSend == null || stackToSend.stackSize == 0) {
+					if (stackToSend == null || stackToSend.isEmpty()) {
 						break;
 					}
 
-					availableItems -= stackToSend.stackSize;
+					availableItems -= stackToSend.getCount();
 					_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
 
 					_service.spawnParticle(Particles.OrangeParticle, 8);
@@ -204,10 +204,10 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			//don't directly modify the stack in the inv
 			int sizePrev;
 			slot = slot.copy();
-			sizePrev = slot.stackSize;
+			sizePrev = slot.getCount();
 			boolean partialSend = false;
 			while (reply != null) {
-				int count = slot.stackSize;
+				int count = slot.getCount();
 				if (reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
@@ -216,7 +216,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
 				_service.spawnParticle(Particles.OrangeParticle, 8);
 
-				if (slot.stackSize == 0) {
+				if (slot.isEmpty()) {
 					break;
 				}
 
@@ -224,12 +224,12 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			}
 			ItemStack returned = null;
-			int amountToExtract = sizePrev - slot.stackSize;
-			if (slot.stackSize > 0) {
+			int amountToExtract = sizePrev - slot.getCount();
+			if (!slot.isEmpty()) {
 				partialSend = true;
 			}
 			returned = invUtil.decrStackSize(lastStackLookedAt, amountToExtract);
-			if (returned.stackSize != amountToExtract) {
+			if (returned.getCount() != amountToExtract) {
 				throw new UnsupportedOperationException("Couldn't extract the already sended items from the inventory.");
 			}
 

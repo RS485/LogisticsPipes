@@ -51,17 +51,17 @@ public class HUDCraftingMK3 extends BasicHUDGui {
 
 		if (pipe.displayList.size() > 0 && pipe.getMk3Module().bufferList.size() == 0) {
 			String message = "Result:";
-			mc.fontRendererObj.drawString(message, -28, -10, 0);
+			mc.fontRenderer.drawString(message, -28, -10, 0);
 			message = "Todo:";
-			mc.fontRendererObj.drawString(message, -28, 5, 0);
+			mc.fontRenderer.drawString(message, -28, 5, 0);
 		} else if (pipe.getMk3Module().bufferList.size() > 0) {
 			String message = "Result:";
-			mc.fontRendererObj.drawString(message, -28, -28, 0);
+			mc.fontRenderer.drawString(message, -28, -28, 0);
 			message = "Todo:";
-			mc.fontRendererObj.drawString(message, -28, -15, 0);
+			mc.fontRenderer.drawString(message, -28, -15, 0);
 		} else {
 			String message = "Result:";
-			mc.fontRendererObj.drawString(message, -16, -10, 0);
+			mc.fontRenderer.drawString(message, -16, -10, 0);
 		}
 		GL11.glScalef(0.8F, 0.8F, -1F);
 		List<ItemIdentifierStack> list = new ArrayList<>();

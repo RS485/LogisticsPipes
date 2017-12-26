@@ -205,10 +205,10 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				}
 
 				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
-				if (stackToSend == null || stackToSend.stackSize == 0) {
+				if (stackToSend == null || stackToSend.isEmpty()) {
 					break;
 				}
-				count = stackToSend.stackSize;
+				count = stackToSend.getCount();
 				_service.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if (itemsleft <= 0) {

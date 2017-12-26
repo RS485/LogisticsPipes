@@ -57,7 +57,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@Override
 	public void update() {
 		super.update();
-		if (MainProxy.isServer(worldObj)) {
+		if (MainProxy.isServer(world)) {
 			if (freeSpace() > 0) {
 				addStoredRF();
 			}

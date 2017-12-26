@@ -103,12 +103,11 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem,
-			EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (!playerIn.isSneaking()) {
 			TileEntity tile = worldIn.getTileEntity(pos);
 			if (tile instanceof IGuiTileEntity) {
-				if (MainProxy.isServer(playerIn.worldObj)) {
+				if (MainProxy.isServer(playerIn.world)) {
 					((IGuiTileEntity) tile).getGuiProvider().setTilePos(tile).open(playerIn);
 				}
 				return true;
@@ -119,8 +118,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	@Nonnull
-	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		IBlockState state = super.onBlockPlaced(world, pos, facing, hitX, hitY, hitZ, meta, placer);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity) tile).placedBy(placer);
@@ -147,7 +146,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 				((IRotationProvider) tile).setRotation(3);
 			}
 		}
-		return state;
 	}
 
 	@Override

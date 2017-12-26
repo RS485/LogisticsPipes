@@ -190,7 +190,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 			for (CoverSides side : CoverSides.values()) {
 				boolean render = true;
 				DoubleCoordinates newPos = CoordinateUtils.sum(pos, side.getDir(rotation));
-				TileEntity sideTile = newPos.getTileEntity(blockTile.getWorldObj());
+				TileEntity sideTile = newPos.getTileEntity(blockTile.getworld());
 				if (sideTile instanceof LogisticsTileGenericPipe) {
 					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
 					if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation).getOpposite())) {

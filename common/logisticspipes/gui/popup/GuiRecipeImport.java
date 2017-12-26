@@ -103,7 +103,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		fontRendererObj.drawString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
+		fontRenderer.drawString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
 		tooltip = null;
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
@@ -115,7 +115,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 
 				FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 				if (font == null) {
-					font = fontRendererObj;
+					font = fontRenderer;
 				}
 
 				itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 45 + x * 18, guiTop + 20 + y * 18);
@@ -135,7 +135,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 			ItemStack itemStack = stack.makeNormalStack();
 			FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 			if (font == null) {
-				font = fontRendererObj;
+				font = fontRenderer;
 			}
 
 			itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 20 + x * 40, guiTop + 90 + y * 40);
@@ -158,7 +158,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 	@Override
 	protected void renderGuiBackground(int par1, int par2) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRendererObj.drawString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
+		fontRenderer.drawString(StringUtils.translate("misc.selectOreDict"), guiLeft + 10, guiTop + 6, 0x404040, false);
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
 				GuiGraphics.drawSlotBackground(mc, guiLeft + 44 + x * 18, guiTop + 19 + y * 18);

@@ -33,7 +33,7 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 				if (settings == null || settings.openRequest) {
 					openGui(entityplayer);
 				} else {
-					entityplayer.addChatMessage(new TextComponentString("Permission denied"));
+					entityplayer.sendMessage(new TextComponentString("Permission denied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());

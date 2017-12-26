@@ -20,12 +20,12 @@ public class SolderingStationHeat extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsSolderingTileEntity tile = this.getTile(player.worldObj, LogisticsSolderingTileEntity.class);
+		final LogisticsSolderingTileEntity tile = this.getTile(player.world, LogisticsSolderingTileEntity.class);
 		if (tile != null) {
 			int old = tile.heat;
 			tile.heat = getInteger();
 			if ((tile.heat == 0 && old != 0) || (tile.heat != 0 && old == 0)) {
-				player.worldObj.notifyNeighborsRespectDebug(new BlockPos(getPosX(), getPosY(), getPosZ()), player.worldObj.getBlockState(new BlockPos(getPosX(), getPosY(), getPosZ())).getBlock());
+				player.world.notifyNeighborsRespectDebug(new BlockPos(getPosX(), getPosY(), getPosZ()), player.world.getBlockState(new BlockPos(getPosX(), getPosY(), getPosZ())).getBlock(), true);
 			}
 		}
 	}

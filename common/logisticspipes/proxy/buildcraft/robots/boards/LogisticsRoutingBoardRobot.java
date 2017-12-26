@@ -81,7 +81,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			return;
 		}
 		DoubleCoordinates pos = new DoubleCoordinates(dock.getPos());
-		LPRobotConnectionControl.instance.addRobot(robot.worldObj, pos, dock.side());
+		LPRobotConnectionControl.instance.addRobot(robot.world, pos, dock.side());
 		init = true;
 	}
 
@@ -115,7 +115,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			return;
 		}
 		need = bat.receiveEnergy(need, true);
-		TileEntity tile = getLinkedStationPosition().getTileEntity(robot.worldObj);
+		TileEntity tile = getLinkedStationPosition().getTileEntity(robot.world);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).isRoutingPipe()) {
 			CoreRoutedPipe pipe = ((LogisticsTileGenericPipe) tile).getRoutingPipe();
 			boolean energyUsed = false;
@@ -166,7 +166,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	}
 
 	private void insertIntoPipe() {
-		TileEntity tile = targetStationPos.getTileEntity(robot.worldObj);
+		TileEntity tile = targetStationPos.getTileEntity(robot.world);
 		if (tile instanceof LogisticsTileGenericPipe) {
 			startDelegateAI(new ItemInsertionAIRobot(robot, (LogisticsTileGenericPipe) tile, this, targetStationSide.getOpposite()));
 		} else {
@@ -188,7 +188,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 			}
 			double distance = CoordinateUtils.add(new DoubleCoordinates(canidatePos.getValue1()).center(), canidatePos.getValue2(), 0.5).distanceTo(robotPos);
 			if (result == null || result.getValue1() > distance) {
-				TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(robot.worldObj);
+				TileEntity connectedPipeTile = canidatePos.getValue1().getTileEntity(robot.world);
 				if (!(connectedPipeTile instanceof LogisticsTileGenericPipe)) {
 					continue;
 				}
@@ -277,7 +277,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	private void dropAndClear() {
 		for (LPTravelingItemServer item : items) {
 			item.itemWasLost();
-			robot.worldObj.spawnEntityInWorld(item.getItemIdentifierStack().makeEntityItem(robot.worldObj, robot.posX, robot.posY, robot.posZ));
+			robot.world.spawnEntityInWorld(item.getItemIdentifierStack().makeEntityItem(robot.world, robot.posX, robot.posY, robot.posZ));
 		}
 		items.clear();
 		for (int i = 0; i < robot.getSizeInventory(); i++) {
@@ -317,7 +317,7 @@ public class LogisticsRoutingBoardRobot extends RedstoneBoardRobot {
 	}
 
 	private void refreshRoutingTable() {
-		TileEntity tile = getLinkedStationPosition().getTileEntity(robot.worldObj);
+		TileEntity tile = getLinkedStationPosition().getTileEntity(robot.world);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).isRoutingPipe()) {
 			CoreRoutedPipe pipe = ((LogisticsTileGenericPipe) tile).getRoutingPipe();
 			pipe.getRouter().update(true, pipe);

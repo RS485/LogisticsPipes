@@ -43,7 +43,6 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleProviderMk2;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
-import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -56,7 +55,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -66,6 +64,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.model.ModelLoader;
@@ -245,8 +246,8 @@ public class ItemModule extends LogisticsItem {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		par3List.addAll(modules.stream()
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+		items.addAll(modules.stream()
 				.map(module -> new ItemStack(this, 1, module.getId()))
 				.collect(Collectors.toList()));
 	}
@@ -254,7 +255,7 @@ public class ItemModule extends LogisticsItem {
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
 		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null);
 		if (module != null && module.hasGui()) {
-			if (par1ItemStack != null && par1ItemStack.stackSize > 0) {
+			if (par1ItemStack != null && par1ItemStack.getCount() > 0) {
 				ItemModuleInformationManager.readInformation(par1ItemStack, module);
 				module.registerPosition(ModulePositionType.IN_HAND, par2EntityPlayer.inventory.currentItem);
 				((LogisticsGuiModule) module).getInHandGuiProviderForModule().open(par2EntityPlayer);
@@ -266,7 +267,7 @@ public class ItemModule extends LogisticsItem {
 	public boolean hasEffect(ItemStack par1ItemStack) {
 		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null);
 		if (module != null) {
-			if (par1ItemStack != null && par1ItemStack.stackSize > 0) {
+			if (par1ItemStack != null && par1ItemStack.getCount() > 0) {
 				return module.hasEffect();
 			}
 		}
@@ -274,16 +275,16 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(final ItemStack par1ItemStack, final World par2World, final EntityPlayer par3EntityPlayer) {
-		if (MainProxy.isServer(par3EntityPlayer.worldObj)) {
-			openConfigGui(par1ItemStack, par3EntityPlayer, par2World);
+	public ActionResult<ItemStack> onItemRightClick(final World par2World, final EntityPlayer par3EntityPlayer, final EnumHand hand) {
+		if (MainProxy.isServer(par3EntityPlayer.world)) {
+			openConfigGui(par3EntityPlayer.getHeldItem(hand), par3EntityPlayer, par2World);
 		}
-		return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+		return super.onItemRightClick(par2World, par3EntityPlayer, hand);
 	}
 
 	@Override
 	public boolean onItemUse(final ItemStack par1ItemStack, final EntityPlayer par2EntityPlayer, final World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
-		if (MainProxy.isServer(par2EntityPlayer.worldObj)) {
+		if (MainProxy.isServer(par2EntityPlayer.world)) {
 			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
 			if (tile instanceof LogisticsTileGenericPipe) {
 				if (par2EntityPlayer.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.

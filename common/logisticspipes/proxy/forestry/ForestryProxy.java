@@ -8,10 +8,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -43,8 +45,8 @@ public class ForestryProxy implements IForestryProxy {
 		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
 		localize = stringUtil.getDeclaredMethod("localize", String.class);
 		localize.setAccessible(true);
-		propolis = GameRegistry.findItem("Forestry", "propolis");
-		pollen = GameRegistry.findItem("Forestry", "pollen");
+		propolis = ForgeRegistries.ITEMS.getValue(new ResourceLocation("forestry", "propolis"));
+		pollen = ForgeRegistries.ITEMS.getValue(new ResourceLocation("forestry", "pollen"));
 		honey = FluidRegistry.getFluidStack("for.honey", 1500);
 		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 	}

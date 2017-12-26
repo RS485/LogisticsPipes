@@ -6,11 +6,10 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -58,7 +57,7 @@ public class PipeFXLaserPowerBeam extends Particle {
 		random = PipeFXLaserPowerBeam.RAND.nextFloat() * PipeFXLaserPowerBeam.RAND.nextInt(10);
 		dir = dir.getOpposite();
 		yaw = ((float) (Math.atan2(dir.getDirectionVec().getX(), dir.getDirectionVec().getZ()) * 180.0D / Math.PI));
-		pitch = ((float) (Math.atan2(dir.getDirectionVec().getY(), MathHelper.sqrt_double(dir.getDirectionVec().getX() * dir.getDirectionVec().getX() + dir.getDirectionVec().getZ() * dir.getDirectionVec().getZ())) * 180.0D / Math.PI));
+		pitch = ((float) (Math.atan2(dir.getDirectionVec().getY(), MathHelper.sqrt(dir.getDirectionVec().getX() * dir.getDirectionVec().getX() + dir.getDirectionVec().getZ() * dir.getDirectionVec().getZ())) * 180.0D / Math.PI));
 		particleMaxAge = 0;
 		Entity renderentity = FMLClientHandler.instance().getClient().getRenderViewEntity();
 		int visibleDistance = 50;
@@ -78,11 +77,11 @@ public class PipeFXLaserPowerBeam extends Particle {
 	}
 
 	@Override
-	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		Tessellator.getInstance().draw();
 		GL11.glPushMatrix();
-		float slide = worldObj.getTotalWorldTime() + random;
-		float rot = worldObj.provider.getWorldTime() % (360 / PipeFXLaserPowerBeam.ROTATIONSPEED) * PipeFXLaserPowerBeam.ROTATIONSPEED + PipeFXLaserPowerBeam.ROTATIONSPEED * partialTicks;
+		float slide = world.getTotalWorldTime() + random;
+		float rot = world.provider.getWorldTime() % (360 / PipeFXLaserPowerBeam.ROTATIONSPEED) * PipeFXLaserPowerBeam.ROTATIONSPEED + PipeFXLaserPowerBeam.ROTATIONSPEED * partialTicks;
 
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 10497.0F);
@@ -93,7 +92,7 @@ public class PipeFXLaserPowerBeam extends Particle {
 		if (reverse) {
 			partSlide *= -1.0F;
 		}
-		float globalTextureSlide = -partSlide * 0.2F - MathHelper.floor_float(-partSlide * 0.1F);
+		float globalTextureSlide = -partSlide * 0.2F - MathHelper.floor(-partSlide * 0.1F);
 
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -114,7 +113,7 @@ public class PipeFXLaserPowerBeam extends Particle {
 			for (int t = 0; t < 3; t++) {
 				double texturePos = -1.0F + globalTextureSlide + t / 3.0F;
 				GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
-				VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+				BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				buffer.pos(-0.07D, length, 0.0D).tex(1.0D, length + texturePos).color(particleRed, particleGreen, particleBlue, 0.5F).endVertex();
 				buffer.pos(-0.07D, 0.0D, 0.0D).tex(1.0D, texturePos).color(particleRed, particleGreen, particleBlue, 0.5F).endVertex();
@@ -129,7 +128,7 @@ public class PipeFXLaserPowerBeam extends Particle {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(PipeFXLaserPowerBeam.field_110737_b);
-		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+		BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}
 }

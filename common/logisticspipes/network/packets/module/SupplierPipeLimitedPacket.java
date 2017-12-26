@@ -34,7 +34,7 @@ public class SupplierPipeLimitedPacket extends ModuleCoordinatesPacket {
 			return;
 		}
 		module.setLimited(isLimited());
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			refresh();
 		} else {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPacketPos(this), player);

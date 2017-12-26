@@ -126,8 +126,8 @@ public class LogisticsGuiOverrenderer {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glTranslated(guiLeft, guiTop, 0);
-					int k1 = slot.xDisplayPosition;
-					int i1 = slot.yDisplayPosition;
+					int k1 = slot.xPos;
+					int i1 = slot.yPos;
 					SimpleGraphics.drawGradientRect(k1, i1, k1 + 16, i1 + 16, 0xa0ff0000, 0xa0ff0000, 0.0);
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -135,7 +135,7 @@ public class LogisticsGuiOverrenderer {
 						MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderNumberPacket.class).setInventorySlot(slot.slotNumber).setSlot(this.slot).setPipePosX(pipePosX).setPipePosY(pipePosY).setPipePosZ(pipePosZ).setType(positionType).setPositionInt(positionInt).setPosX(targetPosX).setPosY(targetPosY)
 								.setPosZ(targetPosZ));
 						clicked = false;
-						FMLClientHandler.instance().getClient().thePlayer.closeScreen();
+						FMLClientHandler.instance().getClient().player.closeScreen();
 						isOverlaySlotActive = false;
 					}
 					break;
@@ -146,7 +146,7 @@ public class LogisticsGuiOverrenderer {
 	}
 
 	private boolean isMouseOverSlot(GuiContainer gui, Slot par1Slot, int par2, int par3) {
-		return isPointInRegion(gui, par1Slot.xDisplayPosition, par1Slot.yDisplayPosition, 16, 16, par2, par3);
+		return isPointInRegion(gui, par1Slot.xPos, par1Slot.yPos, 16, 16, par2, par3);
 	}
 
 	private boolean isPointInRegion(GuiContainer gui, int par1, int par2, int par3, int par4, int par5, int par6) {

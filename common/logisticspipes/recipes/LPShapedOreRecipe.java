@@ -1,5 +1,6 @@
 package logisticspipes.recipes;
 
+import logisticspipes.LPConstants;
 import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -7,6 +8,7 @@ import logisticspipes.utils.PlayerIdentifier;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -15,10 +17,11 @@ public class LPShapedOreRecipe extends ShapedOreRecipe {
 
 	private final CraftingDependency dependent;
 
-	public LPShapedOreRecipe(ItemStack result, CraftingDependency dependent, Object... recipe) {
-		super(result, recipe);
+	public LPShapedOreRecipe(ResourceLocation registryName, ItemStack result, CraftingDependency dependent, Object... recipe) {
+		super(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), result, recipe);
 		this.dependent = dependent;
 		dependent.addStack(result);
+		setRegistryName(registryName);
 	}
 
 	@Override

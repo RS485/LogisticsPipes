@@ -24,7 +24,7 @@ public abstract class ItemPacket extends CoordinatesPacket {
 		super.writeData(output);
 		if (getStack() != null) {
 			output.writeInt(Item.getIdFromItem(getStack().getItem()));
-			output.writeInt(getStack().stackSize);
+			output.writeInt(getStack().getCount());
 			output.writeInt(getStack().getItemDamage());
 			output.writeNBTTagCompound(getStack().getTagCompound());
 		} else {

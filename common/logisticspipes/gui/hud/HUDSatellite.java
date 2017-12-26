@@ -100,12 +100,12 @@ public class HUDSatellite extends BasicHUDGui {
 			} else {
 				message = "ID: " + Integer.toString(pipe2.satelliteId);
 			}
-			mc.fontRendererObj.drawString(message, -28, -28, 0);
+			mc.fontRenderer.drawString(message, -28, -28, 0);
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
-			mc.fontRendererObj.drawString(message, 9, -41, 0);
+			mc.fontRenderer.drawString(message, 9, -41, 0);
 		} else {
 			if (day) {
 				GL11.glColor4b((byte) 64, (byte) 64, (byte) 64, (byte) 64);
@@ -129,7 +129,7 @@ public class HUDSatellite extends BasicHUDGui {
 			} else {
 				message = Integer.toString(pipe2.satelliteId);
 			}
-			mc.fontRendererObj.drawString(message, -(mc.fontRendererObj.getStringWidth(message) / 2), -4, 0);
+			mc.fontRenderer.drawString(message, -(mc.fontRenderer.getStringWidth(message) / 2), -4, 0);
 		}
 	}
 

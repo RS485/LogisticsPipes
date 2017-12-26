@@ -255,10 +255,10 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 				continue;
 			}
 			stack = invUtil.getStackInSlot(slot);
-			if (stack == null || stack.stackSize <= 0) {
+			if (stack == null || stack.getCount() <= 0) {
 				continue;
 			}
-			int amount = Math.min(stack.stackSize, sink.getCanSink());
+			int amount = Math.min(stack.getCount(), sink.getCanSink());
 			ItemStack extracted = invUtil.decrStackSize(slot, amount);
 			_service.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
 			sended = true;

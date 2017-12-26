@@ -20,7 +20,7 @@ public class OrdererManagerContent extends InventoryModuleCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe tile = this.getPipe(player.world);
 		if (tile == null) {
 			return;
 		}

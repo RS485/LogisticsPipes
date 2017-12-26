@@ -71,17 +71,17 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 33, guiTop + 175);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Firewall"), guiLeft + 45, guiTop + 8, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Filter") + ":", guiLeft + 14, guiTop + 28, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Firewall"), guiLeft + 45, guiTop + 8, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Filter") + ":", guiLeft + 14, guiTop + 28, 0x404040);
 		for (int x = 0; x < 6; x++) {
 			for (int y = 0; y < 6; y++) {
 				GuiGraphics.drawSlotBackground(mc, guiLeft + x * 18 + 16, guiTop + y * 18 + 40);
 			}
 		}
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Filtereditemsare") + ":", guiLeft + 125, guiTop + 8, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Providing") + ":", guiLeft + 144, guiTop + 41, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Crafting") + ":", guiLeft + 146, guiTop + 74, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Sorting") + ":", guiLeft + 150, guiTop + 107, 0x404040);
-		mc.fontRendererObj.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Powerflow") + ":", guiLeft + 142, guiTop + 141, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Filtereditemsare") + ":", guiLeft + 125, guiTop + 8, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Providing") + ":", guiLeft + 144, guiTop + 41, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Crafting") + ":", guiLeft + 146, guiTop + 74, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Sorting") + ":", guiLeft + 150, guiTop + 107, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiFirewall.PREFIX + "Powerflow") + ":", guiLeft + 142, guiTop + 141, 0x404040);
 	}
 }

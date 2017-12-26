@@ -52,10 +52,10 @@ public class ComponentList extends ModernPacket {
 					.handleSimulateAnswer(used, missing, (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
 			for (IResource item : used) {
-				player.addChatComponentMessage(new TextComponentString("Component: " + item.getDisplayText(ColorCode.SUCCESS)));
+				player.sendMessage(new TextComponentString("Component: " + item.getDisplayText(ColorCode.SUCCESS)));
 			}
 			for (IResource item : missing) {
-				player.addChatComponentMessage(new TextComponentString("Missing: " + item.getDisplayText(ColorCode.MISSING)));
+				player.sendMessage(new TextComponentString("Missing: " + item.getDisplayText(ColorCode.MISSING)));
 			}
 		}
 	}

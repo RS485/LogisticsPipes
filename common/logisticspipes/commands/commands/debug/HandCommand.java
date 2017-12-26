@@ -27,10 +27,10 @@ public class HandCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		EntityPlayer player = (EntityPlayer) sender;
-		ItemStack item = player.inventory.mainInventory[player.inventory.currentItem];
-		if (item != null) {
+		ItemStack item = player.inventory.mainInventory.get(player.inventory.currentItem);
+		if (!item.isEmpty()) {
 			DebugGuiController.instance().startWatchingOf(item, player);
-			sender.addChatMessage(new TextComponentString("Starting HandDebuging"));
+			sender.sendMessage(new TextComponentString("Starting HandDebuging"));
 		}
 	}
 }

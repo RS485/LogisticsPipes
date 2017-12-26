@@ -29,13 +29,13 @@ public class VersionCommand implements ICommandHandler {
 
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.addChatMessage(new TextComponentString(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LPConstants.MCVersion)));
+		sender.sendMessage(new TextComponentString(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LPConstants.MCVersion)));
 
 		VersionChecker versionChecker = LogisticsPipes.versionChecker;
-		sender.addChatMessage(new TextComponentString(versionChecker.getVersionCheckerStatus()));
+		sender.sendMessage(new TextComponentString(versionChecker.getVersionCheckerStatus()));
 
 		if (versionChecker.isVersionCheckDone() && versionChecker.getVersionInfo().isNewVersionAvailable()) {
-			sender.addChatMessage(new TextComponentString("Use \"/logisticspipes changelog\" to see a changelog."));
+			sender.sendMessage(new TextComponentString("Use \"/logisticspipes changelog\" to see a changelog."));
 		}
 	}
 }

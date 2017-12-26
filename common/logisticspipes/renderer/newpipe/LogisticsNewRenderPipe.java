@@ -1039,7 +1039,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	public static void renderDestruction(CoreUnroutedPipe pipe, World worldObj, int x, int y, int z, ParticleManager effectRenderer) {
+	public static void renderDestruction(CoreUnroutedPipe pipe, World world, int x, int y, int z, ParticleManager effectRenderer) {
 		if (pipe.container != null && pipe.container.renderState != null && pipe.container.renderState.cachedRenderer != null) {
 			for (RenderEntry entry : pipe.container.renderState.cachedRenderer) {
 				IModel3D model = entry.getModel().twoFacedCopy();
@@ -1048,7 +1048,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				double yMid = (bounds.min().y() + bounds.max().y()) / 2;
 				double zMid = (bounds.min().z() + bounds.max().z()) / 2;
 				model.apply(new LPTranslation(-xMid, -yMid, -zMid));
-				effectRenderer.addEffect(new EntityModelFX(worldObj, x + xMid, y + yMid, z + zMid, model, entry.getOperations(), entry.getTexture()));
+				effectRenderer.addEffect(new EntityModelFX(world, x + xMid, y + yMid, z + zMid, model, entry.getOperations(), entry.getTexture()));
 			}
 		}
 	}

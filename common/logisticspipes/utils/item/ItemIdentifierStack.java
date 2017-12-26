@@ -29,7 +29,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	private int stackSize;
 
 	public static ItemIdentifierStack getFromStack(ItemStack stack) {
-		return new ItemIdentifierStack(ItemIdentifier.get(stack), stack.stackSize);
+		return new ItemIdentifierStack(ItemIdentifier.get(stack), stack.getCount());
 	}
 
 	public ItemIdentifierStack(ItemIdentifier item, int stackSize) {

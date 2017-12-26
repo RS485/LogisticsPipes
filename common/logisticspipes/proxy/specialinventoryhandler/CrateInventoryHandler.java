@@ -65,7 +65,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<>((int) (_tile.getUniqueItems() * 1.5));
 		for (ItemStack stack : _tile.getContents()) {
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
-			int stackSize = stack.stackSize - (_hideOnePerStack ? 1 : 0);
+			int stackSize = stack.getCount() - (_hideOnePerStack ? 1 : 0);
 			Integer m = map.get(itemId);
 			if (m == null) {
 				map.put(itemId, stackSize);
@@ -114,17 +114,17 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
-		st.stackSize = 0;
+		st.setCount(0);
 		if (doAdd) {
 			ItemStack tst = stack.copy();
 			ItemStack overflow = _tile.insertItems(tst);
-			st.stackSize = stack.stackSize;
+			st.setCount(stack.getCount());
 			if (overflow != null) {
-				st.stackSize -= overflow.stackSize;
+				st.shrink(overflow.getCount());
 			}
 		} else {
 			int space = roomForItem(ItemIdentifier.get(stack), 0);
-			st.stackSize = Math.max(Math.min(space, stack.stackSize), 0);
+			st.setCount(Math.max(Math.min(space, stack.getCount()), 0));
 		}
 		return st;
 	}

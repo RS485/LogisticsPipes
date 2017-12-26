@@ -64,7 +64,7 @@ public class ItemStackRenderer {
 	private boolean ignoreDepth;
 	private boolean renderInColor;
 	private EntityItem entityitem;
-	private World worldObj;
+	private World world;
 	private float partialTickTime;
 
 	public ItemStackRenderer(int posX, int posY, float zLevel, boolean renderEffects, boolean ignoreDepth) {
@@ -76,9 +76,9 @@ public class ItemStackRenderer {
 		renderManager = Minecraft.getMinecraft().getRenderManager();
 		fontRenderer = renderManager.getFontRenderer();
 		if (fontRenderer == null) {
-			fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+			fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		}
-		worldObj = renderManager.worldObj;
+		world = renderManager.world;
 		texManager = renderManager.renderEngine;
 		if (texManager == null) {
 			texManager = Minecraft.getMinecraft().getTextureManager();
@@ -205,7 +205,7 @@ public class ItemStackRenderer {
 			}
 
 			GL11.glDisable(GL11.GL_LIGHTING);
-			String amountString = StringUtils.getFormatedStackSize(itemstack.stackSize, displayAmount == DisplayAmount.ALWAYS);
+			String amountString = StringUtils.getFormatedStackSize(itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
 
 			// 20 should be about the size of a block + 20 for the effect and overlay
 			GL11.glTranslatef(0.0F, 0.0F, zLevel + 40.0F);
@@ -226,22 +226,22 @@ public class ItemStackRenderer {
 		assert scaleY != 0.0F;
 		assert scaleZ != 0.0F;
 
-		if (entityitem == null || !ItemStack.areItemStacksEqual(entityitem.getEntityItem(), itemstack)) {
+		if (entityitem == null || !ItemStack.areItemStacksEqual(entityitem.getItem(), itemstack)) {
 			if (itemstack == null) {
 				throw new RuntimeException("No EntityItem and no ItemStack, I do not know what to render!");
 			} else {
-				if (worldObj == null) {
+				if (world == null) {
 					throw new NullPointerException("World object is null");
 				}
-				entityitem = new EntityItem(worldObj, 0.0D, 0.0D, 0.0D, itemstack);
-				entityitem.getEntityItem().stackSize = 1;
+				entityitem = new EntityItem(world, 0.0D, 0.0D, 0.0D, itemstack);
+				entityitem.getItem().setCount(1);
 				entityitem.hoverStart = 0.0F;
 			}
 		}
 
 		Item item = itemstack.getItem();
 		if (item instanceof ItemBlock) {
-			Block block = ((ItemBlock) item).block;
+			Block block = ((ItemBlock) item).getBlock();
 			if (block instanceof BlockPane) {
 				GL11.glScalef(0.5F, 0.5F, 0.5F);
 			}

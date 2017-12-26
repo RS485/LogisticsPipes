@@ -40,8 +40,8 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 				break;
 			}
 			final ItemStack newStack = bench.matrix.getStackInSlot(i) == null ? null : bench.matrix.getStackInSlot(i).copy();
-			if (newStack != null && newStack.stackSize > 1) {
-				newStack.stackSize = 1;
+			if (newStack != null && newStack.getCount() > 1) {
+				newStack.setCount(1);
 			}
 			inventory.setInventorySlotContents(i, newStack);
 		}

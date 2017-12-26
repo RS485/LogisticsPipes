@@ -34,7 +34,7 @@ public class TDPart implements ITDPart {
 				if (MainProxy.isServer(pipe.getWorld())) {
 					TickHandler.addMultiBlockToCalculate(duct);
 				}
-				duct.setWorldObj(pipe.getWorld());
+				duct.setworld(pipe.getWorld());
 				duct.setPos(pipe.getPos());
 				duct.validate();
 				DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipe), opposite);
@@ -46,10 +46,10 @@ public class TDPart implements ITDPart {
 	}
 
 	@Override
-	public void setWorldObj_LP(World world) {
+	public void setworld_LP(World world) {
 		for (int i = 0; i < 6; i++) {
 			if (thermalDynamicsDucts[i] != null) {
-				thermalDynamicsDucts[i].setWorldObj(world);
+				thermalDynamicsDucts[i].setworld(world);
 				thermalDynamicsDucts[i].setPos(pipe.getPos());
 			}
 		}

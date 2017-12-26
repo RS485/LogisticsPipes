@@ -45,12 +45,12 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void initTab() {
 			PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 			if (renderDistance == null) {
-				renderDistance = new SearchBar(fontRendererObj, getBaseScreen(), 15, 75, 30, 15, false, true, true);
+				renderDistance = new SearchBar(fontRenderer, getBaseScreen(), 15, 75, 30, 15, false, true, true);
 				renderDistance.searchinput1 = config.getRenderPipeDistance() + "";
 			}
 			renderDistance.reposition(15, 80, 30, 15);
 			if (contentRenderDistance == null) {
-				contentRenderDistance = new SearchBar(fontRendererObj, getBaseScreen(), 15, 105, 30, 15, false, true, true);
+				contentRenderDistance = new SearchBar(fontRenderer, getBaseScreen(), 15, 105, 30, 15, false, true, true);
 				contentRenderDistance.searchinput1 = config.getRenderPipeContentDistance() + "";
 			}
 			contentRenderDistance.reposition(15, 110, 30, 15);
@@ -89,10 +89,10 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void renderForgroundContent() {
 			renderDistance.renderSearchBar();
 			contentRenderDistance.renderSearchBar();
-			//fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
-			//fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
-			fontRendererObj.drawString(StringUtils.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
-			fontRendererObj.drawString(StringUtils.translate(PREFIX + "pipecontentrenderdistance"), 10, 100, 0x404040);
+			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
+			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
+			fontRenderer.drawString(StringUtils.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
+			fontRenderer.drawString(StringUtils.translate(PREFIX + "pipecontentrenderdistance"), 10, 100, 0x404040);
 		}
 
 		@Override

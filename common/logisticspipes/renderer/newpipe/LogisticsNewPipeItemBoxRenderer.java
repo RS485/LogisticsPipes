@@ -9,9 +9,9 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -39,9 +39,9 @@ public class LogisticsNewPipeItemBoxRenderer {
 			renderList = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(renderList, GL11.GL_COMPILE);
 			Tessellator tess = Tessellator.getInstance();
-			VertexBuffer buffer = tess.getBuffer();
+			BufferBuilder buffer = tess.getBuffer();
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-			LogisticsNewRenderPipe.innerTransportBox.render(buffer, LogisticsNewRenderPipe.innerBoxTexture);
+			LogisticsNewRenderPipe.innerTransportBox.render(LogisticsNewRenderPipe.innerBoxTexture);
 			tess.draw();
 			GL11.glEndList();
 		}

@@ -42,7 +42,7 @@ public class RequestHandler {
 
 	public static void request(final EntityPlayer player, final ItemIdentifierStack stack, final CoreRoutedPipe pipe) {
 		if (!pipe.useEnergy(5)) {
-			player.addChatMessage(new TextComponentTranslation("lp.misc.noenergy"));
+			player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
 		RequestTree.request(stack.clone(), pipe, new RequestLog() {
@@ -120,7 +120,7 @@ public class RequestHandler {
 
 	public static void requestList(final EntityPlayer player, final List<ItemIdentifierStack> list, final CoreRoutedPipe pipe) {
 		if (!pipe.useEnergy(5)) {
-			player.addChatMessage(new TextComponentTranslation("lp.misc.noenergy"));
+			player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
 		RequestTree.request(list, pipe, new RequestLog() {
@@ -145,7 +145,7 @@ public class RequestHandler {
 
 	public static void requestMacrolist(NBTTagCompound itemlist, final CoreRoutedPipe requester, final EntityPlayer player) {
 		if (!requester.useEnergy(5)) {
-			player.addChatMessage(new TextComponentTranslation("lp.misc.noenergy"));
+			player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
 		NBTTagList list = itemlist.getTagList("inventar", 10);
@@ -220,7 +220,7 @@ public class RequestHandler {
 
 	public static void requestFluid(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe, IRequestFluid requester) {
 		if (!pipe.useEnergy(10)) {
-			player.addChatMessage(new TextComponentTranslation("lp.misc.noenergy"));
+			player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
 

@@ -35,7 +35,7 @@ public class PipeFXRenderHandler {
 			}
 
 			for (int i = 0; i < Math.sqrt(amount); i++) {
-				effect = provider.createGenericParticle(mc.theWorld, x, y, z, amount);
+				effect = provider.createGenericParticle(mc.world, x, y, z, amount);
 				if (effect != null) {
 					mc.effectRenderer.addEffect(effect);
 				}

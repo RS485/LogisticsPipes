@@ -21,12 +21,12 @@ public class FuzzyUnmodifiableSlot extends UnmodifiableSlot implements IFuzzySlo
 
 	@Override
 	public int getX() {
-		return xDisplayPosition;
+		return xPos;
 	}
 
 	@Override
 	public int getY() {
-		return yDisplayPosition;
+		return yPos;
 	}
 
 	@Override

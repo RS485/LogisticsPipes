@@ -5,8 +5,8 @@ import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -42,7 +42,7 @@ public class EntitySparkleFX extends Particle {
 	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
 
 	@Override
-	public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		Tessellator.getInstance().draw();
 		GL11.glPushMatrix();
 		GL11.glDepthMask(false);
@@ -60,7 +60,7 @@ public class EntitySparkleFX extends Particle {
 		float var15 = (float) (prevPosY + (posY - prevPosY) * partialTicks - Particle.interpPosY);
 		float var16 = (float) (prevPosZ + (posZ - prevPosZ) * partialTicks - Particle.interpPosZ);
 		float var17 = 1.0F;
-		VertexBuffer buffer = Tessellator.getInstance().getBuffer();
+		BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 		//tesselator.setBrightness(240);
 		buffer.pos(var14 - rotationX * var13 - rotationXY * var13, var15 - rotationZ * var13, var16 - rotationYZ * var13 - rotationXZ * var13).tex(var10, var12).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();
@@ -81,7 +81,7 @@ public class EntitySparkleFX extends Particle {
 	@Override
 	public void onUpdate() {
 		try {
-			EntityPlayerSP var1 = Minecraft.getMinecraft().thePlayer;
+			EntityPlayerSP var1 = Minecraft.getMinecraft().player;
 
 			if (var1.getDistance(posX, posY, posZ) > 50) {
 				setExpired();
@@ -99,12 +99,12 @@ public class EntitySparkleFX extends Particle {
 			motionY -= 0.05D * particleGravity - 0.1D * particleGravity * new Random().nextDouble();
 			motionZ -= 0.05D * particleGravity - 0.1D * particleGravity * new Random().nextDouble();
 
-			moveEntity(motionX, motionY, motionZ);
+			move(motionX, motionY, motionZ);
 			motionX *= 0.9800000190734863D;
 			motionY *= 0.9800000190734863D;
 			motionZ *= 0.9800000190734863D;
 
-			if (isCollided) {
+			if (onGround) {
 				motionX *= 0.699999988079071D;
 				motionZ *= 0.699999988079071D;
 			}

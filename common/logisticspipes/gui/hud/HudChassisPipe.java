@@ -144,9 +144,9 @@ public class HudChassisPipe extends BasicHUDGui {
 				GL11.glTranslatef(-11.0F, -5.0F, (float) (0.00005F * distance));
 			} else {
 				GL11.glTranslatef(0.0F, 0.0F, (float) (-0.00005F * distance));
-				mc.fontRendererObj.drawString("Nothing", -5, -15, 0);
-				mc.fontRendererObj.drawString("to", 9, -5, 0);
-				mc.fontRendererObj.drawString("display", -5, 5, 0);
+				mc.fontRenderer.drawString("Nothing", -5, -15, 0);
+				mc.fontRenderer.drawString("to", 9, -5, 0);
+				mc.fontRenderer.drawString("display", -5, 5, 0);
 				GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 			}
 		} else {

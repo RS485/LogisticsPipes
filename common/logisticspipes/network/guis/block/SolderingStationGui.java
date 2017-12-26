@@ -20,7 +20,7 @@ public class SolderingStationGui extends CoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		final LogisticsSolderingTileEntity tile = this.getTile(player.worldObj, LogisticsSolderingTileEntity.class);
+		final LogisticsSolderingTileEntity tile = this.getTile(player.world, LogisticsSolderingTileEntity.class);
 		if (tile == null) {
 			return null;
 		}
@@ -31,7 +31,7 @@ public class SolderingStationGui extends CoordinatesGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		final LogisticsSolderingTileEntity tile = this.getTile(player.worldObj, LogisticsSolderingTileEntity.class);
+		final LogisticsSolderingTileEntity tile = this.getTile(player.world, LogisticsSolderingTileEntity.class);
 		if (tile == null) {
 			return null;
 		}

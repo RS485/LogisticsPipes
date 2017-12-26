@@ -134,7 +134,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 			xTwo += (2 + addTwo) * Math.sin(angle + (2 * Math.PI / 200 * (i + 1)));
 			zTwo += (2 + addTwo) * Math.cos(angle + (2 * Math.PI / 200 * (i)));
 			AxisAlignedBB box = new AxisAlignedBB(Math.min(xOne, xTwo), yMin, Math.min(zOne, zTwo), Math.max(xOne, xTwo), yMax, Math.max(zOne, zTwo));
-			if (box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box))) {
+			if (box != null && (axisalignedbb == null || axisalignedbb.intersects(box))) {
 				arraylist.add(box);
 			}
 		}
@@ -180,7 +180,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 			dir1 = EnumFacing.EAST;
 			dir2 = EnumFacing.WEST;
 		}
-		w = Math.atan2(player.getLookVec().xCoord, player.getLookVec().zCoord);
+		w = Math.atan2(player.getLookVec().x, player.getLookVec().z);
 		w -= addition;
 		if (w < 0) {
 			w += 2 * Math.PI;

@@ -9,7 +9,7 @@ public interface ITDPart {
 
 	TileEntity getInternalDuctForSide(EnumFacing opposite);
 
-	void setWorldObj_LP(World world);
+	void setWorld_LP(World world);
 
 	void invalidate();
 

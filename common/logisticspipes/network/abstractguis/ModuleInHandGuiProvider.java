@@ -37,8 +37,8 @@ public abstract class ModuleInHandGuiProvider extends GuiProvider {
 	}
 
 	public final LogisticsModule getLogisticsModule(EntityPlayer player) {
-		ItemStack item = player.inventory.mainInventory[invSlot];
-		if (item == null) {
+		ItemStack item = player.inventory.mainInventory.get(invSlot);
+		if (item.isEmpty()) {
 			return null;
 		}
 		LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, new DummyWorldProvider(player.getEntityWorld()), null);

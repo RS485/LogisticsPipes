@@ -51,12 +51,6 @@ public class BoundingBoxDelegateBlockState implements IBlockState  {
 		this.state = state;
 	}
 
-	@Nullable
-	@Override
-	public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos) {
-		return box;
-	}
-
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos) {
 		return box;

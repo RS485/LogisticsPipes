@@ -21,7 +21,7 @@ public class ActivateNBTDebug extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		try {
-			Class.forName("codechicken.nei.forge.GuiContainerManager");
+			Class.forName("codechicken.nei.handler.NEIClientEventHandler");
 			Configs.TOOLTIP_INFO = true;
 			LoadingHelper.LoadNeiNBTDebugHelper();
 		} catch (ClassNotFoundException e) {

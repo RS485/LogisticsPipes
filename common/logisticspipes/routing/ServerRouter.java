@@ -352,11 +352,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (crp != null) {
 			return crp;
 		}
-		World worldObj = DimensionManager.getWorld(_dimension);
-		if (worldObj == null) {
+		World world = DimensionManager.getWorld(_dimension);
+		if (world == null) {
 			return null;
 		}
-		TileEntity tile = worldObj.getTileEntity(new BlockPos(_xCoord, _yCoord, _zCoord));
+		TileEntity tile = world.getTileEntity(new BlockPos(_xCoord, _yCoord, _zCoord));
 
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;

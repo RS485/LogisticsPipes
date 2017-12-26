@@ -41,7 +41,7 @@ public class TransactorSimple extends Transactor {
 	private int tryPut(ItemStack stack, List<IInvSlot> slots, int injected, boolean doAdd) {
 		int realInjected = injected;
 
-		if (realInjected >= stack.stackSize) {
+		if (realInjected >= stack.getCount()) {
 			return realInjected;
 		}
 
@@ -51,7 +51,7 @@ public class TransactorSimple extends Transactor {
 				int used = addToSlot(slot, stack, realInjected, doAdd);
 				if (used > 0) {
 					realInjected += used;
-					if (realInjected >= stack.stackSize) {
+					if (realInjected >= stack.getCount()) {
 						return realInjected;
 					}
 				}
@@ -70,7 +70,7 @@ public class TransactorSimple extends Transactor {
 	 * @return Return the number of items moved.
 	 */
 	protected int addToSlot(IInvSlot slot, ItemStack stack, int injected, boolean doAdd) {
-		int available = stack.stackSize - injected;
+		int available = stack.getCount() - injected;
 		int max = Math.min(stack.getMaxStackSize(), inventory.getInventoryStackLimit());
 
 		ItemStack stackInSlot = slot.getStackInSlot();
@@ -78,7 +78,7 @@ public class TransactorSimple extends Transactor {
 			int wanted = Math.min(available, max);
 			if (doAdd) {
 				stackInSlot = stack.copy();
-				stackInSlot.stackSize = wanted;
+				stackInSlot.setCount(wanted);
 				slot.setStackInSlot(stackInSlot);
 			}
 			return wanted;
@@ -88,7 +88,7 @@ public class TransactorSimple extends Transactor {
 			return 0;
 		}
 
-		int wanted = max - stackInSlot.stackSize;
+		int wanted = max - stackInSlot.getCount();
 		if (wanted <= 0) {
 			return 0;
 		}
@@ -98,7 +98,7 @@ public class TransactorSimple extends Transactor {
 		}
 
 		if (doAdd) {
-			stackInSlot.stackSize += wanted;
+			stackInSlot.setCount(stackInSlot.getCount() + wanted);
 			slot.setStackInSlot(stackInSlot);
 		}
 		return wanted;

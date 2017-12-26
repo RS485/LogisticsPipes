@@ -53,13 +53,13 @@ public class MissingItems extends ModernPacket {
 					.handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (isFlag()) {
 			for (IResource item : items) {
-				player.addChatComponentMessage(new TextComponentString(ChatColor.RED + "Missing: " + item.getDisplayText(ColorCode.MISSING)));
+				player.sendMessage(new TextComponentString(ChatColor.RED + "Missing: " + item.getDisplayText(ColorCode.MISSING)));
 			}
 		} else {
 			for (IResource item : items) {
-				player.addChatComponentMessage(new TextComponentString(ChatColor.GREEN + "Requested: " + item.getDisplayText(ColorCode.SUCCESS)));
+				player.sendMessage(new TextComponentString(ChatColor.GREEN + "Requested: " + item.getDisplayText(ColorCode.SUCCESS)));
 			}
-			player.addChatComponentMessage(new TextComponentString(ChatColor.GREEN + "Request successful!"));
+			player.sendMessage(new TextComponentString(ChatColor.GREEN + "Request successful!"));
 		}
 	}
 

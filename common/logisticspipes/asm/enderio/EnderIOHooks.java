@@ -1,26 +1,8 @@
 package logisticspipes.asm.enderio;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-
-import net.minecraftforge.fluids.IFluidHandler;
-
-import com.enderio.core.common.util.BlockCoord;
-import com.enderio.core.common.util.InventoryWrapper;
-import crazypants.enderio.conduit.item.ItemConduit;
-
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
-import logisticspipes.proxy.enderio.LogisticsInsertionFluidHandler;
-import logisticspipes.proxy.enderio.LogisticsInsertionInventory;
-import logisticspipes.utils.OrientationsUtil;
-
 public class EnderIOHooks {
 
+	/*
 	private static boolean isEnabled = true;
 
 	public static void disableHooks() {
@@ -74,4 +56,5 @@ public class EnderIOHooks {
 		}
 		return null;
 	}
+	*/
 }

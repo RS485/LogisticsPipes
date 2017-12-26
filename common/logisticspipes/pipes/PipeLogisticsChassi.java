@@ -434,7 +434,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi) container.pipe).nextOrientation();
 				} else {
-					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
@@ -446,7 +446,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
-					entityplayer.addChatComponentMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
 			return true;

@@ -14,13 +14,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -31,7 +31,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-import scala.tools.nsc.doc.model.Def;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.Color;
@@ -101,9 +100,9 @@ public final class GuiGraphics {
 
 		List<String> var24;
 		if(mc.currentScreen instanceof GuiContainer) {
-			var24 = SimpleServiceLocator.neiProxy.getItemToolTip(var22, mc.thePlayer, mc.gameSettings.advancedItemTooltips, (GuiContainer) mc.currentScreen);
+			var24 = SimpleServiceLocator.neiProxy.getItemToolTip(var22, mc.player, mc.gameSettings.advancedItemTooltips, (GuiContainer) mc.currentScreen);
 		} else {
-			var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+			var24 = var22.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 		}
 
 		if (tooltip.length > 4) {
@@ -111,7 +110,7 @@ public final class GuiGraphics {
 		}
 
 		if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || (Boolean) tooltip[3])) {
-			var24.add(1, "\u00a77" + ((ItemStack) tooltip[2]).stackSize);
+			var24.add(1, "\u00a77" + ((ItemStack) tooltip[2]).getCount());
 		}
 
 		int var11 = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
@@ -134,7 +133,7 @@ public final class GuiGraphics {
 		int var12;
 
 		for (var11 = 0; var11 < msg.size(); ++var11) {
-			var12 = FMLClientHandler.instance().getClient().fontRendererObj.getStringWidth(msg.get(var11));
+			var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(msg.get(var11));
 
 			if (var12 > var10) {
 				var10 = var12;
@@ -175,7 +174,7 @@ public final class GuiGraphics {
 				var19 = "\u00a77" + var19;
 			}
 
-			FMLClientHandler.instance().getClient().fontRendererObj.drawStringWithShadow(var19, var11, var12, -1);
+			FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
 
 			if (var18 == 0) {
 				var12 += 2;
@@ -223,7 +222,7 @@ public final class GuiGraphics {
 		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		buf.pos(x, y + 18, GuiGraphics.zLevel).tex(0, 1).endVertex();
 		buf.pos(x + 18, y + 18, GuiGraphics.zLevel).tex(1, 1).endVertex();;
@@ -238,7 +237,7 @@ public final class GuiGraphics {
 		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
 		buf.pos(x, y + 18, GuiGraphics.zLevel).tex(0, 1).endVertex();
@@ -256,7 +255,7 @@ public final class GuiGraphics {
 		mc.renderEngine.bindTexture(GuiGraphics.BIG_SLOT_TEXTURE);
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		buf.pos(x, y + 26, GuiGraphics.zLevel).tex(0, 1);
 		buf.pos(x + 26, y + 26, GuiGraphics.zLevel).tex(1, 1);
@@ -271,7 +270,7 @@ public final class GuiGraphics {
 		mc.renderEngine.bindTexture(GuiGraphics.SMALL_SLOT_TEXTURE);
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		buf.pos(x, y + 8, GuiGraphics.zLevel).tex(0, 1);
 		buf.pos(x + 8, y + 8, GuiGraphics.zLevel).tex(1, 1);
@@ -288,7 +287,7 @@ public final class GuiGraphics {
 		mc.renderEngine.bindTexture(new ResourceLocation(icon.getIconName()));
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		buf.pos(x, y + 16, GuiGraphics.zLevel).tex(icon.getMinU(), icon.getMaxV());
 		buf.pos(x + 16, y + 16, GuiGraphics.zLevel).tex(icon.getMaxU(), icon.getMaxV());
@@ -304,7 +303,7 @@ public final class GuiGraphics {
 		GlStateManager.enableBlend();
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		buf.pos(x, y + 15, GuiGraphics.zLevel).tex(0, 1);
 		buf.pos(x + 14, y + 15, GuiGraphics.zLevel).tex(1, 1);
@@ -322,7 +321,7 @@ public final class GuiGraphics {
 		GlStateManager.enableBlend();
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		buf.pos(x, y + 16, GuiGraphics.zLevel).tex(0, 1);
 		buf.pos(x + 16, y + 16, GuiGraphics.zLevel).tex(1, 1);
@@ -353,7 +352,7 @@ public final class GuiGraphics {
 
 
 		Tessellator tess = Tessellator.getInstance();
-		VertexBuffer buf = tess.getBuffer();
+		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
 		if (displayTop) {

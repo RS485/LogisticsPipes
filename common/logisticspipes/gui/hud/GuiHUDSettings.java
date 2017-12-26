@@ -62,15 +62,15 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		if (player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).getItem() != LogisticsPipes.LogisticsHUDArmor) {
-			mc.thePlayer.closeScreen();
+			mc.player.closeScreen();
 		}
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		mc.fontRendererObj.drawString("HUD Chassie Pipe", guiLeft + 50, guiTop + 13, 0x4c4c4c);
-		mc.fontRendererObj.drawString("HUD Crafting Pipe", guiLeft + 50, guiTop + 33, 0x4c4c4c);
-		mc.fontRendererObj.drawString("HUD InvSysCon Pipe", guiLeft + 50, guiTop + 53, 0x4c4c4c);
-		mc.fontRendererObj.drawString("HUD Power Junction", guiLeft + 50, guiTop + 73, 0x4c4c4c);
-		mc.fontRendererObj.drawString("HUD Provider Pipe", guiLeft + 50, guiTop + 93, 0x4c4c4c);
-		mc.fontRendererObj.drawString("HUD Satellite Pipe", guiLeft + 50, guiTop + 113, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Chassie Pipe", guiLeft + 50, guiTop + 13, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Crafting Pipe", guiLeft + 50, guiTop + 33, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD InvSysCon Pipe", guiLeft + 50, guiTop + 53, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Power Junction", guiLeft + 50, guiTop + 73, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Provider Pipe", guiLeft + 50, guiTop + 93, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Satellite Pipe", guiLeft + 50, guiTop + 113, 0x4c4c4c);
 		GuiGraphics.drawPlayerHotbarBackground(mc, guiLeft + 10, guiTop + 134);
 		GuiGraphics.drawPlayerArmorBackground(mc, guiLeft + 10, guiTop + 65);
 	}

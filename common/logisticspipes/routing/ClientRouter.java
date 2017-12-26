@@ -91,11 +91,11 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public CoreRoutedPipe getPipe() {
-		World worldObj = MainProxy.proxy.getWorld();
-		if (worldObj == null) {
+		World world = MainProxy.proxy.getWorld();
+		if (world == null) {
 			return null;
 		}
-		TileEntity tile = worldObj.getTileEntity(new BlockPos(_xCoord, _yCoord, _zCoord));
+		TileEntity tile = world.getTileEntity(new BlockPos(_xCoord, _yCoord, _zCoord));
 
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;

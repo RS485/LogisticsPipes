@@ -41,7 +41,7 @@ public class ChangelogCommand implements ICommandHandler {
 			}
 			display.display(sender);
 		} else {
-			sender.addChatMessage(new TextComponentString(statusMessage));
+			sender.sendMessage(new TextComponentString(statusMessage));
 		}
 	}
 }

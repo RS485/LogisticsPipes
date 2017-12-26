@@ -67,7 +67,7 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 		int w = bounds.width * scaledresolution.getScaleFactor();
 		int h = (bounds.height - 1) * scaledresolution.getScaleFactor();
 
-		mc.fontRendererObj.drawString(StringUtils
+		mc.fontRenderer.drawString(StringUtils
 				.translate(PREFIX + "disconnectTitle"), guiLeft + 8, guiTop + 8, logisticspipes.utils.Color
 				.getValue(logisticspipes.utils.Color.DARKER_GREY), false);
 

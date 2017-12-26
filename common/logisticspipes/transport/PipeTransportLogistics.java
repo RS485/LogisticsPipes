@@ -99,11 +99,11 @@ public class PipeTransportLogistics {
 		if (tile != null && chunk != null) {
 			// items are crossing a chunk boundary, mark both chunks modified
 			if (container.getPos().getX() >> 4 != tile.getPos().getX() >> 4 || container.getPos().getZ() >> 4 != tile.getPos().getZ() >> 4) {
-				chunk.setChunkModified();
+				chunk.markDirty();
 				if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.transport != null && ((LogisticsTileGenericPipe) tile).pipe.transport.chunk != null) {
-					((LogisticsTileGenericPipe) tile).pipe.transport.chunk.setChunkModified();
+					((LogisticsTileGenericPipe) tile).pipe.transport.chunk.markDirty();
 				} else {
-					getWorld().getChunkFromBlockCoords(tile.getPos()).setChunkModified();
+					getWorld().getChunkFromBlockCoords(tile.getPos()).markDirty();
 				}
 			}
 		}
@@ -372,7 +372,7 @@ public class PipeTransportLogistics {
 		NBTTagList nbttaglist2 = nbt.getTagList("buffercontents", 10);
 		for (int i = 0; i < nbttaglist2.tagCount(); i++) {
 			NBTTagCompound nbttagcompound1 = nbttaglist2.getCompoundTagAt(i);
-			_itemBuffer.add(new Triplet<>(ItemIdentifierStack.getFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound1)), new Pair<>(_bufferTimeOut, 0), null));
+			_itemBuffer.add(new Triplet<>(ItemIdentifierStack.getFromStack(new ItemStack(nbttagcompound1)), new Pair<>(_bufferTimeOut, 0), null));
 		}
 
 	}
@@ -522,8 +522,8 @@ public class PipeTransportLogistics {
 						if (util.getSizeInventory() > slot) {
 							ItemStack content = util.getStackInSlot(slot);
 							ItemStack toAdd = arrivingItem.getItemIdentifierStack().makeNormalStack();
-							toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, amount - (content != null ? content.stackSize : 0)));
-							if (toAdd.stackSize > 0) {
+							toAdd.setCount(Math.min(toAdd.getCount(), Math.max(0, amount - (content != null ? content.getCount() : 0))));
+							if (toAdd.getCount() > 0) {
 								if (util.getSizeInventory() > slot) {
 									int added = ((ISpecialInsertion) util).addToSlot(toAdd, slot);
 									arrivingItem.getItemIdentifierStack().lowerStackSize(added);
@@ -549,9 +549,9 @@ public class PipeTransportLogistics {
 					}
 					ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 
-					arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
+					arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
 
-					if (added.stackSize > 0 && arrivingItem instanceof IRoutedItem) {
+					if (added.getCount() > 0 && arrivingItem instanceof IRoutedItem) {
 						tookSome = true;
 						arrivingItem.setBufferCounter(0);
 					}
@@ -562,11 +562,11 @@ public class PipeTransportLogistics {
 						// we have some leftovers, we are splitting the stack, we need to clone the info
 						info = arrivingItem.getInfo().clone();
 						// For InvSysCon
-						info.getItem().setStackSize(added.stackSize);
+						info.getItem().setStackSize(added.getCount());
 						insertedItemStack(info, tile);
 					} else {
 						info = arrivingItem.getInfo();
-						info.getItem().setStackSize(added.stackSize);
+						info.getItem().setStackSize(added.getCount());
 						// For InvSysCon
 						insertedItemStack(info, tile);
 
@@ -581,8 +581,8 @@ public class PipeTransportLogistics {
 						}
 						ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 
-						arrivingItem.getItemIdentifierStack().lowerStackSize(added.stackSize);
-						if (added.stackSize > 0) {
+						arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
+						if (added.getCount() > 0) {
 							tookSome = true;
 							arrivingItem.setBufferCounter(0);
 						}
@@ -592,11 +592,11 @@ public class PipeTransportLogistics {
 							// we have some leftovers, we are splitting the stack, we need to clone the info
 							info = arrivingItem.getInfo().clone();
 							// For InvSysCon
-							info.getItem().setStackSize(added.stackSize);
+							info.getItem().setStackSize(added.getCount());
 							insertedItemStack(info, tile);
 						} else {
 							info = arrivingItem.getInfo();
-							info.getItem().setStackSize(added.stackSize);
+							info.getItem().setStackSize(added.getCount());
 							// For InvSysCon
 							insertedItemStack(info, tile);
 							// back to normal code, break if we've inserted everything, all items disposed of.
@@ -752,7 +752,7 @@ public class PipeTransportLogistics {
 		item.setContainer(container);
 		EntityItem entity = item.toEntityItem();
 		if (entity != null) {
-			container.getWorld().spawnEntityInWorld(entity);
+			container.getWorld().spawnEntity(entity);
 		}
 	}
 

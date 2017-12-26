@@ -63,7 +63,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
+		LogisticsTileGenericPipe tile = this.getPipe(player.world);
 		if (tile == null) {
 			return;
 		}
@@ -125,8 +125,8 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			}
 			lasers.add(new LaserData(pipe.getX(), pipe.getY(), pipe.getZ(), dir, connectionType).setStartPipe(firstPipe));
 			firstPipe = false;
-			HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, (worldObj, laser) -> {
-				if (pipe.getWorld() == worldObj) {
+			HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, (world, laser) -> {
+				if (pipe.getWorld() == world) {
 					lasers.add(laser);
 				}
 			}, connectionType);

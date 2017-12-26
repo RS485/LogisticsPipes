@@ -69,12 +69,12 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		TAB_BUTTON_2.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
 		if (itemDisplay_1 == null) {
-			itemDisplay_1 = new ItemDisplay(null, fontRendererObj, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay_1 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay_1.reposition(guiLeft + 10, guiTop + 40, xSize - 20, 20);
 
 		if (itemDisplay_2 == null) {
-			itemDisplay_2 = new ItemDisplay(null, fontRendererObj, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay_2 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
 			itemDisplay_2.setItemList(new ArrayList<>());
 		}
 		itemDisplay_2.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125);
@@ -178,7 +178,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					itemRender.zLevel = 0.0F;
-					mc.fontRendererObj.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRendererObj), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
+					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRenderer), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
 
 					int xOrigo = xCenter - 68;
 					int yOrigo = yCenter + 90;
@@ -223,8 +223,8 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 						left += (time_left % 60) + "min";
 					}
 
-					fontRendererObj.drawString(left, xOrigo - 12, yOrigo + 6, 0x404040);
-					fontRendererObj.drawString(right, xOrigo + 153 - fontRendererObj.getStringWidth(right), yOrigo + 6, 0x404040);
+					fontRenderer.drawString(left, xOrigo - 12, yOrigo + 6, 0x404040);
+					fontRenderer.drawString(right, xOrigo + 153 - fontRenderer.getStringWidth(right), yOrigo + 6, 0x404040);
 
 					long[] data = new long[task.amountRecorded.length];
 					int pos = 0;
@@ -251,9 +251,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 					double averagey = ((double) highest + lowest) / 2;
 
-					fontRendererObj.drawString(StringUtils.getFormatedStackSize(highest, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(highest, false)), guiTop + 117, 0x404040);
-					fontRendererObj.drawString(StringUtils.getFormatedStackSize((long) averagey, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize((long) averagey, false)), yCenter + 46, 0x404040);
-					fontRendererObj.drawString(StringUtils.getFormatedStackSize(lowest, false), xOrigo - 1 - fontRendererObj.getStringWidth(StringUtils.getFormatedStackSize(lowest, false)), bottom - 23, 0x404040);
+					fontRenderer.drawString(StringUtils.getFormatedStackSize(highest, false), xOrigo - 1 - fontRenderer.getStringWidth(StringUtils.getFormatedStackSize(highest, false)), guiTop + 117, 0x404040);
+					fontRenderer.drawString(StringUtils.getFormatedStackSize((long) averagey, false), xOrigo - 1 - fontRenderer.getStringWidth(StringUtils.getFormatedStackSize((long) averagey, false)), yCenter + 46, 0x404040);
+					fontRenderer.drawString(StringUtils.getFormatedStackSize(lowest, false), xOrigo - 1 - fontRenderer.getStringWidth(StringUtils.getFormatedStackSize(lowest, false)), bottom - 23, 0x404040);
 
 					float yScale = 80F / Math.max(highest - lowest, 0.5F);
 					int x = xOrigo + 150;
@@ -328,9 +328,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		if (current_Tab == 0) {
-			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 		} else if (current_Tab == 1) {
-			mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			GuiGraphics.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
 		}
 	}

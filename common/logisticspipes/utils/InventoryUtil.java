@@ -46,10 +46,10 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 				continue;
 			}
 			if (first) {
-				count = stack.stackSize - ((_hideOne || _hideOnePerStack) ? 1 : 0);
+				count = stack.getCount() - ((_hideOne || _hideOnePerStack) ? 1 : 0);
 				first = false;
 			} else {
-				count += stack.stackSize - (_hideOnePerStack ? 1 : 0);
+				count += stack.getCount() - (_hideOnePerStack ? 1 : 0);
 			}
 		}
 		return count;
@@ -64,7 +64,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 				continue;
 			}
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
-			int stackSize = stack.stackSize - (_hideOnePerStack ? 1 : 0);
+			int stackSize = stack.getCount() - (_hideOnePerStack ? 1 : 0);
 			Integer currentSize = items.get(itemId);
 			if (currentSize == null) {
 				items.put(itemId, stackSize - (_hideOne ? 1 : 0));
@@ -103,28 +103,28 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd && count > 0; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null || (stack.stackSize == 1 && _hideOnePerStack) || !ItemIdentifier.get(stack).equals(item)) {
+			if (stack.isEmpty() || (stack.getCount() == 1 && _hideOnePerStack) || !ItemIdentifier.get(stack).equals(item)) {
 				continue;
 			}
-			int itemsToSplit = Math.min(count, stack.stackSize - (((first && _hideOne) || _hideOnePerStack) ? 1 : 0));
+			int itemsToSplit = Math.min(count, stack.getCount() - (((first && _hideOne) || _hideOnePerStack) ? 1 : 0));
 			first = false;
 			if (itemsToSplit == 0) {
 				continue;
 			}
 			ItemStack removed = null;
-			if (stack.stackSize > itemsToSplit) { // then we only want part of the stack
+			if (stack.getCount() > itemsToSplit) { // then we only want part of the stack
 				removed = stack.splitStack(itemsToSplit);
 				_inventory.setInventorySlotContents(i, stack);
 			} else {
 				removed = stack;
-				_inventory.setInventorySlotContents(i, null);
+				_inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 			}
 			if (outputStack == null) {
 				outputStack = removed;
 			} else {
-				outputStack.stackSize += removed.stackSize;
+				outputStack.setCount(outputStack.getCount() + removed.getCount());
 			}
-			count -= removed.stackSize;
+			count -= removed.getCount();
 		}
 		_inventory.markDirty();
 		return outputStack;
@@ -167,7 +167,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 				continue;
 			}
 
-			totalRoom += (Math.min(stackLimit, item.getMaxStackSize()) - stack.stackSize);
+			totalRoom += (Math.min(stackLimit, item.getMaxStackSize()) - stack.getCount());
 		}
 		return totalRoom;
 	}
@@ -203,9 +203,9 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 		ItemStack stackInSlot = _inventory.getStackInSlot(i);
 		if (stackInSlot == null) {
-			int wanted = Math.min(stack.stackSize, max);
+			int wanted = Math.min(stack.getCount(), max);
 			stackInSlot = stack.copy();
-			stackInSlot.stackSize = wanted;
+			stackInSlot.setCount(wanted);
 			_inventory.setInventorySlotContents(i, stackInSlot);
 			return wanted;
 		}
@@ -214,16 +214,16 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			return 0;
 		}
 
-		int toAdd = max - stackInSlot.stackSize;
+		int toAdd = max - stackInSlot.getCount();
 		if (toAdd < 0) {
 			return 0;
 		}
 
-		if (toAdd > stack.stackSize) {
-			toAdd = stack.stackSize;
+		if (toAdd > stack.getCount()) {
+			toAdd = stack.getCount();
 		}
 
-		stackInSlot.stackSize += toAdd;
+		stackInSlot.setCount(stackInSlot.getCount() + toAdd);
 		_inventory.setInventorySlotContents(i, stackInSlot);
 		_inventory.markDirty();
 		return toAdd;

@@ -12,6 +12,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 public class ClassAbstractLiquidConduitHandler {
 	public static byte[] handleAbstractLiquidConduitClass(byte[] bytes) {
+		/*
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
@@ -94,8 +95,10 @@ public class ClassAbstractLiquidConduitHandler {
 			}
 		}
 
-		ClassWriter writer = new ClassWriter(0/*ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES*/);
+		ClassWriter writer = new ClassWriter(0/*ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES* /);
 		node.accept(writer);
 		return writer.toByteArray();
+		 */
+		return bytes;
 	}
 }

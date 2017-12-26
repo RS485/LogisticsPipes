@@ -3,7 +3,6 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -15,7 +14,6 @@ import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
-import logisticspipes.gui.popup.SelectItemOutOfList.IHandleItemChoise;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -34,7 +32,6 @@ import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipeCompat;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -82,7 +79,7 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public World getWorld() {
-		return FMLClientHandler.instance().getClient().theWorld;
+		return FMLClientHandler.instance().getClient().world;
 	}
 
 	@Override
@@ -93,7 +90,7 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsIC2PowerProviderTileEntity.class, "logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity");
 		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
-		GameRegistry.registerTileEntity(LogisticsTileGenericPipeCompat.class, LogisticsPipes.logisticsTileGenericPipeMapping);
+		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
 		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericSubMultiBlock.class, "logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock");
 
@@ -114,7 +111,7 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public EntityPlayer getClientPlayer() {
-		return FMLClientHandler.instance().getClient().thePlayer;
+		return FMLClientHandler.instance().getClient().player;
 	}
 
 	@Override
@@ -206,8 +203,8 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public void sendBroadCast(String message) {
-		if (Minecraft.getMinecraft().thePlayer != null) {
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentString("[LP] Client: " + message));
+		if (Minecraft.getMinecraft().player != null) {
+			Minecraft.getMinecraft().player.sendMessage(new TextComponentString("[LP] Client: " + message));
 		}
 	}
 
@@ -223,9 +220,9 @@ public class ClientProxy implements IProxy {
 	@Override
 	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler) {
 		if (handler instanceof NetHandlerPlayServer) {
-			return ((NetHandlerPlayServer) handler).playerEntity;
+			return ((NetHandlerPlayServer) handler).player;
 		} else {
-			return Minecraft.getMinecraft().thePlayer;
+			return Minecraft.getMinecraft().player;
 		}
 	}
 

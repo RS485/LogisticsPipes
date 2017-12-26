@@ -14,6 +14,7 @@ import logisticspipes.asm.util.ASMHelper;
 
 public class ClassNetworkedInventoryHandler {
 	public static byte[] handleNetworkedInventoryClass(byte[] bytes) {
+		/*
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
@@ -60,8 +61,10 @@ public class ClassNetworkedInventoryHandler {
 					node.methods.set(node.methods.indexOf(m), mv);
 				});
 
-		ClassWriter writer = new ClassWriter(0/*ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES*/);
+		ClassWriter writer = new ClassWriter(0/*ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES* /);
 		node.accept(writer);
 		return writer.toByteArray();
+		*/
+		return bytes;
 	}
 }

@@ -36,7 +36,7 @@ public class CraftingPermissionManager {
 
 	public PlayerIdentifier getPlayerID(InventoryCrafting inv) {
 		if (inv.eventHandler instanceof ContainerPlayer) {
-			return PlayerIdentifier.get(((ContainerPlayer) inv.eventHandler).thePlayer);
+			return PlayerIdentifier.get(((ContainerPlayer) inv.eventHandler).player);
 		} else if (inv instanceof AutoCraftingInventory) {
 			return ((AutoCraftingInventory) inv).placedByPlayer;
 		}

@@ -192,16 +192,6 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		newPipeIconIndex = newIndex;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIconFromDamage(int par1) {
-		if (iconProvider != null) { // invalid pipes won't have this set
-			return iconProvider.getIcon(pipeIconIndex);
-		} else {
-			return null;
-		}
-	}
-
 	public int getNewPipeIconIndex() {
 		return newPipeIconIndex;
 	}
@@ -215,18 +205,6 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			throw new UnsupportedOperationException("Can't reset this");
 		}
 		newPipeRenderList = list;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister) {
-		// NOOP
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getSpriteNumber() {
-		return 0;
 	}
 
 	public void setDummyPipe(CoreUnroutedPipe pipe) {

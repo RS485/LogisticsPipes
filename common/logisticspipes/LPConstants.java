@@ -5,6 +5,8 @@ public class LPConstants {
 
 	private LPConstants() {}
 
+	public static final String LP_MOD_ID = "logisticspipes";
+
 	public static final float FACADE_THICKNESS = 2F / 16F;
 	public static final float PIPE_NORMAL_SPEED = 0.01F;
 	public static final float PIPE_MIN_POS = 0.1875F;

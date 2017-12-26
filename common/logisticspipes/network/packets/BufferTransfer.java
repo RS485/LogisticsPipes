@@ -28,7 +28,7 @@ public class BufferTransfer extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			SimpleServiceLocator.clientBufferHandler.handlePacket(content);
 		} else {
 			SimpleServiceLocator.serverBufferHandler.handlePacket(content, player);

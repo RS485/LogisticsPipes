@@ -245,8 +245,8 @@ public abstract class LPTravelingItem {
 		}
 
 		public EntityItem toEntityItem() {
-			World worldObj = container.getWorld();
-			if (MainProxy.isServer(worldObj)) {
+			World world = container.getWorld();
+			if (MainProxy.isServer(world)) {
 				if (getItemIdentifierStack().getStackSize() <= 0) {
 					return null;
 				}
@@ -283,16 +283,16 @@ public abstract class LPTravelingItem {
 				DoubleCoordinates motion = new DoubleCoordinates(0, 0, 0);
 				CoordinateUtils.add(motion, exitdirection, getSpeed() * 2.0);
 
-				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(worldObj, position.getXCoord(), position.getYCoord(), position.getZCoord());
+				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(world, position.getXCoord(), position.getYCoord(), position.getZCoord());
 
 				//entityitem.lifespan = 1200;
 				//entityitem.delayBeforeCanPickup = 10;
 
 				//uniformly distributed in -0.005 .. 0.01 to increase bias toward smaller values
-				float f3 = worldObj.rand.nextFloat() * 0.015F - 0.005F;
-				entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.getXCoord();
-				entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.getYCoord();
-				entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.getZCoord();
+				float f3 = world.rand.nextFloat() * 0.015F - 0.005F;
+				entityitem.motionX = (float) world.rand.nextGaussian() * f3 + motion.getXCoord();
+				entityitem.motionY = (float) world.rand.nextGaussian() * f3 + motion.getYCoord();
+				entityitem.motionZ = (float) world.rand.nextGaussian() * f3 + motion.getZCoord();
 				itemWasLost();
 
 				return entityitem;

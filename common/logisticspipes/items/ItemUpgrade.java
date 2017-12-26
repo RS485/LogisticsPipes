@@ -241,7 +241,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabRedstone;
+		return CreativeTabs.REDSTONE;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

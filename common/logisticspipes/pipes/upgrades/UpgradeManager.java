@@ -153,7 +153,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				ItemStack stack = getInv().getStackInSlot(i);
 				sneakyOrientation = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			} else if (upgrade instanceof SpeedUpgrade) {
-				speedUpgradeCount += inv.getStackInSlot(i).stackSize;
+				speedUpgradeCount += inv.getStackInSlot(i).getCount();
 			} else if (upgrade instanceof ConnectionUpgrade) {
 				disconnectedSides.add(((ConnectionUpgrade) upgrade).getSide());
 			} else if (upgrade instanceof ConnectionUpgradeConfig) {
@@ -166,7 +166,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			} else if (upgrade instanceof CombinedSneakyUpgrade && sneakyOrientation == null) {
 				isCombinedSneakyUpgrade = true;
 			} else if (upgrade instanceof FluidCraftingUpgrade) {
-				liquidCrafter += inv.getStackInSlot(i).stackSize;
+				liquidCrafter += inv.getStackInSlot(i).getCount();
 			} else if (upgrade instanceof CraftingByproductUpgrade) {
 				hasByproductExtractor = true;
 			} else if (upgrade instanceof PatternUpgrade) {
@@ -184,7 +184,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			} else if (upgrade instanceof OpaqueUpgrade) {
 				hasOpaqueUpgrade = true;
 			} else if (upgrade instanceof CraftingCleanupUpgrade) {
-				craftingCleanup += inv.getStackInSlot(i).stackSize;
+				craftingCleanup += inv.getStackInSlot(i).getCount();
 			} else if (upgrade instanceof LogicControllerUpgrade) {
 				hasLogicControll = true;
 			} else if (upgrade instanceof UpgradeModuleUpgrade) {
@@ -348,8 +348,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				InventoryChanged(inv);
 				return true;
 			} else if (item.getItemDamage() == entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage()) {
-				if (item.stackSize < inv.getInventoryStackLimit()) {
-					item.stackSize++;
+				if (item.getCount() < inv.getInventoryStackLimit()) {
+					item.grow(1);
 					entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1);
 					inv.setInventorySlotContents(i, item);
 					InventoryChanged(inv);

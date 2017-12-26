@@ -136,7 +136,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 			}
 		}
 		orders.clear();
-		if (MainProxy.isServer(worldObj)) {
+		if (MainProxy.isServer(world)) {
 			if (internalStorage != lastUpdateStorage) {
 				updateClients();
 				lastUpdateStorage = internalStorage;

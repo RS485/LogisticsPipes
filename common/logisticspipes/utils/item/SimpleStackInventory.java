@@ -47,6 +47,16 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	@Override
+	public boolean isEmpty() {
+		for(ItemStack stack: _contents) {
+			if(stack == null || !stack.isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public ItemStack getStackInSlot(int i) {
 		return _contents[i];
 	}
@@ -56,10 +66,10 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		if (_contents[slot] == null) {
 			return null;
 		}
-		if (_contents[slot].stackSize > count) {
+		if (_contents[slot].getCount() > count) {
 			ItemStack ret = _contents[slot].copy();
-			ret.stackSize = count;
-			_contents[slot].stackSize -= count;
+			ret.setCount(count);
+			_contents[slot].setCount(_contents[slot].getCount() - count);
 			return ret;
 		}
 		ItemStack ret = _contents[slot];
@@ -99,7 +109,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
 		return false;
 	}
 
@@ -121,7 +131,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 			NBTTagCompound nbttagcompound2 = nbttaglist.getCompoundTagAt(j);
 			int index = nbttagcompound2.getInteger("index");
 			if (index < _contents.length) {
-				_contents[index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+				_contents[index] = new ItemStack(nbttagcompound2);
 			} else {
 				LogisticsPipes.log.fatal("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
 			}
@@ -136,7 +146,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = new NBTTagList();
 		for (int j = 0; j < _contents.length; ++j) {
-			if (_contents[j] != null && _contents[j].stackSize > 0) {
+			if (_contents[j] != null && _contents[j].getCount() > 0) {
 				NBTTagCompound nbttagcompound2 = new NBTTagCompound();
 				nbttaglist.appendTag(nbttagcompound2);
 				nbttagcompound2.setInteger("index", j);
@@ -147,19 +157,19 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		nbttagcompound.setInteger(prefix + "itemsCount", _contents.length);
 	}
 
-	public void dropContents(World worldObj, int posX, int posY, int posZ) {
-		if (MainProxy.isServer(worldObj)) {
+	public void dropContents(World world, int posX, int posY, int posZ) {
+		if (MainProxy.isServer(world)) {
 			for (int i = 0; i < _contents.length; i++) {
 				while (_contents[i] != null) {
 					ItemStack todrop = decrStackSize(i, _contents[i].getMaxStackSize());
-					dropItems(worldObj, todrop, posX, posY, posZ);
+					dropItems(world, todrop, posX, posY, posZ);
 				}
 			}
 		}
 	}
 
 	private void dropItems(World world, ItemStack stack, int i, int j, int k) {
-		if (stack.stackSize <= 0) {
+		if (stack.getCount() <= 0) {
 			return;
 		}
 		float f1 = 0.7F;
@@ -168,7 +178,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		double d2 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
 		EntityItem entityitem = new EntityItem(world, i + d, j + d1, k + d2, stack);
 		entityitem.setDefaultPickupDelay();
-		world.spawnEntityInWorld(entityitem);
+		world.spawnEntity(entityitem);
 	}
 
 	public void addListener(ISimpleInventoryEventHandler listner) {
@@ -197,19 +207,19 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		ItemStack slot = _contents[i];
 		if (slot == null) {
 			_contents[i] = stack.copy();
-			_contents[i].stackSize = Math.min(_contents[i].stackSize, realstacklimit);
-			return _contents[i].stackSize;
+			_contents[i].setCount(Math.min(_contents[i].getCount(), realstacklimit));
+			return _contents[i].getCount();
 		}
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
 		ItemIdentifier slotIdent = ItemIdentifier.get(slot);
 		if (slotIdent.equals(stackIdent)) {
-			slot.stackSize += stack.stackSize;
-			if (slot.stackSize > realstacklimit) {
-				int ans = stack.stackSize - (slot.stackSize - realstacklimit);
-				slot.stackSize = realstacklimit;
+			slot.setCount(slot.getCount() + stack.getCount());
+			if (slot.getCount() > realstacklimit) {
+				int ans = stack.getCount() - (slot.getCount() - realstacklimit);
+				slot.setCount(realstacklimit);
 				return ans;
 			} else {
-				return stack.stackSize;
+				return stack.getCount();
 			}
 		} else {
 			return 0;
@@ -229,24 +239,24 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		}
 
 		for (int i = 0; i < _contents.length; i++) {
-			if (stack.stackSize <= 0) {
+			if (stack.getCount() <= 0) {
 				break;
 			}
 			if (_contents[i] == null) {
 				continue; //Skip Empty Slots on first attempt.
 			}
 			int added = tryAddToSlot(i, stack, stacklimit);
-			stack.stackSize -= added;
+			stack.setCount(stack.getCount() - added);
 		}
 		for (int i = 0; i < _contents.length; i++) {
-			if (stack.stackSize <= 0) {
+			if (stack.getCount() <= 0) {
 				break;
 			}
 			int added = tryAddToSlot(i, stack, stacklimit);
-			stack.stackSize -= added;
+			stack.setCount(stack.getCount() - added);
 		}
 		markDirty();
-		return stack.stackSize;
+		return stack.getCount();
 	}
 
 	@Override

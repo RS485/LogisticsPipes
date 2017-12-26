@@ -25,6 +25,6 @@ public class DumpCommand implements ICommandHandler {
 
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.addChatMessage(new TextComponentString("Dump Created"));
+		sender.sendMessage(new TextComponentString("Dump Created"));
 	}
 }

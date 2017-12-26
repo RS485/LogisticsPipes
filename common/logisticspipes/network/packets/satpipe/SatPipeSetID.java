@@ -42,7 +42,7 @@ public class SatPipeSetID extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = getPipe(player.world);
 		if (pipe == null) {
 			return;
 		}

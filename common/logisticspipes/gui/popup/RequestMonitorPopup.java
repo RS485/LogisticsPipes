@@ -283,7 +283,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			if (!canidate.exists()) {
 				try {
 					ImageIO.write(bufferedimage, "png", canidate);
-					Minecraft.getMinecraft().thePlayer.sendChatMessage("Saved tree view as " + canidate.getName());
+					Minecraft.getMinecraft().player.sendChatMessage("Saved tree view as " + canidate.getName());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -337,10 +337,10 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		String s = Integer.toString(orderId);
 		if (!list.isEmpty()) {
 			drawTexturedModalRect(left - 5, top - 40 + 17, 0, 202, 26, 26);
-			mc.fontRendererObj.drawStringWithShadow(s, left + 9 - mc.fontRendererObj.getStringWidth(s) / 2, top - 30 + 17, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, left + 9 - mc.fontRenderer.getStringWidth(s) / 2, top - 30 + 17, 16777215);
 		} else {
 			drawTexturedModalRect(left - 5, top - 18 + 17, 0, 202, 26, 26);
-			mc.fontRendererObj.drawStringWithShadow(s, left + 9 - mc.fontRendererObj.getStringWidth(s) / 2, top - 18 + 10 + 17, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, left + 9 - mc.fontRenderer.getStringWidth(s) / 2, top - 18 + 10 + 17, 16777215);
 		}
 		renderLinkedOrderListItems(list, left, top + 17, 0, 0);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -427,10 +427,10 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		String s = Integer.toString(orderId);
 		if (!list.isEmpty()) {
 			drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 220, 0, 202, 26, 26);
-			mc.fontRendererObj.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRendererObj.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
 		} else {
 			drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 162, 0, 202, 26, 26);
-			mc.fontRendererObj.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRendererObj.getStringWidth(s) / 2, innerTopSide - mapY - 152, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - mc.fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 152, 16777215);
 		}
 		renderLinkedOrderListItems(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180, par1, par2);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -580,13 +580,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
 		itemRender.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			itemRender.renderItemOverlayIntoGUI(fontRendererObj, item.makeNormalStack(), x, y, "");
+			itemRender.renderItemOverlayIntoGUI(fontRenderer, item.makeNormalStack(), x, y, "");
 			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			itemRender.zLevel = 0.0F;
 			// Draw number
-			mc.fontRendererObj.drawStringWithShadow(s, x + 17 - mc.fontRendererObj.getStringWidth(s), y + 9, 16777215);
+			mc.fontRenderer.drawStringWithShadow(s, x + 17 - mc.fontRenderer.getStringWidth(s), y + 9, 16777215);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}

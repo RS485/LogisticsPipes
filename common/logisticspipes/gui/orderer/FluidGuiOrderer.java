@@ -28,7 +28,7 @@ public class FluidGuiOrderer extends GuiOrderer {
 		super.initGui();
 		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
 		if (setItemDisplay) {
-			itemDisplay = new ItemDisplay(this, fontRendererObj, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 1000, 16000, 100 }, false);
+			itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 1000, 16000, 100 }, false);
 		}
 		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100);
 	}

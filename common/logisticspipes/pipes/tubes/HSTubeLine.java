@@ -82,7 +82,7 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 		set.addFrom(LineTubeRenderer.tubeLine.get(orientation.getRenderOrientation()).bounds().toAABB());
 		set.stream().forEach(o -> o.add(pos));
 		AxisAlignedBB box = set.toABB();
-		if (box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box))) {
+		if (box != null && (axisalignedbb == null || axisalignedbb.intersects(box))) {
 			arraylist.add(box);
 		}
 	}

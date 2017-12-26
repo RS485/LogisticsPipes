@@ -12,6 +12,7 @@ import java.util.Map;
 import logisticspipes.config.Configs;
 import logisticspipes.utils.item.ItemIdentifier;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,17 +37,12 @@ public class DebugHelper implements IContainerTooltipHandler {
 	private static long lastTime = 0;
 
 	@Override
-	public List<String> handleTooltip(GuiContainer gui, int mousex, int mousey, List<String> currenttip) {
-		return currenttip;
+	public void handleTooltip(GuiScreen gui, int mousex, int mousey, List<String> currenttip) {
+
 	}
 
 	@Override
-	public List<String> handleItemDisplayName(GuiContainer paramGuiContainer, ItemStack paramItemStack, List<String> paramList) {
-		return paramList;
-	}
-
-	@Override
-	public List<String> handleItemTooltip(GuiContainer gui, final ItemStack itemstack, int paramInt1, int paramInt2, List<String> currenttip) {
+	public void handleItemDisplayName(GuiScreen gui, ItemStack itemstack, List<String> currenttip) {
 		if (Configs.TOOLTIP_INFO && itemstack != null) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if (DebugHelper.lastTime + 1000 < System.currentTimeMillis()) {
@@ -82,7 +78,6 @@ public class DebugHelper implements IContainerTooltipHandler {
 				}
 			}
 		}
-		return currenttip;
 	}
 
 	@SuppressWarnings("rawtypes")

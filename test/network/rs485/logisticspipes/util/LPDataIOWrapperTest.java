@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -305,7 +305,7 @@ public class LPDataIOWrapperTest {
 
 	@Test
 	public void testForgeDirection() throws Exception {
-		ForgeDirection value = ForgeDirection.UP;
+		EnumFacing value = EnumFacing.UP;
 		ByteBuf testBuffer = buffer(Long.BYTES);
 
 		LPDataIOWrapper.writeData(testBuffer, output -> output.writeFacing(value));

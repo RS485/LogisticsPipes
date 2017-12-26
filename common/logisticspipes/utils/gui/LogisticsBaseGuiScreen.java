@@ -244,8 +244,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	private void onRenderSlot(Slot slot) {
 		if(slot instanceof IFuzzySlot) {
 			final DictResource resource = ((IFuzzySlot) slot).getFuzzyFlags();
-			int x1 = slot.xDisplayPosition;
-			int y1 = slot.yDisplayPosition;
+			int x1 = slot.xPos;
+			int y1 = slot.yPos;
 			GL11.glDisable(GL11.GL_LIGHTING);
 			if (resource.use_od) {
 				Gui.drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
@@ -280,24 +280,24 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			if(fuzzySlotActiveGui && fuzzySlot == slot) {
 				if(!mouseOver) {
 					//Check within FuzzyGui
-					if(!isPointInRegion(slot.xDisplayPosition, slot.yDisplayPosition + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
+					if(!isPointInRegion(slot.xPos, slot.yPos + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
 						fuzzySlotActiveGui = false;
 						fuzzySlot = null;
 					}
 				}
 				//int posX = -60;
 				//int posY = 0;
-				final int posX = slot.xDisplayPosition + guiLeft;
-				final int posY = slot.yDisplayPosition + 17 + guiTop;
+				final int posX = slot.xPos + guiLeft;
+				final int posY = slot.yPos + 17 + guiTop;
 				renderAtTheEnd.add(() -> {
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
 					final String PREFIX = "gui.crafting.";
-					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
-					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
-					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
-					mc.fontRendererObj.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				});
@@ -561,7 +561,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 			if (result != null) {
 				if (result instanceof DummySlot || result instanceof ColorSlot || result instanceof FluidSlot) {
-					((DummyContainer) gui.inventorySlots).handleDummyClick(result, pos, stack, button, ClickType.PICKUP, mc.thePlayer);
+					((DummyContainer) gui.inventorySlots).handleDummyClick(result, pos, stack, button, ClickType.PICKUP, mc.player);
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(pos).setStack(stack).setButton(button));
 					return true;
 				}
@@ -577,11 +577,5 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			return ((LogisticsBaseGuiScreen) gui).extentionControllerRight.isOverPanel(x, y, w, h);
 		}
 		return false;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
-	public VisibilityData modifyVisiblity(GuiContainer gui, VisibilityData currentVisibility) {
-		return null;
 	}
 }

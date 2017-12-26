@@ -34,6 +34,11 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
+	@Override
 	public ItemStack getStackInSlot(int slot) {
 		return null;
 	}
@@ -58,7 +63,7 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(EntityPlayer player) {
 		return false;
 	}
 

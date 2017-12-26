@@ -298,7 +298,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			writeInt(0);
 		} else {
 			writeInt(Item.getIdFromItem(itemstack.getItem()));
-			writeInt(itemstack.stackSize);
+			writeInt(itemstack.getCount());
 			writeInt(itemstack.getItemDamage());
 			writeNBTTagCompound(itemstack.getTagCompound());
 		}

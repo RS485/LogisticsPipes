@@ -28,24 +28,24 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "logisticspipes";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender var1) {
-		return "/" + getCommandName() + " help";
+	public String getUsage(ICommandSender var1) {
+		return "/" + getName() + " help";
 	}
-
+/*
 	@Override
 	public List<String> getCommandAliases() {
 		return Arrays.asList(new String[] { "lp", "logipipes" });
 	}
-
+*/
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] arguments) throws CommandException {
 		if (arguments.length <= 0) {
-			throw new WrongUsageException("Type '" + getCommandUsage(sender) + "' for help.");
+			throw new WrongUsageException("Type '/logisticspipes help' for help.");
 		}
 		try {
 			boolean managed = false;
@@ -61,7 +61,7 @@ public class LogisticsPipesCommand extends CommandBase {
 			} else if (e instanceof CommandNotFoundException) {
 				throw new CommandException("The command was not found");
 			} else {
-				throw new WrongUsageException(getCommandUsage(sender));
+				throw new WrongUsageException("/logisticspipes help");
 			}
 		}
 	}

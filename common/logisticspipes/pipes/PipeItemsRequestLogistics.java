@@ -75,7 +75,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 				if (settings == null || settings.openRequest) {
 					openGui(entityplayer);
 				} else {
-					entityplayer.addChatMessage(new TextComponentString("Permission denied"));
+					entityplayer.sendMessage(new TextComponentString("Permission denied"));
 				}
 			}
 			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
@@ -138,7 +138,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	public SimulationResult simulateRequest(ItemStack wanted) {
 		final List<IResource> used = new ArrayList<>();
 		final List<IResource> missing = new ArrayList<>();
-		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
+		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
 
 			@Override
 			public void handleMissingItems(List<IResource> items) {
@@ -179,7 +179,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	@Override
 	public List<ItemStack> performRequest(ItemStack wanted) {
 		final List<IResource> missing = new ArrayList<>();
-		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.stackSize), this, new RequestLog() {
+		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
 
 			@Override
 			public void handleMissingItems(List<IResource> items) {

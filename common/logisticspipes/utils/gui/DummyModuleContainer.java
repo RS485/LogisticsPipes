@@ -20,8 +20,8 @@ public class DummyModuleContainer extends DummyContainer {
 	public DummyModuleContainer(EntityPlayer player, int slot) {
 		super(player.inventory, null);
 		this.slot = slot;
-		moduleStack = player.inventory.mainInventory[slot];
-		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, new DummyWorldProvider(player.worldObj), null);
+		moduleStack = player.inventory.mainInventory.get(slot);
+		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, new DummyWorldProvider(player.world), null);
 		module.registerPosition(ModulePositionType.IN_HAND, slot);
 		ItemModuleInformationManager.readInformation(moduleStack, module);
 	}
@@ -45,7 +45,7 @@ public class DummyModuleContainer extends DummyContainer {
 	@Override
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		super.onContainerClosed(par1EntityPlayer);
-		ItemModuleInformationManager.saveInfotmation(par1EntityPlayer.inventory.mainInventory[slot], module);
+		ItemModuleInformationManager.saveInfotmation(par1EntityPlayer.inventory.mainInventory.get(slot), module);
 		par1EntityPlayer.inventory.markDirty();
 	}
 }

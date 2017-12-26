@@ -19,7 +19,7 @@ public class SecurityCardPacket extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
+		LogisticsSecurityTileEntity tile = this.getTile(player.world, LogisticsSecurityTileEntity.class);
 		if (tile != null) {
 			tile.buttonFreqCard(getInteger(), player);
 		}

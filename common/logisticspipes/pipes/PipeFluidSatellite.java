@@ -235,7 +235,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void setNextId(EntityPlayer player) {
 		satelliteId = findId(1);
 		ensureAllSatelliteStatus();
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else {
@@ -248,7 +248,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void setPrevId(EntityPlayer player) {
 		satelliteId = findId(-1);
 		ensureAllSatelliteStatus();
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.world)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipePrev.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else {

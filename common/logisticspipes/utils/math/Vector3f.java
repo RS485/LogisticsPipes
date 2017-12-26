@@ -124,4 +124,8 @@ public class Vector3f {
 		y = v2.x * v1.z - v2.z * v1.x;
 		z = v1.x * v2.y - v1.y * v2.x;
 	}
+
+	public void normalize() {
+		makeVectorLength(1);
+	}
 }

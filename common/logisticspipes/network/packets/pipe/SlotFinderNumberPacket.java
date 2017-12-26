@@ -53,7 +53,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
-		IInventory inv = this.getTile(player.worldObj, IInventory.class);
+		IInventory inv = this.getTile(player.world, IInventory.class);
 		if (inv instanceof ISidedInventory) {
 			inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, null, false);
 		}
@@ -71,7 +71,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			}
 		}
 		if (result == null) {
-			player.addChatComponentMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
+			player.sendMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		}
 		int resultIndex = -1;
 		if (resultIndex == -1) {
@@ -101,7 +101,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 						if (stack == null) {
 							continue;
 						}
-						if (ItemIdentifier.get(stack).equals(ItemIdentifier.get(dummyStack)) && stack.stackSize == dummyStack.stackSize) {
+						if (ItemIdentifier.get(stack).equals(ItemIdentifier.get(dummyStack)) && stack.getCount() == dummyStack.getCount()) {
 							resultIndex = i;
 							break;
 						}
@@ -111,7 +111,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			}
 		}
 		if (resultIndex == -1) {
-			player.addChatComponentMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
+			player.sendMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		} else {
 			//Copy pipe to coordinates to use the getPipe method
 			setPosX(getPipePosX());

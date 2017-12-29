@@ -22,7 +22,9 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class FluidIdentifier implements ILPCCTypeHolder {
@@ -183,6 +185,15 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 
 	public static FluidIdentifier get(ItemIdentifierStack stack) {
 		FluidStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
+		if(f == null) {
+			ItemStack itemStack = stack.makeNormalStack();
+			if(itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
+				IFluidHandlerItem capability = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+				if(capability != null) {
+					f = Arrays.stream(capability.getTankProperties()).map(IFluidTankProperties::getContents).findFirst().orElse(null);
+				}
+			}
+		}
 		if (f == null) {
 			return null;
 		}

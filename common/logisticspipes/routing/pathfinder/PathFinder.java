@@ -195,7 +195,7 @@ public class PathFinder {
 
 		//Recurse in all directions
 		for (EnumFacing direction : EnumFacing.VALUES) {
-			if (root && !side.equals(null) && !direction.equals(side)) {
+			if (root && side != null && !direction.equals(side)) {
 				continue;
 			}
 

@@ -1,4 +1,4 @@
-package logisticspipes.proxy.enderio;
+/*package logisticspipes.proxy.enderio;
 
 import javax.annotation.Nullable;
 
@@ -95,3 +95,4 @@ public class LogisticsInsertionInventory implements IInventory {
 	@Override
 	public ITextComponent getDisplayName() {return null;}
 }
+*/

@@ -32,6 +32,8 @@ import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.recipes.CraftingParts;
 import logisticspipes.utils.item.ItemIdentifier;
 
+
+//TODO: This class needs a complete rework
 public class ForestryProxy implements IForestryProxy {
 
 	private Class<?> analyserClass;
@@ -383,7 +385,8 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).getGenome().getTolerantFlyer();
+		return false;
+//		return root.getMember(bee).getGenome().getTolerantFlyer();
 	}
 
 	/**
@@ -400,7 +403,8 @@ public class ForestryProxy implements IForestryProxy {
 		if (!isBee(bee)) {
 			return false;
 		}
-		return root.getMember(bee).getGenome().getTolerantFlyer() && root.getMember(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER);
+		return false;
+//		return root.getMember(bee).getGenome().getTolerantFlyer() && root.getMember(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER);
 	}
 
 	/**
@@ -529,7 +533,8 @@ public class ForestryProxy implements IForestryProxy {
 			bSpecies = root.getDefaultTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
 		}
 		IAlleleBeeSpecies species = (IAlleleBeeSpecies) bSpecies;
-		return species.getIcon(EnumBeeType.DRONE, phase);
+		return null;
+		//return species.getIcon(EnumBeeType.DRONE, phase);
 	}
 
 	/**
@@ -547,7 +552,8 @@ public class ForestryProxy implements IForestryProxy {
 			return 16777215;
 		}
 		IAlleleBeeSpecies species = (IAlleleBeeSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
-		return species.getIconColour(phase);
+		return 0;
+		//return species.getIconColour(phase);
 	}
 
 	/**

@@ -13,6 +13,7 @@ import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.modules.ModuleSatellite;
@@ -34,17 +35,10 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 
 public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
@@ -108,24 +102,12 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(false)) {
-			if (!(pair.getValue1() instanceof IFluidHandler)) {
-				continue;
-			}
-			IFluidHandler tankContainer = (IFluidHandler) pair.getValue1();
-			FluidTankInfo[] tanks = tankContainer.getTankInfo(pair.getValue2().getOpposite());
-			if (tanks == null) {
-				continue;
-			}
-			for (FluidTankInfo tank : tanks) {
-				if (tank == null) {
-					continue;
-				}
-				FluidStack liquid = tank.fluid;
+		for (ITankUtil util : getAdjacentTanks(false)) {
+			util.forEachTank(liquid -> {
 				if (liquid != null && liquid.getFluid() != null) {
 					addToList(FluidIdentifier.get(liquid).getItemIdentifier().makeStack(liquid.amount));
 				}
-			}
+			});
 		}
 		if (!itemList.equals(oldList) || force) {
 			oldList.clear();

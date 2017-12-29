@@ -135,34 +135,19 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 					DoubleCoordinates center = lpBox.getCenter();
 					box = new AxisAlignedBB(center.getXCoord() - 0.3D, center.getYCoord() - 0.3D, center.getZCoord() - 0.3D, center.getXCoord() + 0.3D,
 									center.getYCoord() + 0.3D, center.getZCoord() + 0.3D);
-					if (box != null) {
-						AxisAlignedBB cBox = getCompleteBox();
-						if (box.minX < cBox.minX) {
-							box.minX = cBox.minX;
-						}
-						if (box.minY < cBox.minY) {
-							box.minY = cBox.minY;
-						}
-						if (box.minZ < cBox.minZ) {
-							box.minZ = cBox.minZ;
-						}
-						if (box.maxX > cBox.maxX) {
-							box.maxX = cBox.maxX;
-						}
-						if (box.maxY > cBox.maxY) {
-							box.maxY = cBox.maxY;
-						}
-						if (box.maxZ > cBox.maxZ) {
-							box.maxZ = cBox.maxZ;
-						}
-						box = box.getOffsetBoundingBox(x, y, z);
-						boxes.add(box);
-					}
+					AxisAlignedBB cBox = getCompleteBox();
+					double minX = Math.max(box.minX, cBox.minX);
+					double minY = Math.max(box.minY, cBox.minY);
+					double minZ = Math.max(box.minZ, cBox.minZ);
+					double maxX = Math.min(box.maxX, cBox.maxX);
+					double maxY = Math.min(box.maxY, cBox.maxY);
+					double maxZ = Math.min(box.maxZ, cBox.maxZ);
+					boxes.add(new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ).offset(x, y, z));
 				}
 			}
 		}
 		arraylist.addAll(boxes.stream()
-				.filter(box -> box != null && (axisalignedbb == null || axisalignedbb.intersectsWith(box)))
+				.filter(box -> box != null && (axisalignedbb == null || axisalignedbb.intersects(box)))
 				.collect(Collectors.toList()));
 	}
 

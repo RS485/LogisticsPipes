@@ -1,3 +1,4 @@
+/*
 package logisticspipes.nei;
 
 import java.util.ArrayList;
@@ -77,3 +78,4 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 		}
 	}
 }
+*/

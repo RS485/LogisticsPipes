@@ -32,10 +32,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -54,12 +52,15 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 					return false;
 				}
+				//TODO: FIXME
+				/*
 				if (tile instanceof IFluidHandler) {
 					IFluidHandler liq = (IFluidHandler) tile;
 					if (liq.getTankInfo(dir.getOpposite()) != null && liq.getTankInfo(dir.getOpposite()).length > 0) {
 						return true;
 					}
 				}
+				*/
 				return false;
 			}
 		}, item);

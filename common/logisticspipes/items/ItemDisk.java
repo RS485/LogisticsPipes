@@ -2,9 +2,13 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class ItemDisk extends LogisticsItem {
 
@@ -20,11 +24,11 @@ public class ItemDisk extends LogisticsItem {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
-		if (itemStack.hasTagCompound()) {
-			if (itemStack.getTagCompound().hasKey("name")) {
-				String name = "\u00a78" + itemStack.getTagCompound().getString("name");
-				list.add(name);
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		if (stack.hasTagCompound()) {
+			if (stack.getTagCompound().hasKey("name")) {
+				String name = "\u00a78" + stack.getTagCompound().getString("name");
+				tooltip.add(name);
 			}
 		}
 	}

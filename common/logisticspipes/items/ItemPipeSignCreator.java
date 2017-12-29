@@ -147,7 +147,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabTools;
+		return CreativeTabs.TOOLS;
 	}
 
 	@Override

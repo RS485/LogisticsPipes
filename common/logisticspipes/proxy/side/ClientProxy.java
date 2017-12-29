@@ -38,6 +38,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.newpipe.GLRenderListHandler;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -276,5 +277,12 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void registerModels(LogisticsItem logisticsItem) {
 		logisticsItem.registerModels();
+	}
+
+	@Override
+	public void registerTextures() {
+		LogisticsPipes.textures.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
+		LogisticsNewRenderPipe.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
+		LogisticsPipes.LogisticsSolidBlock.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 	}
 }

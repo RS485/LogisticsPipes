@@ -7,12 +7,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import javax.annotation.Nullable;
+
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -246,7 +248,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(CreativeTabs par2CreativeTabs, NonNullList par3List) {
 		par3List.addAll(upgrades.stream().filter(upgrade -> !upgrade.deprecated)
 				.map(upgrade -> new ItemStack(this, 1, upgrade.getId()))
 				.collect(Collectors.toList()));
@@ -298,7 +300,7 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
-
+/*
 	@Override
 	public void registerIcons(IIconRegister par1IIconRegister) {
 		icons = new TextureAtlasSprite[34];
@@ -354,14 +356,14 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 		return icons[0];
 	}
-
+*/
 	public static String SHIFT_INFO_PREFIX = "item.upgrade.info.";
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void addInformation(ItemStack stack, EntityPlayer par2EntityPlayer, List list, boolean flag) {
-		super.addInformation(stack, par2EntityPlayer, list, flag);
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		super.addInformation(stack, worldIn, tooltip, flagIn);
 		IPipeUpgrade upgrade = getUpgradeForItem(stack, null);
 		if (upgrade == null) {
 			return;
@@ -377,23 +379,23 @@ public class ItemUpgrade extends LogisticsItem {
 				//and {0} modules
 				String base1 = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "both1");
 				String base2 = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "both2");
-				list.add(MessageFormat.format(base1, join(pipe)));
-				list.add(MessageFormat.format(base2, join(module)));
+				tooltip.add(MessageFormat.format(base1, join(pipe)));
+				tooltip.add(MessageFormat.format(base2, join(module)));
 			} else if (!pipe.isEmpty()) {
 				//Can be applied to {0} pipes
 				String base = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "pipe");
-				list.add(MessageFormat.format(base, join(pipe)));
+				tooltip.add(MessageFormat.format(base, join(pipe)));
 			} else if (!module.isEmpty()) {
 				//Can be applied to {0} modules
 				String base = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "module");
-				list.add(MessageFormat.format(base, join(module)));
+				tooltip.add(MessageFormat.format(base, join(module)));
 			}
 		} else {
 			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
 			String key = baseKey + 1;
 			String translation = StringUtils.translate(key);
 			if (translation.equals(key)) {
-				list.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
+				tooltip.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
 			}
 		}
 	}

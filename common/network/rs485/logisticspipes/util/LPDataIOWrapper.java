@@ -511,7 +511,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	public ItemStack readItemStack() {
 		final int itemId = readInt();
 		if (itemId == 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
 		int stackSize = readInt();

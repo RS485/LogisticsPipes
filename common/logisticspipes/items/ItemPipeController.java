@@ -6,6 +6,11 @@ import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ItemPipeController extends LogisticsItem {
@@ -15,17 +20,22 @@ public class ItemPipeController extends LogisticsItem {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn) {
+		ItemStack stack = player.getHeldItem(handIn);
 		if (MainProxy.isClient(world)) {
-			return stack;
+			return new ActionResult<>(EnumActionResult.PASS, stack);
 		}
 		useItem(player, world);
-		return stack.copy();
+		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
-		return false;
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		useItem(player, world);
+		if (MainProxy.isClient(world)) {
+			return EnumActionResult.PASS;
+		}
+		return EnumActionResult.SUCCESS;
 	}
 
 	private void useItem(EntityPlayer player, World world) {

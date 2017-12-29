@@ -55,4 +55,7 @@ public interface IProxy {
 	public void openFluidSelectGui(int slotId);
 
 	void registerModels(LogisticsItem logisticsItem);
+
+	void registerTextures();
+
 }

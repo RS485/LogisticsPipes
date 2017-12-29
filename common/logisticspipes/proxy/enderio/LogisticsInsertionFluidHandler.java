@@ -1,4 +1,4 @@
-package logisticspipes.proxy.enderio;
+/*package logisticspipes.proxy.enderio;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.transport.PipeFluidTransportLogistics;
@@ -8,9 +8,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
-/**
- * Created by David on 03.03.2016.
- */
 public class LogisticsInsertionFluidHandler implements IFluidHandler {
 	private final LogisticsTileGenericPipe pipe;
 
@@ -48,3 +45,4 @@ public class LogisticsInsertionFluidHandler implements IFluidHandler {
 		return new FluidTankInfo[0];
 	}
 }
+*/

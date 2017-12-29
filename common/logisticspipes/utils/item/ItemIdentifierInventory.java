@@ -74,7 +74,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	//NOTE: this is a clone, changing the return of this function does not altet the inventory
 	public ItemStack getStackInSlot(int i) {
 		if (_contents[i] == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return _contents[i].makeNormalStack();
 	}

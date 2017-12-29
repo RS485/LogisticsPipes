@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
@@ -25,10 +26,12 @@ import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 
+*/
 /*
  * Compatibility for Applied Energistics
  * http://www.minecraftforum.net/topic/1625015-151-applied-energistics-rv-10-f-and-rv-9-i/
- */
+ *//*
+
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
@@ -263,3 +266,4 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		}
 	}
 }
+*/

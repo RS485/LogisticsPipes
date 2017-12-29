@@ -33,13 +33,13 @@ public class ItemParts extends LogisticsItem {
 	public String getUnlocalizedName(ItemStack par1ItemStack) {
 		switch (par1ItemStack.getItemDamage()) {
 			case 0: //bow
-				return "item.HUDbow";
+				return "item.HUDbow".toLowerCase();
 			case 1: //glass
-				return "item.HUDglass";
+				return "item.HUDglass".toLowerCase();
 			case 2: //nose bridge
-				return "item.HUDnosebridge";
+				return "item.HUDnosebridge".toLowerCase();
 			case 3:
-				return "item.NanoHopper";
+				return "item.NanoHopper".toLowerCase();
 		}
 		return super.getUnlocalizedName(par1ItemStack);
 	}

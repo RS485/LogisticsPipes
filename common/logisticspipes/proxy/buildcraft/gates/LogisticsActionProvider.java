@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.Collection;
@@ -25,3 +26,4 @@ public class LogisticsActionProvider implements IActionProvider {
 	@Override
 	public void addExternalActions(Collection<IActionExternal> actions, @Nonnull EnumFacing side, TileEntity tile) {}
 }
+*/

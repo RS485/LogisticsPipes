@@ -38,6 +38,9 @@ import java.util.*;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import io.netty.buffer.ByteBuf;
+import static io.netty.buffer.Unpooled.buffer;
+
 public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISubMultiBlockPipeInformationProvider, ITickable {
 
 	private Set<DoubleCoordinates> mainPipePos = new HashSet<>();
@@ -157,7 +160,13 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		try {
 			ModernPacket packet = getLPDescriptionPacket();
-			byte[] data = LPDataIOWrapper.collectData(packet::writeData);
+			ByteBuf dataBuffer = buffer();
+			PacketHandler.fillByteBuf(packet, dataBuffer);
+
+			byte[] data = new byte[dataBuffer.readableBytes()];
+			dataBuffer.getBytes(0, data);
+			dataBuffer.release();
+
 			NBTTagCompound nbt = new NBTTagCompound();
 			nbt.setByteArray("PacketData", data);
 			return new SPacketUpdateTileEntity(getPos(), 1, nbt);

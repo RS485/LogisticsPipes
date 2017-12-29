@@ -11,6 +11,7 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,6 +20,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -73,7 +75,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 
-	private static final TextureAtlasSprite[] icons = new TextureAtlasSprite[18];
+	//private static final TextureAtlasSprite[] icons = new TextureAtlasSprite[18];
 	private static final TextureAtlasSprite[] newTextures = new TextureAtlasSprite[10];
 
 	@Override
@@ -90,6 +92,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		super(Material.IRON);
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
 		setHardness(6.0F);
+		setUnlocalizedName("logisticsSolidBlock");
 		setDefaultState(this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION));
 	}
 
@@ -225,25 +228,24 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister par1IIconRegister) {
-		for (int i = 0; i < LogisticsSolidBlock.icons.length; i++) {
-			LogisticsSolidBlock.icons[i] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/" + i);
-		}
-		LogisticsSolidBlock.newTextures[0] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/baseTexture"); // Base
-		LogisticsSolidBlock.newTextures[1] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/solderTexture"); // SOLDERING_STATION
-		LogisticsSolidBlock.newTextures[9] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/solderTexture_active"); // SOLDERING_STATION Active
-		LogisticsSolidBlock.newTextures[2] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerTexture"); // LOGISTICS_POWER_JUNCTION
-		LogisticsSolidBlock.newTextures[3] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/securityTexture"); // LOGISTICS_SECURITY_STATION
-		LogisticsSolidBlock.newTextures[4] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/craftingTexture"); // LOGISTICS_AUTOCRAFTING_TABLE
-		LogisticsSolidBlock.newTextures[5] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/fuzzycraftingTexture"); // LOGISTICS_FUZZYCRAFTING_TABLE
-		LogisticsSolidBlock.newTextures[6] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/statisticsTexture"); // LOGISTICS_STATISTICS_TABLE
-		LogisticsSolidBlock.newTextures[7] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerRFTexture"); // LOGISTICS_RF_POWERPROVIDER
-		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/powerIC2Texture"); // LOGISTICS_IC2_POWERPROVIDER
-	}
 	*/
-
+	@SideOnly(Side.CLIENT)
+	public void registerBlockIcons(TextureMap par1IIconRegister) {
+		//for (int i = 0; i < LogisticsSolidBlock.icons.length; i++) {
+		//	LogisticsSolidBlock.icons[i] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/" + i);
+		//}
+		LogisticsSolidBlock.newTextures[0] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/baseTexture")); // Base
+		LogisticsSolidBlock.newTextures[1] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/solderTexture")); // SOLDERING_STATION
+		LogisticsSolidBlock.newTextures[9] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/solderTexture_active")); // SOLDERING_STATION Active
+		LogisticsSolidBlock.newTextures[2] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerTexture")); // LOGISTICS_POWER_JUNCTION
+		LogisticsSolidBlock.newTextures[3] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/securityTexture")); // LOGISTICS_SECURITY_STATION
+		LogisticsSolidBlock.newTextures[4] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/craftingTexture")); // LOGISTICS_AUTOCRAFTING_TABLE
+		LogisticsSolidBlock.newTextures[5] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/fuzzycraftingTexture")); // LOGISTICS_FUZZYCRAFTING_TABLE
+		LogisticsSolidBlock.newTextures[6] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/statisticsTexture")); // LOGISTICS_STATISTICS_TABLE
+		LogisticsSolidBlock.newTextures[7] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerRFTexture")); // LOGISTICS_RF_POWERPROVIDER
+		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerIC2Texture")); // LOGISTICS_IC2_POWERPROVIDER
+	}
+/*
 	private TextureAtlasSprite getRotatedTexture(BlockType meta, int side, int rotation, int front) {
 		switch (meta) {
 			case SOLDERING_STATION:
@@ -373,7 +375,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return LogisticsSolidBlock.icons[0];
 		}
 	}
-
+*/
 	public static TextureAtlasSprite getNewIcon(IBlockAccess access, BlockPos pos) {
 		IBlockState state = access.getBlockState(pos);
 		BlockType meta = state.getValue(metaProperty);

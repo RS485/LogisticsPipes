@@ -35,10 +35,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.GameData;
+
+import lombok.SneakyThrows;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -59,6 +62,7 @@ import logisticspipes.utils.math.MatrixTranformations;
 import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
+import network.rs485.logisticspipes.world.SideUtils;
 
 public class LogisticsBlockGenericPipe extends BlockContainer {
 
@@ -131,7 +135,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		ItemLogisticsPipe item = new ItemLogisticsPipe();
 		item.setUnlocalizedName(clas.getSimpleName());
 		item.setRegistryName(item.getUnlocalizedName());
-		GameData.register_impl(item);
+		ForgeRegistries.ITEMS.register(item);
 
 		LogisticsBlockGenericPipe.pipes.put(item, clas);
 
@@ -149,6 +153,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return LogisticsBlockGenericPipe.pipes.containsKey(key);
 	}
 
+	//@SneakyThrows(ReflectiveOperationException.class)
 	public static CoreUnroutedPipe createPipe(Item key) {
 		Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
 		if (pipe != null) {
@@ -156,6 +161,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return pipe.getConstructor(Item.class).newInstance(key);
 			} catch (ReflectiveOperationException e) {
 				LogisticsPipes.log.error("Could not construct class " + pipe.getSimpleName() + " for key " + key, e);
+				/*if(LPConstants.DEBUG) {
+					throw e;
+				}*/
 			}
 		} else {
 			LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). Did you remove a buildcraft addon?");
@@ -391,7 +399,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					(double) pos.getX() + 1, (double) pos.getY() + 1, (double) pos.getZ() + 1);
 		}
 		InternalRayTraceResult rayTraceResult = null;
-		if(bypassPlayerTrace == null) {
+		if (bypassPlayerTrace == null) {
 			rayTraceResult = doRayTrace(state, world, pos, Minecraft.getMinecraft().player);
 		} else {
 			rayTraceResult = bypassPlayerTrace;
@@ -413,7 +421,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 			return box.offset(pos.getX(), pos.getY(), pos.getZ());
 		}
-		return super.getSelectedBoundingBox(state, world, pos).expand(-0.85F, -0.85F, -0.85F);
+		return super.getSelectedBoundingBox(state, world, pos);
 	}
 
 	@Override
@@ -425,6 +433,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			RayTraceResult raytraceresult = FULL_BLOCK_AABB.calculateIntercept(vec3d, vec3d1);
 			return raytraceresult == null ? null : new RayTraceResult(raytraceresult.hitVec.addVector((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), raytraceresult.sideHit, pos);
 		}
+		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe == null) { //Fallback for defect pipe
+			return super.collisionRayTrace(new BoundingBoxDelegateBlockState(new AxisAlignedBB(0, 0, 0, 1, 1, 1), state), world, pos, origin, direction);
+		}
+
 		InternalRayTraceResult internalRayTraceResult = doRayTrace(state, world, pos, origin, direction);
 
 		if (internalRayTraceResult == null) {
@@ -441,7 +453,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			reachDistance = ((EntityPlayerMP) player).interactionManager.getBlockReachDistance();
 		}
 
-		double eyeHeight = world.isRemote ? player.getEyeHeight() - player.getDefaultEyeHeight() : player.getEyeHeight();
+		double eyeHeight = player.getEyeHeight();
 		Vec3d lookVec = player.getLookVec();
 		Vec3d origin = new Vec3d(player.posX, player.posY + eyeHeight, player.posZ);
 		Vec3d direction = origin.addVector(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance);
@@ -508,9 +520,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			if (side == null || tileG.isPipeConnectedCached(side)) {
 				if(side != null && ignoreSideRayTrace) continue;
 				AxisAlignedBB bb = getPipeBoundingBox(side);
-				boxes[side.ordinal()] = bb;
-				hits[side.ordinal()] = super.collisionRayTrace(new BoundingBoxDelegateBlockState(bb, state), tileG.getWorld(), tileG.getPos(), origin, direction);
-				sideHit[side.ordinal()] = side;
+				boxes[SideUtils.getIntegerForFacing(side)] = bb;
+				hits[SideUtils.getIntegerForFacing(side)] = super.collisionRayTrace(new BoundingBoxDelegateBlockState(bb, state), tileG.getWorld(), tileG.getPos(), origin, direction);
+				sideHit[SideUtils.getIntegerForFacing(side)] = side;
 			}
 		}
 
@@ -691,7 +703,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL; // TODO or is it: EnumBlockRenderType.INVISIBLE ???
+		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED; // TODO or is it: EnumBlockRenderType.INVISIBLE ???
 	}
 
 	@Override

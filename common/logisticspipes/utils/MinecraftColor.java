@@ -29,7 +29,7 @@ public enum MinecraftColor {
 	}
 
 	public static MinecraftColor getColor(ItemStack item) {
-		if (item != null) {
+		if (!item.isEmpty()) {
 			if (item.getItem() == Items.DYE && item.getItemDamage() < 16) {
 				return MinecraftColor.values()[item.getItemDamage()];
 			}
@@ -43,7 +43,7 @@ public enum MinecraftColor {
 
 	public ItemStack getItemStack() {
 		if (this == BLANK) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return new ItemStack(Items.DYE, 1, ordinal());
 	}

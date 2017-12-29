@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -40,3 +41,4 @@ public class TriggerCrafting extends LPTrigger implements ITriggerInternal {
 		return false;
 	}
 }
+*/

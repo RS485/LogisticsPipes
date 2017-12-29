@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.enderio;
 
 import java.util.ArrayList;
@@ -90,3 +91,4 @@ public class EnderIOProxy implements IEnderIOProxy {
 		return tile instanceof IConduitBundle;
 	}
 }
+*/

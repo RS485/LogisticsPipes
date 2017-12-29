@@ -192,6 +192,7 @@ public class ClientPacketBufferHandlerThread {
 		private final ReentrantLock packetBufferLock = new ReentrantLock();
 		//List of packets that that should be reattempted to apply in the next tick
 		private final LinkedList<Pair<EntityPlayer, ModernPacket>> retryPackets = new LinkedList<>();
+		private final ReentrantLock retryPacketsLock = new ReentrantLock();
 		//decompressed serialized S->C data
 		private byte[] ByteBuffer = new byte[] {};
 		//Clear content on next tick
@@ -204,9 +205,7 @@ public class ClientPacketBufferHandlerThread {
 		}
 
 		private void handlePacketData(final Pair<EntityPlayer, byte[]> playerDataPair) {
-			LPDataIOWrapper.provideData(playerDataPair.getValue2(), input -> {
-				PacketHandler.onPacketData(input, playerDataPair.getValue1());
-			});
+			LPDataIOWrapper.provideData(playerDataPair.getValue2(), input -> PacketHandler.onPacketData(input, playerDataPair.getValue1()));
 		}
 
 		public void clientTickEnd() {
@@ -227,6 +226,24 @@ public class ClientPacketBufferHandlerThread {
 				}
 
 				handlePacketData(part);
+			}
+			Pair<EntityPlayer, ModernPacket> partB;
+			while (true) {
+				partB = null;
+				retryPacketsLock.lock();
+				try {
+					if (retryPackets.size() > 0) {
+						partB = retryPackets.pop();
+					}
+				} finally {
+					retryPacketsLock.unlock();
+				}
+
+				if (partB == null) {
+					break;
+				}
+
+				PacketHandler.onPacketData(partB.getValue2(), partB.getValue1());
 			}
 		}
 

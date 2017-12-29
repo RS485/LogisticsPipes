@@ -2,13 +2,13 @@ package logisticspipes.asm.enderio;
 
 public class EnderIOHooks {
 
-	/*
 	private static boolean isEnabled = true;
 
 	public static void disableHooks() {
 		isEnabled = false;
 	}
 
+	/*
 	public static IInventory handleGetExternalInventory(ItemConduit itemConduit, TileEntity tileEntity) {
 		if(isEnabled && tileEntity instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tileEntity).isRoutingPipe() && ((LogisticsTileGenericPipe) tileEntity).isRouterInitialized()) {
 			try {

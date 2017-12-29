@@ -11,8 +11,13 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
-import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import logisticspipes.LogisticsPipes;
@@ -25,11 +30,13 @@ import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -37,6 +44,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
+
 import org.apache.logging.log4j.Level;
 
 /**
@@ -61,98 +69,77 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
-	/**
-	 * Adds all keys from the translation file in the format:
-	 * item.className.tip([0-9]*) Tips start from 1 and increment. Sparse rows
-	 * should be left empty (ie empty line must still have a key present) Shift
-	 * shows full tooltip, without it you just get the first line.
-	 */
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean flags) {
-		StringUtils.addShiftAddition(stack, list);
-	}
-
-	@Override
-	//TODO use own pipe handling
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int x, int y, int z, int sideI, float par8, float par9, float par10) {
-		int side = sideI;
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Block block = LogisticsPipes.LogisticsPipeBlock;
 
-		int i = x;
-		int j = y;
-		int k = z;
+		IBlockState iblockstate = worldIn.getBlockState(pos);
+		Block worldBlock = iblockstate.getBlock();
 
-		Block worldBlock = world.getBlock(i, j, k);
-
-		if (worldBlock == Blocks.snow) {
-			side = 1;
-		} else if (worldBlock != Blocks.vine && worldBlock != Blocks.tallgrass && worldBlock != Blocks.deadbush && (worldBlock == null || !worldBlock.isReplaceable(world, i, j, k))) {
-			if (side == 0) {
-				j--;
-			}
-			if (side == 1) {
-				j++;
-			}
-			if (side == 2) {
-				k--;
-			}
-			if (side == 3) {
-				k++;
-			}
-			if (side == 4) {
-				i--;
-			}
-			if (side == 5) {
-				i++;
-			}
+		if (!worldBlock.isReplaceable(worldIn, pos))
+		{
+			pos = pos.offset(facing);
 		}
 
-		if (itemstack.stackSize == 0) {
-			return false;
+		ItemStack itemstack = player.getHeldItem(hand);
+
+		if(itemstack.isEmpty()) {
+			return EnumActionResult.FAIL;
 		}
 
 		if (!dummyPipe.isMultiBlock()) {
-			if (world.canPlaceEntityOnSide(block, i, j, k, false, side, entityplayer, itemstack)) {
+			if (player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(block, pos, false, facing, (Entity)null)) {
 				CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
 
 				if (pipe == null) {
-					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[] { i, j, k });
-					return true;
+					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[] { pos.getX(), pos.getY(), pos.getZ() });
+					return EnumActionResult.PASS;
 				}
 
-				if (LogisticsBlockGenericPipe.placePipe(pipe, world, i, j, k, block, 0)) {
-					block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
+				if (LogisticsBlockGenericPipe.placePipe(pipe, worldIn, pos, block, null)) {
+					IBlockState state = worldIn.getBlockState(pos);
+					if (state.getBlock() == block) {
+						//setTileEntityNBT(world, player, pos, stack);
+						block.onBlockPlacedBy(worldIn, pos, state, player, itemstack);
 
-					itemstack.stackSize--;
+						if (player instanceof EntityPlayerMP)
+							CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, pos, itemstack);
+
+						IBlockState newBlockState = worldIn.getBlockState(pos);
+						SoundType soundtype = newBlockState.getBlock().getSoundType(newBlockState, worldIn, pos, player);
+						worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F,
+								soundtype.getPitch() * 0.8F);
+
+						itemstack.shrink(1);
+					}
 				}
 
-				return true;
+				return EnumActionResult.SUCCESS;
 			} else {
-				return false;
+				return EnumActionResult.FAIL;
 			}
 		} else {
 			CoreMultiBlockPipe multiPipe = (CoreMultiBlockPipe) dummyPipe;
 			boolean isFreeSpace = true;
-			DoubleCoordinates placeAt = new DoubleCoordinates(i, j, k);
+			DoubleCoordinates placeAt = new DoubleCoordinates(pos);
 			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> globalPos = new LPPositionSet<>(DoubleCoordinatesType.class);
 			globalPos.add(new DoubleCoordinatesType<>(placeAt, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
 			LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = multiPipe.getSubBlocks();
-			ITubeOrientation orientation = multiPipe.getTubeOrientation(entityplayer, i, k);
+			ITubeOrientation orientation = multiPipe.getTubeOrientation(player, pos.getX(), pos.getZ());
 			if (orientation == null) {
-				return false;
+				return EnumActionResult.FAIL;
 			}
 			orientation.rotatePositions(positions);
-			positions.stream().map(pos -> pos.add(placeAt)).forEach(globalPos::add);
+			positions.stream().map(iPos -> iPos.add(placeAt)).forEach(globalPos::add);
 			globalPos.addToAll(orientation.getOffset());
 			placeAt.add(orientation.getOffset());
 
-			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
-				if (!world.canPlaceEntityOnSide(block, pos.getXInt(), pos.getYInt(), pos.getZInt(), false, side, entityplayer, itemstack)) {
-					TileEntity tile = world.getTileEntity(pos.getXInt(), pos.getYInt(), pos.getZInt());
+			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> iPos : globalPos) {
+				if(!player.canPlayerEdit(iPos.getBlockPos(), facing, itemstack) || !worldIn.mayPlace(block, iPos.getBlockPos(), false, facing, (Entity)null)) {
+					TileEntity tile = worldIn.getTileEntity(iPos.getBlockPos());
 					boolean canPlace = false;
 					if(tile instanceof LogisticsTileGenericSubMultiBlock) {
-						if(CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), pos.getType())) {
+						if(CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), iPos.getType())) {
 							canPlace = true;
 						}
 					}
@@ -166,18 +153,31 @@ public class ItemLogisticsPipe extends LogisticsItem {
 				CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
 
 				if (pipe == null) {
-					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[] { i, j, k });
-					return true;
+					LogisticsPipes.log.log(Level.WARN, "Pipe failed to create during placement at {0},{1},{2}", new Object[] { pos.getX(), pos.getY(), pos.getZ() });
+					return EnumActionResult.SUCCESS;
 				}
 
-				if (LogisticsBlockGenericPipe.placePipe(pipe, world, placeAt.getXInt(), placeAt.getYInt(), placeAt.getZInt(), block, 0, orientation)) { //TODO
-					block.onBlockPlacedBy(world, i, j, k, entityplayer, itemstack);
-					itemstack.stackSize--;
+				if (LogisticsBlockGenericPipe.placePipe(pipe, worldIn, placeAt.getBlockPos(), block, orientation)) {
+					IBlockState state = worldIn.getBlockState(placeAt.getBlockPos());
+					if (state.getBlock() == block) {
+						//setTileEntityNBT(world, player, pos, stack);
+						block.onBlockPlacedBy(worldIn, pos, state, player, itemstack);
+
+						if (player instanceof EntityPlayerMP)
+							CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, placeAt.getBlockPos(), itemstack);
+
+						IBlockState newBlockState = worldIn.getBlockState(placeAt.getBlockPos());
+						SoundType soundtype = newBlockState.getBlock().getSoundType(newBlockState, worldIn, placeAt.getBlockPos(), player);
+						worldIn.playSound(player, placeAt.getBlockPos(), soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F,
+								soundtype.getPitch() * 0.8F);
+
+						itemstack.shrink(1);
+					}
 				}
 
-				return true;
+				return EnumActionResult.SUCCESS;
 			} else {
-				return false;
+				return EnumActionResult.FAIL;
 			}
 		}
 	}

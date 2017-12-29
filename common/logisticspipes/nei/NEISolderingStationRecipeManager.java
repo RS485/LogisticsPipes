@@ -1,4 +1,4 @@
-package logisticspipes.nei;
+/*package logisticspipes.nei;
 
 import java.awt.Rectangle;
 import java.util.stream.Collectors;
@@ -93,3 +93,4 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 		}
 	}
 }
+*/

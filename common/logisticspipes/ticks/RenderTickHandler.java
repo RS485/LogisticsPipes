@@ -169,7 +169,7 @@ public class RenderTickHandler {
 						GlStateManager.disableTexture2D();
 						GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-						mc.renderEngine.bindTexture(new ResourceLocation("logisticspipes", "textures/blocks/pipes/White.png"));
+						mc.renderEngine.bindTexture(new ResourceLocation("logisticspipes", "textures/blocks/pipes/white.png"));
 
 						SimpleServiceLocator.cclProxy.getRenderState().reset();
 						SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);

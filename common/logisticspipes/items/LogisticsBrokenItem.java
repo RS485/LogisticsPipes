@@ -2,11 +2,15 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,9 +32,9 @@ public class LogisticsBrokenItem extends LogisticsItem implements IItemAdvancedE
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
-		par3List.add(" - " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "1"));
-		par3List.add(" - " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "2"));
-		par3List.add("    " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "3"));
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		tooltip.add(" - " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "1"));
+		tooltip.add(" - " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "2"));
+		tooltip.add("    " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "3"));
 	}
 }

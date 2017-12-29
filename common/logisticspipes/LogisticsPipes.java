@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -149,6 +151,7 @@ import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.Recipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
@@ -164,6 +167,7 @@ import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
+import logisticspipes.utils.TankUtilFactory;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -296,7 +300,7 @@ public class LogisticsPipes {
 	public static Item LogisticsChips;
 
 	// Logistics Blocks
-	public static Block LogisticsSolidBlock;
+	public static LogisticsSolidBlock LogisticsSolidBlock;
 	public static LogisticsBlockGenericPipe LogisticsPipeBlock;
 	public static LogisticsBlockGenericSubMultiBlock LogisticsSubMultiBlock;
 
@@ -330,9 +334,9 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSecurityStationManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManager());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
+		SimpleServiceLocator.setTankUtilFactory(new TankUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
-		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
 		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());
 		SimpleServiceLocator.setCraftingPermissionManager(new CraftingPermissionManager());
 		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
@@ -358,7 +362,6 @@ public class LogisticsPipes {
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		FMLCommonHandler.instance().bus().register(eventListener);
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
-		LogisticsPipes.textures.registerBlockIcons(null);
 
 		RecipeManager.registerRecipeClasses();
 	}
@@ -378,7 +381,9 @@ public class LogisticsPipes {
 			LogisticsPipes.log.debug("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			LogisticsPipes.log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");
 		}
+
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
+		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
 
 		ModelLoaderRegistry.registerLoader(new ICustomModelLoader() {
 
@@ -409,6 +414,8 @@ public class LogisticsPipes {
 
 		SimpleServiceLocator.buildCraftProxy.registerPipeInformationProvider();
 		SimpleServiceLocator.buildCraftProxy.initProxy();
+		SimpleServiceLocator.buildCraftProxy.registerTrigger();
+
 		SimpleServiceLocator.thermalDynamicsProxy.registerPipeInformationProvider();
 
 		//SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
@@ -442,6 +449,9 @@ public class LogisticsPipes {
 
 		versionChecker = VersionChecker.runVersionCheck();
 
+		if(event.getSide().isClient()) {
+			MainProxy.proxy.registerTextures();
+		}
 	}
 
 	@SubscribeEvent
@@ -451,47 +461,54 @@ public class LogisticsPipes {
 
 		LogisticsPipes.LogisticsItemCard = new LogisticsItemCard();
 		LogisticsPipes.LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
+		LogisticsPipes.LogisticsItemCard.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsItemCard.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsItemCard);
 
 		LogisticsPipes.LogisticsRemoteOrderer = new RemoteOrderer();
 		LogisticsPipes.LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
+		LogisticsPipes.LogisticsRemoteOrderer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsRemoteOrderer.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsRemoteOrderer);
 
 		ItemPipeSignCreator.registerPipeSignTypes();
 		LogisticsPipes.LogisticsCraftingSignCreator = new ItemPipeSignCreator();
 		LogisticsPipes.LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
+		LogisticsPipes.LogisticsCraftingSignCreator.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsCraftingSignCreator.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsCraftingSignCreator);
 
 		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor();
 		LogisticsPipes.LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
+		LogisticsPipes.LogisticsHUDArmor.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsHUDArmor.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsHUDArmor);
 
 		LogisticsPipes.LogisticsParts = registerItem(new ItemParts());
-
-		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 
 		LogisticsPipes.ModuleItem = registerItem(new ItemModule());
 		LogisticsPipes.ModuleItem.loadModules();
 
 		LogisticsPipes.LogisticsItemDisk = new ItemDisk();
 		LogisticsPipes.LogisticsItemDisk.setUnlocalizedName("itemDisk");
+		LogisticsPipes.LogisticsItemDisk.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsItemDisk.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsItemDisk);
 
 		LogisticsPipes.UpgradeItem = new ItemUpgrade();
 		LogisticsPipes.UpgradeItem.setUnlocalizedName("itemUpgrade");
+		LogisticsPipes.UpgradeItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.UpgradeItem.getUnlocalizedName()));
 		LogisticsPipes.UpgradeItem.loadUpgrades();
 		event.getRegistry().register(LogisticsPipes.UpgradeItem);
 
 		LogisticsPipes.LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsPipes.LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
+		LogisticsPipes.LogisticsFluidContainer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsFluidContainer.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsFluidContainer);
 
 		LogisticsPipes.LogisticsBrokenItem = new LogisticsBrokenItem();
 		LogisticsPipes.LogisticsBrokenItem.setUnlocalizedName("brokenItem");
+		LogisticsPipes.LogisticsBrokenItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsBrokenItem.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsBrokenItem);
 
 		LogisticsPipes.LogisticsPipeControllerItem = new ItemPipeController();
 		LogisticsPipes.LogisticsPipeControllerItem.setUnlocalizedName("pipeController");
+		LogisticsPipes.LogisticsPipeControllerItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsPipeControllerItem.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsPipeControllerItem);
 
 		LogisticsChips = registerItem(new ItemLogisticsChips());
@@ -505,14 +522,16 @@ public class LogisticsPipes {
 	public void initBlocks(RegistryEvent.Register<Block> event) {
 		//Blocks
 		LogisticsPipes.LogisticsSolidBlock = new LogisticsSolidBlock();
+		LogisticsPipes.LogisticsSolidBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsSolidBlock.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsSolidBlock);
 
 		LogisticsPipes.LogisticsPipeBlock = new LogisticsBlockGenericPipe();
+		LogisticsPipes.LogisticsPipeBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsPipeBlock.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsPipeBlock);
 
 		LogisticsPipes.LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
+		LogisticsPipes.LogisticsSubMultiBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsSubMultiBlock.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsSubMultiBlock);
-
 	}
 
 	private <T extends LogisticsItem> T registerItem(T item) {
@@ -663,7 +682,6 @@ public class LogisticsPipes {
 	protected Item createPipe(Class<? extends CoreUnroutedPipe> clas, String descr) {
 		final ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(clas);
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
-		res.setUnlocalizedName(clas.getSimpleName());
 		final CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if (pipe instanceof CoreRoutedPipe) {
 			postInitRun.add(() -> res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(null).normal, ((CoreRoutedPipe) pipe).getTextureType(null).newTexture));

@@ -2,15 +2,18 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 
 import net.minecraftforge.fluids.FluidStack;
 
@@ -33,11 +36,11 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 		return false;
 	}
 
-	@Override
+/*	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconReg) {
 		itemIcon = iconReg.registerIcon("logisticspipes:liquids/empty");
-	}
+	}*/
 
 	@Override
 	public int getItemStackLimit() {
@@ -59,20 +62,20 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
-		super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			FluidStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(par1ItemStack));
-			if (stack != null) {
-				par3List.add("Type:  " + stack.getFluid().getLocalizedName(stack));
-				par3List.add("Value: " + stack.amount + "mB");
+			FluidStack fluidStack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack));
+			if (fluidStack != null) {
+				tooltip.add("Type:  " + fluidStack.getFluid().getLocalizedName(fluidStack));
+				tooltip.add("Value: " + fluidStack.amount + "mB");
 			}
 		}
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public void getSubItems(Item par1, CreativeTabs ct, List list) {
+	public void getSubItems(CreativeTabs ct, NonNullList list) {
 		//Don't add to creative in any way
 	}
 }

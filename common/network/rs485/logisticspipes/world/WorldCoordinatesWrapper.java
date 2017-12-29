@@ -21,6 +21,7 @@
 package network.rs485.logisticspipes.world;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import logisticspipes.LPConstants;
@@ -82,7 +83,7 @@ public class WorldCoordinatesWrapper {
 	}
 
 	public Stream<AdjacentTileEntity> getAdjacentTileEntities() {
-		return Arrays.stream(EnumFacing.VALUES).map(this::getAdjacentFromDirection).filter(tile -> tile != null);
+		return Arrays.stream(EnumFacing.VALUES).map(this::getAdjacentFromDirection).filter(Objects::nonNull);
 	}
 
 	public Stream<AdjacentTileEntity> getConnectedAdjacentTileEntities() {

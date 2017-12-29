@@ -33,6 +33,7 @@ import static logisticspipes.LogisticsPipes.LogisticsPipeBlock;
 import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 
 import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
@@ -110,6 +111,11 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
+		return false;
+	}
+
+	@Override
+	public boolean canBeReplacedByLeaves(IBlockState state, IBlockAccess world, BlockPos pos) {
 		return false;
 	}
 

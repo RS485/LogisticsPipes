@@ -42,6 +42,36 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 		return (FluidRoutedPipe) getPipe();
 	}
 
+	/**
+	 * For internal use only
+	 */
+	public IFluidTankProperties[] getTankProperties(EnumFacing from) {
+		return sideTanks[from.ordinal()].getTankProperties();
+	}
+
+	public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
+		if (from.ordinal() < EnumFacing.VALUES.length && getFluidPipe().canReceiveFluid()) {
+			return sideTanks[from.ordinal()].fill(resource, doFill);
+		} else {
+			return 0;
+		}
+	}
+
+	public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
+		if (from.ordinal() < EnumFacing.VALUES.length) {
+			return sideTanks[from.ordinal()].drain(maxDrain, doDrain);
+		} else {
+			return null;
+		}
+	}
+
+	public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
+		if (sideTanks[from.ordinal()].getFluid() == null || !(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource))) {
+			return new FluidStack(resource.getFluid(), 0);
+		}
+		return drain(from, resource.amount, doDrain);
+	}
+
 	public class FluidHandler implements IFluidHandler {
 
 		private EnumFacing from;

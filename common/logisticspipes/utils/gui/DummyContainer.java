@@ -439,7 +439,7 @@ public class DummyContainer extends Container {
 				if (itemstack6.isEmpty()) {
 					if (slot4.canTakeStack(player)) {
 						inventoryplayer.setInventorySlotContents(dragType, itemstack10);
-						slot4.onSwapCraft(itemstack10.getCount());
+						//slot4.onSwapCraft(itemstack10.getCount()); //TODO make this public
 						slot4.putStack(ItemStack.EMPTY);
 						slot4.onTake(player, itemstack10);
 					}
@@ -558,14 +558,14 @@ public class DummyContainer extends Container {
 		//debug dump
 		if (LPConstants.DEBUG && slot != null) {
 			ItemStack stack = slot.getStack();
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				ItemIdentifier.get(stack).debugDumpData(entityplayer.world.isRemote);
 			}
 		}
 		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
 			ItemStack stack1 = superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if (stack2 != null && stack2.getItem() == LogisticsPipes.ModuleItem) {
+			if (!stack2.isEmpty() && stack2.getItem() == LogisticsPipes.ModuleItem) {
 				if (entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.world)) {
 					((EntityPlayerMP) entityplayer).sendSlotContents(this, slotId, stack2);
 				}
@@ -602,32 +602,18 @@ public class DummyContainer extends Container {
 	public void handleDummyClick(Slot slot, int slotId, ItemStack currentlyEquippedStack, int mouseButton, ClickType shiftMode, EntityPlayer entityplayer) {
 		if (slot instanceof FluidSlot) {
 			if (currentlyEquippedStack != null) {
-				FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(currentlyEquippedStack);
-				if (liquidId != null) {
-					FluidIdentifier ident = FluidIdentifier.get(liquidId);
-					if (mouseButton == 0) {
-						if (ident == null) {
-							slot.putStack(null);
-						} else {
-							slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
-						}
-					} else {
-						slot.putStack(null);
-					}
-					return;
-				}
 				FluidIdentifier ident = FluidIdentifier.get(currentlyEquippedStack);
 				if (ident != null) {
 					if (mouseButton == 0) {
 						slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
 					} else {
-						slot.putStack(null);
+						slot.putStack(ItemStack.EMPTY);
 					}
 					return;
 				}
 			}
 			FluidIdentifier ident = null;
-			if (slot.getStack() != null) {
+			if (!slot.getStack().isEmpty()) {
 				ident = FluidIdentifier.get(ItemIdentifier.get(slot.getStack()));
 			}
 			if (ident == null) {
@@ -635,7 +621,7 @@ public class DummyContainer extends Container {
 					MainProxy.proxy.openFluidSelectGui(slotId);
 				}
 			}
-			slot.putStack(null);
+			slot.putStack(ItemStack.EMPTY);
 			return;
 		}
 

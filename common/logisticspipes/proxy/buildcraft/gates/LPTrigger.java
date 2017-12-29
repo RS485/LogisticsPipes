@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.textures.Textures;
@@ -65,3 +66,4 @@ public abstract class LPTrigger implements IStatement {
 		return new IStatement[]{this};
 	}
 }
+*/

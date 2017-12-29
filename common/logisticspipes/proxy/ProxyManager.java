@@ -58,7 +58,6 @@ import logisticspipes.proxy.cofh.CoFHPowerProxy;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
-import logisticspipes.proxy.enderio.EnderIOProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic.IronChestProxy;
@@ -304,7 +303,7 @@ public class ProxyManager {
 
 		SimpleServiceLocator.setFactorizationProxy(ProxyManager.getWrappedProxy("factorization", IFactorizationProxy.class, FactorizationProxy.class, tile-> false));
 
-		SimpleServiceLocator.setEnderIOProxy(ProxyManager.getWrappedProxy("EnderIO", IEnderIOProxy.class, EnderIOProxy.class, new IEnderIOProxy() {
+		SimpleServiceLocator.setEnderIOProxy(ProxyManager.getWrappedProxy("EnderIO", IEnderIOProxy.class, null/*EnderIOProxy.class*/, new IEnderIOProxy() {
 			@Override public boolean isSendAndReceive(TileEntity tile) {return false;}
 			@Override public boolean isTransceiver(TileEntity tile) {return false;}
 			@Override public List<TileEntity> getConnectedTransceivers(TileEntity tile) {return null;}

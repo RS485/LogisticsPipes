@@ -32,21 +32,21 @@ public class ItemLogisticsChips extends LogisticsItem {
 		super();
 		setHasSubtypes(true);
 		setUnlocalizedName("logisticsChips");
-		setRegistryName("logisticsChips");
+		setRegistryName("logisticschips");
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {
 		for (int i = 0; i < MAX_DMG; i++) {
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "chips/"), "inventory"));
+			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "chips/").toLowerCase(), "inventory"));
 		}
 	}
 
 	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack) {
 		String name = getLPUnlocalizedNameFromData(par1ItemStack.getItemDamage());
-		if (name != null) return name;
+		if (name != null) return name.toLowerCase();
 		return super.getUnlocalizedName(par1ItemStack);
 	}
 

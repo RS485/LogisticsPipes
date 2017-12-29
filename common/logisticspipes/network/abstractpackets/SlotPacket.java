@@ -47,11 +47,13 @@ public abstract class SlotPacket extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
+		super.readData(input);
 		setInteger(input.readInt());
 	}
 
 	@Override
 	public void writeData(LPDataOutput output) {
+		super.writeData(output);
 		output.writeInt(getInteger());
 	}
 

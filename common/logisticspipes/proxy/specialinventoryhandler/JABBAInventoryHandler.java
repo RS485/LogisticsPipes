@@ -51,7 +51,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemStack items = _storage.getStoredItemType();
 		if (items != null && ItemIdentifier.get(items).equals(itemIdent)) {
-			return (_storage.isCreative() ? (int) (Math.pow(2, 20)) : (items.stackSize - (_hideOnePerStack ? 1 : 0)));
+			return (_storage.isCreative() ? (int) (Math.pow(2, 20)) : (items.getCount() - (_hideOnePerStack ? 1 : 0)));
 		}
 		return 0;
 	}
@@ -66,15 +66,15 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 			return itemIdent.makeNormalStack(count);
 		}
 		if (_hideOnePerStack) {
-			items.stackSize--;
+			items.shrink(1);
 		}
-		if (count >= items.stackSize) {
+		if (count >= items.getCount()) {
 			_storage.setStoredItemCount((_hideOnePerStack ? 1 : 0));
 			_tile.markDirty();
 			return items;
 		}
 		ItemStack newItems = items.splitStack(count);
-		_storage.setStoredItemCount(items.stackSize + (_hideOnePerStack ? 1 : 0));
+		_storage.setStoredItemCount(items.getCount() + (_hideOnePerStack ? 1 : 0));
 		_tile.markDirty();
 		return newItems;
 
@@ -94,8 +94,8 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<>();
 		ItemStack items = _storage.getStoredItemType();
-		if (items != null && items.stackSize > 0) {
-			result.put(ItemIdentifier.get(items), _storage.isCreative() ? (int) (Math.pow(2, 20)) : items.stackSize - (_hideOnePerStack ? 1 : 0));
+		if (items != null && items.getCount() > 0) {
+			result.put(ItemIdentifier.get(items), _storage.isCreative() ? (int) (Math.pow(2, 20)) : items.getCount() - (_hideOnePerStack ? 1 : 0));
 		}
 		return result;
 	}
@@ -132,7 +132,7 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 			if (_storage.isVoid()) {
 				return _storage.getMaxStoredCount();
 			} else {
-				return _storage.getMaxStoredCount() - items.stackSize;
+				return _storage.getMaxStoredCount() - items.getCount();
 			}
 		}
 		return 0;
@@ -141,20 +141,20 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
-		st.stackSize = 0;
+		st.setCount(0);
 		if (stack.getTagCompound() != null) {
 			return st;
 		}
 		ItemStack items = _storage.getStoredItemType();
-		if ((items == null || items.stackSize == 0)) {
-			if (stack.stackSize <= _storage.getMaxStoredCount()) {
-				_storage.setStoredItemType(stack, stack.stackSize);
-				st.stackSize = stack.stackSize;
+		if ((items == null || items.getCount() == 0)) {
+			if (stack.getCount() <= _storage.getMaxStoredCount()) {
+				_storage.setStoredItemType(stack, stack.getCount());
+				st.setCount(stack.getCount());
 				_tile.markDirty();
 				return st;
 			} else {
 				_storage.setStoredItemType(stack, _storage.getMaxStoredCount());
-				st.stackSize = _storage.getMaxStoredCount();
+				st.setCount(_storage.getMaxStoredCount());
 				_tile.markDirty();
 				return st;
 			}
@@ -162,17 +162,17 @@ public class JABBAInventoryHandler extends SpecialInventoryHandler {
 		if (!_storage.sameItem(stack)) {
 			return st;
 		}
-		if (stack.stackSize <= _storage.getMaxStoredCount() - items.stackSize) {
-			_storage.setStoredItemCount(items.stackSize + stack.stackSize);
-			st.stackSize = stack.stackSize;
+		if (stack.getCount() <= _storage.getMaxStoredCount() - items.getCount()) {
+			_storage.setStoredItemCount(items.getCount() + stack.getCount());
+			st.setCount(stack.getCount());
 			_tile.markDirty();
 			return st;
 		} else {
 			_storage.setStoredItemCount(_storage.getMaxStoredCount());
 			if (!_storage.isVoid()) {
-				st.stackSize = _storage.getMaxStoredCount() - items.stackSize;
+				st.setCount(_storage.getMaxStoredCount() - items.getCount());
 			} else {
-				st.stackSize = stack.stackSize;
+				st.setCount(stack.getCount());
 			}
 			_tile.markDirty();
 			return st;

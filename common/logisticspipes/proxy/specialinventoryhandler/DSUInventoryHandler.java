@@ -47,7 +47,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
 		if (items != null && ItemIdentifier.get(items).equals(itemIdent)) {
-			return items.stackSize - (_hideOnePerStack ? 1 : 0);
+			return items.getCount() - (_hideOnePerStack ? 1 : 0);
 		}
 		return 0;
 	}
@@ -59,14 +59,14 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 			return null;
 		}
 		if (_hideOnePerStack) {
-			items.stackSize--;
+			items.shrink(1);
 		}
-		if (count >= items.stackSize) {
+		if (count >= items.getCount()) {
 			_tile.setStoredItemCount((_hideOnePerStack ? 1 : 0));
 			return items;
 		}
 		ItemStack newItems = items.splitStack(count);
-		_tile.setStoredItemCount(items.stackSize + (_hideOnePerStack ? 1 : 0));
+		_tile.setStoredItemCount(items.getCount() + (_hideOnePerStack ? 1 : 0));
 		return newItems;
 
 	}
@@ -75,7 +75,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<>();
 		ItemStack items = _tile.getStoredItemType();
-		if (items != null && items.stackSize > 0) {
+		if (items != null && items.getCount() > 0) {
 			result.add(ItemIdentifier.get(items));
 		}
 		return result;
@@ -85,8 +85,8 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<>();
 		ItemStack items = _tile.getStoredItemType();
-		if (items != null && items.stackSize > 0) {
-			result.put(ItemIdentifier.get(items), items.stackSize - (_hideOnePerStack ? 1 : 0));
+		if (items != null && items.getCount() > 0) {
+			result.put(ItemIdentifier.get(items), items.getCount() - (_hideOnePerStack ? 1 : 0));
 		}
 		return result;
 	}
@@ -120,7 +120,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 			return _tile.getMaxStoredCount();
 		}
 		if (ItemIdentifier.get(items).equals(itemIdent)) {
-			return _tile.getMaxStoredCount() - items.stackSize;
+			return _tile.getMaxStoredCount() - items.getCount();
 		}
 		return 0;
 	}
@@ -128,32 +128,32 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
-		st.stackSize = 0;
+		st.setCount(0);
 		if (stack.getTagCompound() != null) {
 			return st;
 		}
 		ItemStack items = _tile.getStoredItemType();
-		if ((items == null || items.stackSize == 0)) {
-			if (stack.stackSize <= _tile.getMaxStoredCount()) {
-				_tile.setStoredItemType(stack, stack.stackSize);
-				st.stackSize = stack.stackSize;
+		if ((items == null || items.getCount() == 0)) {
+			if (stack.getCount() <= _tile.getMaxStoredCount()) {
+				_tile.setStoredItemType(stack, stack.getCount());
+				st.setCount(stack.getCount());
 				return st;
 			} else {
 				_tile.setStoredItemType(stack, _tile.getMaxStoredCount());
-				st.stackSize = _tile.getMaxStoredCount();
+				st.setCount(_tile.getMaxStoredCount());
 				return st;
 			}
 		}
 		if (!items.isItemEqual(stack)) {
 			return st;
 		}
-		if (stack.stackSize <= _tile.getMaxStoredCount() - items.stackSize) {
-			_tile.setStoredItemCount(items.stackSize + stack.stackSize);
-			st.stackSize = stack.stackSize;
+		if (stack.getCount() <= _tile.getMaxStoredCount() - items.getCount()) {
+			_tile.setStoredItemCount(items.getCount() + stack.getCount());
+			st.setCount(stack.getCount());
 			return st;
 		} else {
 			_tile.setStoredItemCount(_tile.getMaxStoredCount());
-			st.stackSize = _tile.getMaxStoredCount() - items.stackSize;
+			st.setCount(_tile.getMaxStoredCount() - items.getCount());
 			return st;
 		}
 	}

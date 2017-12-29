@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -52,3 +53,4 @@ public class TriggerNeedsPower extends LPTrigger implements ITriggerExternal {
 	}
 
 }
+*/

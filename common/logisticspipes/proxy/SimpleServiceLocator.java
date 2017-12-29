@@ -10,8 +10,6 @@ package logisticspipes.proxy;
 
 import java.util.LinkedList;
 
-import javax.tools.Tool;
-
 import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsFluidManager;
@@ -44,6 +42,7 @@ import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
+import logisticspipes.utils.TankUtilFactory;
 
 public final class SimpleServiceLocator {
 
@@ -107,6 +106,12 @@ public final class SimpleServiceLocator {
 
 	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory) {
 		SimpleServiceLocator.inventoryUtilFactory = invUtilFactory;
+	}
+
+	public static TankUtilFactory tankUtilFactory;
+
+	public static void setTankUtilFactory(final TankUtilFactory tankUtilFactory) {
+		SimpleServiceLocator.tankUtilFactory = tankUtilFactory;
 	}
 
 	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<>();

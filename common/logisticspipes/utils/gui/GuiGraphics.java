@@ -100,7 +100,7 @@ public final class GuiGraphics {
 
 		List<String> var24;
 		if(mc.currentScreen instanceof GuiContainer) {
-			var24 = SimpleServiceLocator.neiProxy.getItemToolTip(var22, mc.player, mc.gameSettings.advancedItemTooltips, (GuiContainer) mc.currentScreen);
+			var24 = SimpleServiceLocator.neiProxy.getItemToolTip(var22, mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL, (GuiContainer) mc.currentScreen);
 		} else {
 			var24 = var22.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 		}

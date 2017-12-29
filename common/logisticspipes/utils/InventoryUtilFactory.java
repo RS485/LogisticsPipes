@@ -34,7 +34,7 @@ public class InventoryUtilFactory {
 		}
 	}
 
-	private TileEntity getTileEntityFromInventory(IInventory inv) {
+	private TileEntity getTileEntityFromInventory(IInventory inv) { //TODO: Find a way for this with the new capability system...
 		if (inv instanceof TileEntity) {
 			return (TileEntity) inv;
 		} else if (inv instanceof SidedInventoryMinecraftAdapter) {

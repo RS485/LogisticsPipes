@@ -123,13 +123,13 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 				if (stack == null) {
 					stack = drawer.getStoredItemCopy();
-					stack.stackSize = 0;
+					stack.setCount(0);
 				}
 
 				int avail = Math.min(count, drawer.getStoredItemCount());
 				drawer.setStoredItemCount(drawer.getStoredItemCount() - avail);
 
-				stack.stackSize += avail;
+				stack.grow(avail);
 				count -= avail;
 
 				if (count <= 0) {
@@ -153,13 +153,13 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			if (ItemIdentifier.get(drawer.getStoredItemPrototype()).equals(itemIdent)) {
 				if (stack == null) {
 					stack = drawer.getStoredItemCopy();
-					stack.stackSize = 0;
+					stack.setCount(0);
 				}
 
 				int avail = Math.min(count, drawer.getStoredItemCount());
 				drawer.setStoredItemCount(drawer.getStoredItemCount() - avail);
 
-				stack.stackSize += avail;
+				stack.grow(avail);
 				count -= avail;
 
 				if (count <= 0) {
@@ -325,7 +325,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
-		st.stackSize = 0;
+		st.setCount(0);
 
 		if (_smartGroup != null) {
 			BitSet set = new BitSet();
@@ -340,12 +340,12 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 				IDrawer drawer = _drawer.getDrawer(slot);
 				int avail = 0;
 				if (!drawer.isEmpty()) {
-					avail = Math.min(stack.stackSize, drawer.getRemainingCapacity());
+					avail = Math.min(stack.getCount(), drawer.getRemainingCapacity());
 					if (doAdd) {
 						drawer.setStoredItemCount(drawer.getStoredItemCount() + avail);
 					}
 				} else {
-					avail = Math.min(stack.stackSize, drawer.getMaxCapacity(stack));
+					avail = Math.min(stack.getCount(), drawer.getMaxCapacity(stack));
 					if (doAdd) {
 						drawer.setStoredItem(stack, avail);
 					}
@@ -355,10 +355,10 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 					return stack;
 				}
 
-				stack.stackSize -= avail;
-				st.stackSize += avail;
+				stack.shrink(avail);
+				st.grow(avail);
 
-				if (stack.stackSize <= 0) {
+				if (stack.getCount() <= 0) {
 					break;
 				}
 			}
@@ -379,12 +379,12 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			if (drawer.canItemBeStored(stack)) {
 				int avail = 0;
 				if (drawer.isEmpty()) {
-					avail = Math.min(stack.stackSize, drawer.getMaxCapacity(stack));
+					avail = Math.min(stack.getCount(), drawer.getMaxCapacity(stack));
 					if (doAdd) {
 						drawer.setStoredItem(stack.copy(), avail);
 					}
 				} else {
-					avail = Math.min(stack.stackSize, drawer.getRemainingCapacity());
+					avail = Math.min(stack.getCount(), drawer.getRemainingCapacity());
 					if (doAdd) {
 						drawer.setStoredItemCount(drawer.getStoredItemCount() + avail);
 					}
@@ -394,10 +394,10 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 					return stack;
 				}
 
-				stack.stackSize -= avail;
-				st.stackSize += avail;
+				stack.shrink(avail);
+				st.grow(avail);
 
-				if (stack.stackSize <= 0) {
+				if (stack.getCount() <= 0) {
 					break;
 				}
 			}
@@ -444,7 +444,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		int avail = Math.min(j, drawer.getStoredItemCount());
 		drawer.setStoredItemCount(drawer.getStoredItemCount() - avail);
 
-		stack.stackSize = avail;
+		stack.setCount(avail);
 
 		return stack;
 	}

@@ -100,12 +100,16 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 
 	private static FMLProxyPacket toFMLPacket(ModernPacket msg, String channel) throws Exception {
 		ByteBuf buffer = Unpooled.buffer();
+		fillByteBuf(msg, buffer);
+
+		return new FMLProxyPacket(new PacketBuffer(buffer), channel);
+	}
+
+	public static void fillByteBuf(ModernPacket msg, ByteBuf buffer) {
 		buffer.writeShort(msg.getId());
 		buffer.writeInt(msg.getDebugId());
 
 		LPDataIOWrapper.writeData(buffer, msg::writeData);
-
-		return new FMLProxyPacket(new PacketBuffer(buffer), channel);
 	}
 
 	//hacky callback to process packets coming from by the packetbufferhandler decompressors
@@ -121,7 +125,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		PacketHandler.onPacketData(packet, player);
 	}
 
-	private static void onPacketData(ModernPacket packet, final EntityPlayer player) {
+	public static void onPacketData(ModernPacket packet, final EntityPlayer player) {
 		try {
 			packet.processPacket(player);
 			if (LPConstants.DEBUG) {

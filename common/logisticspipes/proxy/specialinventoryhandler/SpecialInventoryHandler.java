@@ -43,7 +43,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 				if (newstack == null) {
 					break;
 				}
-				stack.stackSize += newstack.stackSize;
+				stack.grow(newstack.getCount());
 			}
 		}
 		return stack;

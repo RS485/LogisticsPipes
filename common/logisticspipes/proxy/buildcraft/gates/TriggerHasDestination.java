@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.ArrayList;
@@ -52,3 +53,4 @@ public class TriggerHasDestination extends LPTrigger implements ITriggerInternal
 		return true;
 	}
 }
+*/

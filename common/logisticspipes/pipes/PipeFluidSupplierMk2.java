@@ -27,10 +27,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 
 import lombok.Getter;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;

@@ -3,12 +3,16 @@ package logisticspipes.items;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.string.StringUtils;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,22 +31,22 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
-		super.addInformation(itemStack, player, list, flag);
-		if (!itemStack.hasTagCompound()) {
-			list.add(StringUtils.translate("tooltip.logisticsItemCard"));
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		super.addInformation(stack, worldIn, tooltip, flagIn);
+		if (!stack.hasTagCompound()) {
+			tooltip.add(StringUtils.translate("tooltip.logisticsItemCard"));
 		} else {
-			if (itemStack.getTagCompound().hasKey("UUID")) {
-				if (itemStack.getItemDamage() == LogisticsItemCard.FREQ_CARD) {
-					list.add("Freq. Card");
-				} else if (itemStack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
-					list.add("Sec. Card");
+			if (stack.getTagCompound().hasKey("UUID")) {
+				if (stack.getItemDamage() == LogisticsItemCard.FREQ_CARD) {
+					tooltip.add("Freq. Card");
+				} else if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
+					tooltip.add("Sec. Card");
 				}
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-					list.add("Id: " + itemStack.getTagCompound().getString("UUID"));
-					if (itemStack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
-						UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
-						list.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "Authorized" : "Deauthorized"));
+					tooltip.add("Id: " + stack.getTagCompound().getString("UUID"));
+					if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
+						UUID id = UUID.fromString(stack.getTagCompound().getString("UUID"));
+						tooltip.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "Authorized" : "Deauthorized"));
 					}
 				}
 			}

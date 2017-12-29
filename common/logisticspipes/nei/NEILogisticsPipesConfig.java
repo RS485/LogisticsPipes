@@ -2,16 +2,11 @@ package logisticspipes.nei;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.gui.GuiLogisticsCraftingTable;
-import logisticspipes.gui.GuiSolderingStation;
-import logisticspipes.gui.orderer.GuiRequestTable;
 
 import net.minecraftforge.fml.common.Mod;
 
-import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.api.NEIPlugin;
-import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.handler.NEIClientEventHandler;
 
 @NEIPlugin

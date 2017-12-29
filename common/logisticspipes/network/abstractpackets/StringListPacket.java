@@ -21,6 +21,7 @@ public abstract class StringListPacket extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
+		super.readData(input);
 		int size = input.readInt();
 		for (int i = 0; i < size; i++) {
 			getStringList().add(input.readUTF());
@@ -29,6 +30,7 @@ public abstract class StringListPacket extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
+		super.writeData(output);
 		output.writeInt(getStringList().size());
 		for (int i = 0; i < getStringList().size(); i++) {
 			output.writeUTF(getStringList().get(i));

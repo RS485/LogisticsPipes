@@ -34,6 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import io.netty.buffer.ByteBuf;
+import static io.netty.buffer.Unpooled.buffer;
 import li.cil.oc.api.network.Node;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
@@ -262,7 +263,13 @@ public class LogisticsTileGenericPipe extends TileEntity
 		sendInitPacket = true;
 		try {
 			ModernPacket packet = getLPDescriptionPacket();
-			byte[] data = LPDataIOWrapper.collectData(packet::writeData);
+			ByteBuf dataBuffer = buffer();
+			PacketHandler.fillByteBuf(packet, dataBuffer);
+
+			byte[] data = new byte[dataBuffer.readableBytes()];
+			dataBuffer.getBytes(0, data);
+			dataBuffer.release();
+
 			NBTTagCompound nbt = new NBTTagCompound();
 			nbt.setByteArray("PacketData", data);
 			return new SPacketUpdateTileEntity(getPos(), 1, nbt);
@@ -613,7 +620,11 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	public boolean isPipeConnectedCached(EnumFacing side) {
-		return pipeConnectionsBuffer[side.ordinal()];
+		if(MainProxy.isClient(this.world)) {
+			return renderState.pipeConnectionMatrix.isConnected(side);
+		} else {
+			return pipeConnectionsBuffer[side.ordinal()];
+		}
 	}
 
 	public boolean isOpaque() {

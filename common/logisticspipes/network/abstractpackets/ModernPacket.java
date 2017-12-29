@@ -1,6 +1,7 @@
 package logisticspipes.network.abstractpackets;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -28,42 +29,28 @@ public abstract class ModernPacket {
 	@Getter
 	@Setter
 	private int debugId = 0;
+	@Getter
+	@Setter
+	private int dimension = 0; // If the dimension is not set the packet will be handled in the main overworld
 
 	public ModernPacket(int id) {
 		//this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
 		this.id = id;
 	}
 
-	/*
-		public Packet250CustomPayload getPacket() {
-			if(data == null) throw new RuntimeException("The packet needs to be created() first;");
-			Packet250CustomPayload packet = new Packet250CustomPayload();
-			packet.channel = channel;
-			packet.data = this.data;
-			packet.length = packet.data.length;
-			packet.isChunkDataPacket = isChunkDataPacket();
-			return packet;
-		}
+	public void setDimension(World world) {
+		dimension = world.provider.getDimension();
+	}
 
-		public void create() {
-			if(data != null) return; //PacketBuffer already created
-			LPDataOutputStream dataStream = new LPDataOutputStream();
-			try {
-				dataStream.writeInt(getId());
-				dataStream.writeInt(debugId);
-				writeData(dataStream);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			data = dataStream.toByteArray();
-		}
-	 */
-
-	public abstract void readData(LPDataInput input);
+	public void readData(LPDataInput input) {
+		dimension = input.readInt();
+	}
 
 	public abstract void processPacket(EntityPlayer player);
 
-	public abstract void writeData(LPDataOutput output);
+	public void writeData(LPDataOutput output) {
+		output.writeInt(dimension);
+	}
 
 	public abstract ModernPacket template();
 

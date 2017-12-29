@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
@@ -55,6 +57,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -65,8 +68,11 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.model.ModelLoader;
@@ -283,21 +289,21 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public boolean onItemUse(final ItemStack par1ItemStack, final EntityPlayer par2EntityPlayer, final World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
-		if (MainProxy.isServer(par2EntityPlayer.world)) {
-			TileEntity tile = par3World.getTileEntity(par4, par5, par6);
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		if (MainProxy.isServer(player.world)) {
+			TileEntity tile = world.getTileEntity(pos);
 			if (tile instanceof LogisticsTileGenericPipe) {
-				if (par2EntityPlayer.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
-					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(par3World, par4, par5, par6);
+				if (player.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
+					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 					if (LogisticsBlockGenericPipe.isValid(pipe)) {
-						pipe.blockActivated(par2EntityPlayer);
+						pipe.blockActivated(player);
 					}
 				}
-				return true;
+				return EnumActionResult.PASS;
 			}
-			openConfigGui(par1ItemStack, par2EntityPlayer, par3World);
+			openConfigGui(player.inventory.getCurrentItem(), player, world);
 		}
-		return true;
+		return EnumActionResult.PASS;
 	}
 
 	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IWorldProvider world, IPipeServiceProvider service) {
@@ -354,9 +360,9 @@ public class ItemModule extends LogisticsItem {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
-		if (itemStack.hasTagCompound()) {
-			NBTTagCompound nbt = itemStack.getTagCompound();
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+		if (stack.hasTagCompound()) {
+			NBTTagCompound nbt = stack.getTagCompound();
 			if (nbt.hasKey("informationList")) {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);
@@ -376,29 +382,29 @@ public class ItemModule extends LogisticsItem {
 								ItemIdentifierInventory inv = new ItemIdentifierInventory(size, "InformationTempInventory", Integer.MAX_VALUE);
 								inv.readFromNBT(module, prefix);
 								for (int pos = 0; pos < inv.getSizeInventory(); pos++) {
-									ItemIdentifierStack stack = inv.getIDStackInSlot(pos);
-									if (stack != null) {
-										if (stack.getStackSize() > 1) {
-											list.add("  " + stack.getStackSize() + "x " + stack.getFriendlyName());
+									ItemIdentifierStack identStack = inv.getIDStackInSlot(pos);
+									if (identStack != null) {
+										if (identStack.getStackSize() > 1) {
+											tooltip.add("  " + identStack.getStackSize() + "x " + identStack.getFriendlyName());
 										} else {
-											list.add("  " + stack.getFriendlyName());
+											tooltip.add("  " + identStack.getFriendlyName());
 										}
 									}
 								}
 							}
 							i++;
 						} else {
-							list.add(data);
+							tooltip.add(data);
 						}
 					}
 				} else {
-					list.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
+					tooltip.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
 				}
 			} else {
-				StringUtils.addShiftAddition(itemStack, list);
+				StringUtils.addShiftAddition(stack, tooltip);
 			}
 		} else {
-			StringUtils.addShiftAddition(itemStack, list);
+			StringUtils.addShiftAddition(stack, tooltip);
 		}
 	}
 }

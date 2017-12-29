@@ -33,7 +33,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-
+		super.writeData(output);
 		output.writeInt(posX);
 		output.writeInt(posY);
 		output.writeInt(posZ);
@@ -41,7 +41,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
-
+		super.readData(input);
 		posX = input.readInt();
 		posY = input.readInt();
 		posZ = input.readInt();
@@ -49,6 +49,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	}
 
 	public CoordinatesPacket setTilePos(TileEntity tile) {
+		setDimension(tile.getWorld());
 		setPosX(tile.getPos().getX());
 		setPosY(tile.getPos().getY());
 		setPosZ(tile.getPos().getZ());
@@ -70,7 +71,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	}
 
 	public CoordinatesPacket setBlockPos(BlockPos pos) {
-		posX = pos.getY();
+		posX = pos.getX();
 		posY = pos.getY();
 		posZ = pos.getZ();
 		return this;

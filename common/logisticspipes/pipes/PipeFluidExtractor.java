@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -11,7 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidHandler;
 
 public class PipeFluidExtractor extends PipeFluidInsertion {
 
@@ -31,29 +31,26 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 			return;
 		}
 
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
-		worldCoordinates.getAdjacentTileEntities()
-				.filter(adjacent -> adjacent.tileEntity instanceof IFluidHandler && SimpleServiceLocator.pipeInformationManager.isNotAPipe(adjacent.tileEntity))
-				.forEach(adjacent -> extractFrom((IFluidHandler) adjacent.tileEntity, adjacent.direction));
+		getAdjacentTanksAdvanced(false).forEach(tankData -> extractFrom(tankData.getValue1(), tankData.getValue3()));
 	}
 
-	private void extractFrom(IFluidHandler container, EnumFacing side) {
-		int i = side.ordinal();
-		FluidStack contained = ((PipeFluidTransportLogistics) transport).getTankInfo(side)[0].fluid;
+	private void extractFrom(ITankUtil container, EnumFacing side) {
+		int sideID = side.ordinal();
+		FluidStack contained = ((PipeFluidTransportLogistics) transport).getTankProperties(side)[0].getContents();
 		int amountMissing = ((PipeFluidTransportLogistics) transport).getSideCapacity() - (contained != null ? contained.amount : 0);
-		if (liquidToExtract[i] < Math.min(PipeFluidExtractor.flowRate, amountMissing)) {
+		if (liquidToExtract[sideID] < Math.min(PipeFluidExtractor.flowRate, amountMissing)) {
 			if (this.useEnergy(PipeFluidExtractor.energyPerFlow)) {
-				liquidToExtract[i] += Math.min(PipeFluidExtractor.flowRate, amountMissing);
+				liquidToExtract[sideID] += Math.min(PipeFluidExtractor.flowRate, amountMissing);
 			}
 		}
-		FluidStack extracted = container.drain(side.getOpposite(), liquidToExtract[i] > PipeFluidExtractor.flowRate ? PipeFluidExtractor.flowRate : liquidToExtract[i], false);
+		FluidStack extracted = container.drain(liquidToExtract[sideID] > PipeFluidExtractor.flowRate ? PipeFluidExtractor.flowRate : liquidToExtract[sideID], false);
 
 		int inserted = 0;
 		if (extracted != null) {
 			inserted = ((PipeFluidTransportLogistics) transport).fill(side, extracted, true);
-			container.drain(side.getOpposite(), inserted, true);
+			container.drain(inserted, true);
 		}
-		liquidToExtract[i] -= inserted;
+		liquidToExtract[sideID] -= inserted;
 	}
 
 	@Override

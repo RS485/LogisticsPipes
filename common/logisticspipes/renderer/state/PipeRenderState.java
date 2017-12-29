@@ -1,8 +1,10 @@
 package logisticspipes.renderer.state;
 
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -26,7 +28,7 @@ public class PipeRenderState implements IClientState {
 	public boolean[] solidSidesCache = new boolean[6];
 
 	public int[] buffer = null;
-	public GLRenderList renderList;
+	public Map<ResourceLocation, GLRenderList> renderLists;
 	/*
 	 * This is a placeholder for the pipe renderer to set to a value that the BlockGenericPipe->TileGenericPipe will then return the the WorldRenderer
 	 */

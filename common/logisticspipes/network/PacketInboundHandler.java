@@ -75,7 +75,7 @@ public class PacketInboundHandler extends SimpleChannelInboundHandler<InboundMod
 			}
 		} catch (TargetNotFoundException e) {
 			if (packet.retry() && MainProxy.isClient(player.getEntityWorld())) {
-				SimpleServiceLocator.clientBufferHandler.queueFailedPacket(packet, player);
+				SimpleServiceLocator.clientBufferHandler.queuePacket(packet, player);
 			} else if (LPConstants.DEBUG) {
 				LogisticsPipes.log.error(packet.getClass().getName());
 				LogisticsPipes.log.error(packet.toString());

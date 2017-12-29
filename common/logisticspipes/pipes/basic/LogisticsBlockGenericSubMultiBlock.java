@@ -42,6 +42,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	public LogisticsBlockGenericSubMultiBlock() {
 		super(Material.GLASS);
+		setUnlocalizedName("logisticsblockgenericsubmultiblock");
 	}
 
 	@Override

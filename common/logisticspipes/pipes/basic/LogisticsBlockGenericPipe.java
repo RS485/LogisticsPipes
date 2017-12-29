@@ -78,6 +78,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public LogisticsBlockGenericPipe() {
 		super(Material.GLASS);
 		setRenderAllSides();
+		setUnlocalizedName("logisticsblockgenericpipe");
 	}
 
 	public static void removePipe(CoreUnroutedPipe pipe) {

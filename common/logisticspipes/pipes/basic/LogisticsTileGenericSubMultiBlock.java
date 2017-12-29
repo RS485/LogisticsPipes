@@ -157,32 +157,21 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 	}
 
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound nbt = super.getUpdateTag();
 		try {
-			ModernPacket packet = getLPDescriptionPacket();
-			ByteBuf dataBuffer = buffer();
-			PacketHandler.fillByteBuf(packet, dataBuffer);
-
-			byte[] data = new byte[dataBuffer.readableBytes()];
-			dataBuffer.getBytes(0, data);
-			dataBuffer.release();
-
-			NBTTagCompound nbt = new NBTTagCompound();
-			nbt.setByteArray("PacketData", data);
-			return new SPacketUpdateTileEntity(getPos(), 1, nbt);
+			PacketHandler.addPacketToNBT(getLPDescriptionPacket(), nbt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return nbt;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		byte[] data = pkt.getNbtCompound().getByteArray("PacketData");
-		if(data.length > 0) {
-			LPDataIOWrapper.provideData(data, dataInput -> PacketHandler.onPacketData(dataInput, Minecraft.getMinecraft().player));
-		}
+	public void handleUpdateTag(NBTTagCompound tag) {
+		PacketHandler.queueAndRemovePacketFromNBT(tag);
+		super.handleUpdateTag(tag);
 	}
 
 	public ModernPacket getLPDescriptionPacket() {

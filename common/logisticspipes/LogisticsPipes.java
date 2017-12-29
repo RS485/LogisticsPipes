@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.Ingredient;
@@ -77,6 +78,7 @@ import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logistics.LogisticsManager;
@@ -516,6 +518,11 @@ public class LogisticsPipes {
 		registerPipes();
 
 		registerRecipes();
+
+
+		event.getRegistry().register(new LogisticsSolidBlockItem(LogisticsPipes.LogisticsSolidBlock).setRegistryName(LogisticsPipes.LogisticsSolidBlock.getRegistryName()));
+		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsPipeBlock).setRegistryName(LogisticsPipes.LogisticsPipeBlock.getRegistryName()));
+		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsSubMultiBlock).setRegistryName(LogisticsPipes.LogisticsSubMultiBlock.getRegistryName()));
 	}
 
 	@SubscribeEvent
@@ -524,6 +531,7 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsSolidBlock = new LogisticsSolidBlock();
 		LogisticsPipes.LogisticsSolidBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsSolidBlock.getUnlocalizedName()));
 		event.getRegistry().register(LogisticsPipes.LogisticsSolidBlock);
+
 
 		LogisticsPipes.LogisticsPipeBlock = new LogisticsBlockGenericPipe();
 		LogisticsPipes.LogisticsPipeBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsPipeBlock.getUnlocalizedName()));
@@ -575,7 +583,7 @@ public class LogisticsPipes {
 	}
 
 	private void loadClasses() {
-		//Try to load all classes to let out checksums get generated
+		//Try to load all classes to let our checksums get generated
 		forName("net.minecraft.tileentity.TileEntity");
 		forName("net.minecraft.world.World");
 		forName("net.minecraft.item.ItemStack");

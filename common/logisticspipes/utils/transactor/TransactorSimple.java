@@ -22,7 +22,7 @@ public class TransactorSimple extends Transactor {
 		List<IInvSlot> emptySlots = new ArrayList<>(inventory.getSizeInventory());
 		for (IInvSlot slot : InventoryIterator.getIterable(inventory, orientation)) {
 			if (slot.canPutStackInSlot(stack)) {
-				if (slot.getStackInSlot() == null) {
+				if (slot.getStackInSlot().isEmpty()) {
 					emptySlots.add(slot);
 				} else {
 					filledSlots.add(slot);
@@ -47,7 +47,7 @@ public class TransactorSimple extends Transactor {
 
 		for (IInvSlot slot : slots) {
 			ItemStack stackInSlot = slot.getStackInSlot();
-			if (stackInSlot == null || canStacksMerge(stackInSlot, stack)) {
+			if (stackInSlot.isEmpty() || canStacksMerge(stackInSlot, stack)) {
 				int used = addToSlot(slot, stack, realInjected, doAdd);
 				if (used > 0) {
 					realInjected += used;
@@ -74,7 +74,7 @@ public class TransactorSimple extends Transactor {
 		int max = Math.min(stack.getMaxStackSize(), inventory.getInventoryStackLimit());
 
 		ItemStack stackInSlot = slot.getStackInSlot();
-		if (stackInSlot == null) {
+		if (stackInSlot.isEmpty()) {
 			int wanted = Math.min(available, max);
 			if (doAdd) {
 				stackInSlot = stack.copy();
@@ -106,6 +106,9 @@ public class TransactorSimple extends Transactor {
 
 	private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {
 		if (stack1 == null || stack2 == null) {
+			return false;
+		}
+		if (stack1.isEmpty() || stack2.isEmpty()) {
 			return false;
 		}
 		if (!stack1.isItemEqual(stack2)) {

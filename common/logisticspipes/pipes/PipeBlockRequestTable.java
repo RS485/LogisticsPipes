@@ -461,7 +461,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			result = getOutput(false);
 		}
 		if (result == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		result.setCount(inv.addCompressed(result, false));
 		if (result.getCount() > 0) {

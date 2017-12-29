@@ -266,11 +266,6 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public World getWorld() {
-		return getWorld();
-	}
-
-	@Override
 	public void startWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartBlockWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}

@@ -589,12 +589,12 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 		PipeRenderState renderState = pipeTile.renderState;
 
-		if (renderState.renderList != null && renderState.renderList.isInvalid()) {
-			renderState.renderList = null;
+		if (renderState.renderLists != null && renderState.renderLists.values().stream().anyMatch(GLRenderList::isInvalid)) {
+			renderState.renderLists = null;
 		}
 
-		if (renderState.renderList == null) {
-			renderState.renderList = SimpleServiceLocator.renderListHandler.getNewRenderList();
+		if (renderState.renderLists == null) {
+			renderState.renderLists = new HashMap<>();
 		}
 
 		if (distance > config.getRenderPipeDistance() * config.getRenderPipeDistance()) {
@@ -617,23 +617,56 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				renderState.cachedRenderer = objectsToRender;
 				recalculateList = true;
 			}
-			renderList(pipeTile, x, y, z, renderState.renderList, renderState.cachedRenderer, recalculateList);
+			renderList(pipeTile, x, y, z, renderState.renderLists, renderState.cachedRenderer, recalculateList);
 		}
 	}
 
-	private void renderList(TileEntity subTile, double x, double y, double z, GLRenderList renderList, List<RenderEntry> cachedRenderer, boolean recalculateList) {
-		if (!renderList.isFilled() || recalculateList) {
-			ResourceLocation oldTexture = null;
-			renderList.startListCompile();
-
-
-			SimpleServiceLocator.cclProxy.getRenderState().reset();
-			SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+	private void renderList(TileEntity subTile, double x, double y, double z, Map<ResourceLocation, GLRenderList> renderLists, List<RenderEntry> cachedRenderer, boolean recalculateList) {
+		if (!renderLists.values().stream().allMatch(GLRenderList::isFilled) || recalculateList) {
+			Map<ResourceLocation, List<RenderEntry>> sorted = new HashMap<>();
+			for (RenderEntry model : cachedRenderer) {
+				if(!sorted.containsKey(model.getTexture())) {
+					sorted.put(model.getTexture(), new LinkedList<>());
+				}
+				sorted.get(model.getTexture()).add(model);
+			}
 
 			DoubleCoordinates coords = new DoubleCoordinates(subTile);
-			SimpleServiceLocator.cclProxy.getRenderState().setBrightness(subTile.getWorld(), coords.getBlockPos());
-			boolean tesselating = false;
+			for(Entry<ResourceLocation, List<RenderEntry>> entries: sorted.entrySet()) {
+				if(!renderLists.containsKey(entries.getKey())) {
+					renderLists.put(entries.getKey(), SimpleServiceLocator.renderListHandler.getNewRenderList());
+				}
+				GLRenderList renderList = renderLists.get(entries.getKey());
+				if(renderList.isFilled() && !recalculateList) {
+					continue;
+				}
+				renderList.startListCompile();
 
+				SimpleServiceLocator.cclProxy.getRenderState().reset();
+				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+				SimpleServiceLocator.cclProxy.getRenderState().setBrightness(subTile.getWorld(), coords.getBlockPos());
+
+				SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+
+				for(RenderEntry entry: entries.getValue()) {
+					entry.getModel().render(entry.getOperations());
+				}
+
+				//SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+				SimpleServiceLocator.cclProxy.getRenderState().draw();
+				renderList.stopCompile();
+			}
+
+			//ResourceLocation oldTexture = null;
+			//renderList.startListCompile();
+
+
+			//SimpleServiceLocator.cclProxy.getRenderState().reset();
+			//SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
+
+			//SimpleServiceLocator.cclProxy.getRenderState().setBrightness(subTile.getWorld(), coords.getBlockPos());
+			//boolean tesselating = false;
+/*
 			for (RenderEntry model : cachedRenderer) {
 				ResourceLocation texture = model.getTexture();
 				if (texture == null) {
@@ -661,13 +694,17 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				SimpleServiceLocator.cclProxy.getRenderState().draw();
 			}
 			renderList.stopCompile();
+			*/
 		}
-		if (renderList != null) {
+		if(!renderLists.isEmpty()) {
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
-			renderList.render();
+			for (Entry<ResourceLocation, GLRenderList> entry : renderLists.entrySet()) {
+				Minecraft.getMinecraft().getTextureManager().bindTexture(entry.getKey());
+				entry.getValue().render();
+			}
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glPopMatrix();
 		}

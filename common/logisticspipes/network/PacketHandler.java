@@ -1,25 +1,27 @@
 package logisticspipes.network;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import static io.netty.buffer.Unpooled.buffer;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -112,6 +114,32 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		LPDataIOWrapper.writeData(buffer, msg::writeData);
 	}
 
+	public static void addPacketToNBT(ModernPacket packet, NBTTagCompound nbt) {
+		ByteBuf dataBuffer = buffer();
+		PacketHandler.fillByteBuf(packet, dataBuffer);
+
+		byte[] data = new byte[dataBuffer.readableBytes()];
+		dataBuffer.getBytes(0, data);
+		dataBuffer.release();
+
+		nbt.setByteArray("LogisticsPipes:PacketData", data);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void queueAndRemovePacketFromNBT(NBTTagCompound nbt) {
+		byte[] data = nbt.getByteArray("LogisticsPipes:PacketData");
+		if(data.length > 0) {
+			LPDataIOWrapper.provideData(data, dataInput -> {
+				final int packetID = dataInput.readShort();
+				final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
+				packet.setDebugId(dataInput.readInt());
+				packet.readData(dataInput);
+				SimpleServiceLocator.clientBufferHandler.queuePacket(packet, MainProxy.proxy.getClientPlayer());
+			});
+		}
+		nbt.removeTag("LogisticsPipes:PacketData");
+	}
+
 	//hacky callback to process packets coming from by the packetbufferhandler decompressors
 	//TODO replace with proper netty implementation
 	public static void onPacketData(final LPDataInput data, final EntityPlayer player) {
@@ -133,7 +161,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 			}
 		} catch (DelayPacketException e) {
 			if (packet.retry() && MainProxy.isClient(player.getEntityWorld())) {
-				SimpleServiceLocator.clientBufferHandler.queueFailedPacket(packet, player);
+				SimpleServiceLocator.clientBufferHandler.queuePacket(packet, player);
 			} else if (LPConstants.DEBUG) {
 				LogisticsPipes.log.error(packet.getClass().getName());
 				LogisticsPipes.log.error(packet.toString());

@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -32,6 +33,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
 import org.lwjgl.opengl.GL12;
 
 import logisticspipes.LPConstants;
@@ -83,18 +85,49 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 	@Override
 	public void render(LogisticsTileGenericPipe tileentity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-		double distance = new DoubleCoordinates((TileEntity) tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().player));
-
-		LogisticsTileGenericPipe pipe = ((LogisticsTileGenericPipe) tileentity);
-		if (pipe.pipe == null) {
+		if (tileentity.pipe == null) {
 			return;
 		}
+		double distance = new DoubleCoordinates((TileEntity) tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().player));
 
-		if (pipe.pipe instanceof CoreRoutedPipe) {
-			renderPipeSigns((CoreRoutedPipe) pipe.pipe, x, y, z, partialTicks);
+		GlStateManager.enableDepth();
+		GlStateManager.depthFunc(515);
+		GlStateManager.depthMask(true);
+
+		if (destroyStage >= 0)
+		{
+			this.bindTexture(DESTROY_STAGES[destroyStage]);
+			GlStateManager.matrixMode(GL11.GL_TEXTURE);
+			GlStateManager.pushMatrix();
+			GlStateManager.scale(4.0F, 4.0F, 1.0F);
+			//GlStateManager.translate(0.0625F, 0.0625F, 0.0625F);
+			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		}
 
-		LogisticsRenderPipe.secondRenderer.renderTileEntityAt((LogisticsTileGenericPipe) tileentity, x, y, z, partialTicks, distance);
+		GlStateManager.pushMatrix();
+		GlStateManager.enableRescaleNormal();
+
+		if (destroyStage < 0)
+		{
+			GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
+		}
+
+
+		if (tileentity.pipe instanceof CoreRoutedPipe) {
+			renderPipeSigns((CoreRoutedPipe) tileentity.pipe, x, y, z, partialTicks);
+		}
+
+		LogisticsRenderPipe.secondRenderer.renderTileEntityAt(tileentity, x, y, z, partialTicks, distance);
+
+		GlStateManager.disableRescaleNormal();
+		GlStateManager.popMatrix();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		if (destroyStage >= 0)
+		{
+			GlStateManager.matrixMode(GL11.GL_TEXTURE);
+			GlStateManager.popMatrix();
+			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+		}
 	}
 
 	private void renderSolids(CoreUnroutedPipe pipe, double x, double y, double z, float partialTickTime) {

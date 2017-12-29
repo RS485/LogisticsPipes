@@ -92,7 +92,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		super(Material.IRON);
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
 		setHardness(6.0F);
-		setUnlocalizedName("logisticsSolidBlock");
+		setUnlocalizedName("logisticssolidblock");
 		setDefaultState(this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION));
 	}
 

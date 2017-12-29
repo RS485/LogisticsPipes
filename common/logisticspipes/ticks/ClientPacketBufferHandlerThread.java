@@ -78,8 +78,8 @@ public class ClientPacketBufferHandlerThread {
 		clientDecompressorThread.clear();
 	}
 
-	public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
-		clientDecompressorThread.queueFailedPacket(packet, player);
+	public void queuePacket(ModernPacket packet, EntityPlayer player) {
+		clientDecompressorThread.queuePacket(packet, player);
 	}
 
 	private class ClientCompressorThread extends Thread {
@@ -311,7 +311,7 @@ public class ClientPacketBufferHandlerThread {
 			retryPackets.clear();
 		}
 
-		public void queueFailedPacket(ModernPacket packet, EntityPlayer player) {
+		public void queuePacket(ModernPacket packet, EntityPlayer player) {
 			retryPackets.add(new Pair<>(player, packet));
 		}
 	}

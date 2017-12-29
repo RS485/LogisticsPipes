@@ -19,7 +19,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	public LogisticsSolidBlockItem(Block par1) {
 		super(par1);
 		setHasSubtypes(true);
-		setUnlocalizedName("logisticsSolidBlock");
+		setUnlocalizedName("logisticssolidblock");
 	}
 
 	@Override

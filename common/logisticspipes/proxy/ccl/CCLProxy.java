@@ -84,6 +84,7 @@ public class CCLProxy implements ICCLProxy {
 			@Override
 			public void reset() {
 				CCRenderState.instance().reset();
+				CCRenderState.instance().computeLighting = false;
 			}
 
 			@Override

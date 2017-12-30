@@ -31,7 +31,7 @@ public class ConnectionMatrix {
 
 	public boolean isBCConnected(EnumFacing direction) {
 		// test if the direction.ordinal()'th bit of mask is set
-		return (isBCPipeMask & (1 << direction.ordinal())) != 0;
+		return direction != null && (isBCPipeMask & (1 << direction.ordinal())) != 0;
 	}
 
 	public void setBCConnected(EnumFacing direction, boolean value) {
@@ -44,7 +44,7 @@ public class ConnectionMatrix {
 
 	public boolean isTDConnected(EnumFacing direction) {
 		// test if the direction.ordinal()'th bit of mask is set
-		return (isTDPipeMask & (1 << direction.ordinal())) != 0;
+		return direction != null && (isTDPipeMask & (1 << direction.ordinal())) != 0;
 	}
 
 	public void setTDConnected(EnumFacing direction, boolean value) {

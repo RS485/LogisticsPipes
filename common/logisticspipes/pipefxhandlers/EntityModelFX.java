@@ -41,7 +41,7 @@ public class EntityModelFX extends Particle {
 		SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-		SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+		SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
 		model.render(operations);
 		SimpleServiceLocator.cclProxy.getRenderState().draw();
 

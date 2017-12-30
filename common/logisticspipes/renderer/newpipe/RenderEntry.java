@@ -18,7 +18,7 @@ public class RenderEntry {
 		this.texture = texture;
 	}
 
-	public RenderEntry(IModel3D model, I3DOperation[] operations) {
+	public RenderEntry(IModel3D model, I3DOperation... operations) {
 		this(model, operations, RenderEntry.BLOCKS);
 	}
 

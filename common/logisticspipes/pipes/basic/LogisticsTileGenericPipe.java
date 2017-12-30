@@ -364,6 +364,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 		}
 		super.readFromNBT(nbt);
 
+		if(!nbt.hasKey("pipeId") && MainProxy.isClient(world)) return;
+
 		if (nbt.hasKey("redstoneInputSide[0]")) {
 			tilePart.readOldRedStone(nbt);
 		}

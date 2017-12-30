@@ -295,7 +295,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	}
 
 	static IModel3D innerTransportBox;
-	static IModel3D highlight;
+	public static IModel3D highlight;
 
 	public static TextureTransformation basicPipeTexture;
 	public static TextureTransformation inactiveTexture;
@@ -555,19 +555,17 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	public static IModel3D compute(IModel3D m) {
 		m.computeNormals();
-		//m.computeLighting(LightModel.standardLightModel);
-		m.computeStandardLighting();
 		return m;
 	}
 
 	public static void registerTextures(TextureMap iconRegister) {
 		if (LogisticsNewRenderPipe.basicPipeTexture == null) {
-			LogisticsNewRenderPipe.basicPipeTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel")));
-			LogisticsNewRenderPipe.inactiveTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel-inactive")));
-			LogisticsNewRenderPipe.innerBoxTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/InnerBox")));
-			LogisticsNewRenderPipe.glassCenterTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/Glass_Texture_Center")));
-			LogisticsNewRenderPipe.statusTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel-status")));
-			LogisticsNewRenderPipe.statusBCTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel-status-BC")));
+			LogisticsNewRenderPipe.basicPipeTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel")));
+			LogisticsNewRenderPipe.inactiveTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-inactive")));
+			LogisticsNewRenderPipe.innerBoxTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/InnerBox")));
+			LogisticsNewRenderPipe.glassCenterTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/Glass_Texture_Center")));
+			LogisticsNewRenderPipe.statusTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-status")));
+			LogisticsNewRenderPipe.statusBCTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-status-BC")));
 		} else {
 			LogisticsNewRenderPipe.basicPipeTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel")));
 			LogisticsNewRenderPipe.inactiveTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel-inactive")));
@@ -622,7 +620,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	}
 
 	private void renderList(TileEntity subTile, double x, double y, double z, Map<ResourceLocation, GLRenderList> renderLists, List<RenderEntry> cachedRenderer, boolean recalculateList) {
-		if (!renderLists.values().stream().allMatch(GLRenderList::isFilled) || recalculateList) {
+		if (renderLists.isEmpty() || !renderLists.values().stream().allMatch(GLRenderList::isFilled) || recalculateList) {
 			Map<ResourceLocation, List<RenderEntry>> sorted = new HashMap<>();
 			for (RenderEntry model : cachedRenderer) {
 				if(!sorted.containsKey(model.getTexture())) {
@@ -631,7 +629,6 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				sorted.get(model.getTexture()).add(model);
 			}
 
-			DoubleCoordinates coords = new DoubleCoordinates(subTile);
 			for(Entry<ResourceLocation, List<RenderEntry>> entries: sorted.entrySet()) {
 				if(!renderLists.containsKey(entries.getKey())) {
 					renderLists.put(entries.getKey(), SimpleServiceLocator.renderListHandler.getNewRenderList());
@@ -643,58 +640,15 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				renderList.startListCompile();
 
 				SimpleServiceLocator.cclProxy.getRenderState().reset();
-				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-				SimpleServiceLocator.cclProxy.getRenderState().setBrightness(subTile.getWorld(), coords.getBlockPos());
-
-				SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+				SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
 
 				for(RenderEntry entry: entries.getValue()) {
 					entry.getModel().render(entry.getOperations());
 				}
 
-				//SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 				SimpleServiceLocator.cclProxy.getRenderState().draw();
 				renderList.stopCompile();
 			}
-
-			//ResourceLocation oldTexture = null;
-			//renderList.startListCompile();
-
-
-			//SimpleServiceLocator.cclProxy.getRenderState().reset();
-			//SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-
-			//SimpleServiceLocator.cclProxy.getRenderState().setBrightness(subTile.getWorld(), coords.getBlockPos());
-			//boolean tesselating = false;
-/*
-			for (RenderEntry model : cachedRenderer) {
-				ResourceLocation texture = model.getTexture();
-				if (texture == null) {
-					throw new NullPointerException();
-				}
-				if (texture != oldTexture || oldTexture == null) {
-					if (tesselating) {
-						SimpleServiceLocator.cclProxy.getRenderState().draw();
-						tesselating = false;
-					}
-					oldTexture = texture;
-					Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-
-					SimpleServiceLocator.cclProxy.getRenderState().reset();
-					SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-					SimpleServiceLocator.cclProxy.getRenderState().setBrightness(subTile.getWorld(), coords.getBlockPos());
-
-					SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-					tesselating = true;
-				}
-				model.getModel().render(model.getOperations());
-			}
-			if (tesselating) {
-				SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-				SimpleServiceLocator.cclProxy.getRenderState().draw();
-			}
-			renderList.stopCompile();
-			*/
 		}
 		if(!renderLists.isEmpty()) {
 			GL11.glPushMatrix();

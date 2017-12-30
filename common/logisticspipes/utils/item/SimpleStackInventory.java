@@ -58,13 +58,13 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		return _contents[i];
+		return _contents[i] != null ? _contents[i] : ItemStack.EMPTY;
 	}
 
 	@Override
 	public ItemStack decrStackSize(int slot, int count) {
 		if (_contents[slot] == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		if (_contents[slot].getCount() > count) {
 			ItemStack ret = _contents[slot].copy();
@@ -73,7 +73,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 			return ret;
 		}
 		ItemStack ret = _contents[slot];
-		_contents[slot] = null;
+		_contents[slot] = ItemStack.EMPTY;
 		return ret;
 	}
 
@@ -82,7 +82,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		if (itemstack != null) {
 			_contents[i] = itemstack.copy();
 		} else {
-			_contents[i] = null;
+			_contents[i] = ItemStack.EMPTY;
 		}
 	}
 
@@ -160,7 +160,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	public void dropContents(World world, int posX, int posY, int posZ) {
 		if (MainProxy.isServer(world)) {
 			for (int i = 0; i < _contents.length; i++) {
-				while (_contents[i] != null) {
+				while (_contents[i] != null && !_contents[i].isEmpty()) {
 					ItemStack todrop = decrStackSize(i, _contents[i].getMaxStackSize());
 					dropItems(world, todrop, posX, posY, posZ);
 				}

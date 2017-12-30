@@ -1,8 +1,11 @@
 package logisticspipes.renderer.newpipe;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -19,20 +22,40 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.common.model.IModelState;
 
-/**
- * Created by davboecki on 21.09.2017.
- * All rights reserved.
- */
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
+import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.textures.Textures;
+import logisticspipes.utils.tuples.Pair;
+
 public class LogisticsNewPipeModel implements IModel {
+	public static class REF {
+		public CoreUnroutedPipe object;
+		public REF(CoreUnroutedPipe object) {
+			this.object = object;
+		}
+	}
+
+	public static Map<String, REF> nameTextureIdMap = Maps.newLinkedHashMap();
+	private ResourceLocation key;
+
+	public LogisticsNewPipeModel(ResourceLocation resource) {
+		key = resource;
+	}
 
 	@Override
 	public Collection<ResourceLocation> getDependencies() {
-		return null;
+		return Lists.newArrayList();
 	}
 
 	@Override
 	public Collection<ResourceLocation> getTextures() {
-		return null;
+		return Lists.newArrayList();
 	}
 
 	@Override
@@ -41,7 +64,7 @@ public class LogisticsNewPipeModel implements IModel {
 
 			@Override
 			public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-				return null;
+				return LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(nameTextureIdMap.get(key).object.getTextureIndex()), format);
 			}
 
 			@Override
@@ -61,17 +84,17 @@ public class LogisticsNewPipeModel implements IModel {
 
 			@Override
 			public TextureAtlasSprite getParticleTexture() {
-				return null;
+				return Textures.LPnewPipeIconProvider.getIcon(nameTextureIdMap.get(key).object.getTextureIndex()).getTexture();
 			}
 
 			@Override
 			public ItemCameraTransforms getItemCameraTransforms() {
-				return null;
+				return ItemCameraTransforms.DEFAULT;
 			}
 
 			@Override
 			public ItemOverrideList getOverrides() {
-				return null;
+				return ItemOverrideList.NONE;
 			}
 		};
 	}
@@ -79,5 +102,32 @@ public class LogisticsNewPipeModel implements IModel {
 	@Override
 	public IModelState getDefaultState() {
 		return null;
+	}
+
+
+	private List<RenderEntry> generatePipeRenderList(int texture) {
+		List<RenderEntry> objectsToRender = new ArrayList<>();
+
+		for (LogisticsNewRenderPipe.Corner corner : LogisticsNewRenderPipe.Corner.values()) {
+			objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
+					.map(model -> new RenderEntry(model, LogisticsNewRenderPipe.basicPipeTexture))
+					.collect(Collectors.toList()));
+		}
+
+		for (LogisticsNewRenderPipe.Edge edge : LogisticsNewRenderPipe.Edge.values()) {
+			objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges
+					.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
+		}
+
+		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
+		for (EnumFacing dir : EnumFacing.VALUES) {
+			for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
+				TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
+				if (icon != null) {
+					objectsToRender.add(new RenderEntry(model, icon));
+				}
+			}
+		}
+		return objectsToRender;
 	}
 }

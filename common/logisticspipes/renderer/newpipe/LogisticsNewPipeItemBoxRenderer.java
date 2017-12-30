@@ -41,7 +41,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 			GL11.glNewList(renderList, GL11.GL_COMPILE);
 			Tessellator tess = Tessellator.getInstance();
 			BufferBuilder buffer = tess.getBuffer();
-			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
 			LogisticsNewRenderPipe.innerTransportBox.render(LogisticsNewRenderPipe.innerBoxTexture);
 			tess.draw();
 			GL11.glEndList();

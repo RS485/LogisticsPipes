@@ -55,6 +55,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
@@ -145,6 +146,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			item.setPipeIconIndex(dummyPipe.getIconIndexForItem(), dummyPipe.getTextureIndex());
 			MainProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
 			item.setDummyPipe(dummyPipe);
+
+			LogisticsNewPipeModel.nameTextureIdMap.put(item.getUnlocalizedName(), new LogisticsNewPipeModel.REF(dummyPipe));
 		}
 
 		return item;
@@ -154,7 +157,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return LogisticsBlockGenericPipe.pipes.containsKey(key);
 	}
 
-	//@SneakyThrows(ReflectiveOperationException.class)
 	public static CoreUnroutedPipe createPipe(Item key) {
 		Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
 		if (pipe != null) {
@@ -162,12 +164,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return pipe.getConstructor(Item.class).newInstance(key);
 			} catch (ReflectiveOperationException e) {
 				LogisticsPipes.log.error("Could not construct class " + pipe.getSimpleName() + " for key " + key, e);
-				/*if(LPConstants.DEBUG) {
-					throw e;
-				}*/
 			}
 		} else {
-			LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). Did you remove a buildcraft addon?");
+			LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). This should not have happend.");
 		}
 
 		return null;

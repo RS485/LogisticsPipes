@@ -32,6 +32,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
@@ -53,9 +54,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.GameData;
 
+import codechicken.lib.internal.CCLLog;
+import codechicken.lib.texture.TextureUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -153,6 +158,7 @@ import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.Recipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
@@ -391,11 +397,16 @@ public class LogisticsPipes {
 
 			@Override
 			public boolean accepts(ResourceLocation modelLocation) {
-				return modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().replace("logisticspipes", "").contains("Pipe");
+				return modelLocation.getResourceDomain().equals("logisticspipes")
+						&& (modelLocation.getResourcePath().replace("logisticspipes", "").contains("pipe")
+						|| modelLocation.getResourcePath().equalsIgnoreCase("tile.logisticssolidblock"));
 			}
 
 			@Override
 			public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+				if(modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().replace("logisticspipes", "").contains("pipe")) {
+					return new LogisticsNewPipeModel(modelLocation);
+				}
 				return ModelLoaderRegistry.getMissingModel();
 			}
 
@@ -450,10 +461,15 @@ public class LogisticsPipes {
 		FluidIdentifier.initFromForge(false);
 
 		versionChecker = VersionChecker.runVersionCheck();
+	}
 
-		if(event.getSide().isClient()) {
-			MainProxy.proxy.registerTextures();
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void textureLoad(TextureStitchEvent.Pre event) {
+		if (!event.getMap().getBasePath().equals("textures")) {
+			return;
 		}
+		MainProxy.proxy.registerTextures();
 	}
 
 	@SubscribeEvent

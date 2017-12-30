@@ -192,9 +192,6 @@ public class PipeTransportLogistics {
 		if (MainProxy.isServer(container.getWorld())) {
 			readjustSpeed((LPTravelingItemServer) item);
 			item.output = resolveDestination((LPTravelingItemServer) item);
-			if (item.output == null) {
-				return 0;
-			}
 			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + ((LPTravelingItemServer) item).getInfo());
 		} else {
 			item.output = null;
@@ -251,8 +248,6 @@ public class PipeTransportLogistics {
 		readjustSpeed(item);
 		item.output = resolveDestination(item);
 		if (item.output == null) {
-			return; // don't do anything
-		} else if (item.output == null) {
 			dropItem(item);
 			return;
 		}
@@ -326,10 +321,8 @@ public class PipeTransportLogistics {
 		}
 		if (value == null && MainProxy.isClient(getWorld())) {
 			return null;
-		} else if (value == null) {
-			LogisticsPipes.log.fatal("THIS IS NOT SUPPOSED TO HAPPEN!");
-			return null;
 		}
+
 		if (value == null && !data.getDoNotBuffer() && data.getBufferCounter() < 5) {
 			_itemBuffer.add(new Triplet<>(data.getItemIdentifierStack(), new Pair<>(_bufferTimeOut, data.getBufferCounter()), null));
 			return null;

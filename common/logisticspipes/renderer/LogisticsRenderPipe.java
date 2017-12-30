@@ -119,6 +119,20 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 		LogisticsRenderPipe.secondRenderer.renderTileEntityAt(tileentity, x, y, z, partialTicks, distance);
 
+		bcRenderer.renderWires(tileentity, x, y, z);
+
+		// dynamically render pluggables (like gates)
+		bcRenderer.dynamicRenderPluggables(tileentity, x, y, z);
+
+		if (!tileentity.isOpaque()) {
+			if (tileentity.pipe.transport instanceof PipeFluidTransportLogistics) {
+				//renderFluids(pipe.pipe, x, y, z);
+			}
+			if (tileentity.pipe.transport != null) {
+				renderSolids(tileentity.pipe, x, y, z, partialTicks);
+			}
+		}
+
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.popMatrix();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

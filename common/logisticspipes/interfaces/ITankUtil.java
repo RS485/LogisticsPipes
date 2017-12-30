@@ -5,15 +5,25 @@ import java.util.function.Consumer;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
+import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
+
 public interface ITankUtil {
 
 	boolean containsTanks();
 
-	int fill(FluidStack stack, boolean doFill);
+	int fill(FluidIdentifierStack stack, boolean doFill);
 
-	FluidStack drain(int amount, boolean doDrain);
+	FluidIdentifierStack drain(FluidIdentifierStack stack, boolean doDrain);
 
-	void forEachTank(Consumer<FluidStack> fluidStackConsumer);
+	FluidIdentifierStack drain(int amount, boolean doDrain);
 
-	boolean canDrain(Fluid fluid);
+	void forEachFluid(Consumer<FluidIdentifierStack> fluidStackConsumer);
+
+	/**
+	 * Type only amount is ignored
+	 */
+	boolean canDrain(FluidIdentifier fluid);
+
+	int getFreeSpaceInsideTank(FluidIdentifier type);
 }

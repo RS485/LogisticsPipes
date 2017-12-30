@@ -6,6 +6,7 @@ import java.util.Map;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.Minecraft;
@@ -62,7 +63,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		GL11.glTranslated(-0.5, -0.5, -0.5);
 
 		if (itemstack != null && itemstack.getItem() instanceof LogisticsFluidContainer) {
-			FluidStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(itemstack));
+			FluidIdentifierStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(itemstack));
 			if (f != null) {
 				/*
 				FluidContainerRenderer.skipNext = true;

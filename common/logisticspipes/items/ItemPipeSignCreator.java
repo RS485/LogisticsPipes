@@ -11,25 +11,26 @@ import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemPipeSignCreator extends LogisticsItem {
 
 	public static final List<Class<? extends IPipeSign>> signTypes = new ArrayList<>();
 
-	private TextureAtlasSprite[] itemIcon = new TextureAtlasSprite[2];
+	//private TextureAtlasSprite[] itemIcon = new TextureAtlasSprite[2];
 
 	public ItemPipeSignCreator() {
 		super();
@@ -38,16 +39,17 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (MainProxy.isClient(world)) {
-			return false;
+			return EnumActionResult.FAIL;
 		}
-		if (itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) {
-			return false;
+		ItemStack itemStack = player.inventory.getCurrentItem();
+		if (itemStack.getItemDamage() > this.getMaxDamage() || itemStack.getCount() == 0) {
+			return EnumActionResult.FAIL;
 		}
-		TileEntity tile = world.getTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(pos);
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
-			return false;
+			return EnumActionResult.FAIL;
 		}
 
 		if (!itemStack.hasTagCompound()) {
@@ -57,49 +59,49 @@ public class ItemPipeSignCreator extends LogisticsItem {
 
 		int mode = itemStack.getTagCompound().getInteger("CreatorMode");
 
-		EnumFacing dir = EnumFacing.getOrientation(sideinput);
-		if (dir == null) {
-			return false;
+		if (facing == null) {
+			return EnumActionResult.FAIL;
 		}
 
 		if(!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {
-			return false;
+			return EnumActionResult.FAIL;
 		}
 
 		CoreRoutedPipe pipe = (CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe;
 		if (pipe == null) {
-			return false;
+			return EnumActionResult.FAIL;
 		}
 		if (!player.isSneaking()) {
-			if (pipe.hasPipeSign(dir)) {
-				pipe.activatePipeSign(dir, player);
-				return true;
+			if (pipe.hasPipeSign(facing)) {
+				pipe.activatePipeSign(facing, player);
+				return EnumActionResult.SUCCESS;
 			} else if (mode >= 0 && mode < ItemPipeSignCreator.signTypes.size()) {
 				Class<? extends IPipeSign> signClass = ItemPipeSignCreator.signTypes.get(mode);
 				try {
 					IPipeSign sign = signClass.newInstance();
 					if (sign.isAllowedFor(pipe)) {
 						itemStack.damageItem(1, player);
-						sign.addSignTo(pipe, dir, player);
-						return true;
+						sign.addSignTo(pipe, facing, player);
+						return EnumActionResult.SUCCESS;
 					} else {
-						return false;
+						return EnumActionResult.FAIL;
 					}
 				} catch (InstantiationException | IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
 			} else {
-				return false;
+				return EnumActionResult.FAIL;
 			}
 		} else {
-			if (pipe.hasPipeSign(dir)) {
-				pipe.removePipeSign(dir, player);
+			if (pipe.hasPipeSign(facing)) {
+				pipe.removePipeSign(facing, player);
 				itemStack.damageItem(-1, player);
 			}
-			return true;
+			return EnumActionResult.SUCCESS;
 		}
 	}
 
+	/*
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister par1IconRegister) {
@@ -135,6 +137,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 			return super.getIcon(stack, pass); // Fallback
 		}
 	}
+	*/
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
@@ -151,9 +154,10 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+	public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
+		ItemStack stack = player.inventory.getCurrentItem();
 		if (MainProxy.isClient(world)) {
-			return stack;
+			return ActionResult.newResult(EnumActionResult.PASS, stack);
 		}
 		if (player.isSneaking()) {
 			if (!stack.hasTagCompound()) {
@@ -171,7 +175,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 		if (stack.hasTagCompound()) {
 			stack.getTagCompound().removeTag("PipeClicked");
 		}
-		return stack;
+		return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
 	}
 
 	public static void registerPipeSignTypes() {

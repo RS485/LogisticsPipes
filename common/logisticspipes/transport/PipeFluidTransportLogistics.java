@@ -46,6 +46,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 	 * For internal use only
 	 */
 	public IFluidTankProperties[] getTankProperties(EnumFacing from) {
+		if(from == null) return internalTank.getTankProperties();
 		return sideTanks[from.ordinal()].getTankProperties();
 	}
 

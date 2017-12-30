@@ -1,3 +1,4 @@
+/*
 package logisticspipes.proxy.nei;
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import lombok.SneakyThrows;
 
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.utils.ReflectionHelper;
-
 public class NEIProxy implements INEIProxy {
 
 	@Override
@@ -81,3 +81,4 @@ public class NEIProxy implements INEIProxy {
 		return items.get(0);
 	}
 }
+*/

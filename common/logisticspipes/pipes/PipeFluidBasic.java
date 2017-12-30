@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
@@ -8,9 +9,11 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -47,11 +50,11 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	}
 
 	@Override
-	public int sinkAmount(FluidStack stack) {
+	public int sinkAmount(FluidIdentifierStack stack) {
 		if (!guiOpenedBy.isEmpty()) {
 			return 0; //Don't sink when the gui is open
 		}
-		FluidIdentifier ident = FluidIdentifier.get(stack);
+		FluidIdentifier ident = stack.getFluid();
 		if (filterInv.getStackInSlot(0) == null) {
 			return 0;
 		}
@@ -60,12 +63,12 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 		}
 		int onTheWay = this.countOnRoute(ident);
 		int freeSpace = -onTheWay;
-		for (Pair<TileEntity, EnumFacing> pair : getAdjacentTanks(true)) {
-			FluidTank tank = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue2().ordinal()];
-			freeSpace += ident.getFreeSpaceInsideTank((IFluidHandler) pair.getValue1(), pair.getValue2().getOpposite());
+		for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : getAdjacentTanksAdvanced(true)) {
+			FluidTank tank = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue3().ordinal()];
+			freeSpace += pair.getValue1().getFreeSpaceInsideTank(ident);
 			freeSpace += ident.getFreeSpaceInsideTank(tank);
-			if (freeSpace >= stack.amount) {
-				return stack.amount;
+			if (freeSpace >= stack.getAmount()) {
+				return stack.getAmount();
 			}
 		}
 		return freeSpace;

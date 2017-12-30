@@ -30,6 +30,7 @@ import logisticspipes.routing.order.LogisticsFluidOrder;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Triplet;
@@ -73,7 +74,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 					drained = handler.drainFrom(tile, order.getFluid(), amountToSend.get(), true);
 					int amount = drained.amount;
 					amountToSend.addAndGet(-amount);
-					ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
+					ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(FluidIdentifierStack.getFromStack(drained));
 					IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 					item.setDestination(order.getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
@@ -86,26 +87,26 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 			}
 			if (fallback) {
 				if (!util.containsTanks()) {
-					util.forEachTank(fluidStack -> {
+					util.forEachFluid(fluidStack -> {
 						if (amountToSend.get() <= 0) {
 							return;
 						}
 						if (fluidStack.getFluid() != null) {
-							if (order.getFluid().equals(FluidIdentifier.get(fluidStack))) {
-								int amount = Math.min(fluidStack.amount, amountToSend.get());
-								FluidStack drained = util.drain(amount, false);
-								if (drained != null && drained.amount > 0  && order.getFluid().equals(FluidIdentifier.get(drained))) {
+							if (order.getFluid().equals(fluidStack.getFluid())) {
+								int amount = Math.min(fluidStack.getAmount(), amountToSend.get());
+								FluidIdentifierStack drained = util.drain(amount, false);
+								if (drained != null && drained.getAmount() > 0  && order.getFluid().equals(drained.getFluid())) {
 									drained = util.drain(amount, true);
-									while (drained.amount < amountToSend.get()) {
-										FluidStack addition = util.drain(amountToSend.get() - drained.amount, false);
-										if (addition != null && addition.amount > 0  && order.getFluid().equals(FluidIdentifier.get(addition))) {
-											addition = util.drain(amountToSend.get() - drained.amount, true);
-											drained.amount += addition.amount;
+									while (drained.getAmount() < amountToSend.get()) {
+										FluidIdentifierStack addition = util.drain(amountToSend.get() - drained.getAmount(), false);
+										if (addition != null && addition.getAmount() > 0  && order.getFluid().equals(addition.getFluid())) {
+											addition = util.drain(amountToSend.get() - drained.getAmount(), true);
+											drained.raiseAmount(addition.getAmount());
 										} else {
 											break;
 										}
 									}
-									amount = drained.amount;
+									amount = drained.getAmount();
 									amountToSend.addAndGet(-amount);
 									ItemIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
 									IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
@@ -147,16 +148,16 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 			}
 			if (fallback) {
 				if (!util.containsTanks()) {
-					util.forEachTank(liquid -> {
+					util.forEachFluid(liquid -> {
 						if (liquid.getFluid() != null) {
-							FluidIdentifier ident = FluidIdentifier.get(liquid);
-							if (util.canDrain(liquid.getFluid())) {
-								if (util.drain(1, false) != null) {
+							FluidIdentifier ident = liquid.getFluid();
+							if (util.canDrain(ident)) {
+								if (util.drain(ident.makeFluidIdentifierStack(1), false) != null) {
 									if (map.containsKey(ident)) {
-										long addition = ((long) map.get(ident)) + liquid.amount;
+										long addition = ((long) map.get(ident)) + liquid.getAmount();
 										map.put(ident, addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition);
 									} else {
-										map.put(ident, liquid.amount);
+										map.put(ident, liquid.getAmount());
 									}
 								}
 							}
@@ -212,12 +213,12 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 			}
 			if (fallback) {
 				if (!util.containsTanks()) {
-					util.forEachTank(liquid -> {
+					util.forEachFluid(liquid -> {
 						if (liquid.getFluid() != null) {
-							if (fluid.equals(FluidIdentifier.get(liquid))) {
+							if (fluid.equals(liquid.getFluid())) {
 								if (util.canDrain(liquid.getFluid())) {
-									if (util.drain(1, false) != null) {
-										long addition = ((long) containedAmount.get()) + liquid.amount;
+									if (util.drain(liquid.getFluid().makeFluidIdentifierStack(1), false) != null) {
+										long addition = ((long) containedAmount.get()) + liquid.getAmount();
 										containedAmount.set(addition > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) addition);
 									}
 								}
@@ -270,11 +271,11 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 			}
 			if (fallback) {
 				if (!util.containsTanks()) {
-					util.forEachTank(liquid -> {
+					util.forEachFluid(liquid -> {
 						if (liquid.getFluid() != null) {
 							if (util.canDrain(liquid.getFluid())) {
 								if (util.drain(1, false) != null) {
-									FluidIdentifier ident = FluidIdentifier.get(liquid);
+									FluidIdentifier ident = liquid.getFluid();
 									l1.add(ident.getItemIdentifier());
 								}
 							}

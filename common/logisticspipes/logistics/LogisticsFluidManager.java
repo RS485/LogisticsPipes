@@ -18,6 +18,7 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
@@ -32,7 +33,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 	@Override
-	public Pair<Integer, Integer> getBestReply(FluidStack stack, IRouter sourceRouter, List<Integer> jamList) {
+	public Pair<Integer, Integer> getBestReply(FluidIdentifierStack stack, IRouter sourceRouter, List<Integer> jamList) {
 		for (ExitRoute candidateRouter : sourceRouter.getIRoutersByCost()) {
 			if (!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
 				continue;
@@ -64,25 +65,25 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 	}
 
 	@Override
-	public ItemIdentifierStack getFluidContainer(FluidStack stack) {
+	public ItemIdentifierStack getFluidContainer(FluidIdentifierStack stack) {
 		ItemStack item = new ItemStack(LogisticsPipes.LogisticsFluidContainer, 1);
 		NBTTagCompound nbt = new NBTTagCompound();
-		stack.writeToNBT(nbt);
+		stack.makeFluidStack().writeToNBT(nbt);
 		item.setTagCompound(nbt);
 		return ItemIdentifierStack.getFromStack(item);
 	}
 
 	@Override
-	public FluidStack getFluidFromContainer(ItemIdentifierStack stack) {
+	public FluidIdentifierStack getFluidFromContainer(ItemIdentifierStack stack) {
 		ItemStack itemStack = stack.makeNormalStack();
 		if (itemStack.getItem() instanceof LogisticsFluidContainer && stack.getItem().tag != null) {
-			return FluidStack.loadFluidStackFromNBT(stack.getItem().tag);
+			return FluidIdentifierStack.getFromStack(FluidStack.loadFluidStackFromNBT(stack.getItem().tag));
 		}
 		return null;
 	}
 
 	@Override
-	public TreeSet<ItemIdentifierStack> getAvailableFluid(List<ExitRoute> validDestinations) {
+	public TreeSet<FluidIdentifierStack> getAvailableFluid(List<ExitRoute> validDestinations) {
 		Map<FluidIdentifier, Integer> allAvailableItems = new HashMap<>();
 		for (ExitRoute r : validDestinations) {
 			if (r == null) {
@@ -111,8 +112,8 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 				}
 			}
 		}
-		TreeSet<ItemIdentifierStack> itemIdentifierStackList = allAvailableItems.entrySet().stream()
-				.map(item -> new ItemIdentifierStack(item.getKey().getItemIdentifier(), item.getValue()))
+		TreeSet<FluidIdentifierStack> itemIdentifierStackList = allAvailableItems.entrySet().stream()
+				.map(item -> new FluidIdentifierStack(item.getKey(), item.getValue()))
 				.collect(Collectors.toCollection(TreeSet::new));
 		return itemIdentifierStackList;
 	}

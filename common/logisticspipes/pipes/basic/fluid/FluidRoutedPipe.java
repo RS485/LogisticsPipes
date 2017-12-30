@@ -32,6 +32,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
@@ -173,7 +174,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 					continue;
 				}
 				ITankUtil externalTank = pair.getValue1();
-				int filled = externalTank.fill(internalTank.getFluid().copy(), true);
+				int filled = externalTank.fill(FluidIdentifierStack.getFromStack(internalTank.getFluid()), true);
 				if (filled == 0) {
 					continue;
 				}
@@ -223,9 +224,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		for (ItemRoutingInformation next : _inTransitToMe) {
 			ItemIdentifierStack item = next.getItem();
 			if (item.getItem().isFluidContainer()) {
-				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
-				if (FluidIdentifier.get(liquid).equals(ident)) {
-					amount += liquid.amount;
+				FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
+				if (liquid.getFluid().equals(ident)) {
+					amount += liquid.getAmount();
 				}
 			}
 		}
@@ -248,36 +249,36 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				return false;
 			}
 			int filled = 0;
-			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemIdentifierStack());
+			FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemIdentifierStack());
 			if (isConnectableTank(tile, arrivingItem.output, false)) {
 				List<ITankUtil> adjTanks = getAdjacentTanks(false);
 				//Try to put liquid into all adjacent tanks.
 				for (ITankUtil util : adjTanks) {
-					filled = util.fill(liquid.copy(), true);
-					liquid.amount -= filled;
-					if (liquid.amount != 0) {
+					filled = util.fill(liquid, true);
+					liquid.lowerAmount(filled);
+					if (liquid.getAmount() != 0) {
 						continue;
 					}
 					return true;
 				}
 				//Try inserting the liquid into the pipe side tank
-				filled = ((PipeFluidTransportLogistics) transport).sideTanks[arrivingItem.output.ordinal()].fill(liquid, true);
-				if (filled == liquid.amount) {
+				filled = ((PipeFluidTransportLogistics) transport).sideTanks[arrivingItem.output.ordinal()].fill(liquid.makeFluidStack(), true);
+				if (filled == liquid.getAmount()) {
 					return true;
 				}
-				liquid.amount -= filled;
+				liquid.lowerAmount(filled);
 			}
 			//Try inserting the liquid into the pipe internal tank
-			filled = ((PipeFluidTransportLogistics) transport).internalTank.fill(liquid, true);
-			if (filled == liquid.amount) {
+			filled = ((PipeFluidTransportLogistics) transport).internalTank.fill(liquid.makeFluidStack(), true);
+			if (filled == liquid.getAmount()) {
 				return true;
 			}
 			//If liquids still exist,
-			liquid.amount -= filled;
+			liquid.lowerAmount(filled);
 
 			//TODO: FIX THIS
 			if (this instanceof IRequireReliableFluidTransport) {
-				((IRequireReliableFluidTransport) this).liquidNotInserted(FluidIdentifier.get(liquid), liquid.amount);
+				((IRequireReliableFluidTransport) this).liquidNotInserted(liquid.getFluid(), liquid.getAmount());
 			}
 
 			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid));

@@ -103,9 +103,9 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	private void updateInv(boolean force) {
 		itemList.clear();
 		for (ITankUtil util : getAdjacentTanks(false)) {
-			util.forEachTank(liquid -> {
+			util.forEachFluid(liquid -> {
 				if (liquid != null && liquid.getFluid() != null) {
-					addToList(FluidIdentifier.get(liquid).getItemIdentifier().makeStack(liquid.amount));
+					addToList(liquid.getFluid().getItemIdentifier().makeStack(liquid.getAmount()));
 				}
 			});
 		}

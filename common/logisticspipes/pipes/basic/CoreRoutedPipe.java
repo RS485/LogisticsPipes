@@ -118,6 +118,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
@@ -1299,9 +1300,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (this instanceof IRequireReliableFluidTransport) {
 			ItemIdentifierStack stack = information.getItem();
 			if (stack.getItem().isFluidContainer()) {
-				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
+				FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
 				if (liquid != null) {
-					((IRequireReliableFluidTransport) this).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);
+					((IRequireReliableFluidTransport) this).liquidArrived(liquid.getFluid(), liquid.getAmount());
 				}
 			}
 		}

@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -21,6 +23,7 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -34,6 +37,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.FluidUtil;
+
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -96,26 +102,26 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		getCacheHolder().trigger(CacheTypes.Inventory);
 		transport.markChunkModified(tile);
 		notifyOfItemArival(data.getInfo());
-		if (!(tile instanceof IFluidHandler)) {
+		EnumFacing orientation = data.output.getOpposite();
+		if (getOriginalUpgradeManager().hasSneakyUpgrade()) {
+			orientation = getOriginalUpgradeManager().getSneakyOrientation();
+		}
+		ITankUtil util = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tile, orientation);
+		if (util == null) {
 			return;
 		}
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			return;
 		}
-		IFluidHandler container = (IFluidHandler) tile;
 		if (data.getItemIdentifierStack() == null) {
 			return;
 		}
-		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemIdentifierStack().makeNormalStack());
+		FluidIdentifierStack liquidId = FluidIdentifierStack.getFromStack(data.getItemIdentifierStack());
 		if (liquidId == null) {
 			return;
 		}
-		EnumFacing orientation = data.output.getOpposite();
-		if (getOriginalUpgradeManager().hasSneakyUpgrade()) {
-			orientation = getOriginalUpgradeManager().getSneakyOrientation();
-		}
-		while (data.getItemIdentifierStack().getStackSize() > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
-			container.fill(orientation, liquidId.copy(), true);
+		while (data.getItemIdentifierStack().getStackSize() > 0 && util.fill(liquidId, false) == liquidId.getAmount() && this.useEnergy(5)) {
+			util.fill(liquidId, true);
 			data.getItemIdentifierStack().lowerStackSize(1);
 			Item item = data.getItemIdentifierStack().getItem().item;
 			if (item.hasContainerItem(data.getItemIdentifierStack().makeNormalStack())) {
@@ -149,18 +155,17 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		super.throttledUpdateEntity();
 
 		//@formatter:off
-		Iterator<IFluidHandler> iterator = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities()
-				.filter(adjacent -> adjacent.tileEntity instanceof IFluidHandler)
+		Iterator<ITankUtil> iterator = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities()
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
-				.map(adjacent -> (IFluidHandler) adjacent.tileEntity)
+				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.tileEntity, adjacent.direction))
+				.filter(Objects::nonNull)
 				.iterator();
 		//@formatter:on
 
 		while (iterator.hasNext()) {
-			IFluidHandler next = iterator.next();
+			ITankUtil next = iterator.next();
 
-			FluidTankInfo[] result = next.getTankInfo(null);
-			if (result == null || result.length == 0) {
+			if (!next.containsTanks()) {
 				continue;
 			}
 
@@ -169,7 +174,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			HashMap<FluidIdentifier, Integer> wantFluids = new HashMap<>();
 			for (Entry<ItemIdentifier, Integer> item : wantContainers.entrySet()) {
 				ItemStack wantItem = item.getKey().unsafeMakeNormalStack(1);
-				FluidStack liquidstack = FluidContainerRegistry.getFluidForFilledItem(wantItem);
+				FluidStack liquidstack = FluidUtil.getFluidContained(wantItem);
 				if (liquidstack == null) {
 					continue;
 				}
@@ -179,17 +184,11 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
-			for (FluidTankInfo slot : result) {
-				if (slot == null || slot.fluid == null || slot.fluid.getFluid() == null || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) {
-					continue;
+			next.forEachFluid(fluid -> {
+				if (wantFluids.containsKey(fluid.getFluid())) {
+					haveFluids.merge(fluid.getFluid(), fluid.getAmount(), (a, b) -> a + b);
 				}
-				Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.fluid));
-				if (liquidWant == null) {
-					haveFluids.put(FluidIdentifier.get(slot.fluid), slot.fluid.amount);
-				} else {
-					haveFluids.put(FluidIdentifier.get(slot.fluid), liquidWant + slot.fluid.amount);
-				}
-			}
+			});
 
 			//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
 			//Reduce what I have and what have been requested already
@@ -201,7 +200,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			}
 			for (Entry<ItemIdentifier, Integer> requestedItem : _requestedItems.entrySet()) {
 				ItemStack wantItem = requestedItem.getKey().unsafeMakeNormalStack(1);
-				FluidStack requestedFluidId = FluidContainerRegistry.getFluidForFilledItem(wantItem);
+				FluidStack requestedFluidId = FluidUtil.getFluidContained(wantItem);
 				if (requestedFluidId == null) {
 					continue;
 				}
@@ -217,7 +216,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			//Make request
 
 			for (ItemIdentifier need : wantContainers.keySet()) {
-				FluidStack requestedFluidId = FluidContainerRegistry.getFluidForFilledItem(need.unsafeMakeNormalStack(1));
+				FluidStack requestedFluidId = FluidUtil.getFluidContained(need.unsafeMakeNormalStack(1));
 				if (requestedFluidId == null) {
 					continue;
 				}

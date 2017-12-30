@@ -7,12 +7,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.asm.addinfo.IAddInfo;
 import logisticspipes.asm.addinfo.IAddInfoProvider;
+import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import lombok.AllArgsConstructor;
+
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -21,13 +24,14 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
-public class FluidIdentifier implements ILPCCTypeHolder {
+public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHolder {
 
 	private final static ReadWriteLock dblock = new ReentrantReadWriteLock();
 	private final static Lock rlock = FluidIdentifier.dblock.readLock();
@@ -46,6 +50,16 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	public final String name;
 	public final FinalNBTTagCompound tag;
 	public final int uniqueID;
+
+	@Override
+	public int compareTo(FluidIdentifier o) {
+		int c = fluidID.compareTo(o.fluidID);
+		if (c != 0) {
+			return c;
+		}
+		c = uniqueID - o.uniqueID;
+		return c;
+	}
 
 	@AllArgsConstructor
 	private static class FluidStackAddInfo implements IAddInfo {
@@ -184,9 +198,13 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	}
 
 	public static FluidIdentifier get(ItemIdentifierStack stack) {
-		FluidStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
+		FluidStack f = null;
+		FluidIdentifierStack fstack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
+		if(fstack != null) {
+			f = fstack.makeFluidStack();
+		}
 		if(f == null) {
-			ItemStack itemStack = stack.makeNormalStack();
+			ItemStack itemStack = stack.unsafeMakeNormalStack();
 			if(itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
 				IFluidHandlerItem capability = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
 				if(capability != null) {
@@ -195,7 +213,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 			}
 		}
 		if (f == null) {
-			return null;
+			f = FluidUtil.getFluidContained(stack.unsafeMakeNormalStack());
 		}
 		return FluidIdentifier.get(f);
 	}
@@ -222,32 +240,16 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 
 	public FluidStack makeFluidStack(int amount) {
 		//FluidStack constructor does the tag.copy(), so this is safe
-		return new FluidStack(FluidRegistry.getFluid(fluidID), amount, tag);
+		return new FluidStack(getFluid(), amount, tag);
 	}
 
-	public int getFreeSpaceInsideTank(IFluidHandler container, EnumFacing dir) {
-		int free = 0;
-		IFluidTankProperties[] tanks = container.getTankProperties();
-		if (tanks != null && tanks.length > 0) {
-			for (IFluidTankProperties tank : tanks) {
-				free += getFreeSpaceInsideTank(tank);
-			}
-		}
-		return free;
+	public FluidIdentifierStack makeFluidIdentifierStack(int amount) {
+		//FluidStack constructor does the tag.copy(), so this is safe
+		return new FluidIdentifierStack(this, amount);
 	}
 
-	private int getFreeSpaceInsideTank(IFluidTankProperties tanks) {
-		if (tanks == null) {
-			return 0;
-		}
-		FluidStack liquid = tanks.getContents();
-		if (liquid == null || liquid.getFluid() != null) {
-			return tanks.getCapacity();
-		}
-		if (FluidIdentifier.get(liquid).equals(this)) {
-			return tanks.getCapacity() - liquid.amount;
-		}
-		return 0;
+	public Fluid getFluid() {
+		return FluidRegistry.getFluid(fluidID);
 	}
 
 	public int getFreeSpaceInsideTank(IFluidTank tank) {
@@ -344,7 +346,7 @@ public class FluidIdentifier implements ILPCCTypeHolder {
 	}
 
 	public ItemIdentifier getItemIdentifier() {
-		return SimpleServiceLocator.logisticsFluidManager.getFluidContainer(makeFluidStack(0)).getItem();
+		return SimpleServiceLocator.logisticsFluidManager.getFluidContainer(this.makeFluidIdentifierStack(1)).getItem();
 	}
 
 	private Object ccObject;

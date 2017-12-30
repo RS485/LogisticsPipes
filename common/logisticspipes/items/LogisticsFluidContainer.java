@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.util.ITooltipFlag;
@@ -49,9 +50,9 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 
 	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack) {
-		FluidStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(par1ItemStack));
+		FluidIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(par1ItemStack));
 		if (stack != null) {
-			String s = stack.getFluid().getUnlocalizedName();
+			String s = stack.makeFluidStack().getFluid().getUnlocalizedName();
 			if (s != null) {
 				return s;
 			}
@@ -65,10 +66,10 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			FluidStack fluidStack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack));
+			FluidIdentifierStack fluidStack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack));
 			if (fluidStack != null) {
-				tooltip.add("Type:  " + fluidStack.getFluid().getLocalizedName(fluidStack));
-				tooltip.add("Value: " + fluidStack.amount + "mB");
+				tooltip.add("Type:  " + fluidStack.makeFluidStack().getFluid().getLocalizedName(fluidStack.makeFluidStack()));
+				tooltip.add("Value: " + fluidStack.getAmount() + "mB");
 			}
 		}
 	}

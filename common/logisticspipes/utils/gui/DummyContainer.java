@@ -43,6 +43,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.MinecraftColor;
+import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public class DummyContainer extends Container {
@@ -439,7 +440,7 @@ public class DummyContainer extends Container {
 				if (itemstack6.isEmpty()) {
 					if (slot4.canTakeStack(player)) {
 						inventoryplayer.setInventorySlotContents(dragType, itemstack10);
-						//slot4.onSwapCraft(itemstack10.getCount()); //TODO make this public
+						ReflectionHelper.invokePrivateMethodCatched(Void.class, Slot.class, slot4, "onSwapCraft", new Class[]{int.class}, new Object[] {itemstack10.getCount()});
 						slot4.putStack(ItemStack.EMPTY);
 						slot4.onTake(player, itemstack10);
 					}

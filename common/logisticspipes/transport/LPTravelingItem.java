@@ -24,6 +24,7 @@ import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.SlidingWindowBitSet;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -331,8 +332,8 @@ public abstract class LPTravelingItem {
 					}
 					if (destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
 						if (info.getItem().getItem().isFluidContainer()) {
-							FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(info.getItem());
-							((IRequireReliableFluidTransport) destinationRouter.getPipe()).liquidLost(FluidIdentifier.get(liquid), liquid.amount);
+							FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(info.getItem());
+							((IRequireReliableFluidTransport) destinationRouter.getPipe()).liquidLost(liquid.getFluid(), liquid.getAmount());
 						}
 					}
 				}

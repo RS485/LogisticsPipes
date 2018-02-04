@@ -137,7 +137,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		ItemLogisticsPipe item = new ItemLogisticsPipe();
 		item.setUnlocalizedName(clas.getSimpleName());
 		item.setRegistryName(item.getUnlocalizedName());
-		ForgeRegistries.ITEMS.register(item);
+
 
 		LogisticsBlockGenericPipe.pipes.put(item, clas);
 
@@ -146,10 +146,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			item.setPipeIconIndex(dummyPipe.getIconIndexForItem(), dummyPipe.getTextureIndex());
 			MainProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
 			item.setDummyPipe(dummyPipe);
-
-			LogisticsNewPipeModel.nameTextureIdMap.put(item.getUnlocalizedName(), new LogisticsNewPipeModel.REF(dummyPipe));
 		}
 
+		MainProxy.proxy.registerModels(item);
+		ForgeRegistries.ITEMS.register(item);
 		return item;
 	}
 

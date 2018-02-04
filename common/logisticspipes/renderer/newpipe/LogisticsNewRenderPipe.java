@@ -579,6 +579,10 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 
 	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float partialTickTime, double distance) {
+		boolean inHand = false;
+		if(pipeTile == null) {
+			inHand = true;
+		}
 		if (pipeTile.pipe instanceof PipeBlockRequestTable) {
 			return;
 		}
@@ -1113,7 +1117,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				throw new NullPointerException();
 			}
 
-			model.getModel().renderToQuads(format, model.getOperations());
+			quads.addAll(model.getModel().renderToQuads(format, model.getOperations()));
 			//model.getModel().render(model.getOperations());
 		}
 		return ImmutableList.copyOf(quads);

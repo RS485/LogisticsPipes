@@ -60,6 +60,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.common.DimensionManager;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -72,6 +73,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy implements IProxy {
+
 
 	@Override
 	public String getSide() {

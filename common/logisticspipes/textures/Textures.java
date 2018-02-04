@@ -253,13 +253,13 @@ public class Textures {
 		if (MainProxy.isClient() && par1IIconRegister != null) {
 			Textures.LOGISTICS_REQUEST_TABLE = new TextureAtlasSprite[5];
 			for (int i = 0; i < 5; i++) {
-				Textures.LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/" + i));
+				Textures.LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/" + i));
 			}
-			Textures.LOGISTICS_REQUEST_TABLE_NEW = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/requestTexture"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/routed"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:requesttable/unrouted"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:empty"));
-			Textures.LOGISTICS_SIDE_SELECTION = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:sideSelection"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/requesttexture"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/routed"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/unrouted"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/empty"));
+			Textures.LOGISTICS_SIDE_SELECTION = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/sideSelection"));
 		}
 
 		if (LPConstants.DEBUG) {

@@ -66,7 +66,7 @@ public class Model3D implements IModel3D {
 		BakingVertexBuffer buffer = BakingVertexBuffer.create();
 		CCRenderState ccrs = CCRenderState.instance();
 		ccrs.reset();
-		ccrs.startDrawing(0x7, DefaultVertexFormats.ITEM, buffer);
+		ccrs.startDrawing(0x7, format, buffer);
 		model.render(ccrs, list.toArray(new IVertexOperation[0]));
 		buffer.finishDrawing();
 		return buffer.bake();

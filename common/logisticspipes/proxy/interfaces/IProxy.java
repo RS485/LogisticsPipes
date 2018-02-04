@@ -57,5 +57,4 @@ public interface IProxy {
 	void registerModels(LogisticsItem logisticsItem);
 
 	void registerTextures();
-
 }

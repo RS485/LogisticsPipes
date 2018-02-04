@@ -1,17 +1,22 @@
 package logisticspipes.items;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
+import net.minecraftforge.client.model.ModelLoader;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.renderer.newpipe.LogisticsBlockModel;
 import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsSolidBlockItem extends ItemBlock {
@@ -24,7 +29,14 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		switch (LogisticsSolidBlock.BlockType.getForMeta(stack.getItemDamage())) {
+		LogisticsSolidBlock.BlockType forMeta = LogisticsSolidBlock.BlockType.getForMeta(stack.getItemDamage());
+		String x = getUnlocalozedName(forMeta);
+		if (x != null) return x;
+		return super.getUnlocalizedName(stack);
+	}
+
+	private String getUnlocalozedName(LogisticsSolidBlock.BlockType forMeta) {
+		switch (forMeta) {
 			case SOLDERING_STATION:
 				return "tile.solderingstation";
 			case LOGISTICS_POWER_JUNCTION:
@@ -44,7 +56,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 			case LOGISTICS_BLOCK_FRAME:
 				return "tile.logisticsblankblock";
 		}
-		return super.getUnlocalizedName(stack);
+		return null;
 	}
 
 	@Override
@@ -78,5 +90,22 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		if (SimpleServiceLocator.IC2Proxy.hasIC2()) {
 			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER.getMeta()));
 		}
+	}
+
+	public LogisticsSolidBlockItem registerModels() {
+		for(LogisticsSolidBlock.BlockType block: Arrays.asList(LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME,
+				LogisticsSolidBlock.BlockType.SOLDERING_STATION,
+				LogisticsSolidBlock.BlockType.LOGISTICS_POWER_JUNCTION,
+				LogisticsSolidBlock.BlockType.LOGISTICS_SECURITY_STATION,
+				LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE,
+				LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE,
+				LogisticsSolidBlock.BlockType.LOGISTICS_STATISTICS_TABLE,
+				LogisticsSolidBlock.BlockType.LOGISTICS_RF_POWERPROVIDER,
+				LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER)) {
+			ModelResourceLocation resourceLocation = new ModelResourceLocation("logisticspipes:" + getUnlocalozedName(block), "inventory");
+			ModelLoader.setCustomModelResourceLocation(this, block.getMeta(), resourceLocation);
+			LogisticsBlockModel.nameTextureIdMap.put(resourceLocation, block);
+		}
+		return this;
 	}
 }

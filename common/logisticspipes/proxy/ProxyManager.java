@@ -32,6 +32,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -464,6 +465,7 @@ public class ProxyManager {
 				return dummy3DModel;
 			}
 			@Override public Object getColourMultiplier(int i) {return null;}
+			@Override public IModelState getDefaultBlockState() {return null;}
 		};
 		Class<?>[] cclSubWrapper = new Class<?>[] {TextureTransformation.class, IRenderState.class, IModel3D.class, ITranslation.class, IVec3.class, IBounds.class};
 		SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!CCLRender", ICCLProxy.class, CCLProxy.class, dummyCCLProxy, cclSubWrapper));

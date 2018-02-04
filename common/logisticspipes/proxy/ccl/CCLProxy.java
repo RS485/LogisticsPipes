@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -33,6 +34,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.OBJParser;
 import codechicken.lib.render.pipeline.ColourMultiplier;
+import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
@@ -197,5 +199,10 @@ public class CCLProxy implements ICCLProxy {
 	@Override
 	public Object getColourMultiplier(int i) {
 		return ColourMultiplier.instance(i);
+	}
+
+	@Override
+	public IModelState getDefaultBlockState() {
+		return TransformUtils.DEFAULT_BLOCK;
 	}
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 
@@ -19,6 +18,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
@@ -32,25 +32,27 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.Textures;
-import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-public class LogisticsNewPipeModel implements IModel {
+public class LogisticsBlockModel implements IModel {
 
-	public static class LogisticsNewPipeModelLoader implements ICustomModelLoader {
+	public static class LogisticsBlockModelLoader implements ICustomModelLoader {
 
 		@Override
 		public boolean accepts(ResourceLocation modelLocation) {
 			if (modelLocation.getResourceDomain().equals("logisticspipes")) {
 				if(modelLocation instanceof ModelResourceLocation) {
 					if(((ModelResourceLocation)modelLocation).getVariant().equals("inventory")) {
-						return LogisticsNewPipeModel.nameTextureIdMap.containsKey(modelLocation);
+						return LogisticsBlockModel.nameTextureIdMap.containsKey(modelLocation);
 					}
 				}
 			}
@@ -59,7 +61,7 @@ public class LogisticsNewPipeModel implements IModel {
 
 		@Override
 		public IModel loadModel(ResourceLocation modelLocation) {
-			return new LogisticsNewPipeModel((ModelResourceLocation) modelLocation);
+			return new LogisticsBlockModel((ModelResourceLocation) modelLocation);
 		}
 
 		@Override
@@ -68,10 +70,10 @@ public class LogisticsNewPipeModel implements IModel {
 		}
 	}
 
-	public static Map<ModelResourceLocation, CoreUnroutedPipe> nameTextureIdMap = Maps.newLinkedHashMap();
+	public static Map<ModelResourceLocation, LogisticsSolidBlock.BlockType> nameTextureIdMap = Maps.newLinkedHashMap();
 	private ModelResourceLocation key;
 
-	public LogisticsNewPipeModel(ModelResourceLocation resource) {
+	public LogisticsBlockModel(ModelResourceLocation resource) {
 		key = resource;
 	}
 
@@ -96,11 +98,12 @@ public class LogisticsNewPipeModel implements IModel {
 			public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
 				if(side == null) {
 					if(quads.isEmpty()) {
-						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(), format));
+						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generateBlockRenderList(null), format));
 					}
 					return quads;
+				} else {
+					return LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generateBlockRenderList(state), format);
 				}
-				return Lists.newArrayList();
 			}
 
 			@Override
@@ -120,7 +123,7 @@ public class LogisticsNewPipeModel implements IModel {
 
 			@Override
 			public TextureAtlasSprite getParticleTexture() {
-				return Textures.LPnewPipeIconProvider.getIcon(getPipe().getTextureIndex()).getTexture();
+				return LogisticsSolidBlock.getNewIcon(nameTextureIdMap.get(key));
 			}
 
 			@Override
@@ -135,45 +138,47 @@ public class LogisticsNewPipeModel implements IModel {
 		};
 	}
 
-	private CoreUnroutedPipe getPipe() {
-		return nameTextureIdMap.get(key);
-	}
-
-	private List<RenderEntry> generatePipeRenderList() {
+	private List<RenderEntry> generateBlockRenderList(@Nullable IBlockState state) {
 		List<RenderEntry> objectsToRender = new ArrayList<>();
 
-		if(getPipe() instanceof PipeBlockRequestTable) {
-			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
-			LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.ZERO;
 
-			//Draw
-			objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.block.get(rotation), icon));
-			for (LogisticsNewSolidBlockWorldRenderer.CoverSides side : LogisticsNewSolidBlockWorldRenderer.CoverSides.values()) {
-				objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation), icon));
-			}
+		LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.ZERO;
+		TextureTransformation icon;
+		if(state != null) {
+			//rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.getRotation(blockTile.getRotation());
+			//icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(world, blockTile.xCoord, blockTile.yCoord, blockTile.zCoord));
+			icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(nameTextureIdMap.get(key)));
 		} else {
-			for (LogisticsNewRenderPipe.Corner corner : LogisticsNewRenderPipe.Corner.values()) {
-				objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
-						.map(model -> new RenderEntry(model, LogisticsNewRenderPipe.basicPipeTexture))
-						.collect(Collectors.toList()));
-			}
+			icon = SimpleServiceLocator.cclProxy.createIconTransformer(LogisticsSolidBlock.getNewIcon(nameTextureIdMap.get(key)));
+		}
 
-			for (LogisticsNewRenderPipe.Edge edge : LogisticsNewRenderPipe.Edge.values()) {
-				objectsToRender.add(new RenderEntry(LogisticsNewRenderPipe.edges
-						.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
-			}
 
-			//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
-			for (EnumFacing dir : EnumFacing.VALUES) {
-				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
-					TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(getPipe().getTextureIndex());
-					if (icon != null) {
-						objectsToRender.add(new RenderEntry(model, icon));
+		//Draw
+		objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.block.get(rotation), icon));
+		for (LogisticsNewSolidBlockWorldRenderer.CoverSides side : LogisticsNewSolidBlockWorldRenderer.CoverSides.values()) {
+			boolean render = true;
+			if(state != null) {
+				/*
+				DoubleCoordinates newPos = CoordinateUtils.sum(pos, side.getDir(rotation));
+				TileEntity sideTile = newPos.getTileEntity(blockTile.getworld());
+				if (sideTile instanceof LogisticsTileGenericPipe) {
+					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
+					if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation).getOpposite())) {
+						render = false;
 					}
 				}
+				*/
+			}
+			if (render) {
+				objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation), icon));
+				objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Inner.get(side).get(rotation), icon));
 			}
 		}
+
 		return objectsToRender;
 	}
+
+
+
 }

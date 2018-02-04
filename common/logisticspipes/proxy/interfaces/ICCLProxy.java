@@ -15,6 +15,8 @@ import logisticspipes.proxy.object3d.operation.LPScale;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import net.minecraftforge.common.model.IModelState;
+
 public interface ICCLProxy {
 
 	TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon);
@@ -49,4 +51,5 @@ public interface ICCLProxy {
 
 	Object getColourMultiplier(int i);
 
+	IModelState getDefaultBlockState();
 }

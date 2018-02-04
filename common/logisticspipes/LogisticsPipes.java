@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
@@ -158,6 +159,7 @@ import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.Recipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.renderer.newpipe.LogisticsBlockModel;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.routing.RouterManager;
@@ -393,28 +395,8 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
 
-		ModelLoaderRegistry.registerLoader(new ICustomModelLoader() {
-
-			@Override
-			public boolean accepts(ResourceLocation modelLocation) {
-				return modelLocation.getResourceDomain().equals("logisticspipes")
-						&& (modelLocation.getResourcePath().replace("logisticspipes", "").contains("pipe")
-						|| modelLocation.getResourcePath().equalsIgnoreCase("tile.logisticssolidblock"));
-			}
-
-			@Override
-			public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-				if(modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().replace("logisticspipes", "").contains("pipe")) {
-					return new LogisticsNewPipeModel(modelLocation);
-				}
-				return ModelLoaderRegistry.getMissingModel();
-			}
-
-			@Override
-			public void onResourceManagerReload(IResourceManager resourceManager) {
-
-			}
-		});
+		ModelLoaderRegistry.registerLoader(new LogisticsNewPipeModel.LogisticsNewPipeModelLoader());
+		ModelLoaderRegistry.registerLoader(new LogisticsBlockModel.LogisticsBlockModelLoader());
 	}
 
 	@Mod.EventHandler
@@ -536,7 +518,7 @@ public class LogisticsPipes {
 		registerRecipes();
 
 
-		event.getRegistry().register(new LogisticsSolidBlockItem(LogisticsPipes.LogisticsSolidBlock).setRegistryName(LogisticsPipes.LogisticsSolidBlock.getRegistryName()));
+		event.getRegistry().register(new LogisticsSolidBlockItem(LogisticsPipes.LogisticsSolidBlock).registerModels().setRegistryName(LogisticsPipes.LogisticsSolidBlock.getRegistryName()));
 		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsPipeBlock).setRegistryName(LogisticsPipes.LogisticsPipeBlock.getRegistryName()));
 		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsSubMultiBlock).setRegistryName(LogisticsPipes.LogisticsSubMultiBlock.getRegistryName()));
 	}

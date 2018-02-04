@@ -85,10 +85,12 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 	@Override
 	public void render(LogisticsTileGenericPipe tileentity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-		if (tileentity.pipe == null) {
+		boolean inHand = false;
+		if(tileentity == null && x == 0 && y == 0 && z == 0) {
+			inHand = true;
+		} else if (tileentity.pipe == null) {
 			return;
 		}
-		double distance = new DoubleCoordinates((TileEntity) tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().player));
 
 		GlStateManager.enableDepth();
 		GlStateManager.depthFunc(515);
@@ -112,24 +114,29 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
 		}
 
-
-		if (tileentity.pipe instanceof CoreRoutedPipe) {
-			renderPipeSigns((CoreRoutedPipe) tileentity.pipe, x, y, z, partialTicks);
+		if (!inHand) {
+			if (tileentity.pipe instanceof CoreRoutedPipe) {
+				renderPipeSigns((CoreRoutedPipe) tileentity.pipe, x, y, z, partialTicks);
+			}
 		}
+
+		double distance = !inHand ? new DoubleCoordinates((TileEntity) tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().player)) : 0;
 
 		LogisticsRenderPipe.secondRenderer.renderTileEntityAt(tileentity, x, y, z, partialTicks, distance);
 
-		bcRenderer.renderWires(tileentity, x, y, z);
+		if(!inHand) {
+			bcRenderer.renderWires(tileentity, x, y, z);
 
-		// dynamically render pluggables (like gates)
-		bcRenderer.dynamicRenderPluggables(tileentity, x, y, z);
+			// dynamically render pluggables (like gates)
+			bcRenderer.dynamicRenderPluggables(tileentity, x, y, z);
 
-		if (!tileentity.isOpaque()) {
-			if (tileentity.pipe.transport instanceof PipeFluidTransportLogistics) {
-				//renderFluids(pipe.pipe, x, y, z);
-			}
-			if (tileentity.pipe.transport != null) {
-				renderSolids(tileentity.pipe, x, y, z, partialTicks);
+			if (!tileentity.isOpaque()) {
+				if (tileentity.pipe.transport instanceof PipeFluidTransportLogistics) {
+					//renderFluids(pipe.pipe, x, y, z);
+				}
+				if (tileentity.pipe.transport != null) {
+					renderSolids(tileentity.pipe, x, y, z, partialTicks);
+				}
 			}
 		}
 

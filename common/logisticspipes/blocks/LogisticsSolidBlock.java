@@ -1,11 +1,16 @@
 package logisticspipes.blocks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -29,7 +34,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
-import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
@@ -39,13 +43,20 @@ import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StreamHelper;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsSolidBlock extends BlockContainer {
 
 
 	public static final PropertyEnum<BlockType> metaProperty = PropertyEnum.create("block_sub_type", BlockType.class);
+	public static final PropertyInteger rotationProperty = PropertyInteger.create("rotation", 0, 3);
+	public static final PropertyInteger textureIndexProperty = PropertyInteger.create("texture_index", 0, 9);
+	public static final Map<EnumFacing, PropertyBool> connectionPropertys = Arrays.stream(EnumFacing.values()).collect(Collectors.toMap(key -> key, key -> PropertyBool.create("connection_" + key.ordinal())));
+
 
 	public enum BlockType implements IStringSerializable {
 		SOLDERING_STATION("soldering_station", 0),
@@ -73,15 +84,14 @@ public class LogisticsSolidBlock extends BlockContainer {
 		public static BlockType getForMeta(int meta) {
 			return Arrays.stream(values()).filter(value -> value.meta == meta).collect(StreamHelper.singletonCollector());
 		}
+
+		public static BlockType getForName(String name) {
+			return Arrays.stream(values()).filter(value -> value.name.equals(name)).collect(StreamHelper.singletonCollector());
+		}
 	}
 
 	//private static final TextureAtlasSprite[] icons = new TextureAtlasSprite[18];
 	private static final TextureAtlasSprite[] newTextures = new TextureAtlasSprite[10];
-
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
 
 	@Override
 	public boolean isSideSolid(IBlockState base_state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, EnumFacing side) {
@@ -93,7 +103,11 @@ public class LogisticsSolidBlock extends BlockContainer {
 		setCreativeTab(LogisticsPipes.LPCreativeTab);
 		setHardness(6.0F);
 		setUnlocalizedName("logisticssolidblock");
-		setDefaultState(this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION));
+		IBlockState state = this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION)
+				.withProperty(rotationProperty, 0)
+				.withProperty(textureIndexProperty, 0);
+		connectionPropertys.values().stream().forEach(it -> state.withProperty(it, false));
+		setDefaultState(state);
 	}
 
 	@Override
@@ -166,14 +180,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	@Nonnull
 	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return ENTITYBLOCK_ANIMATED;
+		return EnumBlockRenderType.MODEL;
 	}
-
-	/*@Override
-	public TextureAtlasSprite getIcon(int side, int meta) {
-		return getRotatedTexture(meta, side, 2, 0);
-	}
-	*/
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
@@ -215,25 +223,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 		return super.damageDropped(state);
 	}
 
-	/*
-	@Override
-	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getIcon(IBlockAccess access, int x, int y, int z, int side) {
-		int meta = access.getBlockMetadata(x, y, z);
-		TileEntity tile = access.getTileEntity(x, y, z);
-		if (tile instanceof IRotationProvider) {
-			return getRotatedTexture(meta, side, ((IRotationProvider) tile).getRotation(), ((IRotationProvider) tile).getFrontTexture());
-		} else {
-			return getRotatedTexture(meta, side, 3, 0);
-		}
-	}
-
-	*/
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(TextureMap par1IIconRegister) {
-		//for (int i = 0; i < LogisticsSolidBlock.icons.length; i++) {
-		//	LogisticsSolidBlock.icons[i] = par1IIconRegister.registerIcon("logisticspipes:lpsolidblock/" + i);
-		//}
 		LogisticsSolidBlock.newTextures[0] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/baseTexture")); // Base
 		LogisticsSolidBlock.newTextures[1] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/solderTexture")); // SOLDERING_STATION
 		LogisticsSolidBlock.newTextures[9] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/solderTexture_active")); // SOLDERING_STATION Active
@@ -245,177 +236,64 @@ public class LogisticsSolidBlock extends BlockContainer {
 		LogisticsSolidBlock.newTextures[7] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerRFTexture")); // LOGISTICS_RF_POWERPROVIDER
 		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerIC2Texture")); // LOGISTICS_IC2_POWERPROVIDER
 	}
-/*
-	private TextureAtlasSprite getRotatedTexture(BlockType meta, int side, int rotation, int front) {
-		switch (meta) {
-			case SOLDERING_STATION:
-				if (front == 0) {
-					front = 8;
-				}
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[1];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[2];
-					case 2: //East
-						switch (rotation) {
-							case 0:
-							case 1:
-							case 2:
-							default:
-								return LogisticsSolidBlock.icons[7];
-							case 3:
-								return LogisticsSolidBlock.icons[front];
-						}
-					case 3: //West
-						switch (rotation) {
-							case 0:
-							case 1:
-							case 3:
-							default:
-								return LogisticsSolidBlock.icons[7];
-							case 2:
-								return LogisticsSolidBlock.icons[front];
-						}
-					case 4: //South
-						switch (rotation) {
-							case 0:
-							case 2:
-							case 3:
-							default:
-								return LogisticsSolidBlock.icons[7];
-							case 1:
-								return LogisticsSolidBlock.icons[front];
-						}
-					case 5: //North
-						switch (rotation) {
-							case 0:
-								return LogisticsSolidBlock.icons[front];
-							case 1:
-							case 2:
-							case 3:
-							default:
-								return LogisticsSolidBlock.icons[7];
-						}
 
-					default:
-						return LogisticsSolidBlock.icons[0];
-				}
-			case LOGISTICS_POWER_JUNCTION:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[4];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[5];
-					default: //Front
-						return LogisticsSolidBlock.icons[6];
-				}
-			case LOGISTICS_SECURITY_STATION:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[9];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[5];
-					default: //Front
-						return LogisticsSolidBlock.icons[6];
-				}
-			case LOGISTICS_AUTOCRAFTING_TABLE:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[11];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[12];
-					default: //Front
-						return LogisticsSolidBlock.icons[10];
-				}
-			case LOGISTICS_FUZZYCRAFTING_TABLE:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[16];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[12];
-					default: //Front
-						return LogisticsSolidBlock.icons[10];
-				}
-			case LOGISTICS_STATISTICS_TABLE:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[17];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[5];
-					default: //Front
-						return LogisticsSolidBlock.icons[6];
-				}
-			case LOGISTICS_RF_POWERPROVIDER:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[14];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[5];
-					default: //Front
-						return LogisticsSolidBlock.icons[6];
-				}
-			case LOGISTICS_IC2_POWERPROVIDER:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[15];
-					case 0: //Bottom
-						return LogisticsSolidBlock.icons[5];
-					default: //Front
-						return LogisticsSolidBlock.icons[6];
-				}
-			case LOGISTICS_BLOCK_FRAME:
-				switch (side) {
-					case 1: //TOP
-						return LogisticsSolidBlock.icons[10];
-					default:
-						return LogisticsSolidBlock.icons[2];
-				}
-			default:
-				return LogisticsSolidBlock.icons[0];
-		}
-	}
-*/
 	public static TextureAtlasSprite getNewIcon(IBlockAccess access, BlockPos pos) {
+		return LogisticsSolidBlock.newTextures[getTextureIndex(access, pos)];
+	}
+
+	public static TextureAtlasSprite getNewIcon(BlockType type) {
+		return LogisticsSolidBlock.newTextures[getTextureIndex(type)];
+	}
+	public static TextureAtlasSprite getNewIcon(int index) {
+		return LogisticsSolidBlock.newTextures[index];
+	}
+
+	public static int getTextureIndex(IBlockAccess access, BlockPos pos) {
 		IBlockState state = access.getBlockState(pos);
 		BlockType meta = state.getValue(metaProperty);
 		if (meta == BlockType.SOLDERING_STATION) {
 			TileEntity tile = access.getTileEntity(pos);
 			if (tile instanceof IRotationProvider) {
 				if (((IRotationProvider) tile).getFrontTexture() == 3) {
-					return LogisticsSolidBlock.newTextures[9];
+					return 9;
 				}
 			}
 		}
-		return LogisticsSolidBlock.getNewIcon(meta);
+		return LogisticsSolidBlock.getTextureIndex(meta);
 	}
 
-	public static TextureAtlasSprite getNewIcon(BlockType meta) {
+	public static int getTextureIndex(BlockType meta) {
 		switch (meta) {
 			case SOLDERING_STATION:
-				return LogisticsSolidBlock.newTextures[1];
+				return 1;
 			case LOGISTICS_POWER_JUNCTION:
-				return LogisticsSolidBlock.newTextures[2];
+				return 2;
 			case LOGISTICS_SECURITY_STATION:
-				return LogisticsSolidBlock.newTextures[3];
+				return 3;
 			case LOGISTICS_AUTOCRAFTING_TABLE:
-				return LogisticsSolidBlock.newTextures[4];
+				return 4;
 			case LOGISTICS_FUZZYCRAFTING_TABLE:
-				return LogisticsSolidBlock.newTextures[5];
+				return 5;
 			case LOGISTICS_STATISTICS_TABLE:
-				return LogisticsSolidBlock.newTextures[6];
+				return 6;
 			case LOGISTICS_RF_POWERPROVIDER:
-				return LogisticsSolidBlock.newTextures[7];
+				return 7;
 			case LOGISTICS_IC2_POWERPROVIDER:
-				return LogisticsSolidBlock.newTextures[8];
+				return 8;
 			default:
-				return LogisticsSolidBlock.newTextures[0];
+				return 0;
 		}
 	}
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, metaProperty);
+		List<IProperty<?>> list = new ArrayList<>();
+		list.add(metaProperty);
+		list.add(rotationProperty);
+		list.add(textureIndexProperty);
+		list.addAll(connectionPropertys.values());
+		IProperty<?>[] props = list.toArray(new IProperty<?>[list.size()]);
+		return new BlockStateContainer(this, props);
 	}
 
 	@Override
@@ -426,5 +304,35 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@Override
 	public int getMetaFromState(IBlockState state) {
 		return state.getValue(metaProperty).meta;
+	}
+
+	@Override
+	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		state = super.getActualState(state, worldIn, pos);
+		TileEntity tile = worldIn.getTileEntity(pos);
+		if(tile instanceof LogisticsSolidTileEntity) {
+			int rotation = ((LogisticsSolidTileEntity) tile).getRotation();
+			state = state.withProperty(rotationProperty, rotation);
+			state = state.withProperty(textureIndexProperty, LogisticsSolidBlock.getTextureIndex(worldIn, pos));
+		} else {
+			state = state.withProperty(textureIndexProperty, LogisticsSolidBlock.getTextureIndex(worldIn, pos));
+		}
+
+		if(tile != null) {
+			for (EnumFacing side : EnumFacing.VALUES) {
+				boolean render = true;
+				DoubleCoordinates newPos = CoordinateUtils.sum(new DoubleCoordinates(pos), side);
+				TileEntity sideTile = newPos.getTileEntity(tile.getWorld());
+				if (sideTile instanceof LogisticsTileGenericPipe) {
+					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
+					if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getOpposite())) {
+						render = false;
+					}
+				}
+				state = state.withProperty(connectionPropertys.get(side), render);
+			}
+		}
+
+		return state;
 	}
 }

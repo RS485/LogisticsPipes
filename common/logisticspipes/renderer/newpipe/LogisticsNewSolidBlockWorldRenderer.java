@@ -48,14 +48,16 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		public EnumFacing getDir(BlockRotation rot) {
 			EnumFacing result = dir;
-			switch (rot.getInteger()) {
-				case 0:
-					result = result.rotateY();
-				case 3:
-					result = result.rotateY();
-				case 1:
-					result = result.rotateY();
-				case 2:
+			if(result != EnumFacing.DOWN) {
+				switch (rot.getInteger()) {
+					case 0:
+						result = result.rotateY();
+					case 3:
+						result = result.rotateY();
+					case 1:
+						result = result.rotateY();
+					case 2:
+				}
 			}
 			return result;
 		}

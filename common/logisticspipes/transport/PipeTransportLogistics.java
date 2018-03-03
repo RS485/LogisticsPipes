@@ -27,6 +27,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -72,6 +76,13 @@ import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeTransportLogistics {
+
+	@Data
+	@AllArgsConstructor
+	class RoutingResult {
+		private EnumFacing face;
+		private boolean hasRoute;
+	}
 
 	private final int _bufferTimeOut = 20 * 2; // 2 Seconds
 	public final SyncList<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> _itemBuffer = new SyncList<>();
@@ -191,7 +202,11 @@ public class PipeTransportLogistics {
 
 		if (MainProxy.isServer(container.getWorld())) {
 			readjustSpeed((LPTravelingItemServer) item);
-			item.output = resolveDestination((LPTravelingItemServer) item);
+			RoutingResult result = resolveDestination((LPTravelingItemServer) item);
+			item.output = result.getFace();
+			if(!result.hasRoute) {
+				return 0;
+			}
 			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + ((LPTravelingItemServer) item).getInfo());
 		} else {
 			item.output = null;
@@ -246,8 +261,11 @@ public class PipeTransportLogistics {
 		item.input = item.output.getOpposite();
 
 		readjustSpeed(item);
-		item.output = resolveDestination(item);
-		if (item.output == null) {
+		RoutingResult result = resolveDestination(item);
+		item.output = result.getFace();
+		if(!result.hasRoute) {
+			return;
+		} else if (item.output == null) {
 			dropItem(item);
 			return;
 		}
@@ -258,7 +276,7 @@ public class PipeTransportLogistics {
 		}
 	}
 
-	public EnumFacing resolveDestination(LPTravelingItemServer data) {
+	public RoutingResult resolveDestination(LPTravelingItemServer data) {
 		if (isRouted) {
 			return resolveRoutedDestination(data);
 		} else {
@@ -266,7 +284,7 @@ public class PipeTransportLogistics {
 		}
 	}
 
-	public EnumFacing resolveUnroutedDestination(LPTravelingItemServer data) {
+	public RoutingResult resolveUnroutedDestination(LPTravelingItemServer data) {
 		List<EnumFacing> dirs = new ArrayList<>(Arrays.asList(EnumFacing.VALUES));
 		dirs.remove(data.input.getOpposite());
 		Iterator<EnumFacing> iter = dirs.iterator();
@@ -286,10 +304,10 @@ public class PipeTransportLogistics {
 			return null;
 		}
 		int num = new Random().nextInt(dirs.size());
-		return dirs.get(num);
+		return new RoutingResult(dirs.get(num), true);
 	}
 
-	public EnumFacing resolveRoutedDestination(LPTravelingItemServer data) {
+	public RoutingResult resolveRoutedDestination(LPTravelingItemServer data) {
 
 		EnumFacing blocked = null;
 
@@ -309,7 +327,7 @@ public class PipeTransportLogistics {
 
 		if (data.getDestination() >= 0 && !getRoutedPipe().getRouter().hasRoute(data.getDestination(), data.getTransportMode() == TransportMode.Active, data.getItemIdentifierStack().getItem()) && data.getBufferCounter() < MAX_DESTINATION_UNREACHABLE_BUFFER) {
 			_itemBuffer.add(new Triplet<>(data.getItemIdentifierStack(), new Pair<>(_bufferTimeOut, data.getBufferCounter()), data));
-			return null;
+			return new RoutingResult(null, false);
 		}
 
 		EnumFacing value;
@@ -320,23 +338,23 @@ public class PipeTransportLogistics {
 			value = getRoutedPipe().getRouteLayer().getOrientationForItem(data, blocked);
 		}
 		if (value == null && MainProxy.isClient(getWorld())) {
-			return null;
+			return new RoutingResult(null, true);
 		}
 
 		if (value == null && !data.getDoNotBuffer() && data.getBufferCounter() < 5) {
 			_itemBuffer.add(new Triplet<>(data.getItemIdentifierStack(), new Pair<>(_bufferTimeOut, data.getBufferCounter()), null));
-			return null;
+			return new RoutingResult(null, false);
 		}
 
 		if (value != null && !getRoutedPipe().getRouter().isRoutedExit(value)) {
 			if (!isItemExitable(data.getItemIdentifierStack())) {
-				return null;
+				return new RoutingResult(null, false);
 			}
 		}
 
 		data.resetDelay();
 
-		return value;
+		return new RoutingResult(value, true);
 	}
 
 	public void readFromNBT(NBTTagCompound nbt) {

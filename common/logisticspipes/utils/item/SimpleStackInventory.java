@@ -149,7 +149,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = new NBTTagList();
 		for (int j = 0; j < _contents.length; ++j) {
-			if (!_contents[j].isEmpty() && _contents[j].getCount() > 0) {
+			if (_contents[j] != null && !_contents[j].isEmpty() && _contents[j].getCount() > 0) {
 				NBTTagCompound nbttagcompound2 = new NBTTagCompound();
 				nbttaglist.appendTag(nbttagcompound2);
 				nbttagcompound2.setInteger("index", j);
@@ -163,7 +163,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	public void dropContents(World world, int posX, int posY, int posZ) {
 		if (MainProxy.isServer(world)) {
 			for (int i = 0; i < _contents.length; i++) {
-				while (!_contents[i].isEmpty()) {
+				while (_contents[i] != null && !_contents[i].isEmpty()) {
 					ItemStack todrop = decrStackSize(i, _contents[i].getMaxStackSize());
 					dropItems(world, todrop, posX, posY, posZ);
 				}

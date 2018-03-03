@@ -18,7 +18,7 @@ public class EntrencsTransport extends PipeTransportLogistics {
 	public PipeItemsSystemEntranceLogistics pipe;
 
 	@Override
-	public EnumFacing resolveDestination(LPTravelingItemServer data) {
+	public RoutingResult resolveDestination(LPTravelingItemServer data) {
 		if (data.getDestination() < 0 || data.getArrived()) {
 			if (pipe.getLocalFreqUUID() != null) {
 				if (pipe.useEnergy(5)) {

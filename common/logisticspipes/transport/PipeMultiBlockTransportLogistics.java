@@ -67,11 +67,11 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	public EnumFacing resolveDestination(LPTravelingItemServer data) {
+	public RoutingResult resolveDestination(LPTravelingItemServer data) {
 		if (getMultiPipe() == null) {
-			return null;
+			return new RoutingResult(null, false);
 		}
-		return getMultiPipe().getExitForInput(data.input.getOpposite());
+		return new RoutingResult(getMultiPipe().getExitForInput(data.input.getOpposite()), true);
 	}
 
 	@Override

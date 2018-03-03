@@ -80,7 +80,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		Set<ItemIdentifier> items = new TreeSet<>();
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) {
+			if (stack.isEmpty()) {
 				continue;
 			}
 			items.add(ItemIdentifier.get(stack));

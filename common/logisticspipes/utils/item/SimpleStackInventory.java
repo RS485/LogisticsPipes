@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
@@ -37,6 +39,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 
 	public SimpleStackInventory(int size, String name, int stackLimit) {
 		_contents = new ItemStack[size];
+		Arrays.fill(_contents, ItemStack.EMPTY);
 		_name = name;
 		_stackLimit = stackLimit;
 	}
@@ -63,7 +66,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 
 	@Override
 	public ItemStack decrStackSize(int slot, int count) {
-		if (_contents[slot] == null) {
+		if (_contents[slot].isEmpty()) {
 			return ItemStack.EMPTY;
 		}
 		if (_contents[slot].getCount() > count) {
@@ -79,7 +82,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		if (itemstack != null) {
+		if (!itemstack.isEmpty()) {
 			_contents[i] = itemstack.copy();
 		} else {
 			_contents[i] = ItemStack.EMPTY;
@@ -146,7 +149,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = new NBTTagList();
 		for (int j = 0; j < _contents.length; ++j) {
-			if (_contents[j] != null && _contents[j].getCount() > 0) {
+			if (!_contents[j].isEmpty() && _contents[j].getCount() > 0) {
 				NBTTagCompound nbttagcompound2 = new NBTTagCompound();
 				nbttaglist.appendTag(nbttagcompound2);
 				nbttagcompound2.setInteger("index", j);
@@ -160,7 +163,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	public void dropContents(World world, int posX, int posY, int posZ) {
 		if (MainProxy.isServer(world)) {
 			for (int i = 0; i < _contents.length; i++) {
-				while (_contents[i] != null && !_contents[i].isEmpty()) {
+				while (!_contents[i].isEmpty()) {
 					ItemStack todrop = decrStackSize(i, _contents[i].getMaxStackSize());
 					dropItems(world, todrop, posX, posY, posZ);
 				}
@@ -195,17 +198,17 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 
 	@Override
 	public ItemStack removeStackFromSlot(int i) {
-		if (_contents[i] == null) {
+		if (_contents[i].isEmpty()) {
 			return null;
 		}
 		ItemStack stackToTake = _contents[i];
-		_contents[i] = null;
+		_contents[i] = ItemStack.EMPTY;
 		return stackToTake;
 	}
 
 	private int tryAddToSlot(int i, ItemStack stack, int realstacklimit) {
 		ItemStack slot = _contents[i];
-		if (slot == null) {
+		if (slot.isEmpty()) {
 			_contents[i] = stack.copy();
 			_contents[i].setCount(Math.min(_contents[i].getCount(), realstacklimit));
 			return _contents[i].getCount();
@@ -227,7 +230,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	public int addCompressed(ItemStack stack, boolean ignoreMaxStackSize) {
-		if (stack == null) {
+		if (stack.isEmpty()) {
 			return 0;
 		}
 		stack = stack.copy();
@@ -242,7 +245,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 			if (stack.getCount() <= 0) {
 				break;
 			}
-			if (_contents[i] == null) {
+			if (_contents[i].isEmpty()) {
 				continue; //Skip Empty Slots on first attempt.
 			}
 			int added = tryAddToSlot(i, stack, stacklimit);

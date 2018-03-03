@@ -886,10 +886,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return false;
 			} else if (heldItem.getItem() instanceof ItemLogisticsPipe) {
 				return false;
-			} else if (SimpleServiceLocator.toolWrenchHandler.isWrench(heldItem.getItem())) {
-				// Only check the instance at this point. Call the IToolWrench
-				// interface callbacks for the individual pipe/logic calls
-				return pipe.blockActivated(player);
 			}
 			if (pipe.canHoldBCParts()) {
 				IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, pos, state, player, side, xOffset, yOffset, zOffset, pipe);

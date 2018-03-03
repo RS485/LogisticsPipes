@@ -469,6 +469,5 @@ public class ProxyManager {
 		};
 		Class<?>[] cclSubWrapper = new Class<?>[] {TextureTransformation.class, IRenderState.class, IModel3D.class, ITranslation.class, IVec3.class, IBounds.class};
 		SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!CCLRender", ICCLProxy.class, CCLProxy.class, dummyCCLProxy, cclSubWrapper));
-		SimpleServiceLocator.setToolWrenchHandler(new ToolWrenchHandler());
 	}
 }

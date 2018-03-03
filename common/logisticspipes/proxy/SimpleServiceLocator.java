@@ -245,10 +245,4 @@ public final class SimpleServiceLocator {
 	public static void setCCLProxy(ICCLProxy proxy) {
 		SimpleServiceLocator.cclProxy = proxy;
 	}
-
-	public static ToolWrenchHandler toolWrenchHandler;
-
-	public static void setToolWrenchHandler(ToolWrenchHandler toolWrenchHandler) {
-		SimpleServiceLocator.toolWrenchHandler = toolWrenchHandler;
-	}
 }

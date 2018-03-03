@@ -27,19 +27,14 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, getX(), getY(), getZ()
-		)) {
-			if (MainProxy.isServer(getWorld())) {
-				if (settings == null || settings.openRequest) {
-					openGui(entityplayer);
-				} else {
-					entityplayer.sendMessage(new TextComponentString("Permission denied"));
-				}
+		if (MainProxy.isServer(getWorld())) {
+			if (settings == null || settings.openRequest) {
+				openGui(entityplayer);
+			} else {
+				entityplayer.sendMessage(new TextComponentString("Permission denied"));
 			}
-			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
-			return true;
 		}
-		return false;
+		return true;
 	}
 
 	@Override

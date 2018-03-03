@@ -82,7 +82,7 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void onWrenchClicked(EntityPlayer entityplayer) {
+	public void onClicked(EntityPlayer entityplayer) {
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
 	}
 }

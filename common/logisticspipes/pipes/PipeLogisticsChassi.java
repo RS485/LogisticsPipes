@@ -424,23 +424,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == null) {
-			return false;
-		}
-
-		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.toolWrenchHandler.canWrench(entityplayer, getX(), getY(), getZ()
-		)) {
-			if (MainProxy.isServer(getWorld())) {
-				if (settings == null || settings.openGui) {
-					((PipeLogisticsChassi) container.pipe).nextOrientation();
-				} else {
-					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
-				}
-			}
-			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getX(), getY(), getZ());
-			return true;
-		}
-
 		if (!entityplayer.isSneaking() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.ModuleItem && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage() != ItemModule.BLANK) {
 			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
@@ -452,7 +435,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			return true;
 		}
 
-		return false;
+		if (MainProxy.isServer(getWorld())) {
+			if (settings == null || settings.openGui) {
+				((PipeLogisticsChassi) container.pipe).nextOrientation();
+			} else {
+				entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+			}
+		}
+		return true;
 	}
 
 	/*** IProvideItems ***/

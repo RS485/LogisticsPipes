@@ -45,7 +45,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void onWrenchClicked(EntityPlayer entityplayer) {
+	public void onClicked(EntityPlayer entityplayer) {
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
 	}

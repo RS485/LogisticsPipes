@@ -39,8 +39,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fluids.FluidStack;
-
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
@@ -117,7 +115,6 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.EnumFacingUtil;
-import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
@@ -899,20 +896,16 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (SimpleServiceLocator.toolWrenchHandler.isWrenchEquipped(entityplayer) && SimpleServiceLocator.toolWrenchHandler
-				.canWrench(entityplayer, getPos())) {
-			if (MainProxy.isServer(entityplayer.world)) {
-				if (settings == null || settings.openGui) {
-					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-						((LogisticsGuiModule) getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(container).open(entityplayer);
-					} else {
-						onWrenchClicked(entityplayer);
-					}
+		if (MainProxy.isServer(entityplayer.world)) {
+			if (settings == null || settings.openGui) {
+				if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
+					((LogisticsGuiModule) getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(container).open(entityplayer);
 				} else {
-					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+					onClicked(entityplayer);
 				}
+			} else {
+				entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 			}
-			SimpleServiceLocator.toolWrenchHandler.wrenchUsed(entityplayer, getPos());
 			return true;
 		}
 
@@ -1462,7 +1455,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		queueEvent(CCConstants.LP_CC_BROADCAST_EVENT, new Object[] { sourceId, message });
 	}
 
-	public void onWrenchClicked(EntityPlayer entityplayer) {
+	public void onClicked(EntityPlayer entityplayer) {
 		//do nothing, every pipe with a GUI should either have a LogisticsGuiModule or override this method
 	}
 
@@ -1482,7 +1475,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Override
 	public IInventoryUtil getPointedInventory(boolean forExtraction) {
-		return getSneakyInventory(getPointedOrientation().getOpposite(), forExtraction);
+		if(getPointedOrientation() != null) {
+			return getSneakyInventory(getPointedOrientation().getOpposite(), forExtraction);
+		}
+		return getSneakyInventory(null, forExtraction);
 	}
 
 	@Override

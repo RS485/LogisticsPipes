@@ -255,7 +255,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	@Override
-	public void onWrenchClicked(EntityPlayer entityplayer) {
+	public void onClicked(EntityPlayer entityplayer) {
 		// Send the satellite id when opening gui
 		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 		MainProxy.sendPacketToPlayer(packet, entityplayer);

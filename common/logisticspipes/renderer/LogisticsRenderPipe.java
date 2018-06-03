@@ -250,7 +250,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		GL11.glRotated(pitch, 1, 0, 0);
 		GL11.glRotated(-yawForPitch, 0, 1, 0);
 		GL11.glRotated(yaw, 0, 1, 0);
-		GL11.glTranslatef(0.0F, -0.1F, 0.0F);
+		GL11.glTranslatef(0.0F, -0.35F, 0.0F);
 		itemRenderer.setItemstack(itemstack).setWorld(world).setPartialTickTime(partialTickTime);
 		itemRenderer.renderInWorld();
 		GL11.glPopMatrix();

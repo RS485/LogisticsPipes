@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
@@ -32,11 +33,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
+import logisticspipes.proxy.object3d.operation.LPUVScale;
+import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
@@ -51,6 +56,9 @@ public class LogisticsNewPipeModel implements IModel {
 				if(modelLocation instanceof ModelResourceLocation) {
 					if(((ModelResourceLocation)modelLocation).getVariant().equals("inventory")) {
 						return LogisticsNewPipeModel.nameTextureIdMap.containsKey(modelLocation);
+					}
+					if(modelLocation.getResourcePath().equals("tile.logisticsblockgenericpipe")) {
+						return true;
 					}
 				}
 			}
@@ -93,9 +101,16 @@ public class LogisticsNewPipeModel implements IModel {
 
 			@Override
 			@SideOnly(Side.CLIENT)
-			public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-				if(side == null) {
-					if(quads.isEmpty()) {
+			public List<BakedQuad> getQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side, long rand) {
+				if(blockstate != null) {
+					if (side == null) {
+						if (quads.isEmpty()) {
+							quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(blockstate), format));
+						}
+						return quads;
+					}
+				} else {
+					if (quads.isEmpty()) {
 						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(), format));
 					}
 					return quads;
@@ -120,6 +135,9 @@ public class LogisticsNewPipeModel implements IModel {
 
 			@Override
 			public TextureAtlasSprite getParticleTexture() {
+				if(getPipe() == null) {
+					return null;
+				}
 				return Textures.LPnewPipeIconProvider.getIcon(getPipe().getTextureIndex()).getTexture();
 			}
 
@@ -135,14 +153,37 @@ public class LogisticsNewPipeModel implements IModel {
 		};
 	}
 
+	private List<RenderEntry> generatePipeRenderList(IBlockState blockstate) {
+		List<RenderEntry> objectsToRender = new ArrayList<>();
+
+		if(blockstate.getValue(LogisticsBlockGenericPipe.modelTypeProperty) == LogisticsBlockGenericPipe.PipeRenderModel.REQUEST_TABLE) {
+			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+
+			LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.getRotation(blockstate.getValue(LogisticsBlockGenericPipe.rotationProperty));
+
+			//Draw
+			objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.block.get(rotation), icon));
+			for (LogisticsNewSolidBlockWorldRenderer.CoverSides side : LogisticsNewSolidBlockWorldRenderer.CoverSides.values()) {
+				if(blockstate.getValue(LogisticsBlockGenericPipe.connectionPropertys.get(side.getDir(rotation)))) {
+
+				}
+				objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation), icon));
+			}
+		}
+
+		return objectsToRender;
+	}
+
 	private CoreUnroutedPipe getPipe() {
 		return nameTextureIdMap.get(key);
 	}
-
 	private List<RenderEntry> generatePipeRenderList() {
 		List<RenderEntry> objectsToRender = new ArrayList<>();
 
-		if(getPipe() instanceof PipeBlockRequestTable) {
+		if(getPipe() == null) {
+
+			System.out.println("'" + key + "' does not result in pipe");
+		} else if(getPipe() instanceof PipeBlockRequestTable) {
 			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
 			LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.ZERO;
@@ -153,10 +194,19 @@ public class LogisticsNewPipeModel implements IModel {
 				objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation), icon));
 			}
 		} else {
+			int red = 0;
+			boolean toggle = Math.random() < 0.5;
 			for (LogisticsNewRenderPipe.Corner corner : LogisticsNewRenderPipe.Corner.values()) {
+				final int fred = red;
+				final boolean ftoggle = toggle;
 				objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
-						.map(model -> new RenderEntry(model, LogisticsNewRenderPipe.basicPipeTexture))
+						.map(model -> new RenderEntry(model, ftoggle && (fred % 4 == 0 || fred % 4 == 3) || !ftoggle && (fred % 4 == 1 || fred % 4 == 2) ? LogisticsNewRenderPipe.inactiveTexture : LogisticsNewRenderPipe.basicPipeTexture))
 						.collect(Collectors.toList()));
+				red++;
+				if(red > 3) {
+					red -= 4;
+					toggle = !toggle;
+				}
 			}
 
 			for (LogisticsNewRenderPipe.Edge edge : LogisticsNewRenderPipe.Edge.values()) {
@@ -169,7 +219,7 @@ public class LogisticsNewPipeModel implements IModel {
 				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 					TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(getPipe().getTextureIndex());
 					if (icon != null) {
-						objectsToRender.add(new RenderEntry(model, icon));
+						objectsToRender.add(new RenderEntry(model, new LPUVTransformationList(new LPUVScale(12f/16, 12f/16), icon)));
 					}
 				}
 			}

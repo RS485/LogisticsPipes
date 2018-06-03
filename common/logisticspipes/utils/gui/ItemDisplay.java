@@ -266,11 +266,11 @@ public class ItemDisplay {
 			buf.pos(xPosition, yPosition, zLevel).tex(0.04, 0.69 + (graphic * 0.03125)).endVertex();
 			tess.draw();
 		} else {
-			RenderHelper.enableGUIStandardItemLighting();
-			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GL11.glDisable(GL11.GL_LIGHTING);
+			//RenderHelper.enableGUIStandardItemLighting();
+			//GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+			//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
+			//GL11.glDisable(GL11.GL_DEPTH_TEST);
+			//GL11.glDisable(GL11.GL_LIGHTING);
 
 			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
 				ItemIdentifier item = itemIdentifierStack.getItem();
@@ -320,7 +320,7 @@ public class ItemDisplay {
 				}
 
 				// use GuiGraphics to render the ItemStacks
-				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, false, true);
+				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, false, false);
 				itemstackRenderer.setItemstack(itemstack).setDisplayAmount(DisplayAmount.HIDE_ONE);
 				itemstackRenderer.renderInGui();
 
@@ -331,7 +331,7 @@ public class ItemDisplay {
 				}
 			}
 
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			//GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 		GL11.glPopMatrix();
 

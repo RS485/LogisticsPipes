@@ -21,12 +21,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockPane;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -154,38 +159,56 @@ public class ItemStackRenderer {
 		assert scaleY != 0.0F;
 		assert scaleZ != 0.0F;
 
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GlStateManager.pushMatrix();
 
 		// The only thing that ever sets NORMALIZE are slimes. It never gets disabled and it interferes with our lightning in the HUD.
-		GL11.glDisable(GL11.GL_NORMALIZE);
+		GlStateManager.disableNormalize();
 
 		// set up lightning
-		GL11.glScalef(1.0F / scaleX, 1.0F / scaleY, 1.0F / scaleZ);
+		GlStateManager.scale(1.0F / scaleX, 1.0F / scaleY, 1.0F / scaleZ);
 		RenderHelper.enableGUIStandardItemLighting();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-		GL11.glScalef(scaleX, scaleY, scaleZ);
+		GlStateManager.scale(scaleX, scaleY, scaleZ);
 
 		if (ignoreDepth) {
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GlStateManager.disableDepth();
 		} else {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GlStateManager.enableDepth();
 		}
 
 		renderItem.zLevel += zLevel;
-		if(renderEffects) {
-			renderItem.renderItemAndEffectIntoGUI(itemstack, posX, posY);
-		} else {
-			renderItem.renderItemIntoGUI(itemstack, posX, posY);
-		}
+
+		IBakedModel bakedmodel = renderItem.getItemModelWithOverrides(itemstack, null, (renderEffects ? Minecraft.getMinecraft().player : null));
+
+		GlStateManager.pushMatrix();
+		this.texManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		this.texManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+		GlStateManager.enableRescaleNormal();
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		this.setupGuiTransform(posX, posY, bakedmodel.isGui3d());
+		bakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedmodel, ItemCameraTransforms.TransformType.GUI, false);
+		renderItem.renderItem(itemstack, bakedmodel);
+		GlStateManager.disableAlpha();
+		GlStateManager.disableRescaleNormal();
+		GlStateManager.disableLighting();
+		GlStateManager.popMatrix();
+
+		this.texManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		this.texManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+
 		renderItem.zLevel -= zLevel;
 
 		// disable lightning
 		RenderHelper.disableStandardItemLighting();
 
 		if (ignoreDepth) {
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GlStateManager.disableDepth();
 		} else {
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GlStateManager.enableDepth();
 		}
 		// 20 should be about the size of a block
 		GuiGraphics.drawDurabilityBar(itemstack, posX, posY, zLevel + 20.0F);
@@ -193,9 +216,9 @@ public class ItemStackRenderer {
 		// if we want to render the amount, do that
 		if (displayAmount != DisplayAmount.NEVER) {
 			if (ignoreDepth) {
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GlStateManager.disableDepth();
 			} else {
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GlStateManager.enableDepth();
 			}
 
 			FontRenderer specialFontRenderer = itemstack.getItem().getFontRenderer(itemstack);
@@ -204,19 +227,34 @@ public class ItemStackRenderer {
 				fontRenderer = specialFontRenderer;
 			}
 
-			GL11.glDisable(GL11.GL_LIGHTING);
+			GlStateManager.disableLighting();
 			String amountString = StringUtils.getFormatedStackSize(itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
 
-			// 20 should be about the size of a block + 20 for the effect and overlay
-			GL11.glTranslatef(0.0F, 0.0F, zLevel + 40.0F);
+			GlStateManager.translate(0.0F, 0.0F, zLevel + 130.0F);
 
 			// using a translated shadow does not hurt and works with the HUD
 			SimpleGraphics.drawStringWithTranslatedShadow(fontRenderer, amountString, posX + 17 - fontRenderer.getStringWidth(amountString), posY + 9, Color.getValue(Color.WHITE));
 
-			GL11.glTranslatef(0.0F, 0.0F, -(zLevel + 40.0F));
+			GlStateManager.translate(0.0F, 0.0F, -(zLevel + 130.0F));
 		}
 
-		GL11.glPopAttrib();
+		GlStateManager.popMatrix();
+	}
+
+	private void setupGuiTransform(int xPosition, int yPosition, boolean isGui3d) {
+		GlStateManager.translate((float)xPosition, (float)yPosition, 100.0F + renderItem.zLevel);
+		GlStateManager.translate(8.0F, 8.0F, 0.0F);
+		GlStateManager.scale(1.0F, -1.0F, 1.0F);
+		GlStateManager.scale(16.0F, 16.0F, 16.0F);
+
+		if (isGui3d)
+		{
+			GlStateManager.enableLighting();
+		}
+		else
+		{
+			GlStateManager.disableLighting();
+		}
 	}
 
 	public void renderInWorld() {

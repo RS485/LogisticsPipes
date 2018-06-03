@@ -298,16 +298,16 @@ public class LogisticsPipes {
 	public static ItemUpgrade UpgradeItem;
 
 	// Miscellaneous Items
-	public static Item LogisticsRemoteOrderer;
-	public static Item LogisticsCraftingSignCreator;
+	public static RemoteOrderer LogisticsRemoteOrderer;
+	public static ItemPipeSignCreator LogisticsCraftingSignCreator;
 	public static ItemDisk LogisticsItemDisk;
-	public static Item LogisticsItemCard;
+	public static LogisticsItemCard LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
-	public static Item LogisticsParts;
-	public static Item LogisticsFluidContainer;
-	public static Item LogisticsBrokenItem;
-	public static Item LogisticsPipeControllerItem;
-	public static Item LogisticsChips;
+	public static ItemParts LogisticsParts;
+	public static LogisticsFluidContainer LogisticsFluidContainer;
+	public static LogisticsBrokenItem LogisticsBrokenItem;
+	public static ItemPipeController LogisticsPipeControllerItem;
+	public static ItemLogisticsChips LogisticsChips;
 
 	// Logistics Blocks
 	public static LogisticsSolidBlock LogisticsSolidBlock;
@@ -461,23 +461,23 @@ public class LogisticsPipes {
 
 		LogisticsPipes.LogisticsItemCard = new LogisticsItemCard();
 		LogisticsPipes.LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
-		LogisticsPipes.LogisticsItemCard.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsItemCard.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsItemCard);
+		LogisticsPipes.LogisticsItemCard.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticsitemcard"));
+		registerItem(LogisticsPipes.LogisticsItemCard);
 
 		LogisticsPipes.LogisticsRemoteOrderer = new RemoteOrderer();
 		LogisticsPipes.LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
-		LogisticsPipes.LogisticsRemoteOrderer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsRemoteOrderer.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsRemoteOrderer);
+		LogisticsPipes.LogisticsRemoteOrderer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "remoteordereritem"));
+		registerItem(LogisticsPipes.LogisticsRemoteOrderer);
 
 		ItemPipeSignCreator.registerPipeSignTypes();
 		LogisticsPipes.LogisticsCraftingSignCreator = new ItemPipeSignCreator();
 		LogisticsPipes.LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
-		LogisticsPipes.LogisticsCraftingSignCreator.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsCraftingSignCreator.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsCraftingSignCreator);
+		LogisticsPipes.LogisticsCraftingSignCreator.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "itempipesigncreator"));
+		registerItem(LogisticsPipes.LogisticsCraftingSignCreator);
 
 		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor();
 		LogisticsPipes.LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
-		LogisticsPipes.LogisticsHUDArmor.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsHUDArmor.getUnlocalizedName()));
+		LogisticsPipes.LogisticsHUDArmor.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticshudglasses"));
 		event.getRegistry().register(LogisticsPipes.LogisticsHUDArmor);
 
 		LogisticsPipes.LogisticsParts = registerItem(new ItemParts());
@@ -487,29 +487,29 @@ public class LogisticsPipes {
 
 		LogisticsPipes.LogisticsItemDisk = new ItemDisk();
 		LogisticsPipes.LogisticsItemDisk.setUnlocalizedName("itemDisk");
-		LogisticsPipes.LogisticsItemDisk.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsItemDisk.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsItemDisk);
+		LogisticsPipes.LogisticsItemDisk.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "itemdisk"));
+		registerItem(LogisticsPipes.LogisticsItemDisk);
 
 		LogisticsPipes.UpgradeItem = new ItemUpgrade();
 		LogisticsPipes.UpgradeItem.setUnlocalizedName("itemUpgrade");
-		LogisticsPipes.UpgradeItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.UpgradeItem.getUnlocalizedName()));
+		LogisticsPipes.UpgradeItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "itemupgrade"));
 		LogisticsPipes.UpgradeItem.loadUpgrades();
-		event.getRegistry().register(LogisticsPipes.UpgradeItem);
+		registerItem(LogisticsPipes.UpgradeItem);
 
 		LogisticsPipes.LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsPipes.LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
-		LogisticsPipes.LogisticsFluidContainer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsFluidContainer.getUnlocalizedName()));
+		LogisticsPipes.LogisticsFluidContainer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticsfluidcontainer"));
 		event.getRegistry().register(LogisticsPipes.LogisticsFluidContainer);
 
 		LogisticsPipes.LogisticsBrokenItem = new LogisticsBrokenItem();
 		LogisticsPipes.LogisticsBrokenItem.setUnlocalizedName("brokenItem");
-		LogisticsPipes.LogisticsBrokenItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsBrokenItem.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsBrokenItem);
+		LogisticsPipes.LogisticsBrokenItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "brokenitem"));
+		registerItem(LogisticsPipes.LogisticsBrokenItem);
 
 		LogisticsPipes.LogisticsPipeControllerItem = new ItemPipeController();
 		LogisticsPipes.LogisticsPipeControllerItem.setUnlocalizedName("pipeController");
-		LogisticsPipes.LogisticsPipeControllerItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsPipeControllerItem.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsPipeControllerItem);
+		LogisticsPipes.LogisticsPipeControllerItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "pipecontroller"));
+		registerItem(LogisticsPipes.LogisticsPipeControllerItem);
 
 		LogisticsChips = registerItem(new ItemLogisticsChips());
 

@@ -899,7 +899,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 					TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
 					if (icon != null) {
-						objectsToRender.add(new RenderEntry(model, new I3DOperation[] { icon }));
+						objectsToRender.add(new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVScale(12f/16, 12f/16), icon) }));
 					}
 				}
 			}

@@ -9,19 +9,23 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 
 import logisticspipes.LPConstants;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
@@ -92,6 +96,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	//Power Upgrades
 	public static final int POWER_TRANSPORTATION = 30;
+	public static final int POWER_BC_SUPPLIER = 31;
 	public static final int POWER_RF_SUPPLIER = 32;
 	public static final int POWER_IC2_LV_SUPPLIER = 33;
 	public static final int POWER_IC2_MV_SUPPLIER = 34;
@@ -116,19 +121,19 @@ public class ItemUpgrade extends LogisticsItem {
 
 		private int id;
 		private Class<? extends IPipeUpgrade> upgradeClass;
-		private int textureIndex = -1;
+		private String texturePath;
 		private boolean deprecated = false;
 
-		private Upgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureIndex) {
+		private Upgrade(int id, Class<? extends IPipeUpgrade> moduleClass, String texturePath) {
 			this.id = id;
 			upgradeClass = moduleClass;
-			this.textureIndex = textureIndex;
+			this.texturePath = texturePath;
 		}
 
-		private Upgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureIndex, boolean deprecated) {
+		private Upgrade(int id, Class<? extends IPipeUpgrade> moduleClass, String texturePath, boolean deprecated) {
 			this.id = id;
 			upgradeClass = moduleClass;
-			this.textureIndex = textureIndex;
+			this.texturePath = texturePath;
 			this.deprecated = deprecated;
 		}
 
@@ -152,8 +157,13 @@ public class ItemUpgrade extends LogisticsItem {
 			return id;
 		}
 
-		private int getTextureIndex() {
-			return textureIndex;
+		@SideOnly(Side.CLIENT)
+		private void registerUpgradeModel(Item item) {
+			if (texturePath == null) {
+				ModelLoader.setCustomModelResourceLocation(item, getId(), new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/blank", "inventory"));
+			} else {
+				ModelLoader.setCustomModelResourceLocation(item, getId(), new ModelResourceLocation("logisticspipes:" + texturePath, "inventory"));
+			}
 		}
 	}
 
@@ -162,45 +172,46 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	public void loadUpgrades() {
-		registerUpgrade(ItemUpgrade.SNEAKY_UP, SneakyUpgradeUP.class, 0, true);
-		registerUpgrade(ItemUpgrade.SNEAKY_DOWN, SneakyUpgradeDOWN.class, 1, true);
-		registerUpgrade(ItemUpgrade.SNEAKY_NORTH, SneakyUpgradeNORTH.class, 2, true);
-		registerUpgrade(ItemUpgrade.SNEAKY_SOUTH, SneakyUpgradeSOUTH.class, 3, true);
-		registerUpgrade(ItemUpgrade.SNEAKY_EAST, SneakyUpgradeEAST.class, 4, true);
-		registerUpgrade(ItemUpgrade.SNEAKY_WEST, SneakyUpgradeWEST.class, 5, true);
-		registerUpgrade(ItemUpgrade.SNEAKY_COMBINATION, CombinedSneakyUpgrade.class, 6);
-		registerUpgrade(ItemUpgrade.SNEAKY, SneakyUpgradeConfig.class, 32);
-		registerUpgrade(ItemUpgrade.SPEED, SpeedUpgrade.class, 7);
-		registerUpgrade(ItemUpgrade.CONNECTION_UP, ConnectionUpgradeUP.class, 8, true);
-		registerUpgrade(ItemUpgrade.CONNECTION_DOWN, ConnectionUpgradeDOWN.class, 9, true);
-		registerUpgrade(ItemUpgrade.CONNECTION_NORTH, ConnectionUpgradeNORTH.class, 10, true);
-		registerUpgrade(ItemUpgrade.CONNECTION_SOUTH, ConnectionUpgradeSOUTH.class, 11, true);
-		registerUpgrade(ItemUpgrade.CONNECTION_EAST, ConnectionUpgradeEAST.class, 12, true);
-		registerUpgrade(ItemUpgrade.CONNECTION_WEST, ConnectionUpgradeWEST.class, 13, true);
-		registerUpgrade(ItemUpgrade.CONNECTION, ConnectionUpgradeConfig.class, 33);
+		registerUpgrade(ItemUpgrade.SNEAKY_UP, SneakyUpgradeUP.class, "itemupgrade/sneakyup", true);
+		registerUpgrade(ItemUpgrade.SNEAKY_DOWN, SneakyUpgradeDOWN.class, "itemupgrade/sneakydown", true);
+		registerUpgrade(ItemUpgrade.SNEAKY_NORTH, SneakyUpgradeNORTH.class, "itemupgrade/sneakynorth", true);
+		registerUpgrade(ItemUpgrade.SNEAKY_SOUTH, SneakyUpgradeSOUTH.class, "itemupgrade/sneakysouth", true);
+		registerUpgrade(ItemUpgrade.SNEAKY_EAST, SneakyUpgradeEAST.class, "itemupgrade/sneakyeast", true);
+		registerUpgrade(ItemUpgrade.SNEAKY_WEST, SneakyUpgradeWEST.class, "itemupgrade/sneakywest", true);
+		registerUpgrade(ItemUpgrade.SNEAKY_COMBINATION, CombinedSneakyUpgrade.class, "itemupgrade/sneakycombination");
+		registerUpgrade(ItemUpgrade.SNEAKY, SneakyUpgradeConfig.class, "itemupgrade/sneaky");
+		registerUpgrade(ItemUpgrade.SPEED, SpeedUpgrade.class, "itemupgrade/speed");
+		registerUpgrade(ItemUpgrade.CONNECTION_UP, ConnectionUpgradeUP.class, "itemupgrade/disup", true);
+		registerUpgrade(ItemUpgrade.CONNECTION_DOWN, ConnectionUpgradeDOWN.class, "itemupgrade/disdown", true);
+		registerUpgrade(ItemUpgrade.CONNECTION_NORTH, ConnectionUpgradeNORTH.class, "itemupgrade/disnorth", true);
+		registerUpgrade(ItemUpgrade.CONNECTION_SOUTH, ConnectionUpgradeSOUTH.class, "itemupgrade/dissouth", true);
+		registerUpgrade(ItemUpgrade.CONNECTION_EAST, ConnectionUpgradeEAST.class, "itemupgrade/diseast", true);
+		registerUpgrade(ItemUpgrade.CONNECTION_WEST, ConnectionUpgradeWEST.class, "itemupgrade/diswest", true);
+		registerUpgrade(ItemUpgrade.CONNECTION, ConnectionUpgradeConfig.class, "itemupgrade/dis");
 
-		registerUpgrade(ItemUpgrade.ADVANCED_SAT_CRAFTINGPIPE, AdvancedSatelliteUpgrade.class, 14);
-		registerUpgrade(ItemUpgrade.LIQUID_CRAFTING, FluidCraftingUpgrade.class, 15);
-		registerUpgrade(ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR, CraftingByproductUpgrade.class, 16);
-		registerUpgrade(ItemUpgrade.SUPPLIER_PATTERN, PatternUpgrade.class, 17);
-		registerUpgrade(ItemUpgrade.FUZZY_CRAFTING, FuzzyUpgrade.class, 18);
-		registerUpgrade(ItemUpgrade.POWER_TRANSPORTATION, PowerTransportationUpgrade.class, 19);
-		registerUpgrade(ItemUpgrade.POWER_RF_SUPPLIER, RFPowerSupplierUpgrade.class, 21);
-		registerUpgrade(ItemUpgrade.POWER_IC2_LV_SUPPLIER, IC2LVPowerSupplierUpgrade.class, 22);
-		registerUpgrade(ItemUpgrade.POWER_IC2_MV_SUPPLIER, IC2MVPowerSupplierUpgrade.class, 23);
-		registerUpgrade(ItemUpgrade.POWER_IC2_HV_SUPPLIER, IC2HVPowerSupplierUpgrade.class, 24);
-		registerUpgrade(ItemUpgrade.POWER_IC2_EV_SUPPLIER, IC2EVPowerSupplierUpgrade.class, 25);
-		registerUpgrade(ItemUpgrade.CC_REMOTE_CONTROL, CCRemoteControlUpgrade.class, 26);
-		registerUpgrade(ItemUpgrade.CRAFTING_MONITORING, CraftingMonitoringUpgrade.class, 27);
-		registerUpgrade(ItemUpgrade.OPAQUE_UPGRADE, OpaqueUpgrade.class, 28);
-		registerUpgrade(ItemUpgrade.CRAFTING_CLEANUP, CraftingCleanupUpgrade.class, 29);
+		registerUpgrade(ItemUpgrade.ADVANCED_SAT_CRAFTINGPIPE, AdvancedSatelliteUpgrade.class, "itemupgrade/satellite");
+		registerUpgrade(ItemUpgrade.LIQUID_CRAFTING, FluidCraftingUpgrade.class, "itemupgrade/fluidcrafting");
+		registerUpgrade(ItemUpgrade.CRAFTING_BYPRODUCT_EXTRACTOR, CraftingByproductUpgrade.class, "itemupgrade/craftingbyproduct");
+		registerUpgrade(ItemUpgrade.SUPPLIER_PATTERN, PatternUpgrade.class, "itemupgrade/placementrules");
+		registerUpgrade(ItemUpgrade.FUZZY_CRAFTING, FuzzyUpgrade.class, "itemupgrade/fuzzycrafting");
+		registerUpgrade(ItemUpgrade.POWER_TRANSPORTATION, PowerTransportationUpgrade.class, "itemupgrade/powertransport");
+		//registerUpgrade(ItemUpgrade.POWER_BC_SUPPLIER, BCPowerSupplierUpgrade.class, "itemupgrade/powertransportbc");
+		registerUpgrade(ItemUpgrade.POWER_RF_SUPPLIER, RFPowerSupplierUpgrade.class, "itemupgrade/powertransportte");
+		registerUpgrade(ItemUpgrade.POWER_IC2_LV_SUPPLIER, IC2LVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-lv");
+		registerUpgrade(ItemUpgrade.POWER_IC2_MV_SUPPLIER, IC2MVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-mv");
+		registerUpgrade(ItemUpgrade.POWER_IC2_HV_SUPPLIER, IC2HVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-hv");
+		registerUpgrade(ItemUpgrade.POWER_IC2_EV_SUPPLIER, IC2EVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-ev");
+		registerUpgrade(ItemUpgrade.CC_REMOTE_CONTROL, CCRemoteControlUpgrade.class, "itemupgrade/ccremotecontrol");
+		registerUpgrade(ItemUpgrade.CRAFTING_MONITORING, CraftingMonitoringUpgrade.class, "itemupgrade/craftingmonitoring");
+		registerUpgrade(ItemUpgrade.OPAQUE_UPGRADE, OpaqueUpgrade.class, "itemupgrade/opaqueupgrade");
+		registerUpgrade(ItemUpgrade.CRAFTING_CLEANUP, CraftingCleanupUpgrade.class, "itemupgrade/craftingcleanup");
 		if (LPConstants.DEBUG) {
-			registerUpgrade(ItemUpgrade.LOGIC_CONTROLLER_UPGRADE, LogicControllerUpgrade.class, 30);
+			registerUpgrade(ItemUpgrade.LOGIC_CONTROLLER_UPGRADE, LogicControllerUpgrade.class, "itemupgrade/logiccontroller");
 		}
-		registerUpgrade(ItemUpgrade.UPGRADE_MODULE_UPGRADE, UpgradeModuleUpgrade.class, 31);
+		registerUpgrade(ItemUpgrade.UPGRADE_MODULE_UPGRADE, UpgradeModuleUpgrade.class, "itemupgrade/upgrademodule");
 	}
 
-	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
+	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, String texturePath) {
 		boolean flag = true;
 		for (Upgrade upgrade : upgrades) {
 			if (upgrade.getId() == id) {
@@ -208,7 +219,7 @@ public class ItemUpgrade extends LogisticsItem {
 			}
 		}
 		if (flag) {
-			upgrades.add(new Upgrade(id, moduleClass, textureId));
+			upgrades.add(new Upgrade(id, moduleClass, texturePath));
 		} else if (!flag) {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (Id " + id + " already in use)");
 		} else {
@@ -216,7 +227,7 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 	}
 
-	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, int textureId, boolean deprecated) {
+	public void registerUpgrade(int id, Class<? extends IPipeUpgrade> moduleClass, String texturePath, boolean deprecated) {
 		boolean flag = true;
 		for (Upgrade upgrade : upgrades) {
 			if (upgrade.getId() == id) {
@@ -224,7 +235,7 @@ public class ItemUpgrade extends LogisticsItem {
 			}
 		}
 		if (flag) {
-			upgrades.add(new Upgrade(id, moduleClass, textureId, deprecated));
+			upgrades.add(new Upgrade(id, moduleClass, texturePath, deprecated));
 		} else if (!flag) {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (Id " + id + " already in use)");
 		} else {
@@ -300,63 +311,18 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
-/*
-	@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		icons = new TextureAtlasSprite[34];
-		icons[0] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
-		icons[1] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
-		icons[2] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
-		icons[3] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakySOUTH");
-		icons[4] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyEAST");
-		icons[5] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyWEST");
-		icons[6] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyCombination");
-
-		icons[7] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Speed");
-
-		icons[8] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisUP");
-		icons[9] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisDOWN");
-		icons[10] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisNORTH");
-		icons[11] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisSOUTH");
-		icons[12] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisEAST");
-		icons[13] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
-
-		icons[14] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Satellite");
-		icons[15] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
-		icons[16] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
-		icons[17] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");
-		icons[18] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/FuzzyCrafting");
-		icons[19] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransport");
-		icons[20] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportBC");
-		icons[21] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportTE");
-		icons[22] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-LV");
-		icons[23] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-MV");
-		icons[24] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-HV");
-		icons[25] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/PowerTransportIC2-EV");
-		icons[26] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CCRemoteControl");
-		icons[27] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingMonitoring");
-		icons[28] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/OpaqueUpgrade");
-		icons[29] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingCleanup");
-		icons[30] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/LogicController");
-		icons[31] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/UpgradeModule");
-
-		icons[32] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Sneaky");
-		icons[33] = par1IIconRegister.registerIcon("logisticspipes:itemUpgrade/Dis");
-	}
 
 	@Override
-	public TextureAtlasSprite getIconFromDamage(int i) {
-
-		for (Upgrade upgrade : upgrades) {
-			if (upgrade.getId() == i) {
-				if (upgrade.getTextureIndex() != -1) {
-					return icons[upgrade.getTextureIndex()];
-				}
-			}
+	@SideOnly(Side.CLIENT)
+	public void registerModels() {
+		if (upgrades.size() <= 0) {
+			loadUpgrades();
 		}
-		return icons[0];
+		for (Upgrade module : upgrades) {
+			module.registerUpgradeModel(this);
+		}
 	}
-*/
+
 	public static String SHIFT_INFO_PREFIX = "item.upgrade.info.";
 
 	@Override

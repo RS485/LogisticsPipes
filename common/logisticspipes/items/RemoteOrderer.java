@@ -42,40 +42,17 @@ import org.lwjgl.input.Keyboard;
 
 public class RemoteOrderer extends LogisticsItem {
 
-	//final static TextureAtlasSprite[] _icons = new TextureAtlasSprite[17];
-
-	/*
-	@Override
-	public void registerIcons(TextureMap par1IIconRegister) {
-		for (int i = 0; i < 17; i++) {
-			RemoteOrderer._icons[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i));
-		}
-	}
-	*/
-
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {
 		for (int i = 0; i < 17; i++) {
-//			RemoteOrderer._icons[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i));
-			ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i, "inventory"));
+			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i, "inventory"));
 		}
-
 	}
 
 	@Override
 	public boolean getShareTag() {
 		return true;
 	}
-
-	/*
-	@Override
-	public TextureAtlasSprite getIconFromDamage(int par1) {
-		if (par1 > 16) {
-			par1 = 0;
-		}
-		return RemoteOrderer._icons[par1];
-	}
-	*/
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -189,23 +191,20 @@ public class DummyContainer extends Container {
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer pl, int i) {
 		if (transferTop.isEmpty() || transferBottom.isEmpty()) {
-			return null;
+			return ItemStack.EMPTY;
 		}
-		Slot slot = (Slot) inventorySlots.get(i);
+		Slot slot = inventorySlots.get(i);
 		if (slot == null || slot instanceof DummySlot || slot instanceof UnmodifiableSlot || slot instanceof FluidSlot || slot instanceof ColorSlot || slot instanceof HandelableSlot || !slot.getHasStack()) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		if (transferTop.contains(slot)) {
 			handleShiftClickLists(slot, transferBottom, true, pl);
 			handleShiftClickLists(slot, transferBottom, false, pl);
-			return null;
 		} else if (transferBottom.contains(slot)) {
 			handleShiftClickLists(slot, transferTop, true, pl);
 			handleShiftClickLists(slot, transferTop, false, pl);
-			return null;
-		} else {
-			return null;
 		}
+		return ItemStack.EMPTY;
 	}
 
 	private void handleShiftClickLists(Slot from, List<Slot> toList, boolean ignoreEmpty, EntityPlayer player) {

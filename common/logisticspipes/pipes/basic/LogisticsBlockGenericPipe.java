@@ -6,11 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
@@ -28,6 +34,7 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -36,15 +43,14 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.registries.GameData;
 
-import lombok.SneakyThrows;
+import mcp.MethodsReturnNonnullByDefault;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IRotationProvider;
@@ -55,7 +61,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
@@ -76,10 +81,30 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	private boolean skippedFirstIconRegister;
 	private int renderMask = 0;
 
+	public static final PropertyInteger rotationProperty = PropertyInteger.create("rotation", 0, 3);
+	public static final PropertyEnum<PipeRenderModel> modelTypeProperty = PropertyEnum.create("model_type", PipeRenderModel.class);
+	public static final Map<EnumFacing, PropertyBool> connectionPropertys = Arrays.stream(EnumFacing.values()).collect(Collectors
+			.toMap(key -> key, key -> PropertyBool.create("connection_" + key.ordinal())));
+
+	public enum PipeRenderModel implements IStringSerializable {
+		NONE,
+		REQUEST_TABLE;
+
+		@Override
+		public String getName() {
+			return name().toLowerCase();
+		}
+	}
+
 	public LogisticsBlockGenericPipe() {
 		super(Material.GLASS);
 		setRenderAllSides();
 		setUnlocalizedName("logisticsblockgenericpipe");
+		IBlockState state = this.blockState.getBaseState()
+				.withProperty(rotationProperty, 0)
+				.withProperty(modelTypeProperty, PipeRenderModel.NONE);
+		connectionPropertys.values().forEach(it -> state.withProperty(it, false));
+		setDefaultState(state);
 	}
 
 	public static void removePipe(CoreUnroutedPipe pipe) {
@@ -703,7 +728,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED; // TODO or is it: EnumBlockRenderType.INVISIBLE ???
+		return EnumBlockRenderType.MODEL;
 	}
 
 	@Override
@@ -951,16 +976,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 	}
 
-	@Override
-	public String getUnlocalizedName() {
-		return "LogisticsPipes Pipe Block";
-	}
-
-	@Override
-	public String getLocalizedName() {
-		return getUnlocalizedName();
-	}
-
 	/*
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -1078,5 +1093,49 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 		*/
 		return true;
+	}
+
+	@Override
+	protected BlockStateContainer createBlockState() {
+		List<IProperty<?>> list = new ArrayList<>();
+		list.add(rotationProperty);
+		list.add(modelTypeProperty);
+		list.addAll(connectionPropertys.values());
+		IProperty<?>[] props = list.toArray(new IProperty<?>[list.size()]);
+		return new BlockStateContainer(this, props);
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		return this.getDefaultState();
+	}
+
+	@Override
+	public int getMetaFromState(IBlockState state) {
+		return 0;
+	}
+
+	@Override
+	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		state = super.getActualState(state, worldIn, pos);
+		//TileEntity tile = worldIn.getTileEntity(pos);
+
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
+
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
+			if (pipe instanceof IRotationProvider) {
+				state = state.withProperty(rotationProperty, ((IRotationProvider) pipe).getRotation());
+			}
+
+			for (EnumFacing side : EnumFacing.VALUES) {
+				state = state.withProperty(connectionPropertys.get(side), pipe.container.renderState.pipeConnectionMatrix.isConnected(side));
+			}
+
+			if(pipe instanceof PipeBlockRequestTable) {
+				state = state.withProperty(modelTypeProperty, PipeRenderModel.REQUEST_TABLE);
+			}
+		}
+
+		return state;
 	}
 }

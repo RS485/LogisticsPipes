@@ -63,7 +63,9 @@ public class PacketInboundHandler extends SimpleChannelInboundHandler<InboundMod
 		Queue<InboundModernPacketWrapper> queue = getQueue(side, dimId);
 		InboundModernPacketWrapper wrapper;
 		while ((wrapper = queue.poll()) != null) {
-			inThreadProcessPacket(wrapper.packet, wrapper.player);
+			if(wrapper.player != null && wrapper.player.world != null) {
+				inThreadProcessPacket(wrapper.packet, wrapper.player);
+			}
 		}
 	}
 

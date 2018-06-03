@@ -147,7 +147,11 @@ public class LogisticsBlockModel implements IModel {
 
 			@Override
 			public TextureAtlasSprite getParticleTexture() {
-				return LogisticsSolidBlock.getNewIcon(typeProvider.getType());
+				LogisticsSolidBlock.BlockType type = typeProvider.getType();
+				if(type == null) {
+					return null;
+				}
+				return LogisticsSolidBlock.getNewIcon(type);
 			}
 
 			@Override

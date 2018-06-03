@@ -37,6 +37,8 @@
 
 package network.rs485.logisticspipes.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
@@ -255,9 +258,10 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		} else {
 			writeByte(1);
 			try {
-				CompressedStreamTools.write(tag, new ByteBufOutputStream(localBuffer));
+				ByteArrayOutputStream output = new ByteArrayOutputStream();
+				CompressedStreamTools.writeCompressed(tag, output);
+				writeByteArray(output.toByteArray());
 			} catch (IOException e) {
-
 				e.printStackTrace();
 			}
 		}
@@ -460,7 +464,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		}
 
 		try {
-			return CompressedStreamTools.readCompressed(new ByteBufInputStream(localBuffer));
+			return CompressedStreamTools.readCompressed(new ByteArrayInputStream(Objects.requireNonNull(readByteArray())));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

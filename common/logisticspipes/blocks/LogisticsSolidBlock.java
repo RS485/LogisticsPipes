@@ -106,7 +106,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		IBlockState state = this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION)
 				.withProperty(rotationProperty, 0)
 				.withProperty(textureIndexProperty, 0);
-		connectionPropertys.values().stream().forEach(it -> state.withProperty(it, false));
+		connectionPropertys.values().forEach(it -> state.withProperty(it, false));
 		setDefaultState(state);
 	}
 
@@ -201,6 +201,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return new LogisticsRFPowerProviderTileEntity();
 			case LOGISTICS_IC2_POWERPROVIDER:
 				return new LogisticsIC2PowerProviderTileEntity();
+			case LOGISTICS_BLOCK_FRAME:
+				return null;
 			default:
 				throw new IllegalArgumentException("Undefined meta");
 		}

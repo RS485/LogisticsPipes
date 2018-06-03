@@ -1,7 +1,7 @@
 {
 	"parent": "builtin/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/logisticsItemCard"
+		"layer0": "logisticspipes:items/logisticsitemcard"
 	},
 	"display": {
 		"thirdperson": {

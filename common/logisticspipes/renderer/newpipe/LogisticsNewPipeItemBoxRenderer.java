@@ -39,11 +39,13 @@ public class LogisticsNewPipeItemBoxRenderer {
 		if (renderList == -1) {
 			renderList = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(renderList, GL11.GL_COMPILE);
-			Tessellator tess = Tessellator.getInstance();
-			BufferBuilder buffer = tess.getBuffer();
-			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+
+			SimpleServiceLocator.cclProxy.getRenderState().reset();
+			SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
+
 			LogisticsNewRenderPipe.innerTransportBox.render(LogisticsNewRenderPipe.innerBoxTexture);
-			tess.draw();
+
+			SimpleServiceLocator.cclProxy.getRenderState().draw();
 			GL11.glEndList();
 		}
 

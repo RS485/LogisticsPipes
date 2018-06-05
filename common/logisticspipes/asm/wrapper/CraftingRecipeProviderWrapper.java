@@ -29,7 +29,7 @@ class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICrafting
 	public boolean canOpenGui(TileEntity tile) {
 		if (isEnabled()) {
 			try {
-				provider.canOpenGui(tile);
+				return provider.canOpenGui(tile);
 			} catch (Exception | NoClassDefFoundError e) {
 				handleException(e);
 			}
@@ -41,7 +41,7 @@ class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICrafting
 	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
 		if (isEnabled()) {
 			try {
-				provider.importRecipe(tile, inventory);
+				return provider.importRecipe(tile, inventory);
 			} catch (Exception | NoClassDefFoundError e) {
 				handleException(e);
 			}

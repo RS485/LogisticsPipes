@@ -91,18 +91,18 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			return null;
 		}
 		if (world.isAirBlock(new BlockPos(getPosX(), getPosY(), getPosZ()))) {
-			targetNotFound("Couldn't find " + clazz.getName());
+			targetNotFound("Couldn't find " + clazz.getName() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
 			return null;
 		}
 
 		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
-				targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass());
+				targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
 				return null;
 			}
 		} else {
-			targetNotFound("Couldn't find " + clazz.getName());
+			targetNotFound("Couldn't find " + clazz.getName() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
 		}
 		return (T) tile;
 	}
@@ -121,7 +121,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			return null;
 		}
 		if (world.isAirBlock(new BlockPos(getPosX(), getPosY(), getPosZ()))) {
-			targetNotFound("Couldn't find " + clazz.getName());
+			targetNotFound("Couldn't find " + clazz.getName() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
 			return null;
 		}
 
@@ -134,14 +134,14 @@ public abstract class CoordinatesPacket extends ModernPacket {
 				if (((LogisticsTileGenericPipe) tile).pipe != null && clazz.isAssignableFrom(((LogisticsTileGenericPipe) tile).pipe.getClass())) {
 					return (T) ((LogisticsTileGenericPipe) tile).pipe;
 				}
-				targetNotFound("Couldn't find " + clazz.getName() + ", found pipe with " + tile.getClass());
+				targetNotFound("Couldn't find " + clazz.getName() + ", found pipe with " + tile.getClass() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
 				return null;
 			}
 		} else {
-			targetNotFound("Couldn't find " + clazz.getName());
+			targetNotFound("Couldn't find " + clazz.getName() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
 			return null;
 		}
-		targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass());
+		targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
 		return null;
 	}
 

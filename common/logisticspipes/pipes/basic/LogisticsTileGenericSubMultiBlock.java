@@ -21,6 +21,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import network.rs485.logisticspipes.util.LPDataIOWrapper;
@@ -40,6 +41,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import io.netty.buffer.ByteBuf;
 import static io.netty.buffer.Unpooled.buffer;
+import sun.applet.Main;
 
 public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISubMultiBlockPipeInformationProvider, ITickable {
 
@@ -62,6 +64,14 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 		renderState = new PipeSubRenderState();
 	}
 
+	@Override
+	public void setPos(BlockPos posIn) {
+		super.setPos(posIn);
+		if(MainProxy.isClient()) {
+			System.out.println("Multi Pipe Created at: " + posIn);
+		}
+	}
+
 	public List<LogisticsTileGenericPipe> getMainPipe() {
 		if (mainPipe == null) {
 			mainPipe = new ArrayList<>();
@@ -73,15 +83,17 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 			}
 			mainPipe = Collections.unmodifiableList(mainPipe);
 		}
-		boolean allInvalid = true;
-		for(LogisticsTileGenericPipe pipe:mainPipe) {
-			if(!pipe.isInvalid()) {
-				allInvalid = false;
-				break;
+		if(MainProxy.isServer(world)) {
+			boolean allInvalid = true;
+			for (LogisticsTileGenericPipe pipe : mainPipe) {
+				if (!pipe.isInvalid()) {
+					allInvalid = false;
+					break;
+				}
 			}
-		}
-		if (mainPipe.isEmpty() || allInvalid) {
-			getWorld().setBlockToAir(getPos());
+			if (mainPipe.isEmpty() || allInvalid) {
+				getWorld().setBlockToAir(getPos());
+			}
 		}
 		if(mainPipe != null) {
 			return mainPipe;

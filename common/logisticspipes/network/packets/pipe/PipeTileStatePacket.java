@@ -39,21 +39,28 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	@Getter
 	private byte[] bytesPipe;
 
+	@Getter
+	@Setter
+	private int statePacketId;
+
 	public PipeTileStatePacket(int id) {
 		super(id);
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.NONE);
 		if (pipe == null) {
 			return;
 		}
-		LPDataIOWrapper.provideData(bytesRenderState, pipe.renderState::readData);
-		LPDataIOWrapper.provideData(bytesCoreState, pipe.coreState::readData);
-		LPDataIOWrapper.provideData(bytesBCPluggableState, pipe.bcPlugableState::readData);
-		pipe.afterStateUpdated();
-		LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
+		if(pipe.statePacketId < statePacketId) {
+			LPDataIOWrapper.provideData(bytesRenderState, pipe.renderState::readData);
+			LPDataIOWrapper.provideData(bytesCoreState, pipe.coreState::readData);
+			LPDataIOWrapper.provideData(bytesBCPluggableState, pipe.bcPlugableState::readData);
+			pipe.afterStateUpdated();
+			LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
+			pipe.statePacketId = statePacketId;
+		}
 	}
 
 	@Override
@@ -71,6 +78,8 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 			clientStateBuffers[i] = LPDataIOWrapper.collectData(clientStates[i]::writeData);
 			output.writeByteArray(clientStateBuffers[i]);
 		}
+
+		output.writeInt(statePacketId);
 	}
 
 	@Override
@@ -81,5 +90,7 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		bytesCoreState = input.readByteArray();
 		bytesBCPluggableState = input.readByteArray();
 		bytesPipe = input.readByteArray();
+
+		statePacketId = input.readInt();
 	}
 }

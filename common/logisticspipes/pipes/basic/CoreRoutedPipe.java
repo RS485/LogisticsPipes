@@ -823,8 +823,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public void onNeighborBlockChange(int blockId) {
-		super.onNeighborBlockChange(blockId);
+	public void onNeighborBlockChange() {
+		super.onNeighborBlockChange();
 		clearCache();
 		if (!stillNeedReplace && MainProxy.isServer(getWorld())) {
 			onNeighborBlockChange_Logistics();

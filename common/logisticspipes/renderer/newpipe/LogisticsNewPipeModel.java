@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -136,7 +137,7 @@ public class LogisticsNewPipeModel implements IModel {
 			@Override
 			public TextureAtlasSprite getParticleTexture() {
 				if(getPipe() == null) {
-					return null;
+					return Minecraft.getMinecraft().getTextureMapBlocks().getMissingSprite();
 				}
 				return Textures.LPnewPipeIconProvider.getIcon(getPipe().getTextureIndex()).getTexture();
 			}

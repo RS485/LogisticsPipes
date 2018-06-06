@@ -27,12 +27,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BoundingBoxDelegateBlockState implements IBlockState  {
 	private interface RemoveDelegate {
 		@Nullable
-		AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos);
+		AxisAlignedBB getCollisionBoundingBox(IBlockAccess worldIn, BlockPos pos);
 		AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos);
 	}
 
@@ -51,8 +52,16 @@ public class BoundingBoxDelegateBlockState implements IBlockState  {
 		this.state = state;
 	}
 
+	@Nonnull
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos) {
+	public AxisAlignedBB getBoundingBox(@Nonnull IBlockAccess blockAccess, @Nonnull BlockPos pos) {
+		return box;
+	}
+
+
+	@Override
+	@Nullable
+	public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
 		return box;
 	}
 }

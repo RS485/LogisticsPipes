@@ -31,7 +31,7 @@ public class TextureMatrix {
 	@Getter
 	private EnumFacing pointedOrientation;
 
-	private boolean dirty = false;
+	private boolean dirty = true;
 
 	public int getTextureIndex(EnumFacing direction) {
 		return iconIndexes[direction.ordinal()];

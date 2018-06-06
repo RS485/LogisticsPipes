@@ -79,9 +79,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void onNeighborBlockChange(int blockId) {
+	public void onNeighborBlockChange() {
 		craftingModule.clearCache();
-		super.onNeighborBlockChange(blockId);
+		super.onNeighborBlockChange();
 	}
 
 	@Override

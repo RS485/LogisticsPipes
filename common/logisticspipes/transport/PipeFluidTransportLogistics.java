@@ -13,10 +13,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.Fluid;
+
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
@@ -155,8 +154,8 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	public void onNeighborBlockChange(int blockId) {
-		super.onNeighborBlockChange(blockId);
+	public void onNeighborBlockChange() {
+		super.onNeighborBlockChange();
 
 		for (EnumFacing direction : EnumFacing.VALUES) {
 			if (!MainProxy.checkPipesConnections(container, container.getTile(PipeFluidTransportLogistics.orientations[direction.ordinal()]), PipeFluidTransportLogistics.orientations[direction.ordinal()])) {

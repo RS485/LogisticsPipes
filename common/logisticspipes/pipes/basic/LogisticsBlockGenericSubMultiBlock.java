@@ -132,6 +132,11 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
+
+	@Override
 	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
 		TileEntity tile = worldIn.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -139,7 +144,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.forEach(mainPipe -> LogisticsPipeBlock.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn, isActualState));
+					.forEach(mainPipe -> LogisticsPipeBlock.addCollisionBoxToList(mainPipe, entityBox, collidingBoxes, entityIn, isActualState));
 		}
 	}
 

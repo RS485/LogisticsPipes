@@ -16,6 +16,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -56,16 +57,20 @@ import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.PipeSolidSideCheck;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.math.MatrixTranformations;
 import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
+import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.SideUtils;
@@ -106,6 +111,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		connectionPropertys.values().forEach(it -> state.withProperty(it, false));
 		setDefaultState(state);
 	}
+
+
 
 	public static void removePipe(CoreUnroutedPipe pipe) {
 		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
@@ -325,25 +332,14 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		return list;
 	}
 
-	/*
-	@Override
-	@SideOnly(Side.CLIENT)
-	@SuppressWarnings({ "all" })
-	public TextureAtlasSprite getIcon(IBlockAccess iblockaccess, BlockPos pos, int l) {
-		TileEntity tile = iblockaccess.getTileEntity(i, j, k);
-		if (!(tile instanceof LogisticsTileGenericPipe)) {
-			return null;
-		}
-		if (((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
-			PipeBlockRequestTable table = (PipeBlockRequestTable) ((LogisticsTileGenericPipe) tile).pipe;
-			return table.getTextureFor(l);
-		}
-		if (((LogisticsTileGenericPipe) tile).renderState.textureArray != null) {
-			return ((LogisticsTileGenericPipe) tile).renderState.textureArray[l];
-		}
-		return ((LogisticsTileGenericPipe) tile).renderState.currentTexture;
+	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
+	{
+		return BlockFaceShape.UNDEFINED;
 	}
-	*/
+
+	public void addCollisionBoxToList(LogisticsTileGenericPipe pipe, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState) {
+		addCollisionBoxToList(pipe.getWorld().getBlockState(pipe.getPos()), pipe.getWorld(), pipe.getPos(), entityBox, collidingBoxes, entityIn, isActualState);
+	}
 
 	@Override
 	@SuppressWarnings({ "rawtypes" })
@@ -737,6 +733,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
+
+	@Override
 	public boolean canBeReplacedByLeaves(IBlockState state, IBlockAccess world, BlockPos pos) {
 		return false;
 	}
@@ -851,15 +852,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	/* Wrappers ************************************************************ */
 	@Override
-	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
-		super.onNeighborChange(world, pos, neighbor);
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
 
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.container.scheduleNeighborChange();
 		}
-		SimpleServiceLocator.buildCraftProxy.callBCNeighborBlockChange(world, pos, neighbor);
+		SimpleServiceLocator.buildCraftProxy.callBCNeighborBlockChange(worldIn, pos, fromPos);
 	}
 
 	@Override
@@ -1117,6 +1118,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		checkForRenderChanges(worldIn, pos);
 		state = super.getActualState(state, worldIn, pos);
 		//TileEntity tile = worldIn.getTileEntity(pos);
 
@@ -1137,5 +1139,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 
 		return state;
+	}
+
+	private void checkForRenderChanges(IBlockAccess worldIn, BlockPos blockPos) {
+		TileEntity tile = new DoubleCoordinates(blockPos).getTileEntity(worldIn);
+		if (!(tile instanceof LogisticsTileGenericPipe)) return;
+		((LogisticsTileGenericPipe) tile).renderState.checkSolidFaces(worldIn, blockPos);
 	}
 }

@@ -174,6 +174,22 @@ public class LogisticsTileGenericSubMultiBlock extends TileEntity implements ISu
 		super.handleUpdateTag(tag);
 	}
 
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		try {
+			PacketHandler.addPacketToNBT(getLPDescriptionPacket(), nbt);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SPacketUpdateTileEntity(getPos(), 1, nbt);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+		PacketHandler.queueAndRemovePacketFromNBT(packet.getNbtCompound());
+	}
+
 	public ModernPacket getLPDescriptionPacket() {
 		MultiBlockCoordinatesPacket packet = PacketHandler.getPacket(MultiBlockCoordinatesPacket.class);
 		packet.setTilePos(this);

@@ -41,7 +41,6 @@ import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
@@ -79,8 +78,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public void onBlockPlacedBy(EntityLivingBase placer) {}
 
-	public void onNeighborBlockChange(int blockId) {
-		transport.onNeighborBlockChange(blockId);
+	public void onNeighborBlockChange() {
+		transport.onNeighborBlockChange();
 	}
 
 	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {

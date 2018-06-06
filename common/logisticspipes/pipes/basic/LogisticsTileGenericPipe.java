@@ -1,9 +1,6 @@
 package logisticspipes.pipes.basic;
 
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +11,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -33,7 +29,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
-import io.netty.buffer.ByteBuf;
 import static io.netty.buffer.Unpooled.buffer;
 import li.cil.oc.api.network.Node;
 import lombok.Getter;
@@ -49,9 +44,9 @@ import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.LogicController;
 import logisticspipes.logic.interfaces.ILogicControllerTile;
-import logisticspipes.network.IWriteListObject;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.block.PipeSolidSideCheck;
 import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.proxy.MainProxy;
@@ -73,8 +68,6 @@ import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.util.LPDataIOWrapper;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -88,6 +81,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, */
 		ILogicControllerTile {
 
+	public int statePacketId = 0;
 	public final PipeRenderState renderState;
 	public final CoreState coreState = new CoreState();
 	public final IBCTilePart tilePart;
@@ -209,9 +203,13 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 		if (blockNeighborChange) {
 			computeConnections();
-			pipe.onNeighborBlockChange(0);
+			pipe.onNeighborBlockChange();
 			blockNeighborChange = false;
 			refreshRenderState = true;
+
+			if(MainProxy.isServer(world)) {
+				MainProxy.sendPacketToAllWatchingChunk(this, PacketHandler.getPacket(PipeSolidSideCheck.class).setTilePos(this));
+			}
 		}
 
 		//Sideblocks need to be checked before this
@@ -275,6 +273,22 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public void handleUpdateTag(NBTTagCompound tag) {
 		PacketHandler.queueAndRemovePacketFromNBT(tag);
 		super.handleUpdateTag(tag);
+	}
+
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		try {
+			PacketHandler.addPacketToNBT(getLPDescriptionPacket(), nbt);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new SPacketUpdateTileEntity(getPos(), 1, nbt);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+		PacketHandler.queueAndRemovePacketFromNBT(packet.getNbtCompound());
 	}
 
 	@Override
@@ -734,6 +748,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		packet.setRenderState(renderState);
 		packet.setBcPluggableState(bcPlugableState);
 		packet.setPipe(pipe);
+		packet.setStatePacketId(++statePacketId);
 
 		return packet;
 	}

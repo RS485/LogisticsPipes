@@ -29,12 +29,9 @@ import net.minecraft.world.chunk.Chunk;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IInventoryUtil;
@@ -835,7 +832,7 @@ public class PipeTransportLogistics {
 		return container.getWorld();
 	}
 
-	public void onNeighborBlockChange(int blockId) {}
+	public void onNeighborBlockChange() {}
 
 	public void onBlockPlaced() {}
 

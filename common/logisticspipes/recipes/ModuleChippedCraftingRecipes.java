@@ -1,5 +1,11 @@
 package logisticspipes.recipes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -158,8 +164,8 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 				break;
 		}
 		if(layout != null) {
-			RecipeManager.craftingManager.addRecipe(new ItemStack(module),
-					layout,
+			final RecipeManager.RecipeLayout fLayout = layout;
+			List<RecipeManager.RecipeIndex> recipeIndexes = Arrays.asList(
 					new RecipeManager.RecipeIndex('a', parts.getChipAdvanced()),
 					new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
 					new RecipeManager.RecipeIndex('f', parts.getChipFpga()),
@@ -169,8 +175,12 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 					new RecipeManager.RecipeIndex('m', baseModule),
 					new RecipeManager.RecipeIndex('p', programmer),
 					new RecipeManager.RecipeIndex('r', "dustRedstone"),
-					new RecipeManager.RecipeIndex('z', Items.BLAZE_POWDER)
-			);
+					new RecipeManager.RecipeIndex('z', Items.BLAZE_POWDER));
+			LinkedList<Object> indexToUse = new LinkedList<>(recipeIndexes.stream()
+					.filter(recipeIndex -> !(fLayout.getLine1() + fLayout.getLine2() + fLayout.getLine3()).replace(recipeIndex.getIndex(), ' ')
+							.equals((fLayout.getLine1() + fLayout.getLine2() + fLayout.getLine3()))).collect(Collectors.toList()));
+			indexToUse.addFirst(layout);
+			RecipeManager.craftingManager.addRecipe(new ItemStack(module), indexToUse.toArray());
 		}
 	}
 

@@ -12,6 +12,17 @@ public class RestrictedSlot extends Slot {
 	private final Item item;
 	private final ISlotCheck slotCheck;
 
+	public RestrictedSlot(IInventory iinventory, int i, int j, int k, Class<? extends Item> itemClass) {
+		super(iinventory, i, j, k);
+		this.item = null;
+		slotCheck = itemStack -> {
+			if(!itemStack.isEmpty()) {
+				return itemClass.isAssignableFrom(itemStack.getItem().getClass());
+			}
+			return false;
+		};
+	}
+
 	public RestrictedSlot(IInventory iinventory, int i, int j, int k, Item item) {
 		super(iinventory, i, j, k);
 		this.item = item;

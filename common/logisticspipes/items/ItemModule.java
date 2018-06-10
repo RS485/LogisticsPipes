@@ -1,17 +1,12 @@
 package logisticspipes.items;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
@@ -66,12 +61,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -79,63 +72,16 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import lombok.Getter;
 import org.lwjgl.input.Keyboard;
 
 public class ItemModule extends LogisticsItem {
 
-	//PASSIVE MODULES
-	public static final int BLANK = 0;
-	public static final int ITEMSINK = 1;
-	public static final int PASSIVE_SUPPLIER = 2;
-	public static final int EXTRACTOR = 3;
-	public static final int POLYMORPHIC_ITEMSINK = 4;
-	public static final int QUICKSORT = 5;
-	public static final int TERMINUS = 6;
-	public static final int ADVANCED_EXTRACTOR = 7;
-	public static final int BEEANALYZER = 8;
-	public static final int BEESINK = 9;
-	public static final int APIARISTREFILLER = 10;
-	public static final int APIARISTTERMINUS = 11;
-	public static final int MODBASEDITEMSINK = 12;
-	public static final int OREDICTITEMSINK = 13;
-	public static final int CC_BASED_QUICKSORT = 14;
-	public static final int CC_BASED_ITEMSINK = 15;
-	public static final int CREATIVETABBASEDITEMSINK = 16;
+	private static class Module {
 
-	public static final int THAUMICASPECTSINK = 30;
-	public static final int ENCHANTMENTSINK = 31;
-
-	//PASSIVE MK 2
-	public static final int EXTRACTOR_MK2 = 100 + ItemModule.EXTRACTOR;
-	public static final int ADVANCED_EXTRACTOR_MK2 = 100 + ItemModule.ADVANCED_EXTRACTOR;
-	public static final int ENCHANTMENTSINK_MK2 = 100 + ItemModule.ENCHANTMENTSINK;
-
-	//PASSIVE MK 3
-	public static final int EXTRACTOR_MK3 = 200 + ItemModule.EXTRACTOR;
-	public static final int ADVANCED_EXTRACTOR_MK3 = 200 + ItemModule.ADVANCED_EXTRACTOR;
-
-	public static final int ELECTRICMANAGER = 300;
-	public static final int ELECTRICBUFFER = 301;
-
-	//Providers MODULES
-	public static final int PROVIDER = 500;
-	public static final int PROVIDER_MK2 = 501;
-	public static final int ACTIVE_SUPPLIER = 502;
-
-	//Crafter MODULES
-	public static final int CRAFTER = 600;
-	public static final int CRAFTER_MK2 = 601;
-	public static final int CRAFTER_MK3 = 602;
-
-	private List<Module> modules = new ArrayList<>();
-
-	private class Module {
-
-		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
 
-		private Module(int id, Class<? extends LogisticsModule> moduleClass) {
-			this.id = id;
+		private Module(Class<? extends LogisticsModule> moduleClass) {
 			this.moduleClass = moduleClass;
 		}
 
@@ -155,107 +101,72 @@ public class ItemModule extends LogisticsItem {
 			return moduleClass;
 		}
 
-		private int getId() {
-			return id;
-		}
-
 		@SideOnly(Side.CLIENT)
 		private void registerModuleModel(Item item) {
-			if (moduleClass == null) {
-				ModelLoader.setCustomModelResourceLocation(item, getId(), new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/blank", "inventory"));
-			} else {
-				try {
-					LogisticsModule instance = moduleClass.newInstance();
-					String path = instance.getModuleModelPath();
-					if(path != null) {
-						ModelLoader.setCustomModelResourceLocation(item, getId(), new ModelResourceLocation("logisticspipes:" + path, "inventory"));
-					}
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
+			try {
+				LogisticsModule instance = moduleClass.newInstance();
+				String path = instance.getModuleModelPath();
+				if (path != null) {
+					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("logisticspipes:" + path, "inventory"));
 				}
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
-	public ItemModule() {
+	private Module moduleType;
+
+	public ItemModule(Module moduleType) {
 		super();
-		setHasSubtypes(true);
-		setUnlocalizedName("itemModule");
-		setRegistryName("itemModule");
+		this.moduleType = moduleType;
+		setHasSubtypes(false);
+		setUnlocalizedName("itemModule." + moduleType.getILogisticsModuleClass().getSimpleName());
+		setRegistryName("itemModule." + moduleType.getILogisticsModuleClass().getSimpleName());
 	}
 
-	public void loadModules() {
-		if(!modules.isEmpty()) return;
-		registerModule(ItemModule.BLANK, null);
-		registerModule(ItemModule.ITEMSINK, ModuleItemSink.class);
-		registerModule(ItemModule.PASSIVE_SUPPLIER, ModulePassiveSupplier.class);
-		registerModule(ItemModule.EXTRACTOR, ModuleExtractor.class);
-		registerModule(ItemModule.POLYMORPHIC_ITEMSINK, ModulePolymorphicItemSink.class);
-		registerModule(ItemModule.QUICKSORT, ModuleQuickSort.class);
-		registerModule(ItemModule.TERMINUS, ModuleTerminus.class);
-		registerModule(ItemModule.ADVANCED_EXTRACTOR, ModuleAdvancedExtractor.class);
-		registerModule(ItemModule.EXTRACTOR_MK2, ModuleExtractorMk2.class);
-		registerModule(ItemModule.ADVANCED_EXTRACTOR_MK2, ModuleAdvancedExtractorMK2.class);
-		registerModule(ItemModule.EXTRACTOR_MK3, ModuleExtractorMk3.class);
-		registerModule(ItemModule.ADVANCED_EXTRACTOR_MK3, ModuleAdvancedExtractorMK3.class);
-		registerModule(ItemModule.PROVIDER, ModuleProvider.class);
-		registerModule(ItemModule.PROVIDER_MK2, ModuleProviderMk2.class);
-		registerModule(ItemModule.ELECTRICMANAGER, ModuleElectricManager.class);
-		registerModule(ItemModule.ELECTRICBUFFER, ModuleElectricBuffer.class);
-		registerModule(ItemModule.BEEANALYZER, ModuleApiaristAnalyser.class);
-		registerModule(ItemModule.BEESINK, ModuleApiaristSink.class);
-		registerModule(ItemModule.APIARISTREFILLER, ModuleApiaristRefiller.class);
-		registerModule(ItemModule.APIARISTTERMINUS, ModuleApiaristTerminus.class);
-		registerModule(ItemModule.MODBASEDITEMSINK, ModuleModBasedItemSink.class);
-		registerModule(ItemModule.OREDICTITEMSINK, ModuleOreDictItemSink.class);
-//		registerModule(ItemModule.THAUMICASPECTSINK, ModuleThaumicAspectSink.class);
-		registerModule(ItemModule.ENCHANTMENTSINK, ModuleEnchantmentSink.class);
-		registerModule(ItemModule.ENCHANTMENTSINK_MK2, ModuleEnchantmentSinkMK2.class);
-		registerModule(ItemModule.CC_BASED_QUICKSORT, ModuleCCBasedQuickSort.class);
-		registerModule(ItemModule.CC_BASED_ITEMSINK, ModuleCCBasedItemSink.class);
-		registerModule(ItemModule.CRAFTER, ModuleCrafter.class);
-		registerModule(ItemModule.CRAFTER_MK2, ModuleCrafterMK2.class);
-		registerModule(ItemModule.CRAFTER_MK3, ModuleCrafterMK3.class);
-		registerModule(ItemModule.ACTIVE_SUPPLIER, ModuleActiveSupplier.class);
-		registerModule(ItemModule.CREATIVETABBASEDITEMSINK, ModuleCreativeTabBasedItemSink.class);
+	public static void loadModules() {
+		registerModule(ModuleItemSink.class);
+		registerModule(ModulePassiveSupplier.class);
+		registerModule(ModuleExtractor.class);
+		registerModule(ModulePolymorphicItemSink.class);
+		registerModule(ModuleQuickSort.class);
+		registerModule(ModuleTerminus.class);
+		registerModule(ModuleAdvancedExtractor.class);
+		registerModule(ModuleExtractorMk2.class);
+		registerModule(ModuleAdvancedExtractorMK2.class);
+		registerModule(ModuleExtractorMk3.class);
+		registerModule(ModuleAdvancedExtractorMK3.class);
+		registerModule(ModuleProvider.class);
+		registerModule(ModuleProviderMk2.class);
+		registerModule(ModuleElectricManager.class);
+		registerModule(ModuleElectricBuffer.class);
+		registerModule(ModuleApiaristAnalyser.class);
+		registerModule(ModuleApiaristSink.class);
+		registerModule(ModuleApiaristRefiller.class);
+		registerModule(ModuleApiaristTerminus.class);
+		registerModule(ModuleModBasedItemSink.class);
+		registerModule(ModuleOreDictItemSink.class);
+		//		registerModule(ModuleThaumicAspectSink.class);
+		registerModule(ModuleEnchantmentSink.class);
+		registerModule(ModuleEnchantmentSinkMK2.class);
+		registerModule(ModuleCCBasedQuickSort.class);
+		registerModule(ModuleCCBasedItemSink.class);
+		registerModule(ModuleCrafter.class);
+		registerModule(ModuleCrafterMK2.class);
+		registerModule(ModuleCrafterMK3.class);
+		registerModule(ModuleActiveSupplier.class);
+		registerModule(ModuleCreativeTabBasedItemSink.class);
 	}
 
-	public void registerModule(int id, Class<? extends LogisticsModule> moduleClass) {
-		boolean flag = true;
-		for (Module module : modules) {
-			if (module.getId() == id) {
-				flag = false;
-			}
-		}
-		if (flag) {
-			modules.add(new Module(id, moduleClass));
-		} else if (!flag) {
-			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Module. (Id " + id + " already in use)");
-		} else {
-			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Module. (No name given)");
-		}
-	}
-
-	public int[] getRegisteredModulesIDs() {
-		int[] array = new int[modules.size()];
-		int i = 0;
-		for (Module module : modules) {
-			array[i++] = module.getId();
-		}
-		return array;
+	public static void registerModule(@Nonnull Class<? extends LogisticsModule> moduleClass) {
+		Module module = new Module(moduleClass);
+		LogisticsPipes.LogisticsModules.put(moduleClass, LogisticsPipes.registerItem(new ItemModule(module)));
 	}
 
 	@Override
 	public CreativeTabs getCreativeTab() {
 		return CreativeTabs.REDSTONE;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		items.addAll(modules.stream()
-				.map(module -> new ItemStack(this, 1, module.getId()))
-				.collect(Collectors.toList()));
 	}
 
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
@@ -313,49 +224,28 @@ public class ItemModule extends LogisticsItem {
 		if (itemStack.getItem() != this) {
 			return null;
 		}
-		for (Module module : modules) {
-			if (itemStack.getItemDamage() == module.getId()) {
-				if (module.getILogisticsModuleClass() == null) {
-					return null;
-				}
-				if (currentModule != null) {
-					if (module.getILogisticsModuleClass().equals(currentModule.getClass())) {
-						return currentModule;
-					}
-				}
-				LogisticsModule newmodule = module.getILogisticsModule();
-				if (newmodule == null) {
-					return null;
-				}
-				newmodule.registerHandler(world, service);
-				return newmodule;
+		if (currentModule != null) {
+			if (moduleType.getILogisticsModuleClass().equals(currentModule.getClass())) {
+				return currentModule;
 			}
 		}
-		return null;
+		LogisticsModule newmodule = moduleType.getILogisticsModule();
+		if (newmodule == null) {
+			return null;
+		}
+		newmodule.registerHandler(world, service);
+		return newmodule;
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
-		for (Module module : modules) {
-			if (itemstack.getItemDamage() == module.getId()) {
-				if (module.getILogisticsModuleClass() == null) {
-					return "item.ModuleBlank";
-				}
-				return "item." + module.getILogisticsModuleClass().getSimpleName();
-			}
-		}
-		return null;
+	public String getUnlocalizedName() {
+		return "item." + moduleType.getILogisticsModuleClass().getSimpleName();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {
-		if (modules.size() <= 0) {
-			loadModules();
-		}
-		for (Module module : modules) {
-			module.registerModuleModel(this);
-		}
+		moduleType.registerModuleModel(this);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

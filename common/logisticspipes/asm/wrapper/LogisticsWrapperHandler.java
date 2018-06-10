@@ -22,6 +22,7 @@ import logisticspipes.proxy.DontLoadProxy;
 import logisticspipes.proxy.VersionNotSupportedException;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
+import logisticspipes.proxy.interfaces.ILPPipeConfigToolWrapper;
 import logisticspipes.utils.ModStatusHelper;
 
 import net.minecraft.launchwrapper.Launch;
@@ -46,6 +47,43 @@ public class LogisticsWrapperHandler {
 	private static Method m_defineClass = null;
 
 	private LogisticsWrapperHandler() {}
+
+
+	public static ILPPipeConfigToolWrapper getWrappedPipeConfigToolWrapper(String clazz, String name, Class<? extends ILPPipeConfigToolWrapper> providerClass) {
+		ILPPipeConfigToolWrapper wrapper = null;
+		Throwable e = null;
+		try {
+			Class.forName(clazz);
+			try {
+				wrapper = providerClass.newInstance();
+			} catch (Exception e1) {
+				if (e1 instanceof VersionNotSupportedException) {
+					throw (VersionNotSupportedException) e1;
+				}
+				e1.printStackTrace();
+				e = e1;
+			} catch (NoClassDefFoundError e1) {
+				e1.printStackTrace();
+				e = e1;
+			}
+		} catch (NoClassDefFoundError | ClassNotFoundException ignored) {}
+		GenericLPPipeConfigToolWrapper instance = new GenericLPPipeConfigToolWrapper(wrapper, name);
+		if (wrapper != null) {
+			LogisticsPipes.log.info("Loaded " + name + " PipeConfigToolWrapper");
+		} else {
+			if (e != null) {
+				((AbstractWrapper) instance).setState(WrapperState.Exception);
+				((AbstractWrapper) instance).setReason(e);
+				LogisticsPipes.log.info("Couldn't load " + name + " PipeConfigToolWrapper");
+			} else {
+				LogisticsPipes.log.info("Didn't load " + name + " PipeConfigToolWrapper");
+				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
+			}
+		}
+		LogisticsWrapperHandler.wrapperController.add(instance);
+		return instance;
+	}
+
 
 	public static IGenericProgressProvider getWrappedProgressProvider(String modId, String name, Class<? extends IGenericProgressProvider> providerClass) {
 		IGenericProgressProvider provider = null;

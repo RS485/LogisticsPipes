@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.capabilities.Capability;
@@ -913,99 +915,105 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public ILPPipe getLPPipe() {
 		return pipe;
 	}
-/*
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public IPipe getPipe() {
-		return (IPipe) tilePart.getBCPipePart().getOriginal();
-	}
 
 	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean canInjectItems(EnumFacing from) {
-		return isPipeConnectedCached(from);
+	public BlockPos getBlockPos() {
+		return getPos();
 	}
 
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int x() {
-		return xCoord;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int y() {
-		return yCoord;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int z() {
-		return zCoord;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public Block getNeighborBlock(EnumFacing dir) {
-		return getBlock(dir);
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public TileEntity getNeighborTile(EnumFacing dir) {
-		return getTile(dir);
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public IPipe getNeighborPipe(EnumFacing dir) {
-		if (getTile(dir) instanceof IPipeTile) {
-			return ((IPipeTile) getTile(dir)).getPipe();
+	/*
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public IPipe getPipe() {
+			return (IPipe) tilePart.getBCPipePart().getOriginal();
 		}
-		return null;
-	}
 
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public int getPipeColor() {
-		return 0;
-	}
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public boolean canInjectItems(EnumFacing from) {
+			return isPipeConnectedCached(from);
+		}
 
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public PipePluggable getPipePluggable(EnumFacing direction) {
-		if (tilePart.getBCPipePluggable(direction) == null) {
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public int x() {
+			return xCoord;
+		}
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public int y() {
+			return yCoord;
+		}
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public int z() {
+			return zCoord;
+		}
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public Block getNeighborBlock(EnumFacing dir) {
+			return getBlock(dir);
+		}
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public TileEntity getNeighborTile(EnumFacing dir) {
+			return getTile(dir);
+		}
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public IPipe getNeighborPipe(EnumFacing dir) {
+			if (getTile(dir) instanceof IPipeTile) {
+				return ((IPipeTile) getTile(dir)).getPipe();
+			}
 			return null;
 		}
-		return (PipePluggable) tilePart.getBCPipePluggable(direction).getOriginal();
-	}
 
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean hasPipePluggable(EnumFacing direction) {
-		return tilePart.getBCPipePluggable(direction) != null;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public boolean hasBlockingPluggable(EnumFacing direction) {
-		if (tilePart.getBCPipePluggable(direction) == null) {
-			return false;
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public int getPipeColor() {
+			return 0;
 		}
-		return tilePart.getBCPipePluggable(direction).isBlocking();
-	}
 
-	@Override
-	@ModDependentMethod(modId = "BuildCraft|Transport")
-	public ConnectOverride overridePipeConnection(PipeType pipeType, EnumFacing forgeDirection) {
-		if (this.pipe != null && this.pipe.isFluidPipe()) {
-			if (pipeType == PipeType.FLUID) {
-				return ConnectOverride.CONNECT;
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public PipePluggable getPipePluggable(EnumFacing direction) {
+			if (tilePart.getBCPipePluggable(direction) == null) {
+				return null;
 			}
+			return (PipePluggable) tilePart.getBCPipePluggable(direction).getOriginal();
 		}
-		return ConnectOverride.DEFAULT;
-	}
-*/
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public boolean hasPipePluggable(EnumFacing direction) {
+			return tilePart.getBCPipePluggable(direction) != null;
+		}
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public boolean hasBlockingPluggable(EnumFacing direction) {
+			if (tilePart.getBCPipePluggable(direction) == null) {
+				return false;
+			}
+			return tilePart.getBCPipePluggable(direction).isBlocking();
+		}
+
+		@Override
+		@ModDependentMethod(modId = "BuildCraft|Transport")
+		public ConnectOverride overridePipeConnection(PipeType pipeType, EnumFacing forgeDirection) {
+			if (this.pipe != null && this.pipe.isFluidPipe()) {
+				if (pipeType == PipeType.FLUID) {
+					return ConnectOverride.CONNECT;
+				}
+			}
+			return ConnectOverride.DEFAULT;
+		}
+	*/
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);

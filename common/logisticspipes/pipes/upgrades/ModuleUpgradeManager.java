@@ -158,7 +158,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
 		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
 		if (upgrades[slot] == null) {
-			inv.setInventorySlotContents(slot, null);
+			inv.setInventorySlotContents(slot, ItemStack.EMPTY);
 			return false;
 		} else {
 			return upgrades[slot].needsUpdate();

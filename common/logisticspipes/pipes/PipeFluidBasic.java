@@ -45,7 +45,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	}
 
 	@Override
-	public void onClicked(EntityPlayer entityplayer) {
+	public void onWrenchClicked(EntityPlayer entityplayer) {
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Fluid_Basic_ID, getWorld(), getX(), getY(), getZ());
 	}
 

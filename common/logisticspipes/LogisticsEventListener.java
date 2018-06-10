@@ -185,7 +185,6 @@ public class LogisticsEventListener {
 	public void onPlayerLogin(PlayerLoggedInEvent event) {
 		if (MainProxy.isServer(event.player.world)) {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(event.player);
-			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(event.player);
 		}
 
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);

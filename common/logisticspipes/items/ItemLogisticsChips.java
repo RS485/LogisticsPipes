@@ -24,28 +24,27 @@ public class ItemLogisticsChips extends LogisticsItem {
 	public static final int ITEM_CHIP_FPGA = 4;
 	public static final int ITEM_CHIP_FPGA_RAW = 5;
 
-	public static final int MAX_DMG = 6;
+	private static final int MAX_DMG = 6;
 
-	//private IIcon[] _icons;
+	private final int currentSubItem;
 
-	public ItemLogisticsChips() {
+	public ItemLogisticsChips(int subItem) {
 		super();
+		currentSubItem = subItem;
 		setHasSubtypes(true);
-		setUnlocalizedName("logisticsChips");
-		setRegistryName("logisticschips");
+		setUnlocalizedName("logisticsChips." + Integer.toString(currentSubItem));
+		setRegistryName("logisticschips." + Integer.toString(currentSubItem));
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {
-		for (int i = 0; i < MAX_DMG; i++) {
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getLPUnlocalizedNameFromData(i).replace("item.logisticsChips.", "chips/").toLowerCase(), "inventory"));
-		}
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getLPUnlocalizedNameFromData(currentSubItem).replace("item.logisticsChips.", "chips/").toLowerCase(), "inventory"));
 	}
 
 	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack) {
-		String name = getLPUnlocalizedNameFromData(par1ItemStack.getItemDamage());
+		String name = getLPUnlocalizedNameFromData(currentSubItem);
 		if (name != null) return name.toLowerCase();
 		return super.getUnlocalizedName(par1ItemStack);
 	}
@@ -73,14 +72,4 @@ public class ItemLogisticsChips extends LogisticsItem {
 		return CreativeTabs.REDSTONE;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		items.add(new ItemStack(this, 1, ITEM_CHIP_BASIC));
-		items.add(new ItemStack(this, 1, ITEM_CHIP_BASIC_RAW));
-		items.add(new ItemStack(this, 1, ITEM_CHIP_ADVANCED));
-		items.add(new ItemStack(this, 1, ITEM_CHIP_ADVANCED_RAW));
-		items.add(new ItemStack(this, 1, ITEM_CHIP_FPGA));
-		items.add(new ItemStack(this, 1, ITEM_CHIP_FPGA_RAW));
-	}
 }

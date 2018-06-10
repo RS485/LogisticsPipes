@@ -866,7 +866,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) == null) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).isEmpty()) {
 			if (!entityplayer.isSneaking()) {
 				return false;
 			}
@@ -896,16 +896,19 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (MainProxy.isServer(entityplayer.world)) {
-			if (settings == null || settings.openGui) {
-				if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-					((LogisticsGuiModule) getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(container).open(entityplayer);
+		if (SimpleServiceLocator.configToolHandler.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
+			if (MainProxy.isServer(entityplayer.world)) {
+				if (settings == null || settings.openGui) {
+					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
+						((LogisticsGuiModule) getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(container).open(entityplayer);
+					} else {
+						onWrenchClicked(entityplayer);
+					}
 				} else {
-					onClicked(entityplayer);
+					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
-			} else {
-				entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 			}
+			SimpleServiceLocator.configToolHandler.wrenchUsed(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container);
 			return true;
 		}
 
@@ -1455,7 +1458,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		queueEvent(CCConstants.LP_CC_BROADCAST_EVENT, new Object[] { sourceId, message });
 	}
 
-	public void onClicked(EntityPlayer entityplayer) {
+	public void onWrenchClicked(EntityPlayer entityplayer) {
 		//do nothing, every pipe with a GUI should either have a LogisticsGuiModule or override this method
 	}
 

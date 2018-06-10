@@ -461,7 +461,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public void addCraftingRecipes(CraftingParts parts) {
 		/*
-		//Enable Carpenter-based Recipes
+		//Enable Carpenter-based CraftingRecipes
 		if (Configs.MANDATORY_CARPENTER_RECIPES) {
 
 			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'), parts.getGearTear1(),
@@ -486,7 +486,7 @@ public class ForestryProxy implements IForestryProxy {
 
 			RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { "CrC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('r'), Items.redstone, });
 		}
-		//Disable Carpenter-based Recipes
+		//Disable Carpenter-based CraftingRecipes
 		if (!Configs.MANDATORY_CARPENTER_RECIPES) {
 			LocalCraftingManager manager = RecipeManager.craftingManager;
 

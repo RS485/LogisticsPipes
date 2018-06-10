@@ -1,11 +1,7 @@
 package logisticspipes.network;
 
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
+import net.minecraft.util.IThreadListener;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -14,58 +10,24 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.ticks.LPTickHandler;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.Level;
 
 public class PacketInboundHandler extends SimpleChannelInboundHandler<InboundModernPacketWrapper> {
 
-	private Map<Side, Map<Integer, Queue<InboundModernPacketWrapper>>> map;
-
-	public PacketInboundHandler() {
-		Map<Side, Map<Integer, Queue<InboundModernPacketWrapper>>> packetMap = Maps.newHashMap();
-		for (Side side : Side.values()) {
-			packetMap.put(side, new ConcurrentHashMap<>());
-		}
-		map = ImmutableMap.copyOf(packetMap);
-		LPTickHandler.registerPacketHandler(this);
-	}
-
-
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, InboundModernPacketWrapper msg) {
-		Side side = ctx.channel().attr(NetworkRegistry.CHANNEL_SOURCE).get();
-		if (side != null) {
-			int dimId = msg.packet.getDimension();
-			if(side == Side.CLIENT) dimId = 0;
-			Queue<InboundModernPacketWrapper> queue = getQueue(side, dimId);
-			if(queue != null) {
-				queue.add(msg);
-				return;
-			}
-		}
-		inThreadProcessPacket(msg.packet, msg.player);
-	}
-
-	public void tick(World world) {
-		Side side = world.isRemote ? Side.CLIENT : Side.SERVER;
-		int dimId = world.provider.getDimension();
-		if(side == Side.CLIENT) dimId = 0;
-		Queue<InboundModernPacketWrapper> queue = getQueue(side, dimId);
-		InboundModernPacketWrapper wrapper;
-		while ((wrapper = queue.poll()) != null) {
-			if(wrapper.player != null && wrapper.player.world != null) {
-				inThreadProcessPacket(wrapper.packet, wrapper.player);
-			}
+		IThreadListener thread = FMLCommonHandler.instance().getWorldThread(ctx.channel().attr(NetworkRegistry.NET_HANDLER).get());
+		if (thread.isCallingFromMinecraftThread()) {
+			inThreadProcessPacket(msg.packet, msg.player);
+		} else {
+			thread.addScheduledTask(() -> inThreadProcessPacket(msg.packet, msg.player));
 		}
 	}
 
@@ -90,13 +52,5 @@ public class PacketInboundHandler extends SimpleChannelInboundHandler<InboundMod
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		FMLLog.log(Level.ERROR, cause, "PacketInboundHandler exception");
 		super.exceptionCaught(ctx, cause);
-	}
-
-	private Queue<InboundModernPacketWrapper> getQueue(Side side, int dimId) {
-		Map<Integer, Queue<InboundModernPacketWrapper>> localMap = map.get(side);
-		if (!localMap.containsKey(dimId)) {
-			localMap.put(dimId, Queues.newConcurrentLinkedQueue());
-		}
-		return localMap.get(dimId);
 	}
 }

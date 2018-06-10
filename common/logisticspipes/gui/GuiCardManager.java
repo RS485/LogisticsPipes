@@ -3,6 +3,7 @@ package logisticspipes.gui;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.items.ItemModule;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
@@ -27,8 +28,8 @@ public class GuiCardManager extends LogisticsBaseGuiScreen {
 				Cinv.close(player, (int) player.posX, (int) player.posY, (int) player.posZ);
 			}
 		});
-		dummy.addRestrictedSlot(0, Cinv, 21, 21, LogisticsPipes.ModuleItem);
-		dummy.addRestrictedSlot(1, Cinv, 61, 21, LogisticsPipes.ModuleItem);
+		dummy.addRestrictedSlot(0, Cinv, 21, 21, ItemModule.class);
+		dummy.addRestrictedSlot(1, Cinv, 61, 21, ItemModule.class);
 		dummy.addRestrictedSlot(2, Cinv, 41, 58, itemStack -> false);
 		dummy.addRestrictedSlot(3, Cinv, 121, 39, LogisticsPipes.LogisticsItemCard);
 		for (int i = 4; i < 7; i++) {

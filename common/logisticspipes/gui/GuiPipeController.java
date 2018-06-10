@@ -233,7 +233,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		public void renderForgroundContent() {
 			fontRenderer.drawString(StringUtils.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
-			if (itemStack != null) {
+			if (!itemStack.isEmpty()) {
 				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
 				fontRenderer.drawString("Id: ", 10, 68, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glTranslated(10, 80, 0);

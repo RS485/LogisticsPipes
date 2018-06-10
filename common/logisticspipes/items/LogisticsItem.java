@@ -39,7 +39,7 @@ public class LogisticsItem extends Item {
 
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {
-		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName(), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", ""), "inventory"));
 	}
 
 	@Override

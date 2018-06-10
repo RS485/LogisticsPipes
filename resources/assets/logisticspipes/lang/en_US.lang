@@ -222,6 +222,10 @@ tooltip.brokenItem.2=You get this by trying to
 tooltip.brokenItem.3=break a protected pipe
 tooltip.logisticsItemCard=This is no valid Card
 
+tooltip.programmerForModule=Module program loaded
+tooltip.programmerForPipe=Pipe program loaded
+tooltip.programmerForUnknown=No valid program loaded
+
 # Upgrades
 
 item.SneakyUpgradeUP=Sneaky Upgrade (UP)

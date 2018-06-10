@@ -132,6 +132,10 @@ public class DummyContainer extends Container {
 		transferTop.add(addSlotToContainer(new Slot(inventory, slotId, xCoord, yCoord)));
 	}
 
+	public Slot addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Class<? extends Item> itemClass) {
+		return addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, itemClass));
+	}
+
 	public Slot addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Item item) {
 		return addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, item));
 	}
@@ -565,7 +569,7 @@ public class DummyContainer extends Container {
 		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
 			ItemStack stack1 = superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if (!stack2.isEmpty() && stack2.getItem() == LogisticsPipes.ModuleItem) {
+			if (!stack2.isEmpty() && stack2.getItem() instanceof ItemModule) {
 				if (entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.world)) {
 					((EntityPlayerMP) entityplayer).sendSlotContents(this, slotId, stack2);
 				}
@@ -819,7 +823,7 @@ public class DummyContainer extends Container {
 			ItemStack itemstack1 = (ItemStack) inventoryItemStacks.get(i);
 
 			if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
-				itemstack1 = itemstack == null ? null : itemstack.copy();
+				itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
 				inventoryItemStacks.set(i, itemstack1);
 
 				for (IContainerListener crafter : listeners) {

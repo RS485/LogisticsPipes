@@ -4,6 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCardManager;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.items.ItemModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.DummyContainer;
@@ -36,7 +37,7 @@ public class ItemMangerGui extends GuiProvider {
 			}
 		});
 		for (int i = 0; i < 2; i++) {
-			dummy.addRestrictedSlot(i, Cinv, 0, 0, LogisticsPipes.ModuleItem);
+			dummy.addRestrictedSlot(i, Cinv, 0, 0, ItemModule.class);
 		}
 		dummy.addRestrictedSlot(2, Cinv, 0, 0, itemStack -> false);
 		dummy.addRestrictedSlot(3, Cinv, 0, 0, LogisticsPipes.LogisticsItemCard);

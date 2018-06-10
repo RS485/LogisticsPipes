@@ -140,7 +140,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		boolean found = false;
 		EnumFacing oldOrientation = pointedDirection;
 		for (int l = 0; l < 6; ++l) {
-			pointedDirection = EnumFacing.values()[(pointedDirection.ordinal() + 1) % 6];
+			pointedDirection = EnumFacing.values()[(pointedDirection == null ? 6 : pointedDirection.ordinal() + 1) % 6];
 			if (isValidOrientation(pointedDirection)) {
 				found = true;
 				break;
@@ -235,7 +235,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound);
-			pointedDirection = EnumFacingUtil.getOrientation(nbttagcompound.getInteger("Orientation") % 7);
+			int tmp = nbttagcompound.getInteger("Orientation");
+			if(tmp == -1) {
+				pointedDirection = null;
+			} else {
+				pointedDirection = EnumFacingUtil.getOrientation(tmp % 6);
+			}
 			switchOrientationOnTick = (pointedDirection == null);
 			for (int i = 0; i < getChassiSize(); i++) {
 				_upgradeManagers[i].readFromNBT(nbttagcompound, Integer.toString(i));
@@ -250,10 +255,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
-		if (pointedDirection == null) {
-			pointedDirection = null;
-		}
-		nbttagcompound.setInteger("Orientation", pointedDirection.ordinal());
+		nbttagcompound.setInteger("Orientation", pointedDirection == null ? -1 : pointedDirection.ordinal());
 		for (int i = 0; i < getChassiSize(); i++) {
 			_upgradeManagers[i].writeToNBT(nbttagcompound, Integer.toString(i));
 		}
@@ -342,7 +344,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		boolean reInitGui = false;
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 			ItemStack stack = inventory.getStackInSlot(i);
-			if (stack == null) {
+			if (stack.isEmpty()) {
 				if (_module.hasModule(i)) {
 					_module.removeModule(i);
 					reInitGui = true;
@@ -413,7 +415,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
 		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 			ItemStack item = _moduleInventory.getStackInSlot(i);
-			if (item == null) {
+			if (item.isEmpty()) {
 				_moduleInventory.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(_moduleInventory);
 				return true;
@@ -424,7 +426,23 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (!entityplayer.isSneaking() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.ModuleItem && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage() != ItemModule.BLANK) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).isEmpty()) {
+			return false;
+		}
+
+		if (entityplayer.isSneaking() && SimpleServiceLocator.configToolHandler.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
+			if (MainProxy.isServer(getWorld())) {
+				if (settings == null || settings.openGui) {
+					((PipeLogisticsChassi) container.pipe).nextOrientation();
+				} else {
+					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
+				}
+			}
+			SimpleServiceLocator.configToolHandler.wrenchUsed(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container);
+			return true;
+		}
+
+		if (!entityplayer.isSneaking() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof ItemModule) {
 			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
@@ -435,14 +453,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			return true;
 		}
 
-		if (MainProxy.isServer(getWorld())) {
-			if (settings == null || settings.openGui) {
-				((PipeLogisticsChassi) container.pipe).nextOrientation();
-			} else {
-				entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
-			}
-		}
-		return true;
+		return false;
 	}
 
 	/*** IProvideItems ***/

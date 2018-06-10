@@ -7,22 +7,17 @@
 
 package logisticspipes;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.Ingredient;
@@ -34,8 +29,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ICustomModelLoader;
-import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -59,9 +52,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.GameData;
 
-import codechicken.lib.internal.CCLLog;
-import codechicken.lib.texture.TextureUtils;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -71,13 +61,16 @@ import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
+import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemPipeController;
+import logisticspipes.items.ItemPipeManager;
 import logisticspipes.items.ItemPipeSignCreator;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
@@ -88,6 +81,7 @@ import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logistics.LogisticsManager;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -151,17 +145,18 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
-import logisticspipes.recipes.ChipCraftingRecipes;
+import logisticspipes.recipes.BlockChippedCraftingRecipes;
+import logisticspipes.recipes.ChippedCraftingRecipes;
 import logisticspipes.recipes.CraftingPartRecipes;
 import logisticspipes.recipes.CraftingParts;
-import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.recipes.LPChipRecipes;
+import logisticspipes.recipes.ModuleChippedCraftingRecipes;
+import logisticspipes.recipes.PipeChippedCraftingRecipes;
 import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.Recipes;
+import logisticspipes.recipes.CraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.newpipe.LogisticsBlockModel;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
-import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
@@ -294,7 +289,9 @@ public class LogisticsPipes {
 	public static Item HSTubeGain;
 
 	// Logistics Modules/Upgrades
-	public static ItemModule ModuleItem;
+	public static ItemBlankModule LogisticsBlankModule;
+	public static Map<Class<? extends LogisticsModule>, ItemModule> LogisticsModules = new HashMap<>();
+	//public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
 
 	// Miscellaneous Items
@@ -307,7 +304,15 @@ public class LogisticsPipes {
 	public static LogisticsFluidContainer LogisticsFluidContainer;
 	public static LogisticsBrokenItem LogisticsBrokenItem;
 	public static ItemPipeController LogisticsPipeControllerItem;
-	public static ItemLogisticsChips LogisticsChips;
+	public static ItemPipeManager LogisticsPipeManagerItem;
+	public static ItemLogisticsProgrammer LogisticsProgrammer;
+
+	public static ItemLogisticsChips LogisticsChips_basic;
+	public static ItemLogisticsChips LogisticsChips_basic_raw;
+	public static ItemLogisticsChips LogisticsChips_advanced;
+	public static ItemLogisticsChips LogisticsChips_advanced_raw;
+	public static ItemLogisticsChips LogisticsChips_fpga;
+	public static ItemLogisticsChips LogisticsChips_fpga_raw;
 
 	// Logistics Blocks
 	public static LogisticsSolidBlock LogisticsSolidBlock;
@@ -348,7 +353,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
 		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());
-		SimpleServiceLocator.setCraftingPermissionManager(new CraftingPermissionManager());
 		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
 		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
 
@@ -482,8 +486,8 @@ public class LogisticsPipes {
 
 		LogisticsPipes.LogisticsParts = registerItem(new ItemParts());
 
-		LogisticsPipes.ModuleItem = registerItem(new ItemModule());
-		LogisticsPipes.ModuleItem.loadModules();
+		LogisticsPipes.LogisticsBlankModule = registerItem(new ItemBlankModule());
+		ItemModule.loadModules();
 
 		LogisticsPipes.LogisticsItemDisk = new ItemDisk();
 		LogisticsPipes.LogisticsItemDisk.setUnlocalizedName("itemDisk");
@@ -511,7 +515,22 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsPipeControllerItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "pipecontroller"));
 		registerItem(LogisticsPipes.LogisticsPipeControllerItem);
 
-		LogisticsChips = registerItem(new ItemLogisticsChips());
+		LogisticsPipes.LogisticsPipeManagerItem = new ItemPipeManager();
+		LogisticsPipes.LogisticsPipeManagerItem.setUnlocalizedName("pipeManager");
+		LogisticsPipes.LogisticsPipeManagerItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "pipemanager"));
+		registerItem(LogisticsPipes.LogisticsPipeManagerItem);
+
+		LogisticsPipes.LogisticsProgrammer = new ItemLogisticsProgrammer();
+		LogisticsPipes.LogisticsProgrammer.setUnlocalizedName("logisticsProgrammer");
+		LogisticsPipes.LogisticsProgrammer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticsprogrammer"));
+		registerItem(LogisticsPipes.LogisticsProgrammer);
+
+		LogisticsChips_basic = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC));
+		LogisticsChips_basic_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC_RAW));
+		LogisticsChips_advanced = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED));
+		LogisticsChips_advanced_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW));
+		LogisticsChips_fpga = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA));
+		LogisticsChips_fpga_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW));
 
 		registerPipes();
 
@@ -540,7 +559,7 @@ public class LogisticsPipes {
 		event.getRegistry().register(LogisticsPipes.LogisticsSubMultiBlock);
 	}
 
-	private <T extends LogisticsItem> T registerItem(T item) {
+	public static <T extends LogisticsItem> T registerItem(T item) {
 		MainProxy.proxy.registerModels(item);
 		ForgeRegistries.ITEMS.register(item);
 		return item;
@@ -569,13 +588,16 @@ public class LogisticsPipes {
 
 		if(true) { // TODO: Add Config Option
 			CraftingPartRecipes.craftingPartList.add(new CraftingParts(
-					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_FPGA),
-					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_BASIC),
-					new ItemStack(LogisticsPipes.LogisticsChips, 1, ItemLogisticsChips.ITEM_CHIP_ADVANCED)));
+					new ItemStack(LogisticsPipes.LogisticsChips_fpga, 1),
+					new ItemStack(LogisticsPipes.LogisticsChips_basic, 1),
+					new ItemStack(LogisticsPipes.LogisticsChips_advanced, 1)));
 			RecipeManager.recipeProvider.add(new LPChipRecipes());
 		}
-		RecipeManager.recipeProvider.add(new ChipCraftingRecipes());
-		RecipeManager.recipeProvider.add(new Recipes());
+		RecipeManager.recipeProvider.add(new BlockChippedCraftingRecipes());
+		RecipeManager.recipeProvider.add(new ModuleChippedCraftingRecipes());
+		RecipeManager.recipeProvider.add(new PipeChippedCraftingRecipes());
+		RecipeManager.recipeProvider.add(new ChippedCraftingRecipes());
+		RecipeManager.recipeProvider.add(new CraftingRecipes());
 		RecipeManager.loadRecipes();
 
 	}

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -41,7 +42,7 @@ public abstract class ModuleInHandGuiProvider extends GuiProvider {
 		if (item.isEmpty()) {
 			return null;
 		}
-		LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, new DummyWorldProvider(player.getEntityWorld()), null);
+		LogisticsModule module = ((ItemModule)item.getItem()).getModuleForItem(item, null, new DummyWorldProvider(player.getEntityWorld()), null);
 		module.registerPosition(ModulePositionType.IN_HAND, invSlot);
 		ItemModuleInformationManager.readInformation(item, module);
 		return module;

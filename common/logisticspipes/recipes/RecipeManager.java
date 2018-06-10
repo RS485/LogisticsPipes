@@ -11,6 +11,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.GameData;
 
@@ -70,7 +71,7 @@ public class RecipeManager {
 		}
 
 		@SuppressWarnings("unchecked")
-		public void addRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
+		public void addRecipe(ItemStack stack, Object... objects) {
 			List<Object> result = new ArrayList<>();
 			final boolean[] addRecipe = {true};
 			Arrays.stream(objects).forEach(o -> {
@@ -94,7 +95,8 @@ public class RecipeManager {
 				}
 			});
 			if(!addRecipe[0]) return;
-			GameData.register_impl(new LPShapedOreRecipe(getFreeRecipeResourceLocation(stack), stack, dependent, result.toArray()));
+
+			GameData.register_impl(new ShapedOreRecipe(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, result.toArray()).setRegistryName(getFreeRecipeResourceLocation(stack)));
 		}
 
 		@SuppressWarnings("unchecked")
@@ -103,8 +105,8 @@ public class RecipeManager {
 		}
 
 		@SuppressWarnings("unchecked")
-		public void addShapelessRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
-			GameData.register_impl(new LPShapelessOreRecipe(getFreeRecipeResourceLocation(stack), stack, dependent, objects));
+		public void addShapelessRecipe(ItemStack stack, Object... objects) {
+			GameData.register_impl(new ShapelessOreRecipe(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, objects).setRegistryName(getFreeRecipeResourceLocation(stack)));
 		}
 
 		@SuppressWarnings("unchecked")
@@ -125,7 +127,7 @@ public class RecipeManager {
 				ItemStack result = super.getCraftingResult(var1);
 				for (int i = 0; i < var1.getInventoryStackLimit(); i++) {
 					ItemStack stack = var1.getStackInSlot(i);
-					if (stack != null && stack.getItem() instanceof RemoteOrderer) {
+					if (!stack.isEmpty() && stack.getItem() instanceof RemoteOrderer) {
 						result.setTagCompound(stack.getTagCompound());
 						break;
 					}

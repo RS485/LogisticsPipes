@@ -1,6 +1,7 @@
 package logisticspipes.utils.gui;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -21,7 +22,7 @@ public class DummyModuleContainer extends DummyContainer {
 		super(player.inventory, null);
 		this.slot = slot;
 		moduleStack = player.inventory.mainInventory.get(slot);
-		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, new DummyWorldProvider(player.world), null);
+		module = ((ItemModule)moduleStack.getItem()).getModuleForItem(moduleStack, null, new DummyWorldProvider(player.world), null);
 		module.registerPosition(ModulePositionType.IN_HAND, slot);
 		ItemModuleInformationManager.readInformation(moduleStack, module);
 	}

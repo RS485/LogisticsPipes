@@ -126,6 +126,7 @@ import logisticspipes.pipes.tubes.HSTubeLine;
 import logisticspipes.pipes.tubes.HSTubeSCurve;
 import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
+import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -154,6 +155,7 @@ import logisticspipes.recipes.ModuleChippedCraftingRecipes;
 import logisticspipes.recipes.PipeChippedCraftingRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.CraftingRecipes;
+import logisticspipes.recipes.UpgradeChippedCraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.newpipe.LogisticsBlockModel;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
@@ -291,8 +293,7 @@ public class LogisticsPipes {
 	// Logistics Modules/Upgrades
 	public static ItemBlankModule LogisticsBlankModule;
 	public static Map<Class<? extends LogisticsModule>, ItemModule> LogisticsModules = new HashMap<>();
-	//public static ItemModule ModuleItem;
-	public static ItemUpgrade UpgradeItem;
+	public static Map<Class<? extends IPipeUpgrade>, ItemUpgrade> LogisticsUpgrades = new HashMap<>();
 
 	// Miscellaneous Items
 	public static RemoteOrderer LogisticsRemoteOrderer;
@@ -494,11 +495,7 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsItemDisk.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "itemdisk"));
 		registerItem(LogisticsPipes.LogisticsItemDisk);
 
-		LogisticsPipes.UpgradeItem = new ItemUpgrade();
-		LogisticsPipes.UpgradeItem.setUnlocalizedName("itemUpgrade");
-		LogisticsPipes.UpgradeItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "itemupgrade"));
-		LogisticsPipes.UpgradeItem.loadUpgrades();
-		registerItem(LogisticsPipes.UpgradeItem);
+		ItemUpgrade.loadUpgrades();
 
 		LogisticsPipes.LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsPipes.LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
@@ -532,14 +529,13 @@ public class LogisticsPipes {
 		LogisticsChips_fpga = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA));
 		LogisticsChips_fpga_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW));
 
-		registerPipes();
-
-		registerRecipes();
-
 
 		event.getRegistry().register(new LogisticsSolidBlockItem(LogisticsPipes.LogisticsSolidBlock).registerModels().setRegistryName(LogisticsPipes.LogisticsSolidBlock.getRegistryName()));
 		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsPipeBlock).setRegistryName(LogisticsPipes.LogisticsPipeBlock.getRegistryName()));
 		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsSubMultiBlock).setRegistryName(LogisticsPipes.LogisticsSubMultiBlock.getRegistryName()));
+
+		registerPipes();
+		registerRecipes();
 	}
 
 	@SubscribeEvent
@@ -594,6 +590,7 @@ public class LogisticsPipes {
 			RecipeManager.recipeProvider.add(new LPChipRecipes());
 		}
 		RecipeManager.recipeProvider.add(new BlockChippedCraftingRecipes());
+		RecipeManager.recipeProvider.add(new UpgradeChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new ModuleChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new PipeChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new ChippedCraftingRecipes());
@@ -742,7 +739,7 @@ public class LogisticsPipes {
 				recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
 			}
 
-			ShapelessRecipes recipe = new ShapelessRecipes(recipeLoc.getResourceDomain(), output, list);
+			ShapelessRecipes recipe = new ShapelessRecipes("logisticspipes.resetrecipe.pipe", output, list);
 			recipe.setRegistryName(recipeLoc);
 			GameData.register_impl(recipe);
 		}

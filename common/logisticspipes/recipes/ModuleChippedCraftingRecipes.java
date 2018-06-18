@@ -23,6 +23,7 @@ import logisticspipes.modules.ModuleCrafterMK2;
 import logisticspipes.modules.ModuleCrafterMK3;
 import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
 import logisticspipes.modules.ModuleEnchantmentSink;
+import logisticspipes.modules.ModuleEnchantmentSinkMK2;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
 import logisticspipes.modules.ModuleExtractorMk3;
@@ -176,9 +177,9 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 					new RecipeManager.RecipeIndex('p', programmer),
 					new RecipeManager.RecipeIndex('r', "dustRedstone"),
 					new RecipeManager.RecipeIndex('z', Items.BLAZE_POWDER));
-			LinkedList<Object> indexToUse = new LinkedList<>(recipeIndexes.stream()
+			LinkedList<Object> indexToUse = recipeIndexes.stream()
 					.filter(recipeIndex -> !(fLayout.getLine1() + fLayout.getLine2() + fLayout.getLine3()).replace(recipeIndex.getIndex(), ' ')
-							.equals((fLayout.getLine1() + fLayout.getLine2() + fLayout.getLine3()))).collect(Collectors.toList()));
+							.equals((fLayout.getLine1() + fLayout.getLine2() + fLayout.getLine3()))).collect(Collectors.toCollection(LinkedList::new));
 			indexToUse.addFirst(layout);
 			RecipeManager.craftingManager.addRecipe(new ItemStack(module), indexToUse.toArray());
 		}
@@ -204,7 +205,7 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 		registerModuleRecipe(parts, RecipeType.UPGRADE_2, ModuleModBasedItemSink.class, null);
 		registerModuleRecipe(parts, RecipeType.UPGRADE_2, ModuleOreDictItemSink.class, null);
 		registerModuleRecipe(parts, RecipeType.UPGRADE_5, ModuleEnchantmentSink.class, ModuleItemSink.class);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_6, ModuleEnchantmentSink.class, ModuleItemSink.class);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_6, ModuleEnchantmentSinkMK2.class, ModuleEnchantmentSink.class);
 		registerModuleRecipe(parts, RecipeType.UPGRADE_2, ModuleCreativeTabBasedItemSink.class, null);
 		registerModuleRecipe(parts, RecipeType.ADVANCED_1, ModuleCrafter.class, null);
 		registerModuleRecipe(parts, RecipeType.ADVANCED_2, ModuleCrafterMK2.class, ModuleCrafter.class);

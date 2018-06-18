@@ -119,8 +119,9 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		craftingCleanup = 0;
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
-			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == null) {
-				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
+			if (upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == null) {
+				ItemStack stack = inv.getStackInSlot(i);
+				sneakyOrientation = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			} else if (upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;
 			} else if (upgrade instanceof FuzzyUpgrade) {
@@ -156,7 +157,12 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	}
 
 	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
-		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
+		ItemStack stackInSlot = inv.getStackInSlot(slot);
+		if(stackInSlot.getItem() instanceof ItemUpgrade) {
+			upgrades[slot] = ((ItemUpgrade) stackInSlot.getItem()).getUpgradeForItem(stackInSlot, upgrades[slot]);
+		} else {
+			upgrades[slot] = null;
+		}
 		if (upgrades[slot] == null) {
 			inv.setInventorySlotContents(slot, ItemStack.EMPTY);
 			return false;

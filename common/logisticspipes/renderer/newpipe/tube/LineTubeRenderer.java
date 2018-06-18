@@ -73,6 +73,9 @@ public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightP
 				objectsToRender.addAll(LineTubeRenderer.tubeLineBase.get(speedupDirection).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, LineTubeRenderer.TEXTURE)).collect(Collectors.toList()));
 			}
 		}
+		if (pipe == null) {
+			objectsToRender.addAll(LineTubeRenderer.tubeLineBase.get(TubeLineRenderOrientation.NORTH_SOUTH).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, LineTubeRenderer.TEXTURE)).collect(Collectors.toList()));
+		}
 	}
 
 	@Override

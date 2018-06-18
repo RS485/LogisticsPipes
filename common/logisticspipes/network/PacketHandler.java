@@ -166,7 +166,6 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 				LogisticsPipes.log.error(packet.getClass().getName());
 				LogisticsPipes.log.error(packet.toString());
 				e.printStackTrace();
-				Thread.dumpStack();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

@@ -30,6 +30,14 @@ public class RenderEntry {
 		this(model, new I3DOperation[] {}, texture);
 	}
 
+	public RenderEntry clone() {
+		return new RenderEntry(model.copy(), operations.clone(), texture);
+	}
+
+	public RenderEntry clone(I3DOperation[] ops) {
+		return new RenderEntry(model.copy(), ops, RenderEntry.BLOCKS);
+	}
+
 	private final IModel3D model;
 	private final I3DOperation[] operations;
 	private final ResourceLocation texture;

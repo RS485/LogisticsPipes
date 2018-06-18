@@ -98,6 +98,13 @@ public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlace
 								.collect(Collectors.toList()));
 			}
 		}
+		if(pipe == null) {
+			objectsToRender
+					.addAll(SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.NORTH)
+							.stream()
+							.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, SCurveTubeRenderer.TEXTURE))
+							.collect(Collectors.toList()));
+		}
 	}
 
 	@Override

@@ -582,15 +582,15 @@ public class DummyContainer extends Container {
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
 
 		// we get a leftclick *and* a doubleclick message if there's a doubleclick with no item on the pointer, filter it out
-		if (currentlyEquippedStack == null && shiftMode == ClickType.PICKUP_ALL) {
+		if (currentlyEquippedStack.isEmpty() && shiftMode == ClickType.PICKUP_ALL) {
 			return currentlyEquippedStack;
 		}
 
 		if (slot instanceof HandelableSlot) {
 			overrideMCAntiSend = true;
-			if (currentlyEquippedStack == null) {
+			if (currentlyEquippedStack.isEmpty()) {
 				inventoryplayer.setItemStack(((HandelableSlot) slot).getProvidedStack());
-				return null;
+				return ItemStack.EMPTY;
 			}
 			return currentlyEquippedStack;
 		}

@@ -326,6 +326,11 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 
 			@Override
+			public boolean hasBCPowerSupplierUpgrade() {
+				return false;
+			}
+
+			@Override
 			public int getIC2PowerLevel() {
 				return 0;
 			}

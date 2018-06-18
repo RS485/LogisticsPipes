@@ -91,6 +91,9 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 				objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(tube.getOrientation().getRenderOrientation()).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
 			}
 		}
+		if(pipe == null) {
+			objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(TubeGainRenderOrientation.NORTH).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
+		}
 	}
 
 	@Override

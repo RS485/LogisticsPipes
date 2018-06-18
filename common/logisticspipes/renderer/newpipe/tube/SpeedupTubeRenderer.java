@@ -80,6 +80,11 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 						.collect(Collectors.toList()));
 			}
 		}
+		if(pipe == null) {
+			objectsToRender.addAll(SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.NORTH).stream()
+					.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, SpeedupTubeRenderer.TEXTURE))
+					.collect(Collectors.toList()));
+		}
 	}
 
 	@Override

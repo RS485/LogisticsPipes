@@ -243,6 +243,12 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
+	public String getUnlocalizedName(ItemStack stack)
+	{
+		return getUnlocalizedName();
+	}
+
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {
 		moduleType.registerModuleModel(this);

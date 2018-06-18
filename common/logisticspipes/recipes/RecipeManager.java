@@ -65,6 +65,11 @@ public class RecipeManager {
 		private String line1;
 		private String line2;
 	}
+	@AllArgsConstructor
+	@Getter
+	public static class RecipeLayoutSmaller {
+		private String line1;
+	}
 
 	public static class LocalCraftingManager {
 		public LocalCraftingManager() {
@@ -83,12 +88,13 @@ public class RecipeManager {
 				} else if (o instanceof RecipeLayoutSmall) {
 					result.add(((RecipeLayoutSmall) o).getLine1());
 					result.add(((RecipeLayoutSmall) o).getLine2());
+				} else if (o instanceof RecipeLayoutSmaller) {
+					result.add(((RecipeLayoutSmaller) o).getLine1());
 				} else if (o instanceof RecipeIndex) {
 					result.add(((RecipeIndex) o).getIndex());
 					result.add(((RecipeIndex) o).getValue());
 					if(((RecipeIndex) o).getValue() == null) {
 						addRecipe[0] = false;
-						return;
 					}
 				} else {
 					result.add(o);

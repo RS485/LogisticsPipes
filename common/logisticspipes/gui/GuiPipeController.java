@@ -28,7 +28,6 @@ import logisticspipes.network.packets.gui.OpenUpgradePacket;
 import logisticspipes.network.packets.pipe.PipeManagerWatchingPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
-import logisticspipes.pipes.upgrades.SneakyUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -96,8 +95,8 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 					if (itemStack == null) {
 						return false;
 					}
-					if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						if (!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
+					if (itemStack.getItem() instanceof ItemUpgrade) {
+						if (!((ItemUpgrade)itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
 							return false;
 						}
 					} else {
@@ -112,9 +111,9 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 					if (itemStack == null) {
 						return false;
 					}
-					if (itemStack.getItem() == LogisticsPipes.UpgradeItem) {
-						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
-						if (!(upgrade instanceof SneakyUpgrade) && !(upgrade instanceof SneakyUpgradeConfig)) {
+					if (itemStack.getItem() instanceof ItemUpgrade) {
+						IPipeUpgrade upgrade = ((ItemUpgrade)itemStack.getItem()).getUpgradeForItem(itemStack, null);
+						if (!(upgrade instanceof SneakyUpgradeConfig)) {
 							return false;
 						}
 						if (!upgrade.isAllowedForPipe(pipe)) {
@@ -163,7 +162,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
-			ItemStack stack = new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.SNEAKY_COMBINATION);
+			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsUpgrades.get(SneakyUpgradeConfig.class), 1);
 			itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);

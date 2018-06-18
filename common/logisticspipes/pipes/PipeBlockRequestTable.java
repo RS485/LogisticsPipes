@@ -41,6 +41,7 @@ import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -58,6 +59,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
 	public SimpleStackInventory toSortInv = new SimpleStackInventory(1, "Sorting Slot", 64);
+	private InventoryCraftResult vanillaResult = new InventoryCraftResult();
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private int delay = 0;
@@ -358,11 +360,11 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		if (cache == null) {
 			cacheRecipe();
 			if (cache == null) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 		}
 		if (resultInv.getIDStackInSlot(0) == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
 		int[] toUse = new int[9];
@@ -370,14 +372,14 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		outer:
 			for (int i = 0; i < 9; i++) {
 				ItemStack item = matrix.getStackInSlot(i);
-				if (item == null) {
+				if (item.isEmpty()) {
 					toUse[i] = -1;
 					continue;
 				}
 				ItemIdentifier ident = ItemIdentifier.get(item);
 				for (int j = 0; j < inv.getSizeInventory(); j++) {
 					item = inv.getStackInSlot(j);
-					if (item == null) {
+					if (item.isEmpty()) {
 						continue;
 					}
 					ItemIdentifier withIdent = ItemIdentifier.get(item);
@@ -399,7 +401,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 					}
 				}
 				//Not enough material
-				return null;
+				return ItemStack.EMPTY;
 			}
 		AutoCraftingInventory crafter = new AutoCraftingInventory(null);//TODO
 		for (int i = 0; i < 9; i++) {
@@ -409,14 +411,14 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			}
 		}
 		if (!cache.matches(crafter, getWorld())) {
-			return null; //Fix MystCraft
+			return ItemStack.EMPTY; //Fix MystCraft
 		}
 		ItemStack result = cache.getCraftingResult(crafter);
-		if (result == null) {
-			return null;
+		if (result.isEmpty()) {
+			return ItemStack.EMPTY;
 		}
 		if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		crafter = new AutoCraftingInventory(null);//TODO
 		for (int i = 0; i < 9; i++) {
@@ -430,7 +432,18 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			fake = MainProxy.getFakePlayer(container);
 		}
 		result = result.copy();
-		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0);
+
+		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {
+
+			@Override
+			protected void onCrafting(ItemStack stack) {
+				IInventory tmp = this.inventory;
+				vanillaResult.setRecipeUsed(cache);
+				this.inventory = vanillaResult;
+				super.onCrafting(stack);
+				this.inventory = tmp;
+			}
+		};
 		result = craftingSlot.onTake(fake, result);
 		for (int i = 0; i < 9; i++) {
 			ItemStack left = crafter.getStackInSlot(i);
@@ -457,10 +470,10 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	public ItemStack getResultForClick() {
 		ItemStack result = getOutput(true);
-		if (result == null) {
+		if (result.isEmpty()) {
 			result = getOutput(false);
 		}
-		if (result == null) {
+		if (result.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
 		result.setCount(inv.addCompressed(result, false));

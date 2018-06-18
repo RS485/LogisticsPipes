@@ -95,6 +95,12 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 						.collect(Collectors.toList()));
 			}
 		}
+		if(pipe == null) {
+			objectsToRender.addAll(CurveTubeRenderer.tubeTurnBase.get(TurnDirection.NORTH_EAST)
+					.stream()
+					.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, CurveTubeRenderer.TEXTURE))
+					.collect(Collectors.toList()));
+		}
 	}
 
 	@Override

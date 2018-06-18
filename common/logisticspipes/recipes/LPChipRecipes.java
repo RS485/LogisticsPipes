@@ -29,7 +29,7 @@ public class LPChipRecipes implements IRecipeProvider {
 						"cd",
 						"dc"
 				),
-				new RecipeManager.RecipeIndex('c', new ItemStack(LogisticsPipes.LogisticsChips_basic, 1)),
+				new RecipeManager.RecipeIndex('c', new ItemStack(LogisticsPipes.LogisticsChips_basic_raw, 1)),
 				new RecipeManager.RecipeIndex('d', "gemDiamond"));
 
 		GameRegistry.addSmelting(new ItemStack(LogisticsPipes.LogisticsChips_advanced_raw, 1), new ItemStack(LogisticsPipes.LogisticsChips_advanced, 1), 0);

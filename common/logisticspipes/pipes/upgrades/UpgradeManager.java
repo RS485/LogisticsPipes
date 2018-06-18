@@ -20,6 +20,7 @@ import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.upgrades.power.BCPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2PowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
 import logisticspipes.proxy.MainProxy;
@@ -57,6 +58,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	private boolean hasPatternUpgrade = false;
 	private boolean hasPowerPassUpgrade = false;
 	private boolean hasRFPowerUpgrade = false;
+	private boolean hasBCPowerUpgrade = false;
 	private int getIC2PowerLevel = 0;
 	private boolean hasCCRemoteControlUpgrade = false;
 	private boolean hasCraftingMonitoringUpgrade = false;
@@ -98,7 +100,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
-		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
+		ItemStack stack = inv.getStackInSlot(slot);
+		if(stack.getItem() instanceof ItemUpgrade) {
+			upgrades[slot] = ((ItemUpgrade)stack.getItem()).getUpgradeForItem(stack, upgrades[slot]);
+		} else {
+			upgrades[slot] = null;
+		}
 		if (upgrades[slot] == null) {
 			inv.setInventorySlotContents(slot, ItemStack.EMPTY);
 			return false;
@@ -118,9 +125,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		boolean needUpdate = false;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
-			if (item != null) {
+			if (!item.isEmpty()) {
 				needUpdate |= updateModule(i, upgrades, inv);
-			} else if (item == null && upgrades[i] != null) {
+			} else if (item.isEmpty() && upgrades[i] != null) {
 				needUpdate |= removeUpgrade(i, upgrades);
 			}
 		}
@@ -137,6 +144,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		hasPatternUpgrade = false;
 		hasPowerPassUpgrade = false;
 		hasRFPowerUpgrade = false;
+		hasBCPowerUpgrade = false;
 		getIC2PowerLevel = 0;
 		hasCCRemoteControlUpgrade = false;
 		hasCraftingMonitoringUpgrade = false;
@@ -147,15 +155,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		guiUpgrades = new boolean[18];
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
-			if (upgrade instanceof SneakyUpgrade && sneakyOrientation == null && !isCombinedSneakyUpgrade) {
-				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
-			} else if(upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == null && !isCombinedSneakyUpgrade) {
+			if(upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == null && !isCombinedSneakyUpgrade) {
 				ItemStack stack = getInv().getStackInSlot(i);
 				sneakyOrientation = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			} else if (upgrade instanceof SpeedUpgrade) {
 				speedUpgradeCount += inv.getStackInSlot(i).getCount();
-			} else if (upgrade instanceof ConnectionUpgrade) {
-				disconnectedSides.add(((ConnectionUpgrade) upgrade).getSide());
 			} else if (upgrade instanceof ConnectionUpgradeConfig) {
 				ItemStack stack = getInv().getStackInSlot(i);
 				((ConnectionUpgradeConfig)upgrade).getSides(stack).forEach(disconnectedSides::add);
@@ -175,6 +179,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				hasPowerPassUpgrade = true;
 			} else if (upgrade instanceof RFPowerSupplierUpgrade) {
 				hasRFPowerUpgrade = true;
+			} else if (upgrade instanceof BCPowerSupplierUpgrade) {
+				hasBCPowerUpgrade = true;
 			} else if (upgrade instanceof IC2PowerSupplierUpgrade) {
 				getIC2PowerLevel = Math.max(getIC2PowerLevel, ((IC2PowerSupplierUpgrade) upgrade).getPowerLevel());
 			} else if (upgrade instanceof CCRemoteControlUpgrade) {
@@ -201,17 +207,15 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		}
 		for (int i = 0; i < sneakyInv.getSizeInventory(); i++) {
 			ItemStack item = sneakyInv.getStackInSlot(i);
-			if (item != null) {
+			if (!item.isEmpty()) {
 				needUpdate |= updateModule(i, sneakyUpgrades, sneakyInv);
-			} else if (item == null && sneakyUpgrades[i] != null) {
+			} else if (item.isEmpty() && sneakyUpgrades[i] != null) {
 				needUpdate |= removeUpgrade(i, sneakyUpgrades);
 			}
 		}
 		for (int i = 0; i < sneakyUpgrades.length; i++) {
 			IPipeUpgrade upgrade = sneakyUpgrades[i];
-			if (upgrade instanceof SneakyUpgrade) {
-				combinedSneakyOrientation[i] = ((SneakyUpgrade) upgrade).getSneakyOrientation();
-			} else if(upgrade instanceof SneakyUpgradeConfig) {
+			if(upgrade instanceof SneakyUpgradeConfig) {
 				ItemStack stack = getSneakyInv().getStackInSlot(i);
 				combinedSneakyOrientation[i] = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			}
@@ -308,14 +312,15 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	public boolean tryIserting(World world, EntityPlayer entityplayer) {
-		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.UpgradeItem) {
+		ItemStack itemStackInMainHand = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+		if (!itemStackInMainHand.isEmpty() && itemStackInMainHand.getItem() instanceof ItemUpgrade) {
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
-			IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), null);
+			IPipeUpgrade upgrade = ((ItemUpgrade)itemStackInMainHand.getItem()).getUpgradeForItem(itemStackInMainHand, null);
 			if (upgrade.isAllowedForPipe(pipe)) {
 				if (isCombinedSneakyUpgrade) {
-					if (upgrade instanceof SneakyUpgrade) {
+					if (upgrade instanceof SneakyUpgradeConfig) {
 						if (insertIntInv(entityplayer, sneakyInv)) {
 							return true;
 						}
@@ -326,12 +331,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				}
 			}
 		}
-		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsItemCard && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage() == LogisticsItemCard.SEC_CARD) {
+		if (!itemStackInMainHand.isEmpty() && itemStackInMainHand.getItem() == LogisticsPipes.LogisticsItemCard && itemStackInMainHand.getItemDamage() == LogisticsItemCard.SEC_CARD) {
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
 			if (secInv.getStackInSlot(0) == null) {
-				ItemStack newItem = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1);
+				ItemStack newItem = itemStackInMainHand.splitStack(1);
 				secInv.setInventorySlotContents(0, newItem);
 				InventoryChanged(secInv);
 				return true;
@@ -413,12 +418,17 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 
 	@Override
 	public boolean hasPowerPassUpgrade() {
-		return hasPowerPassUpgrade || hasRFPowerUpgrade || getIC2PowerLevel > 0;
+		return hasPowerPassUpgrade || hasRFPowerUpgrade || hasBCPowerUpgrade || getIC2PowerLevel > 0;
 	}
 
 	@Override
 	public boolean hasRFPowerSupplierUpgrade() {
 		return hasRFPowerUpgrade;
+	}
+
+	@Override
+	public boolean hasBCPowerSupplierUpgrade() {
+		return hasBCPowerUpgrade;
 	}
 
 	@Override

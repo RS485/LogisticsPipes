@@ -362,7 +362,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	@SuppressWarnings("ConstantConditions")
 	public static ItemIdentifier get(ItemStack itemStack) {
-		if (itemStack == null && ItemIdentifier.allowNullsForTesting) {
+		if ((itemStack == null || itemStack.isEmpty()) && ItemIdentifier.allowNullsForTesting) {
 			return null;
 		}
 		ItemIdentifier proposal = null;

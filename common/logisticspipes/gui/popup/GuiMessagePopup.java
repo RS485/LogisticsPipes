@@ -35,7 +35,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 	}
 
 	@Override
-	protected void renderGuiBackground(int par1, int par2) {
+	protected void renderGuiBackground(int mouseX, int mouseY) {
 		if (mWidth == 0) {
 			int lWidth = 0;
 			for (String msg : text) {

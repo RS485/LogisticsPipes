@@ -58,6 +58,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -225,6 +226,16 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			writeByte(Byte.MIN_VALUE);
 		} else {
 			writeByte(direction.ordinal());
+		}
+	}
+
+	@Override
+	public void writeResourceLocation(ResourceLocation resource) {
+		if(resource == null) {
+			writeBoolean(false);
+		} else {
+			writeBoolean(true);
+			writeUTF(resource.toString());
 		}
 	}
 
@@ -428,6 +439,14 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 			throw new IndexOutOfBoundsException("Invalid value for EnumFacing");
 		}
 		return EnumFacing.VALUES[b];
+	}
+
+	@Override
+	public ResourceLocation readResourceLocation() {
+		if(readBoolean()) {
+			return new ResourceLocation(Objects.requireNonNull(readUTF()));
+		}
+		return null;
 	}
 
 	@Override

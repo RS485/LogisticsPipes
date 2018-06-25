@@ -123,12 +123,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	protected List<IInventory> getConnectedRawInventories() {
+	protected List<TileEntity> getConnectedRawInventories() {
 		if (_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
 		}
-		List<IInventory> adjacent = new ArrayList<>(1);
-		IInventory adjinv = getRealInventory();
+		List<TileEntity> adjacent = new ArrayList<>(1);
+		TileEntity adjinv = getRealInventory();
 		if (adjinv != null) {
 			adjacent.add(adjinv);
 		}

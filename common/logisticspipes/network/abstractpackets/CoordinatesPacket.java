@@ -1,5 +1,7 @@
 package logisticspipes.network.abstractpackets;
 
+import java.util.function.Function;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -8,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import logisticspipes.LPConstants;
 import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -75,6 +78,16 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		posY = pos.getY();
 		posZ = pos.getZ();
 		return this;
+	}
+
+
+	public TileEntity getTile(World world, Function<TileEntity, Boolean> validateResult) {
+		TileEntity tile = getTile(world, TileEntity.class);
+		if (!validateResult.apply(tile)) {
+			targetNotFound("TileEntity condition not met");
+			return null;
+		}
+		return tile;
 	}
 
 	@SuppressWarnings("unchecked")

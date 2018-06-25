@@ -20,15 +20,17 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import net.minecraftforge.items.IItemHandler;
+
 public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
-	protected final IInventory _inventory;
+	protected final IItemHandler _inventory;
 	private final boolean _hideOnePerStack;
 	private final boolean _hideOne;
 	private final int _cropStart;
 	private final int _cropEnd;
 
-	public InventoryUtil(IInventory inventory, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public InventoryUtil(IItemHandler inventory, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		_inventory = inventory;
 		_hideOnePerStack = hideOnePerStack;
 		_hideOne = hideOne;
@@ -40,7 +42,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	public int itemCount(ItemIdentifier item) {
 		int count = 0;
 		boolean first = true;
-		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++) {
+		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null || !ItemIdentifier.get(stack).equals(item)) {
 				continue;
@@ -58,9 +60,9 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		Map<ItemIdentifier, Integer> items = new LinkedHashMap<>();
-		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++) {
+		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) {
+			if (stack.isEmpty()) {
 				continue;
 			}
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
@@ -78,7 +80,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> items = new TreeSet<>();
-		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++) {
+		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack.isEmpty()) {
 				continue;
@@ -101,7 +103,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		ItemStack outputStack = null;
 		boolean first = true;
 
-		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd && count > 0; i++) {
+		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd && count > 0; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack.isEmpty() || (stack.getCount() == 1 && _hideOnePerStack) || !ItemIdentifier.get(stack).equals(item)) {
 				continue;
@@ -111,14 +113,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			if (itemsToSplit == 0) {
 				continue;
 			}
-			ItemStack removed = null;
-			if (stack.getCount() > itemsToSplit) { // then we only want part of the stack
-				removed = stack.splitStack(itemsToSplit);
-				_inventory.setInventorySlotContents(i, stack);
-			} else {
-				removed = stack;
-				_inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-			}
+			ItemStack removed = _inventory.extractItem(i, itemsToSplit, false);
 			if (outputStack == null) {
 				outputStack = removed;
 			} else {
@@ -126,16 +121,15 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			}
 			count -= removed.getCount();
 		}
-		_inventory.markDirty();
 		return outputStack;
 	}
 
 	//Ignores slot/item hiding
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
-		for (int i = 0; i < _inventory.getSizeInventory(); i++) {
+		for (int i = 0; i < _inventory.getSlots(); i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) {
+			if (stack.isEmpty()) {
 				continue;
 			}
 			if (ItemIdentifier.get(stack).getUndamaged().equals(item)) {
@@ -154,11 +148,11 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
 		int totalRoom = 0;
-		int stackLimit = _inventory.getInventoryStackLimit();
-		for (int i = 0; i < _inventory.getSizeInventory() && count > totalRoom; i++) {
+		for (int i = 0; i < _inventory.getSlots() && count > totalRoom; i++) {
+			int stackLimit = _inventory.getSlotLimit(i);
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) {
-				if (_inventory.isItemValidForSlot(i, item.unsafeMakeNormalStack(1))) {
+			if (stack.isEmpty()) {
+				if (_inventory.insertItem(i, item.unsafeMakeNormalStack(1), true).isEmpty()) {
 					totalRoom += Math.min(stackLimit, item.getMaxStackSize());
 				}
 				continue;
@@ -179,7 +173,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	@Override
 	public int getSizeInventory() {
-		return _inventory.getSizeInventory();
+		return _inventory.getSlots();
 	}
 
 	@Override
@@ -189,43 +183,13 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		ItemStack stack = _inventory.decrStackSize(i, j);
-		_inventory.markDirty();
-		return stack;
+		return _inventory.extractItem(i, j, false);
 	}
 
 	@Override
-	public int addToSlot(ItemStack stack, int i) {
-		if (!_inventory.isItemValidForSlot(i, stack)) {
-			return 0;
-		}
-		int max = Math.min(stack.getMaxStackSize(), _inventory.getInventoryStackLimit());
-
-		ItemStack stackInSlot = _inventory.getStackInSlot(i);
-		if (stackInSlot == null) {
-			int wanted = Math.min(stack.getCount(), max);
-			stackInSlot = stack.copy();
-			stackInSlot.setCount(wanted);
-			_inventory.setInventorySlotContents(i, stackInSlot);
-			return wanted;
-		}
-
-		if (!ItemIdentifier.get(stackInSlot).equals(ItemIdentifier.get(stack))) {
-			return 0;
-		}
-
-		int toAdd = max - stackInSlot.getCount();
-		if (toAdd < 0) {
-			return 0;
-		}
-
-		if (toAdd > stack.getCount()) {
-			toAdd = stack.getCount();
-		}
-
-		stackInSlot.setCount(stackInSlot.getCount() + toAdd);
-		_inventory.setInventorySlotContents(i, stackInSlot);
-		_inventory.markDirty();
-		return toAdd;
+	public int addToSlot(ItemStack stack, int slot) {
+		int wanted = stack.getCount();
+		ItemStack rest = _inventory.insertItem(slot, stack, true);
+		return wanted - rest.getCount();
 	}
 }

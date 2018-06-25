@@ -19,7 +19,11 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
 
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class InventoryUtilFactory {
 
@@ -34,48 +38,31 @@ public class InventoryUtilFactory {
 		}
 	}
 
-	private TileEntity getTileEntityFromInventory(IInventory inv) { //TODO: Find a way for this with the new capability system...
-		if (inv instanceof TileEntity) {
-			return (TileEntity) inv;
-		} else if (inv instanceof SidedInventoryMinecraftAdapter) {
-			if (((SidedInventoryMinecraftAdapter) inv)._sidedInventory instanceof TileEntity) {
-				return (TileEntity) ((SidedInventoryMinecraftAdapter) inv)._sidedInventory;
-			}
-		}
-		return null;
-	}
-
-	public SpecialInventoryHandler getUtilForInv(IInventory inv, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		TileEntity tile = getTileEntityFromInventory(inv);
-		if (tile == null) {
+	public SpecialInventoryHandler getUtilForInv(ICapabilityProvider inv, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		if (!(inv instanceof TileEntity)) {
 			return null;
 		}
 		for (SpecialInventoryHandler invHandler : handler) {
-			if (invHandler.isType(tile)) {
-				return invHandler.getUtilForTile(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
+			if (invHandler.isType((TileEntity) inv)) {
+				return invHandler.getUtilForTile((TileEntity) inv, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 			}
 		}
 		return null;
 	}
 
-	@Deprecated
-	public IInventoryUtil getInventoryUtil(IInventory inv) {
-		return getInventoryUtil(inv, null);
+	public IInventoryUtil getInventoryUtil(WorldCoordinatesWrapper.AdjacentTileEntity adj) {
+		return getHidingInventoryUtil(adj.tileEntity, adj.direction.getOpposite(), false, false, 0, 0);
 	}
 
-	public IInventoryUtil getInventoryUtil(IInventory inv, EnumFacing dir) {
+	public IInventoryUtil getInventoryUtil(TileEntity inv, EnumFacing dir) {
 		return getHidingInventoryUtil(inv, dir, false, false, 0, 0);
 	}
 
-	public IInventoryUtil getHidingInventoryUtil(IInventory inv, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		IInventoryUtil util = getUtilForInv(inv, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
-		if (util == null) {
-			util = new InventoryUtil(InventoryHelper.getInventory(inv), hideOnePerStack, hideOne, cropStart, cropEnd);;
+	public IInventoryUtil getHidingInventoryUtil(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		IInventoryUtil util = getUtilForInv(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
+		if (util == null &&  tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir)) {
+			util = new InventoryUtil(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
 		}
 		return util;
-	}
-
-	public IInventoryUtil getFuzzyInventoryUtil(IInventory inv) {
-		return new FuzzyInventoryUtil(inv);
 	}
 }

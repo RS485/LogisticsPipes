@@ -44,6 +44,7 @@ import java.util.EnumSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 
 import io.netty.buffer.ByteBuf;
 
@@ -111,6 +112,8 @@ public interface LPDataOutput {
 
 	void writeFacing(EnumFacing direction);
 
+	void writeResourceLocation(ResourceLocation resource);
+
 	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 
 	void writeBitSet(BitSet bits);
@@ -136,6 +139,7 @@ public interface LPDataOutput {
 	default void writeSerializable(LPFinalSerializable finalSerializable) {
 		finalSerializable.write(this);
 	}
+
 
 	interface LPDataOutputConsumer {
 

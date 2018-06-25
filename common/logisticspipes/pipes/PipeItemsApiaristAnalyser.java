@@ -26,6 +26,8 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
 
+import net.minecraftforge.items.CapabilityItemHandler;
+
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRoutedItem {
@@ -104,7 +106,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	@Override
-	public IInventoryUtil getPointedInventory(boolean forExtract) {
+	public IInventoryUtil getPointedInventory() {
 		return null; //Unused
 	}
 
@@ -119,21 +121,21 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation, boolean forExtract) {
+	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation) {
 		return null;
 	}
 
 	@Override
 	public IInventoryUtil getUnsidedInventory() {
-		IInventory inv = getRealInventory();
+		TileEntity inv = getRealInventory();
 		if (inv == null) {
 			return null;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, getPointedOrientation().getOpposite());
 	}
 
 	@Override
-	public IInventory getRealInventory() {
+	public TileEntity getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
 		if (tile == null) {
 			return null;
@@ -141,10 +143,10 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements ISendRo
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			return null;
 		}
-		if (!(tile instanceof IInventory)) {
+		if (!(tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getPointedOrientation().getOpposite()))) {
 			return null;
 		}
-		return InventoryHelper.getInventory((IInventory) tile);
+		return tile;
 	}
 
 	@Override

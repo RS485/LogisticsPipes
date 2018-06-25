@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IInventoryUtil;
@@ -26,7 +27,6 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -35,6 +35,8 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
@@ -50,7 +52,14 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 				}
 				if (tile instanceof LogisticsSecurityTileEntity) {
 					EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
-					if (ori == null || ori == null || ori == EnumFacing.DOWN || ori == EnumFacing.UP) {
+					if (ori == null || ori == EnumFacing.DOWN || ori == EnumFacing.UP) {
+						return false;
+					}
+					return true;
+				}
+				if (tile instanceof LogisticsProgramCompilerTileEntity) {
+					EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
+					if (ori == null || ori == EnumFacing.DOWN) {
 						return false;
 					}
 					return true;
@@ -123,16 +132,13 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public IInventoryUtil getPointedInventory(boolean forExtraction) {
-		IInventoryUtil inv = super.getPointedInventory(forExtraction);
+	public IInventoryUtil getPointedInventory() {
+		IInventoryUtil inv = super.getPointedInventory();
 		if (inv == null) {
-			Optional<Pair<IInventory, EnumFacing>> first = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-					.map(adjacentInventory -> new Pair<>(InventoryHelper.getInventory((IInventory) adjacentInventory.tileEntity), adjacentInventory.direction))
-					.filter(inventoryDirectionPair -> inventoryDirectionPair.getValue1() != null).findFirst();
+			Optional<WorldCoordinatesWrapper.AdjacentTileEntity> first = new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> adjacent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)).findFirst();
 			if (first.isPresent()) {
-				Pair<IInventory, EnumFacing> p = first.get();
-				inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(p.getValue1(), p.getValue2().getOpposite());
+				inv = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(first.get());
 			}
 		}
 		return inv;

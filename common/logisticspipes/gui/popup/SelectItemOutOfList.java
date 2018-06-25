@@ -95,7 +95,7 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	}
 
 	@Override
-	protected void renderGuiBackground(int par1, int par2) {
+	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		fontRenderer.drawString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
 		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);

@@ -217,11 +217,11 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 				.filter(adjacent -> ((IInventory) adjacent.tileEntity).getSizeInventory() > 0)
 		//@formatter:on
 				.forEach(adjacent -> {
-					EnumFacing direction = adjacent.direction;
+					EnumFacing direction = adjacent.direction.getOpposite();
 					if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
 						direction = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
 					}
-					IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) adjacent.tileEntity, direction);
+					IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent.tileEntity, direction);
 
 					if (_service.getUpgradeManager(slot, positionInt).hasPatternUpgrade()) {
 						createPatternRequest(invUtil);

@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
@@ -68,7 +69,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 			return;
 		}
 		currentTickCount = 0;
-		IInventory inv = _service.getRealInventory();
+		TileEntity inv = _service.getRealInventory();
 		if (!(inv instanceof ISidedInventory)) {
 			return;
 		}

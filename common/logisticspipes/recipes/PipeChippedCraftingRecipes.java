@@ -1,6 +1,7 @@
 package logisticspipes.recipes;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,8 +11,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 
@@ -24,11 +27,17 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 		ENDER_2,
 	}
 
-	private void registerPipeRecipe(CraftingParts parts, RecipeType type, Item targetPipe, Item basePipe) {
+	private void registerPipeRecipe(CraftingParts parts, RecipeType type, ResourceLocation recipeCategory, Item targetPipe, Item basePipe) {
 		ItemStack programmerStack = new ItemStack(LogisticsPipes.LogisticsProgrammer);
 		programmerStack.setTagCompound(new NBTTagCompound());
 		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, targetPipe.getRegistryName().toString());
 		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);
+
+		if(!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
+			LogisticsProgramCompilerTileEntity.programByCategory.put(recipeCategory, new HashSet<>());
+		}
+		LogisticsProgramCompilerTileEntity.programByCategory.get(recipeCategory).add(targetPipe.getRegistryName());
+
 		RecipeManager.RecipeLayout layout = null;
 		switch (type) {
 			case LEVEL_1:
@@ -100,20 +109,20 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('f', parts.getChipFpga()),
 				new RecipeManager.RecipeIndex('p', new ItemStack(LogisticsPipes.BasicTransportPipe)));
 
-		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsPipes.LogisticsRequestPipeMk1, LogisticsPipes.LogisticsBasicPipe);
-		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsPipes.LogisticsProviderPipeMk1, LogisticsPipes.LogisticsBasicPipe);
-		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsPipes.LogisticsCraftingPipeMk1, LogisticsPipes.LogisticsBasicPipe);
-		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsPipes.LogisticsSatellitePipe, LogisticsPipes.LogisticsBasicPipe);
-		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsPipes.LogisticsSupplierPipe, LogisticsPipes.LogisticsBasicPipe);
-		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsPipes.LogisticsCraftingPipeMk2, LogisticsPipes.LogisticsCraftingPipeMk1);
-		registerPipeRecipe(parts, RecipeType.LEVEL_3, LogisticsPipes.LogisticsRequestPipeMk2, LogisticsPipes.LogisticsRequestPipeMk1);
-		registerPipeRecipe(parts, RecipeType.ENDER_1, LogisticsPipes.LogisticsRemoteOrdererPipe, LogisticsPipes.LogisticsBasicPipe);
-		registerPipeRecipe(parts, RecipeType.LEVEL_3, LogisticsPipes.LogisticsProviderPipeMk2, LogisticsPipes.LogisticsProviderPipeMk1);
-		registerPipeRecipe(parts, RecipeType.ENDER_1, LogisticsPipes.LogisticsInvSysConPipe, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LogisticsPipes.LogisticsRequestPipeMk1, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LogisticsPipes.LogisticsProviderPipeMk1, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LogisticsPipes.LogisticsCraftingPipeMk1, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LogisticsPipes.LogisticsSatellitePipe, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LogisticsPipes.LogisticsSupplierPipe, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsCraftingPipeMk2, LogisticsPipes.LogisticsCraftingPipeMk1);
+		registerPipeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsRequestPipeMk2, LogisticsPipes.LogisticsRequestPipeMk1);
+		registerPipeRecipe(parts, RecipeType.ENDER_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsRemoteOrdererPipe, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsProviderPipeMk2, LogisticsPipes.LogisticsProviderPipeMk1);
+		registerPipeRecipe(parts, RecipeType.ENDER_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_3, LogisticsPipes.LogisticsInvSysConPipe, LogisticsPipes.LogisticsBasicPipe);
 
-		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsPipes.LogisticsEntrancePipe, LogisticsPipes.LogisticsProviderPipeMk1);
-		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsPipes.LogisticsDestinationPipe, LogisticsPipes.LogisticsProviderPipeMk1);
-		registerPipeRecipe(parts, RecipeType.ENDER_2, LogisticsPipes.LogisticsFirewallPipe, LogisticsPipes.LogisticsBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsEntrancePipe, LogisticsPipes.LogisticsProviderPipeMk1);
+		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsDestinationPipe, LogisticsPipes.LogisticsProviderPipeMk1);
+		registerPipeRecipe(parts, RecipeType.ENDER_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_3, LogisticsPipes.LogisticsFirewallPipe, LogisticsPipes.LogisticsBasicPipe);
 	}
 
 	@Override

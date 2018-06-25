@@ -8,18 +8,20 @@ import net.minecraft.item.ItemStack;
 
 import net.minecraft.util.EnumFacing;
 
+import net.minecraftforge.items.IItemHandler;
+
 public class TransactorSimple extends Transactor {
 
-	protected IInventory inventory;
+	protected IItemHandler inventory;
 
-	public TransactorSimple(IInventory inventory) {
+	public TransactorSimple(IItemHandler inventory) {
 		this.inventory = inventory;
 	}
 
 	@Override
 	public int inject(ItemStack stack, EnumFacing orientation, boolean doAdd) {
-		List<IInvSlot> filledSlots = new ArrayList<>(inventory.getSizeInventory());
-		List<IInvSlot> emptySlots = new ArrayList<>(inventory.getSizeInventory());
+		List<IInvSlot> filledSlots = new ArrayList<>(inventory.getSlots());
+		List<IInvSlot> emptySlots = new ArrayList<>(inventory.getSlots());
 		for (IInvSlot slot : InventoryIterator.getIterable(inventory, orientation)) {
 			if (slot.canPutStackInSlot(stack)) {
 				if (slot.getStackInSlot().isEmpty()) {
@@ -34,7 +36,6 @@ public class TransactorSimple extends Transactor {
 		injected = tryPut(stack, filledSlots, injected, doAdd);
 		injected = tryPut(stack, emptySlots, injected, doAdd);
 
-		inventory.markDirty();
 		return injected;
 	}
 
@@ -71,37 +72,13 @@ public class TransactorSimple extends Transactor {
 	 */
 	protected int addToSlot(IInvSlot slot, ItemStack stack, int injected, boolean doAdd) {
 		int available = stack.getCount() - injected;
-		int max = Math.min(stack.getMaxStackSize(), inventory.getInventoryStackLimit());
 
-		ItemStack stackInSlot = slot.getStackInSlot();
-		if (stackInSlot.isEmpty()) {
-			int wanted = Math.min(available, max);
-			if (doAdd) {
-				stackInSlot = stack.copy();
-				stackInSlot.setCount(wanted);
-				slot.setStackInSlot(stackInSlot);
-			}
-			return wanted;
-		}
+		ItemStack newStack = stack.copy();
+		newStack.setCount(available);
 
-		if (!canStacksMerge(stack, stackInSlot)) {
-			return 0;
-		}
-
-		int wanted = max - stackInSlot.getCount();
-		if (wanted <= 0) {
-			return 0;
-		}
-
-		if (wanted > available) {
-			wanted = available;
-		}
-
-		if (doAdd) {
-			stackInSlot.setCount(stackInSlot.getCount() + wanted);
-			slot.setStackInSlot(stackInSlot);
-		}
-		return wanted;
+		int wanted = stack.getCount();
+		ItemStack rest = slot.insertItem(newStack, !doAdd);
+		return wanted - rest.getCount();
 	}
 
 	private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {

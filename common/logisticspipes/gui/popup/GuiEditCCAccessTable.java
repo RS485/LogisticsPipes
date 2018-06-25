@@ -58,7 +58,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 	}
 
 	@Override
-	protected void renderGuiBackground(int par1, int par2) {
+	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		mc.fontRenderer.drawString("(" + (page + 1) + "/" + ((int) ((_tile.excludedCC.size() / 9D) + 1 - (_tile.excludedCC.size() % 9 == 0 && _tile.excludedCC.size() != 0 ? 1 : 0))) + ")", guiLeft + 100, guiTop + 5, 0x4F4F4F);
 

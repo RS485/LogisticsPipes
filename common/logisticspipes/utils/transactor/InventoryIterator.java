@@ -5,6 +5,8 @@ import net.minecraft.inventory.ISidedInventory;
 
 import net.minecraft.util.EnumFacing;
 
+import net.minecraftforge.items.IItemHandler;
+
 public final class InventoryIterator {
 
 	/**
@@ -19,10 +21,7 @@ public final class InventoryIterator {
 	 * @param side
 	 * @return Iterable
 	 */
-	public static Iterable<IInvSlot> getIterable(IInventory inv, EnumFacing side) {
-		if (inv instanceof ISidedInventory) {
-			return new InventoryIteratorSided((ISidedInventory) inv, side);
-		}
+	public static Iterable<IInvSlot> getIterable(IItemHandler inv, EnumFacing side) {
 
 		return new InventoryIteratorSimple(inv);
 	}

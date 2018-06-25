@@ -21,12 +21,9 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -73,7 +70,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 		}
 
 		//Extract Item
-		IInventoryUtil invUtil = _service.getPointedInventory(true);
+		IInventoryUtil invUtil = _service.getPointedInventory();
 		if (invUtil == null) {
 			return;
 		}

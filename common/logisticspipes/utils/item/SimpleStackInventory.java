@@ -26,6 +26,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -158,6 +159,10 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		}
 		nbttagcompound.setTag(prefix + "items", nbttaglist);
 		nbttagcompound.setInteger(prefix + "itemsCount", _contents.length);
+	}
+
+	public void dropContents(World world, BlockPos pos) {
+		dropContents(world, pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public void dropContents(World world, int posX, int posY, int posZ) {

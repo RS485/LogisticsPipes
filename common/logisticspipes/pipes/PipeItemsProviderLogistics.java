@@ -72,7 +72,6 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
@@ -213,26 +212,22 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 
 	private IInventoryUtil getAdaptedInventoryUtil(AdjacentTileEntity adjacent) {
-		IInventory base = (IInventory) adjacent.tileEntity;
-		if (base instanceof net.minecraft.inventory.ISidedInventory) {
-			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, adjacent.direction.getOpposite(), true);
-		}
 		ExtractionMode mode = getExtractionMode();
 		switch (mode) {
 			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, adjacent.direction.getOpposite(), false, false, 1, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.tileEntity, adjacent.direction.getOpposite(), false, false, 1, 0);
 			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, adjacent.direction.getOpposite(), false, false, 0, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.tileEntity, adjacent.direction.getOpposite(), false, false, 0, 1);
 			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, adjacent.direction.getOpposite(), false, false, 1, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.tileEntity, adjacent.direction.getOpposite(), false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, adjacent.direction.getOpposite(), true, false, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.tileEntity, adjacent.direction.getOpposite(), true, false, 0, 0);
 			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, adjacent.direction.getOpposite(), false, true, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.tileEntity, adjacent.direction.getOpposite(), false, true, 0, 0);
 			default:
 				break;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, adjacent.direction.getOpposite(), false, false, 0, 0);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.tileEntity, adjacent.direction.getOpposite(), false, false, 0, 0);
 	}
 
 	@Override

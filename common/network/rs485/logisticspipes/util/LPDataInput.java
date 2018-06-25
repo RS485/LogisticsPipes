@@ -46,6 +46,7 @@ import java.util.Set;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 
 import io.netty.buffer.ByteBuf;
 
@@ -98,6 +99,8 @@ public interface LPDataInput {
 	String readUTF();
 
 	EnumFacing readFacing();
+
+	ResourceLocation readResourceLocation();
 
 	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz);
 

@@ -10,14 +10,12 @@ package logisticspipes.pipes;
 
 import java.util.*;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -34,20 +32,15 @@ import logisticspipes.network.packets.satpipe.SatPipePrev;
 import logisticspipes.network.packets.satpipe.SatPipeSetID;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
 
@@ -96,26 +89,6 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
-	private IInventory getRawInventory(EnumFacing dir) {
-		DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
-		TileEntity tile = pos.getTileEntity(getWorld());
-		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
-			return null;
-		}
-		if (!(tile instanceof IInventory)) {
-			return null;
-		}
-		return InventoryHelper.getInventory((IInventory) tile);
-	}
-
-	private IInventory getInventory(EnumFacing ori) {
-		IInventory rawInventory = getRawInventory(ori);
-		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) {
-			return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, ori.getOpposite(), false);
-		}
-		return rawInventory;
-	}
-
 	private void addToList(ItemIdentifierStack stack) {
 		for (ItemIdentifierStack ident : itemList) {
 			if (ident.getItem().equals(stack.getItem())) {
@@ -130,7 +103,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		itemList.clear();
 		for (EnumFacing ori : EnumFacing.VALUES) {
 			if(!this.container.isPipeConnectedCached(ori)) continue;
-			IInventory inv = getInventory(ori);
+			IInventoryUtil inv = this.getPointedInventory();
 			if (inv != null) {
 				for (int i = 0; i < inv.getSizeInventory(); i++) {
 					if (inv.getStackInSlot(i) != null) {

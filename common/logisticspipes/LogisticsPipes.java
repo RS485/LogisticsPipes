@@ -47,6 +47,7 @@ import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
@@ -56,7 +57,15 @@ import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
+import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.config.Configs;
@@ -120,6 +129,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericSubMultiBlock;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.pipes.tubes.HSTubeCurve;
 import logisticspipes.pipes.tubes.HSTubeGain;
 import logisticspipes.pipes.tubes.HSTubeLine;
@@ -438,6 +449,17 @@ public class LogisticsPipes {
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
 		//SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("EnderIO", "Generic", EnderIOProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("endercore", "Generic", EnderCoreProgressProvider.class));
+
+		GameRegistry.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
+		GameRegistry.registerTileEntity(LogisticsPowerJunctionTileEntity.class, "logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity");
+		GameRegistry.registerTileEntity(LogisticsRFPowerProviderTileEntity.class, "logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity");
+		GameRegistry.registerTileEntity(LogisticsIC2PowerProviderTileEntity.class, "logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity");
+		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
+		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
+		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
+		GameRegistry.registerTileEntity(LogisticsStatisticsTileEntity.class, "logisticspipes.blocks.stats.LogisticsStatisticsTileEntity");
+		GameRegistry.registerTileEntity(LogisticsProgramCompilerTileEntity.class, "logisticspipes.blocks.LogisticsProgramCompilerTileEntity");
+		GameRegistry.registerTileEntity(LogisticsTileGenericSubMultiBlock.class, "logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock");
 
 		MainProxy.proxy.registerTileEntities();
 

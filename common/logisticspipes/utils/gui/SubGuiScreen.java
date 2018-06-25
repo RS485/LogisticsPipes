@@ -7,18 +7,25 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 
+import lombok.Getter;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler {
+public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler, IGuiAccess {
 
+	@Getter
 	protected int guiLeft;
+	@Getter
 	protected int guiTop;
 	protected int xCenter;
 	protected int yCenter;
+	@Getter
 	protected int right;
+	@Getter
 	protected int bottom;
+	@Getter
 	protected int xSize;
+	@Getter
 	protected int ySize;
 	protected int xCenterOffset;
 	protected int yCenterOffset;
@@ -61,13 +68,13 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 	}
 
 	@Override
-	public final void drawScreen(int par1, int par2, float par3) {
+	public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		RenderHelper.disableStandardItemLighting();
-		renderGuiBackground(par1, par2);
+		renderGuiBackground(mouseX, mouseY);
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		super.drawScreen(par1, par2, par3);
+		super.drawScreen(mouseX, mouseY, partialTicks);
 		RenderHelper.enableGUIStandardItemLighting();
 
 		GL11.glPushMatrix();
@@ -78,7 +85,7 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) short1 / 1.0F, (float) short2 / 1.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		this.drawGuiContainerForegroundLayer(par1, par2, par3);
+		this.drawGuiContainerForegroundLayer(mouseX, mouseY, partialTicks);
 
 		GL11.glPopMatrix();
 
@@ -91,10 +98,10 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 				super.drawDefaultBackground();
 			}
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-			subGui.drawScreen(par1, par2, par3);
+			subGui.drawScreen(mouseX, mouseY, partialTicks);
 			GL11.glPopAttrib();
 		}
-		renderToolTips(par1, par2, par3);
+		renderToolTips(mouseX, mouseY, partialTicks);
 	}
 
 	protected void renderToolTips(int mouseX, int mouseY, float par3) {}
@@ -105,7 +112,7 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {}
 
-	protected abstract void renderGuiBackground(int par1, int par2);
+	protected abstract void renderGuiBackground(int mouseX, int mouseY);
 
 	@Override
 	public final void handleMouseInput() throws IOException {
@@ -167,4 +174,8 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 		return controler.getBaseScreen();
 	}
 
+	@Override
+	public Minecraft getMC() {
+		return mc;
+	}
 }

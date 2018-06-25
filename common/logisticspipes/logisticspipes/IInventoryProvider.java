@@ -7,23 +7,22 @@ import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.utils.item.ItemIdentifier;
 
-import net.minecraft.inventory.IInventory;
-
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 public interface IInventoryProvider extends ISendRoutedItem {
 
-	public IInventoryUtil getPointedInventory(boolean forExtraction);
+	public IInventoryUtil getPointedInventory();
 
 	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction);
 
 	public IInventoryUtil getSneakyInventory(boolean forExtraction, ModulePositionType slot, int positionInt);
 
-	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation, boolean forExtraction);
+	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation);
 
 	public IInventoryUtil getUnsidedInventory();
 
-	public IInventory getRealInventory();
+	public TileEntity getRealInventory();
 
 	public EnumFacing inventoryOrientation();
 

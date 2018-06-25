@@ -15,12 +15,13 @@ import java.util.UUID;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDInvSysConnector;
@@ -47,7 +48,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -115,15 +115,10 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 			//@formatter:off
 			new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
+					.filter(adjacent -> adjacent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
 					.filter(adjacent -> isConnectedInv(adjacent.tileEntity))
 					.map(adjacent -> {
-						IInventory inv = InventoryHelper.getInventory((IInventory) adjacent.tileEntity);
-						if (inv instanceof ISidedInventory) {
-							inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, adjacent.direction.getOpposite(), false);
-						}
-
-						IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, adjacent.direction.getOpposite());
+						IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent);
 						return checkOneConnectedInv(util, adjacent.direction);
 					})
 					.filter(ret -> ret) // filter only true

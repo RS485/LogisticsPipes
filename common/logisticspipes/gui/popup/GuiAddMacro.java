@@ -292,7 +292,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	protected void renderGuiBackground(int par1, int par2) {
+	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
 		mc.fontRenderer.drawString("Add Macro", guiLeft + mc.fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 

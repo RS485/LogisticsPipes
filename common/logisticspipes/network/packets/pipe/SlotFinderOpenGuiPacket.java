@@ -76,7 +76,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 			AdjacentTileEntity adjacent = adjacentIt.next();
 
 			if (adjacent.tileEntity instanceof IInventory) {
-				if (!(SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) adjacent.tileEntity) instanceof ISpecialInsertion)) {
+				if (!(SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent) instanceof ISpecialInsertion)) {
 					continue;
 				}
 			}

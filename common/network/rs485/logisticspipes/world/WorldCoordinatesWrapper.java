@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
@@ -120,5 +122,9 @@ public class WorldCoordinatesWrapper {
 
 		public TileEntity tileEntity;
 		public EnumFacing direction;
+
+		public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability) {
+			return tileEntity.hasCapability(capability, direction.getOpposite());
+		}
 	}
 }

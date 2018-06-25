@@ -53,6 +53,10 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				return "tile.logisticstepowerprovider";
 			case LOGISTICS_IC2_POWERPROVIDER:
 				return "tile.logisticsic2powerprovider";
+			case LOGISTICS_BC_POWERPROVIDER:
+				return "tile.logisticsbcpowerprovider";
+			case LOGISTICS_PROGRAM_COMPILER:
+				return "tile.logisticsprogramcompiler";
 			case LOGISTICS_BLOCK_FRAME:
 				return "tile.logisticsblankblock";
 		}
@@ -90,6 +94,10 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		if (SimpleServiceLocator.IC2Proxy.hasIC2()) {
 			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER.getMeta()));
 		}
+		if (SimpleServiceLocator.buildCraftProxy.isActive()) {
+			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER.getMeta()));
+		}
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER.getMeta()));
 	}
 
 	public LogisticsSolidBlockItem registerModels() {
@@ -101,7 +109,9 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE,
 				LogisticsSolidBlock.BlockType.LOGISTICS_STATISTICS_TABLE,
 				LogisticsSolidBlock.BlockType.LOGISTICS_RF_POWERPROVIDER,
-				LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER)) {
+				LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER,
+				LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER,
+				LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER)) {
 			ModelResourceLocation resourceLocation = new ModelResourceLocation("logisticspipes:" + getUnlocalozedName(block), "inventory");
 			ModelLoader.setCustomModelResourceLocation(this, block.getMeta(), resourceLocation);
 			LogisticsBlockModel.nameTextureIdMap.put(resourceLocation, block);

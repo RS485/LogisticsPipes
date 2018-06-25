@@ -342,7 +342,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		if (_service == null) {
 			return;
 		}
-		IInventoryUtil inv = _service.getPointedInventory(false);
+		IInventoryUtil inv = _service.getPointedInventory();
 		if (inv == null) {
 			return;
 		}

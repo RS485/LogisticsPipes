@@ -23,6 +23,13 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 	}
 
 	@Override
+	public ItemStack getContainerItem(ItemStack itemStack) {
+		ItemStack items = super.getContainerItem(itemStack);
+		items.setTagCompound(itemStack.getTagCompound());
+		return items;
+	}
+
+	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		if(!stack.isEmpty()) {
 			if(stack.hasTagCompound()) {
@@ -32,6 +39,9 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 					Item target_item = REGISTRY.getObject(new ResourceLocation(target));
 					if(target_item instanceof ItemModule) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForModule"));
+						tooltip.add(StringUtils.translate(target_item.getUnlocalizedName()));
+					} else if(target_item instanceof ItemUpgrade) {
+						tooltip.add(StringUtils.translate("tooltip.programmerForUpgrade"));
 						tooltip.add(StringUtils.translate(target_item.getUnlocalizedName()));
 					} else if(target_item instanceof ItemLogisticsPipe) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForPipe"));

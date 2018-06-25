@@ -64,7 +64,6 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
@@ -519,11 +518,7 @@ public class PipeTransportLogistics {
 				if (arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
 
 					ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
-					IInventory inv = (IInventory) tile;
-					if (inv instanceof ISidedInventory) {
-						inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, null, false);
-					}
-					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(tile, dir.getOpposite());
 					if (util instanceof ISpecialInsertion) {
 						int slot = information.getTargetSlot();
 						int amount = information.getAmount();

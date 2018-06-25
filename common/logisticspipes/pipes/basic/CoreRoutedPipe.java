@@ -39,6 +39,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
+import net.minecraftforge.items.CapabilityItemHandler;
+
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
@@ -116,10 +118,8 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -161,7 +161,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	protected TransportLayer _transportLayer;
 	protected UpgradeManager upgradeManager = new UpgradeManager(this);
 	protected LogisticsItemOrderManager _orderItemManager = null;
-	protected List<IInventory> _cachedAdjacentInventories;
+	protected List<TileEntity> _cachedAdjacentInventories;
 	protected EnumFacing pointedDirection = null;
 	//public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
@@ -298,11 +298,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	 * @return boolean indicating if both pull from the same inventory.
 	 */
 	public boolean sharesInterestWith(CoreRoutedPipe other) {
-		List<IInventory> others = other.getConnectedRawInventories();
+		List<TileEntity> others = other.getConnectedRawInventories();
 		if (others == null || others.size() == 0) {
 			return false;
 		}
-		for (IInventory i : getConnectedRawInventories()) {
+		for (TileEntity i : getConnectedRawInventories()) {
 			if (others.contains(i)) {
 				return true;
 			}
@@ -310,11 +310,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return false;
 	}
 
-	protected List<IInventory> getConnectedRawInventories() {
+	protected List<TileEntity> getConnectedRawInventories() {
 		if (_cachedAdjacentInventories == null) {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
 			_cachedAdjacentInventories = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.tileEntity instanceof IInventory).map(adjacent -> (IInventory) adjacent.tileEntity)
+					.filter(adjacent -> adjacent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)).map(adjacent -> adjacent.tileEntity)
 					.collect(Collectors.toList());
 		}
 		return _cachedAdjacentInventories;
@@ -1477,21 +1477,18 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	/* IInventoryProvider */
 
 	@Override
-	public IInventoryUtil getPointedInventory(boolean forExtraction) {
+	public IInventoryUtil getPointedInventory() {
 		if(getPointedOrientation() != null) {
-			return getSneakyInventory(getPointedOrientation().getOpposite(), forExtraction);
+			return getSneakyInventory(getPointedOrientation().getOpposite());
 		}
-		return getSneakyInventory(null, forExtraction);
+		return getSneakyInventory(null);
 	}
 
 	@Override
 	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction) {
-		IInventory inv = getRealInventory();
+		TileEntity inv = getRealInventory();
 		if (inv == null) {
 			return null;
-		}
-		if (inv instanceof net.minecraft.inventory.ISidedInventory) {
-			inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, getPointedOrientation().getOpposite(), forExtraction);
 		}
 		switch (mode) {
 			case LeaveFirst:
@@ -1517,40 +1514,37 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
 		}
-		return getSneakyInventory(insertion, forExtraction);
+		return getSneakyInventory(insertion);
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation, boolean forExtraction) {
-		IInventory inv = getRealInventory();
+	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation) {
+		TileEntity inv = getRealInventory();
 		if (inv == null) {
 			return null;
-		}
-		if (inv instanceof net.minecraft.inventory.ISidedInventory) {
-			inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation, forExtraction);
 		}
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, _sneakyOrientation);
 	}
 
 	@Override
 	public IInventoryUtil getUnsidedInventory() {
-		IInventory inv = getRealInventory();
+		TileEntity inv = getRealInventory();
 		if (inv == null) {
 			return null;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, null);
 	}
 
 	@Override
-	public IInventory getRealInventory() {
+	public TileEntity getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
 		if (tile == null) {
 			return null;
 		}
-		if (!(tile instanceof IInventory)) {
+		if (!tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getPointedOrientation())) {
 			return null;
 		}
-		return InventoryHelper.getInventory((IInventory) tile);
+		return tile;
 	}
 
 	private TileEntity getPointedTileEntity() {

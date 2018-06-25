@@ -2,17 +2,21 @@ package logisticspipes.utils.transactor;
 
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.utils.InventoryHelper;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import net.minecraftforge.items.IItemHandler;
+
 class InventoryIteratorSimple implements Iterable<IInvSlot> {
 
-	private final IInventory inv;
+	private final IItemHandler inv;
 
-	InventoryIteratorSimple(IInventory inv) {
-		this.inv = InventoryHelper.getInventory(inv);
+	InventoryIteratorSimple(IItemHandler inv) {
+		this.inv = inv;
 	}
 
 	@Override
@@ -23,7 +27,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 
 			@Override
 			public boolean hasNext() {
-				return slot < inv.getSizeInventory();
+				return slot < inv.getSlots();
 			}
 
 			@Override
@@ -51,14 +55,28 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 			return inv.getStackInSlot(slot);
 		}
 
+		@Nonnull
 		@Override
-		public void setStackInSlot(ItemStack stack) {
-			inv.setInventorySlotContents(slot, stack);
+		public ItemStack insertItem(@Nonnull ItemStack stack, boolean simulate) {
+			return inv.insertItem(slot, stack, simulate);
+		}
+
+		@Nonnull
+		@Override
+		public ItemStack extractItem(int amount, boolean simulate) {
+			return inv.extractItem(slot, amount, simulate);
+		}
+
+		@Override
+		public int getSlotLimit() {
+			return inv.getSlotLimit(slot);
 		}
 
 		@Override
 		public boolean canPutStackInSlot(ItemStack stack) {
-			return inv.isItemValidForSlot(slot, stack);
+			ItemStack toTest = stack.copy();
+			toTest.setCount(1);
+			return inv.insertItem(slot, toTest, true).isEmpty();
 		}
 	}
 }

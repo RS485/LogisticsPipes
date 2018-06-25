@@ -82,7 +82,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 	}
 
-	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
+	private static final ResourceLocation achievementTextures = new ResourceLocation("logisticspipes","textures/gui/gui_border.png");
 	private final PipeBlockRequestTable _table;
 	private final int orderId;
 
@@ -148,7 +148,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	}
 
 	@Override
-	protected void renderGuiBackground(int par1, int par2) {
+	protected void renderGuiBackground(int mouseX, int mouseY) {
 		if (!_table.watchedRequests.containsKey(orderId)) {
 			exitGui();
 			return;
@@ -159,16 +159,16 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			int i1 = k + 8;
 			int j1 = l + 17;
 
-			if ((isMouseButtonDown == 0 || isMouseButtonDown == 1) && par1 >= i1 && par1 < i1 + 224 && par2 >= j1 && par2 < j1 + 155) {
+			if ((isMouseButtonDown == 0 || isMouseButtonDown == 1) && mouseX >= i1 && mouseX < i1 + 224 && mouseY >= j1 && mouseY < j1 + 155) {
 				if (isMouseButtonDown == 0) {
 					isMouseButtonDown = 1;
 				} else {
-					guiMapX -= (double) (par1 - mouseX) / zoom.zoom;
-					guiMapY -= (double) (par2 - mouseY) / zoom.zoom;
+					guiMapX -= (double) (mouseX - this.mouseX) / zoom.zoom;
+					guiMapY -= (double) (mouseY - this.mouseY) / zoom.zoom;
 				}
 
-				mouseX = par1;
-				mouseY = par2;
+				this.mouseX = mouseX;
+				this.mouseY = mouseY;
 			}
 
 		} else {
@@ -196,7 +196,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 		createBoundary();
 		drawTransparentBack();
-		drawMap(par1, par2);
+		drawMap(mouseX, mouseY);
 	}
 
 	private void createBoundary() {

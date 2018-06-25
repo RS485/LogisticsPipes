@@ -44,7 +44,7 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 	}
 
 	@Override
-	protected void renderGuiBackground(int par1, int par2) {
+	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);

@@ -29,15 +29,13 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -147,7 +145,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		currentTick = 0;
 
 		//Extract Item
-		IInventory realInventory = _service.getRealInventory();
+		TileEntity realInventory = _service.getRealInventory();
 		if (realInventory == null) {
 			return;
 		}
@@ -156,7 +154,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 			extractOrientation = _service.inventoryOrientation().getOpposite();
 		}
 
-		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation, true);
+		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation);
 
 		for (int i = 0; i < targetUtil.getSizeInventory(); i++) {
 

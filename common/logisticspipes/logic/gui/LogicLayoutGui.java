@@ -102,24 +102,24 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton button) {}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		super.drawScreen(par1, par2, par3);
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		super.drawScreen(mouseX, mouseY, partialTicks);
 		if (Mouse.isButtonDown(0)) {
 			int k = (width - xSize) / 2;
 			int l = (height - ySize) / 2;
 			int i1 = k + 8;
 			int j1 = l + 17;
 
-			if ((isMouseButtonDown == 0 || isMouseButtonDown == 1) && par1 >= i1 && par1 < i1 + 224 && par2 >= j1 && par2 < j1 + 155) {
+			if ((isMouseButtonDown == 0 || isMouseButtonDown == 1) && mouseX >= i1 && mouseX < i1 + 224 && mouseY >= j1 && mouseY < j1 + 155) {
 				if (isMouseButtonDown == 0) {
 					isMouseButtonDown = 1;
 				} else {
-					guiMapX -= (double) (par1 - mouseX) / zoom.zoom;
-					guiMapY -= (double) (par2 - mouseY) / zoom.zoom;
+					guiMapX -= (double) (mouseX - this.mouseX) / zoom.zoom;
+					guiMapY -= (double) (mouseY - this.mouseY) / zoom.zoom;
 				}
 
-				mouseX = par1;
-				mouseY = par2;
+				this.mouseX = mouseX;
+				this.mouseY = mouseY;
 			}
 
 		} else {

@@ -31,6 +31,7 @@ import net.minecraft.util.text.TextFormatting;
 import codechicken.nei.VisibilityData;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
+import lombok.Getter;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -49,13 +50,15 @@ import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
 import logisticspipes.utils.string.StringUtils;
 
 @ModDependentInterface(modId = { "NotEnoughItems" }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
-public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler {
+public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler, IGuiAccess {
 
 	protected static final ResourceLocation ITEMSINK = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
 	protected static final ResourceLocation CHASSI1 = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 
+	@Getter
 	protected int right;
+	@Getter
 	protected int bottom;
 	protected int xCenter;
 	protected int yCenter;
@@ -150,9 +153,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	public void drawScreen(int par1, int par2, float par3) {
-		currentDrawScreenMouseX = par1;
-		currentDrawScreenMouseY = par2;
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		currentDrawScreenMouseX = mouseX;
+		currentDrawScreenMouseY = mouseY;
 		checkButtons();
 		if (subGui != null) {
 			//Save Mouse Pos
@@ -172,7 +175,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				}
 			}
 			//Draw super class (maybe NEI)
-			super.drawScreen(0, 0, par3);
+			super.drawScreen(0, 0, partialTicks);
 			//Resore Mouse Pos
 			try {
 				Field fX = Mouse.class.getDeclaredField("x");
@@ -192,26 +195,28 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				super.drawDefaultBackground();
 			}
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-			subGui.drawScreen(par1, par2, par3);
+			subGui.drawScreen(mouseX, mouseY, partialTicks);
 			GL11.glPopAttrib();
 		} else {
-			super.drawScreen(par1, par2, par3);
+			drawDefaultBackground();
+			super.drawScreen(mouseX, mouseY, partialTicks);
 			RenderHelper.disableStandardItemLighting();
 			for (IRenderSlot slot : slots) {
-				int mouseX = par1 - guiLeft;
-				int mouseY = par2 - guiTop;
-				int mouseXMax = mouseX - slot.getSize();
-				int mouseYMax = mouseY - slot.getSize();
-				if (slot.getXPos() < mouseX && slot.getXPos() > mouseXMax && slot.getYPos() < mouseY && slot.getYPos() > mouseYMax) {
+				int localMouseX = mouseX - guiLeft;
+				int localMouseY = mouseY - guiTop;
+				int mouseXMax = localMouseX - slot.getSize();
+				int mouseYMax = localMouseY - slot.getSize();
+				if (slot.getXPos() < localMouseX && slot.getXPos() > mouseXMax && slot.getYPos() < localMouseY && slot.getYPos() > mouseYMax) {
 					if (slot.displayToolTip()) {
 						if (slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
 							ArrayList<String> list = new ArrayList<>();
 							list.add(slot.getToolTipText());
-							GuiGraphics.drawToolTip(par1, par2, list, TextFormatting.WHITE);
+							GuiGraphics.drawToolTip(mouseX, mouseY, list, TextFormatting.WHITE);
 						}
 					}
 				}
 			}
+			this.renderHoveredToolTip(mouseX, mouseY);
 			RenderHelper.enableStandardItemLighting();
 		}
 		Runnable run = renderAtTheEnd.poll();
@@ -524,6 +529,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		keyTyped(' ', 1);
 	}
 
+	@Override
 	public Minecraft getMC() {
 		return mc;
 	}

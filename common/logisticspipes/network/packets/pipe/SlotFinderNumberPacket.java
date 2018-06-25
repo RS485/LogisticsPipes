@@ -9,7 +9,10 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextComponentTranslation;
+
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +22,6 @@ import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -53,17 +55,14 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
-		IInventory inv = this.getTile(player.world, IInventory.class);
-		if (inv instanceof ISidedInventory) {
-			inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, null, false);
-		}
-		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		TileEntity inv = this.getTile(player.world, tile -> tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
+		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, null);
 		Slot result = null;
-		if (((List<Slot>) player.openContainer.inventorySlots).get(inventorySlot).slotNumber == inventorySlot) {
-			result = ((List<Slot>) player.openContainer.inventorySlots).get(inventorySlot);
+		if (player.openContainer.inventorySlots.get(inventorySlot).slotNumber == inventorySlot) {
+			result = player.openContainer.inventorySlots.get(inventorySlot);
 		}
 		if (result == null) {
-			for (Slot slotObject : (List<Slot>) player.openContainer.inventorySlots) {
+			for (Slot slotObject : player.openContainer.inventorySlots) {
 				if (slotObject.slotNumber == inventorySlot) {
 					result = slotObject;
 					break;

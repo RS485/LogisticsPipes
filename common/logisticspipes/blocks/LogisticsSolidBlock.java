@@ -54,7 +54,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	public static final PropertyEnum<BlockType> metaProperty = PropertyEnum.create("block_sub_type", BlockType.class);
 	public static final PropertyInteger rotationProperty = PropertyInteger.create("rotation", 0, 3);
-	public static final PropertyInteger textureIndexProperty = PropertyInteger.create("texture_index", 0, 9);
+	public static final PropertyInteger textureIndexProperty = PropertyInteger.create("texture_index", 0, 11);
 	public static final Map<EnumFacing, PropertyBool> connectionPropertys = Arrays.stream(EnumFacing.values()).collect(Collectors.toMap(key -> key, key -> PropertyBool.create("connection_" + key.ordinal())));
 
 
@@ -69,6 +69,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 		//Power Provider
 		LOGISTICS_RF_POWERPROVIDER("logistics_rf_powerprovider", 10),
 		LOGISTICS_IC2_POWERPROVIDER("logistics_ic2_powerprovider", 11),
+		LOGISTICS_BC_POWERPROVIDER("logistics_bc_powerprovider", 12),
+
+		LOGISTICS_PROGRAM_COMPILER("logistics_program_compiler", 14),
 
 		LOGISTICS_BLOCK_FRAME("logistics_block_frame", 15);
 
@@ -91,7 +94,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	//private static final TextureAtlasSprite[] icons = new TextureAtlasSprite[18];
-	private static final TextureAtlasSprite[] newTextures = new TextureAtlasSprite[10];
+	private static final TextureAtlasSprite[] newTextures = new TextureAtlasSprite[12];
 
 	@Override
 	public boolean isSideSolid(IBlockState base_state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, EnumFacing side) {
@@ -174,6 +177,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity) tile).onBlockBreak();
 		}
+		if (tile instanceof LogisticsProgramCompilerTileEntity) {
+			((LogisticsProgramCompilerTileEntity) tile).onBlockBreak();
+		}
 		super.breakBlock(worldIn, pos, state);
 	}
 
@@ -201,6 +207,10 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return new LogisticsRFPowerProviderTileEntity();
 			case LOGISTICS_IC2_POWERPROVIDER:
 				return new LogisticsIC2PowerProviderTileEntity();
+			case LOGISTICS_BC_POWERPROVIDER:
+				return null;//new LogisticsBCPowerProvider();
+			case LOGISTICS_PROGRAM_COMPILER:
+				return new LogisticsProgramCompilerTileEntity();
 			case LOGISTICS_BLOCK_FRAME:
 				return null;
 			default:
@@ -219,6 +229,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_STATISTICS_TABLE:
 			case LOGISTICS_RF_POWERPROVIDER:
 			case LOGISTICS_IC2_POWERPROVIDER:
+			case LOGISTICS_BC_POWERPROVIDER:
+			case LOGISTICS_PROGRAM_COMPILER:
 			case LOGISTICS_BLOCK_FRAME:
 				return state.getValue(metaProperty).meta;
 		}
@@ -237,15 +249,14 @@ public class LogisticsSolidBlock extends BlockContainer {
 		LogisticsSolidBlock.newTextures[6] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/statisticsTexture")); // LOGISTICS_STATISTICS_TABLE
 		LogisticsSolidBlock.newTextures[7] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerRFTexture")); // LOGISTICS_RF_POWERPROVIDER
 		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerIC2Texture")); // LOGISTICS_IC2_POWERPROVIDER
-	}
-
-	public static TextureAtlasSprite getNewIcon(IBlockAccess access, BlockPos pos) {
-		return LogisticsSolidBlock.newTextures[getTextureIndex(access, pos)];
+		LogisticsSolidBlock.newTextures[10] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerBCTexture")); // LOGISTICS_BC_POWERPROVIDER
+		LogisticsSolidBlock.newTextures[11] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/compilerTexture")); // LOGISTICS_PROGRAM_COMPILER
 	}
 
 	public static TextureAtlasSprite getNewIcon(BlockType type) {
 		return LogisticsSolidBlock.newTextures[getTextureIndex(type)];
 	}
+
 	public static TextureAtlasSprite getNewIcon(int index) {
 		return LogisticsSolidBlock.newTextures[index];
 	}
@@ -282,6 +293,10 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return 7;
 			case LOGISTICS_IC2_POWERPROVIDER:
 				return 8;
+			case LOGISTICS_BC_POWERPROVIDER:
+				return 10;
+			case LOGISTICS_PROGRAM_COMPILER:
+				return 11;
 			default:
 				return 0;
 		}

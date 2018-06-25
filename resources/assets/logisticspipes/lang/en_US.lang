@@ -224,6 +224,7 @@ tooltip.logisticsItemCard=This is no valid Card
 
 tooltip.programmerForModule=Module program loaded
 tooltip.programmerForPipe=Pipe program loaded
+tooltip.programmerForUpgrade=Upgrade program loaded
 tooltip.programmerForUnknown=No valid program loaded
 
 # Upgrades
@@ -288,6 +289,7 @@ tile.logisticsbcpowerprovider=Logistics MJ Power Provider
 tile.logisticsic2powerprovider=Logistics EU Power Provider
 tile.logisticstepowerprovider=Logistics RF Power Provider
 tile.logisticsstatisticstable=Logistics Statistics Table
+tile.logisticsprogramcompiler=Logistics Program Compiler
 
 # Misc
 itemGroup.Logistics_Pipes=Logistics Pipes
@@ -455,6 +457,15 @@ gui.networkstatistics.amount=Track amount
 gui.networkstatistics.crafting=View active crafting tasks
 gui.networkstatistics.gettasks=Acquire tasks
 gui.networkstatistics.add.alreadytracked=This item type is already tracked
+
+gui.compiler.logisticspipes.compilercategory.basic=Basic
+gui.compiler.logisticspipes.compilercategory.tier_2=Tier 2
+gui.compiler.logisticspipes.compilercategory.fluid=Fluid
+gui.compiler.logisticspipes.compilercategory.tier_3=Tier 3
+gui.compiler.logisticspipes.compilercategory.chassis=Chassis
+gui.compiler.logisticspipes.compilercategory.chassis_2=Chassis 2
+gui.compiler.logisticspipes.compilercategory.chassis_3=Chassis 3
+gui.compiler.logisticspipes.compilercategory.modded=Modded
 
 gui.settings.pipenewrenderer=Use New Renderer
 gui.settings.pipefallbackrenderer=Use Fallback Renderer

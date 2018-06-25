@@ -9,15 +9,12 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -69,11 +66,7 @@ public class ModuleSatellite extends LogisticsModule {
 				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
 		//@formatter:on
 				.map(adjacent -> {
-					IInventory inv = (IInventory) adjacent.tileEntity;
-					if (inv instanceof net.minecraft.inventory.ISidedInventory) {
-						inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, adjacent.direction.getOpposite(), false);
-					}
-					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, adjacent.direction);
+					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent);
 					return util.roomForItem(item, 9999);
 				}).reduce(Integer::sum).orElse(0);
 

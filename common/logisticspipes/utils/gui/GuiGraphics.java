@@ -49,6 +49,8 @@ public final class GuiGraphics {
 	public static final ResourceLocation LOCK_ICON = new ResourceLocation("logisticspipes", "textures/gui/lock.png");
 	public static final ResourceLocation LINES_ICON = new ResourceLocation("logisticspipes", "textures/gui/lines.png");
 	public static final ResourceLocation STATS_ICON = new ResourceLocation("logisticspipes", "textures/gui/stats.png");
+	public static final ResourceLocation SLOT_DISK_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/slot_disk.png");
+	public static final ResourceLocation SLOT_PROGRAMMER_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/slot_programmer.png");
 	public static float zLevel = 0.0F;
 
 	private GuiGraphics() {}
@@ -148,8 +150,7 @@ public final class GuiGraphics {
 			var14 += 2 + (msg.size() - 1) * 10;
 		}
 
-		GL11.glDisable(2896 /*GL_LIGHTING*/);
-		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
+		GlStateManager.disableDepth();
 		GuiGraphics.zLevel = 300.0F;
 		int var15 = -267386864;
 
@@ -185,8 +186,7 @@ public final class GuiGraphics {
 
 		GuiGraphics.zLevel = 0.0F;
 
-		GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-		GL11.glEnable(2896 /*GL_LIGHTING*/);
+		GlStateManager.enableDepth();
 	}
 
 	public static void drawPlayerInventoryBackground(Minecraft mc, int xOffset, int yOffset) {
@@ -216,36 +216,39 @@ public final class GuiGraphics {
 		}
 	}
 
-	public static void drawSlotBackground(Minecraft mc, int x, int y) {
+	private static void doDrawSlotBackground(Minecraft mc, int x, int y, ResourceLocation slotDiskTexture) {
 		GuiGraphics.zLevel = 0;
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
+		mc.renderEngine.bindTexture(slotDiskTexture);
 
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
 		buf.pos(x, y + 18, GuiGraphics.zLevel).tex(0, 1).endVertex();
-		buf.pos(x + 18, y + 18, GuiGraphics.zLevel).tex(1, 1).endVertex();;
-		buf.pos(x + 18, y, GuiGraphics.zLevel).tex(1, 0).endVertex();;
-		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();;
+		buf.pos(x + 18, y + 18, GuiGraphics.zLevel).tex(1, 1).endVertex();
+		buf.pos(x + 18, y, GuiGraphics.zLevel).tex(1, 0).endVertex();
+		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();
 		tess.draw();
 	}
 
+	public static void drawSlotDiskBackground(Minecraft mc, int x, int y) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_DISK_TEXTURE);
+	}
+
+	public static void drawSlotProgrammerBackground(Minecraft mc, int x, int y) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_PROGRAMMER_TEXTURE);
+	}
+
+	public static void drawSlotBackground(Minecraft mc, int x, int y) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_TEXTURE);
+	}
+
 	public static void drawSlotBackground(Minecraft mc, int x, int y, int color) {
-		GuiGraphics.zLevel = 0;
 		GlStateManager.color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
-		mc.renderEngine.bindTexture(GuiGraphics.SLOT_TEXTURE);
-
-		Tessellator tess = Tessellator.getInstance();
-		BufferBuilder buf = tess.getBuffer();
-		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-		buf.pos(x, y + 18, GuiGraphics.zLevel).tex(0, 1).endVertex();
-		buf.pos(x + 18, y + 18, GuiGraphics.zLevel).tex(1, 1).endVertex();;
-		buf.pos(x + 18, y, GuiGraphics.zLevel).tex(1, 0).endVertex();;
-		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();;
-		tess.draw();
-
+		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_TEXTURE);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 

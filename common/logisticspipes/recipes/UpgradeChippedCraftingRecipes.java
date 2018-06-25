@@ -1,6 +1,7 @@
 package logisticspipes.recipes;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,8 +11,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
@@ -58,13 +61,19 @@ public class UpgradeChippedCraftingRecipes extends CraftingPartRecipes {
 		LEVEL_3,
 	}
 
-	private void registerUpgradeRecipe(CraftingParts parts, RecipeType type, Class<? extends IPipeUpgrade> upgradeClass) {
-		Item module = LogisticsPipes.LogisticsUpgrades.get(upgradeClass);
+	private void registerUpgradeRecipe(CraftingParts parts, RecipeType type, ResourceLocation recipeCategory, Class<? extends IPipeUpgrade> upgradeClass) {
+		Item upgrade = LogisticsPipes.LogisticsUpgrades.get(upgradeClass);
 
 		ItemStack programmerStack = new ItemStack(LogisticsPipes.LogisticsProgrammer);
 		programmerStack.setTagCompound(new NBTTagCompound());
-		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, module.getRegistryName().toString());
+		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, upgrade.getRegistryName().toString());
 		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);
+
+		if(!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
+			LogisticsProgramCompilerTileEntity.programByCategory.put(recipeCategory, new HashSet<>());
+		}
+		LogisticsProgramCompilerTileEntity.programByCategory.get(recipeCategory).add(upgrade.getRegistryName());
+
 		RecipeManager.RecipeLayout layout = null;
 		switch (type) {
 			case LEVEL_1:
@@ -107,26 +116,26 @@ public class UpgradeChippedCraftingRecipes extends CraftingPartRecipes {
 					.filter(recipeIndex -> !(fLayout.getLine1() + fLayout.getLine2() + fLayout.getLine3()).replace(recipeIndex.getIndex(), ' ')
 							.equals((fLayout.getLine1() + fLayout.getLine2() + fLayout.getLine3()))).collect(Collectors.toCollection(LinkedList::new));
 			indexToUse.addFirst(layout);
-			RecipeManager.craftingManager.addRecipe(new ItemStack(module), indexToUse.toArray());
+			RecipeManager.craftingManager.addRecipe(new ItemStack(upgrade), indexToUse.toArray());
 		}
 	}
 
 	@Override
 	protected void loadRecipes(CraftingParts parts) {
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, SneakyUpgradeConfig.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, SpeedUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, CombinedSneakyUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, ConnectionUpgradeConfig.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_2, AdvancedSatelliteUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, FluidCraftingUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, CraftingByproductUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, PatternUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, FuzzyUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, PowerTransportationUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, CraftingMonitoringUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, OpaqueUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_2, CraftingCleanupUpgrade.class);
-		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, UpgradeModuleUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, SneakyUpgradeConfig.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, SpeedUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, CombinedSneakyUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, ConnectionUpgradeConfig.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, AdvancedSatelliteUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, FluidCraftingUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, CraftingByproductUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, PatternUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, FuzzyUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, PowerTransportationUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, CraftingMonitoringUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, OpaqueUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, CraftingCleanupUpgrade.class);
+		registerUpgradeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_3, UpgradeModuleUpgrade.class);
 	}
 
 	@Override

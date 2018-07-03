@@ -95,6 +95,16 @@ public class CraftingRecipes implements IRecipeProvider {
 				new RecipeManager.RecipeIndex('p', "paper"),
 				new RecipeManager.RecipeIndex('g', "nuggetGold"));
 
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsItemDisk, 1),
+				new RecipeManager.RecipeLayout(
+						"iri",
+						"rgr",
+						"iri"
+				),
+				new RecipeManager.RecipeIndex('r', "dustRedstone"),
+				new RecipeManager.RecipeIndex('i', "ingotIron"),
+				new RecipeManager.RecipeIndex('g', "nuggetGold"));
+
 		registerResetRecipe(dyes);
 	}
 

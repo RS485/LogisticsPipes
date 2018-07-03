@@ -28,10 +28,7 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 	}
 
 	private void registerPipeRecipe(CraftingParts parts, RecipeType type, ResourceLocation recipeCategory, Item targetPipe, Item basePipe) {
-		ItemStack programmerStack = new ItemStack(LogisticsPipes.LogisticsProgrammer);
-		programmerStack.setTagCompound(new NBTTagCompound());
-		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, targetPipe.getRegistryName().toString());
-		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);
+		Ingredient programmer = getIngredientForProgrammer(targetPipe);
 
 		if(!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
 			LogisticsProgramCompilerTileEntity.programByCategory.put(recipeCategory, new HashSet<>());
@@ -99,6 +96,13 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 		}
 	}
 
+	private Ingredient getIngredientForProgrammer(Item targetPipe) {
+		ItemStack programmerStack = new ItemStack(LogisticsPipes.LogisticsProgrammer);
+		programmerStack.setTagCompound(new NBTTagCompound());
+		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, targetPipe.getRegistryName().toString());
+		return NBTIngredient.fromStacks(programmerStack);
+	}
+
 	@Override
 	protected void loadRecipes(CraftingParts parts) {
 		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBasicPipe),
@@ -123,6 +127,71 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsEntrancePipe, LogisticsPipes.LogisticsProviderPipeMk1);
 		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LogisticsPipes.LogisticsDestinationPipe, LogisticsPipes.LogisticsProviderPipeMk1);
 		registerPipeRecipe(parts, RecipeType.ENDER_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_3, LogisticsPipes.LogisticsFirewallPipe, LogisticsPipes.LogisticsBasicPipe);
+
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk1),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						" b ",
+						"fsf"
+				),
+				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LogisticsPipes.LogisticsChassisPipeMk1)),
+				new RecipeManager.RecipeIndex('s', LogisticsPipes.LogisticsBasicPipe),
+				new RecipeManager.RecipeIndex('f', parts.getChipFpga())
+		);
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk2),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						"bsb",
+						"ili"
+				),
+				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LogisticsPipes.LogisticsChassisPipeMk2)),
+				new RecipeManager.RecipeIndex('s', LogisticsPipes.LogisticsChassisPipeMk1),
+				new RecipeManager.RecipeIndex('l', "gemLapis"),
+				new RecipeManager.RecipeIndex('i', "ingotIron")
+		);
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk3),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						"gsg",
+						"iai"
+				),
+				new RecipeManager.RecipeIndex('a', parts.getChipAdvanced()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LogisticsPipes.LogisticsChassisPipeMk3)),
+				new RecipeManager.RecipeIndex('s', LogisticsPipes.LogisticsChassisPipeMk2),
+				new RecipeManager.RecipeIndex('g', "dustGlowstone"),
+				new RecipeManager.RecipeIndex('i', "ingotIron")
+		);
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk4),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						"bsb",
+						"gag"
+				),
+				new RecipeManager.RecipeIndex('a', parts.getChipAdvanced()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LogisticsPipes.LogisticsChassisPipeMk4)),
+				new RecipeManager.RecipeIndex('s', LogisticsPipes.LogisticsChassisPipeMk3),
+				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('g', "ingotGold")
+		);
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk5),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						"asa",
+						"dnd"
+				),
+				new RecipeManager.RecipeIndex('a', parts.getChipAdvanced()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LogisticsPipes.LogisticsChassisPipeMk5)),
+				new RecipeManager.RecipeIndex('s', LogisticsPipes.LogisticsChassisPipeMk4),
+				new RecipeManager.RecipeIndex('d', "gemDiamond"),
+				new RecipeManager.RecipeIndex('n', "gemQuartz")
+		);
 	}
 
 	@Override

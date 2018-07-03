@@ -65,6 +65,18 @@ public class BlockChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('k', Blocks.CHEST),
 				new RecipeManager.RecipeIndex('p', LogisticsPipes.LogisticsCraftingPipeMk1));
 
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER.getMeta()),
+				new RecipeManager.RecipeLayout(
+						" g ",
+						"rfr",
+						"ili"
+				),
+				new RecipeManager.RecipeIndex('g', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('r', "dustRedstone"),
+				new RecipeManager.RecipeIndex('f', logisticsBlockFrame),
+				new RecipeManager.RecipeIndex('i', "ingotIron"),
+				new RecipeManager.RecipeIndex('l', "gemLapis"));
+
 	}
 
 	@Override

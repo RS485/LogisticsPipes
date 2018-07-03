@@ -14,6 +14,9 @@ import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
+import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.ItemModule;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CompilerTriggerTaskPacket;
 import logisticspipes.proxy.MainProxy;
@@ -258,9 +261,22 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new ResourceLocation(((NBTTagString) nbtBase).getString()))
 						.stream())
 				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getUnlocalizedName()).toLowerCase().contains(search.getContent().toLowerCase()))
+				.sorted(Comparator.comparing(o -> getSortingClass(Item.REGISTRY.getObject((ResourceLocation) o)))
+						.thenComparing(o -> StringUtils.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName()).toLowerCase())
+				)
 				.collect(Collectors.toList());
-		result.sort(Comparator.comparing(o -> StringUtils.translate(Item.REGISTRY.getObject(o).getUnlocalizedName()).toLowerCase()));
 		return result;
+	}
+
+	private int getSortingClass(Item object) {
+		if(object instanceof ItemLogisticsPipe) {
+			return 0;
+		} else if(object instanceof ItemModule) {
+			return 1;
+		} else if(object instanceof ItemUpgrade) {
+			return 2;
+		}
+		return 10;
 	}
 
 	@Override

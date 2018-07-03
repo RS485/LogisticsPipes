@@ -1,6 +1,5 @@
 package logisticspipes.blocks;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,7 +27,6 @@ import logisticspipes.network.packets.block.CompilerStatusPacket;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.SimpleStackInventory;

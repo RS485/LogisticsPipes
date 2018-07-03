@@ -54,6 +54,18 @@ public class ChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
 				new RecipeManager.RecipeIndex('s', Items.SIGN));
 
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsPipeManagerItem),
+				new RecipeManager.RecipeLayout(
+						"ibi",
+						"rsl",
+						"rrl"
+				),
+				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('i', "ingotIron"),
+				new RecipeManager.RecipeIndex('s', "blockGlass"),
+				new RecipeManager.RecipeIndex('l', "gemLapis"),
+				new RecipeManager.RecipeIndex('r', "dustRedstone"));
+
 	}
 
 	@Override

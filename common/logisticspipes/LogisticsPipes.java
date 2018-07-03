@@ -8,6 +8,7 @@
 package logisticspipes;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -186,6 +187,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.TankUtilFactory;
+import logisticspipes.utils.tuples.Pair;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -342,6 +344,8 @@ public class LogisticsPipes {
 	private Queue<Runnable> postInitRun = new LinkedList<>();
 	private static LPGlobalCCAccess generalAccess;
 	private static PlayerConfig playerConfig;
+
+	private List<Pair<Item, Item>> resetRecipeList = new ArrayList<>();
 
 	@CapabilityInject(IItemHandler.class)
 	public static Capability<IItemHandler> ITEM_HANDLER_CAPABILITY = null;
@@ -619,6 +623,7 @@ public class LogisticsPipes {
 		RecipeManager.recipeProvider.add(new CraftingRecipes());
 		RecipeManager.loadRecipes();
 
+		resetRecipeList.forEach(itemItemPair -> registerShapelessResetRecipe(itemItemPair.getValue1(), itemItemPair.getValue2()));
 	}
 
 	private void loadClasses() {
@@ -736,35 +741,31 @@ public class LogisticsPipes {
 
 		if (clas != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(clas)) {
 			if (clas != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(clas)) {
-				registerShapelessResetRecipe(res, 0, LogisticsPipes.LogisticsFluidBasicPipe, 0);
+				resetRecipeList.add(new Pair<>(res, LogisticsPipes.LogisticsFluidBasicPipe));
 			} else {
-				registerShapelessResetRecipe(res, 0, LogisticsPipes.LogisticsBasicPipe, 0);
+				resetRecipeList.add(new Pair<>(res, LogisticsPipes.LogisticsBasicPipe));
 			}
 		}
 		return res;
 	}
 
-	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
-		for (int j = 1; j < 10; j++) {
-			NonNullList<Ingredient> list = NonNullList.create();
-			for (int k = 0; k < j; k++) {
-				list.add(CraftingHelper.getIngredient(new ItemStack(fromItem, 1, toData)));
-			}
+	protected void registerShapelessResetRecipe(Item fromItem, Item toItem) {
+		NonNullList<Ingredient> list = NonNullList.create();
+		list.add(CraftingHelper.getIngredient(new ItemStack(fromItem, 1, 0)));
 
-			ItemStack output = new ItemStack(toItem, j, fromData);
+		ItemStack output = new ItemStack(toItem, 1, 0);
 
-			ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, output.getItem().getRegistryName().getResourcePath());
-			ResourceLocation recipeLoc = baseLoc;
-			int index = 0;
-			while (CraftingManager.REGISTRY.containsKey(recipeLoc)) {
-				index++;
-				recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
-			}
-
-			ShapelessRecipes recipe = new ShapelessRecipes("logisticspipes.resetrecipe.pipe", output, list);
-			recipe.setRegistryName(recipeLoc);
-			GameData.register_impl(recipe);
+		ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, fromItem.getRegistryName().getResourcePath() + ".resetrecipe");
+		ResourceLocation recipeLoc = baseLoc;
+		int index = 0;
+		while (CraftingManager.REGISTRY.containsKey(recipeLoc)) {
+			index++;
+			recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
 		}
+
+		ShapelessRecipes recipe = new ShapelessRecipes("logisticspipes.resetrecipe.pipe", output, list);
+		recipe.setRegistryName(recipeLoc);
+		GameData.register_impl(recipe);
 	}
 
 	public static PlayerConfig getClientPlayerConfig() {

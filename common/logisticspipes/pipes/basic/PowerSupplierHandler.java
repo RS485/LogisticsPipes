@@ -56,7 +56,7 @@ public class PowerSupplierHandler {
 	}
 
 	public void update() {
-		if (SimpleServiceLocator.cofhPowerProxy.isAvailable() && pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
+		if (SimpleServiceLocator.powerProxy.isAvailable() && pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 			//Use Buffer
 
 			Stream<AdjacentTileEntity> adjacentTileEntityStream = new WorldCoordinatesWrapper(pipe.container).getAdjacentTileEntities();
@@ -69,9 +69,9 @@ public class PowerSupplierHandler {
 			while (adjacentIt.hasNext()) {
 				AdjacentTileEntity adjacent = adjacentIt.next();
 
-				if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
+				if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
 					if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
-						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
+						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
 						EnumFacing oppositeDir = adjacent.direction.getOpposite();
 						globalNeed += need[i] = (energyReceiver.getMaxEnergyStored() - energyReceiver.getEnergyStored());
 					}
@@ -86,9 +86,9 @@ public class PowerSupplierHandler {
 				while (adjacentIt.hasNext()) {
 					AdjacentTileEntity adjacent = adjacentIt.next();
 
-					if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
+					if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
 						if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
-							ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
+							ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
 							EnumFacing oppositeDir = adjacent.direction.getOpposite();
 							if (internalBufferRF + 1 < need[i] * fullfillable) {
 								return;

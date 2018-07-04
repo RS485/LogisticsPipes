@@ -1,4 +1,4 @@
-package logisticspipes.proxy.cofh;
+package logisticspipes.proxy;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -10,12 +10,9 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
-import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
-import logisticspipes.recipes.CraftingParts;
-import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
+import logisticspipes.proxy.interfaces.IPowerProxy;
 
-public class CoFHPowerProxy implements ICoFHPowerProxy {
+public class PowerProxy implements IPowerProxy {
 
 	private class MEnergyStorage extends EnergyStorage {
 
@@ -74,20 +71,6 @@ public class CoFHPowerProxy implements ICoFHPowerProxy {
 				return handler.receiveEnergy(amount, simulate);
 			}
 		};
-	}
-
-	@Override
-	public void addCraftingRecipes(CraftingParts parts) {
-		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
-		/*
-		craftingManager.addRecipe(
-				new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER),
-				CraftingDependency.Power_Distribution,
-				new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), Character.valueOf('P'), Items.paper, Character.valueOf('E'), parts.getBlockDynamo(), Character.valueOf('T'), parts.getPowerCoilSilver(),
-						Character.valueOf('R'), parts.getPowerCoilGold() });
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER), CraftingDependency.Power_Distribution,
-				new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), Blocks.redstone_block, Character.valueOf('P'), Items.paper, Character.valueOf('E'), parts.getBlockDynamo(), Character.valueOf('T'), parts.getPowerCoilSilver(), Character.valueOf('R'), parts.getPowerCoilGold() });
-		*/
 	}
 
 	@Override

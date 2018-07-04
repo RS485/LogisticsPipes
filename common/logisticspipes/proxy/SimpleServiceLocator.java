@@ -18,7 +18,7 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
+import logisticspipes.proxy.interfaces.IPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
@@ -221,10 +221,10 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.renderListHandler = handler;
 	}
 
-	public static ICoFHPowerProxy cofhPowerProxy;
+	public static IPowerProxy powerProxy;
 
-	public static void setCoFHPowerProxy(ICoFHPowerProxy proxy) {
-		SimpleServiceLocator.cofhPowerProxy = proxy;
+	public static void setPowerProxy(IPowerProxy proxy) {
+		SimpleServiceLocator.powerProxy = proxy;
 	}
 
 	public static ITDProxy thermalDynamicsProxy;

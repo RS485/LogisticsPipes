@@ -2,7 +2,6 @@ package logisticspipes.blocks.powertile;
 
 import javax.annotation.Nullable;
 
-import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -58,7 +57,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	private ICoFHEnergyStorage storage;
 
 	public LogisticsRFPowerProviderTileEntity() {
-		storage = SimpleServiceLocator.cofhPowerProxy.getEnergyStorage(10000);
+		storage = SimpleServiceLocator.powerProxy.getEnergyStorage(10000);
 	}
 
 	public void addEnergy(double amount) {

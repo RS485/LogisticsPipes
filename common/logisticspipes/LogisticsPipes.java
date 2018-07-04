@@ -596,15 +596,10 @@ public class LogisticsPipes {
 			SimpleServiceLocator.forestryProxy.addCraftingRecipes(parts);
 			SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes(parts);
 			SimpleServiceLocator.ccProxy.addCraftingRecipes(parts);
-			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 			SimpleServiceLocator.buildCraftProxy.addCraftingRecipes(parts);
 
 			SolderingStationRecipes.loadRecipe(parts);
 			RecipeManager.loadRecipes();
-		}
-		parts = SimpleServiceLocator.thermalExpansionProxy.getRecipeParts();
-		if (parts != null) {
-			SimpleServiceLocator.cofhPowerProxy.addCraftingRecipes(parts);
 		}
 		*/
 

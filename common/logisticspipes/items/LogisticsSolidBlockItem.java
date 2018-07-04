@@ -1,12 +1,10 @@
 package logisticspipes.items;
 
 import java.util.Arrays;
-import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -88,7 +86,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE.getMeta()));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE.getMeta()));
 		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_STATISTICS_TABLE.getMeta()));
-		if (SimpleServiceLocator.cofhPowerProxy.isAvailable()) {
+		if (SimpleServiceLocator.powerProxy.isAvailable()) {
 			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_RF_POWERPROVIDER.getMeta()));
 		}
 		if (SimpleServiceLocator.IC2Proxy.hasIC2()) {

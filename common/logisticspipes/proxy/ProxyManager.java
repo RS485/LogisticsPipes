@@ -55,9 +55,6 @@ import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.ccl.CCLProxy;
-import logisticspipes.proxy.cofh.CoFHPowerProxy;
-import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
-import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
@@ -67,7 +64,6 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.ICoFHPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
@@ -341,29 +337,6 @@ public class ProxyManager {
 			@Override public boolean isWrench(Item item) {return false;}
 		}));*/
 
-		SimpleServiceLocator.setCoFHPowerProxy(ProxyManager.getWrappedProxy("CoFHAPI|energy", ICoFHPowerProxy.class, CoFHPowerProxy.class, new ICoFHPowerProxy() {
-			@Override public boolean isEnergyReceiver(TileEntity tile, EnumFacing face) {return false;}
-			@Override public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile, EnumFacing face) {
-				return new ICoFHEnergyReceiver() {
-					@Override public int getMaxEnergyStored() {return 0;}
-					@Override public int getEnergyStored() {return 0;}
-					@Override public int receiveEnergy(EnumFacing opposite, int i, boolean b) {return 0;}
-				};
-			}
-			@Override public void addCraftingRecipes(CraftingParts parts) {}
-			@Override public ICoFHEnergyStorage getEnergyStorage(int i) {
-				return new ICoFHEnergyStorage() {
-					@Override public int extractEnergy(int space, boolean b) {return 0;}
-					@Override public int receiveEnergy(int maxReceive, boolean simulate) {return 0;}
-					@Override public int getEnergyStored() {return 0;}
-					@Override public int getMaxEnergyStored() {return 0;}
-					@Override public void readFromNBT(NBTTagCompound nbt) {}
-					@Override public void writeToNBT(NBTTagCompound nbt) {}
-				};
-			}
-			@Override public boolean isAvailable() {return false;}
-		}, ICoFHEnergyReceiver.class, ICoFHEnergyStorage.class));
-
 		SimpleServiceLocator.setThermalDynamicsProxy(ProxyManager.getWrappedProxy("ThermalDynamics", ITDProxy.class, null /*ThermalDynamicsProxy.class */, new ITDProxy() {
 			@Override public ITDPart getTDPart(final LogisticsTileGenericPipe pipe) {
 				return new ITDPart() {
@@ -470,5 +443,8 @@ public class ProxyManager {
 		SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!CCLRender", ICCLProxy.class, CCLProxy.class, dummyCCLProxy, cclSubWrapper));
 		SimpleServiceLocator.setConfigToolHandler(new ConfigToolHandler());
 		SimpleServiceLocator.configToolHandler.registerWrapper();
+
+		SimpleServiceLocator.setPowerProxy(new PowerProxy());
+
 	}
 }

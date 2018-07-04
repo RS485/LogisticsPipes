@@ -39,8 +39,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.FluidUtil;
 
-import sun.java2d.pipe.SpanShapeRenderer;
-
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {

@@ -2,7 +2,8 @@ package logisticspipes.blocks.powertile;
 
 import java.util.List;
 
-import cofh.api.energy.IEnergyReceiver;
+import javax.annotation.Nullable;
+
 import ic2.api.energy.tile.IEnergyEmitter;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -39,12 +40,16 @@ import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
-import cofh.api.energy.IEnergyHandler;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
+
 import ic2.api.energy.tile.IEnergySink;
 
-@ModDependentInterface(modId = { "IC2", "CoFHAPI|energy", "BuildCraft|Transport" }, interfacePath = { "ic2.api.energy.tile.IEnergySink", "cofh.api.energy.IEnergyHandler", "buildcraft.api.power.IPowerReceptor" })
+@ModDependentInterface(modId = { "IC2", "BuildCraft|Transport" }, interfacePath = { "ic2.api.energy.tile.IEnergySink", "buildcraft.api.power.IPowerReceptor" })
 @CCType(name = "LogisticsPowerJunction")
-public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IEnergyReceiver {
+public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 
@@ -68,6 +73,53 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	private PlayerCollectionList watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
+
+
+	private IEnergyStorage energyInterface = new IEnergyStorage() {
+
+		@Override
+		public int receiveEnergy(int maxReceive, boolean simulate) {
+			if (freeSpace() < 1) {
+				return 0;
+			}
+			int RFspace = freeSpace() * LogisticsPowerJunctionTileEntity.RFDivisor - internalRFbuffer;
+			int RFtotake = Math.min(maxReceive, RFspace);
+			if (!simulate) {
+				addEnergy(RFtotake / LogisticsPowerJunctionTileEntity.RFDivisor);
+				internalRFbuffer += RFtotake % LogisticsPowerJunctionTileEntity.RFDivisor;
+				if (internalRFbuffer >= LogisticsPowerJunctionTileEntity.RFDivisor) {
+					addEnergy(1);
+					internalRFbuffer -= LogisticsPowerJunctionTileEntity.RFDivisor;
+				}
+			}
+			return RFtotake;
+		}
+
+		@Override
+		public int extractEnergy(int maxExtract, boolean simulate) {
+			return 0;
+		}
+
+		@Override
+		public int getEnergyStored() {
+			return internalStorage * LogisticsPowerJunctionTileEntity.RFDivisor + internalRFbuffer;
+		}
+
+		@Override
+		public int getMaxEnergyStored() {
+			return LogisticsPowerJunctionTileEntity.MAX_STORAGE * LogisticsPowerJunctionTileEntity.RFDivisor;
+		}
+
+		@Override
+		public boolean canExtract() {
+			return false;
+		}
+
+		@Override
+		public boolean canReceive() {
+			return true;
+		}
+	};
 
 	public LogisticsPowerJunctionTileEntity() {
 		HUD = new HUDPowerLevel(this);
@@ -342,40 +394,20 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
-		if (freeSpace() < 1) {
-			return 0;
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityEnergy.ENERGY) {
+			return true;
 		}
-		int RFspace = freeSpace() * LogisticsPowerJunctionTileEntity.RFDivisor - internalRFbuffer;
-		int RFtotake = Math.min(maxReceive, RFspace);
-		if (!simulate) {
-			addEnergy(RFtotake / LogisticsPowerJunctionTileEntity.RFDivisor);
-			internalRFbuffer += RFtotake % LogisticsPowerJunctionTileEntity.RFDivisor;
-			if (internalRFbuffer >= LogisticsPowerJunctionTileEntity.RFDivisor) {
-				addEnergy(1);
-				internalRFbuffer -= LogisticsPowerJunctionTileEntity.RFDivisor;
-			}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Nullable
+	@Override
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityEnergy.ENERGY) {
+			return (T) energyInterface;
 		}
-		return RFtotake;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public boolean canConnectEnergy(EnumFacing from) {
-		return true;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getEnergyStored(EnumFacing from) {
-		return internalStorage * LogisticsPowerJunctionTileEntity.RFDivisor + internalRFbuffer;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getMaxEnergyStored(EnumFacing from) {
-		return LogisticsPowerJunctionTileEntity.MAX_STORAGE * LogisticsPowerJunctionTileEntity.RFDivisor;
+		return super.getCapability(capability, facing);
 	}
 
 	@Override

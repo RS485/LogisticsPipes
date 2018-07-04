@@ -342,12 +342,11 @@ public class ProxyManager {
 		}));*/
 
 		SimpleServiceLocator.setCoFHPowerProxy(ProxyManager.getWrappedProxy("CoFHAPI|energy", ICoFHPowerProxy.class, CoFHPowerProxy.class, new ICoFHPowerProxy() {
-			@Override public boolean isEnergyReceiver(TileEntity tile) {return false;}
-			@Override public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile) {
+			@Override public boolean isEnergyReceiver(TileEntity tile, EnumFacing face) {return false;}
+			@Override public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile, EnumFacing face) {
 				return new ICoFHEnergyReceiver() {
-					@Override public int getMaxEnergyStored(EnumFacing opposite) {return 0;}
-					@Override public int getEnergyStored(EnumFacing opposite) {return 0;}
-					@Override public boolean canConnectEnergy(EnumFacing opposite) {return false;}
+					@Override public int getMaxEnergyStored() {return 0;}
+					@Override public int getEnergyStored() {return 0;}
 					@Override public int receiveEnergy(EnumFacing opposite, int i, boolean b) {return 0;}
 				};
 			}

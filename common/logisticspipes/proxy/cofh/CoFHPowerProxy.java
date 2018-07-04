@@ -4,8 +4,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
-import cofh.api.energy.EnergyStorage;
-import cofh.api.energy.IEnergyReceiver;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
@@ -16,34 +17,61 @@ import logisticspipes.recipes.RecipeManager.LocalCraftingManager;
 
 public class CoFHPowerProxy implements ICoFHPowerProxy {
 
-	@Override
-	public boolean isEnergyReceiver(TileEntity tile) {
-		return tile instanceof IEnergyReceiver;
+	private class MEnergyStorage extends EnergyStorage {
+
+		public MEnergyStorage(int capacity) {
+			super(capacity);
+		}
+
+		public void readFromNBT(NBTTagCompound nbt) {
+			this.energy = nbt.getInteger("Energy");
+
+			if (energy > capacity) {
+				energy = capacity;
+			}
+		}
+
+		public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+			if (energy < 0) {
+				energy = 0;
+			}
+			nbt.setInteger("Energy", energy);
+			return nbt;
+		}
 	}
 
 	@Override
-	public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile) {
-		final IEnergyReceiver handler = (IEnergyReceiver) tile;
+	public boolean isEnergyReceiver(TileEntity tile, EnumFacing face) {
+		if(tile.hasCapability(CapabilityEnergy.ENERGY, face)) {
+			return tile.getCapability(CapabilityEnergy.ENERGY, face).canReceive();
+		}
+		return tile instanceof IEnergyStorage;
+	}
+
+	@Override
+	public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile, EnumFacing face) {
+		IEnergyStorage bHandler = null;
+		if(tile.hasCapability(CapabilityEnergy.ENERGY, face)) {
+			bHandler = tile.getCapability(CapabilityEnergy.ENERGY, face);
+		} else if(tile instanceof IEnergyStorage) {
+			bHandler = (IEnergyStorage) tile;
+		}
+		final IEnergyStorage handler = bHandler;
 		return new ICoFHEnergyReceiver() {
 
 			@Override
-			public int getMaxEnergyStored(EnumFacing opposite) {
-				return handler.getMaxEnergyStored(opposite);
+			public int getMaxEnergyStored() {
+				return handler.getMaxEnergyStored();
 			}
 
 			@Override
-			public int getEnergyStored(EnumFacing opposite) {
-				return handler.getEnergyStored(opposite);
+			public int getEnergyStored() {
+				return handler.getEnergyStored();
 			}
 
 			@Override
-			public boolean canConnectEnergy(EnumFacing opposite) {
-				return handler.canConnectEnergy(opposite);
-			}
-
-			@Override
-			public int receiveEnergy(EnumFacing opposite, int i, boolean b) {
-				return handler.receiveEnergy(opposite, i, b);
+			public int receiveEnergy(EnumFacing opposite, int amount, boolean simulate) {
+				return handler.receiveEnergy(amount, simulate);
 			}
 		};
 	}
@@ -64,7 +92,7 @@ public class CoFHPowerProxy implements ICoFHPowerProxy {
 
 	@Override
 	public ICoFHEnergyStorage getEnergyStorage(int i) {
-		final EnergyStorage energy = new EnergyStorage(i);
+		final MEnergyStorage energy = new MEnergyStorage(i);
 		return new ICoFHEnergyStorage() {
 
 			@Override

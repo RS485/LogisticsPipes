@@ -1,6 +1,7 @@
 package logisticspipes.blocks.powertile;
 
-import logisticspipes.asm.ModDependentInterface;
+import javax.annotation.Nullable;
+
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -11,15 +12,48 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.EnumFacing;
 
-import cofh.api.energy.IEnergyHandler;
-import cofh.api.energy.IEnergyReceiver;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
-@ModDependentInterface(modId = { "CoFHAPI|energy" }, interfacePath = { "cofh.api.energy.IEnergyHandler" })
-public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IEnergyReceiver {
+public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTileEntity {
 
 	public static final int MAX_STORAGE = 10000000;
 	public static final int MAX_MAXMODE = 8;
 	public static final int MAX_PROVIDE_PER_TICK = 10000; //TODO
+
+	private IEnergyStorage energyInterface = new IEnergyStorage() {
+
+		@Override
+		public int receiveEnergy(int maxReceive, boolean simulate) {
+			return storage.receiveEnergy(maxReceive, simulate);
+		}
+
+		@Override
+		public int extractEnergy(int maxExtract, boolean simulate) {
+			return 0;
+		}
+
+		@Override
+		public int getEnergyStored() {
+			return storage.getEnergyStored();
+		}
+
+		@Override
+		public int getMaxEnergyStored() {
+			return storage.getMaxEnergyStored();
+		}
+
+		@Override
+		public boolean canExtract() {
+			return false;
+		}
+
+		@Override
+		public boolean canReceive() {
+			return true;
+		}
+	};
 
 	private ICoFHEnergyStorage storage;
 
@@ -65,30 +99,6 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 
 	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
-		return storage.receiveEnergy(maxReceive, simulate);
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public boolean canConnectEnergy(EnumFacing from) {
-		return true;
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getEnergyStored(EnumFacing from) {
-		return storage.getEnergyStored();
-	}
-
-	@Override
-	@ModDependentMethod(modId = "CoFHAPI|energy")
-	public int getMaxEnergyStored(EnumFacing from) {
-		return storage.getMaxEnergyStored();
-	}
-
-	@Override
 	public int getMaxStorage() {
 		maxMode = Math.min(LogisticsRFPowerProviderTileEntity.MAX_MAXMODE, Math.max(1, maxMode));
 		return (LogisticsRFPowerProviderTileEntity.MAX_STORAGE / maxMode);
@@ -125,5 +135,22 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@Override
 	protected int getLaserColor() {
 		return LogisticsPowerProviderTileEntity.RF_COLOR;
+	}
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityEnergy.ENERGY) {
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Nullable
+	@Override
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityEnergy.ENERGY) {
+			return (T) energyInterface;
+		}
+		return super.getCapability(capability, facing);
 	}
 }

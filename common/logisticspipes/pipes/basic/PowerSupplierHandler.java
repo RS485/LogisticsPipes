@@ -69,13 +69,11 @@ public class PowerSupplierHandler {
 			while (adjacentIt.hasNext()) {
 				AdjacentTileEntity adjacent = adjacentIt.next();
 
-				if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity)) {
+				if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
 					if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
-						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity);
+						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
 						EnumFacing oppositeDir = adjacent.direction.getOpposite();
-						if (energyReceiver.canConnectEnergy(oppositeDir)) {
-							globalNeed += need[i] = (energyReceiver.getMaxEnergyStored(oppositeDir) - energyReceiver.getEnergyStored(oppositeDir));
-						}
+						globalNeed += need[i] = (energyReceiver.getMaxEnergyStored() - energyReceiver.getEnergyStored());
 					}
 				}
 				++i;
@@ -88,23 +86,21 @@ public class PowerSupplierHandler {
 				while (adjacentIt.hasNext()) {
 					AdjacentTileEntity adjacent = adjacentIt.next();
 
-					if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity)) {
+					if (SimpleServiceLocator.cofhPowerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
 						if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
-							ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity);
+							ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.cofhPowerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
 							EnumFacing oppositeDir = adjacent.direction.getOpposite();
-							if (energyReceiver.canConnectEnergy(oppositeDir)) {
-								if (internalBufferRF + 1 < need[i] * fullfillable) {
-									return;
-								}
-								int used = energyReceiver.receiveEnergy(oppositeDir, (int) (need[i] * fullfillable), false);
-								if (used > 0) {
-									pipe.container.addLaser(adjacent.direction, 0.5F, LogisticsPowerProviderTileEntity.RF_COLOR, false, true);
-									internalBufferRF -= used;
-								}
-								if (internalBufferRF < 0) {
-									internalBufferRF = 0;
-									return;
-								}
+							if (internalBufferRF + 1 < need[i] * fullfillable) {
+								return;
+							}
+							int used = energyReceiver.receiveEnergy(oppositeDir, (int) (need[i] * fullfillable), false);
+							if (used > 0) {
+								pipe.container.addLaser(adjacent.direction, 0.5F, LogisticsPowerProviderTileEntity.RF_COLOR, false, true);
+								internalBufferRF -= used;
+							}
+							if (internalBufferRF < 0) {
+								internalBufferRF = 0;
+								return;
 							}
 						}
 					}

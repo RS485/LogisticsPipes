@@ -46,7 +46,7 @@ if (ENV.BUILD_NUMBER) {
     version += "." + ENV.BUILD_NUMBER
     buildby = 'RS485-Jenkins'
 } else {
-    version += ".local"
+    version += ".99999"
 }
 
 ant.version = version

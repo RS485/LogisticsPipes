@@ -103,6 +103,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if (name.equals("net.minecraftforge.fluids.Fluid")) {
 				return handleFluidClass(bytes);
 			}
+			/*
 			if (name.equals("dan200.computercraft.core.lua.LuaJLuaMachine")) {
 				return handleCCLuaJLuaMachine(bytes);
 			}
@@ -124,6 +125,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if (name.equals("crazypants.enderio.conduit.liquid.AbstractLiquidConduit")) {
 				return ClassAbstractLiquidConduitHandler.handleAbstractLiquidConduitClass(bytes);
 			}
+			*/
 			if (!name.startsWith("logisticspipes.")) {
 				return bytes;
 			}

@@ -1,11 +1,17 @@
 package logisticspipes.network;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -72,25 +78,69 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	@SuppressWarnings("unchecked")
 	@SneakyThrows({ IOException.class/*, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, IllegalArgumentException.class, NoSuchMethodException.class, SecurityException.class*/ })
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
-	public static final void initialize() {
+	public static void initialize() {
 		final List<ClassInfo> classes = new ArrayList<>(ClassPath.from(PacketHandler.class.getClassLoader())
 				.getTopLevelClassesRecursive("logisticspipes.network.packets"));
-		classes.sort(Comparator.comparing(ClassInfo::getSimpleName));
+
+		loadPacketsFromList(classes.stream().map(ClassInfo::getName).collect(Collectors.toList()));
+
+		if (PacketHandler.packetlist.isEmpty()) {
+			System.err.println(
+					"LogisticsPipes could not search for its packet classes. Your mods are probably installed in a path containing spaces or special characters. Trying to use fallback solution.");
+			URL location = PacketHandler.class.getProtectionDomain().getCodeSource().getLocation();
+			String locationString = location.toString();
+			System.out.println(locationString);
+			if (locationString.startsWith("jar:file:/") && locationString.contains("!")) {
+				locationString = locationString.substring(10, locationString.indexOf('!'));
+				locationString = java.net.URLDecoder.decode(locationString, "UTF-8");
+			}
+			System.out.println(locationString);
+
+			List<String> classInfoList = new ArrayList<>();
+
+			File file = new File(locationString);
+			if (file.exists() && !file.isDirectory()) {
+				JarFile jar = new JarFile(file);
+				System.out.println(jar);
+				Enumeration<JarEntry> entriesS = jar.entries();
+				while (entriesS.hasMoreElements()) {
+					JarEntry entryB = entriesS.nextElement();
+					System.out.println(entryB);
+					if (!entryB.isDirectory() && entryB.getName().startsWith("logisticspipes/network/packets/")) {
+						String filename = entryB.getName();
+						int classNameEnd = filename.length() - ".class".length();
+						filename = filename.substring(0, classNameEnd).replace('/', '.');
+						System.out.println(filename);
+						classInfoList.add(filename);
+					}
+				}
+			}
+
+			loadPacketsFromList(classInfoList);
+
+			if (PacketHandler.packetlist.isEmpty()) {
+				System.err.println("Fallback solution failed. Please try to move your minecraft folder to a different location.");
+				throw new RuntimeException("Cannot load Packet Classes");
+			}
+		}
+	}
+
+	private static void loadPacketsFromList(List<String> classes) {
+		classes.sort(Comparator.comparing(it -> it));
 
 		PacketHandler.packetlist = new ArrayList<>(classes.size());
 		PacketHandler.packetmap = new HashMap<>(classes.size());
 
-		int currentid = 0;
-
-		for (ClassInfo c : classes) {
+		int currentId = 0;
+		for (String c : classes) {
 			try {
-				final Class<?> cls = c.load();
-				final ModernPacket instance = (ModernPacket) cls.getConstructor(int.class).newInstance(currentid);
+				final Class<?> cls = PacketHandler.class.getClassLoader().loadClass(c);
+				final ModernPacket instance = (ModernPacket) cls.getConstructor(int.class).newInstance(currentId);
 				PacketHandler.packetlist.add(instance);
 				PacketHandler.packetmap.put((Class<? extends ModernPacket>) cls, instance);
-				currentid++;
-			} catch(Throwable ignored) {
-				ignored.printStackTrace();
+				currentId++;
+			} catch (Throwable ignoredButPrinted) {
+				ignoredButPrinted.printStackTrace();
 			}
 		}
 	}
@@ -128,7 +178,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	@SideOnly(Side.CLIENT)
 	public static void queueAndRemovePacketFromNBT(NBTTagCompound nbt) {
 		byte[] data = nbt.getByteArray("LogisticsPipes:PacketData");
-		if(data.length > 0) {
+		if (data.length > 0) {
 			LPDataIOWrapper.provideData(data, dataInput -> {
 				final int packetID = dataInput.readShort();
 				final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();

@@ -547,7 +547,7 @@ public class LogisticsHUDRenderer {
 		GL11.glTranslatef((float) x, (float) y, (float) z);
 		GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
 		GL11.glRotatef(getAngle(z, x) + 90, 0.0F, 0.0F, 1.0F);
-		GL11.glRotatef((-1) * getAngle(Math.hypot(x, z), y) + 180, 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef((-1) * getAngle(Math.hypot(x, z), y - player.getEyeHeight()) + 180, 1.0F, 0.0F, 0.0F);
 
 		GL11.glTranslatef(0.0F, 0.0F, -0.4F);
 
@@ -575,7 +575,7 @@ public class LogisticsHUDRenderer {
 		Vector3d playerView = Vector3d.getFromAngles((270 - player.rotationYaw) / 360 * -2 * Math.PI, (player.rotationPitch) / 360 * -2 * Math.PI);
 		Vector3d playerPos = new Vector3d();
 		playerPos.x = player.posX;
-		playerPos.y = player.posY;
+		playerPos.y = player.posY + player.getEyeHeight();
 		playerPos.z = player.posZ;
 
 		Vector3d panelPos = new Vector3d();

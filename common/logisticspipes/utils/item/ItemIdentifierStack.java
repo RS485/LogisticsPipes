@@ -100,7 +100,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return new ItemIdentifierStack(_item, getStackSize());
 	}
 
-	public String getFriendlyName() {
+	public String getFriendlyName(	) {
 		return getStackSize() + " " + _item.getFriendlyName();
 	}
 
@@ -111,7 +111,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	public static LinkedList<ItemIdentifierStack> getListFromInventory(IInventory inv, boolean removeNull) {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<>();
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			if (inv.getStackInSlot(i) == null) {
+			if (inv.getStackInSlot(i).isEmpty()) {
 				if (!removeNull) {
 					list.add(null);
 				}

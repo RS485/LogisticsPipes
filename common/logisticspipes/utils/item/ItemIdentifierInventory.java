@@ -257,9 +257,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	}
 
 	public void removeListener(ISimpleInventoryEventHandler listner) {
-		if (_listener.contains(listner)) {
-			_listener.remove(listner);
-		}
+		_listener.remove(listner);
 	}
 
 	@Override
@@ -366,12 +364,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 				continue;
 			}
 			ItemIdentifier itemId = _content.getItem();
-			Integer count = _contentsMap.get(itemId);
-			if (count == null) {
-				_contentsMap.put(itemId, _content.getStackSize());
-			} else {
-				_contentsMap.put(itemId, _contentsMap.get(itemId) + _content.getStackSize());
-			}
+			_contentsMap.merge(itemId, _content.getStackSize(), (a, b) -> a + b);
 			_contentsUndamagedSet.add(itemId.getUndamaged()); // add is cheaper than check then add; it just returns false if it is already there
 			_contentsNoNBTSet.add(itemId.getIgnoringNBT()); // add is cheaper than check then add; it just returns false if it is already there
 			_contentsUndamagedNoNBTSet.add(itemId.getIgnoringNBT().getUndamaged()); // add is cheaper than check then add; it just returns false if it is already there

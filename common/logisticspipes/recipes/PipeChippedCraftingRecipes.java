@@ -192,6 +192,40 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('d', "gemDiamond"),
 				new RecipeManager.RecipeIndex('n', "gemQuartz")
 		);
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSupplierPipeMk1),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						"bsb",
+						"iwi"
+				),
+				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LogisticsPipes.LogisticsFluidSupplierPipeMk1)),
+				new RecipeManager.RecipeIndex('s', LogisticsPipes.LogisticsBasicPipe),
+				new RecipeManager.RecipeIndex('w', Items.BUCKET),
+				new RecipeManager.RecipeIndex('i', "ingotIron")
+		);
+
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidBasicPipe),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						"bsb",
+						"gwg"
+				),
+				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LogisticsPipes.LogisticsFluidBasicPipe)),
+				new RecipeManager.RecipeIndex('s', LogisticsPipes.LogisticsBasicPipe),
+				new RecipeManager.RecipeIndex('w', Items.BUCKET),
+				new RecipeManager.RecipeIndex('g', "ingotGold")
+		);
+
+		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LogisticsPipes.LogisticsFluidRequestPipe, LogisticsPipes.LogisticsFluidBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LogisticsPipes.LogisticsFluidProviderPipe, LogisticsPipes.LogisticsFluidBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LogisticsPipes.LogisticsFluidSupplierPipeMk2, LogisticsPipes.LogisticsFluidSupplierPipeMk1);
+		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LogisticsPipes.LogisticsFluidSatellitePipe, LogisticsPipes.LogisticsFluidBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LogisticsPipes.LogisticsFluidInsertionPipe, LogisticsPipes.LogisticsFluidBasicPipe);
+		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LogisticsPipes.LogisticsFluidExtractorPipe, LogisticsPipes.LogisticsFluidBasicPipe);
+
 	}
 
 	@Override

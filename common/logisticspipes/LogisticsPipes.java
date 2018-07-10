@@ -31,7 +31,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -170,8 +169,6 @@ import logisticspipes.recipes.PipeChippedCraftingRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.UpgradeChippedCraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.renderer.newpipe.LogisticsBlockModel;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
@@ -424,8 +421,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
 
-		ModelLoaderRegistry.registerLoader(new LogisticsNewPipeModel.LogisticsNewPipeModelLoader());
-		ModelLoaderRegistry.registerLoader(new LogisticsBlockModel.LogisticsBlockModelLoader());
+		MainProxy.proxy.initModelLoader();
 	}
 
 	@Mod.EventHandler
@@ -565,7 +561,7 @@ public class LogisticsPipes {
 		LogisticsChips_fpga_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW));
 
 
-		event.getRegistry().register(new LogisticsSolidBlockItem(LogisticsPipes.LogisticsSolidBlock).registerModels().setRegistryName(LogisticsPipes.LogisticsSolidBlock.getRegistryName()));
+		event.getRegistry().register(MainProxy.proxy.registerSolidBlockModel(new LogisticsSolidBlockItem(LogisticsPipes.LogisticsSolidBlock)).setRegistryName(LogisticsPipes.LogisticsSolidBlock.getRegistryName()));
 		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsPipeBlock).setRegistryName(LogisticsPipes.LogisticsPipeBlock.getRegistryName()));
 		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsSubMultiBlock).setRegistryName(LogisticsPipes.LogisticsSubMultiBlock.getRegistryName()));
 

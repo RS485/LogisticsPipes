@@ -16,6 +16,7 @@ import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.LogisticsItem;
+import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
@@ -38,6 +39,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.newpipe.GLRenderListHandler;
+import logisticspipes.renderer.newpipe.LogisticsBlockModel;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.textures.Textures;
@@ -62,6 +64,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.DimensionManager;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -278,5 +281,16 @@ public class ClientProxy implements IProxy {
 		LogisticsNewRenderPipe.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsPipes.LogisticsSolidBlock.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewPipeModel.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
+	}
+
+	@Override
+	public void initModelLoader() {
+		ModelLoaderRegistry.registerLoader(new LogisticsNewPipeModel.LogisticsNewPipeModelLoader());
+		ModelLoaderRegistry.registerLoader(new LogisticsBlockModel.LogisticsBlockModelLoader());
+	}
+
+	@Override
+	public LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem) {
+		return logisticsSolidBlockItem.registerModels();
 	}
 }

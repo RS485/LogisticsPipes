@@ -57,6 +57,7 @@ public class CCLProxy implements ICCLProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon) {
 		final IconTransformation icon = new IconTransformation(registerIcon);
 		return new TextureTransformation() {

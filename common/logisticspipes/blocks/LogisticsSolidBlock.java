@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -93,8 +94,14 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 
-	//private static final TextureAtlasSprite[] icons = new TextureAtlasSprite[18];
-	private static final TextureAtlasSprite[] newTextures = new TextureAtlasSprite[12];
+	@SideOnly(Side.CLIENT)
+	private static TextureAtlasSprite[] newTextures;
+
+	static {
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			newTextures = new TextureAtlasSprite[12];
+		}
+	}
 
 	@Override
 	public boolean isSideSolid(IBlockState base_state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, EnumFacing side) {

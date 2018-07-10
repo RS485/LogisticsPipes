@@ -13,6 +13,7 @@ import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.LogisticsItem;
+import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
@@ -273,4 +274,12 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void registerTextures() {}
+
+	@Override
+	public void initModelLoader() {}
+
+	@Override
+	public LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem) {
+		return logisticsSolidBlockItem;
+	}
 }

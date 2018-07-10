@@ -2,6 +2,7 @@ package logisticspipes.proxy.interfaces;
 
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.LogisticsItem;
+import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -11,6 +12,8 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.world.World;
+
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public interface IProxy {
 
@@ -57,4 +60,8 @@ public interface IProxy {
 	void registerModels(LogisticsItem logisticsItem);
 
 	void registerTextures();
+
+	void initModelLoader();
+
+	LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem);
 }

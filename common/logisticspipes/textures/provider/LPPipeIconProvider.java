@@ -7,18 +7,30 @@ import logisticspipes.renderer.IIconProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import lombok.Getter;
+
 public class LPPipeIconProvider implements IIconProvider {
 
-	public ArrayList<TextureAtlasSprite> icons = new ArrayList<>();
+	@SideOnly(Side.CLIENT)
+	private ArrayList<TextureAtlasSprite> icons;
+
+	public LPPipeIconProvider() {
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			icons = new ArrayList<>();
+		}
+	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public TextureAtlasSprite getIcon(int iconIndex) {
 		return icons.get(iconIndex);
 	}
 
+	@SideOnly(Side.CLIENT)
 	public void setIcon(int index, TextureAtlasSprite icon) {
 		while (icons.size() < index + 1) {
 			icons.add(null);

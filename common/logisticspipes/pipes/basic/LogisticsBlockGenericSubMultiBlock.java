@@ -91,19 +91,10 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		TileEntity tile = worldIn.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			boolean notHandled = mainPipeList.stream()
+			mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().player)))
-					.map(mainPipe -> worldIn.setBlockToAir(mainPipe.getPos()))
-					.count() == 0;
-
-			if (notHandled) {
-				mainPipeList.stream()
-						.filter(Objects::nonNull)
-						.filter(LogisticsTileGenericPipe::isMultiBlock)
-						.forEach(mainPipe -> worldIn.setBlockToAir(mainPipe.getPos()));
-			}
+					.forEach(mainPipe -> worldIn.setBlockToAir(mainPipe.getPos()));
 		}
 	}
 
@@ -203,6 +194,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
 		TileEntity tile = world.getTileEntity(pos);
 		Optional<Boolean> result = Optional.empty();
@@ -242,6 +234,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		return result.orElse(super.getPickBlock(state, target, world, pos, player));
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void addHitEffects(LogisticsTileGenericPipe mainPipe, IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
 		final TextureAtlasSprite icon = mainPipe.pipe.getIconProvider().getIcon(mainPipe.pipe.getIconIndexForItem());
 		final EnumFacing sideHit = target.sideHit;
@@ -284,6 +277,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
 		TileEntity tile = world.getTileEntity(target.getBlockPos());
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {

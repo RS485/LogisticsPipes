@@ -2,19 +2,34 @@ package logisticspipes.textures.provider;
 
 import java.util.ArrayList;
 
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class LPPipeIconTransformerProvider {
 
-	public ArrayList<TextureTransformation> icons = new ArrayList<>();
+	@SideOnly(Side.CLIENT)
+	private ArrayList<TextureTransformation> icons;
 
+	public LPPipeIconTransformerProvider() {
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			icons = new ArrayList<>();
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
 	public TextureTransformation getIcon(int iconIndex) {
 		return icons.get(iconIndex);
 	}
 
+	@SideOnly(Side.CLIENT)
 	public void setIcon(int index, TextureAtlasSprite icon) {
 		while (icons.size() < index + 1) {
 			icons.add(null);

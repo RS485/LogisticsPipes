@@ -180,7 +180,7 @@ public class LogisticsNewPipeModel implements IModel {
 		List<RenderEntry> objectsToRender = new ArrayList<>();
 
 		if(blockstate.getValue(LogisticsBlockGenericPipe.modelTypeProperty) == LogisticsBlockGenericPipe.PipeRenderModel.REQUEST_TABLE) {
-			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer((TextureAtlasSprite) Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
 			LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.getRotation(blockstate.getValue(LogisticsBlockGenericPipe.rotationProperty));
 
@@ -207,7 +207,7 @@ public class LogisticsNewPipeModel implements IModel {
 
 			System.out.println("'" + key + "' does not result in pipe");
 		} else if(getPipe() instanceof PipeBlockRequestTable) {
-			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
+			TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer((TextureAtlasSprite) Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
 			LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.ZERO;
 

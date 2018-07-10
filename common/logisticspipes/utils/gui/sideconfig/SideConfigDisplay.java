@@ -279,7 +279,7 @@ public abstract class SideConfigDisplay {
 		}
 		BoundingBox bb = new BoundingBox(new DoubleCoordinates(selection.config));
 
-		TextureAtlasSprite icon = Textures.LOGISTICS_SIDE_SELECTION;
+		TextureAtlasSprite icon = (TextureAtlasSprite) Textures.LOGISTICS_SIDE_SELECTION;
 		List<Vertex> corners = bb.getCornersWithUvForFace(selection.face, icon.getMinU(), icon.getMaxU(), icon.getMinV(), icon.getMaxV());
 
 		GlStateManager.disableDepth();

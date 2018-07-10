@@ -205,7 +205,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		return Textures.empty_2;
 	}
 
-	public TextureAtlasSprite getTextureFor(int l) {
+	/*public TextureAtlasSprite getTextureFor(int l) {
 		EnumFacing dir = EnumFacing.getFront(l);
 		//if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			switch (dir) {
@@ -223,7 +223,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 						return Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY;
 					}
 			}
-		/*} else {
+		} else {
 			switch (dir) {
 				case UP:
 					return Textures.LOGISTICS_REQUEST_TABLE[0];
@@ -240,8 +240,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 						return Textures.LOGISTICS_REQUEST_TABLE[4];
 					}
 			}
-		}*/
-	}
+		}
+	}*/
 
 	@Override
 	public void onAllowedRemoval() {

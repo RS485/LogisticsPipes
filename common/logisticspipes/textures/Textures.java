@@ -1,6 +1,5 @@
 package logisticspipes.textures;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
 
@@ -70,14 +69,14 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE = Textures.empty;
 	public static SmallTextureType LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE = Textures.smallEmpty;
 
-	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE[] = new TextureAtlasSprite[0];
-	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW = null;
-	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW_ROUTED = null;
-	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = null;
-	public static TextureAtlasSprite LOGISTICS_REQUEST_TABLE_NEW_EMPTY = null;
+	public static Object LOGISTICS_REQUEST_TABLE[] = new Object[0];
+	public static Object LOGISTICS_REQUEST_TABLE_NEW = null;
+	public static Object LOGISTICS_REQUEST_TABLE_NEW_ROUTED = null;
+	public static Object LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = null;
+	public static Object LOGISTICS_REQUEST_TABLE_NEW_EMPTY = null;
 
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR = 0;
-	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_DISABLED;
+/*	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_DISABLED;
 	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_CRAFTING_ICON;
 	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
 	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON;
@@ -86,8 +85,8 @@ public class Textures {
 	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
 	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_ICONINDEX;
 	public static TextureAtlasSprite LOGISTICSITEMS_ITEMHUD_ICON;
-	public static TextureAtlasSprite LOGISTICSITEMTEXTURE_FOR_DISK;
-	public static TextureAtlasSprite LOGISTICS_SIDE_SELECTION;
+	public static TextureAtlasSprite LOGISTICSITEMTEXTURE_FOR_DISK;*/
+	public static Object LOGISTICS_SIDE_SELECTION;
 
 	// Standalone pipes
 	public static String LOGISTICSPIPE_TEXTURE_FILE = "pipes/basic";
@@ -251,7 +250,7 @@ public class Textures {
 		Textures.LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE = registerSmallTexture(par1IIconRegister, Textures.LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE_FILE);
 
 		if (MainProxy.isClient() && par1IIconRegister != null) {
-			Textures.LOGISTICS_REQUEST_TABLE = new TextureAtlasSprite[5];
+			Textures.LOGISTICS_REQUEST_TABLE = new Object[5];
 			for (int i = 0; i < 5; i++) {
 				Textures.LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/" + i));
 			}

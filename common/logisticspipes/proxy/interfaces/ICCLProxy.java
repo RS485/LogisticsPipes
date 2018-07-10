@@ -16,9 +16,12 @@ import logisticspipes.proxy.object3d.operation.LPScale;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface ICCLProxy {
 
+	@SideOnly(Side.CLIENT)
 	TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon);
 
 	IRenderState getRenderState();

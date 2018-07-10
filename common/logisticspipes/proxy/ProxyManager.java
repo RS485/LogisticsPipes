@@ -393,7 +393,7 @@ public class ProxyManager {
 			}
 		};
 		ICCLProxy dummyCCLProxy = new ICCLProxy() {
-			@Override public TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon) {
+			@SideOnly(Side.CLIENT) @Override public TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon) {
 				return new TextureTransformation() {
 					@Override public Object getOriginal() {return null;}
 					@Override public void update(TextureAtlasSprite registerIcon) {}

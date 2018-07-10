@@ -19,6 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -105,6 +107,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerModels() {
 		signTypeModels.addAll(Collections.nCopies(ItemPipeSignCreator.signTypes.size(), null));
 		for (int i = 0; i < ItemPipeSignCreator.signTypes.size(); i++) {

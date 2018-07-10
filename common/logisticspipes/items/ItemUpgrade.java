@@ -2,20 +2,14 @@ package logisticspipes.items;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.model.ModelLoader;
@@ -24,9 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
@@ -133,11 +125,6 @@ public class ItemUpgrade extends LogisticsItem {
 	public static void registerUpgrade(Class<? extends IPipeUpgrade> upgradeClass, String texturePath) {
 		Upgrade upgrade = new Upgrade(upgradeClass, texturePath);
 		LogisticsPipes.LogisticsUpgrades.put(upgradeClass, LogisticsPipes.registerItem(new ItemUpgrade(upgrade)));
-	}
-
-	@Override
-	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.REDSTONE;
 	}
 
 	public IPipeUpgrade getUpgradeForItem(ItemStack itemStack, IPipeUpgrade currentUpgrade) {

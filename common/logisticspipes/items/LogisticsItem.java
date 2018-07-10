@@ -9,42 +9,31 @@
 package logisticspipes.items;
 
 import java.util.List;
-
 import javax.annotation.Nullable;
-
-import logisticspipes.LogisticsPipes;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import logisticspipes.LogisticsPipes;
+import logisticspipes.utils.string.StringUtils;
+
 public class LogisticsItem extends Item {
 
 	public LogisticsItem() {
 		//itemIcon = icon;
-		setCreativeTab(LogisticsPipes.LPCreativeTab);
+		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void registerModels() {
 		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", ""), "inventory"));
-	}
-
-	@Override
-	public CreativeTabs[] getCreativeTabs() {
-		return new CreativeTabs[] { LogisticsPipes.LPCreativeTab };
 	}
 
 	/**

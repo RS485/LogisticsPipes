@@ -1,27 +1,23 @@
 package logisticspipes.items;
 
 import java.util.List;
-
 import javax.annotation.Nullable;
-
-import logisticspipes.interfaces.IItemAdvancedExistance;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fluids.FluidStack;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
+
+import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvancedExistance {
 
@@ -75,8 +71,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public void getSubItems(CreativeTabs ct, NonNullList list) {
-		//Don't add to creative in any way
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+		// don't add to creative tabs in any way
 	}
 }

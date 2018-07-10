@@ -1,11 +1,5 @@
 package logisticspipes.items;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.api.IHUDArmor;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,6 +16,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.ISpecialArmor;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.api.IHUDArmor;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.string.StringUtils;
 
 public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor {
 
@@ -74,7 +74,8 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
-		return new CreativeTabs[] { getCreativeTab(), LogisticsPipes.LPCreativeTab };
+		// is visible in the LP creative tab and the ItemArmor creative tab
+		return new CreativeTabs[] { getCreativeTab(), LogisticsPipes.CREATIVE_TAB_LP };
 	}
 
 	/*@Override

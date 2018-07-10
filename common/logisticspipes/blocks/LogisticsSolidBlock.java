@@ -103,7 +103,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	public LogisticsSolidBlock() {
 		super(Material.IRON);
-		setCreativeTab(LogisticsPipes.LPCreativeTab);
 		setHardness(6.0F);
 		setUnlocalizedName("logisticssolidblock");
 		IBlockState state = this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION)
@@ -111,6 +110,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 				.withProperty(textureIndexProperty, 0);
 		connectionPropertys.values().forEach(it -> state.withProperty(it, false));
 		setDefaultState(state);
+		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
 
 	@Override

@@ -26,14 +26,15 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import static logisticspipes.LogisticsPipes.LogisticsPipeBlock;
 import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
-import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
@@ -43,6 +44,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	public LogisticsBlockGenericSubMultiBlock() {
 		super(Material.GLASS);
 		setUnlocalizedName("logisticsblockgenericsubmultiblock");
+		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
 
 	@Override

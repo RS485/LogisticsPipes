@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -162,11 +163,11 @@ import logisticspipes.recipes.BlockChippedCraftingRecipes;
 import logisticspipes.recipes.ChippedCraftingRecipes;
 import logisticspipes.recipes.CraftingPartRecipes;
 import logisticspipes.recipes.CraftingParts;
+import logisticspipes.recipes.CraftingRecipes;
 import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.ModuleChippedCraftingRecipes;
 import logisticspipes.recipes.PipeChippedCraftingRecipes;
 import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.CraftingRecipes;
 import logisticspipes.recipes.UpgradeChippedCraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.renderer.newpipe.LogisticsBlockModel;
@@ -336,10 +337,18 @@ public class LogisticsPipes {
 	// other statics
 	public static Textures textures = new Textures();
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
-	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
 	public static Logger log;
 	public static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 	public static VersionChecker versionChecker;
+
+	// initializes the creative tab
+	public static final CreativeTabs CREATIVE_TAB_LP = new CreativeTabs("Logistics_Pipes") {
+
+		@SideOnly(Side.CLIENT)
+		public ItemStack getTabIconItem() {
+			return new ItemStack(LogisticsPipes.LogisticsBasicPipe);
+		}
+	};
 
 	private Queue<Runnable> postInitRun = new LinkedList<>();
 	private static LPGlobalCCAccess generalAccess;
@@ -728,7 +737,6 @@ public class LogisticsPipes {
 
 	protected Item createPipe(Class<? extends CoreUnroutedPipe> clas, String descr) {
 		final ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(clas);
-		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		final CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if (pipe instanceof CoreRoutedPipe) {
 			postInitRun.add(() -> res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(null).normal, ((CoreRoutedPipe) pipe).getTextureType(null).newTexture));

@@ -1,10 +1,7 @@
 package logisticspipes.items;
 
-import java.util.List;
-
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -45,17 +42,13 @@ public class ItemParts extends LogisticsItem {
 	}
 
 	@Override
-	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.REDSTONE;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		items.add(new ItemStack(this, 1, 0));
-		items.add(new ItemStack(this, 1, 1));
-		items.add(new ItemStack(this, 1, 2));
-		items.add(new ItemStack(this, 1, 3));
+		if (isInCreativeTab(tab)) {
+			items.add(new ItemStack(this, 1, 0));
+			items.add(new ItemStack(this, 1, 1));
+			items.add(new ItemStack(this, 1, 2));
+			items.add(new ItemStack(this, 1, 3));
+		}
 	}
 
 }

@@ -164,11 +164,6 @@ public class ItemModule extends LogisticsItem {
 		LogisticsPipes.LogisticsModules.put(moduleClass, LogisticsPipes.registerItem(new ItemModule(module)));
 	}
 
-	@Override
-	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.REDSTONE;
-	}
-
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
 		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null);
 		if (module != null && module.hasGui()) {

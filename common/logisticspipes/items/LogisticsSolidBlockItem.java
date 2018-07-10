@@ -23,6 +23,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		super(par1);
 		setHasSubtypes(true);
 		setUnlocalizedName("logisticssolidblock");
+		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
 
 	@Override
@@ -67,35 +68,31 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	}
 
 	@Override
-	public CreativeTabs getCreativeTab() {
-		return LogisticsPipes.LPCreativeTab;
-	}
-
-	@Override
 	public int getMetadata(int par1) {
 		return par1;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void getSubItems(CreativeTabs par2CreativeTabs, NonNullList par3List) {
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME.getMeta()));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.SOLDERING_STATION.getMeta()));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_POWER_JUNCTION.getMeta()));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_SECURITY_STATION.getMeta()));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE.getMeta()));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE.getMeta()));
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_STATISTICS_TABLE.getMeta()));
-		if (SimpleServiceLocator.powerProxy.isAvailable()) {
-			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_RF_POWERPROVIDER.getMeta()));
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+		if (isInCreativeTab(tab)) {
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME.getMeta()));
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.SOLDERING_STATION.getMeta()));
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_POWER_JUNCTION.getMeta()));
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_SECURITY_STATION.getMeta()));
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE.getMeta()));
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE.getMeta()));
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_STATISTICS_TABLE.getMeta()));
+			if (SimpleServiceLocator.powerProxy.isAvailable()) {
+				items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_RF_POWERPROVIDER.getMeta()));
+			}
+			if (SimpleServiceLocator.IC2Proxy.hasIC2()) {
+				items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER.getMeta()));
+			}
+			if (SimpleServiceLocator.buildCraftProxy.isActive()) {
+				items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER.getMeta()));
+			}
+			items.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER.getMeta()));
 		}
-		if (SimpleServiceLocator.IC2Proxy.hasIC2()) {
-			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER.getMeta()));
-		}
-		if (SimpleServiceLocator.buildCraftProxy.isActive()) {
-			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER.getMeta()));
-		}
-		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER.getMeta()));
 	}
 
 	public LogisticsSolidBlockItem registerModels() {

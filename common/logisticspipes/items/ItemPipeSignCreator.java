@@ -4,6 +4,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.renderer.ItemMeshDefinition;
+import net.minecraft.client.renderer.block.model.ModelBakery;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import net.minecraftforge.client.model.ModelLoader;
+
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.CraftingPipeSign;
@@ -11,25 +27,6 @@ import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.client.model.ModelLoader;
 
 public class ItemPipeSignCreator extends LogisticsItem {
 
@@ -137,11 +134,6 @@ public class ItemPipeSignCreator extends LogisticsItem {
 		}
 		int mode = itemstack.getTagCompound().getInteger("CreatorMode");
 		return StringUtils.translate(getUnlocalizedName(itemstack) + "." + mode);
-	}
-
-	@Override
-	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.TOOLS;
 	}
 
 	@Override

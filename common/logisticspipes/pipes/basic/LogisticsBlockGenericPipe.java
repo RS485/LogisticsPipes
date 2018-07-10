@@ -47,30 +47,23 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import mcp.MethodsReturnNonnullByDefault;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.block.PipeSolidSideCheck;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.math.MatrixTranformations;
 import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
-import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.SideUtils;
@@ -110,9 +103,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				.withProperty(modelTypeProperty, PipeRenderModel.NONE);
 		connectionPropertys.values().forEach(it -> state.withProperty(it, false));
 		setDefaultState(state);
+		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
-
-
 
 	public static void removePipe(CoreUnroutedPipe pipe) {
 		if (!LogisticsBlockGenericPipe.isValid(pipe)) {

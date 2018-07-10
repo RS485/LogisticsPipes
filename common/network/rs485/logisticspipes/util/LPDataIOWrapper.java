@@ -309,7 +309,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public void writeItemStack(ItemStack itemstack) {
-		if (itemstack == null) {
+		if (itemstack == ItemStack.EMPTY) {
 			writeInt(0);
 		} else {
 			writeInt(Item.getIdFromItem(itemstack.getItem()));

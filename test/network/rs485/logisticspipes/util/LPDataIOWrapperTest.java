@@ -1,11 +1,11 @@
 package network.rs485.logisticspipes.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
@@ -21,12 +21,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+@SuppressWarnings("unused")
 public class LPDataIOWrapperTest {
 
 	private static final String BUFFER_EMPTY_MSG = "Buffer must be empty";
 
 	@Test
-	public void testDirectBuffer() throws IOException {
+	public void testDirectBuffer() {
 		ByteBuf directBuf = directBuffer();
 
 		LPDataIOWrapper.writeData(directBuf, output -> {
@@ -43,7 +44,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testProvideByteData() throws Exception {
+	public void testProvideByteData() {
 		int result = 16909060;
 
 		LPDataIOWrapper.provideData(TestUtil.getBytesFromInteger(result), input -> {
@@ -54,14 +55,12 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testProvideByteBufData() throws Exception {
+	public void testProvideByteBufData() {
 		int result = 1234;
 
 		ByteBuf dataBuffer = wrappedBuffer(TestUtil.getBytesFromInteger(result));
 
-		LPDataIOWrapper.provideData(dataBuffer, dataInput -> {
-			assertEquals(result, dataInput.readInt());
-		});
+		LPDataIOWrapper.provideData(dataBuffer, dataInput -> assertEquals(result, dataInput.readInt()));
 
 		assertEquals(BUFFER_EMPTY_MSG, 0, dataBuffer.readableBytes());
 
@@ -69,7 +68,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteData() throws Exception {
+	public void testWriteData() {
 		ByteBuf dataBuffer = buffer(Integer.BYTES);
 
 		LPDataIOWrapper.writeData(dataBuffer, dataOutput -> dataOutput.writeInt(5));
@@ -81,14 +80,14 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testCollectData() throws Exception {
+	public void testCollectData() {
 		byte[] arr = LPDataIOWrapper.collectData(dataOutput -> dataOutput.writeInt(7890));
 
 		assertArrayEquals(TestUtil.getBytesFromInteger(7890), arr);
 	}
 
 	@Test
-	public void testWriteByteArray() throws Exception {
+	public void testWriteByteArray() {
 		ByteBuf dataBuffer = buffer(Integer.BYTES * 2);
 		byte[] arr = TestUtil.getBytesFromInteger(-1);
 
@@ -103,14 +102,12 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullByteArray() throws IOException {
+	public void testNullByteArray() {
 		ByteBuf dataBuffer = Unpooled.buffer();
 
 		LPDataIOWrapper.writeData(dataBuffer, output -> output.writeByteArray(null));
 
-		LPDataIOWrapper.provideData(dataBuffer, input -> {
-			assertNull(input.readByteArray());
-		});
+		LPDataIOWrapper.provideData(dataBuffer, input -> assertNull(input.readByteArray()));
 
 		assertEquals(BUFFER_EMPTY_MSG, 0, dataBuffer.readableBytes());
 
@@ -118,7 +115,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testReadByteArray() throws Exception {
+	public void testReadByteArray() {
 		ByteBuf dataBuffer = buffer(Integer.BYTES * 2);
 
 		dataBuffer.writeInt(4);
@@ -135,7 +132,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteByte() throws Exception {
+	public void testWriteByte() {
 		byte value = 0x6f;
 		ByteBuf testBuffer = buffer(Byte.BYTES);
 
@@ -151,7 +148,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteByteInt() throws Exception {
+	public void testWriteByteInt() {
 		int byteValue = 0x6f;
 		ByteBuf testBuffer = buffer(Byte.BYTES);
 
@@ -167,7 +164,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteShort() throws Exception {
+	public void testWriteShort() {
 		short value = 0x6f0f;
 		ByteBuf testBuffer = buffer(Short.BYTES);
 
@@ -183,7 +180,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteShortInt() throws Exception {
+	public void testWriteShortInt() {
 		int shortValue = 0x6f0f;
 		ByteBuf testBuffer = buffer(Short.BYTES);
 
@@ -199,7 +196,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteInt() throws Exception {
+	public void testWriteInt() {
 		int value = 0x6f0f9f3f;
 		ByteBuf testBuffer = buffer(Integer.BYTES);
 
@@ -215,7 +212,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteLong() throws Exception {
+	public void testWriteLong() {
 		long value = 0x6f0f9f3f6f0f9f3fL;
 		ByteBuf testBuffer = buffer(Long.BYTES);
 
@@ -231,7 +228,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteFloat() throws Exception {
+	public void testWriteFloat() {
 		float value = 0.123456F;
 		ByteBuf testBuffer = buffer(Float.BYTES);
 
@@ -247,7 +244,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testWriteDouble() throws Exception {
+	public void testWriteDouble() {
 		double value = 0.1234567890123456;
 		ByteBuf testBuffer = buffer(Double.BYTES);
 
@@ -264,7 +261,7 @@ public class LPDataIOWrapperTest {
 
 	@Test
 	@SuppressWarnings("ConstantConditions")
-	public void testWriteBoolean() throws Exception {
+	public void testWriteBoolean() {
 		boolean value = true;
 		ByteBuf testBuffer = buffer(1);
 
@@ -280,7 +277,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testUTF() throws Exception {
+	public void testUTF() {
 		String value = "◘ËTest♀StringßüöäÜÖÄ";
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeUTF(value));
@@ -293,18 +290,18 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullUTF() throws Exception {
+	public void testNullUTF() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeUTF(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readUTF());
+			assertNull(input.readUTF());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testForgeDirection() throws Exception {
+	public void testForgeDirection() {
 		EnumFacing value = EnumFacing.UP;
 		ByteBuf testBuffer = buffer(Long.BYTES);
 
@@ -320,18 +317,18 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullForgeDirection() throws Exception {
+	public void testNullForgeDirection() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeFacing(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readFacing());
+			assertNull(input.readFacing());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testBitSet() throws Exception {
+	public void testBitSet() {
 		BitSet value = new BitSet(9);
 		value.set(3, true);
 		value.set(4, true);
@@ -347,12 +344,12 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNullBitSet() throws Exception {
+	public void testNullBitSet() {
 		LPDataIOWrapper.collectData(output -> output.writeBitSet(null));
 	}
 
 	@Test
-	public void testBooleanArray() throws Exception {
+	public void testBooleanArray() {
 		boolean[] arr = new boolean[] { true, false, true, true };
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeBooleanArray(arr));
@@ -365,7 +362,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testEmptyBooleanArray() throws Exception {
+	public void testEmptyBooleanArray() {
 		boolean[] arr = new boolean[0];
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeBooleanArray(arr));
@@ -378,18 +375,18 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullBooleanArray() throws Exception {
+	public void testNullBooleanArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeBooleanArray(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readBooleanArray());
+			assertNull(input.readBooleanArray());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testInvalidBooleanArray() throws Exception {
+	public void testInvalidBooleanArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> {
 			output.writeInt(12);
 			output.writeByteArray(null);
@@ -399,7 +396,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testIntArray() throws Exception {
+	public void testIntArray() {
 		int[] arr = new int[] { 12, 13, 13513, Integer.MAX_VALUE, Integer.MIN_VALUE };
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeIntArray(arr));
@@ -412,18 +409,18 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullIntArray() throws Exception {
+	public void testNullIntArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeIntArray(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readIntArray());
+			assertNull(input.readIntArray());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testByteBuf() throws Exception {
+	public void testByteBuf() {
 		byte[] arr = TestUtil.getBytesFromInteger(741893247);
 		ByteBuf testBuffer = buffer(arr.length);
 
@@ -444,19 +441,19 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNullByteBuf() throws Exception {
+	public void testNullByteBuf() {
 		LPDataIOWrapper.collectData(output -> output.writeByteBuf(null));
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testInvalidByteBuf() throws Exception {
+	public void testInvalidByteBuf() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeByteArray(null));
 
 		LPDataIOWrapper.provideData(data, LPDataInput::readByteBuf);
 	}
 
 	@Test
-	public void testLongArray() throws Exception {
+	public void testLongArray() {
 		long[] arr = new long[] { 12L, 13L, 1351312398172398L, Long.MAX_VALUE, Long.MIN_VALUE };
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeLongArray(arr));
@@ -469,18 +466,18 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullLongArray() throws Exception {
+	public void testNullLongArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeLongArray(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readLongArray());
+			assertNull(input.readLongArray());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testReadShort() throws Exception {
+	public void testReadShort() {
 		short value = 12;
 
 		ByteBuf dataBuffer = buffer(Short.BYTES);
@@ -494,7 +491,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testReadLong() throws Exception {
+	public void testReadLong() {
 		long value = 1092347801374L;
 
 		ByteBuf dataBuffer = buffer(Long.BYTES);
@@ -508,7 +505,7 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testReadFloat() throws Exception {
+	public void testReadFloat() {
 		float value = 0.123456F;
 
 		ByteBuf dataBuffer = buffer(Float.BYTES);
@@ -522,8 +519,8 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testReadDouble() throws Exception {
-		double value = 0.1234567890123456F;
+	public void testReadDouble() {
+		double value = 0.1234567890123456D;
 
 		ByteBuf dataBuffer = buffer(Double.BYTES);
 		dataBuffer.writeDouble(value);
@@ -537,20 +534,20 @@ public class LPDataIOWrapperTest {
 
 	@Test
 	@SuppressWarnings("ConstantConditions")
-	public void testBoolean() throws Exception {
+	public void testBoolean() {
 		boolean value = true;
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeBoolean(value));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertTrue(value == input.readBoolean());
+			assertEquals(value, input.readBoolean());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testNBTTagCompound() throws Exception {
+	public void testNBTTagCompound() {
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setBoolean("bool", true);
 		tag.setByte("byte", (byte) 127);
@@ -574,37 +571,35 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullNBTTagCompound() throws Exception {
+	public void testNullNBTTagCompound() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeNBTTagCompound(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readNBTTagCompound());
+			assertNull(input.readNBTTagCompound());
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
-	// ItemStack cannot be unit tested
-
 	@Test
-	public void testNullItemStack() throws Exception {
-		byte[] data = LPDataIOWrapper.collectData(output -> output.writeItemStack(null));
+	public void testEmptyItemStack() {
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeItemStack(ItemStack.EMPTY));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readItemStack());
+			assertEquals(input.readItemStack(), ItemStack.EMPTY);
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testArrayList() throws Exception {
+	public void testArrayList() {
 		ArrayList<String> arrayList = new ArrayList<>();
 		arrayList.add("drölf");
 		arrayList.add("text");
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(arrayList,
-				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
+				LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(arrayList, input.readArrayList(LPDataInput::readUTF));
@@ -614,25 +609,25 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullArrayList() throws Exception {
+	public void testNullArrayList() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
-				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
+				LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readArrayList(LPDataInput::readUTF));
+			assertNull(input.readArrayList(LPDataInput::readUTF));
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testLinkedList() throws Exception {
+	public void testLinkedList() {
 		LinkedList<String> linkedList = new LinkedList<>();
 		linkedList.add("drölf");
 		linkedList.add("text");
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(linkedList,
-				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
+				LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(linkedList, input.readLinkedList(LPDataInput::readUTF));
@@ -642,25 +637,25 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullLinkedList() throws Exception {
+	public void testNullLinkedList() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
-				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
+				LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readLinkedList(LPDataInput::readUTF));
+			assertNull(input.readLinkedList(LPDataInput::readUTF));
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});
 	}
 
 	@Test
-	public void testSet() throws Exception {
+	public void testSet() {
 		HashSet<String> set = new HashSet<>();
 		set.add("drölf");
 		set.add("text");
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(set,
-				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
+				LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(set, input.readSet(LPDataInput::readUTF));
@@ -670,12 +665,12 @@ public class LPDataIOWrapperTest {
 	}
 
 	@Test
-	public void testNullSet() throws Exception {
+	public void testNullSet() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
-				(logisticspipes.network.IWriteListObject<String>) LPDataOutput::writeUTF));
+				LPDataOutput::writeUTF));
 
 		LPDataIOWrapper.provideData(data, input -> {
-			assertEquals(null, input.readSet(LPDataInput::readUTF));
+			assertNull(input.readSet(LPDataInput::readUTF));
 
 			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
 		});

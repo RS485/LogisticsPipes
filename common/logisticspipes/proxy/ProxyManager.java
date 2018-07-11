@@ -75,7 +75,6 @@ import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 import logisticspipes.proxy.interfaces.ITDProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
-//import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IBounds;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
@@ -93,6 +92,8 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
+
+//import logisticspipes.proxy.nei.NEIProxy;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -180,6 +181,7 @@ public class ProxyManager {
 							@Override @SideOnly(Side.CLIENT) public void renderPluggable(EnumFacing dir, int renderPass, int x, int y, int z) {}
 							@Override public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {return false;}
 							@Override public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {return arrivingItem;}
+							@Override public AxisAlignedBB getBoundingBox(EnumFacing side) {return null;}
 						};
 					}
 					@Override public void readOldRedStone(NBTTagCompound nbt) {}
@@ -205,6 +207,8 @@ public class ProxyManager {
 				};
 			}
 			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}
+			@Override public Object getPipeFromTGP(TileEntity tile) {return null;}
+			@Override public TileEntity getTileFromPipe(Object pipe) {return null;}
 			@Override public void cleanup() {}
 		}, IBCTilePart.class, IBCPipePart.class, IBCPipePluggable.class, IBCPluggableState.class, IBCRenderState.class, IBCRenderTESR.class));
 

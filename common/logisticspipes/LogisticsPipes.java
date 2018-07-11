@@ -54,6 +54,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.GameData;
 
+import lombok.Getter;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -186,6 +187,7 @@ import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.grow.TickExecutor;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -246,6 +248,9 @@ public class LogisticsPipes {
 
 	@Mod.Instance("logisticspipes")
 	public static LogisticsPipes instance;
+
+	@Getter
+	private static TickExecutor globalTickExecutor;
 
 	//Log Requests
 	public static boolean DisplayRequests;
@@ -649,6 +654,11 @@ public class LogisticsPipes {
 	}
 
 	@Mod.EventHandler
+	public void starting(FMLServerStartingEvent event) {
+		globalTickExecutor = new TickExecutor();
+	}
+
+	@Mod.EventHandler
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
 		QueuedTasks.clearAllTasks();
@@ -658,6 +668,9 @@ public class LogisticsPipes {
 		ServerRouter.cleanup();
 		if (event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();
+		}
+		if (globalTickExecutor != null) {
+			globalTickExecutor.shutdownNow();
 		}
 		LogisticsEventListener.serverShutdown();
 		SimpleServiceLocator.buildCraftProxy.cleanup();

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.robots.LPRobotConnectionControl;
 import logisticspipes.proxy.buildcraft.robots.boards.LogisticsRoutingBoardRobot;
@@ -23,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -285,6 +288,7 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 	}
 
 	@Override
+	@Nullable
 	public IBCPipePluggable getBCPipePluggable(final EnumFacing sideHit) {
 		final PipePluggable plug = getPipePluggable(sideHit);
 		if (plug == null) {
@@ -342,6 +346,11 @@ public class LPBCTileGenericPipe extends TileGenericPipe implements IBCTilePart 
 					return arrivingItem; // Not at station
 				}
 				return ((LogisticsRoutingBoardRobot) robot.getBoard()).handleItem(arrivingItem);
+			}
+
+			@Override
+			public AxisAlignedBB getBoundingBox(ForgeDirection side) {
+				return plug.getBoundingBox(side);
 			}
 		};
 	}

@@ -123,9 +123,9 @@ processResources {
 }
 
 dependencies {
-    compile files("build/download/buildcraft-7.99.17-dev.jar")
+    compileOnly files("build/download/buildcraft-7.99.17-dev.jar")
     //compile 'codechicken:CodeChickenCore:1.10.2-2.4.1.102:deobf'
-    compile 'org.projectlombok:lombok:1.16.8'
+    compileOnly 'org.projectlombok:lombok:1.16.8'
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.1.233:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.5.331:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'

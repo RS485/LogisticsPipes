@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,7 +29,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
-import static io.netty.buffer.Unpooled.buffer;
 import li.cil.oc.api.network.Node;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;

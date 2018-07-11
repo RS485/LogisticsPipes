@@ -65,5 +65,9 @@ public interface IBCProxy {
 
 	boolean isTileGenericPipe(TileEntity tile);
 
+	Object getPipeFromTGP(TileEntity tile);
+
+	TileEntity getTileFromPipe(Object pipe);
+
 	void cleanup();
 }

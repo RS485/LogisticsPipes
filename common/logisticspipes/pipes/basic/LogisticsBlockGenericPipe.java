@@ -543,9 +543,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		/*
 		for (EnumFacing side : EnumFacing.VALUES) {
-			if (tileG.getPipePluggable(side) != null) {
+			if (tileG.getBCPipePluggable(side) != null) {
 				if(side != null && ignoreSideRayTrace) continue;
-				AxisAlignedBB bb = tileG.getPipePluggable(side).getBoundingBox(side);
+				AxisAlignedBB bb = tileG.getBCPipePluggable(side).getBoundingBox(side);
 				boxes[7 + side.ordinal()] = bb;
 				hits[7 + side.ordinal()] = super.collisionRayTrace(new BoundingBoxDelegateBlockState(bb, state), tileG.getWorld(), tileG.getPos(), origin, direction);
 				sideHit[7 + side.ordinal()] = side;

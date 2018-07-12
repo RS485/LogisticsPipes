@@ -5,38 +5,29 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-
 import org.lwjgl.opengl.GL11;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
 import org.lwjgl.opengl.GL12;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -51,7 +42,6 @@ import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.tuples.Pair;
@@ -355,6 +345,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 		GL11.glTranslatef(-0.32F, 0.5F * signScale + 0.08F, 0.07F * signScale);
 
+		// new render code does not work with display lists
+		/*
 		IPipeSignData data = type.getRenderData(pipe);
 		GLRenderList renderList = pipeSignRenderListMap.get(data);
 		if(data.isListCompatible(this)) {
@@ -369,123 +361,61 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		} else {
 			type.render(pipe, this);
 		}
+		*/
+		type.render(pipe, this);
 	}
 
-	public void renderItemStackOnSign(ItemStack itemstack) {
-		if (itemstack == null || itemstack.getItem() == null) {
+	public void renderItemStackOnSign(@Nonnull ItemStack itemstack) {
+		if (itemstack.isEmpty()) {
 			return; // Only happens on false configuration
 		}
 
-		Item item = itemstack.getItem();
+		Minecraft mc = Minecraft.getMinecraft();
+		RenderItem itemRender = mc.getRenderItem();
 
-		/*
-		IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
+		GlStateManager.disableLighting();
+		GlStateManager.color(1F, 1F, 1F); //Forge: Reset color in case Items change it.
+		GlStateManager.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
+		itemRender.zLevel = 100.0F;
+		GlStateManager.enableLighting();
+		GlStateManager.enableRescaleNormal();
 
-		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		// itemRender.renderItemAndEffectIntoGUI(itemstack, 0, 0);
+		// item render code
+		GlStateManager.pushMatrix();
+		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		mc.renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+		GlStateManager.enableRescaleNormal();
+		GlStateManager.enableAlpha();
+		GlStateManager.alphaFunc(516, 0.1F);
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-		GL11.glPushMatrix();
+		// make item flat and position it
+		GlStateManager.scale(0.4F, -0.4F, 0.01F);
+		GlStateManager.translate(0.15F, 0.08F, 0F);
 
-		if (customRenderer != null) {
-			if (customRenderer.shouldUseRenderHelper(ItemRenderType.INVENTORY, itemstack, ItemRendererHelper.INVENTORY_BLOCK)) {
-				GL11.glScalef(0.20F, -0.20F, -0.01F);
+		// mezz.jei.render.ItemStackFastRenderer#getBakedModel
+		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		IBakedModel bakedModel = itemModelMesher.getItemModel(itemstack);
+		bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemstack, null, null);
 
-				GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
+		bakedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.FIXED, false);
+		itemRender.renderItem(itemstack, bakedModel);
+		GlStateManager.disableAlpha();
+		GlStateManager.disableRescaleNormal();
+		GlStateManager.disableLighting();
+		GlStateManager.popMatrix();
+		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+		mc.renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+		// item render code end
 
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_LIGHT0);
-				GL11.glDisable(GL11.GL_LIGHT1);
-				GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-
-				customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
-
-				GL11.glEnable(GL11.GL_LIGHTING);
-				GL11.glEnable(GL11.GL_LIGHT0);
-				GL11.glEnable(GL11.GL_LIGHT1);
-				GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			} else {
-				GL11.glScalef(0.018F, -0.018F, -0.01F);
-				GL11.glTranslatef(-7F, -8F, 0F);
-
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glDisable(GL11.GL_LIGHT0);
-				GL11.glDisable(GL11.GL_LIGHT1);
-				GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-
-				customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
-
-				GL11.glEnable(GL11.GL_LIGHTING);
-				GL11.glEnable(GL11.GL_LIGHT0);
-				GL11.glEnable(GL11.GL_LIGHT1);
-				GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			}
-		} else if (item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(item).getRenderType())) {
-			GL11.glScalef(0.20F, -0.20F, -0.01F);
-
-			GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-			GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
-
-			renderBlocks.useInventoryTint = false;
-
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_LIGHT0);
-			GL11.glDisable(GL11.GL_LIGHT1);
-			GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-
-			renderBlocks.renderBlockAsItem(Block.getBlockFromItem(item), itemstack.getItemDamage(), 1.0F);
-
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_LIGHT0);
-			GL11.glEnable(GL11.GL_LIGHT1);
-			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		} else {
-			GL11.glScalef(0.02F, -0.02F, -0.01F);
-
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_LIGHT0);
-			GL11.glDisable(GL11.GL_LIGHT1);
-			GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-
-			GL11.glTranslatef(-8F, -8F, 0.0F);
-
-			if (item.requiresMultipleRenderPasses()) {
-				for (int var14 = 0; var14 < item.getRenderPasses(itemstack.getItemDamage()); ++var14) {
-					TextureAtlasSprite var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
-					renderItem(var15);
-				}
-			} else {
-				renderItem(item.getIconIndex(itemstack));
-			}
-
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_LIGHT0);
-			GL11.glEnable(GL11.GL_LIGHT1);
-			GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		}
-
-		GL11.glPopMatrix();*/
+		// not needed?
+		//itemRender.renderItemOverlays(mc.fontRenderer, itemstack, 0, 0);
+		GlStateManager.disableLighting();
+		itemRender.zLevel = 0.0F;
 	}
-
-	/*private void renderItem(TextureAtlasSprite par3Icon) {
-		if (par3Icon == null) {
-			return;
-		}
-		int par1 = 0;
-		int par2 = 0;
-		int par4 = 16;
-		int par5 = 16;
-		double zLevel = 0;
-		GL11.glPushMatrix();
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, 1.0F, 0.0F);
-		tessellator.addVertexWithUV(par1 + 0, par2 + par5, zLevel, par3Icon.getMinU(), par3Icon.getMaxV());
-		tessellator.addVertexWithUV(par1 + par4, par2 + par5, zLevel, par3Icon.getMaxU(), par3Icon.getMaxV());
-		tessellator.addVertexWithUV(par1 + par4, par2 + 0, zLevel, par3Icon.getMaxU(), par3Icon.getMinV());
-		tessellator.addVertexWithUV(par1 + 0, par2 + 0, zLevel, par3Icon.getMinU(), par3Icon.getMinV());
-		tessellator.draw();
-		GL11.glPopMatrix();
-	}*/
 
 	public String cut(String name, FontRenderer renderer) {
 		if (renderer.getStringWidth(name) < 90) {

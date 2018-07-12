@@ -1,10 +1,8 @@
 package logisticspipes.renderer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
@@ -34,10 +32,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
-import logisticspipes.pipes.signs.IPipeSignData;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
-import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.transport.LPTravelingItem;
@@ -58,7 +54,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static PlayerConfig config;
 	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false);
-	private static Map<IPipeSignData, GLRenderList> pipeSignRenderListMap = new HashMap<IPipeSignData, GLRenderList>();
 	private static int localItemTestRenderList = -1;
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
@@ -345,23 +340,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 		GL11.glTranslatef(-0.32F, 0.5F * signScale + 0.08F, 0.07F * signScale);
 
-		// new render code does not work with display lists
-		/*
-		IPipeSignData data = type.getRenderData(pipe);
-		GLRenderList renderList = pipeSignRenderListMap.get(data);
-		if(data.isListCompatible(this)) {
-			if (renderList == null || renderList.isInvalid() || !renderList.isFilled()) {
-				renderList = SimpleServiceLocator.renderListHandler.getNewRenderList();
-				pipeSignRenderListMap.put(data, renderList);
-				renderList.startListCompile();
-				type.render(pipe, this);
-				renderList.stopCompile();
-			}
-			renderList.render();
-		} else {
-			type.render(pipe, this);
-		}
-		*/
 		type.render(pipe, this);
 	}
 

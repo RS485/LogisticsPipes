@@ -1,16 +1,15 @@
 package logisticspipes.pipes.signs;
 
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.renderer.LogisticsRenderPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.renderer.LogisticsRenderPipe;
 
 public interface IPipeSign {
 
@@ -35,5 +34,4 @@ public interface IPipeSign {
 	@SideOnly(Side.CLIENT)
 	void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer);
 
-	IPipeSignData getRenderData(CoreRoutedPipe pipe);
 }

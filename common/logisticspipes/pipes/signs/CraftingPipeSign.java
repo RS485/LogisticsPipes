@@ -2,6 +2,18 @@ package logisticspipes.pipes.signs;
 
 import java.util.List;
 
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
@@ -12,33 +24,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import lombok.Data;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.opengl.GL11;
-
 public class CraftingPipeSign implements IPipeSign {
-
-	@Data
-	private static class CraftingPipeSignData implements IPipeSignData {
-		private final ItemIdentifierStack item;
-		private final int satID;
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public boolean isListCompatible(LogisticsRenderPipe render) {
-			return item == null || item.getItem().isRenderListCompatible(render);
-		}
-	}
 
 	public CoreRoutedPipe pipe;
 	public EnumFacing dir;
@@ -126,19 +112,4 @@ public class CraftingPipeSign implements IPipeSign {
 		}
 	}
 
-	@Override
-	public IPipeSignData getRenderData(CoreRoutedPipe pipe) {
-		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics) pipe;
-		if (cpipe != null) {
-			List<ItemIdentifierStack> craftables = cpipe.getCraftedItems();
-			if (craftables != null && craftables.size() > 0) {
-				ItemIdentifierStack itemIdentifierStack = craftables.get(0);
-				ModuleCrafter logisticsMod = cpipe.getLogisticsModule();
-				return new CraftingPipeSignData(itemIdentifierStack, logisticsMod.satelliteId);
-			} else {
-				return new CraftingPipeSignData(null, -1);
-			}
-		}
-		return null;
-	}
 }

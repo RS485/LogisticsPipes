@@ -16,41 +16,22 @@
 	<property name="downloadserver.dir"   value="external/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
-	<property name="forestry.filename"     value="forestry_1.12.2-5.7.0.218-api.jar"/>
-	<property name="ic2.filename"          value="industrialcraft-2-2.8.35-ex112-api.jar"/>
+
 	<property name="cc.filename"           value="ComputerCraftAPI-19e4c03d3a83e7367696937b7a702246490acca0.zip"/>
 	<!--<property name="thaumcraft.filename"   value="Thaumcraft-1.8.9-5.2.4-api.jar"/>-->
-	<property name="ocapi.filename"        value="OpenComputers-MC1.12.1-1.7.1.46-api.jar"/>
-	<property name="appeng.filename"       value="appliedenergistics2-rv5-stable-3-api.jar"/>
 	<property name="bc.filename"           value="buildcraft-7.99.17-dev.jar"/>
 
 	<target name="download">
 		<mkdir dir="${download.dir}"/>
 		<echo message="Download started"/>
-		<get src="${downloadserver.full}${forestry.filename}" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}${ic2.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${cc.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<!--<get src="${downloadserver.full}${thaumcraft.filename}" dest="${download.dir}" usetimestamp="True"/>-->
-		<get src="${downloadserver.full}${ocapi.filename}" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}${appeng.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}${bc.filename}" dest="${download.dir}" usetimestamp="True"/>
 		<echo message="Download finished"/>
 	</target>
 
 	<target name="extract" depends="download">
 		<delete dir="${build.dir}/unpack"/>
-
-		<unzip dest="${forestry.dir}" failOnEmptyArchive="true">
-			<fileset dir="${download.dir}">
-				<include name="${forestry.filename}"/>
-			</fileset>
-		</unzip>
-
-		<unzip dest="${ic2.dir}" failOnEmptyArchive="true">
-			<fileset dir="${download.dir}">
-				<include name="${ic2.filename}"/>
-			</fileset>
-		</unzip>
 
 		<unzip dest="${cc.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
@@ -64,18 +45,6 @@
 			</fileset>
 		</unzip>
 -->
-		<unzip dest="${ocapi.dir}" failOnEmptyArchive="true">
-			<fileset dir="${download.dir}">
-				<include name="${ocapi.filename}"/>
-			</fileset>
-		</unzip>
-
-		<unzip dest="${appeng.dir}" failOnEmptyArchive="true">
-			<fileset dir="${download.dir}">
-				<include name="${appeng.filename}"/>
-			</fileset>
-		</unzip>
-
 		<echo message="Unpacking finished"/>
 
 		<delete dir="${api.dir}"/>

@@ -839,7 +839,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 					return new ItemStack(LogisticsBlockGenericPipe.getPipe(world, pos).item);
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	/* Wrappers ************************************************************ */

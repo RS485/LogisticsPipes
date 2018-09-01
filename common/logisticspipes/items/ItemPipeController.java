@@ -31,10 +31,10 @@ public class ItemPipeController extends LogisticsItem {
 
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		useItem(player, world);
 		if (MainProxy.isClient(world)) {
 			return EnumActionResult.PASS;
 		}
+		useItem(player, world);
 		return EnumActionResult.SUCCESS;
 	}
 

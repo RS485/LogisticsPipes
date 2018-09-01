@@ -350,10 +350,6 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
 	}
 
-	public World getWorld() {
-		return getWorld();
-	}
-
 	@Override
 	public CoordinatesGuiProvider getGuiProvider() {
 		return NewGuiHandler.getGui(SecurityStationGui.class);

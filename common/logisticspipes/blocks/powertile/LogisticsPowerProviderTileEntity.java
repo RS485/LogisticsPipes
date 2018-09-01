@@ -292,11 +292,6 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public World getWorld() {
-		return getWorld();
-	}
-
-	@Override
 	public void startWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartBlockWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}

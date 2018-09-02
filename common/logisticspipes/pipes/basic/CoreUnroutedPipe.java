@@ -473,4 +473,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public abstract IHighlightPlacementRenderer getHighlightRenderer();
+
+	public World getWorldForHUD() {
+		return getWorld();
+	}
 }

@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -175,5 +176,9 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	@Override
 	public Object getCCType() {
 		return ccType;
+	}
+
+	public World getWorldForHUD() {
+		return getWorld();
 	}
 }

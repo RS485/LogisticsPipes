@@ -38,7 +38,7 @@ public class HUDRoutingTableDebugProvider implements IHeadUpDisplayRendererProvi
 	}
 
 	@Override
-	public World getWorld() {
+	public World getWorldForHUD() {
 		return null;
 	}
 

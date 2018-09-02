@@ -113,7 +113,7 @@ public class LogisticsHUDRenderer {
 		}
 
 		List<IHeadUpDisplayBlockRendererProvider> remove = new ArrayList<>();
-		providers.stream().filter(provider -> MainProxy.getDimensionForWorld(provider.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().world))
+		providers.stream().filter(provider -> MainProxy.getDimensionForWorld(provider.getWorldForHUD()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().world))
 				.forEach(provider -> {
 					double dis = Math.hypot(provider.getX() - x + 0.5, Math.hypot(provider.getY() - y + 0.5, provider.getZ() - z + 0.5));
 					if (dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isHUDInvalid() && provider.isHUDExistent()) {

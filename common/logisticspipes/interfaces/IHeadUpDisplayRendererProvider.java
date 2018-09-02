@@ -12,7 +12,7 @@ public interface IHeadUpDisplayRendererProvider {
 
 	public int getZ();
 
-	public World getWorld();
+	public World getWorldForHUD();
 
 	public void startWatching();
 

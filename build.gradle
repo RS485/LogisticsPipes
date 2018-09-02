@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
@@ -18,21 +19,10 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 //apply plugin: 'curseforge'
 
-repositories {
-    maven {
-        name 'CB Repo'
-        url "http://chickenbones.net/maven/"
-    }
-    maven {
-        name = "JEI Maven."
-        url = "http://dvs1.progwml6.com/files/maven"
-    }
-}
-
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-ant.importBuild 'download-api.xml'
+//ant.importBuild 'download-api.xml'
 ant.importBuild 'build-ant.xml'
 
 version = "0.10.0"
@@ -122,13 +112,47 @@ processResources {
     }
 }
 
+repositories {
+    maven {
+        name = 'CB Repo'
+        url = "http://chickenbones.net/maven/"
+    }
+    maven {
+        name = "JEI Maven."
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        name = "player"
+        url = "http://maven.ic2.player.to"
+    }
+    maven { url = "https://cc.crzd.me/maven/" }
+
+    maven {
+        url = "http://maven.cil.li/"
+    }
+    maven {
+        name = "buildcraft"
+        url = "https://mod-buildcraft.com/maven/"
+    }
+    maven { // JEI Bees & Thaumcraft
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
+}
+
 dependencies {
     compileOnly files("build/download/buildcraft-7.99.17-dev.jar")
-    //compile 'codechicken:CodeChickenCore:1.10.2-2.4.1.102:deobf'
     compileOnly 'org.projectlombok:lombok:1.16.8'
+    compile "com.mod-buildcraft:buildcraft-api:7.99.8.2"
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.1.233:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.5.331:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'
+    compile 'net.industrial-craft:industrialcraft-2:2.8.97-ex112:api'
+    compile 'net.sengir.forestry:forestry_1.12.2:5.8.1.339:api'
+    compile "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+:api"
+    compile "appeng:appliedenergistics2:rv5-stable-11:api"
+    compile "dan200.computercraft:ComputerCraft:1.80pr1-build5"
+    deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA23"
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
     testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
@@ -169,7 +193,7 @@ artifacts {
     archives jar
 }
 
-tasks.compileApiJava.dependsOn('extract')
+//tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
 tasks.processResources.dependsOn('integrateLang')
 tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')

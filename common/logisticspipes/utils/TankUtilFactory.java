@@ -26,7 +26,7 @@ public class TankUtilFactory {
 			}
 		}
 
-		if(tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dirOnEntity)) {
+		if(tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dirOnEntity)) {
 			IFluidHandler fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dirOnEntity);
 			if(fluidHandler != null) {
 				return new TankUtil(fluidHandler);

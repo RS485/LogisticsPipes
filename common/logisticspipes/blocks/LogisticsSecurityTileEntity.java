@@ -204,7 +204,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 					player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
-				if (inv.getStackInSlot(0) == null) {
+				if (inv.getIDStackInSlot(0) == null) {
 					ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
 					stack.setTagCompound(new NBTTagCompound());
 					stack.getTagCompound().setString("UUID", getSecId().toString());

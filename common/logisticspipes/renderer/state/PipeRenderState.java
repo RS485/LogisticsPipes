@@ -5,18 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import logisticspipes.interfaces.IClientState;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
 import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
 import logisticspipes.renderer.newpipe.GLRenderList;
@@ -28,23 +25,21 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeRenderState implements IClientState {
 
+	public enum LocalCacheType {
+		QUADS
+	}
+
 	public final ConnectionMatrix pipeConnectionMatrix = new ConnectionMatrix();
 	public final TextureMatrix textureMatrix = new TextureMatrix();
 	public final IBCRenderState bcRenderState;
 
 	public List<RenderEntry> cachedRenderer = null;
+	public Cache<LocalCacheType, Object> objectCache = CacheBuilder.newBuilder().build();
 	public boolean forceRenderOldPipe = false;
 	private boolean[] solidSidesCache = new boolean[6];
 
 	public int[] buffer = null;
 	public Map<ResourceLocation, GLRenderList> renderLists;
-	/*
-	 * This is a placeholder for the pipe renderer to set to a value that the BlockGenericPipe->TileGenericPipe will then return the the WorldRenderer
-	 */
-	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite currentTexture;
-	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite[] textureArray;
 
 	private boolean dirty = true;
 
@@ -57,7 +52,7 @@ public class PipeRenderState implements IClientState {
 		pipeConnectionMatrix.clean();
 		textureMatrix.clean();
 		bcRenderState.clean();
-		cachedRenderer = null;
+		clearRenderCaches();
 	}
 
 	public boolean isDirty() {
@@ -79,8 +74,14 @@ public class PipeRenderState implements IClientState {
 		}
 		if (!Arrays.equals(solidSides, solidSidesCache)) {
 			solidSidesCache = solidSides.clone();
-			cachedRenderer = null;
+			clearRenderCaches();
 		}
+	}
+
+	public void clearRenderCaches() {
+		cachedRenderer = null;
+		objectCache.invalidateAll();
+		objectCache.cleanUp();
 	}
 
 	@Override

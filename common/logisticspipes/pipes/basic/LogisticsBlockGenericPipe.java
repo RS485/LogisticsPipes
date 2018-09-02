@@ -31,6 +31,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -47,6 +48,9 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -60,10 +64,12 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.math.MatrixTranformations;
 import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
+import network.rs485.logisticspipes.utils.block.RenderListDelegateBlockState;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.SideUtils;
@@ -720,6 +726,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
+	public BlockRenderLayer getBlockLayer() {
+		return BlockRenderLayer.CUTOUT;
+	}
+
+	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
@@ -1112,7 +1123,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		checkForRenderChanges(worldIn, pos);
 		state = super.getActualState(state, worldIn, pos);
-		//TileEntity tile = worldIn.getTileEntity(pos);
 
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
 
@@ -1130,6 +1140,17 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 		}
 
+		return state;
+	}
+
+	@Override
+	public IBlockState getExtendedState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
+
+		if (LogisticsBlockGenericPipe.isValid(pipe) && !(pipe instanceof PipeBlockRequestTable)) {
+			LogisticsNewRenderPipe.checkAndCalculateRenderCache(pipe.container);
+			return new RenderListDelegateBlockState(pipe.container.renderState.cachedRenderer, pipe.container.renderState.objectCache, state);
+		}
 		return state;
 	}
 

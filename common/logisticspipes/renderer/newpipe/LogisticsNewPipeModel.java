@@ -55,8 +55,10 @@ import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.object3d.operation.LPUVScale;
 import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
 import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
+import network.rs485.logisticspipes.utils.block.RenderListDelegateBlockState;
 
 public class LogisticsNewPipeModel implements IModel {
 
@@ -130,14 +132,21 @@ public class LogisticsNewPipeModel implements IModel {
 			public List<BakedQuad> getQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side, long rand) {
 				if(blockstate != null) {
 					if (side == null) {
-						if (quads.isEmpty()) {
-							quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(blockstate), format));
+						if (blockstate instanceof RenderListDelegateBlockState) {
+							Object localQuads = ((RenderListDelegateBlockState) blockstate).getObjectCache().getIfPresent(PipeRenderState.LocalCacheType.QUADS);
+							if (localQuads instanceof List) {
+								return (List<BakedQuad>) localQuads;
+							}
 						}
-						return quads;
+						List<BakedQuad> localQuads = LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(blockstate), format, true);
+						if (blockstate instanceof RenderListDelegateBlockState) {
+							((RenderListDelegateBlockState) blockstate).getObjectCache().put(PipeRenderState.LocalCacheType.QUADS, localQuads);
+						}
+						return localQuads;
 					}
 				} else {
 					if (quads.isEmpty()) {
-						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(), format));
+						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(), format, true));
 					}
 					return quads;
 				}
@@ -191,6 +200,9 @@ public class LogisticsNewPipeModel implements IModel {
 					objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation), icon));
 				}
 			}
+		} else if(blockstate instanceof RenderListDelegateBlockState) {
+			RenderListDelegateBlockState lpState = (RenderListDelegateBlockState) blockstate;
+			objectsToRender = lpState.getRenderList();
 		}
 
 		return objectsToRender;

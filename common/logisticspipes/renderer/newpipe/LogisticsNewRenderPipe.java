@@ -605,25 +605,34 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}*/
 		} else {
 			renderState.forceRenderOldPipe = false;
-			boolean recalculateList = false;
-			if (renderState.cachedRenderer == null) {
-				List<RenderEntry> objectsToRender = new ArrayList<>();
-
-				if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe()) {
-					fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
-				}
-				if (pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null) {
-					pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
-				}
-
-				renderState.cachedRenderer = objectsToRender;
-				recalculateList = true;
+			boolean recalculateList = checkAndCalculateRenderCache(pipeTile);
+			renderList(x, y, z, renderState.renderLists, renderState.cachedRenderer, recalculateList);
+			if(recalculateList) {
+				pipeTile.getWorld().markBlockRangeForRenderUpdate(pipeTile.getPos(), pipeTile.getPos());
 			}
-			renderList(pipeTile, x, y, z, renderState.renderLists, renderState.cachedRenderer, recalculateList);
 		}
 	}
 
-	private void renderList(TileEntity subTile, double x, double y, double z, Map<ResourceLocation, GLRenderList> renderLists, List<RenderEntry> cachedRenderer, boolean recalculateList) {
+	public static boolean checkAndCalculateRenderCache(LogisticsTileGenericPipe pipeTile) {
+		PipeRenderState renderState = pipeTile.renderState;
+
+		if (renderState.cachedRenderer == null) {
+			List<RenderEntry> objectsToRender = new ArrayList<>();
+
+			if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe()) {
+				fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
+			}
+			if (pipeTile.pipe != null && pipeTile.pipe.getSpecialRenderer() != null) {
+				pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
+			}
+
+			renderState.cachedRenderer = Collections.unmodifiableList(objectsToRender);
+			return true;
+		}
+		return false;
+	}
+
+	private static void renderList(double x, double y, double z, Map<ResourceLocation, GLRenderList> renderLists, List<RenderEntry> cachedRenderer, boolean recalculateList) {
 		if (renderLists.isEmpty() || !renderLists.values().stream().allMatch(GLRenderList::isFilled) || recalculateList) {
 			Map<ResourceLocation, List<RenderEntry>> sorted = new HashMap<>();
 			for (RenderEntry model : cachedRenderer) {
@@ -634,6 +643,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 
 			for(Entry<ResourceLocation, List<RenderEntry>> entries: sorted.entrySet()) {
+				if(entries.getKey().equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) continue;
 				if(!renderLists.containsKey(entries.getKey())) {
 					renderLists.put(entries.getKey(), SimpleServiceLocator.renderListHandler.getNewRenderList());
 				}
@@ -668,7 +678,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {
+	private static void fillObjectsToRenderList(List<RenderEntry> objectsToRender, LogisticsTileGenericPipe pipeTile, PipeRenderState renderState) {
 		List<Edge> edgesToRender = new ArrayList<>(Arrays.asList(Edge.values()));
 		Map<Corner, Integer> connectionAtCorner = new HashMap<>();
 		List<PipeMount> mountCanidates = new ArrayList<>(Arrays.asList(PipeMount.values()));
@@ -921,7 +931,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void findOponentOnSameSide(List<PipeMount> mountCanidates, EnumFacing dir) {
+	private static void findOponentOnSameSide(List<PipeMount> mountCanidates, EnumFacing dir) {
 		boolean sides[] = new boolean[6];
 		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -955,11 +965,11 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void removeFromSide(List<PipeMount> mountCanidates, EnumFacing dir) {
+	private static void removeFromSide(List<PipeMount> mountCanidates, EnumFacing dir) {
 		mountCanidates.removeIf(mount -> mount.dir == dir);
 	}
 
-	private void reduceToOnePerSide(List<PipeMount> mountCanidates, EnumFacing dir, EnumFacing pref) {
+	private static void reduceToOnePerSide(List<PipeMount> mountCanidates, EnumFacing dir, EnumFacing pref) {
 		boolean found = false;
 		for (PipeMount mount : mountCanidates) {
 			if (mount.dir != dir) {
@@ -985,7 +995,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void reduceToOnePerSide(List<PipeMount> mountCanidates, EnumFacing dir) {
+	private static void reduceToOnePerSide(List<PipeMount> mountCanidates, EnumFacing dir) {
 		boolean found = false;
 		Iterator<PipeMount> iter = mountCanidates.iterator();
 		while (iter.hasNext()) {
@@ -1001,7 +1011,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void removeIfHasOponentSide(List<PipeMount> mountCanidates) {
+	private static void removeIfHasOponentSide(List<PipeMount> mountCanidates) {
 		boolean sides[] = new boolean[6];
 		for (PipeMount mount : mountCanidates) {
 			sides[mount.dir.ordinal()] = true;
@@ -1019,7 +1029,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private void removeIfHasConnectedSide(List<PipeMount> mountCanidates) {
+	private static void removeIfHasConnectedSide(List<PipeMount> mountCanidates) {
 		boolean sides[] = new boolean[6];
 		for (PipeMount mount : mountCanidates) {
 			sides[mount.dir.ordinal()] = true;
@@ -1109,16 +1119,16 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	public List<BakedQuad> getQuadsFromRenderList(List<RenderEntry> renderEntryList, VertexFormat format) {
+	public List<BakedQuad> getQuadsFromRenderList(List<RenderEntry> renderEntryList, VertexFormat format, boolean skipNonBlockTextures) {
 		List<BakedQuad> quads = Lists.newArrayList();
 		for (RenderEntry model : renderEntryList) {
 			ResourceLocation texture = model.getTexture();
 			if (texture == null) {
 				throw new NullPointerException();
 			}
-
-			quads.addAll(model.getModel().renderToQuads(format, model.getOperations()));
-			//model.getModel().render(model.getOperations());
+			if(texture.equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) {
+				quads.addAll(model.getModel().renderToQuads(format, model.getOperations()));
+			}
 		}
 		return ImmutableList.copyOf(quads);
 	}

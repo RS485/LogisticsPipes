@@ -122,7 +122,7 @@ public class LogisticsBlockModel implements IModel {
 			public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
 				if(side == null) {
 					if(quads.isEmpty()) {
-						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generateBlockRenderList(state), format));
+						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generateBlockRenderList(state), format, true));
 					}
 					return quads;
 				} else {

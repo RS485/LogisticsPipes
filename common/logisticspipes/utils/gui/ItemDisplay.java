@@ -286,7 +286,7 @@ public class ItemDisplay {
 					break;
 				}
 
-				ItemStack itemstack = itemIdentifierStack.unsafeMakeNormalStack();
+				//
 				// -2 on both, because field starts there (see black rect below)
 				int realX = x - 2;
 				int realY = y - 2;
@@ -300,7 +300,11 @@ public class ItemDisplay {
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
 					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARKER_GREY);
 
-					tooltip = new Object[] { mouseX + left, mouseY + top, itemstack };
+					if(itemIdentifierStack.getStackSize() > 0) {
+						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.unsafeMakeNormalStack() };
+					} else {
+						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.getItem().unsafeMakeNormalStack(1) };
+					}
 				}
 
 				/*if (lastClickedx >= realX && lastClickedx < realX + panelxSize && lastClickedy >= realY && lastClickedy < realY + panelySize) {
@@ -321,7 +325,7 @@ public class ItemDisplay {
 
 				// use GuiGraphics to render the ItemStacks
 				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, false, false);
-				itemstackRenderer.setItemstack(itemstack).setDisplayAmount(DisplayAmount.HIDE_ONE);
+				itemstackRenderer.setItemIdentStack(itemIdentifierStack).setDisplayAmount(DisplayAmount.HIDE_ONE);
 				itemstackRenderer.renderInGui();
 
 				x += panelxSize;

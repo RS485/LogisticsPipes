@@ -58,6 +58,7 @@ public class ItemStackRenderer {
 	private RenderEntityItem itemEntityRenderer;
 
 	private ItemStack itemstack;
+	private ItemIdentifierStack itemIdentStack;
 	private int posX;
 	private int posY;
 	private float zLevel;
@@ -150,7 +151,7 @@ public class ItemStackRenderer {
 	}
 
 	public void renderInGui() {
-		assert itemstack != null;
+		assert itemstack != null || itemIdentStack != null;
 		assert displayAmount != null;
 		assert renderItem != null;
 		assert texManager != null;
@@ -177,6 +178,12 @@ public class ItemStackRenderer {
 		}
 
 		renderItem.zLevel += zLevel;
+
+		if(itemIdentStack.getStackSize() < 1) {
+			itemstack = itemIdentStack.getItem().unsafeMakeNormalStack(1);
+		} else {
+			itemstack = itemIdentStack.unsafeMakeNormalStack();
+		}
 
 		IBakedModel bakedmodel = renderItem.getItemModelWithOverrides(itemstack, null, (renderEffects ? Minecraft.getMinecraft().player : null));
 
@@ -228,7 +235,7 @@ public class ItemStackRenderer {
 			}
 
 			GlStateManager.disableLighting();
-			String amountString = StringUtils.getFormatedStackSize(itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
+			String amountString = StringUtils.getFormatedStackSize(itemIdentStack != null ? itemIdentStack.getStackSize() : itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
 
 			GlStateManager.translate(0.0F, 0.0F, zLevel + 130.0F);
 

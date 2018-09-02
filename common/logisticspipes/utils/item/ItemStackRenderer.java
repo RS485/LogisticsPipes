@@ -179,10 +179,12 @@ public class ItemStackRenderer {
 
 		renderItem.zLevel += zLevel;
 
-		if(itemIdentStack.getStackSize() < 1) {
-			itemstack = itemIdentStack.getItem().unsafeMakeNormalStack(1);
-		} else {
-			itemstack = itemIdentStack.unsafeMakeNormalStack();
+		if(itemIdentStack != null) {
+			if (itemIdentStack.getStackSize() < 1) {
+				itemstack = itemIdentStack.getItem().unsafeMakeNormalStack(1);
+			} else {
+				itemstack = itemIdentStack.unsafeMakeNormalStack();
+			}
 		}
 
 		IBakedModel bakedmodel = renderItem.getItemModelWithOverrides(itemstack, null, (renderEffects ? Minecraft.getMinecraft().player : null));

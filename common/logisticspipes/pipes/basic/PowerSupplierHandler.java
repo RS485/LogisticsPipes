@@ -72,7 +72,6 @@ public class PowerSupplierHandler {
 				if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
 					if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
 						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
-						EnumFacing oppositeDir = adjacent.direction.getOpposite();
 						globalNeed += need[i] = (energyReceiver.getMaxEnergyStored() - energyReceiver.getEnergyStored());
 					}
 				}

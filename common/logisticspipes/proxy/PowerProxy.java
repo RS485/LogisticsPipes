@@ -39,7 +39,7 @@ public class PowerProxy implements IPowerProxy {
 
 	@Override
 	public boolean isEnergyReceiver(TileEntity tile, EnumFacing face) {
-		if(tile.hasCapability(CapabilityEnergy.ENERGY, face)) {
+		if(tile != null && tile.hasCapability(CapabilityEnergy.ENERGY, face)) {
 			return tile.getCapability(CapabilityEnergy.ENERGY, face).canReceive();
 		}
 		return tile instanceof IEnergyStorage;
@@ -48,7 +48,7 @@ public class PowerProxy implements IPowerProxy {
 	@Override
 	public ICoFHEnergyReceiver getEnergyReceiver(TileEntity tile, EnumFacing face) {
 		IEnergyStorage bHandler = null;
-		if(tile.hasCapability(CapabilityEnergy.ENERGY, face)) {
+		if(tile != null && tile.hasCapability(CapabilityEnergy.ENERGY, face)) {
 			bHandler = tile.getCapability(CapabilityEnergy.ENERGY, face);
 		} else if(tile instanceof IEnergyStorage) {
 			bHandler = (IEnergyStorage) tile;

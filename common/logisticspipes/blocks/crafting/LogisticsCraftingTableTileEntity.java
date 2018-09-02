@@ -3,6 +3,8 @@ package logisticspipes.blocks.crafting;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -28,20 +30,28 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.util.Constants;
 
-public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ISimpleInventoryEventHandler, IInventory, IGuiOpenControler {
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
+
+public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IInventory, IGuiTileEntity, ISimpleInventoryEventHandler, IGuiOpenControler {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
+
+	private InventoryCraftResult vanillaResult = new InventoryCraftResult();
 
 	public ItemIdentifier targetType = null;
 	//just use CraftingRequirement to store flags; field "stack" is ignored
@@ -50,6 +60,8 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private PlayerIdentifier placedBy = null;
+
+	private InvWrapper invWrapper = new InvWrapper(this);
 
 	private PlayerCollectionList guiWatcher = new PlayerCollectionList();
 
@@ -235,7 +247,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			}
 		}
 		ItemStack result = recipe.getCraftingResult(crafter);
-		if (result == null) {
+		if (result.isEmpty()) {
 			return null;
 		}
 		if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
@@ -268,12 +280,22 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			fake = MainProxy.getFakePlayer(this);
 		}
 		result = result.copy();
-		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0);
+		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {
+
+			@Override
+			protected void onCrafting(ItemStack stack) {
+				IInventory tmp = this.inventory;
+				vanillaResult.setRecipeUsed(cache);
+				this.inventory = vanillaResult;
+				super.onCrafting(stack);
+				this.inventory = tmp;
+			}
+		};
 		result = craftingSlot.onTake(fake, result);
 		for (int i = 0; i < 9; i++) {
 			ItemStack left = crafter.getStackInSlot(i);
-			crafter.setInventorySlotContents(i, null);
-			if (left != null) {
+			crafter.setInventorySlotContents(i, ItemStack.EMPTY);
+			if (left.isEmpty()) {
 				left.setCount(inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(world, left, getPos());
@@ -282,8 +304,8 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		for (int i = 0; i < fake.inventory.getSizeInventory(); i++) {
 			ItemStack left = fake.inventory.getStackInSlot(i);
-			fake.inventory.setInventorySlotContents(i, null);
-			if (left != null) {
+			fake.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+			if (left.isEmpty()) {
 				left.setCount(inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(world, left, getPos());
@@ -379,6 +401,23 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			par1nbtTagCompound.removeTag("targetType");
 		}
 		return par1nbtTagCompound;
+	}
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Nullable
+	@Override
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			return (T) invWrapper;
+		}
+		return super.getCapability(capability, facing);
 	}
 
 	@Override

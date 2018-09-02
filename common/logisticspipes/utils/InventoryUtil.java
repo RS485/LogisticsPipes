@@ -44,7 +44,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		boolean first = true;
 		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null || !ItemIdentifier.get(stack).equals(item)) {
+			if (stack.isEmpty() || !ItemIdentifier.get(stack).equals(item)) {
 				continue;
 			}
 			if (first) {

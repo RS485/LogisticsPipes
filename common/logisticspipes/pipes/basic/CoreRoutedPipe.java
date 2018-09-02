@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
@@ -108,6 +109,7 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
@@ -1597,6 +1599,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	public EnumFacing getPointedOrientation() {
+		if (pointedDirection == null) {
+			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
+			Optional<EnumFacing> first = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> adjacent.tileEntity != null).map(adjacent -> adjacent.direction).findFirst();
+			if(first.isPresent()) {
+				return first.get();
+			}
+		}
 		return pointedDirection;
 	}
 

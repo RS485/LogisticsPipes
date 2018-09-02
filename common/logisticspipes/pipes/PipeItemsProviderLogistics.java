@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -478,9 +479,10 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public Set<ItemIdentifier> getSpecificInterests() {
 		//@formatter:off
 		return new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
-				.flatMap(adjacent -> getAdaptedInventoryUtil(adjacent).getItems().stream())
+				.map(this::getAdaptedInventoryUtil)
+				.filter(Objects::nonNull)
+				.flatMap(inv -> inv.getItems().stream())
 				.collect(Collectors.toSet());
 		//@formatter:on
 	}

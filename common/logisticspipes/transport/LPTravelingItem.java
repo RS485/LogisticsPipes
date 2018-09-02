@@ -229,8 +229,16 @@ public abstract class LPTravelingItem {
 		public void readFromNBT(NBTTagCompound data) {
 			setPosition(data.getFloat("position"));
 			setSpeed(data.getFloat("speed"));
-			input = EnumFacingUtil.getOrientation(data.getInteger("input"));
-			output = EnumFacingUtil.getOrientation(data.getInteger("output"));
+			if(data.hasKey("input")) {
+				input = EnumFacingUtil.getOrientation(data.getInteger("input"));
+			} else {
+				input = null;
+			}
+			if(data.hasKey("output")) {
+				output = EnumFacingUtil.getOrientation(data.getInteger("output"));
+			} else {
+				output = null;
+			}
 			info.readFromNBT(data);
 		}
 
@@ -238,7 +246,9 @@ public abstract class LPTravelingItem {
 		public void writeToNBT(NBTTagCompound data) {
 			data.setFloat("position", getPosition());
 			data.setFloat("speed", getSpeed());
-			data.setInteger("input", input.ordinal());
+			if (input != null) {
+				data.setInteger("input", input.ordinal());
+			}
 			if (output != null) {
 				data.setInteger("output", output.ordinal());
 			}

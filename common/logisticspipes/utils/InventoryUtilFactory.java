@@ -60,7 +60,7 @@ public class InventoryUtilFactory {
 
 	public IInventoryUtil getHidingInventoryUtil(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		IInventoryUtil util = getUtilForInv(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
-		if (util == null &&  tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir)) {
+		if (util == null && tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir)) {
 			util = new InventoryUtil(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
 		}
 		return util;

@@ -23,7 +23,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 //ant.importBuild 'download-api.xml'
-//ant.importBuild 'build-ant.xml'
+ant.importBuild 'build-ant.xml'
 
 version = "0.10.0"
 group= "network.rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -193,7 +193,7 @@ artifacts {
     archives jar
 }
 
-tasks.compileApiJava.dependsOn('extract')
+//tasks.compileApiJava.dependsOn('extract')
 tasks.compileJava.dependsOn('loadFingerprints')
 tasks.processResources.dependsOn('integrateLang')
 tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')

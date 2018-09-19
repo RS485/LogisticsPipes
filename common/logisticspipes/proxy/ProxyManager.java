@@ -392,9 +392,7 @@ public class ProxyManager {
 			@Override public IModel3D copy() {return this;}
 			@Override public IModel3D twoFacedCopy() {return this;}
 			@Override public Object getOriginal() {return this;}
-			@Override public IBounds getBoundsInside(AxisAlignedBB boundingBox) {
-				return dummyBounds;
-			}
+			@Override public IBounds getBoundsInside(AxisAlignedBB boundingBox) {return dummyBounds;}
 		};
 		ICCLProxy dummyCCLProxy = new ICCLProxy() {
 			@SideOnly(Side.CLIENT) @Override public TextureTransformation createIconTransformer(TextureAtlasSprite registerIcon) {

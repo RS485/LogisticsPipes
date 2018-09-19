@@ -1,6 +1,8 @@
 package logisticspipes.proxy.ccl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -70,122 +72,7 @@ public class Model3D implements IModel3D {
 		model.render(ccrs, list.toArray(new IVertexOperation[0]));
 		buffer.finishDrawing();
 		return buffer.bake();
-
-		//return CCModelBakery.bakeModel(model, format, list.toArray(new IVertexOperation[0]));
-		/*
-		ArrayList<BakedQuad> quads = Lists.newArrayList();
-
-		CCRenderState.instance().setPipeline(model, 0, model.verts.length, list.toArray(new IVertexOperation[list.size()]));
-		Vertex5[] verts = CCRenderState.instance().model.getVertices();
-		UnpackedBakedQuad.Builder builder = null;
-		Vector3f faceNormal = null;
-		int counter = 0;
-		for (CCRenderState.instance().vertexIndex = CCRenderState.instance().firstVertexIndex; CCRenderState.instance().vertexIndex < CCRenderState.instance().lastVertexIndex; CCRenderState.instance().vertexIndex++) {
-			if(counter++ % model.vp == 0) {
-				if(builder != null) quads.add(builder.build());
-				builder = new UnpackedBakedQuad.Builder(format);
-				Vertex5 vert0 = verts[CCRenderState.instance().vertexIndex + 0];
-				Vertex5 vert1 = verts[CCRenderState.instance().vertexIndex + 1];
-				Vertex5 vert2 = verts[CCRenderState.instance().vertexIndex + 2];
-				Vertex5 vert3 = verts[CCRenderState.instance().vertexIndex + ((model.vp == 3) ? 2: 3)]; //TODO is this the right vector to copy or does the normal invert?
-				Vector3f a = new Vector3f((float) vert2.vec.x, (float)vert2.vec.y, (float)vert2.vec.z);
-				a.sub(new Vector3f((float) vert0.vec.x, (float)vert0.vec.y, (float)vert0.vec.z));
-				Vector3f b = new Vector3f((float) vert3.vec.x, (float)vert3.vec.y, (float)vert3.vec.z);
-				b.sub(new Vector3f((float) vert1.vec.x, (float)vert1.vec.y, (float)vert1.vec.z));
-				a.cross(a, b);
-				a.normalize();
-				faceNormal = a;
-				//builder.setContractUVs(true);
-				builder.setTexture(CCRenderState.instance().sprite);
-				builder.setQuadOrientation(EnumFacing.getFacingFromVector(faceNormal.x, faceNormal.y, faceNormal.z));
-			}
-			CCRenderState.instance().model.prepareVertex(CCRenderState.instance());
-			CCRenderState.instance().vert.set(verts[CCRenderState.instance().vertexIndex]);
-			CCRenderState.instance().runPipeline();
-			writeVert(builder);
-			if(model.vp == 3 && model.vp % model.vp == 2) {
-				writeVert(builder);
-			}
-		}
-		quads.add(builder.build());
-		return ImmutableList.copyOf(quads);
-		*/
 	}
-
-	/*
-	@SideOnly(Side.CLIENT)
-	public static void writeVert(UnpackedBakedQuad.Builder builder) {
-		for (int e = 0; e < CCRenderState.instance().fmt.getElementCount(); e++) {
-			VertexFormatElement fmte = CCRenderState.instance().fmt.getElement(e);
-			switch (fmte.getUsage()) {
-				case POSITION:
-					builder.put(e, (float) CCRenderState.instance().vert.vec.x, (float) CCRenderState.instance().vert.vec.y, (float) CCRenderState.instance().vert.vec.z);
-					break;
-				case UV:
-					if (fmte.getIndex() == 0) {
-						CCRenderState.instance().r.tex(CCRenderState.instance().vert.uv.u, CCRenderState.instance().vert.uv.v);
-					} else {
-						CCRenderState.instance().r.lightmap(CCRenderState.instance().brightness >> 16 & 65535, CCRenderState.instance().brightness & 65535);
-					}
-					break;
-				case COLOR:
-					builder.put(e,CCRenderState.instance().colour >>> 24, CCRenderState.instance().colour >> 16 & 0xFF, CCRenderState.instance().colour >> 8 & 0xFF, CCRenderState.instance().alphaOverride >= 0 ? CCRenderState.instance().alphaOverride : CCRenderState.instance().colour & 0xFF);
-					break;
-				case NORMAL: // TODO Check if normals need to be computed from the face manualy?
-					CCRenderState.instance().r.normal((float) CCRenderState.instance().normal.x, (float) CCRenderState.instance().normal.y, (float) CCRenderState.instance().normal.z);
-					break;
-				case PADDING:
-					break;
-				default:
-					throw new UnsupportedOperationException("Generic vertex format element");
-			}
-		}
-	}
-	*/
-/*
-	private final void putVertexData(UnpackedBakedQuad.Builder builder, OBJModel.Vertex v, OBJModel.Normal faceNormal, OBJModel.TextureCoordinate defUV, TextureAtlasSprite sprite)
-	{
-		for (int e = 0; e < format.getElementCount(); e++)
-		{
-			switch (format.getElement(e).getUsage())
-			{
-				case POSITION:
-					builder.put(e, v.getPos().x, v.getPos().y, v.getPos().z, v.getPos().w);
-					break;
-				case COLOR:
-					if (v.getMaterial() != null)
-						builder.put(e,
-								v.getMaterial().getColor().x,
-								v.getMaterial().getColor().y,
-								v.getMaterial().getColor().z,
-								v.getMaterial().getColor().w);
-					else
-						builder.put(e, 1, 1, 1, 1);
-					break;
-				case UV:
-					if (!v.hasTextureCoordinate())
-						builder.put(e,
-								sprite.getInterpolatedU(defUV.u * 16),
-								sprite.getInterpolatedV((model.customData.flipV ? 1 - defUV.v: defUV.v) * 16),
-								0, 1);
-					else
-						builder.put(e,
-								sprite.getInterpolatedU(v.getTextureCoordinate().u * 16),
-								sprite.getInterpolatedV((model.customData.flipV ? 1 - v.getTextureCoordinate().v : v.getTextureCoordinate().v) * 16),
-								0, 1);
-					break;
-				case NORMAL:
-					if (!v.hasNormal())
-						builder.put(e, faceNormal.x, faceNormal.y, faceNormal.z, 0);
-					else
-						builder.put(e, v.getNormal().x, v.getNormal().y, v.getNormal().z, 0);
-					break;
-				default:
-					builder.put(e);
-			}
-		}
-	}
-	*/
 
 	@Override
 	public IModel3D copy() {
@@ -323,5 +210,4 @@ public class Model3D implements IModel3D {
 		if(c == null) return null;
 		return wrap(c);
 	}
-	
 }

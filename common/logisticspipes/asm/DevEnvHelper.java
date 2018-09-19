@@ -142,8 +142,14 @@ public class DevEnvHelper {
 					// Not a coremod and no access transformer list
 					continue;
 				}
-				ModAccessTransformer.addJar(jar);
 				mfAttributes = jar.getManifest().getMainAttributes();
+				String ats = mfAttributes.getValue(ModAccessTransformer.FMLAT);
+				if (ats != null && !ats.isEmpty())
+				{
+					if (jar == null) //We could of loaded the external manifest earlier, if so the jar isn't loaded.
+						jar = new JarFile(coreMod);
+					ModAccessTransformer.addJar(jar, ats);
+				}
 			} catch (IOException ioe) {
 				FMLRelaunchLog.log(Level.ERROR, ioe, "Unable to read the jar file %s - ignoring", coreMod.getName());
 				continue;

@@ -43,7 +43,7 @@ ant.version = version
 ant.archivesBaseName = archivesBaseName
 
 minecraft {
-    version = "1.12.2-14.23.0.2544"
+    version = "1.12.2-14.23.4.2705"
     runDir = "run/assets"
     replace '%VERSION%', project.version
     replace '%MCVERSION%', "1.12.2"
@@ -125,8 +125,9 @@ repositories {
         name = "player"
         url = "http://maven.ic2.player.to"
     }
-    maven { url = "https://cc.crzd.me/maven/" }
-
+    maven {
+        url = "https://cc.crzd.me/maven/"
+    }
     maven {
         url = "http://maven.cil.li/"
     }
@@ -138,12 +139,15 @@ repositories {
         name = "CurseForge"
         url = "https://minecraft.curseforge.com/api/maven/"
     }
+    maven {
+        name = "buildcraft"
+        url = "https://mod-buildcraft.com/maven"
+    }
 }
 
 dependencies {
-    compileOnly files("build/download/buildcraft-7.99.17-dev.jar")
+    deobfCompile "com.mod-buildcraft:buildcraft:7.99.17"
     compileOnly 'org.projectlombok:lombok:1.16.8'
-    compile "com.mod-buildcraft:buildcraft-api:7.99.8.2"
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.1.233:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.5.331:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'
@@ -151,11 +155,13 @@ dependencies {
     compile 'net.sengir.forestry:forestry_1.12.2:5.8.1.339:api'
     compile "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+:api"
     compile "appeng:appliedenergistics2:rv5-stable-11:api"
-    compile "dan200.computercraft:ComputerCraft:1.80pr1-build5"
+    compileOnly "dan200.computercraft:ComputerCraft:1.80pr1-build5"
     deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA23"
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
     testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+    
+    deobfCompile ''
 }
 
 task deobfJar(type: Jar, dependsOn: 'jar') {

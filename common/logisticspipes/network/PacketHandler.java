@@ -89,28 +89,23 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 					"LogisticsPipes could not search for its packet classes. Your mods are probably installed in a path containing spaces or special characters. Trying to use fallback solution.");
 			URL location = PacketHandler.class.getProtectionDomain().getCodeSource().getLocation();
 			String locationString = location.toString();
-			System.out.println(locationString);
 			if (locationString.startsWith("jar:file:/") && locationString.contains("!")) {
 				locationString = locationString.substring(10, locationString.indexOf('!'));
 				locationString = java.net.URLDecoder.decode(locationString, "UTF-8");
 			}
-			System.out.println(locationString);
 
 			List<String> classInfoList = new ArrayList<>();
 
 			File file = new File(locationString);
 			if (file.exists() && !file.isDirectory()) {
 				JarFile jar = new JarFile(file);
-				System.out.println(jar);
 				Enumeration<JarEntry> entriesS = jar.entries();
 				while (entriesS.hasMoreElements()) {
 					JarEntry entryB = entriesS.nextElement();
-					System.out.println(entryB);
 					if (!entryB.isDirectory() && entryB.getName().startsWith("logisticspipes/network/packets/")) {
 						String filename = entryB.getName();
 						int classNameEnd = filename.length() - ".class".length();
 						filename = filename.substring(0, classNameEnd).replace('/', '.');
-						System.out.println(filename);
 						classInfoList.add(filename);
 					}
 				}

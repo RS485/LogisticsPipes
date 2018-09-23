@@ -439,7 +439,6 @@ public class LogisticsPipes {
 
 		SimpleServiceLocator.buildCraftProxy.registerPipeInformationProvider();
 		SimpleServiceLocator.buildCraftProxy.initProxy();
-		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 
 		SimpleServiceLocator.thermalDynamicsProxy.registerPipeInformationProvider();
 
@@ -673,7 +672,6 @@ public class LogisticsPipes {
 			globalTickExecutor.shutdownNow();
 		}
 		LogisticsEventListener.serverShutdown();
-		SimpleServiceLocator.buildCraftProxy.cleanup();
 	}
 
 	@Mod.EventHandler

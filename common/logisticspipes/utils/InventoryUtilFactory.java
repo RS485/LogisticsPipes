@@ -14,14 +14,12 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -43,7 +41,7 @@ public class InventoryUtilFactory {
 			return null;
 		}
 		for (SpecialInventoryHandler invHandler : handler) {
-			if (invHandler.isType((TileEntity) inv)) {
+			if (invHandler.isType((TileEntity) inv, dir)) {
 				return invHandler.getUtilForTile((TileEntity) inv, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 			}
 		}

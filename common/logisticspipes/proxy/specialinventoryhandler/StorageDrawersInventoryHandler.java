@@ -61,7 +61,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean isType(TileEntity tile) {
+	public boolean isType(TileEntity tile, EnumFacing dir) {
 		return tile instanceof IDrawerGroup;
 	}
 

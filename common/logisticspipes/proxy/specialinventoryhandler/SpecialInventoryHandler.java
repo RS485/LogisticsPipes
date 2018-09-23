@@ -15,7 +15,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 
 	public abstract boolean init();
 
-	public abstract boolean isType(TileEntity tile);
+	public abstract boolean isType(TileEntity tile, EnumFacing dir);
 
 	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
 

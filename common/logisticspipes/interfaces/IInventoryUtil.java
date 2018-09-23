@@ -45,7 +45,7 @@ public interface IInventoryUtil {
 	//IInventory adapter
 	public int getSizeInventory();
 
-	public ItemStack getStackInSlot(int i);
+	public ItemStack getStackInSlot(int slot);
 
-	public ItemStack decrStackSize(int i, int j);
+	public ItemStack decrStackSize(int slot, int amount);
 }

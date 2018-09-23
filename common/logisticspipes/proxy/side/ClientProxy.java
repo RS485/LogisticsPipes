@@ -91,17 +91,8 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public void registerTileEntities() {
-		//LPConstants.pipeModel = RenderingRegistry.getNextAvailableRenderId();
-		//LPConstants.solidBlockModel = RenderingRegistry.getNextAvailableRenderId();
-
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
-
-		//RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
-
-		//RenderingRegistry.registerBlockHandler(new LogisticsSolidBlockWorldRenderer());
-
-		SimpleServiceLocator.buildCraftProxy.resetItemRotation();
 
 		SimpleServiceLocator.setRenderListHandler(new GLRenderListHandler());
 	}

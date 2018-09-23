@@ -38,7 +38,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean isType(TileEntity tile) {
+	public boolean isType(TileEntity tile, EnumFacing dir) {
 		return SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
 	}
 

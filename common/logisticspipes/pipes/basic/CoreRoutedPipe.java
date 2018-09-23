@@ -1025,9 +1025,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (getUpgradeManager().isSideDisconnected(side)) {
 			return true;
 		}
-		if (container != null && side != null && container.tilePart.hasBlockingPluggable(side)) {
-			return true;
-		}
 		if (!stillNeedReplace) {
 			if (getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
 				return true;

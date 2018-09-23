@@ -48,9 +48,6 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -60,11 +57,7 @@ import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
-import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.math.MatrixTranformations;
@@ -380,32 +373,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			if (tileG.isPipeConnectedCached(EnumFacing.SOUTH)) {
 				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MIN_POS, LPConstants.PIPE_MAX_POS, LPConstants.PIPE_MAX_POS, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
 			}
-
-			float facadeThickness = LPConstants.FACADE_THICKNESS;
-
-			if (tileG.tilePart.hasEnabledFacade(EnumFacing.EAST)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(1 - facadeThickness, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
-			}
-
-			if (tileG.tilePart.hasEnabledFacade(EnumFacing.WEST)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, facadeThickness, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
-			}
-
-			if (tileG.tilePart.hasEnabledFacade(EnumFacing.UP)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 1 - facadeThickness, 0.0F, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
-			}
-
-			if (tileG.tilePart.hasEnabledFacade(EnumFacing.DOWN)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, 1.0F, facadeThickness, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
-			}
-
-			if (tileG.tilePart.hasEnabledFacade(EnumFacing.SOUTH)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 1 - facadeThickness, 1.0F, 1.0F, 1.0F, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
-			}
-
-			if (tileG.tilePart.hasEnabledFacade(EnumFacing.NORTH)) {
-				super.addCollisionBoxToList(new BoundingBoxDelegateBlockState(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, facadeThickness, state), world, pos, axisalignedbb, arraylist, par7Entity, isActualState);
-			}
 		}
 	}
 
@@ -427,11 +394,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			AxisAlignedBB box = rayTraceResult.boundingBox;
 			switch (rayTraceResult.hitPart) {
-				case Pluggable: {
-					float scale = 0.001F;
-					box = box.expand(scale, scale, scale);
-					break;
-				}
 				case Pipe: {
 					float scale = 0.001F;
 					box = box.expand(scale, scale, scale);
@@ -590,7 +552,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			if (minIndex < 7) {
 				hitPart = Part.Pipe;
 			} else {
-				hitPart = Part.Pluggable;
+				hitPart = Part.UNKNWON;
 			}
 
 			return new InternalRayTraceResult(hitPart, hits[minIndex], boxes[minIndex], sideHit[minIndex]);
@@ -685,7 +647,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	public static enum Part {
 		Pipe,
-		Pluggable
+		UNKNWON
 	}
 
 	public static class InternalRayTraceResult {
@@ -790,7 +752,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
 		LogisticsBlockGenericPipe.removePipe(LogisticsBlockGenericPipe.getPipe(world, pos));
 		super.breakBlock(world, pos, state);
-		SimpleServiceLocator.buildCraftProxy.callBCRemovePipe(world, pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	@Override
@@ -836,16 +797,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
 			switch (rayTraceResult.hitPart) {
-				case Pluggable: {
-					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-					IBCPipePluggable pluggable = pipe.container.tilePart.getBCPipePluggable(rayTraceResult.sideHit);
-					if (pluggable != null) {
-						ItemStack[] drops = pluggable.getDropItems(pipe.container);
-						if (drops != null && drops.length > 0) {
-							return drops[0];
-						}
-					}
-				}
 				case Pipe:
 					return new ItemStack(LogisticsBlockGenericPipe.getPipe(world, pos).item);
 			}
@@ -863,7 +814,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			pipe.container.scheduleNeighborChange();
 		}
-		SimpleServiceLocator.buildCraftProxy.callBCNeighborBlockChange(worldIn, pos, fromPos);
 	}
 
 	@Override
@@ -916,15 +866,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			} else if (heldItem.getItem() instanceof ItemLogisticsPipe) {
 				return false;
 			}
-			if (pipe.canHoldBCParts()) {
-				IBCClickResult result = SimpleServiceLocator.buildCraftProxy.handleBCClickOnPipe(world, pos, state, player, side, xOffset, yOffset, zOffset, pipe);
-				if (result.handled()) {
-					return true;
-				}
-				if (result.blocked()) {
-					return false;
-				}
-			}
 			return pipe.blockActivated(player);
 		}
 
@@ -943,61 +884,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-
-		if (LogisticsBlockGenericPipe.isValid(pipe)) {
-			return pipe.bcPipePart.canConnectRedstone();
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public int getStrongPower(IBlockState state, IBlockAccess iblockaccess, BlockPos pos, EnumFacing l) {
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(iblockaccess, pos);
-
-		if (LogisticsBlockGenericPipe.isValid(pipe)) {
-			return pipe.bcPipePart.isPoweringTo(l);
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
 	public boolean canProvidePower(IBlockState state) {
 		return true;
 	}
-
-	@Override
-	public int getWeakPower(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing l) {
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-
-		if (LogisticsBlockGenericPipe.isValid(pipe)) {
-			return pipe.bcPipePart.isIndirectlyPoweringTo(l);
-		} else {
-			return 0;
-		}
-	}
-
-	/*
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		LogisticsNewRenderPipe.registerTextures(iconRegister);
-		SimpleServiceLocator.thermalDynamicsProxy.registerTextures(iconRegister);
-		if (!skippedFirstIconRegister) {
-			skippedFirstIconRegister = true;
-			return;
-		}
-		for (Item i : LogisticsBlockGenericPipe.pipes.keySet()) {
-			CoreUnroutedPipe dummyPipe = LogisticsBlockGenericPipe.createPipe(i);
-			if (dummyPipe != null) {
-				dummyPipe.getIconProvider().registerIcons(iconRegister);
-			}
-		}
-	}
-	*/
 
 	@SideOnly(Side.CLIENT)
 	@Override

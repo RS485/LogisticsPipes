@@ -449,15 +449,6 @@ public class PipeTransportLogistics {
 	}
 
 	protected final void handleTileReachedServer_internal(LPTravelingItemServer arrivingItem, TileEntity tile, EnumFacing dir) {
-		if (isRouted && getPipe().container.tilePart.getBCPipePluggable(dir) != null && getPipe().container.tilePart.getBCPipePluggable(dir).isAcceptingItems(arrivingItem)) {
-			LPTravelingItemServer remainingItem = getPipe().container.tilePart.getBCPipePluggable(dir).handleItem(arrivingItem);
-			if (remainingItem != null) {
-				getRoutedPipe().getRouter().update(true, getRoutedPipe());
-				this.injectItem(remainingItem, dir);
-			}
-			return;
-		}
-
 		if (getPipe() instanceof PipeItemsFluidSupplier) {
 			((PipeItemsFluidSupplier) getPipe()).endReached(arrivingItem, tile);
 			if (arrivingItem.getItemIdentifierStack().getStackSize() <= 0) {

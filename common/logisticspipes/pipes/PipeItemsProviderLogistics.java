@@ -130,7 +130,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:off
 		return new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
-				.map(adjacent -> getAdaptedInventoryUtil(adjacent).itemCount(item))
+				.map(this::getAdaptedInventoryUtil)
+				.filter(Objects::nonNull)
+				.map(util -> util.itemCount(item))
 				.reduce(Integer::sum).orElse(0);
 		//@formatter:on
 	}
@@ -155,6 +157,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:off
 		Iterator<Pair<IInventoryUtil, EnumFacing>> iterator = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
+				.filter(adjacent -> getAdaptedInventoryUtil(adjacent) != null)
 				.map(adjacent -> new Pair<>(getAdaptedInventoryUtil(adjacent), adjacent.direction))
 				.iterator();
 		//@formatter:on
@@ -337,7 +340,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		//@formatter:off
 		Iterator<Map<ItemIdentifier,Integer>> iterator = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.tileEntity))
-				.map(adjacent -> getAdaptedInventoryUtil(adjacent).getItemsAndCount())
+				.map(this::getAdaptedInventoryUtil)
+				.filter(Objects::nonNull)
+				.map(IInventoryUtil::getItemsAndCount)
 				.iterator();
 		//@formatter:on
 
@@ -357,12 +362,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 					}
 				}
 
-				Integer addedAmount = addedItems.get(next.getKey());
-				if (addedAmount == null) {
-					addedItems.put(next.getKey(), next.getValue());
-				} else {
-					addedItems.put(next.getKey(), addedAmount + next.getValue());
-				}
+				addedItems.merge(next.getKey(), next.getValue(), (a, b) -> a + b);
 			}
 		}
 

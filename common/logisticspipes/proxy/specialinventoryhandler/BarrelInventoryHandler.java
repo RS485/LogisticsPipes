@@ -53,7 +53,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean isType(TileEntity tile) {
+	public boolean isType(TileEntity tile, EnumFacing dir) {
 		return SimpleServiceLocator.factorizationProxy.isBarral(tile);
 	}
 

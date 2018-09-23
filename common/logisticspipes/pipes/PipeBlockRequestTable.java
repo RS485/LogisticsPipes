@@ -47,7 +47,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -615,8 +614,4 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		return 0;
 	}
 
-	@Override
-	public boolean canHoldBCParts() {
-		return false;
-	}
 }

@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -34,6 +37,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+
+import net.minecraft.util.NonNullList;
 
 public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>> {
 
@@ -549,5 +554,11 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	@Override
 	public ITextComponent getDisplayName() {
 		return null;
+	}
+
+	public NonNullList<ItemStack> toNonNullList() {
+		NonNullList<ItemStack> list = NonNullList.create();
+		list.addAll(0, StreamSupport.stream(this.spliterator(), false).filter(Objects::nonNull).map(it -> it.getValue1().makeNormalStack()).collect(Collectors.toSet()));
+		return list;
 	}
 }

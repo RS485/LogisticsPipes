@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -18,8 +20,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,6 +32,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -41,18 +42,11 @@ import com.google.common.collect.Lists;
 import logisticspipes.LPConstants;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
-import logisticspipes.proxy.buildcraft.subproxies.IBCClickResult;
-import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
-import logisticspipes.proxy.buildcraft.subproxies.IBCPipePluggable;
-import logisticspipes.proxy.buildcraft.subproxies.IBCPluggableState;
-import logisticspipes.proxy.buildcraft.subproxies.IBCRenderState;
-import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
-import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
-import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipeCapabilityProvider;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.ccl.CCLProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
@@ -88,10 +82,7 @@ import logisticspipes.proxy.opencomputers.OpenComputersProxy;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.recipes.CraftingParts;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.util.LPDataInput;
-import network.rs485.logisticspipes.util.LPDataOutput;
 
 //import logisticspipes.proxy.nei.NEIProxy;
 
@@ -99,9 +90,9 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 //CHECKSTYLE:OFF
 
 public class ProxyManager {
-	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy, Class<?>... object) {
+	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy, Class<?>... wrapperInterfaces) {
 		try {
-			return LogisticsWrapperHandler.getWrappedProxy(modId, interfaze, proxyClazz, dummyProxy, object);
+			return LogisticsWrapperHandler.getWrappedProxy(modId, interfaze, proxyClazz, dummyProxy, wrapperInterfaces);
 		} catch(Exception e) {
 			if(e instanceof RuntimeException) {
 				throw (RuntimeException) e;
@@ -111,108 +102,24 @@ public class ProxyManager {
 	}
 
 	public static void load() {
-		SimpleServiceLocator.setBuildCraftProxy(ProxyManager.getWrappedProxy("BuildCraft|Transport+BuildCraft|Silicon+BuildCraft|Robotics", IBCProxy.class, null /*BuildCraftProxy.class*/, new IBCProxy() {
-			@Override public void resetItemRotation() {}
-			@Override public boolean isIPipeTile(TileEntity tile) {return false;}
+		SimpleServiceLocator.setBuildCraftProxy(ProxyManager.getWrappedProxy("buildcrafttransport+buildcraftsilicon", IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
-			@Override public boolean checkForPipeConnection(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe) {return true;}
-			@Override public IConnectionOverrideResult checkConnectionOverride(TileEntity with, EnumFacing side, LogisticsTileGenericPipe pipe) {
-				return new IConnectionOverrideResult() {
-					@Override public boolean forceConnect() {return false;}
-					@Override public boolean forceDisconnect() {return false;}
-				};
-			}
-			@Override public boolean canPipeConnect(TileEntity pipe, TileEntity tile, EnumFacing direction) {return false;}
 			@Override public boolean isActive() {return false;}
 			@Override public boolean isInstalled() {return false;}
-			@Override public Object getLPPipeType() {return null;}
-			@Override public void registerTrigger() {}
 			@Override public CraftingParts getRecipeParts() {return null;}
 			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public Class<? extends ICraftingRecipeProvider> getAssemblyTableProviderClass() {return null;}
-			@Override public void notifyOfChange(LogisticsTileGenericPipe logisticsTileGenericPipe, TileEntity tile, EnumFacing o) {}
-			@Override public IBCTilePart getBCTilePart(LogisticsTileGenericPipe logisticsTileGenericPipe) {
-				return new IBCTilePart() {
-					@Override public boolean hasBlockingPluggable(EnumFacing side) {return false;}
-					@Override public void writeToNBT_LP(NBTTagCompound nbt) {}
-					@Override public void readFromNBT_LP(NBTTagCompound nbt) {}
-					@Override public boolean isSolidOnSide(EnumFacing side) {return false;}
-					@Override public void invalidate_LP() {}
-					@Override public void validate_LP() {}
-					@Override public void updateEntity_LP() {}
-					@Override public void scheduleNeighborChange() {}
-					@Override public boolean hasGate(EnumFacing orientation) {return false;}
-					@Override public IBCRenderState getBCRenderState() {
-						return new IBCRenderState() {
-							@Override public boolean needsRenderUpdate() {return false;}
-							@Override public boolean isDirty() {return false;}
-							@Override public void writeData_LP(LPDataOutput output)  {
-								output.writeBoolean(false);
-							}
-							@Override public void readData_LP(LPDataInput input) {}
-							@Override public void clean() {}
-						};
-					}
-					@Override public IBCPipePart getBCPipePart() {
-						return new IBCPipePart() {
-							@Override public boolean canConnectRedstone() {return false;}
-							@Override public int isPoweringTo(EnumFacing l) {return 0;}
-							@Override public int isIndirectlyPoweringTo(EnumFacing l) {return 0;}
-							@Override public Object getClientGui(InventoryPlayer inventory, int side) {return null;}
-							@Override public Container getGateContainer(InventoryPlayer inventory, int side) {return null;}
-							@Override public void addItemDrops(ArrayList<ItemStack> result) {}
-							@Override public Object getOriginal() {return null;}
-						};
-					}
-					@Override public IBCPluggableState getBCPlugableState() {
-						return new IBCPluggableState() {
-							@Override public void writeData(LPDataOutput output)  {}
-							@Override public void readData(LPDataInput input)  {}
-							@Override public boolean isDirty(boolean clean) {return false;}
-						};
-					}
-					@Override public boolean hasEnabledFacade(EnumFacing dir) {return false;}
-					@Override public IBCPipePluggable getBCPipePluggable(EnumFacing sideHit) {
-						return new IBCPipePluggable() {
-							@Override public ItemStack[] getDropItems(LogisticsTileGenericPipe container) {return new ItemStack[]{};}
-							@Override public boolean isBlocking() {return false;}
-							@Override public Object getOriginal() {return null;}
-							@Override @SideOnly(Side.CLIENT) public void renderPluggable(EnumFacing dir, int renderPass, int x, int y, int z) {}
-							@Override public boolean isAcceptingItems(LPTravelingItemServer arrivingItem) {return false;}
-							@Override public LPTravelingItemServer handleItem(LPTravelingItemServer arrivingItem) {return arrivingItem;}
-							@Override public AxisAlignedBB getBoundingBox(EnumFacing side) {return null;}
-						};
-					}
-					@Override public void readOldRedStone(NBTTagCompound nbt) {}
-					@Override public void afterStateUpdated() {}
-					@Override public Object getOriginal() {return null;}
-					@Override public boolean hasPipePluggable(EnumFacing dir) {return false;}
-					@Override public void setWorld_LP(World world) {}
+			@Override public void registerInventoryHandler() {}
+			@Override public IBCPipeCapabilityProvider getIBCPipeCapabilityProvider(LogisticsTileGenericPipe pipe) {
+				return new IBCPipeCapabilityProvider() {
+					@Override public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {return false;}
+					@Nullable@Override public<T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {return null;}
 				};
 			}
-			@Override public IBCClickResult handleBCClickOnPipe(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float xOffset, float yOffset, float zOffset, CoreUnroutedPipe pipe) {
-				return new IBCClickResult() {
-					@Override public boolean handled() {return false;}
-					@Override public boolean blocked() {return false;}
-				};
-			}
-			@Override public void callBCNeighborBlockChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {}
-			@Override public void callBCRemovePipe(World world, int x, int y, int z) {}
-			@Override public void logWarning(String format) {}
-			@Override public IBCRenderTESR getBCRenderTESR() {
-				return new IBCRenderTESR() {
-					@Override public void renderWires(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
-					@Override public void dynamicRenderPluggables(LogisticsTileGenericPipe pipe, double x, double y, double z) {}
-				};
-			}
-			@Override public boolean isTileGenericPipe(TileEntity tile) {return false;}
-			@Override public Object getPipeFromTGP(TileEntity tile) {return null;}
-			@Override public TileEntity getTileFromPipe(Object pipe) {return null;}
-			@Override public void cleanup() {}
-		}, IBCTilePart.class, IBCPipePart.class, IBCPipePluggable.class, IBCPluggableState.class, IBCRenderState.class, IBCRenderTESR.class));
+		}, IBCPipeCapabilityProvider.class));
 
-		SimpleServiceLocator.setForestryProxy(ProxyManager.getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
+		SimpleServiceLocator.setForestryProxy(ProxyManager.getWrappedProxy("forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}
 			@Override public boolean isBee(ItemIdentifier item) {return false;}
 			@Override public boolean isAnalysedBee(ItemStack item) {return false;}
@@ -273,7 +180,7 @@ public class ProxyManager {
 			@Override public Object getAnswer(Object object) {return object;}
 		}));
 
-		SimpleServiceLocator.setThermalExpansionProxy(ProxyManager.getWrappedProxy("ThermalExpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
+		SimpleServiceLocator.setThermalExpansionProxy(ProxyManager.getWrappedProxy("thermalexpansion", IThermalExpansionProxy.class, ThermalExpansionProxy.class, new IThermalExpansionProxy() {
 			@Override public boolean isTE() {return false;}
 			@Override public CraftingParts getRecipeParts() {return null;}
 			@Override public boolean isToolHammer(Item stack) {return false;}
@@ -295,7 +202,7 @@ public class ProxyManager {
 			}
 		}, ICrateStorageProxy.class));
 
-		SimpleServiceLocator.setNEIProxy(ProxyManager.getWrappedProxy("NotEnoughItems", INEIProxy.class, null /*NEIProxy.class*/, new INEIProxy() {
+		SimpleServiceLocator.setNEIProxy(ProxyManager.getWrappedProxy("notenoughitems", INEIProxy.class, null /*NEIProxy.class*/, new INEIProxy() {
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {return new ArrayList<>(0);}
 			@Override @SideOnly(Side.CLIENT) public boolean renderItemToolTip(int posX, int posY, List<String> msg, TextFormatting rarityColor, ItemStack stack) {return false;}
 			@Override @SideOnly(Side.CLIENT) public List<String> getItemToolTip(ItemStack stack, EntityPlayer thePlayer, ITooltipFlag advancedItemTooltips, GuiContainer screen) {return stack.getTooltip(thePlayer, advancedItemTooltips);}
@@ -304,7 +211,7 @@ public class ProxyManager {
 
 		SimpleServiceLocator.setFactorizationProxy(ProxyManager.getWrappedProxy("factorization", IFactorizationProxy.class, FactorizationProxy.class, tile-> false));
 
-		SimpleServiceLocator.setEnderIOProxy(ProxyManager.getWrappedProxy("EnderIO", IEnderIOProxy.class, null/*EnderIOProxy.class*/, new IEnderIOProxy() {
+		SimpleServiceLocator.setEnderIOProxy(ProxyManager.getWrappedProxy("enderio", IEnderIOProxy.class, null/*EnderIOProxy.class*/, new IEnderIOProxy() {
 			@Override public boolean isSendAndReceive(TileEntity tile) {return false;}
 			@Override public boolean isTransceiver(TileEntity tile) {return false;}
 			@Override public List<TileEntity> getConnectedTransceivers(TileEntity tile) {return null;}
@@ -314,12 +221,12 @@ public class ProxyManager {
 			@Override public boolean isBundledPipe(TileEntity tile) {return false;}
 		}));
 
-		SimpleServiceLocator.setIronChestProxy(ProxyManager.getWrappedProxy("IronChest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {
+		SimpleServiceLocator.setIronChestProxy(ProxyManager.getWrappedProxy("ironchest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {
 			@Override public boolean isIronChest(TileEntity tile) {return false;}
 			@Override public @SideOnly(Side.CLIENT) boolean isChestGui(GuiScreen gui) {return false;}
 		}));
 
-		SimpleServiceLocator.setEnderStorageProxy(ProxyManager.getWrappedProxy("EnderStorage", IEnderStorageProxy.class, EnderStorageProxy.class, new IEnderStorageProxy() {
+		SimpleServiceLocator.setEnderStorageProxy(ProxyManager.getWrappedProxy("enderstorage", IEnderStorageProxy.class, EnderStorageProxy.class, new IEnderStorageProxy() {
 			@Override public boolean isEnderChestBlock(Block block) {return false;}
 			@Override public void openEnderChest(World world, int x, int y, int z, EntityPlayer player) {}
 		}));
@@ -341,7 +248,7 @@ public class ProxyManager {
 			@Override public boolean isWrench(Item item) {return false;}
 		}));*/
 
-		SimpleServiceLocator.setThermalDynamicsProxy(ProxyManager.getWrappedProxy("ThermalDynamics", ITDProxy.class, null /*ThermalDynamicsProxy.class */, new ITDProxy() {
+		SimpleServiceLocator.setThermalDynamicsProxy(ProxyManager.getWrappedProxy("thermaldynamics", ITDProxy.class, null /*ThermalDynamicsProxy.class */, new ITDProxy() {
 			@Override public ITDPart getTDPart(final LogisticsTileGenericPipe pipe) {
 				return new ITDPart() {
 					@Override public TileEntity getInternalDuctForSide(EnumFacing opposite) {return pipe;}

@@ -31,6 +31,8 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new StorageDrawersInventoryHandler());
 		}
 
+		SimpleServiceLocator.buildCraftProxy.registerInventoryHandler();
+
 		try {
 			Class.forName("powercrystals.minefactoryreloaded.api.IDeepStorageUnit");
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());

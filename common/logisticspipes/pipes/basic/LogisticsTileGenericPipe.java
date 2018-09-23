@@ -50,9 +50,7 @@ import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.subproxies.IBCPluggableState;
-import logisticspipes.proxy.buildcraft.subproxies.IBCTilePart;
-import logisticspipes.proxy.buildcraft.subproxies.IConnectionOverrideResult;
+import logisticspipes.proxy.buildcraft.subproxies.IBCPipeCapabilityProvider;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.renderer.IIconProvider;
@@ -83,9 +81,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public int statePacketId = 0;
 	public final PipeRenderState renderState;
 	public final CoreState coreState = new CoreState();
-	public final IBCTilePart tilePart;
-	public final IBCPluggableState bcPlugableState;
 	public final ITDPart tdPart;
+	public final IBCPipeCapabilityProvider bcCapProvider;
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	public Set<DoubleCoordinates> subMultiBlock = new HashSet<>();
 	public boolean[] turtleConnect = new boolean[7];
@@ -97,7 +94,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public Node node;
 	public LogicController logicController = new LogicController();
 	public boolean[] pipeConnectionsBuffer = new boolean[6];
-	public boolean[] pipeBCConnectionsBuffer = new boolean[6];
 	public boolean[] pipeTDConnectionsBuffer = new boolean[6];
 	public CoreUnroutedPipe pipe;
 	private LogisticsTileRenderController renderController;
@@ -117,10 +113,9 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public LogisticsTileGenericPipe() {
 		preInit();
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
-		tilePart = SimpleServiceLocator.buildCraftProxy.getBCTilePart(this);
 		tdPart = SimpleServiceLocator.thermalDynamicsProxy.getTDPart(this);
-		renderState = new PipeRenderState(tilePart);
-		bcPlugableState = tilePart.getBCPlugableState();
+		bcCapProvider = SimpleServiceLocator.buildCraftProxy.getIBCPipeCapabilityProvider(this);
+		renderState = new PipeRenderState();
 	}
 
 	protected void preInit() {}
@@ -139,7 +134,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 			pipe.invalidate();
 			super.invalidate();
 			SimpleServiceLocator.openComputersProxy.handleInvalidate(this);
-			tilePart.invalidate_LP();
 			tdPart.invalidate();
 		}
 	}
@@ -153,7 +147,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 		if (pipe != null) {
 			pipe.validate();
 		}
-		tilePart.validate_LP();
 	}
 
 	@Override
@@ -212,14 +205,12 @@ public class LogisticsTileGenericPipe extends TileEntity
 		}
 
 		//Sideblocks need to be checked before this
-		tilePart.updateEntity_LP();
 		//Network needs to be after this
 
 		if (refreshRenderState) {
 			// Pipe connections;
 			for (EnumFacing o : EnumFacing.VALUES) {
 				renderState.pipeConnectionMatrix.setConnected(o, pipeConnectionsBuffer[o.ordinal()]);
-				renderState.pipeConnectionMatrix.setBCConnected(o, pipeBCConnectionsBuffer[o.ordinal()]);
 				renderState.pipeConnectionMatrix.setTDConnected(o, pipeTDConnectionsBuffer[o.ordinal()]);
 			}
 			// Pipe Textures
@@ -236,10 +227,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 			}
 
 			refreshRenderState = false;
-		}
-
-		if (bcPlugableState.isDirty(true)) {
-			sendUpdateToClient();
 		}
 
 		if (sendClientUpdate) {
@@ -319,7 +306,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	public void scheduleNeighborChange() {
-		tilePart.scheduleNeighborChange();
 		tdPart.scheduleNeighborChange();
 		blockNeighborChange = true;
 		boolean[] connected = new boolean[6];
@@ -353,7 +339,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 			nbt.setInteger("pipeId", coreState.pipeId);
 		}
 
-		tilePart.writeToNBT_LP(nbt);
 		for (int i = 0; i < turtleConnect.length; i++) {
 			nbt.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
@@ -379,10 +364,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 		if(!nbt.hasKey("pipeId") && MainProxy.isClient(world)) return;
 
-		if (nbt.hasKey("redstoneInputSide[0]")) {
-			tilePart.readOldRedStone(nbt);
-		}
-
 		coreState.pipeId = nbt.getInteger("pipeId");
 		pipe = LogisticsBlockGenericPipe.createPipe(Item.getItemById(coreState.pipeId));
 		bindPipe();
@@ -394,7 +375,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 			deletePipe = true;
 		}
 
-		tilePart.readFromNBT_LP(nbt);
 		for (int i = 0; i < turtleConnect.length; i++) {
 			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
@@ -412,10 +392,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 			return false;
 		}
 
-		if (tilePart.hasBlockingPluggable(side)) {
-			return false;
-		}
-
 		if (!LogisticsBlockGenericPipe.isValid(pipe)) {
 			return false;
 		}
@@ -424,24 +400,10 @@ public class LogisticsTileGenericPipe extends TileEntity
 			return false;
 		}
 
-		IConnectionOverrideResult result = SimpleServiceLocator.buildCraftProxy.checkConnectionOverride(with, side, this);
-		if (result.forceDisconnect()) {
-			return false;
-		}
-		if (result.forceConnect()) {
-			return true;
-		}
-
-		if (!SimpleServiceLocator.buildCraftProxy.checkForPipeConnection(with, side, this)) {
-			return false;
-		}
 		if (SimpleServiceLocator.thermalDynamicsProxy.isBlockedSide(with, side.getOpposite())) {
 			return false;
 		}
 		if (with instanceof LogisticsTileGenericPipe) {
-			if (((LogisticsTileGenericPipe) with).tilePart.hasBlockingPluggable(side.getOpposite())) {
-				return false;
-			}
 			CoreUnroutedPipe otherPipe = ((LogisticsTileGenericPipe) with).pipe;
 
 			if (!(LogisticsBlockGenericPipe.isValid(otherPipe))) {
@@ -478,7 +440,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public ItemStack insertItem(EnumFacing dir, ItemStack stack) {
 		int used = injectItem(stack, true, dir);
 		if (used == stack.getCount()) {
-			return null;
+			return ItemStack.EMPTY;
 		} else {
 			stack = stack.copy();
 			stack.shrink(used);
@@ -710,8 +672,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 			if (tile instanceof LogisticsTileGenericPipe) {
 				((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
 			}
-
-			SimpleServiceLocator.buildCraftProxy.notifyOfChange(this, tile, o);
 		}
 
 		bindPipe();
@@ -745,7 +705,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 		packet.setCoreState(coreState);
 		packet.setRenderState(renderState);
-		packet.setBcPluggableState(bcPlugableState);
 		packet.setPipe(pipe);
 		packet.setStatePacketId(++statePacketId);
 
@@ -767,7 +726,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 			world.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 			renderState.clean();
 		}
-		tilePart.afterStateUpdated();
 	}
 
 	public void sendUpdateToClient() {
@@ -835,10 +793,8 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 			pipeConnectionsBuffer[side.ordinal()] = canPipeConnect(t.getTile(), side);
 			if (pipeConnectionsBuffer[side.ordinal()]) {
-				pipeBCConnectionsBuffer[side.ordinal()] = SimpleServiceLocator.buildCraftProxy.isTileGenericPipe(t.getTile());
 				pipeTDConnectionsBuffer[side.ordinal()] = SimpleServiceLocator.thermalDynamicsProxy.isItemDuct(t.getTile());
 			} else {
-				pipeBCConnectionsBuffer[side.ordinal()] = false;
 				pipeTDConnectionsBuffer[side.ordinal()] = false;
 			}
 		}
@@ -849,8 +805,11 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && !tilePart.hasBlockingPluggable(facing)) {
+		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics) {
 			if(((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
+		}
+		if (bcCapProvider.hasCapability(capability, facing)) {
+			return true;
 		}
 		return super.hasCapability(capability, facing);
 	}
@@ -858,8 +817,11 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Nullable
 	@Override
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && !tilePart.hasBlockingPluggable(facing)) {
+		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics) {
 			return (T)((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing);
+		}
+		if(bcCapProvider.hasCapability(capability, facing)) {
+			return bcCapProvider.getCapability(capability, facing);
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -883,7 +845,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	public boolean isSolidOnSide(EnumFacing side) {
-		return tilePart.isSolidOnSide(side);
+		return false;
 	}
 
 	public Block getBlock() {
@@ -1014,7 +976,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);
-		tilePart.setWorld_LP(world);
 		tdPart.setWorld_LP(world);
 	}
 

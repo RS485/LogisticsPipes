@@ -8,7 +8,6 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public class ConnectionMatrix {
 
 	private int mask = 0;
-	private int isBCPipeMask = 0;
 	private int isTDPipeMask = 0;
 	private boolean dirty = false;
 
@@ -24,21 +23,7 @@ public class ConnectionMatrix {
 			dirty = true;
 		}
 		if (!value) {
-			setBCConnected(direction, false);
 			setTDConnected(direction, false);
-		}
-	}
-
-	public boolean isBCConnected(EnumFacing direction) {
-		// test if the direction.ordinal()'th bit of mask is set
-		return direction != null && (isBCPipeMask & (1 << direction.ordinal())) != 0;
-	}
-
-	public void setBCConnected(EnumFacing direction, boolean value) {
-		if (isBCConnected(direction) != value) {
-			// invert the direction.ordinal()'th bit of mask
-			isBCPipeMask ^= 1 << direction.ordinal();
-			dirty = true;
 		}
 	}
 
@@ -74,7 +59,6 @@ public class ConnectionMatrix {
 
 	public void writeData(LPDataOutput output) {
 		output.writeByte(mask);
-		output.writeByte(isBCPipeMask);
 		output.writeByte(isTDPipeMask);
 	}
 
@@ -83,12 +67,6 @@ public class ConnectionMatrix {
 
 		if (newMask != mask) {
 			mask = newMask;
-			dirty = true;
-		}
-
-		newMask = input.readByte();
-		if (newMask != isBCPipeMask) {
-			isBCPipeMask = newMask;
 			dirty = true;
 		}
 

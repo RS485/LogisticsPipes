@@ -22,9 +22,6 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	private IClientState coreState;
 
 	@Setter
-	private IClientState bcPluggableState;
-
-	@Setter
 	private IClientState pipe;
 
 	@Getter
@@ -32,9 +29,6 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 
 	@Getter
 	private byte[] bytesCoreState;
-
-	@Getter
-	private byte[] bytesBCPluggableState;
 
 	@Getter
 	private byte[] bytesPipe;
@@ -56,7 +50,6 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 		if(pipe.statePacketId < statePacketId) {
 			LPDataIOWrapper.provideData(bytesRenderState, pipe.renderState::readData);
 			LPDataIOWrapper.provideData(bytesCoreState, pipe.coreState::readData);
-			LPDataIOWrapper.provideData(bytesBCPluggableState, pipe.bcPlugableState::readData);
 			pipe.afterStateUpdated();
 			LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
 			pipe.statePacketId = statePacketId;
@@ -72,8 +65,8 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 
-		IClientState[] clientStates = new IClientState[] { renderState, coreState, bcPluggableState, pipe };
-		byte[][] clientStateBuffers = new byte[][] { bytesRenderState, bytesCoreState, bytesBCPluggableState, bytesPipe };
+		IClientState[] clientStates = new IClientState[] { renderState, coreState, pipe };
+		byte[][] clientStateBuffers = new byte[][] { bytesRenderState, bytesCoreState, bytesPipe };
 		for (int i = 0; i < clientStates.length; i++) {
 			clientStateBuffers[i] = LPDataIOWrapper.collectData(clientStates[i]::writeData);
 			output.writeByteArray(clientStateBuffers[i]);
@@ -88,7 +81,6 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 
 		bytesRenderState = input.readByteArray();
 		bytesCoreState = input.readByteArray();
-		bytesBCPluggableState = input.readByteArray();
 		bytesPipe = input.readByteArray();
 
 		statePacketId = input.readInt();

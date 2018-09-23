@@ -18,7 +18,6 @@ import logisticspipes.pipes.basic.debug.DebugLogController;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.subproxies.IBCPipePart;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
@@ -51,8 +50,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public final Item item;
 	public DebugLogController debug = new DebugLogController(this);
 
-	public IBCPipePart bcPipePart;
-
 	private boolean initialized = false;
 
 	private boolean oldRendererState;
@@ -65,7 +62,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public void setTile(TileEntity tile) {
 		container = (LogisticsTileGenericPipe) tile;
 		transport.setTile((LogisticsTileGenericPipe) tile);
-		bcPipePart = ((LogisticsTileGenericPipe) tile).tilePart.getBCPipePart();
 	}
 
 	public boolean blockActivated(EntityPlayer entityplayer) {
@@ -171,7 +167,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public ArrayList<ItemStack> computeItemDrop() {
 		ArrayList<ItemStack> result = new ArrayList<>();
-		bcPipePart.addItemDrops(result);
 		return result;
 	}
 
@@ -397,10 +392,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			}
 		}
 		return lowest;
-	}
-
-	public boolean canHoldBCParts() {
-		return true;
 	}
 
 	public boolean isMultiBlock() {

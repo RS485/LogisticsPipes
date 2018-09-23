@@ -33,7 +33,6 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.subproxies.IBCRenderTESR;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.transport.LPTravelingItem;
@@ -58,7 +57,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
 	private ModelSign modelSign;
-	private IBCRenderTESR bcRenderer = SimpleServiceLocator.buildCraftProxy.getBCRenderTESR();
 
 	public LogisticsRenderPipe() {
 		super();
@@ -110,10 +108,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		LogisticsRenderPipe.secondRenderer.renderTileEntityAt(tileentity, x, y, z, partialTicks, distance);
 
 		if(!inHand) {
-			bcRenderer.renderWires(tileentity, x, y, z);
-
-			// dynamically render pluggables (like gates)
-			bcRenderer.dynamicRenderPluggables(tileentity, x, y, z);
 
 			if (!tileentity.isOpaque()) {
 				if (tileentity.pipe.transport instanceof PipeFluidTransportLogistics) {

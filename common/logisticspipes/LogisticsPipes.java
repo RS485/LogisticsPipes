@@ -640,7 +640,6 @@ public class LogisticsPipes {
 		forName("dan200.computercraft.core.lua.LuaJLuaMachine");
 		forName("cofh.thermaldynamics.block.TileTDBase");
 		forName("cofh.thermaldynamics.duct.item.TravelingItem");
-		forName("cofh.thermaldynamics.render.RenderDuctItems");
 		forName("crazypants.enderio.conduit.item.ItemConduit");
 		forName("crazypants.enderio.conduit.item.NetworkedInventory");
 		forName("crazypants.enderio.conduit.liquid.AbstractLiquidConduit");

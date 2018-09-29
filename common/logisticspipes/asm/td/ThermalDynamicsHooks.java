@@ -1,3 +1,4 @@
+/*
 package logisticspipes.asm.td;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -45,7 +46,7 @@ public class ThermalDynamicsHooks {
 	public static void renderItemTransportBox(TravelingItem item) {
 		/*if (!LogisticsRenderPipe.config.isUseNewRenderer()) {
 			return;
-		}*/
+		}* /
 		if (item.stack.hasTagCompound()) {
 			if (item.stack.getTagCompound().getString("LogsitcsPipes_ITEM_ON_TRANSPORTATION").equals("YES")) {
 				double scale = 0.65 / 0.6;
@@ -68,3 +69,4 @@ public class ThermalDynamicsHooks {
 		return stack;
 	}
 }
+*/

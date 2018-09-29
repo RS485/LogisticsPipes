@@ -25,7 +25,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 //ant.importBuild 'download-api.xml'
 ant.importBuild 'build-ant.xml'
 
-version = "0.10.0"
+version = "0.10.1"
 group= "network.rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "logisticspipes"
 
@@ -149,7 +149,7 @@ dependencies {
     deobfCompile "com.mod-buildcraft:buildcraft:7.99.17"
     compileOnly 'org.projectlombok:lombok:1.16.8'
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.1.233:deobf'
-    compile 'codechicken:CodeChickenLib:1.12.2-3.1.5.331:deobf'
+    compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'
     compile 'net.industrial-craft:industrialcraft-2:2.8.97-ex112:api'
     compile 'net.sengir.forestry:forestry_1.12.2:5.8.1.339:api'

@@ -215,6 +215,9 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 		if (f == null) {
 			f = FluidUtil.getFluidContained(stack.unsafeMakeNormalStack());
 		}
+		if (f == null) {
+			return null;
+		}
 		return FluidIdentifier.get(f);
 	}
 

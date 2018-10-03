@@ -1,23 +1,19 @@
 package logisticspipes.blocks.powertile;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import buildcraft.api.mj.IMjConnector;
+import buildcraft.api.mj.IMjReceiver;
+import buildcraft.api.mj.MjAPI;
 import ic2.api.energy.tile.IEnergyEmitter;
+import ic2.api.energy.tile.IEnergySink;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerLevel;
-import logisticspipes.interfaces.IBlockWatchingHandler;
-import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.IGuiTileEntity;
-import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
-import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.IPowerLevelDisplay;
+import logisticspipes.interfaces.*;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
@@ -31,33 +27,39 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.PlayerCollectionList;
-
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
 import net.minecraft.util.EnumFacing;
-
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 
-import ic2.api.energy.tile.IEnergySink;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
-@ModDependentInterface(modId = { "IC2", "BuildCraft|Transport" }, interfacePath = { "ic2.api.energy.tile.IEnergySink", "buildcraft.api.power.IPowerReceptor" })
+import static java.lang.Math.min;
+
+@ModDependentInterface(modId = {"IC2"}, interfacePath = {"ic2.api.energy.tile.IEnergySink"})
 @CCType(name = "LogisticsPowerJunction")
 public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
+
+	@CapabilityInject(IMjConnector.class)
+	private static Capability<IMjConnector> MJ_CONN = null;
+
+	@CapabilityInject(IMjReceiver.class)
+	private static Capability<IMjReceiver> MJ_RECV = null;
 
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 
 	public final static int IC2Multiplier = 2;
 	public final static int RFDivisor = 2;
+	public final static int MJDivisor = 20;
 	public final static int MAX_STORAGE = 2000000;
 
 	private int internalStorage = 0;
@@ -83,7 +85,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 				return 0;
 			}
 			int RFspace = freeSpace() * LogisticsPowerJunctionTileEntity.RFDivisor - internalRFbuffer;
-			int RFtotake = Math.min(maxReceive, RFspace);
+			int RFtotake = min(maxReceive, RFspace);
 			if (!simulate) {
 				addEnergy(RFtotake / LogisticsPowerJunctionTileEntity.RFDivisor);
 				internalRFbuffer += RFtotake % LogisticsPowerJunctionTileEntity.RFDivisor;
@@ -117,6 +119,29 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 		@Override
 		public boolean canReceive() {
+			return true;
+		}
+	};
+
+	@ModDependentField(modId = "buildcraftlib")
+	private IMjReceiver mjReceiver = new IMjReceiver() {
+		@Override
+		public long getPowerRequested() {
+			return freeSpace() * MJDivisor * MjAPI.MJ;
+		}
+
+		@Override
+		public long receivePower(long l, boolean b) {
+			long freeMj = freeSpace() * MJDivisor * MjAPI.MJ;
+			long needs = min(freeMj, l);
+			if (!b) {
+				addEnergy(((float) needs) / MJDivisor / MjAPI.MJ);
+			}
+			return l - needs;
+		}
+
+		@Override
+		public boolean canConnect(@Nonnull IMjConnector iMjConnector) {
 			return true;
 		}
 	};
@@ -357,7 +382,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	private void transferFromIC2Buffer() {
 		if (freeSpace() > 0 && internalBuffer >= 1) {
-			int addAmount = Math.min((int) Math.floor(internalBuffer), freeSpace());
+			int addAmount = min((int) Math.floor(internalBuffer), freeSpace());
 			addEnergy(addAmount);
 			internalBuffer -= addAmount;
 		}
@@ -395,7 +420,10 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-		if(capability == CapabilityEnergy.ENERGY) {
+		if (capability == CapabilityEnergy.ENERGY) {
+			return true;
+		}
+		if (capability != null && (capability == MJ_CONN || capability == MJ_RECV)) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
@@ -404,8 +432,11 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	@Nullable
 	@Override
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-		if(capability == CapabilityEnergy.ENERGY) {
+		if (capability == CapabilityEnergy.ENERGY) {
 			return (T) energyInterface;
+		}
+		if (capability != null && (capability == MJ_CONN || capability == MJ_RECV)) {
+			return (T) mjReceiver;
 		}
 		return super.getCapability(capability, facing);
 	}

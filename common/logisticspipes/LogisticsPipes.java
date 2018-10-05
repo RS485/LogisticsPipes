@@ -198,6 +198,7 @@ import network.rs485.grow.TickExecutor;
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:forge@[10.12.1.1079,);" +
+				"required-after:codechickenlib;" +
 				"after:buildcraft|Core;" +
 				"after:buildcraft|Transport;" +
 				"after:buildcraft|Silicon;" +

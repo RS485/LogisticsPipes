@@ -295,7 +295,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		for (int i = 0; i < 9; i++) {
 			ItemStack left = crafter.getStackInSlot(i);
 			crafter.setInventorySlotContents(i, ItemStack.EMPTY);
-			if (left.isEmpty()) {
+			if (!left.isEmpty()) {
 				left.setCount(inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(world, left, getPos());
@@ -305,7 +305,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		for (int i = 0; i < fake.inventory.getSizeInventory(); i++) {
 			ItemStack left = fake.inventory.getStackInSlot(i);
 			fake.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-			if (left.isEmpty()) {
+			if (!left.isEmpty()) {
 				left.setCount(inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(world, left, getPos());

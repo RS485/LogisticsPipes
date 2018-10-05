@@ -1,7 +1,10 @@
 package logisticspipes.proxy.ccl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,6 +16,7 @@ import logisticspipes.proxy.object3d.interfaces.IVec3;
 import logisticspipes.utils.math.Vector3f;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -35,8 +39,21 @@ import codechicken.lib.vec.Vertex5;
 import codechicken.lib.vec.uv.UVTransformation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import lombok.SneakyThrows;
 
 public class Model3D implements IModel3D {
+
+	private static final Field spiteMap;
+	private static final HashMap<Integer, TextureAtlasSprite> emptyHashMap = new HashMap<>();
+
+	static {
+		try {
+			spiteMap = BakingVertexBuffer.class.getDeclaredField("spriteMap");
+			spiteMap.setAccessible(true);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	private final CCModel model;
 
@@ -58,6 +75,7 @@ public class Model3D implements IModel3D {
 
 	@Override
 	@SideOnly(Side.CLIENT)
+	@SneakyThrows({IllegalAccessException.class})
 	public List<BakedQuad> renderToQuads(VertexFormat format, I3DOperation... i3dOperations) {
 		List<IVertexOperation> list = new ArrayList<>();
 
@@ -71,6 +89,10 @@ public class Model3D implements IModel3D {
 		ccrs.startDrawing(0x7, format, buffer);
 		model.render(ccrs, list.toArray(new IVertexOperation[0]));
 		buffer.finishDrawing();
+
+		emptyHashMap.clear();
+		spiteMap.set(buffer, emptyHashMap);
+
 		return buffer.bake();
 	}
 

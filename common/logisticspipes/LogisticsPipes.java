@@ -194,23 +194,8 @@ import network.rs485.grow.TickExecutor;
 
 @Mod(
 		modid = LPConstants.LP_MOD_ID,
-		name = "Logistics Pipes",
-		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
-		dependencies = "required-after:forge@[10.12.1.1079,);" +
-				"required-after:codechickenlib;" +
-				"after:buildcraft|Core;" +
-				"after:buildcraft|Transport;" +
-				"after:buildcraft|Silicon;" +
-				"after:buildcraft|Robotics;" +
-				"after:ic2;" +
-				"after:forestry;" +
-				"after:computercraft;" +
-				"after:factorization;" +
-				"after:gregtech_addon;" +
-				"after:appliedenergistics;" +
-				"after:thermalexpansion;" +
-		"after:BetterStorage")
+		useMetadata = true)
 public class LogisticsPipes {
 
 	//@formatter:on

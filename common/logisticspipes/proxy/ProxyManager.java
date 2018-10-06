@@ -42,6 +42,7 @@ import com.google.common.collect.Lists;
 import logisticspipes.LPConstants;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
@@ -117,6 +118,7 @@ public class ProxyManager {
 					@Nullable@Override public<T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {return null;}
 				};
 			}
+			@Override public Object createMjReceiver(@Nonnull LogisticsPowerJunctionTileEntity te) {return null;}
 		}, IBCPipeCapabilityProvider.class));
 
 		SimpleServiceLocator.setForestryProxy(ProxyManager.getWrappedProxy("forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
@@ -266,7 +268,7 @@ public class ProxyManager {
 			@Override public void registerTextures(TextureMap iconRegister) {}
 			@Override public boolean isBlockedSide(TileEntity with, EnumFacing opposite) {return false;}
 		}, ITDPart.class));
-		
+
 		final IBounds dummyBounds = new IBounds() {
 			@Override public IVec3 min() {
 				return new IVec3() {

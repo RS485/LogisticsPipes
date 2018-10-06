@@ -1,5 +1,9 @@
 package logisticspipes.proxy.buildcraft;
 
+import buildcraft.api.mj.IMjConnector;
+import buildcraft.api.mj.IMjReceiver;
+import buildcraft.api.mj.MjAPI;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.recipeprovider.AssemblyTable;
@@ -9,6 +13,8 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.specialinventoryhandler.BuildCraftTransactorHandler;
 import logisticspipes.recipes.CraftingParts;
+
+import javax.annotation.Nonnull;
 
 public class BuildCraftProxy implements IBCProxy {
 
@@ -57,5 +63,30 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public IBCPipeCapabilityProvider getIBCPipeCapabilityProvider(LogisticsTileGenericPipe pipe) {
 		return new BCPipeCapabilityProvider(pipe);
+	}
+
+	@Override
+	public Object createMjReceiver(@Nonnull LogisticsPowerJunctionTileEntity te) {
+		return new IMjReceiver() {
+			@Override
+			public long getPowerRequested() {
+				return te.freeSpace() / LogisticsPowerJunctionTileEntity.MJMultiplier * MjAPI.MJ;
+			}
+
+			@Override
+			public long receivePower(long l, boolean b) {
+				long freeMj = te.freeSpace() / LogisticsPowerJunctionTileEntity.MJMultiplier * MjAPI.MJ;
+				long needs = Math.min(freeMj, l);
+				if (!b) {
+					te.addEnergy(((float) needs) * LogisticsPowerJunctionTileEntity.MJMultiplier / MjAPI.MJ);
+				}
+				return l - needs;
+			}
+
+			@Override
+			public boolean canConnect(@Nonnull IMjConnector iMjConnector) {
+				return true;
+			}
+		};
 	}
 }

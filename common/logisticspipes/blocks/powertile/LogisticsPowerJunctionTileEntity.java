@@ -1,10 +1,9 @@
 package logisticspipes.blocks.powertile;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import buildcraft.api.mj.IMjConnector;
+import buildcraft.api.mj.IMjReceiver;
 import ic2.api.energy.tile.IEnergyEmitter;
+import ic2.api.energy.tile.IEnergySink;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentInterface;
@@ -31,33 +30,36 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.PlayerCollectionList;
-
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
 import net.minecraft.util.EnumFacing;
-
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 
-import ic2.api.energy.tile.IEnergySink;
+import javax.annotation.Nullable;
+import java.util.List;
 
-@ModDependentInterface(modId = { "IC2", "BuildCraft|Transport" }, interfacePath = { "ic2.api.energy.tile.IEnergySink", "buildcraft.api.power.IPowerReceptor" })
+@ModDependentInterface(modId = {"IC2"}, interfacePath = {"ic2.api.energy.tile.IEnergySink"})
 @CCType(name = "LogisticsPowerJunction")
 public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
+
+	@CapabilityInject(IMjConnector.class)
+	private static Capability<IMjConnector> MJ_CONN = null;
+
+	@CapabilityInject(IMjReceiver.class)
+	private static Capability<IMjReceiver> MJ_RECV = null;
 
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 
 	public final static int IC2Multiplier = 2;
 	public final static int RFDivisor = 2;
+	public final static int MJMultiplier = 5;
 	public final static int MAX_STORAGE = 2000000;
 
 	private int internalStorage = 0;
@@ -121,8 +123,11 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		}
 	};
 
+	private Object mjReceiver;
+
 	public LogisticsPowerJunctionTileEntity() {
 		HUD = new HUDPowerLevel(this);
+		mjReceiver = SimpleServiceLocator.buildCraftProxy.createMjReceiver(this);
 	}
 
 	@Override
@@ -395,7 +400,10 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-		if(capability == CapabilityEnergy.ENERGY) {
+		if (capability == CapabilityEnergy.ENERGY) {
+			return true;
+		}
+		if (capability == MJ_CONN || capability == MJ_RECV) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
@@ -404,8 +412,11 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	@Nullable
 	@Override
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-		if(capability == CapabilityEnergy.ENERGY) {
+		if (capability == CapabilityEnergy.ENERGY) {
 			return (T) energyInterface;
+		}
+		if (capability == MJ_CONN || capability == MJ_RECV) {
+			return (T) mjReceiver;
 		}
 		return super.getCapability(capability, facing);
 	}

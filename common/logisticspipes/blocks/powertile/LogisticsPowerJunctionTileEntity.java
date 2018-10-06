@@ -13,7 +13,12 @@ import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerLevel;
-import logisticspipes.interfaces.*;
+import logisticspipes.interfaces.IBlockWatchingHandler;
+import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiTileEntity;
+import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IPowerLevelDisplay;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
@@ -39,8 +44,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-
-import static java.lang.Math.min;
 
 @ModDependentInterface(modId = {"IC2"}, interfacePath = {"ic2.api.energy.tile.IEnergySink"})
 @CCType(name = "LogisticsPowerJunction")
@@ -85,7 +88,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 				return 0;
 			}
 			int RFspace = freeSpace() * LogisticsPowerJunctionTileEntity.RFDivisor - internalRFbuffer;
-			int RFtotake = min(maxReceive, RFspace);
+			int RFtotake = Math.min(maxReceive, RFspace);
 			if (!simulate) {
 				addEnergy(RFtotake / LogisticsPowerJunctionTileEntity.RFDivisor);
 				internalRFbuffer += RFtotake % LogisticsPowerJunctionTileEntity.RFDivisor;
@@ -133,7 +136,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		@Override
 		public long receivePower(long l, boolean b) {
 			long freeMj = freeSpace() / MJMultiplier * MjAPI.MJ;
-			long needs = min(freeMj, l);
+			long needs = Math.min(freeMj, l);
 			if (!b) {
 				addEnergy(((float) needs) * MJMultiplier / MjAPI.MJ);
 			}
@@ -382,7 +385,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	private void transferFromIC2Buffer() {
 		if (freeSpace() > 0 && internalBuffer >= 1) {
-			int addAmount = min((int) Math.floor(internalBuffer), freeSpace());
+			int addAmount = Math.min((int) Math.floor(internalBuffer), freeSpace());
 			addEnergy(addAmount);
 			internalBuffer -= addAmount;
 		}
@@ -423,7 +426,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		if (capability == CapabilityEnergy.ENERGY) {
 			return true;
 		}
-		if (capability != null && (capability == MJ_CONN || capability == MJ_RECV)) {
+		if (capability == MJ_CONN || capability == MJ_RECV) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
@@ -435,7 +438,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		if (capability == CapabilityEnergy.ENERGY) {
 			return (T) energyInterface;
 		}
-		if (capability != null && (capability == MJ_CONN || capability == MJ_RECV)) {
+		if (capability == MJ_CONN || capability == MJ_RECV) {
 			return (T) mjReceiver;
 		}
 		return super.getCapability(capability, facing);

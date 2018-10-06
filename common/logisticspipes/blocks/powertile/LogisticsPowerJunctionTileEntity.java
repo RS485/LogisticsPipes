@@ -40,6 +40,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -126,31 +127,39 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		}
 	};
 
-	@ModDependentField(modId = "buildcraftlib")
-	private IMjReceiver mjReceiver = new IMjReceiver() {
-		@Override
-		public long getPowerRequested() {
-			return freeSpace() / MJMultiplier * MjAPI.MJ;
-		}
-
-		@Override
-		public long receivePower(long l, boolean b) {
-			long freeMj = freeSpace() / MJMultiplier * MjAPI.MJ;
-			long needs = Math.min(freeMj, l);
-			if (!b) {
-				addEnergy(((float) needs) * MJMultiplier / MjAPI.MJ);
-			}
-			return l - needs;
-		}
-
-		@Override
-		public boolean canConnect(@Nonnull IMjConnector iMjConnector) {
-			return true;
-		}
-	};
+	private Object mjReceiver;
 
 	public LogisticsPowerJunctionTileEntity() {
 		HUD = new HUDPowerLevel(this);
+
+		if (Loader.isModLoaded("buildcraftlib")) {
+			initMjReceiver();
+		}
+	}
+
+	// Split off into its own method to avoid JVM shenanigans when IMjReceiver is not there.
+	private void initMjReceiver() {
+		mjReceiver = new IMjReceiver() {
+			@Override
+			public long getPowerRequested() {
+				return freeSpace() / MJMultiplier * MjAPI.MJ;
+			}
+
+			@Override
+			public long receivePower(long l, boolean b) {
+				long freeMj = freeSpace() / MJMultiplier * MjAPI.MJ;
+				long needs = Math.min(freeMj, l);
+				if (!b) {
+					addEnergy(((float) needs) * MJMultiplier / MjAPI.MJ);
+				}
+				return l - needs;
+			}
+
+			@Override
+			public boolean canConnect(@Nonnull IMjConnector iMjConnector) {
+				return true;
+			}
+		};
 	}
 
 	@Override

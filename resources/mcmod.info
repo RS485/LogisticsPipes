@@ -1,5 +1,5 @@
 [{
-    "modid": "LogisticsPipes|Main",
+    "modid": "logisticspipes",
     "name": "Logistics Pipes",
     "description": "Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.",
     "version": "${version}",
@@ -7,29 +7,28 @@
     "url": "http://www.minecraftforum.net/topic/1831791-",
     "updateUrl": "",
     "authorList": [ "RS485", "LP Team" ],
-    "credits": "Contributors: https://github.com/RS485/LogisticsPipes/contributors . Original code and idea made by Krapht. Thanks!",
+    "credits": "Contributors: https://github.com/RS485/LogisticsPipes/contributors. Original code and idea made by Krapht. Thanks!",
     "logoFile": "",
     "screenshots": [],
     "requiredMods": [
-        "Forge@[9.10.1.850,)"
+        "forge@[10.12.1.1079,)",
+        "codechickenlib"
     ],
     "dependencies": [
-        "Forge@[9.10.1.850,)",
-        "BuildCraft|Core",
-        "BuildCraft|Transport",
-        "BuildCraft|Silicon",
-        "BuildCraft|Robotics",
-        "IC2",
-        "Forestry",
-        "Thaumcraft",
-        "CCTurtle",
-        "ComputerCraft",
+        "forge@[10.12.1.1079,)",
+        "codechickenlib",
+        "buildcraftcore",
+        "buildcrafttransport",
+        "buildcraftsilicon",
+        "buildcraftrobotics",
+        "ic2",
+        "forestry",
+        "computercraft",
         "factorization",
-        "GregTech_Addon",
-        "AppliedEnergistics",
-        "ThermalExpansion",
-        "BetterStorage"
+        "gregtech_addon",
+        "appliedenergistics",
+        "thermalexpansion",
+        "betterstorage"
     ],
-    "dependants": [],
-    "useDependencyInformation": "true"
+    "dependants": []
 }]

@@ -59,7 +59,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	public final static int IC2Multiplier = 2;
 	public final static int RFDivisor = 2;
-	public final static int MJDivisor = 20;
+	public final static int MJMultiplier = 5;
 	public final static int MAX_STORAGE = 2000000;
 
 	private int internalStorage = 0;
@@ -127,15 +127,15 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	private IMjReceiver mjReceiver = new IMjReceiver() {
 		@Override
 		public long getPowerRequested() {
-			return freeSpace() * MJDivisor * MjAPI.MJ;
+			return freeSpace() / MJMultiplier * MjAPI.MJ;
 		}
 
 		@Override
 		public long receivePower(long l, boolean b) {
-			long freeMj = freeSpace() * MJDivisor * MjAPI.MJ;
+			long freeMj = freeSpace() / MJMultiplier * MjAPI.MJ;
 			long needs = min(freeMj, l);
 			if (!b) {
-				addEnergy(((float) needs) / MJDivisor / MjAPI.MJ);
+				addEnergy(((float) needs) * MJMultiplier / MjAPI.MJ);
 			}
 			return l - needs;
 		}

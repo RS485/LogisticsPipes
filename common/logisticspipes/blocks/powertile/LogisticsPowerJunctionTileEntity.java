@@ -2,12 +2,10 @@ package logisticspipes.blocks.powertile;
 
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.IMjReceiver;
-import buildcraft.api.mj.MjAPI;
 import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -40,9 +38,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.common.Loader;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -131,35 +127,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	public LogisticsPowerJunctionTileEntity() {
 		HUD = new HUDPowerLevel(this);
-
-		if (Loader.isModLoaded("buildcraftlib")) {
-			initMjReceiver();
-		}
-	}
-
-	// Split off into its own method to avoid JVM shenanigans when IMjReceiver is not there.
-	private void initMjReceiver() {
-		mjReceiver = new IMjReceiver() {
-			@Override
-			public long getPowerRequested() {
-				return freeSpace() / MJMultiplier * MjAPI.MJ;
-			}
-
-			@Override
-			public long receivePower(long l, boolean b) {
-				long freeMj = freeSpace() / MJMultiplier * MjAPI.MJ;
-				long needs = Math.min(freeMj, l);
-				if (!b) {
-					addEnergy(((float) needs) * MJMultiplier / MjAPI.MJ);
-				}
-				return l - needs;
-			}
-
-			@Override
-			public boolean canConnect(@Nonnull IMjConnector iMjConnector) {
-				return true;
-			}
-		};
+		mjReceiver = SimpleServiceLocator.buildCraftProxy.createMjReceiver(this);
 	}
 
 	@Override

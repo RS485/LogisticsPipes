@@ -70,6 +70,7 @@ public class EntitySparkleFX extends Particle {
 		Tessellator.getInstance().draw();
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDepthMask(true);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glPopMatrix();
 		Minecraft.getMinecraft().renderEngine.bindTexture(EntitySparkleFX.field_110737_b);
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);

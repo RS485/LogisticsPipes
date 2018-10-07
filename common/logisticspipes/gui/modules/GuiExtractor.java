@@ -58,13 +58,13 @@ public class GuiExtractor extends ModuleBaseGui {
 	private void refreshButtons() {
 		for (Object p : buttonList) {
 			GuiButton button = (GuiButton) p;
-			button.displayString = isExtract(EnumFacing.getFront(button.id));
+			button.displayString = isExtract(button.id == 6 ? null : EnumFacing.getFront(button.id));
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
-		_directionReceiver.setSneakyDirection(EnumFacing.getFront(guibutton.id));
+		_directionReceiver.setSneakyDirection(guibutton.id == 6 ? null : EnumFacing.getFront(guibutton.id));
 
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setDirection(_directionReceiver.getSneakyDirection()).setModulePos(_directionReceiver));
 

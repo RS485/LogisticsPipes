@@ -149,19 +149,8 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	public int roomForItem(ItemIdentifier item, int count) {
 		int totalRoom = 0;
 		for (int i = 0; i < _inventory.getSlots() && count > totalRoom; i++) {
-			int stackLimit = _inventory.getSlotLimit(i);
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack.isEmpty()) {
-				if (_inventory.insertItem(i, item.unsafeMakeNormalStack(1), true).isEmpty()) {
-					totalRoom += Math.min(stackLimit, item.getMaxStackSize());
-				}
-				continue;
-			}
-			if (!ItemIdentifier.get(stack).equals(item)) {
-				continue;
-			}
-
-			totalRoom += (Math.min(stackLimit, item.getMaxStackSize()) - stack.getCount());
+			ItemStack leftover = _inventory.insertItem(i, item.unsafeMakeNormalStack(count), true);
+			totalRoom += count - leftover.getCount();
 		}
 		return totalRoom;
 	}

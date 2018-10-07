@@ -1044,6 +1044,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static void renderDestruction(CoreUnroutedPipe pipe, World world, int x, int y, int z, ParticleManager effectRenderer) {
 		if (pipe.container != null && pipe.container.renderState != null && pipe.container.renderState.cachedRenderer != null) {
 			for (RenderEntry entry : pipe.container.renderState.cachedRenderer) {

@@ -91,7 +91,6 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb) {
 		if (boxes == null || boxes.isEmpty()) {
@@ -146,7 +145,6 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getCompleteBox() {
 		return SCurveTubeRenderer.tubeSCurve.get(orientation.getRenderOrientation()).bounds().toAABB();
 	}

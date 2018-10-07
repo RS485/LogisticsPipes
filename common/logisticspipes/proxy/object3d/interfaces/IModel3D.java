@@ -6,12 +6,16 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.math.AxisAlignedBB;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public interface IModel3D {
 
 	IModel3D backfacedCopy();
 
 	void render(I3DOperation... i3dOperations);
 
+	@SideOnly(Side.CLIENT)
 	List<BakedQuad> renderToQuads(VertexFormat format, I3DOperation... i3dOperations);
 
 	void computeNormals();

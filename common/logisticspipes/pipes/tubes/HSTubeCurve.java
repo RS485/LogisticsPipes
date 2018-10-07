@@ -90,7 +90,6 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb) {
 		double x = getX();
@@ -141,7 +140,6 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public AxisAlignedBB getCompleteBox() {
 		return CurveTubeRenderer.tubeCurve.get(orientation.getRenderOrientation()).bounds().toAABB();
 	}

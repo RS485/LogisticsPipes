@@ -93,11 +93,9 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 
 	public abstract LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getRotatedSubBlocks();
 
-	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("rawtypes")
 	public abstract void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb);
 
-	@SideOnly(Side.CLIENT)
 	public abstract AxisAlignedBB getCompleteBox();
 
 	public abstract ITubeOrientation getTubeOrientation(EntityPlayer player, int xPos, int zPos);

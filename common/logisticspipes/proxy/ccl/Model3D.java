@@ -25,6 +25,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -47,11 +48,15 @@ public class Model3D implements IModel3D {
 	private static final HashMap<Integer, TextureAtlasSprite> emptyHashMap = new HashMap<>();
 
 	static {
-		try {
-			spiteMap = BakingVertexBuffer.class.getDeclaredField("spriteMap");
-			spiteMap.setAccessible(true);
-		} catch (NoSuchFieldException e) {
-			throw new RuntimeException(e);
+		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			try {
+				spiteMap = BakingVertexBuffer.class.getDeclaredField("spriteMap");
+				spiteMap.setAccessible(true);
+			} catch (NoSuchFieldException e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			spiteMap = null;
 		}
 	}
 
@@ -91,7 +96,9 @@ public class Model3D implements IModel3D {
 		buffer.finishDrawing();
 
 		emptyHashMap.clear();
-		spiteMap.set(buffer, emptyHashMap);
+		if (spiteMap != null) {
+			spiteMap.set(buffer, emptyHashMap);
+		}
 
 		return buffer.bake();
 	}

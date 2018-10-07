@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -14,8 +15,6 @@ import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.opengl.GL11;
 
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -162,10 +161,10 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 				renderer.renderItemStackOnSign(itemstack);
 				Item item = itemstack.getItem();
 
-				GL11.glDepthMask(false);
-				GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glTranslatef(0.5F, +0.08F, 0.0F);
-				GL11.glScalef(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
+				GlStateManager.depthMask(false);
+				GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.translate(0.5F, +0.08F, 0.0F);
+				GlStateManager.scale(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
 
 				try {
 					name = item.getItemStackDisplayName(itemstack);
@@ -180,9 +179,9 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 				var17.drawString("Amount:", -var17.getStringWidth("Amount:") / 2, 1 * 10 - 4 * 5, 0);
 				var17.drawString(String.valueOf(displayAmount), -var17.getStringWidth(String.valueOf(displayAmount)) / 2, 2 * 10 - 4 * 5, 0);
 			} else {
-				GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glTranslatef(0.5F, +0.08F, 0.0F);
-				GL11.glScalef(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
+				GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
+				GlStateManager.translate(0.5F, +0.08F, 0.0F);
+				GlStateManager.scale(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
 				name = "Empty";
 			}
 
@@ -190,8 +189,8 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 
 			var17.drawString(name, -var17.getStringWidth(name) / 2 - 15, 3 * 10 - 4 * 5, 0);
 
-			GL11.glDepthMask(true);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.depthMask(true);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 

@@ -23,6 +23,8 @@ import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import net.minecraftforge.client.ForgeHooksClient;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -32,11 +34,11 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
+import logisticspipes.utils.debug.PerformanceMeter;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.tuples.Pair;
@@ -57,6 +59,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
 	private ModelSign modelSign;
+	private final PerformanceMeter renderItemStackOnSignPerfMeter = new PerformanceMeter(60, false);
 
 	public LogisticsRenderPipe() {
 		super();
@@ -69,7 +72,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	@Override
 	public void render(LogisticsTileGenericPipe tileentity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		boolean inHand = false;
-		if(tileentity == null && x == 0 && y == 0 && z == 0) {
+		if (tileentity == null && x == 0 && y == 0 && z == 0) {
 			inHand = true;
 		} else if (tileentity.pipe == null) {
 			return;
@@ -79,8 +82,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
 
-		if (destroyStage >= 0)
-		{
+		if (destroyStage >= 0) {
 			this.bindTexture(DESTROY_STAGES[destroyStage]);
 			GlStateManager.matrixMode(GL11.GL_TEXTURE);
 			GlStateManager.pushMatrix();
@@ -92,8 +94,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		GlStateManager.pushMatrix();
 		GlStateManager.enableRescaleNormal();
 
-		if (destroyStage < 0)
-		{
+		if (destroyStage < 0) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
 		}
 
@@ -107,23 +108,19 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 		LogisticsRenderPipe.secondRenderer.renderTileEntityAt(tileentity, x, y, z, partialTicks, distance);
 
-		if(!inHand) {
-
-			if (!tileentity.isOpaque()) {
-				if (tileentity.pipe.transport instanceof PipeFluidTransportLogistics) {
-					//renderFluids(pipe.pipe, x, y, z);
-				}
-				if (tileentity.pipe.transport != null) {
-					renderSolids(tileentity.pipe, x, y, z, partialTicks);
-				}
+		if (!inHand && !tileentity.isOpaque()) {
+			if (tileentity.pipe.transport instanceof PipeFluidTransportLogistics) {
+				//renderFluids(pipe.pipe, x, y, z);
+			}
+			if (tileentity.pipe.transport != null) {
+				renderSolids(tileentity.pipe, x, y, z, partialTicks);
 			}
 		}
 
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.popMatrix();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		if (destroyStage >= 0)
-		{
+		if (destroyStage >= 0) {
 			GlStateManager.matrixMode(GL11.GL_TEXTURE);
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
@@ -338,6 +335,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	}
 
 	public void renderItemStackOnSign(@Nonnull ItemStack itemstack) {
+		long start = System.nanoTime();
+		this.renderItemStackOnSignInner(itemstack);
+		long end = System.nanoTime();
+		renderItemStackOnSignPerfMeter.newPerfValue(end - start);
+	}
+
+	private void renderItemStackOnSignInner(@Nonnull ItemStack itemstack) {
 		if (itemstack.isEmpty()) {
 			return; // Only happens on false configuration
 		}
@@ -349,7 +353,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		GlStateManager.color(1F, 1F, 1F); //Forge: Reset color in case Items change it.
 		GlStateManager.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
 		itemRender.zLevel = 100.0F;
-		GlStateManager.enableLighting();
 		GlStateManager.enableRescaleNormal();
 
 		// itemRender.renderItemAndEffectIntoGUI(itemstack, 0, 0);
@@ -364,20 +367,25 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-		// make item flat and position it
-		GlStateManager.scale(0.4F, -0.4F, 0.01F);
-		GlStateManager.translate(0.15F, 0.08F, 0F);
-
 		// mezz.jei.render.ItemStackFastRenderer#getBakedModel
 		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 		IBakedModel bakedModel = itemModelMesher.getItemModel(itemstack);
 		bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemstack, null, null);
 
-		bakedModel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.FIXED, false);
+		// make item/block flat and position it
+		GlStateManager.translate(0.05F, 0F, 0F);
+		GlStateManager.scale(0.8F, 0.8F, 0.001F);
+
+		// model rotation
+		bakedModel = ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
+
+		// model scaling to fit on sign
+		GlStateManager.scale(0.4F, 0.4F, 0.4F);
+
 		itemRender.renderItem(itemstack, bakedModel);
-		GlStateManager.disableAlpha();
+
 		GlStateManager.disableRescaleNormal();
-		GlStateManager.disableLighting();
+		GlStateManager.disableAlpha();
 		GlStateManager.popMatrix();
 		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		mc.renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
@@ -385,7 +393,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 		// not needed?
 		//itemRender.renderItemOverlays(mc.fontRenderer, itemstack, 0, 0);
-		GlStateManager.disableLighting();
 		itemRender.zLevel = 0.0F;
 	}
 
@@ -414,7 +421,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 				GL11.glPopMatrix();
 				return false;
 			}
-			if(localItemTestRenderList == -1) {
+			if (localItemTestRenderList == -1) {
 				localItemTestRenderList = GLAllocation.generateDisplayLists(1);
 			}
 			GL11.glNewList(localItemTestRenderList, GL11.GL_COMPILE);

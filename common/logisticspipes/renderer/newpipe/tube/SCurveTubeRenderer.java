@@ -68,32 +68,7 @@ public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlace
 			pipePartModels.entrySet().stream()
 					.filter(entry -> entry.getKey().startsWith("Lane ") || entry.getKey().contains(" Lane ") || entry.getKey().endsWith(" Lane"))
 					.forEach(entry -> {
-						SCurveTubeRenderer.
-								tubeSCurveBase.
-								get(
-										TurnSDirection
-												.EAST
-								)
-								.add(
-										LogisticsNewRenderPipe
-												.compute(
-														entry
-																.getValue()
-																.twoFacedCopy()
-																.apply(
-																		new LPRotation
-																				(Math.PI / 2,
-																						0, 0, 1)
-																).apply(
-																		new LPTranslation(
-																				1.0, 0.0, 0.0)
-														).apply(
-																new LPRotation(
-																		-Math.PI / 2, 0, 1, 0)
-														)
-												)
-								)
-						;
+						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.EAST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(Math.PI / 2,0, 0, 1)).apply(new LPTranslation(1.0, 0.0, 0.0)).apply(new LPRotation(-Math.PI / 2, 0, 1, 0))));
 						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.NORTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(Math.PI / 2, 0, 0, 1)).apply(new LPTranslation(1.0, 0.0, 1.0))));
 						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.EAST_INV).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(-Math.PI / 2, 0, 0, 1)).apply(new LPTranslation(-2.0, 1.0, 4.0)).apply(new LPRotation(Math.PI / 2, 0, 1, 0))));
 						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.NORTH_INV).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(-Math.PI / 2, 0, 0, 1)).apply(new LPTranslation(-2.0, 1.0, 3.0)).apply(new LPRotation(Math.PI, 0, 1, 0))));

@@ -156,6 +156,7 @@ dependencies {
     compile "appeng:appliedenergistics2:rv5-stable-11:api"
     compileOnly "dan200.computercraft:ComputerCraft:1.80pr1-build5"
     deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA23"
+    runtimeOnly "baubles:Baubles:1.12:1.5.2"
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
     testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'

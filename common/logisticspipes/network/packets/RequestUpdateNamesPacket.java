@@ -1,6 +1,5 @@
 package logisticspipes.network.packets;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +20,9 @@ import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class RequestUpdateNamesPacket extends ModernPacket {
 
 	public RequestUpdateNamesPacket(int id) {

@@ -11,6 +11,9 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class StringBasedItemSinkModuleGuiInHand extends ModuleInHandGuiProvider {
 
 	public StringBasedItemSinkModuleGuiInHand(int id) {

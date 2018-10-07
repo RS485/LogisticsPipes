@@ -17,6 +17,7 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import logisticspipes.utils.*;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -182,10 +183,6 @@ import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.VersionChecker;
-import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.InventoryUtilFactory;
-import logisticspipes.utils.RoutedItemHelper;
-import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.grow.TickExecutor;
 
@@ -226,8 +223,6 @@ public class LogisticsPipes {
 			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
 			e.printStackTrace();
 		}
-		PacketHandler.initialize();
-		NewGuiHandler.initialize();
 
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -395,6 +390,10 @@ public class LogisticsPipes {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
+		StaticResolverUtil.useASMDataTable(evt.getAsmData());
+		PacketHandler.initialize();
+		NewGuiHandler.initialize();
+
 		LogisticsPipes.log = evt.getModLog();
 		loadClasses();
 		ProxyManager.load();

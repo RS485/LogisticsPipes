@@ -18,6 +18,9 @@ import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.DummyContainer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PipeController extends CoordinatesGuiProvider {
 
 	public PipeController(int id) {

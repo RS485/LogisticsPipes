@@ -9,6 +9,9 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class OreDictItemSinkModuleSlot extends NBTModuleCoordinatesGuiProvider {
 
 	public OreDictItemSinkModuleSlot(int id) {

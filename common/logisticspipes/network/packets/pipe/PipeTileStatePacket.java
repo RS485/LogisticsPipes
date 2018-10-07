@@ -13,6 +13,9 @@ import network.rs485.logisticspipes.util.LPDataIOWrapper;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PipeTileStatePacket extends CoordinatesPacket {
 
 	@Setter

@@ -7,6 +7,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class OrderWatchRemovePacket extends IntegerCoordinatesPacket {
 
 	public OrderWatchRemovePacket(int id) {

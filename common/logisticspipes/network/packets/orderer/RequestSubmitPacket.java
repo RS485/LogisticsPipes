@@ -9,6 +9,9 @@ import logisticspipes.request.RequestHandler;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class RequestSubmitPacket extends RequestPacket {
 
 	public RequestSubmitPacket(int id) {

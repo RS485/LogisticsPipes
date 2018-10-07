@@ -9,7 +9,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,10 +24,12 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-import network.rs485.logisticspipes.world.IntegerCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 
 	@Getter

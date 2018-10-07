@@ -7,6 +7,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class FireWallFlag extends BitSetCoordinatesPacket {
 
 	public FireWallFlag(int id) {

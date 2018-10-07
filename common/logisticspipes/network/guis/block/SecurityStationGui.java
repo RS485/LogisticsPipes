@@ -9,6 +9,9 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SecurityStationGui extends CoordinatesGuiProvider {
 
 	public SecurityStationGui(int id) {

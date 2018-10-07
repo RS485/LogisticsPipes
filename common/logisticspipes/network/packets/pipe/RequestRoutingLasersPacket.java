@@ -18,24 +18,24 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IPaintPath;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.PathFinder;
 
 import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class RequestRoutingLasersPacket extends CoordinatesPacket {
 
 	private abstract class Log {

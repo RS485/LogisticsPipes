@@ -9,6 +9,9 @@ import logisticspipes.network.guis.logic.LogicControllerGuiProvider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class LogicControllerPacket extends CoordinatesPacket {
 
 	public LogicControllerPacket(int id) {

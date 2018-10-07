@@ -9,6 +9,9 @@ import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class FluidSupplierMode extends IntegerCoordinatesPacket {
 
 	public FluidSupplierMode(int id) {

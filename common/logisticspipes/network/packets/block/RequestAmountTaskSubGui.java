@@ -17,6 +17,9 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class RequestAmountTaskSubGui extends CoordinatesPacket {
 
 	public RequestAmountTaskSubGui(int id) {

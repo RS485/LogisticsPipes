@@ -15,6 +15,9 @@ import logisticspipes.utils.gui.UpgradeSlot;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SneakyUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvider {
 
 	public SneakyUpgradeConfigGuiProvider(int id) {

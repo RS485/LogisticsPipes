@@ -9,6 +9,9 @@ import logisticspipes.pipes.upgrades.IConfigPipeUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.utils.gui.UpgradeSlot;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class OpenUpgradePacket extends SlotPacket {
 	public OpenUpgradePacket(int id) {
 		super(id);

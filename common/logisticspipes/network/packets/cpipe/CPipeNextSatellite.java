@@ -6,6 +6,9 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class CPipeNextSatellite extends ModuleCoordinatesPacket {
 
 	public CPipeNextSatellite(int id) {

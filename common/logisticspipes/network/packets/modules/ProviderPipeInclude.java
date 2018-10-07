@@ -10,6 +10,9 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ProviderPipeInclude extends IntegerCoordinatesPacket {
 
 	public ProviderPipeInclude(int id) {

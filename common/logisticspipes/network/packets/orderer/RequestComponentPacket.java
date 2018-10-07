@@ -9,6 +9,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestHandler;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class RequestComponentPacket extends RequestPacket {
 
 	public RequestComponentPacket(int id) {

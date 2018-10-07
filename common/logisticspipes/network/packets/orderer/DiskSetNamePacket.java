@@ -9,6 +9,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class DiskSetNamePacket extends StringCoordinatesPacket {
 
 	public DiskSetNamePacket(int id) {

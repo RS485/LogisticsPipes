@@ -8,6 +8,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PipeDebugLogResponse extends CoordinatesPacket {
 
 	public PipeDebugLogResponse(int id) {

@@ -11,6 +11,9 @@ import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SupplierPipeModePacket extends ModuleCoordinatesPacket {
 
 	public SupplierPipeModePacket(int id) {

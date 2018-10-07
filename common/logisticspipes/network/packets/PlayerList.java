@@ -8,6 +8,9 @@ import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringListPacket;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PlayerList extends StringListPacket {
 
 	public PlayerList(int id) {

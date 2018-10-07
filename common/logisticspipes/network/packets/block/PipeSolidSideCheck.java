@@ -6,6 +6,9 @@ import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PipeSolidSideCheck extends IntegerCoordinatesPacket {
 
 	public PipeSolidSideCheck(int id) {

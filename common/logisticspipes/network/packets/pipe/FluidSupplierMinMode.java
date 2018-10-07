@@ -8,6 +8,9 @@ import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeFluidSupplierMk2.MinMode;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class FluidSupplierMinMode extends IntegerCoordinatesPacket {
 
 	public FluidSupplierMinMode(int id) {

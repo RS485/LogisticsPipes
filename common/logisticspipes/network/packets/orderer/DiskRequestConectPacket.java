@@ -12,6 +12,9 @@ import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class DiskRequestConectPacket extends CoordinatesPacket {
 
 	public DiskRequestConectPacket(int id) {

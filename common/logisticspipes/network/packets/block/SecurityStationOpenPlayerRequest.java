@@ -6,6 +6,9 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringCoordinatesPacket;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SecurityStationOpenPlayerRequest extends StringCoordinatesPacket {
 
 	public SecurityStationOpenPlayerRequest(int id) {

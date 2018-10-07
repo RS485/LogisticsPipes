@@ -9,6 +9,9 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class OrdererContent extends InventoryModuleCoordinatesPacket {
 
 	public OrdererContent(int id) {

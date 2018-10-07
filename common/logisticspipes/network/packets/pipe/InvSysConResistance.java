@@ -8,6 +8,9 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class InvSysConResistance extends IntegerCoordinatesPacket {
 
 	public InvSysConResistance(int id) {

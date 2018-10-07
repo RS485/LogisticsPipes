@@ -11,6 +11,9 @@ import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class DiskDropPacket extends CoordinatesPacket {
 
 	public DiskDropPacket(int id) {

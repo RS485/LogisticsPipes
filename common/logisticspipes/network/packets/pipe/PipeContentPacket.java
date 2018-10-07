@@ -15,6 +15,9 @@ import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PipeContentPacket extends ModernPacket {
 
 	@Getter

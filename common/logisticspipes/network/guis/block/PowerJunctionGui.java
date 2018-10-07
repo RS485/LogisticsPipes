@@ -8,6 +8,9 @@ import logisticspipes.utils.gui.DummyContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PowerJunctionGui extends CoordinatesGuiProvider {
 
 	public PowerJunctionGui(int id) {

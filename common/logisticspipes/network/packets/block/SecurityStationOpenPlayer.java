@@ -12,6 +12,9 @@ import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SecurityStationOpenPlayer extends NBTCoordinatesPacket {
 
 	public SecurityStationOpenPlayer(int id) {

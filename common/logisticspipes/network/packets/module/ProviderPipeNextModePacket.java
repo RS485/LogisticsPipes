@@ -10,6 +10,9 @@ import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ProviderPipeNextModePacket extends CoordinatesPacket {
 
 	public ProviderPipeNextModePacket(int id) {

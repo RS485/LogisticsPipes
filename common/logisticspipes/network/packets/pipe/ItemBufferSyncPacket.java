@@ -1,5 +1,6 @@
 package logisticspipes.network.packets.pipe;
 
+import logisticspipes.utils.StaticResolve;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.network.abstractpackets.ListSyncPacket;
@@ -11,6 +12,7 @@ import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
+@StaticResolve
 public class ItemBufferSyncPacket
 		extends ListSyncPacket<Triplet<ItemIdentifierStack, Pair<Integer /* Time */, Integer /* BufferCounter */>, LPTravelingItemServer>> {
 

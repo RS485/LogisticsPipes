@@ -6,6 +6,9 @@ import logisticspipes.routing.debug.DebugController;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class RoutingUpdateUntrace extends IntegerPacket {
 
 	public RoutingUpdateUntrace(int id) {

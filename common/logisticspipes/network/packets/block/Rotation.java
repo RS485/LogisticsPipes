@@ -7,8 +7,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
+import logisticspipes.utils.StaticResolve;
 
+@StaticResolve
 public class Rotation extends IntegerCoordinatesPacket {
 
 	public Rotation(int id) {

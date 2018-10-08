@@ -76,9 +76,8 @@ public class TransactorSimple extends Transactor {
 		ItemStack newStack = stack.copy();
 		newStack.setCount(available);
 
-		int wanted = stack.getCount();
 		ItemStack rest = slot.insertItem(newStack, !doAdd);
-		return wanted - rest.getCount();
+		return available - rest.getCount();
 	}
 
 	private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {

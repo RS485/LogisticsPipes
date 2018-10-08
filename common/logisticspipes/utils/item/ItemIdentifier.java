@@ -757,14 +757,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return _dict;
 	}
 
-	@SideOnly(Side.CLIENT)
-	public boolean isRenderListCompatible(LogisticsRenderPipe render) {
-		if(isRenderListCompatible == null) {
-			isRenderListCompatible = render.isRenderListCompatible(this.makeNormalStack(1));
-		}
-		return isRenderListCompatible;
-	}
-
 	public void debugDumpData(boolean isClient) {
 		System.out.println((isClient ? "Client" : "Server") + " Item: " + Item.getIdFromItem(item) + ":" + itemDamage + " uniqueID " + uniqueID);
 		StringBuilder sb = new StringBuilder();

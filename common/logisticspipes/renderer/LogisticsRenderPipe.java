@@ -8,7 +8,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
@@ -409,58 +408,5 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			}
 		}
 		return sum.toString();
-	}
-
-	public boolean isRenderListCompatible(ItemStack stack) {
-		GL11.glPushMatrix();
-		GL11.glScaled(0, 0, 0);
-		try {
-			renderItemStackOnSign(stack);
-			int i = GL11.glGetError();
-			if (i != 0) {
-				GL11.glPopMatrix();
-				return false;
-			}
-			if (localItemTestRenderList == -1) {
-				localItemTestRenderList = GLAllocation.generateDisplayLists(1);
-			}
-			GL11.glNewList(localItemTestRenderList, GL11.GL_COMPILE);
-			i = GL11.glGetError();
-			if (i != 0) {
-				GL11.glPopMatrix();
-				return false;
-			}
-			renderItemStackOnSign(stack);
-			i = GL11.glGetError();
-			if (i != 0) {
-				GL11.glPopMatrix();
-				return false;
-			}
-			GL11.glEndList();
-			i = GL11.glGetError();
-			if (i != 0) {
-				GL11.glPopMatrix();
-				return false;
-			}
-			GL11.glCallList(localItemTestRenderList);
-			i = GL11.glGetError();
-			if (i != 0) {
-				GL11.glPopMatrix();
-				return false;
-			}
-			GL11.glPopMatrix();
-			return true;
-		} catch (Exception e) {
-		}
-		GL11.glPopMatrix();
-		return false;
-	}
-
-	private class DisplayFluidList {
-
-		public int[] sideHorizontal = new int[LogisticsRenderPipe.LIQUID_STAGES];
-		public int[] sideVertical = new int[LogisticsRenderPipe.LIQUID_STAGES];
-		public int[] centerHorizontal = new int[LogisticsRenderPipe.LIQUID_STAGES];
-		public int[] centerVertical = new int[LogisticsRenderPipe.LIQUID_STAGES];
 	}
 }

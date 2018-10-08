@@ -46,9 +46,8 @@ minecraft {
     version = "1.12.2-14.23.4.2705"
     runDir = "run/assets"
     replace '%VERSION%', project.version
-    replace '%MCVERSION%', "1.12.2"
+    replace '%MCVERSION%', project.minecraft.version
     replace '%DEBUG%', "false"
-    replaceIn "LogisticsPipes.java"
     replaceIn "LPConstants.java"
     mappings = "snapshot_20171120"
 }

@@ -98,7 +98,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 					}
 					ItemStack result = recipe.getCraftingResult(craftInv);
-					if (result != null && targetType.equals(ItemIdentifier.get(result))) {
+					if (!result.isEmpty() && targetType.equals(ItemIdentifier.get(result))) {
 						resultInv.setInventorySlotContents(0, result);
 						cache = recipe;
 						break;
@@ -108,7 +108,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			if (cache == null) {
 				for (IRecipe r : list) {
 					ItemStack result = r.getCraftingResult(craftInv);
-					if (result != null) {
+					if (!result.isEmpty()) {
 						cache = r;
 						resultInv.setInventorySlotContents(0, result);
 						targetType = ItemIdentifier.get(result);
@@ -470,7 +470,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		if (i < 9 && i >= 0) {
 			ItemIdentifierStack stack = matrix.getIDStackInSlot(i);
-			if (stack != null && itemstack != null) {
+			if (stack != null && !itemstack.isEmpty()) {
 				if(isFuzzy() && fuzzyFlags[i].getBitSet().nextSetBit(0) != -1) {
 					fuzzyFlags[i].stack = stack;
 					return fuzzyFlags[i].matches(ItemIdentifier.get(itemstack), IResource.MatchSettings.NORMAL);

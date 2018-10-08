@@ -1,9 +1,0 @@
-ProxyManager
-SolderingStationRecipies
-RecipeManager
-Configs
-
-Add the following comments to turn off checks for the specified resource:
-//@formatter:off
-//CHECKSTYLE:OFF
-

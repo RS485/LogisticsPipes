@@ -348,7 +348,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	private boolean insertIntInv(EntityPlayer entityplayer, SimpleStackInventory inv) {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
-			if (item == null) {
+			if (item.isEmpty()) {
 				inv.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(inv);
 				return true;

@@ -30,5 +30,6 @@
         "thermalexpansion",
         "betterstorage"
     ],
-    "dependants": []
+    "dependants": [],
+    "useDependencyInformation": true
 }]

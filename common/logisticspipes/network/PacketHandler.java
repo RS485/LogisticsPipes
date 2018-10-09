@@ -26,10 +26,12 @@ import network.rs485.logisticspipes.util.LPDataInput;
 import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static io.netty.buffer.Unpooled.buffer;
 
@@ -74,8 +76,10 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		}
 	}
 
-	private static void loadPackets(Set<Class<? extends ModernPacket>> classes) {
-		// classes.sort(Comparator.comparing(it -> it));
+	private static void loadPackets(Set<Class<? extends ModernPacket>> classesIn) {
+		List<Class<? extends ModernPacket>> classes = classesIn.stream()
+				.sorted(Comparator.comparing(Class::getCanonicalName))
+				.collect(Collectors.toList());
 
 		PacketHandler.packetlist = new ArrayList<>(classes.size());
 		PacketHandler.packetmap = new HashMap<>(classes.size());

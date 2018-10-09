@@ -20,10 +20,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NewGuiHandler {
 
@@ -48,8 +50,10 @@ public class NewGuiHandler {
 		}
 	}
 
-	private static void loadGuiProviders(Set<Class<? extends GuiProvider>> classes) {
-		// classes.sort(Comparator.comparing(it -> it));
+	private static void loadGuiProviders(Set<Class<? extends GuiProvider>> classesIn) {
+		List<Class<? extends GuiProvider>> classes = classesIn.stream()
+				.sorted(Comparator.comparing(Class::getCanonicalName))
+				.collect(Collectors.toList());
 
 		NewGuiHandler.guilist = new ArrayList<>(classes.size());
 		NewGuiHandler.guimap = new HashMap<>(classes.size());

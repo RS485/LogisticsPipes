@@ -18,6 +18,7 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
@@ -97,11 +98,11 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 79, 9, 9, 18, 18, 0.0F, DisplayAmount.NEVER);
 
-		GL11.glTranslatef(0F, 0F, 20F);
+		GlStateManager.translate(0, 0, 200F);
 		for (int a = 0; a < 9; a++) {
 			Gui.drawRect(guiLeft + 8 + (a * 18), guiTop + 80, guiLeft + 24 + (a * 18), guiTop + 96, 0xc08b8b8b);
 		}
-		GL11.glTranslatef(0F, 0F, -20F);
+		GlStateManager.translate(0, 0, -200F);
 	}
 
 	@Override

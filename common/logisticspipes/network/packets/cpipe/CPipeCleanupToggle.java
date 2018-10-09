@@ -8,6 +8,9 @@ import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class CPipeCleanupToggle extends ModuleCoordinatesPacket {
 
 	public CPipeCleanupToggle(int id) {

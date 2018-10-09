@@ -12,6 +12,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PipeManagerWatchingPacket extends CoordinatesPacket {
 
 	@Getter

@@ -7,6 +7,9 @@ import logisticspipes.network.abstractpackets.Integer2ModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class FluidCraftingAmount extends Integer2ModuleCoordinatesPacket {
 
 	public FluidCraftingAmount(int id) {

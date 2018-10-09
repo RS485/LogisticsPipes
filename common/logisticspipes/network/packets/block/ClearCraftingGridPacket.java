@@ -8,6 +8,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ClearCraftingGridPacket extends CoordinatesPacket {
 
 	public ClearCraftingGridPacket(int id) {

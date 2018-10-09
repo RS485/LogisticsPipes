@@ -8,6 +8,9 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class FluidSupplierSlot extends ModuleCoordinatesGuiProvider {
 
 	public FluidSupplierSlot(int id) {

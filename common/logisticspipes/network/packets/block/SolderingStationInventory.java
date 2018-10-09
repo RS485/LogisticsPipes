@@ -7,6 +7,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SolderingStationInventory extends InventoryModuleCoordinatesPacket {
 
 	public SolderingStationInventory(int id) {

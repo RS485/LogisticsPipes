@@ -1,48 +1,39 @@
 package logisticspipes.network;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.stream.Collectors;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import static io.netty.buffer.Unpooled.buffer;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.AttributeKey;
-import lombok.SneakyThrows;
-import org.apache.logging.log4j.Level;
-
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.exception.DelayPacketException;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.StaticResolverUtil;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import network.rs485.logisticspipes.util.LPDataIOWrapper;
 import network.rs485.logisticspipes.util.LPDataInput;
+import org.apache.logging.log4j.Level;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static io.netty.buffer.Unpooled.buffer;
 
 /*
  *  Basically FML SimpleIndexedCodec, except with static registration of LP ModernPackets and short instead of byte discriminator
@@ -75,64 +66,30 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	/*
 	 * enumerates all ModernPackets, sets their IDs and populate packetlist/packetmap
 	 */
-	@SuppressWarnings("unchecked")
-	@SneakyThrows({ IOException.class/*, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class, IllegalArgumentException.class, NoSuchMethodException.class, SecurityException.class*/ })
-	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
 	public static void initialize() {
-		final List<ClassInfo> classes = new ArrayList<>(ClassPath.from(PacketHandler.class.getClassLoader())
-				.getTopLevelClassesRecursive("logisticspipes.network.packets"));
+		Set<Class<? extends ModernPacket>> classes = StaticResolverUtil.findClassesByType(ModernPacket.class);
 
-		loadPacketsFromList(classes.stream().map(ClassInfo::getName).collect(Collectors.toList()));
+		loadPackets(classes);
 
 		if (PacketHandler.packetlist.isEmpty()) {
-			System.err.println(
-					"LogisticsPipes could not search for its packet classes. Your mods are probably installed in a path containing spaces or special characters. Trying to use fallback solution.");
-			URL location = PacketHandler.class.getProtectionDomain().getCodeSource().getLocation();
-			String locationString = location.toString();
-			if (locationString.startsWith("jar:file:/") && locationString.contains("!")) {
-				locationString = locationString.substring(10, locationString.indexOf('!'));
-				locationString = java.net.URLDecoder.decode(locationString, "UTF-8");
-			}
-
-			List<String> classInfoList = new ArrayList<>();
-
-			File file = new File(locationString);
-			if (file.exists() && !file.isDirectory()) {
-				JarFile jar = new JarFile(file);
-				Enumeration<JarEntry> entriesS = jar.entries();
-				while (entriesS.hasMoreElements()) {
-					JarEntry entryB = entriesS.nextElement();
-					if (!entryB.isDirectory() && entryB.getName().startsWith("logisticspipes/network/packets/")) {
-						String filename = entryB.getName();
-						int classNameEnd = filename.length() - ".class".length();
-						filename = filename.substring(0, classNameEnd).replace('/', '.');
-						classInfoList.add(filename);
-					}
-				}
-			}
-
-			loadPacketsFromList(classInfoList);
-
-			if (PacketHandler.packetlist.isEmpty()) {
-				System.err.println("Fallback solution failed. Please try to move your minecraft folder to a different location.");
-				throw new RuntimeException("Cannot load Packet Classes");
-			}
+			throw new RuntimeException("Cannot load Packet Classes");
 		}
 	}
 
-	private static void loadPacketsFromList(List<String> classes) {
-		classes.sort(Comparator.comparing(it -> it));
+	private static void loadPackets(Set<Class<? extends ModernPacket>> classesIn) {
+		List<Class<? extends ModernPacket>> classes = classesIn.stream()
+				.sorted(Comparator.comparing(Class::getCanonicalName))
+				.collect(Collectors.toList());
 
 		PacketHandler.packetlist = new ArrayList<>(classes.size());
 		PacketHandler.packetmap = new HashMap<>(classes.size());
 
 		int currentId = 0;
-		for (String c : classes) {
+		for (Class<? extends ModernPacket> cls : classes) {
 			try {
-				final Class<?> cls = PacketHandler.class.getClassLoader().loadClass(c);
-				final ModernPacket instance = (ModernPacket) cls.getConstructor(int.class).newInstance(currentId);
+				final ModernPacket instance = cls.getConstructor(int.class).newInstance(currentId);
 				PacketHandler.packetlist.add(instance);
-				PacketHandler.packetmap.put((Class<? extends ModernPacket>) cls, instance);
+				PacketHandler.packetmap.put(cls, instance);
 				currentId++;
 			} catch (Throwable ignoredButPrinted) {
 				ignoredButPrinted.printStackTrace();

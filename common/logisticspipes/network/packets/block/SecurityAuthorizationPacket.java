@@ -6,6 +6,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SecurityAuthorizationPacket extends IntegerCoordinatesPacket {
 
 	public SecurityAuthorizationPacket(int id) {

@@ -9,6 +9,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ExtractorModuleDirectionPacket extends DirectionModuleCoordinatesPacket {
 
 	public ExtractorModuleDirectionPacket(int id) {

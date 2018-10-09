@@ -15,6 +15,9 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class RequestRunningCraftingTasks extends CoordinatesPacket {
 
 	public RequestRunningCraftingTasks(int id) {

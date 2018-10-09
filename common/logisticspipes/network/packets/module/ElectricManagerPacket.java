@@ -6,6 +6,9 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.abstractpackets.BooleanModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ElectricManagerPacket extends BooleanModuleCoordinatesPacket {
 
 	public ElectricManagerPacket(int id) {

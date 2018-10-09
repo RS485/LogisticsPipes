@@ -7,6 +7,9 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class LogisticsPlayerSettingsGuiProvider extends GuiProvider {
 
 	public LogisticsPlayerSettingsGuiProvider(int id) {

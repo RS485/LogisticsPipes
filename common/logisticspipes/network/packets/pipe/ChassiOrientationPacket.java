@@ -11,6 +11,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ChassiOrientationPacket extends CoordinatesPacket {
 
 	@Getter

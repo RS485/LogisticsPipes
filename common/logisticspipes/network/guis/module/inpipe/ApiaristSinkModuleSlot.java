@@ -9,6 +9,9 @@ import logisticspipes.utils.gui.DummyContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ApiaristSinkModuleSlot extends NBTModuleCoordinatesGuiProvider {
 
 	public ApiaristSinkModuleSlot(int id) {

@@ -12,6 +12,9 @@ import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SecurityStationAutoDestroy extends IntegerCoordinatesPacket {
 
 	public SecurityStationAutoDestroy(int id) {

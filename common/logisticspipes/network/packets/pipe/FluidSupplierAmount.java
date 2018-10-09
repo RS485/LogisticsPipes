@@ -8,6 +8,9 @@ import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class FluidSupplierAmount extends IntegerCoordinatesPacket {
 
 	public FluidSupplierAmount(int id) {

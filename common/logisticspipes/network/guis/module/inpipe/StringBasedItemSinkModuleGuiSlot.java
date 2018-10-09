@@ -9,6 +9,9 @@ import logisticspipes.network.abstractguis.NBTModuleCoordinatesGuiProvider;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class StringBasedItemSinkModuleGuiSlot extends NBTModuleCoordinatesGuiProvider {
 
 	public StringBasedItemSinkModuleGuiSlot(int id) {

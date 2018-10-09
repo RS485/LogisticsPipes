@@ -14,6 +14,9 @@ import logisticspipes.routing.ExitRoute;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class StatUpdate extends CoordinatesPacket {
 
 	@Setter

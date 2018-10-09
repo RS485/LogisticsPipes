@@ -6,6 +6,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ProviderModuleInclude extends BooleanModuleCoordinatesPacket {
 
 	public ProviderModuleInclude(int id) {

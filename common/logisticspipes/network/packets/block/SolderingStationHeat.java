@@ -7,6 +7,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SolderingStationHeat extends IntegerCoordinatesPacket {
 
 	public SolderingStationHeat(int id) {

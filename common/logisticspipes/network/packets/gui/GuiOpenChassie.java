@@ -10,6 +10,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class GuiOpenChassie extends CoordinatesPacket {
 
 	public GuiOpenChassie(int id) {

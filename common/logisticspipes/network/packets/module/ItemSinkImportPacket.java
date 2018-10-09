@@ -6,6 +6,9 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ItemSinkImportPacket extends ModuleCoordinatesPacket {
 
 	public ItemSinkImportPacket(int id) {

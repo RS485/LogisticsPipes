@@ -9,6 +9,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.gui.UpgradeSlot;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class DisconnectionUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvider {
 
 	public DisconnectionUpgradeConfigGuiProvider(int id) {

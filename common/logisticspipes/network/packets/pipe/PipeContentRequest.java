@@ -11,6 +11,9 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class PipeContentRequest extends IntegerPacket {
 
 	public PipeContentRequest(int id) {

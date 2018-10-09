@@ -6,6 +6,9 @@ import logisticspipes.utils.QuickSortChestMarkerStorage;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class QuickSortState extends Integer2CoordinatesPacket {
 
 	public QuickSortState(int id) {

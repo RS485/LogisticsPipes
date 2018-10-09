@@ -6,6 +6,9 @@ import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class SaveSecurityPlayerPacket extends NBTCoordinatesPacket {
 
 	public SaveSecurityPlayerPacket(int id) {

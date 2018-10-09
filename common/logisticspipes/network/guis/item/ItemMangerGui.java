@@ -3,15 +3,16 @@ package logisticspipes.network.guis.item;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCardManager;
 import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.DummyContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ItemMangerGui extends GuiProvider {
 
 	public ItemMangerGui(int id) {

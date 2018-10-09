@@ -7,6 +7,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class OreDictItemSinkList extends NBTModuleCoordinatesPacket {
 
 	public OreDictItemSinkList(int id) {

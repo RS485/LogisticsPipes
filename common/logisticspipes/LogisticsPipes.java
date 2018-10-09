@@ -185,6 +185,7 @@ import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
+import logisticspipes.utils.StaticResolverUtil;
 import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.grow.TickExecutor;
@@ -226,8 +227,6 @@ public class LogisticsPipes {
 			loader.registerTransformer("logisticspipes.asm.LogisticsPipesClassInjector");
 			e.printStackTrace();
 		}
-		PacketHandler.initialize();
-		NewGuiHandler.initialize();
 
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -395,6 +394,10 @@ public class LogisticsPipes {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
+		StaticResolverUtil.useASMDataTable(evt.getAsmData());
+		PacketHandler.initialize();
+		NewGuiHandler.initialize();
+
 		LogisticsPipes.log = evt.getModLog();
 		loadClasses();
 		ProxyManager.load();

@@ -6,6 +6,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ItemSinkDefault extends BooleanModuleCoordinatesPacket {
 
 	public ItemSinkDefault(int id) {

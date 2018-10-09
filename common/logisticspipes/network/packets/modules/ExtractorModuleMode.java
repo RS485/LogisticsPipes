@@ -6,6 +6,9 @@ import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.abstractpackets.DirectionModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ExtractorModuleMode extends DirectionModuleCoordinatesPacket {
 
 	public ExtractorModuleMode(int id) {

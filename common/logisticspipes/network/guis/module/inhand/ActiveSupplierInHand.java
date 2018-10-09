@@ -10,6 +10,9 @@ import logisticspipes.utils.gui.DummyModuleContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.utils.StaticResolve;
+
+@StaticResolve
 public class ActiveSupplierInHand extends ModuleInHandGuiProvider {
 
 	public ActiveSupplierInHand(int id) {

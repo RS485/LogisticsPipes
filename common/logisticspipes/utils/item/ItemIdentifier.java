@@ -464,7 +464,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	public String getFriendlyName() {
-		return getName(unsafeMakeNormalStack(0));
+		return getName(unsafeMakeNormalStack(1));
 	}
 
 	public String getFriendlyNameCC() {

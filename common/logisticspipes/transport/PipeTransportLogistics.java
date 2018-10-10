@@ -297,7 +297,7 @@ public class PipeTransportLogistics {
 			}
 		}
 		if (dirs.isEmpty()) {
-			return null;
+			return new RoutingResult(null, false);
 		}
 		int num = new Random().nextInt(dirs.size());
 		return new RoutingResult(dirs.get(num), true);

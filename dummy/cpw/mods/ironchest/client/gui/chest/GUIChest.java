@@ -1,4 +1,4 @@
-package cpw.mods.ironchest.client;
+package cpw.mods.ironchest.client.gui.chest;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;

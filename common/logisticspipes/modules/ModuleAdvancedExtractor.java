@@ -88,7 +88,12 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
+			int sneak = nbttagcompound.getInteger("sneakydirection");
+			if(sneak == 6) {
+				_sneakyDirection = null;
+			} else {
+				_sneakyDirection = EnumFacing.values()[sneak];
+			}
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
@@ -114,7 +119,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("itemsIncluded", areItemsIncluded());
-		nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
+		nbttagcompound.setInteger("sneakydirection", _sneakyDirection == null ? 6 : _sneakyDirection.ordinal());
 	}
 
 	@Override

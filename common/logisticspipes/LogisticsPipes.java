@@ -72,6 +72,7 @@ import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
+import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
@@ -507,7 +508,7 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor();
 		LogisticsPipes.LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		LogisticsPipes.LogisticsHUDArmor.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticshudglasses"));
-		event.getRegistry().register(LogisticsPipes.LogisticsHUDArmor);
+		registerItem(LogisticsPipes.LogisticsHUDArmor);
 
 		LogisticsPipes.LogisticsParts = registerItem(new ItemParts());
 
@@ -524,7 +525,7 @@ public class LogisticsPipes {
 		LogisticsPipes.LogisticsFluidContainer = new LogisticsFluidContainer();
 		LogisticsPipes.LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
 		LogisticsPipes.LogisticsFluidContainer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticsfluidcontainer"));
-		event.getRegistry().register(LogisticsPipes.LogisticsFluidContainer);
+		registerItem(LogisticsPipes.LogisticsFluidContainer);
 
 		LogisticsPipes.LogisticsBrokenItem = new LogisticsBrokenItem();
 		LogisticsPipes.LogisticsBrokenItem.setUnlocalizedName("brokenItem");
@@ -579,7 +580,7 @@ public class LogisticsPipes {
 		event.getRegistry().register(LogisticsPipes.LogisticsSubMultiBlock);
 	}
 
-	public static <T extends LogisticsItem> T registerItem(T item) {
+	public static <T extends Item & ILogisticsItem> T registerItem(T item) {
 		MainProxy.proxy.registerModels(item);
 		ForgeRegistries.ITEMS.register(item);
 		return item;

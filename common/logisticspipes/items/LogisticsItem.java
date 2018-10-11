@@ -22,9 +22,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.utils.string.StringUtils;
 
-public class LogisticsItem extends Item {
+public class LogisticsItem extends Item implements ILogisticsItem {
 
 	public LogisticsItem() {
 		//itemIcon = icon;

@@ -33,12 +33,6 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 		return false;
 	}
 
-/*	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconReg) {
-		itemIcon = iconReg.registerIcon("logisticspipes:liquids/empty");
-	}*/
-
 	@Override
 	public int getItemStackLimit() {
 		return 1;

@@ -1,5 +1,6 @@
 package logisticspipes.items;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,15 +16,17 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ISpecialArmor;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IHUDArmor;
+import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.StringUtils;
 
-public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor {
+public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor, ILogisticsItem {
 
 	public ItemHUDArmor() {
 		super(ArmorMaterial.LEATHER, 0, EntityEquipmentSlot.HEAD);
@@ -78,12 +81,6 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 		return new CreativeTabs[] { getCreativeTab(), LogisticsPipes.CREATIVE_TAB_LP };
 	}
 
-	/*@Override
-	public void registerIcons(IIconRegister par1IIconRegister) {
-		itemIcon = par1IIconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
-	}
-	*/
-
 	@Override
 	public boolean isEnabled(ItemStack item) {
 		return true;
@@ -97,5 +94,10 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
 		return StringUtils.translate(getUnlocalizedName(itemstack));
+	}
+
+	@Override
+	public void registerModels() {
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:logisticshudglasses", "inventory"));
 	}
 }

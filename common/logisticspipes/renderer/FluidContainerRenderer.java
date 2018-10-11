@@ -1,197 +1,142 @@
-/*
 package logisticspipes.renderer;
 
-import logisticspipes.items.LogisticsFluidContainer;
-import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.MinecraftColor;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import javax.annotation.Nonnull;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
-import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.fluids.FluidStack;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.client.model.BakedItemModel;
+import net.minecraftforge.client.model.ICustomModelLoader;
+import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ItemLayerModel;
+import net.minecraftforge.client.model.ItemTextureQuadConverter;
+import net.minecraftforge.client.model.PerspectiveMapWrapper;
+import net.minecraftforge.client.model.SimpleModelState;
+import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+
+import logisticspipes.utils.FluidIdentifier;
 
 @SideOnly(Side.CLIENT)
-public class FluidContainerRenderer implements IItemRenderer {
+public class FluidContainerRenderer implements IModel {
 
-	private final EntityItem dummyEntityItem = new EntityItem(null);
-	private boolean useThis = true;
-	private RenderItem renderItem;
-	public static boolean skipNext;
+	public static class FluidContainerRendererModelLoader implements ICustomModelLoader {
+
+		@Override
+		public boolean accepts(@Nonnull ResourceLocation modelLocation) {
+			return modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().equals("models/item/logisticsfluidcontainer");
+		}
+
+		@Override
+		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
+			return new FluidContainerRenderer();
+		}
+
+		@Override
+		public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
+
+		}
+	}
+
+	private static final ResourceLocation STENCIL = new ResourceLocation("logisticspipes:items/liquids/stencil");
+	private static final ResourceLocation EMPTY = new ResourceLocation("logisticspipes:items/liquids/empty");
 
 	@Override
-	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-		if (useThis && item != null) {
-			if (item.getItem() instanceof LogisticsFluidContainer) {
-				switch (type) {
-					case ENTITY:
-						return true;
-					case INVENTORY:
-						return true;
-					default:
-						return false;
-				}
-			}
-			if (item.getItem() instanceof LogisticsItemCard) {
-				switch (type) {
-					case INVENTORY:
-						return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-					default:
-						return false;
-				}
-			}
-		}
-		return false;
+	public Collection<ResourceLocation> getTextures() {
+		return ImmutableList.of(EMPTY, STENCIL);
 	}
 
 	@Override
-	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
-		return false;
+	public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+		ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap = PerspectiveMapWrapper.getTransforms(state);
+
+		ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
+
+		IBakedModel model = (new ItemLayerModel(ImmutableList.of(EMPTY))).bake(state, format, bakedTextureGetter);
+		builder.addAll(model.getQuads(null, null, 0));
+		TextureAtlasSprite particleSprite = model.getParticleTexture();
+
+		return new BakedItemModel(builder.build(), particleSprite, Maps.immutableEnumMap(transformMap), new FluidContainerItemOverrideList(state, format, transformMap, bakedTextureGetter));
 	}
 
-	@Override
-	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		if (FluidContainerRenderer.skipNext) {
-			FluidContainerRenderer.skipNext = false;
-			return;
+	private static class FluidContainerItemOverrideList extends ItemOverrideList {
+
+		private static final float NORTH_Z = 7.502f / 16f;
+		private static final float SOUTH_Z = 8.498f / 16f;
+
+		private Map<FluidIdentifier, IBakedModel> cache = new HashMap<>();
+
+		private IModelState state;
+		private VertexFormat format;
+		private ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap;
+		private Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
+
+		public FluidContainerItemOverrideList(IModelState state, VertexFormat format,
+				ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap,
+				Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+			super(ImmutableList.of());
+			this.state = state;
+			this.format = format;
+			this.transformMap = transformMap;
+			this.bakedTextureGetter = bakedTextureGetter;
 		}
-		GL11.glPushMatrix();
-		Minecraft mc = FMLClientHandler.instance().getClient();
-		if (item.getItem() instanceof LogisticsFluidContainer) {
-			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(item));
-			if ((type != ItemRenderType.INVENTORY && type != ItemRenderType.ENTITY) || liquid == null) {
-				doRenderItem(item, mc, type, data);
-				GL11.glPopMatrix();
-				return;
-			}
-			doRenderFluid(liquid, mc, type, data);
-			doRenderItem(item, mc, type, data);
-		} else if (item.getItem() instanceof LogisticsItemCard) {
-			doRenderItem(item, mc, type, data);
-			NBTTagCompound nbt = item.getTagCompound();
-			if (nbt == null || !nbt.hasKey("colors")) {
-				GL11.glPopMatrix();
-				return;
-			}
-			NBTTagCompound colors = nbt.getCompoundTag("colors");
-			if (colors == null) {
-				GL11.glPopMatrix();
-				return;
-			}
-			if (type == ItemRenderType.ENTITY) {
-				GL11.glScaled(0.07, 0.07, 1);
-				GL11.glTranslated(-3, 3.5, -0.025);
-			}
-			for (int i = 0; i < 6; i++) {
-				int colorCode = colors.getInteger("color:" + i);
-				MinecraftColor color = MinecraftColor.values()[colorCode];
-				int x = i / 3;
-				int y = i % 3;
-				if (type == ItemRenderType.INVENTORY) {
-					Gui.drawRect(x * 5 + 4, y * 3 + 3, x * 5 + 7, y * 3 + 5, color.getColorCode());
+
+		@Override
+		@Nonnull
+		public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, World world, EntityLivingBase entity) {
+			FluidIdentifier fluidIdent = FluidIdentifier.get(stack);
+			if (fluidIdent != null) {
+				if (cache.containsKey(fluidIdent)) {
+					return cache.get(fluidIdent);
 				}
-				if (type == ItemRenderType.ENTITY) {
-					Gui.drawRect(-x * 5 + 4, -y * 3 + 3, -x * 5 + 7, -y * 3 + 5, color.getColorCode());
-					GL11.glRotatef(180, 1, 0, 0);
-					Gui.drawRect(-x * 5 + 4, -y * 3 + 3, -x * 5 + 7, -y * 3 + 5, color.getColorCode());
-					GL11.glRotatef(180, 1, 0, 0);
-				}
+
+				Fluid fluid = fluidIdent.getFluid();
+
+				ResourceLocation fluidSprite = fluid.getStill(fluidIdent.makeFluidStack(1000));
+
+				TRSRTransformation transform = new SimpleModelState(transformMap).apply(Optional.empty())
+						.orElse(TRSRTransformation.identity());
+				ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
+
+				builder.addAll(
+						ItemTextureQuadConverter
+								.convertTexture(format, transform, this.bakedTextureGetter.apply(STENCIL), this.bakedTextureGetter.apply(fluidSprite),
+										NORTH_Z, EnumFacing.NORTH, fluid.getColor()));
+				builder.addAll(
+						ItemTextureQuadConverter
+								.convertTexture(format, transform, this.bakedTextureGetter.apply(STENCIL), this.bakedTextureGetter.apply(fluidSprite),
+										SOUTH_Z, EnumFacing.SOUTH, fluid.getColor()));
+
+				builder.addAll(originalModel.getQuads(null, null, 0));
+
+				BakedItemModel override = new BakedItemModel(builder.build(), bakedTextureGetter.apply(fluidSprite), Maps.immutableEnumMap(transformMap),
+						ItemOverrideList.NONE);
+				cache.put(fluidIdent, override);
+				return override;
 			}
+			return originalModel;
 		}
-		GL11.glPopMatrix();
-	}
-
-	public void doRenderFluid(FluidStack liquid, Minecraft mc, ItemRenderType type, Object[] data) {
-		GL11.glPushMatrix();
-		if (type == ItemRenderType.ENTITY) {
-			GL11.glRotatef(((((EntityItem) data[1]).age) / 20.0F + ((EntityItem) data[1]).hoverStart) * (180F / (float) Math.PI), 0.0F, 1.0F, 0.0F);
-			GL11.glScaled(0.063, 0.065, 1);
-			GL11.glTranslated(-8, -4, -0.02);
-		}
-		GL11.glDisable(GL11.GL_LIGHTING);
-		ResourceLocation resourcelocation = mc.renderEngine.getResourceLocation(liquid.getFluid().getSpriteNumber());
-		mc.renderEngine.bindTexture(resourcelocation);
-
-		int i1 = liquid.getFluid().getColor();
-		float f = (i1 >> 16 & 255) / 255.0F;
-		float f1 = (i1 >> 8 & 255) / 255.0F;
-		float f2 = (i1 & 255) / 255.0F;
-
-		GL11.glColor4f(f, f1, f2, 1.0F);
-
-		TextureAtlasSprite icon = liquid.getFluid().getIcon();
-		if (icon != null) {
-			renderIcon(5, 2, icon, 6, 12, 0);
-			if (type == ItemRenderType.ENTITY) {
-				GL11.glPopMatrix();
-				GL11.glPushMatrix();
-				GL11.glRotatef(((((EntityItem) data[1]).age) / 20.0F + ((EntityItem) data[1]).hoverStart) * (180F / (float) Math.PI) + 180, 0.0F, 1.0F, 0.0F);
-				GL11.glScaled(0.063, 0.065, 1);
-				GL11.glTranslated(-8, -4, -0.042);
-				renderIcon(5, 2, icon, 6, 12, 0);
-			}
-		}
-		GL11.glEnable(GL11.GL_LIGHTING);
-
-		GL11.glPopMatrix();
-	}
-
-	public void renderIcon(int x, int y, TextureAtlasSprite par3Icon, int width, int height, double zLevel) {
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV(x + 0, y + height, zLevel, par3Icon.getInterpolatedU(x), par3Icon.getInterpolatedV(y + height));
-		tessellator.addVertexWithUV(x + width, y + height, zLevel, par3Icon.getInterpolatedU(x + width), par3Icon.getInterpolatedV(y + height));
-		tessellator.addVertexWithUV(x + width, y + 0, zLevel, par3Icon.getInterpolatedU(x + width), par3Icon.getInterpolatedV(y));
-		tessellator.addVertexWithUV(x + 0, y + 0, zLevel, par3Icon.getInterpolatedU(x), par3Icon.getInterpolatedV(y));
-		tessellator.draw();
-	}
-
-	public void doRenderItem(ItemStack itemstack, Minecraft mc, ItemRenderType type, Object[] data) {
-		useThis = false;
-		if (renderItem == null) {
-			renderItem = new RenderItem() {
-
-				@Override
-				public boolean shouldBob() {
-					return false;
-				};
-
-				@Override
-				public boolean shouldSpreadItems() {
-					return false;
-				};
-			};
-			renderItem.setRenderManager(RenderManager.instance);
-		}
-		if (type == ItemRenderType.INVENTORY) {
-			renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.renderEngine, itemstack, 0, 0);
-		} else {
-			GL11.glPushMatrix();
-			dummyEntityItem.setEntityItemStack(itemstack);
-			dummyEntityItem.hoverStart = 0;
-			GL11.glScalef(2F, 2F, 2F);
-			GL11.glRotatef(((((EntityItem) data[1]).age) / 20.0F + ((EntityItem) data[1]).hoverStart) * (180F / (float) Math.PI), 0.0F, 1.0F, 0.0F);
-			renderItem.doRender(dummyEntityItem, 0, 0, 0, 0, 0);
-			GL11.glPopMatrix();
-		}
-		useThis = true;
 	}
 }
-*/

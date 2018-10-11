@@ -2,7 +2,6 @@ package logisticspipes;
 
 public class LPConstants {
 
-
 	private LPConstants() {}
 
 	public static final String LP_MOD_ID = "logisticspipes";
@@ -19,12 +18,29 @@ public class LPConstants {
 	public static final String VERSION = "%VERSION%:%DEBUG%";
 	public static final boolean DEV_BUILD = LPConstants.VERSION.contains(".dev.") || LPConstants.DEBUG;
 
-	public static final String computerCraftModID = "ComputerCraft@1.7";
-	public static final String openComputersModID = "OpenComputers";
+	public static final String computerCraftModID = "computercraft";
+	public static final String openComputersModID = "opencomputers";
+	public static final String ic2ModID = "ic2";
+	public static final String bcSiliconModID = "buildcraftsilicon";
+	public static final String bcTransportModID = "buildcrafttransport";
+	public static final String railcraftModID = "railcraft";
+	public static final String tubestuffModID = "tubestuff";
+	public static final String forestryModID = "forestry";
+	public static final String thermalExpansionModID = "thermalexpansion";
+	public static final String enderCoreModID = "endercore";
+	public static final String betterStorageModID = "betterstorage";
+	public static final String neiModID = "notenoughitems";
+	public static final String factorizationModID = "factorization";
+	public static final String enderioModID = "enderio";
+	public static final String thermalDynamicsModID = "thermaldynamics";
+	public static final String cclrenderModID = "cclrender";
+	public static final String ironChestModID = "ironchest";
+	public static final String cofhCoreModID = "cofhcore";
 
 	public static boolean COREMOD_LOADED = false;
 
 	public static void loadedCoremod() {
 		LPConstants.COREMOD_LOADED = true;
 	}
+
 }

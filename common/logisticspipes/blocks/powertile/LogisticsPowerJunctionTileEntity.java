@@ -42,7 +42,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@ModDependentInterface(modId = {"IC2"}, interfacePath = {"ic2.api.energy.tile.IEnergySink"})
+@ModDependentInterface(modId = {LPConstants.ic2ModID}, interfacePath = {"ic2.api.energy.tile.IEnergySink"})
 @CCType(name = "LogisticsPowerJunction")
 public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink {
 
@@ -355,7 +355,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public boolean acceptsEnergyFrom(IEnergyEmitter tile, EnumFacing dir) {
 		return true;
 	}
@@ -369,7 +369,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public double getDemandedEnergy() {
 		if (!addedToEnergyNet) {
 			return 0;
@@ -380,7 +380,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
 		internalBuffer += amount * LogisticsPowerJunctionTileEntity.IC2Multiplier;
 		transferFromIC2Buffer();
@@ -388,7 +388,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public int getSinkTier() {
 		return Integer.MAX_VALUE;
 	}

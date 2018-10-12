@@ -1,7 +1,7 @@
 package logisticspipes.items;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,7 +53,6 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -72,29 +71,26 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import lombok.Getter;
+import net.minecraftforge.registries.IForgeRegistry;
 import org.lwjgl.input.Keyboard;
 
 public class ItemModule extends LogisticsItem {
 
 	private static class Module {
 
+		private Supplier<? extends LogisticsModule> moduleConstructor;
 		private Class<? extends LogisticsModule> moduleClass;
 
-		private Module(Class<? extends LogisticsModule> moduleClass) {
-			this.moduleClass = moduleClass;
+		private Module(Supplier<? extends LogisticsModule> moduleConstructor) {
+			this.moduleConstructor = moduleConstructor;
+			this.moduleClass = moduleConstructor.get().getClass();
 		}
 
 		private LogisticsModule getILogisticsModule() {
-			if (moduleClass == null) {
+			if (moduleConstructor == null) {
 				return null;
 			}
-			try {
-				return moduleClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
-			} catch (IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
-				e.printStackTrace();
-			}
-			return null;
+			return moduleConstructor.get();
 		}
 
 		private Class<? extends LogisticsModule> getILogisticsModuleClass() {
@@ -103,14 +99,10 @@ public class ItemModule extends LogisticsItem {
 
 		@SideOnly(Side.CLIENT)
 		private void registerModuleModel(Item item) {
-			try {
-				LogisticsModule instance = moduleClass.newInstance();
-				String path = instance.getModuleModelPath();
-				if (path != null) {
-					ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("logisticspipes:" + path, "inventory"));
-				}
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+			LogisticsModule instance = moduleConstructor.get();
+			String path = instance.getModuleModelPath();
+			if (path != null) {
+				ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("logisticspipes:" + path, "inventory"));
 			}
 		}
 	}
@@ -121,47 +113,47 @@ public class ItemModule extends LogisticsItem {
 		super();
 		this.moduleType = moduleType;
 		setHasSubtypes(false);
-		setUnlocalizedName("itemModule." + moduleType.getILogisticsModuleClass().getSimpleName());
-		setRegistryName("itemModule." + moduleType.getILogisticsModuleClass().getSimpleName());
 	}
 
-	public static void loadModules() {
-		registerModule(ModuleItemSink.class);
-		registerModule(ModulePassiveSupplier.class);
-		registerModule(ModuleExtractor.class);
-		registerModule(ModulePolymorphicItemSink.class);
-		registerModule(ModuleQuickSort.class);
-		registerModule(ModuleTerminus.class);
-		registerModule(ModuleAdvancedExtractor.class);
-		registerModule(ModuleExtractorMk2.class);
-		registerModule(ModuleAdvancedExtractorMK2.class);
-		registerModule(ModuleExtractorMk3.class);
-		registerModule(ModuleAdvancedExtractorMK3.class);
-		registerModule(ModuleProvider.class);
-		registerModule(ModuleProviderMk2.class);
-		registerModule(ModuleElectricManager.class);
-		registerModule(ModuleElectricBuffer.class);
-		registerModule(ModuleApiaristAnalyser.class);
-		registerModule(ModuleApiaristSink.class);
-		registerModule(ModuleApiaristRefiller.class);
-		registerModule(ModuleApiaristTerminus.class);
-		registerModule(ModuleModBasedItemSink.class);
-		registerModule(ModuleOreDictItemSink.class);
-		//		registerModule(ModuleThaumicAspectSink.class);
-		registerModule(ModuleEnchantmentSink.class);
-		registerModule(ModuleEnchantmentSinkMK2.class);
-		registerModule(ModuleCCBasedQuickSort.class);
-		registerModule(ModuleCCBasedItemSink.class);
-		registerModule(ModuleCrafter.class);
-		registerModule(ModuleCrafterMK2.class);
-		registerModule(ModuleCrafterMK3.class);
-		registerModule(ModuleActiveSupplier.class);
-		registerModule(ModuleCreativeTabBasedItemSink.class);
+	public static void loadModules(IForgeRegistry<Item> registry) {
+		registerModule(registry, "item_sink", ModuleItemSink::new);
+		registerModule(registry, "passive_supplier", ModulePassiveSupplier::new);
+		registerModule(registry, "extractor", ModuleExtractor::new);
+		registerModule(registry, "item_sink_polymorphic", ModulePolymorphicItemSink::new);
+		registerModule(registry, "quick_sort", ModuleQuickSort::new);
+		registerModule(registry, "terminus", ModuleTerminus::new);
+		registerModule(registry, "extractor_advanced", ModuleAdvancedExtractor::new);
+		registerModule(registry, "extractor_mk2", ModuleExtractorMk2::new);
+		registerModule(registry, "extractor_advanced_mk2", ModuleAdvancedExtractorMK2::new);
+		registerModule(registry, "extractor_mk3", ModuleExtractorMk3::new);
+		registerModule(registry, "extractor_advanced_mk3", ModuleAdvancedExtractorMK3::new);
+		registerModule(registry, "provider", ModuleProvider::new);
+		registerModule(registry, "provider_mk2", ModuleProviderMk2::new);
+		registerModule(registry, "electric_manager", ModuleElectricManager::new);
+		registerModule(registry, "electric_buffer", ModuleElectricBuffer::new);
+		registerModule(registry, "apiarist_analyser", ModuleApiaristAnalyser::new);
+		registerModule(registry, "apiarist_sink", ModuleApiaristSink::new);
+		registerModule(registry, "apiarist_refiller", ModuleApiaristRefiller::new);
+		registerModule(registry, "apiarist_terminus", ModuleApiaristTerminus::new);
+		registerModule(registry, "item_sink_mod_based", ModuleModBasedItemSink::new);
+		registerModule(registry, "item_sink_oredict", ModuleOreDictItemSink::new);
+		// registerModule(registry, "thaumic_aspect_sink", ModuleThaumicAspectSink::new);
+		registerModule(registry, "enchantment_sink", ModuleEnchantmentSink::new);
+		registerModule(registry, "enchantment_sink_mk2", ModuleEnchantmentSinkMK2::new);
+		registerModule(registry, "quick_sort_cc", ModuleCCBasedQuickSort::new);
+		registerModule(registry, "item_sink_cc", ModuleCCBasedItemSink::new);
+		registerModule(registry, "crafter", ModuleCrafter::new);
+		registerModule(registry, "crafter_mk2", ModuleCrafterMK2::new);
+		registerModule(registry, "crafter_mk3", ModuleCrafterMK3::new);
+		registerModule(registry, "active_supplier", ModuleActiveSupplier::new);
+		registerModule(registry, "item_sink_creativetab", ModuleCreativeTabBasedItemSink::new);
 	}
 
-	public static void registerModule(@Nonnull Class<? extends LogisticsModule> moduleClass) {
-		Module module = new Module(moduleClass);
-		LogisticsPipes.LogisticsModules.put(moduleClass, LogisticsPipes.registerItem(new ItemModule(module)));
+	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
+		Module module = new Module(moduleConstructor);
+		ItemModule mod = LogisticsPipes.setName(new ItemModule(module), String.format("module_%s", name));
+		LogisticsPipes.LogisticsModules.put(moduleConstructor, mod); // TODO account for registry overrides → move to init or something
+		registry.register(mod);
 	}
 
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
@@ -230,17 +222,6 @@ public class ItemModule extends LogisticsItem {
 		}
 		newmodule.registerHandler(world, service);
 		return newmodule;
-	}
-
-	@Override
-	public String getUnlocalizedName() {
-		return "item." + moduleType.getILogisticsModuleClass().getSimpleName();
-	}
-
-	@Override
-	public String getUnlocalizedName(ItemStack stack)
-	{
-		return getUnlocalizedName();
 	}
 
 	@Override

@@ -14,8 +14,6 @@ public class ItemParts extends LogisticsItem {
 	public ItemParts() {
 		super();
 		setHasSubtypes(true);
-		setUnlocalizedName("logisticsParts");
-		setRegistryName("logisticsParts");
 	}
 
 	@Override

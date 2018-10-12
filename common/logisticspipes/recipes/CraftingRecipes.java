@@ -1,10 +1,10 @@
 package logisticspipes.recipes;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -109,26 +109,27 @@ public class CraftingRecipes implements IRecipeProvider {
 	}
 
 	private void registerResetRecipe(String[] dyes) {
-	for(Map.Entry<Class<? extends LogisticsModule>,ItemModule> entry: LogisticsPipes.LogisticsModules.entrySet()) {
-		NBTTagCompound nbt = new NBTTagCompound();
-		LogisticsModule module = entry.getValue().getModuleForItem(new ItemStack(entry.getValue()), null, null, null);
-		boolean force = false;
-		try {
-			module.writeToNBT(nbt);
-		} catch(Exception e) {
-			force = true;
+		for (Map.Entry<Supplier<? extends LogisticsModule>, ItemModule> entry : LogisticsPipes.LogisticsModules.entrySet()) {
+			NBTTagCompound nbt = new NBTTagCompound();
+			LogisticsModule module = entry.getValue().getModuleForItem(new ItemStack(entry.getValue()), null, null, null);
+			boolean force = false;
+			try {
+				module.writeToNBT(nbt);
+			} catch (Exception e) {
+				force = true;
+			}
+			if (!nbt.equals(new NBTTagCompound()) || force) {
+				RecipeManager.craftingManager.addShapelessResetRecipe(entry.getValue(), 0);
+			}
 		}
-		if(!nbt.equals(new NBTTagCompound()) || force) {
-			RecipeManager.craftingManager.addShapelessResetRecipe(entry.getValue(), 0);
-		}
-	}
 
-		for(int i=1;i<17;i++) {
+		for (int i = 1; i < 17; i++) {
 			RecipeManager.craftingManager.addOrdererRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, i),
 					dyes[i - 1],
 					new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, -1)
 			);
 			RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, i);
 		}
-		RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, 0);}
+		RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, 0);
+	}
 }

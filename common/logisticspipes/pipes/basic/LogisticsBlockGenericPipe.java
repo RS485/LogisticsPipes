@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -61,6 +62,7 @@ import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.math.MatrixTranformations;
+import net.minecraftforge.registries.IForgeRegistry;
 import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
 import network.rs485.logisticspipes.utils.block.RenderListDelegateBlockState;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -71,7 +73,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	public static InternalRayTraceResult bypassPlayerTrace = null;
 	public static boolean ignoreSideRayTrace = false;
-	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<>();
+	public static Map<Item, Function<Item, ? extends CoreUnroutedPipe>> pipes = new HashMap<>();
 	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<>();
 	private static long lastRemovedDate = -1;
 	protected final Random rand = new Random();
@@ -156,13 +158,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	/* Registration ******************************************************** */
-	public static ItemLogisticsPipe registerPipe(Class<? extends CoreUnroutedPipe> clas) {
+	public static ItemLogisticsPipe registerPipe(IForgeRegistry<Item> registry, String name, Function<Item, ? extends CoreUnroutedPipe> constructor) {
 		ItemLogisticsPipe item = new ItemLogisticsPipe();
-		item.setUnlocalizedName(clas.getSimpleName());
-		item.setRegistryName(item.getUnlocalizedName());
+		LogisticsPipes.setName(item, String.format("pipe_%s", name));
 
-
-		LogisticsBlockGenericPipe.pipes.put(item, clas);
+		LogisticsBlockGenericPipe.pipes.put(item, constructor);
 
 		CoreUnroutedPipe dummyPipe = LogisticsBlockGenericPipe.createPipe(item);
 		if (dummyPipe != null) {
@@ -172,7 +172,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 
 		MainProxy.proxy.registerModels(item);
-		ForgeRegistries.ITEMS.register(item);
+		registry.register(item);
 		return item;
 	}
 
@@ -181,13 +181,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static CoreUnroutedPipe createPipe(Item key) {
-		Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
+		Function<Item, ? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
 		if (pipe != null) {
-			try {
-				return pipe.getConstructor(Item.class).newInstance(key);
-			} catch (ReflectiveOperationException e) {
-				LogisticsPipes.log.error("Could not construct class " + pipe.getSimpleName() + " for key " + key, e);
-			}
+			return pipe.apply(key);
 		} else {
 			LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). This should not have happend.");
 		}

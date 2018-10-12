@@ -16,8 +16,6 @@ public class ItemBlankModule extends LogisticsItem {
 
 	public ItemBlankModule() {
 		super();
-		setUnlocalizedName("ModuleBlank");
-		setRegistryName("moduleblank");
 	}
 
 	@Override

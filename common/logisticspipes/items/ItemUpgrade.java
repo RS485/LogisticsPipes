@@ -1,9 +1,9 @@
 package logisticspipes.items;
 
-import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -16,6 +16,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import net.minecraftforge.registries.IForgeRegistry;
 import org.lwjgl.input.Keyboard;
 
 import logisticspipes.LogisticsPipes;
@@ -52,24 +53,21 @@ public class ItemUpgrade extends LogisticsItem {
 
 	private static class Upgrade {
 
+		private Supplier<? extends IPipeUpgrade> upgradeConstructor;
 		private Class<? extends IPipeUpgrade> upgradeClass;
 		private String texturePath;
 
-		private Upgrade(Class<? extends IPipeUpgrade> moduleClass, String texturePath) {
-			upgradeClass = moduleClass;
+		private Upgrade(Supplier<? extends IPipeUpgrade> moduleConstructor, String texturePath) {
+			upgradeConstructor = moduleConstructor;
+			upgradeClass = moduleConstructor.get().getClass();
 			this.texturePath = texturePath;
 		}
 
 		private IPipeUpgrade getIPipeUpgrade() {
-			if (upgradeClass == null) {
+			if (upgradeConstructor == null) {
 				return null;
 			}
-			try {
-				return upgradeClass.getConstructor(new Class[] {}).newInstance();
-			} catch (IllegalArgumentException | InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
-				e.printStackTrace();
-			}
-			return null;
+			return upgradeConstructor.get();
 		}
 
 		private Class<? extends IPipeUpgrade> getIPipeUpgradeClass() {
@@ -92,39 +90,39 @@ public class ItemUpgrade extends LogisticsItem {
 		super();
 		this.upgradeType = upgradeType;
 		setHasSubtypes(false);
-		setUnlocalizedName("itemModule." + upgradeType.getIPipeUpgradeClass().getSimpleName());
-		setRegistryName("itemModule." + upgradeType.getIPipeUpgradeClass().getSimpleName());
 	}
 
-	public static void loadUpgrades() {
-		registerUpgrade(CombinedSneakyUpgrade.class, "itemupgrade/sneakycombination");
-		registerUpgrade(SneakyUpgradeConfig.class, "itemupgrade/sneaky");
-		registerUpgrade(SpeedUpgrade.class, "itemupgrade/speed");
-		registerUpgrade(ConnectionUpgradeConfig.class, "itemupgrade/dis");
+	public static void loadUpgrades(IForgeRegistry<Item> registry) {
+		registerUpgrade(registry, "sneaky_combination", CombinedSneakyUpgrade::new, "itemupgrade/sneakycombination");
+		registerUpgrade(registry, "sneaky", SneakyUpgradeConfig::new, "itemupgrade/sneaky");
+		registerUpgrade(registry, "speed", SpeedUpgrade::new, "itemupgrade/speed");
+		registerUpgrade(registry, "connection", ConnectionUpgradeConfig::new, "itemupgrade/dis");
 
-		registerUpgrade(AdvancedSatelliteUpgrade.class, "itemupgrade/satellite");
-		registerUpgrade(FluidCraftingUpgrade.class, "itemupgrade/fluidcrafting");
-		registerUpgrade(CraftingByproductUpgrade.class, "itemupgrade/craftingbyproduct");
-		registerUpgrade(PatternUpgrade.class, "itemupgrade/placementrules");
-		registerUpgrade(FuzzyUpgrade.class, "itemupgrade/fuzzycrafting");
-		registerUpgrade(PowerTransportationUpgrade.class, "itemupgrade/powertransport");
-		registerUpgrade(BCPowerSupplierUpgrade.class, "itemupgrade/powertransportbc");
-		registerUpgrade(RFPowerSupplierUpgrade.class, "itemupgrade/powertransportte");
-		registerUpgrade(IC2LVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-lv");
-		registerUpgrade(IC2MVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-mv");
-		registerUpgrade(IC2HVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-hv");
-		registerUpgrade(IC2EVPowerSupplierUpgrade.class, "itemupgrade/powertransportic2-ev");
-		registerUpgrade(CCRemoteControlUpgrade.class, "itemupgrade/ccremotecontrol");
-		registerUpgrade(CraftingMonitoringUpgrade.class, "itemupgrade/craftingmonitoring");
-		registerUpgrade(OpaqueUpgrade.class, "itemupgrade/opaqueupgrade");
-		registerUpgrade(CraftingCleanupUpgrade.class, "itemupgrade/craftingcleanup");
-		registerUpgrade(LogicControllerUpgrade.class, "itemupgrade/logiccontroller");
-		registerUpgrade(UpgradeModuleUpgrade.class, "itemupgrade/upgrademodule");
+		registerUpgrade(registry, "satellite_advanced", AdvancedSatelliteUpgrade::new, "itemupgrade/satellite");
+		registerUpgrade(registry, "fluid_crafting", FluidCraftingUpgrade::new, "itemupgrade/fluidcrafting");
+		registerUpgrade(registry, "crafting_byproduct", CraftingByproductUpgrade::new, "itemupgrade/craftingbyproduct");
+		registerUpgrade(registry, "pattern", PatternUpgrade::new, "itemupgrade/placementrules");
+		registerUpgrade(registry, "fuzzy", FuzzyUpgrade::new, "itemupgrade/fuzzycrafting");
+		registerUpgrade(registry, "power_transportation", PowerTransportationUpgrade::new, "itemupgrade/powertransport");
+		registerUpgrade(registry, "power_supplier_bc", BCPowerSupplierUpgrade::new, "itemupgrade/powertransportbc");
+		registerUpgrade(registry, "power_supplier_rf", RFPowerSupplierUpgrade::new, "itemupgrade/powertransportte");
+		registerUpgrade(registry, "power_supplier_ic2_lv", IC2LVPowerSupplierUpgrade::new, "itemupgrade/powertransportic2-lv");
+		registerUpgrade(registry, "power_supplier_ic2_mv", IC2MVPowerSupplierUpgrade::new, "itemupgrade/powertransportic2-mv");
+		registerUpgrade(registry, "power_supplier_ic2_hv", IC2HVPowerSupplierUpgrade::new, "itemupgrade/powertransportic2-hv");
+		registerUpgrade(registry, "power_supplier_ic2_ev", IC2EVPowerSupplierUpgrade::new, "itemupgrade/powertransportic2-ev");
+		registerUpgrade(registry, "cc_remote_control", CCRemoteControlUpgrade::new, "itemupgrade/ccremotecontrol");
+		registerUpgrade(registry, "crafting_monitoring", CraftingMonitoringUpgrade::new, "itemupgrade/craftingmonitoring");
+		registerUpgrade(registry, "opaque", OpaqueUpgrade::new, "itemupgrade/opaqueupgrade");
+		registerUpgrade(registry, "crafting_cleanup", CraftingCleanupUpgrade::new, "itemupgrade/craftingcleanup");
+		registerUpgrade(registry, "logic_controller", LogicControllerUpgrade::new, "itemupgrade/logiccontroller");
+		registerUpgrade(registry, "module_upgrade", UpgradeModuleUpgrade::new, "itemupgrade/upgrademodule");
 	}
 
-	public static void registerUpgrade(Class<? extends IPipeUpgrade> upgradeClass, String texturePath) {
-		Upgrade upgrade = new Upgrade(upgradeClass, texturePath);
-		LogisticsPipes.LogisticsUpgrades.put(upgradeClass, LogisticsPipes.registerItem(new ItemUpgrade(upgrade)));
+	public static void registerUpgrade(IForgeRegistry<Item> registry, String name, Supplier<? extends IPipeUpgrade> upgradeConstructor, String texturePath) {
+		Upgrade upgrade = new Upgrade(upgradeConstructor, texturePath);
+		ItemUpgrade item = LogisticsPipes.setName(new ItemUpgrade(upgrade), String.format("upgrade_%s", name));
+		LogisticsPipes.LogisticsUpgrades.put(upgradeConstructor, item); // TODO account for registry overrides → move to init or something
+		registry.register(item);
 	}
 
 	public IPipeUpgrade getUpgradeForItem(ItemStack itemStack, IPipeUpgrade currentUpgrade) {
@@ -149,20 +147,6 @@ public class ItemUpgrade extends LogisticsItem {
 		return newupgrade;
 	}
 
-	@Override
-	public String getUnlocalizedName() {
-		return "item." + upgradeType.getIPipeUpgradeClass().getSimpleName();
-	}
-
-	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
-		return "item." + upgradeType.getIPipeUpgradeClass().getSimpleName();
-	}
-
-	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack));
-	}
 
 	@Override
 	@SideOnly(Side.CLIENT)

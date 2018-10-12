@@ -17,9 +17,6 @@ import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class ModuleElectricBuffer extends LogisticsModule {
 
 	private int currentTickCount = 0;
@@ -128,9 +125,4 @@ public class ModuleElectricBuffer extends LogisticsModule {
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleElectricBuffer";
-	}
 }

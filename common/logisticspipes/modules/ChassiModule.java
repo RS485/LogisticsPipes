@@ -19,12 +19,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ChassiModule extends LogisticsGuiModule {
 
@@ -173,12 +168,6 @@ public class ChassiModule extends LogisticsGuiModule {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return null;
 	}
 
 	@Override

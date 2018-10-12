@@ -3,7 +3,6 @@ package logisticspipes.items;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,10 +16,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
@@ -34,11 +30,14 @@ import logisticspipes.utils.string.StringUtils;
 
 public class RemoteOrderer extends LogisticsItem {
 
-	@SideOnly(Side.CLIENT)
-	public void registerModels() {
-		for (int i = 0; i < 17; i++) {
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i, "inventory"));
-		}
+	@Override
+	public String getModelSubdir() {
+		return "remote_orderer";
+	}
+
+	@Override
+	public int getModelCount() {
+		return 17;
 	}
 
 	@Override

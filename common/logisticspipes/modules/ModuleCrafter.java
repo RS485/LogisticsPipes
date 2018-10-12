@@ -24,8 +24,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import lombok.Getter;
@@ -312,12 +310,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	@Override
 	public boolean recievePassive() {
 		return false;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleCrafter";
 	}
 
 	@Override

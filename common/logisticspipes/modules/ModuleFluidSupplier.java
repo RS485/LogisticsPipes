@@ -17,13 +17,8 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientInformationProvider {
 
@@ -113,12 +108,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	@Override
 	public boolean recievePassive() {
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return null;
 	}
 
 }

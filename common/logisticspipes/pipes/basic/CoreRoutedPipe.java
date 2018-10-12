@@ -25,6 +25,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import logisticspipes.LPItems;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
@@ -887,7 +888,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.remoteOrderer) {
 			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openRequest) {
 					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());

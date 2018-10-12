@@ -2,9 +2,9 @@ package logisticspipes.network.guis.pipe;
 
 import java.util.UUID;
 
+import logisticspipes.LPItems;
 import net.minecraft.entity.player.EntityPlayer;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiPipeController;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.items.ItemUpgrade;
@@ -97,7 +97,7 @@ public class PipeController extends CoordinatesGuiProvider {
 			if (itemStack == null) {
 				return false;
 			}
-			if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+			if (itemStack.getItem() != LPItems.itemCard) {
 				return false;
 			}
 			if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
@@ -105,7 +105,7 @@ public class PipeController extends CoordinatesGuiProvider {
 			}
 			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
 		}, 1);
-		dummy.addRestrictedSlot(0, tile.logicController.diskInv, 14, 36, LogisticsPipes.LogisticsItemDisk);
+		dummy.addRestrictedSlot(0, tile.logicController.diskInv, 14, 36, LPItems.disk);
 		return dummy;
 	}
 

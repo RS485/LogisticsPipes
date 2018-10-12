@@ -25,18 +25,12 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
@@ -112,12 +106,6 @@ public class ModuleCrafterMK3 extends ModuleCrafter implements IBufferItems, ISi
 	@Override
 	protected int stacksToExtract() {
 		return 8;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleCrafterMK3";
 	}
 
 	@Override

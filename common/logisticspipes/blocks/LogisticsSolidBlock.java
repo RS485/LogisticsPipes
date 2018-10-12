@@ -111,7 +111,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public LogisticsSolidBlock() {
 		super(Material.IRON);
 		setHardness(6.0F);
-		setUnlocalizedName("logisticssolidblock");
 		IBlockState state = this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION)
 				.withProperty(rotationProperty, 0)
 				.withProperty(textureIndexProperty, 0);

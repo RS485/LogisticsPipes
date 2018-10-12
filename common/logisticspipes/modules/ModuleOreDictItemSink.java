@@ -32,19 +32,13 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.oredict.OreDictionary;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
@@ -241,9 +235,4 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleOreDictItemSink";
-	}
 }

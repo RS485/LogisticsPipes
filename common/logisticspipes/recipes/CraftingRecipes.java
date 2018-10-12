@@ -1,14 +1,14 @@
 package logisticspipes.recipes;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
+import logisticspipes.LPBlocks;
+import logisticspipes.LPItems;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -42,7 +42,7 @@ public class CraftingRecipes implements IRecipeProvider {
 
 
 
-		ItemStack logisticsBlockFrame = new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME.getMeta());
+		ItemStack logisticsBlockFrame = new ItemStack(LPBlocks.solidBlock, 1, LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME.getMeta());
 
 		RecipeManager.craftingManager.addRecipe(logisticsBlockFrame,
 				new RecipeManager.RecipeLayout(
@@ -53,7 +53,7 @@ public class CraftingRecipes implements IRecipeProvider {
 				new RecipeManager.RecipeIndex('r', "dustRedstone"),
 				new RecipeManager.RecipeIndex('w', "plankWood"));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.BlockType.SOLDERING_STATION.getMeta()),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPBlocks.solidBlock, 1, LogisticsSolidBlock.BlockType.SOLDERING_STATION.getMeta()),
 				new RecipeManager.RecipeLayout(
 						" c ",
 						"ifi",
@@ -64,7 +64,7 @@ public class CraftingRecipes implements IRecipeProvider {
 				new RecipeManager.RecipeIndex('f', logisticsBlockFrame),
 				new RecipeManager.RecipeIndex('b', Items.BLAZE_POWDER));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE.getMeta()),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPBlocks.solidBlock, 1, LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE.getMeta()),
 				new RecipeManager.RecipeLayout(
 						" c ",
 						"wfw",
@@ -75,7 +75,7 @@ public class CraftingRecipes implements IRecipeProvider {
 				new RecipeManager.RecipeIndex('f', logisticsBlockFrame),
 				new RecipeManager.RecipeIndex('p', Blocks.PISTON));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.BasicTransportPipe, 8),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.pipeTransportBasic, 8),
 				new RecipeManager.RecipeLayout(
 						"iri",
 						"g g",
@@ -85,7 +85,7 @@ public class CraftingRecipes implements IRecipeProvider {
 				new RecipeManager.RecipeIndex('r', "dustRedstone"),
 				new RecipeManager.RecipeIndex('g', "blockGlass"));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBlankModule, 1),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.blankModule, 1),
 				new RecipeManager.RecipeLayout(
 						"r",
 						"p",
@@ -95,7 +95,7 @@ public class CraftingRecipes implements IRecipeProvider {
 				new RecipeManager.RecipeIndex('p', "paper"),
 				new RecipeManager.RecipeIndex('g', "nuggetGold"));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsItemDisk, 1),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.disk, 1),
 				new RecipeManager.RecipeLayout(
 						"iri",
 						"rgr",
@@ -109,7 +109,7 @@ public class CraftingRecipes implements IRecipeProvider {
 	}
 
 	private void registerResetRecipe(String[] dyes) {
-		for (Map.Entry<Supplier<? extends LogisticsModule>, ItemModule> entry : LogisticsPipes.LogisticsModules.entrySet()) {
+		for (Map.Entry<Class<? extends LogisticsModule>, ItemModule> entry : LPItems.modules.entrySet()) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			LogisticsModule module = entry.getValue().getModuleForItem(new ItemStack(entry.getValue()), null, null, null);
 			boolean force = false;
@@ -124,12 +124,12 @@ public class CraftingRecipes implements IRecipeProvider {
 		}
 
 		for (int i = 1; i < 17; i++) {
-			RecipeManager.craftingManager.addOrdererRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, i),
+			RecipeManager.craftingManager.addOrdererRecipe(new ItemStack(LPItems.remoteOrderer, 1, i),
 					dyes[i - 1],
-					new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, -1)
+					new ItemStack(LPItems.remoteOrderer, 1, -1)
 			);
-			RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, i);
+			RecipeManager.craftingManager.addShapelessResetRecipe(LPItems.remoteOrderer, i);
 		}
-		RecipeManager.craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, 0);
+		RecipeManager.craftingManager.addShapelessResetRecipe(LPItems.remoteOrderer, 0);
 	}
 }

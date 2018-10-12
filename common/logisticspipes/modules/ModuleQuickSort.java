@@ -25,9 +25,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class ModuleQuickSort extends LogisticsGuiModule {
 
 	protected final int stalledDelay = 24;
@@ -288,12 +285,6 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	@Override
 	public boolean recievePassive() {
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleQuickSort";
 	}
 
 	public void addWatchingPlayer(EntityPlayer player) {

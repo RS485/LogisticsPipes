@@ -16,12 +16,6 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import lombok.Getter;
 
 @CCType(name = "LogisticsModule")
@@ -149,14 +143,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * is this module a valid destination for bounced items.
 	 */
 	public abstract boolean recievePassive();
-
-	/**
-	 * get The Model path for this Module Class
-	 *
-	 * @return
-	 */
-	@SideOnly(Side.CLIENT)
-	public abstract String getModuleModelPath();
 
 	/**
 	 * Returns whether the module should be displayed the effect when as an

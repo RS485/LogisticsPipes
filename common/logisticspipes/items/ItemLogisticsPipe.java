@@ -8,14 +8,12 @@
 
 package logisticspipes.items;
 
-import java.util.List;
-
+import logisticspipes.LPBlocks;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
@@ -27,7 +25,6 @@ import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.IIconProvider;
-import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.string.StringUtils;
 
@@ -41,7 +38,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -72,16 +68,9 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		return StringUtils.translate(getUnlocalizedName(itemstack));
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void registerModels() {
-		ModelResourceLocation resourceLocation = new ModelResourceLocation("logisticspipes:pipemodel." + getUnlocalizedName(), "inventory");
-		ModelLoader.setCustomModelResourceLocation(this, 0, resourceLocation);
-		LogisticsNewPipeModel.nameTextureIdMap.put(resourceLocation, dummyPipe);
-	}
-
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-		Block block = LogisticsPipes.LogisticsPipeBlock;
+		Block block = LPBlocks.pipe;
 
 		IBlockState iblockstate = worldIn.getBlockState(pos);
 		Block worldBlock = iblockstate.getBlock();

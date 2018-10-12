@@ -1,6 +1,5 @@
 package logisticspipes.renderer.newpipe;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,8 +12,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 
+import logisticspipes.LPBlocks;
+import logisticspipes.items.ItemLogisticsPipe;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -24,7 +24,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -33,19 +33,17 @@ import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
-import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
@@ -57,7 +55,6 @@ import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-import logisticspipes.textures.provider.LPPipeIconTransformerProvider;
 import network.rs485.logisticspipes.utils.block.RenderListDelegateBlockState;
 
 public class LogisticsNewPipeModel implements IModel {
@@ -81,11 +78,17 @@ public class LogisticsNewPipeModel implements IModel {
 		@Override
 		public boolean accepts(ResourceLocation modelLocation) {
 			if (modelLocation.getResourceDomain().equals("logisticspipes")) {
-				if(modelLocation instanceof ModelResourceLocation) {
-					if(((ModelResourceLocation)modelLocation).getVariant().equals("inventory")) {
-						return LogisticsNewPipeModel.nameTextureIdMap.containsKey(modelLocation);
+				if (modelLocation instanceof ModelResourceLocation) {
+					ResourceLocation rl = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
+					if (((ModelResourceLocation)modelLocation).getVariant().equals("inventory")) {
+						Item item = ForgeRegistries.ITEMS.getValue(rl);
+						if (item instanceof ItemLogisticsPipe) {
+							CoreUnroutedPipe pipe = ((ItemLogisticsPipe) item).getDummyPipe();
+							nameTextureIdMap.put((ModelResourceLocation) modelLocation, pipe);
+							return true;
+						}
 					}
-					if(modelLocation.getResourcePath().equals("tile.logisticsblockgenericpipe")) {
+					if (rl.equals(LPBlocks.pipe.getRegistryName())) {
 						return true;
 					}
 				}

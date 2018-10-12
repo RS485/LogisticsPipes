@@ -10,7 +10,7 @@ package logisticspipes.utils.item;
 
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPItems;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
@@ -31,14 +31,12 @@ import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -292,7 +290,7 @@ public class ItemStackRenderer {
 			if (block instanceof BlockPane) {
 				GL11.glScalef(0.5F, 0.5F, 0.5F);
 			}
-		} else if (item == LogisticsPipes.logisticsRequestTable) {
+		} else if (item == LPItems.requestTable) {
 			GL11.glScalef(0.5F, 0.5F, 0.5F);
 		}
 

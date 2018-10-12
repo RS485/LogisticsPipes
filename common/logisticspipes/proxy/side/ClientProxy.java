@@ -3,6 +3,7 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LPBlocks;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.modules.ModuleBaseGui;
@@ -260,7 +261,7 @@ public class ClientProxy implements IProxy {
 	public void registerTextures() {
 		LogisticsPipes.textures.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewRenderPipe.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
-		LogisticsPipes.LogisticsSolidBlock.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
+		LPBlocks.solidBlock.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewPipeModel.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 	}
 

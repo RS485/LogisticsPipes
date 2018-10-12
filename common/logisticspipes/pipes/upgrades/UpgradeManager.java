@@ -3,6 +3,7 @@ package logisticspipes.pipes.upgrades;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import logisticspipes.LPItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
@@ -13,7 +14,6 @@ import net.minecraft.world.World;
 
 import lombok.Getter;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.ISlotUpgradeManager;
@@ -83,7 +83,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		secInv.readFromNBT(nbttagcompound, "SecurityInventory_");
 
 		if (sneakyInv.getStackInSlot(8) != null) {
-			if (sneakyInv.getStackInSlot(8).getItem() == LogisticsPipes.LogisticsItemCard && sneakyInv.getStackInSlot(8).getItemDamage() == LogisticsItemCard.SEC_CARD) {
+			if (sneakyInv.getStackInSlot(8).getItem() == LPItems.itemCard && sneakyInv.getStackInSlot(8).getItemDamage() == LogisticsItemCard.SEC_CARD) {
 				secInv.setInventorySlotContents(0, sneakyInv.getStackInSlot(8));
 				sneakyInv.setInventorySlotContents(8, null);
 			}
@@ -235,7 +235,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		if (stack == null) {
 			return;
 		}
-		if (stack.getItem() != LogisticsPipes.LogisticsItemCard || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
+		if (stack.getItem() != LPItems.itemCard || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
 			return;
 		}
 		if (!stack.hasTagCompound()) {
@@ -331,7 +331,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				}
 			}
 		}
-		if (!itemStackInMainHand.isEmpty() && itemStackInMainHand.getItem() == LogisticsPipes.LogisticsItemCard && itemStackInMainHand.getItemDamage() == LogisticsItemCard.SEC_CARD) {
+		if (!itemStackInMainHand.isEmpty() && itemStackInMainHand.getItem() == LPItems.itemCard && itemStackInMainHand.getItemDamage() == LogisticsItemCard.SEC_CARD) {
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
@@ -370,7 +370,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	public void insetSecurityID(UUID id) {
-		ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
+		ItemStack stack = new ItemStack(LPItems.itemCard, 1, LogisticsItemCard.SEC_CARD);
 		stack.setTagCompound(new NBTTagCompound());
 		stack.getTagCompound().setString("UUID", id.toString());
 		secInv.setInventorySlotContents(0, stack);

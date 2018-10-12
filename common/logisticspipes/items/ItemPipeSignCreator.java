@@ -1,12 +1,8 @@
 package logisticspipes.items;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,10 +13,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -33,7 +25,6 @@ import logisticspipes.utils.string.StringUtils;
 public class ItemPipeSignCreator extends LogisticsItem {
 
 	public static final List<Class<? extends IPipeSign>> signTypes = new ArrayList<>();
-	public static final List<ModelResourceLocation> signTypeModels = new ArrayList<>();
 
 	//private TextureAtlasSprite[] itemIcon = new TextureAtlasSprite[2];
 
@@ -107,27 +98,15 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerModels() {
-		signTypeModels.addAll(Collections.nCopies(ItemPipeSignCreator.signTypes.size(), null));
-		for (int i = 0; i < ItemPipeSignCreator.signTypes.size(); i++) {
-			signTypeModels.set(i, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "." + i));
-		}
-		for(ModelResourceLocation model: signTypeModels) {
-			if(model != null) {
-				ModelBakery.registerItemVariants(this, model);
-			}
-		}
-		ModelLoader.setCustomMeshDefinition(this, new ItemMeshDefinition() {
-			@Override
-			public ModelResourceLocation getModelLocation(ItemStack stack) {
-				if (!stack.hasTagCompound()) {
-					stack.setTagCompound(new NBTTagCompound());
-				}
-				int mode = stack.getTagCompound().getInteger("CreatorMode");
-				return signTypeModels.get(Math.min(mode, ItemPipeSignCreator.signTypes.size() - 1));
-			}
-		});
+	public int getMetadata(ItemStack stack) {
+		if (!stack.hasTagCompound()) return 0;
+		int mode = stack.getTagCompound().getInteger("CreatorMode");
+		return Math.min(mode, ItemPipeSignCreator.signTypes.size() - 1);
+	}
+
+	@Override
+	public int getModelCount() {
+		return signTypes.size();
 	}
 
 	@Override

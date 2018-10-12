@@ -1,6 +1,6 @@
 package logisticspipes.network;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPItems;
 import logisticspipes.gui.GuiFirewall;
 import logisticspipes.gui.GuiFluidBasic;
 import logisticspipes.gui.GuiFluidSupplierMk2Pipe;
@@ -15,8 +15,6 @@ import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.interfaces.ISlotCheck;
-import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
@@ -41,7 +39,6 @@ import logisticspipes.utils.gui.DummyContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -163,7 +160,7 @@ public class GuiHandler implements IGuiHandler {
 						if (itemStack == null) {
 							return false;
 						}
-						if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+						if (itemStack.getItem() != LPItems.itemCard) {
 							return false;
 						}
 						if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
@@ -195,7 +192,7 @@ public class GuiHandler implements IGuiHandler {
 						if (itemStack == null) {
 							return false;
 						}
-						if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+						if (itemStack.getItem() != LPItems.itemCard) {
 							return false;
 						}
 						if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {

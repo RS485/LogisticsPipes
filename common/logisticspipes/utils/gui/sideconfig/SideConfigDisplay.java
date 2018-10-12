@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import logisticspipes.LPBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -47,7 +48,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.textures.Textures;
@@ -224,7 +224,7 @@ public abstract class SideConfigDisplay {
 			Block block = bs.getBlock();
 			if (block != null) {
 				if(block instanceof LogisticsBlockGenericPipe) {
-					cachedLPBlockTrace = LogisticsPipes.LogisticsPipeBlock.doRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
+					cachedLPBlockTrace = LPBlocks.pipe.doRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
 				} else {
 					cachedLPBlockTrace = null;
 				}

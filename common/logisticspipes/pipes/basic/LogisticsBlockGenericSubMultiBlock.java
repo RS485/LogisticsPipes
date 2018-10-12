@@ -30,7 +30,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import static logisticspipes.LogisticsPipes.LogisticsPipeBlock;
+import static logisticspipes.LPBlocks.pipe;
 import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 
 import logisticspipes.LogisticsPipes;
@@ -43,7 +43,6 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	public LogisticsBlockGenericSubMultiBlock() {
 		super(Material.GLASS);
-		setUnlocalizedName("logisticsblockgenericsubmultiblock");
 		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
 
@@ -137,7 +136,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.forEach(mainPipe -> LogisticsPipeBlock.addCollisionBoxToList(mainPipe, entityBox, collidingBoxes, entityIn, isActualState));
+					.forEach(mainPipe -> pipe.addCollisionBoxToList(mainPipe, entityBox, collidingBoxes, entityIn, isActualState));
 		}
 	}
 
@@ -150,7 +149,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			return mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.map(mainPipe -> LogisticsPipeBlock.collisionRayTrace(blockState, worldIn, mainPipe.getPos(), start, end))
+					.map(mainPipe -> pipe.collisionRayTrace(blockState, worldIn, mainPipe.getPos(), start, end))
 					.filter(Objects::nonNull)
 					.findFirst()
 					.map(it -> {
@@ -177,8 +176,8 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().player)))
-					.map(mainPipe -> LogisticsPipeBlock.getSelectedBoundingBox(state, worldIn, mainPipe.getPos()))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().player)))
+					.map(mainPipe -> pipe.getSelectedBoundingBox(state, worldIn, mainPipe.getPos()))
 					.findFirst();
 		}
 		return result.orElse(super.getSelectedBoundingBox(state, worldIn, pos).expand(-0.85F, -0.85F, -0.85F));
@@ -204,8 +203,8 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
-					.map(mainPipe -> LogisticsPipeBlock.addDestroyEffects(world, mainPipe.getPos(), manager))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
+					.map(mainPipe -> pipe.addDestroyEffects(world, mainPipe.getPos(), manager))
 					.findFirst();
 		}
 		return result.orElse(super.addDestroyEffects(world, pos, manager));
@@ -221,14 +220,14 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), player)))
-					.map(mainPipe -> LogisticsPipeBlock.getPickBlock(state, target, world, mainPipe.getPos(), player))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, world, mainPipe.getPos(), player)))
+					.map(mainPipe -> pipe.getPickBlock(state, target, world, mainPipe.getPos(), player))
 					.findFirst();
 
 			if (!result.isPresent()) {
 				result = mainPipeList.stream()
 						.findFirst()
-						.map(mainPipe -> LogisticsPipeBlock.getPickBlock(state, target, world, mainPipe.getPos(), player));
+						.map(mainPipe -> pipe.getPickBlock(state, target, world, mainPipe.getPos(), player));
 			}
 		}
 		return result.orElse(super.getPickBlock(state, target, world, pos, player));
@@ -285,7 +284,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			Optional<LogisticsTileGenericPipe> result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(LogisticsPipeBlock.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.findFirst();
 
 			result.ifPresent(mainPipe -> addHitEffects(mainPipe, state, world, target, manager));

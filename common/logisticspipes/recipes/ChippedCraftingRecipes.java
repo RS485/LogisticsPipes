@@ -1,14 +1,13 @@
 package logisticspipes.recipes;
 
+import logisticspipes.LPItems;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-
-import logisticspipes.LogisticsPipes;
 
 public class ChippedCraftingRecipes extends CraftingPartRecipes {
 	@Override
 	protected void loadRecipes(CraftingParts parts) {
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProgrammer),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.logisticsProgrammer),
 				new RecipeManager.RecipeLayout(
 						" a ",
 						"ifi",
@@ -18,9 +17,9 @@ public class ChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('i', "ingotIron"),
 				new RecipeManager.RecipeIndex('f', parts.getChipFpga()),
 				new RecipeManager.RecipeIndex('g', "ingotGold"),
-				new RecipeManager.RecipeIndex('m', new ItemStack(LogisticsPipes.LogisticsBlankModule, 1)));
+				new RecipeManager.RecipeIndex('m', new ItemStack(LPItems.blankModule, 1)));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.remoteOrderer),
 				new RecipeManager.RecipeLayout(
 						"aga",
 						"rsl",
@@ -32,7 +31,7 @@ public class ChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('l', "gemLapis"),
 				new RecipeManager.RecipeIndex('r', "dustRedstone"));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsPipeControllerItem),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.pipeController),
 				new RecipeManager.RecipeLayout(
 						"gbg",
 						"rsl",
@@ -44,7 +43,7 @@ public class ChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('l', "gemLapis"),
 				new RecipeManager.RecipeIndex('r', "dustRedstone"));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingSignCreator),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.craftingSignCreator),
 				new RecipeManager.RecipeLayout(
 						"b b",
 						" s ",
@@ -54,7 +53,7 @@ public class ChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
 				new RecipeManager.RecipeIndex('s', Items.SIGN));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsPipeManagerItem),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.pipeManager),
 				new RecipeManager.RecipeLayout(
 						"ibi",
 						"rsl",

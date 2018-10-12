@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -564,7 +565,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			return;
 		}
 		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, guiLeft, guiTop);
-		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LogisticsPipes.LogisticsItemDisk);
+		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
 	}
 
 	@SuppressWarnings("unchecked")

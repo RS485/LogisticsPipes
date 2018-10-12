@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import logisticspipes.LPBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -45,7 +46,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -98,7 +98,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public LogisticsBlockGenericPipe() {
 		super(Material.GLASS);
 		setRenderAllSides();
-		setUnlocalizedName("logisticsblockgenericpipe");
 		IBlockState state = this.blockState.getBaseState()
 				.withProperty(rotationProperty, 0)
 				.withProperty(modelTypeProperty, PipeRenderModel.NONE);
@@ -171,7 +170,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			item.setDummyPipe(dummyPipe);
 		}
 
-		MainProxy.proxy.registerModels(item);
 		registry.register(item);
 		return item;
 	}
@@ -226,7 +224,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 							((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
 							MainProxy.sendPacketToAllWatchingChunk(subTile, ((LogisticsTileGenericSubMultiBlock) subTile).getLPDescriptionPacket());
 						} else {
-							world.setBlockState(pos.getBlockPos(), LogisticsPipes.LogisticsSubMultiBlock.getDefaultState(), 0);
+							world.setBlockState(pos.getBlockPos(), LPBlocks.subMultiblock.getDefaultState(), 0);
 							subTile = world.getTileEntity(pos.getBlockPos());
 							if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
 								((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
@@ -274,8 +272,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return null;
 			}
 			boolean changed = false;
-			if (worldCache.getBlockState(posCache) != null || worldCache.getBlockState(posCache).getBlock() != LogisticsPipes.LogisticsPipeBlock) {
-				worldCache.setBlockState(posCache, LogisticsPipes.LogisticsPipeBlock.getDefaultState());
+			if (worldCache.getBlockState(posCache) != null || worldCache.getBlockState(posCache).getBlock() != LPBlocks.pipe) {
+				worldCache.setBlockState(posCache, LPBlocks.pipe.getDefaultState());
 				changed = true;
 			}
 			if (worldCache.getTileEntity(posCache) != tileCache) {
@@ -898,7 +896,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		EnumFacing sideHit = target.sideHit;
 
-		Block block = LogisticsPipes.LogisticsPipeBlock;
+		Block block = LPBlocks.pipe;
 		float b = 0.1F;
 		double px = target.hitVec.x + rand.nextDouble() * (state.getBoundingBox(world, pos).maxX - state.getBoundingBox(world, pos).minX - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minX;
 		double py = target.hitVec.y + rand.nextDouble() * (state.getBoundingBox(world, pos).maxY - state.getBoundingBox(world, pos).minY - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minY;

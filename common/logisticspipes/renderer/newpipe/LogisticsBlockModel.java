@@ -6,11 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import javax.vecmath.Matrix4f;
 
+import logisticspipes.LPBlocks;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -20,7 +19,6 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
@@ -35,15 +33,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.renderer.LogisticsRenderPipe;
-import logisticspipes.textures.Textures;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsBlockModel implements IModel {
 
@@ -57,10 +49,11 @@ public class LogisticsBlockModel implements IModel {
 		public boolean accepts(ResourceLocation modelLocation) {
 			if (modelLocation.getResourceDomain().equals("logisticspipes")) {
 				if(modelLocation instanceof ModelResourceLocation) {
-					if(((ModelResourceLocation)modelLocation).getVariant().equals("inventory")) {
+					ResourceLocation rl = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
+					if (((ModelResourceLocation) modelLocation).getVariant().equals("inventory")) {
 						return LogisticsBlockModel.nameTextureIdMap.containsKey(modelLocation);
 					}
-					if(modelLocation.getResourcePath().equals("tile.logisticssolidblock")) {
+					if (rl.equals(LPBlocks.solidBlock.getRegistryName())) {
 						return true;
 					}
 				}
@@ -72,10 +65,11 @@ public class LogisticsBlockModel implements IModel {
 		public IModel loadModel(ResourceLocation modelLocation) {
 			if (modelLocation.getResourceDomain().equals("logisticspipes")) {
 				if(modelLocation instanceof ModelResourceLocation) {
+					ResourceLocation rl = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
 					if(((ModelResourceLocation)modelLocation).getVariant().equals("inventory")) {
 						return new LogisticsBlockModel(() -> nameTextureIdMap.get(modelLocation));
 					}
-					if(modelLocation.getResourcePath().equals("tile.logisticssolidblock")) {
+					if (rl.equals(LPBlocks.solidBlock.getRegistryName())) {
 						String key = ((ModelResourceLocation) modelLocation).getVariant();
 						key = key.substring(key.indexOf("block_sub_type=") + 15);
 						key = key.substring(0, key.indexOf(","));

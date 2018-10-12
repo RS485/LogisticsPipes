@@ -1,5 +1,6 @@
 package logisticspipes.gui;
 
+import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.utils.gui.DummyContainer;
@@ -64,7 +65,7 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
-			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1);
+			ItemStack stack = new ItemStack(LPItems.pipeBasic, 1);
 			itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);

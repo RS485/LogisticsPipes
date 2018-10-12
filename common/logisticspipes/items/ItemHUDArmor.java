@@ -98,6 +98,11 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 
 	@Override
 	public void registerModels() {
-		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:logisticshudglasses", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getModelPath(), "inventory"));
+	}
+
+	@Override
+	public String getModelPath() {
+		return getRegistryName().getResourcePath();
 	}
 }

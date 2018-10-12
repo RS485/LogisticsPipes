@@ -1,6 +1,6 @@
 package logisticspipes.network.guis.item;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPItems;
 import logisticspipes.gui.GuiCardManager;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.items.ItemModule;
@@ -41,7 +41,7 @@ public class ItemMangerGui extends GuiProvider {
 			dummy.addRestrictedSlot(i, Cinv, 0, 0, ItemModule.class);
 		}
 		dummy.addRestrictedSlot(2, Cinv, 0, 0, itemStack -> false);
-		dummy.addRestrictedSlot(3, Cinv, 0, 0, LogisticsPipes.LogisticsItemCard);
+		dummy.addRestrictedSlot(3, Cinv, 0, 0, LPItems.itemCard);
 		for (int i = 4; i < 10; i++) {
 			dummy.addColorSlot(i, Cinv, 0, 0);
 		}

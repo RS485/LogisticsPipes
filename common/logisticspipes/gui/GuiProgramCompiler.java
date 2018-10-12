@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -12,7 +13,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.ItemModule;
@@ -47,8 +47,8 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 		DummyContainer dummy = new DummyContainer(player.inventory, compiler.getInventory());
 
-		dummy.addRestrictedSlot(0, compiler.getInventory(), 10, 10, LogisticsPipes.LogisticsItemDisk);
-		dummy.addRestrictedSlot(1, compiler.getInventory(), 154, 10, LogisticsPipes.LogisticsProgrammer);
+		dummy.addRestrictedSlot(0, compiler.getInventory(), 10, 10, LPItems.disk);
+		dummy.addRestrictedSlot(1, compiler.getInventory(), 154, 10, LPItems.logisticsProgrammer);
 
 		dummy.addNormalSlotsForPlayerInventory(10, 105);
 

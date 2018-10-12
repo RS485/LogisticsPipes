@@ -3,13 +3,13 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LPBlocks;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
@@ -143,12 +143,12 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	protected void notifyBlockOfNeighborChange(EnumFacing side) {
-		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container.getPos()), side).getBlockPos(), LogisticsPipes.LogisticsPipeBlock, true);
+		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container.getPos()), side).getBlockPos(), LPBlocks.pipe, true);
 	}
 
 	public void updateNeighbors(boolean needSelf) {
 		if (needSelf) {
-			container.getWorld().notifyNeighborsOfStateChange(container.getPos(), LogisticsPipes.LogisticsPipeBlock, true);
+			container.getWorld().notifyNeighborsOfStateChange(container.getPos(), LPBlocks.pipe, true);
 		}
 		for (EnumFacing side : EnumFacing.VALUES) {
 			notifyBlockOfNeighborChange(side);

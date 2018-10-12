@@ -45,9 +45,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 @CCType(name = "ItemSink Module")
 public class ModuleItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
@@ -278,12 +275,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public boolean recievePassive() {
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleItemSink";
 	}
 
 	public void setIgnoreData(BitSet ignoreData) {

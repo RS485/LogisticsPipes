@@ -9,15 +9,12 @@ package logisticspipes;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -32,6 +29,7 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -95,7 +93,6 @@ import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logistics.LogisticsManager;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -142,7 +139,6 @@ import logisticspipes.pipes.tubes.HSTubeLine;
 import logisticspipes.pipes.tubes.HSTubeSCurve;
 import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport;
-import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -247,83 +243,6 @@ public class LogisticsPipes {
 
 	private boolean certificateError = false;
 
-	// Logistics Pipes
-	public static Item LogisticsBasicPipe;
-	public static Item LogisticsRequestPipeMk1;
-	public static Item LogisticsRequestPipeMk2;
-	public static Item LogisticsProviderPipeMk1;
-	public static Item LogisticsProviderPipeMk2;
-	public static Item LogisticsCraftingPipeMk1;
-	public static Item LogisticsCraftingPipeMk2;
-	public static Item LogisticsCraftingPipeMk3;
-	public static Item LogisticsSatellitePipe;
-	public static Item LogisticsSupplierPipe;
-	public static Item LogisticsChassisPipeMk1;
-	public static Item LogisticsChassisPipeMk2;
-	public static Item LogisticsChassisPipeMk3;
-	public static Item LogisticsChassisPipeMk4;
-	public static Item LogisticsChassisPipeMk5;
-	public static Item LogisticsRemoteOrdererPipe;
-	public static Item LogisticsInvSysConPipe;
-	public static Item LogisticsEntrancePipe;
-	public static Item LogisticsDestinationPipe;
-	public static Item LogisticsFirewallPipe;
-	public static Item logisticsRequestTable;
-
-	// Logistics Apiarist's Pipes
-	public static Item LogisticsApiaristAnalyzerPipe;
-	public static Item LogisticsApiaristSinkPipe;
-
-	// Logistics Fluid Pipes
-	public static Item LogisticsFluidBasicPipe;
-	public static Item LogisticsFluidRequestPipe;
-	public static Item LogisticsFluidProviderPipe;
-	public static Item LogisticsFluidSatellitePipe;
-	public static Item LogisticsFluidSupplierPipeMk1;
-	public static Item LogisticsFluidSupplierPipeMk2;
-	public static Item LogisticsFluidInsertionPipe;
-	public static Item LogisticsFluidExtractorPipe;
-
-	//Transport Pipes
-	public static Item BasicTransportPipe;
-
-	//Tubes
-	public static Item HSTubeCurve;
-	public static Item HSTubeSpeedup;
-	public static Item HSTubeSCurve;
-	public static Item HSTubeLine;
-	public static Item HSTubeGain;
-
-	// Logistics Modules/Upgrades
-	public static ItemBlankModule LogisticsBlankModule;
-	public static Map<Supplier<? extends LogisticsModule>, ItemModule> LogisticsModules = new HashMap<>();
-	public static Map<Supplier<? extends IPipeUpgrade>, ItemUpgrade> LogisticsUpgrades = new HashMap<>();
-
-	// Miscellaneous Items
-	public static RemoteOrderer LogisticsRemoteOrderer;
-	public static ItemPipeSignCreator LogisticsCraftingSignCreator;
-	public static ItemDisk LogisticsItemDisk;
-	public static LogisticsItemCard LogisticsItemCard;
-	public static ItemHUDArmor LogisticsHUDArmor;
-	public static ItemParts LogisticsParts;
-	public static LogisticsFluidContainer LogisticsFluidContainer;
-	public static LogisticsBrokenItem LogisticsBrokenItem;
-	public static ItemPipeController LogisticsPipeControllerItem;
-	public static ItemPipeManager LogisticsPipeManagerItem;
-	public static ItemLogisticsProgrammer LogisticsProgrammer;
-
-	public static ItemLogisticsChips LogisticsChips_basic;
-	public static ItemLogisticsChips LogisticsChips_basic_raw;
-	public static ItemLogisticsChips LogisticsChips_advanced;
-	public static ItemLogisticsChips LogisticsChips_advanced_raw;
-	public static ItemLogisticsChips LogisticsChips_fpga;
-	public static ItemLogisticsChips LogisticsChips_fpga_raw;
-
-	// Logistics Blocks
-	public static LogisticsSolidBlock LogisticsSolidBlock;
-	public static LogisticsBlockGenericPipe LogisticsPipeBlock;
-	public static LogisticsBlockGenericSubMultiBlock LogisticsSubMultiBlock;
-
 	// other statics
 	public static Textures textures = new Textures();
 	public static Logger log;
@@ -335,7 +254,7 @@ public class LogisticsPipes {
 
 		@SideOnly(Side.CLIENT)
 		public ItemStack getTabIconItem() {
-			return new ItemStack(LogisticsPipes.LogisticsBasicPipe);
+			return new ItemStack(LPItems.pipeBasic);
 		}
 	};
 
@@ -353,6 +272,7 @@ public class LogisticsPipes {
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
+		registerRecipes(); // TODO data fileS!!!!!
 
 		//Register Network channels
 		MainProxy.createChannels();
@@ -486,104 +406,31 @@ public class LogisticsPipes {
 
 	@SubscribeEvent
 	public void initItems(RegistryEvent.Register<Item> event) {
-
-//		LogisticsPipes.LogisticsItemCard = new LogisticsItemCard();
-//		LogisticsPipes.LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
-//		LogisticsPipes.LogisticsItemCard.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticsitemcard"));
-//		registerItem(LogisticsPipes.LogisticsItemCard);
-
 		IForgeRegistry<Item> registry = event.getRegistry();
 
-		registry.register(setName(new LogisticsItemCard(), "logisticsitemcard"));
-
-//		LogisticsPipes.LogisticsRemoteOrderer = new RemoteOrderer();
-//		LogisticsPipes.LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
-//		LogisticsPipes.LogisticsRemoteOrderer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "remoteordereritem"));
-//		registerItem(LogisticsPipes.LogisticsRemoteOrderer);
-
-		registry.register(setName(new RemoteOrderer(), "remoteordereritem"));
-
+		registry.register(setName(new LogisticsItemCard(), "item_card"));
+		registry.register(setName(new RemoteOrderer(), "remote_orderer"));
 		ItemPipeSignCreator.registerPipeSignTypes();
-//		LogisticsPipes.LogisticsCraftingSignCreator = new ItemPipeSignCreator();
-//		LogisticsPipes.LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
-//		LogisticsPipes.LogisticsCraftingSignCreator.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "itempipesigncreator"));
-//		registerItem(LogisticsPipes.LogisticsCraftingSignCreator);
-
-		registry.register(setName(new ItemPipeSignCreator(), "itempipesigncreator"));
-
-//		LogisticsPipes.LogisticsHUDArmor = new ItemHUDArmor();
-//		LogisticsPipes.LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
-//		LogisticsPipes.LogisticsHUDArmor.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticshudglasses"));
-//		registerItem(LogisticsPipes.LogisticsHUDArmor);
-
-		registry.register(setName(new ItemHUDArmor(), "logisticshudglasses"));
-
-//		LogisticsPipes.LogisticsParts = registerItem(new ItemParts());
-		registry.register(setName(new ItemParts(), "logisticsparts"));
-
-//		LogisticsPipes.LogisticsBlankModule = registerItem(new ItemBlankModule());
-		registry.register(setName(new ItemBlankModule(), "moduleblank"));
-
+		registry.register(setName(new ItemPipeSignCreator(), "crafting_sign_creator"));
+		registry.register(setName(new ItemHUDArmor(), "hud_glasses"));
+		registry.register(setName(new ItemParts(), "parts"));
+		registry.register(setName(new ItemBlankModule(), "module_blank"));
 		ItemModule.loadModules(registry);
-
-//		LogisticsPipes.LogisticsItemDisk = new ItemDisk();
-//		LogisticsPipes.LogisticsItemDisk.setUnlocalizedName("itemDisk");
-//		LogisticsPipes.LogisticsItemDisk.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "itemdisk"));
-//		registerItem(LogisticsPipes.LogisticsItemDisk);
-		registry.register(setName(new ItemDisk(), "itemdisk"));
-
+		registry.register(setName(new ItemDisk(), "disk"));
 		ItemUpgrade.loadUpgrades(registry);
-
-//		LogisticsPipes.LogisticsFluidContainer = new LogisticsFluidContainer();
-//		LogisticsPipes.LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
-//		LogisticsPipes.LogisticsFluidContainer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticsfluidcontainer"));
-//		registerItem(LogisticsPipes.LogisticsFluidContainer);
-		registry.register(setName(new LogisticsFluidContainer(), "logisticsfluidcontainer"));
-
-//		LogisticsPipes.LogisticsBrokenItem = new LogisticsBrokenItem();
-//		LogisticsPipes.LogisticsBrokenItem.setUnlocalizedName("brokenItem");
-//		LogisticsPipes.LogisticsBrokenItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "brokenitem"));
-//		registerItem(LogisticsPipes.LogisticsBrokenItem);
-		registry.register(setName(new LogisticsFluidContainer(), "brokenitem"));
-
-//		LogisticsPipes.LogisticsPipeControllerItem = new ItemPipeController();
-//		LogisticsPipes.LogisticsPipeControllerItem.setUnlocalizedName("pipeController");
-//		LogisticsPipes.LogisticsPipeControllerItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "pipecontroller"));
-//		registerItem(LogisticsPipes.LogisticsPipeControllerItem);
-		registry.register(setName(new LogisticsFluidContainer(), "pipecontroller"));
-
-//		LogisticsPipes.LogisticsPipeManagerItem = new ItemPipeManager();
-//		LogisticsPipes.LogisticsPipeManagerItem.setUnlocalizedName("pipeManager");
-//		LogisticsPipes.LogisticsPipeManagerItem.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "pipemanager"));
-//		registerItem(LogisticsPipes.LogisticsPipeManagerItem);
-		registry.register(setName(new ItemPipeManager(), "pipemanager"));
-
-//		LogisticsPipes.LogisticsProgrammer = new ItemLogisticsProgrammer();
-//		LogisticsPipes.LogisticsProgrammer.setUnlocalizedName("logisticsProgrammer");
-//		LogisticsPipes.LogisticsProgrammer.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, "logisticsprogrammer"));
-//		registerItem(LogisticsPipes.LogisticsProgrammer);
-		registry.register(setName(new ItemLogisticsProgrammer(), "logisticsprogrammer"));
-
-//		LogisticsChips_basic = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC));
-//		LogisticsChips_basic_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC_RAW));
-//		LogisticsChips_advanced = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED));
-//		LogisticsChips_advanced_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW));
-//		LogisticsChips_fpga = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA));
-//		LogisticsChips_fpga_raw = registerItem(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW));
-		registry.register(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC));
-		registry.register(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC_RAW));
-		registry.register(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED));
-		registry.register(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW));
-		registry.register(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA));
-		registry.register(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW));
-
-
-		registry.register(MainProxy.proxy.registerSolidBlockModel(new LogisticsSolidBlockItem(LogisticsPipes.LogisticsSolidBlock)).setRegistryName(LogisticsPipes.LogisticsSolidBlock.getRegistryName()));
-		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsPipeBlock).setRegistryName(LogisticsPipes.LogisticsPipeBlock.getRegistryName()));
-		//event.getRegistry().register(new ItemBlock(LogisticsPipes.LogisticsSubMultiBlock).setRegistryName(LogisticsPipes.LogisticsSubMultiBlock.getRegistryName()));
-
+		registry.register(setName(new LogisticsFluidContainer(), "fluid_container"));
+		registry.register(setName(new LogisticsBrokenItem(), "broken_item"));
+		registry.register(setName(new ItemPipeController(), "pipe_controller"));
+		registry.register(setName(new ItemPipeManager(), "pipe_manager"));
+		registry.register(setName(new ItemLogisticsProgrammer(), "logistics_programmer"));
+		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC), "chip_basic"));
+		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_BASIC_RAW), "chip_basic_raw"));
+		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED), "chip_advanced"));
+		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW), "chip_advanced_raw"));
+		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA), "chip_fpga"));
+		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW), "chip_fpga_raw"));
+		registry.register(MainProxy.proxy.registerSolidBlockModel(new LogisticsSolidBlockItem(LPBlocks.solidBlock)).setRegistryName(LPBlocks.solidBlock.getRegistryName()));
 		registerPipes(registry);
-		registerRecipes(); // TODO data fileS!!!!!
 	}
 
 	// TODO move somewhere
@@ -593,27 +440,29 @@ public class LogisticsPipes {
 		return item;
 	}
 
-	@SubscribeEvent
-	public void initBlocks(RegistryEvent.Register<Block> event) {
-		//Blocks
-		LogisticsPipes.LogisticsSolidBlock = new LogisticsSolidBlock();
-		LogisticsPipes.LogisticsSolidBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsSolidBlock.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsSolidBlock);
-
-
-		LogisticsPipes.LogisticsPipeBlock = new LogisticsBlockGenericPipe();
-		LogisticsPipes.LogisticsPipeBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsPipeBlock.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsPipeBlock);
-
-		LogisticsPipes.LogisticsSubMultiBlock = new LogisticsBlockGenericSubMultiBlock();
-		LogisticsPipes.LogisticsSubMultiBlock.setRegistryName(new ResourceLocation(LPConstants.LP_MOD_ID, LogisticsPipes.LogisticsSubMultiBlock.getUnlocalizedName()));
-		event.getRegistry().register(LogisticsPipes.LogisticsSubMultiBlock);
+	// TODO move somewhere
+	public static <T extends Block> T setName(T block, String name) {
+		block.setRegistryName(LPConstants.LP_MOD_ID, name);
+		block.setUnlocalizedName(String.format("%s.%s", LPConstants.LP_MOD_ID, name));
+		return block;
 	}
 
-	@Deprecated
-	private static <T extends Item & ILogisticsItem> void registerItem(T item) {
-		MainProxy.proxy.registerModels(item);
-		ForgeRegistries.ITEMS.register(item);
+	@SubscribeEvent
+	public void initBlocks(RegistryEvent.Register<Block> event) {
+		IForgeRegistry<Block> registry = event.getRegistry();
+
+		registry.register(setName(new LogisticsSolidBlock(), "solid_block"));
+		registry.register(setName(new LogisticsBlockGenericPipe(), "pipe"));
+		registry.register(setName(new LogisticsBlockGenericSubMultiBlock(), "sub_multiblock"));
+	}
+
+	@SubscribeEvent
+	public void onModelLoad(ModelRegistryEvent e) {
+		// TODO don't have regsiterModels in the item class it makes me sad, guess this works for now though
+		ForgeRegistries.ITEMS.getValuesCollection().stream()
+				.filter(item -> item.getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID))
+				.filter(item -> item instanceof ILogisticsItem)
+				.forEach(item -> MainProxy.proxy.registerModels((ILogisticsItem) item));
 	}
 
 	private void registerRecipes() {
@@ -634,9 +483,9 @@ public class LogisticsPipes {
 
 		if(true) { // TODO: Add Config Option
 			CraftingPartRecipes.craftingPartList.add(new CraftingParts(
-					new ItemStack(LogisticsPipes.LogisticsChips_fpga, 1),
-					new ItemStack(LogisticsPipes.LogisticsChips_basic, 1),
-					new ItemStack(LogisticsPipes.LogisticsChips_advanced, 1)));
+					new ItemStack(LPItems.chipFPGA, 1),
+					new ItemStack(LPItems.chipBasic, 1),
+					new ItemStack(LPItems.chipAdvanced, 1)));
 			RecipeManager.recipeProvider.add(new LPChipRecipes());
 		}
 		RecipeManager.recipeProvider.add(new BlockChippedCraftingRecipes());
@@ -732,7 +581,7 @@ public class LogisticsPipes {
 		createPipe(registry, "request_mk2", PipeItemsRequestLogisticsMk2::new, "Request Logistics Pipe MK2");
 		createPipe(registry, "remote_orderer", PipeItemsRemoteOrdererLogistics::new, "Remote Orderer Pipe");
 		createPipe(registry, "provider_mk2", PipeItemsProviderLogisticsMk2::new, "Provider Logistics Pipe MK2");
-		createPipe(registry, "apiarist_analyser", PipeItemsApiaristAnalyser::new, "Apiarist Logistics Analyser Pipe");
+		createPipe(registry, "apiarist_analyzer", PipeItemsApiaristAnalyser::new, "Apiarist Logistics Analyser Pipe");
 		createPipe(registry, "apiarist_sink", PipeItemsApiaristSink::new, "Apiarist Logistics Analyser Pipe");
 		createPipe(registry, "inventory_system_connector", PipeItemsInvSysConnector::new, "Logistics Inventory System Connector");
 		createPipe(registry, "system_entrance", PipeItemsSystemEntranceLogistics::new, "Logistics System Entrance Pipe");
@@ -740,9 +589,8 @@ public class LogisticsPipes {
 		createPipe(registry, "crafting_mk3", PipeItemsCraftingLogisticsMk3::new, "Crafting Logistics Pipe MK3");
 		createPipe(registry, "firewall", PipeItemsFirewall::new, "Firewall Logistics Pipe");
 
-		createPipe(registry, "fluid_supplier", PipeItemsFluidSupplier::new, "Fluid Supplier Logistics Pipe");
-
 		createPipe(registry, "fluid_basic", PipeFluidBasic::new, "Basic Logistics Fluid Pipe");
+		createPipe(registry, "fluid_supplier", PipeItemsFluidSupplier::new, "Fluid Supplier Logistics Pipe");
 		createPipe(registry, "fluid_insertion", PipeFluidInsertion::new, "Logistics Fluid Insertion Pipe");
 		createPipe(registry, "fluid_provider", PipeFluidProvider::new, "Logistics Fluid Provider Pipe");
 		createPipe(registry, "fluid_request", PipeFluidRequestLogistics::new, "Logistics Fluid Request Pipe");
@@ -752,7 +600,7 @@ public class LogisticsPipes {
 
 		createPipe(registry, "request_table", PipeBlockRequestTable::new, "Request Table");
 
-		createPipe(registry, "unrouted", PipeItemsBasicTransport::new, "Basic Transport Pipe");
+		createPipe(registry, "transport_basic", PipeItemsBasicTransport::new, "Basic Transport Pipe");
 
 		createPipe(registry, "hs_curve", HSTubeCurve::new, "High Speed Tube Curve");
 		createPipe(registry, "hs_speedup", HSTubeSpeedup::new, "High Speed Tube Speedup");
@@ -770,9 +618,9 @@ public class LogisticsPipes {
 
 		if (pipe.getClass() != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(pipe.getClass())) {
 			if (pipe.getClass() != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(pipe.getClass())) {
-				resetRecipeList.add(new Pair<>(res, LogisticsPipes.LogisticsFluidBasicPipe));
+				resetRecipeList.add(new Pair<>(res, LPItems.pipeFluidBasic));
 			} else {
-				resetRecipeList.add(new Pair<>(res, LogisticsPipes.LogisticsBasicPipe));
+				resetRecipeList.add(new Pair<>(res, LPItems.pipeBasic));
 			}
 		}
 	}

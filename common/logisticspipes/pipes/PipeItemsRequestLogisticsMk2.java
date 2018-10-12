@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
@@ -43,7 +44,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if (disk == null) {
-			if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+			if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem().equals(LPItems.disk)) {
 				disk = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 				entityplayer.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, null);
 				flag = false;

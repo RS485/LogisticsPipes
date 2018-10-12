@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
@@ -51,7 +52,6 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -66,10 +66,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import net.minecraftforge.registries.IForgeRegistry;
 import org.lwjgl.input.Keyboard;
@@ -97,14 +93,6 @@ public class ItemModule extends LogisticsItem {
 			return moduleClass;
 		}
 
-		@SideOnly(Side.CLIENT)
-		private void registerModuleModel(Item item) {
-			LogisticsModule instance = moduleConstructor.get();
-			String path = instance.getModuleModelPath();
-			if (path != null) {
-				ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("logisticspipes:" + path, "inventory"));
-			}
-		}
 	}
 
 	private Module moduleType;
@@ -135,7 +123,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(registry, "apiarist_sink", ModuleApiaristSink::new);
 		registerModule(registry, "apiarist_refiller", ModuleApiaristRefiller::new);
 		registerModule(registry, "apiarist_terminus", ModuleApiaristTerminus::new);
-		registerModule(registry, "item_sink_mod_based", ModuleModBasedItemSink::new);
+		registerModule(registry, "item_sink_mod", ModuleModBasedItemSink::new);
 		registerModule(registry, "item_sink_oredict", ModuleOreDictItemSink::new);
 		// registerModule(registry, "thaumic_aspect_sink", ModuleThaumicAspectSink::new);
 		registerModule(registry, "enchantment_sink", ModuleEnchantmentSink::new);
@@ -152,7 +140,7 @@ public class ItemModule extends LogisticsItem {
 	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
 		Module module = new Module(moduleConstructor);
 		ItemModule mod = LogisticsPipes.setName(new ItemModule(module), String.format("module_%s", name));
-		LogisticsPipes.LogisticsModules.put(moduleConstructor, mod); // TODO account for registry overrides → move to init or something
+		LPItems.modules.put(module.getILogisticsModuleClass(), mod); // TODO account for registry overrides → move to init or something
 		registry.register(mod);
 	}
 
@@ -225,9 +213,8 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerModels() {
-		moduleType.registerModuleModel(this);
+	public String getModelSubdir() {
+		return "module";
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

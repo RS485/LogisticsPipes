@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPItems;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
@@ -40,9 +40,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
@@ -205,7 +203,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 					return;
 				}
 				if (inv.getIDStackInSlot(0) == null) {
-					ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
+					ItemStack stack = new ItemStack(LPItems.itemCard, 1, LogisticsItemCard.SEC_CARD);
 					stack.setTagCompound(new NBTTagCompound());
 					stack.getTagCompound().setString("UUID", getSecId().toString());
 					inv.setInventorySlotContents(0, stack);
@@ -224,7 +222,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 					player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 					return;
 				}
-				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
+				ItemStack stack = new ItemStack(LPItems.itemCard, 64, LogisticsItemCard.SEC_CARD);
 				stack.setTagCompound(new NBTTagCompound());
 				stack.getTagCompound().setString("UUID", getSecId().toString());
 				inv.setInventorySlotContents(0, stack);

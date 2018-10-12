@@ -16,9 +16,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 //IHUDModuleHandler,
@@ -116,9 +113,4 @@ public class ModuleSatellite extends LogisticsModule {
 		return false;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return null;
-	}
 }

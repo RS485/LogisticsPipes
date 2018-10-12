@@ -48,9 +48,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
 	private Map<Integer, Pair<Integer, List<CCSinkResponder>>> sinkResponses = new HashMap<>();
@@ -254,12 +251,6 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			sended = true;
 		}
 		return sended;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleCCQuickSort";
 	}
 
 	@Override

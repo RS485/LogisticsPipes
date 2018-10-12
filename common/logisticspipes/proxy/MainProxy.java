@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
+import logisticspipes.LPItems;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -317,6 +318,6 @@ public class MainProxy {
 	}
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsPipeControllerItem;
+		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
 	}
 }

@@ -1,12 +1,12 @@
 package logisticspipes.recipes;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import logisticspipes.LPItems;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,7 +14,6 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.modules.ModuleActiveSupplier;
@@ -60,9 +59,9 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 	}
 
 	private void registerModuleRecipe(CraftingParts parts, RecipeType type, ResourceLocation recipeCategory, Class<? extends LogisticsModule> moduleClass, Class<? extends LogisticsModule> baseModuleClass) {
-		Item module = LogisticsPipes.LogisticsModules.get(moduleClass);
-		Item baseModule = baseModuleClass == null ? LogisticsPipes.LogisticsBlankModule : LogisticsPipes.LogisticsModules.get(baseModuleClass);
-		ItemStack programmerStack = new ItemStack(LogisticsPipes.LogisticsProgrammer);
+		Item module = LPItems.modules.get(moduleClass);
+		Item baseModule = baseModuleClass == null ? LPItems.blankModule : LPItems.modules.get(baseModuleClass);
+		ItemStack programmerStack = new ItemStack(LPItems.logisticsProgrammer);
 		programmerStack.setTagCompound(new NBTTagCompound());
 		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, module.getRegistryName().toString());
 		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);

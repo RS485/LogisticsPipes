@@ -37,7 +37,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -370,14 +369,13 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
-		FMLCommonHandler.instance().bus().register(new LPTickHandler());
+		MinecraftForge.EVENT_BUS.register(new LPTickHandler());
 
 		if (event.getSide().equals(Side.CLIENT)) {
 			RenderTickHandler sub = new RenderTickHandler();
-			FMLCommonHandler.instance().bus().register(sub);
 			MinecraftForge.EVENT_BUS.register(sub);
 		}
-		FMLCommonHandler.instance().bus().register(new QueuedTasks());
+		MinecraftForge.EVENT_BUS.register(new QueuedTasks());
 		if (event.getSide() == Side.CLIENT) {
 			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
 		}
@@ -387,7 +385,6 @@ public class LogisticsPipes {
 		}
 		LogisticsEventListener eventListener = new LogisticsEventListener();
 		MinecraftForge.EVENT_BUS.register(eventListener);
-		FMLCommonHandler.instance().bus().register(eventListener);
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 
 		RecipeManager.registerRecipeClasses();

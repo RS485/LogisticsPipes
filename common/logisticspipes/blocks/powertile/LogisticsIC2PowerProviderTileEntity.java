@@ -1,6 +1,7 @@
 package logisticspipes.blocks.powertile;
 
 import ic2.api.energy.tile.IEnergyEmitter;
+import logisticspipes.LPConstants;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -15,7 +16,7 @@ import net.minecraft.util.EnumFacing;
 
 import ic2.api.energy.tile.IEnergySink;
 
-@ModDependentInterface(modId = { "IC2" }, interfacePath = { "ic2.api.energy.tile.IEnergySink" })
+@ModDependentInterface(modId = { LPConstants.ic2ModID }, interfacePath = { "ic2.api.energy.tile.IEnergySink" })
 public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IEnergySink {
 
 	public static final int MAX_STORAGE = 40000000;
@@ -129,25 +130,25 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public boolean acceptsEnergyFrom(IEnergyEmitter tile, EnumFacing dir) {
 		return true;
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public double getDemandedEnergy() {
 		return freeSpace();
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public int getSinkTier() {
 		return Integer.MAX_VALUE;
 	}
 
 	@Override
-	@ModDependentMethod(modId = "IC2")
+	@ModDependentMethod(modId = LPConstants.ic2ModID)
 	public double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
 		addEnergy(amount);
 		return 0;

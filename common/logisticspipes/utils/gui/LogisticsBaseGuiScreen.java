@@ -49,7 +49,7 @@ import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
 import logisticspipes.utils.string.StringUtils;
 
-@ModDependentInterface(modId = { "NotEnoughItems" }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
+@ModDependentInterface(modId = { LPConstants.neiModID }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
 public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler, IGuiAccess {
 
 	protected static final ResourceLocation ITEMSINK = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
@@ -540,25 +540,25 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
+	@ModDependentMethod(modId = LPConstants.neiModID)
 	public List<TaggedInventoryArea> getInventoryAreas(GuiContainer gui) {
 		return null;
 	}
 
 	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
+	@ModDependentMethod(modId = LPConstants.neiModID)
 	public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack stack) {
 		return null;
 	}
 
 	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
+	@ModDependentMethod(modId = LPConstants.neiModID)
 	public boolean handleDragNDrop(GuiContainer gui, int mouseX, int mouseY, ItemStack stack, int button) {
 		if (gui instanceof LogisticsBaseGuiScreen && gui.inventorySlots instanceof DummyContainer && stack != null) {
 			Slot result = null;
 			int pos = -1;
 			for (int k = 0; k < inventorySlots.inventorySlots.size(); ++k) {
-				Slot slot = (Slot) inventorySlots.inventorySlots.get(k);
+				Slot slot = inventorySlots.inventorySlots.get(k);
 				if (isMouseOverSlot(slot, mouseX, mouseY)) {
 					result = slot;
 					pos = k;
@@ -577,7 +577,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Override
-	@ModDependentMethod(modId = "NotEnoughItems")
+	@ModDependentMethod(modId = LPConstants.neiModID)
 	public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h) {
 		if (gui instanceof LogisticsBaseGuiScreen) {
 			return ((LogisticsBaseGuiScreen) gui).extentionControllerRight.isOverPanel(x, y, w, h);

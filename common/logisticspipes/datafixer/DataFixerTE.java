@@ -22,7 +22,7 @@ public class DataFixerTE implements IFixableData {
 			.put("minecraft:logisticspipes.pipes.basic.logisticstilegenericpipe", "logisticspipes:pipe")
 			.put("minecraft:logisticspipes.blocks.stats.logisticsstatisticstileentity", "logisticspipes:statistics_table")
 			.put("minecraft:logisticspipes.blocks.logisticsprogramcompilertileentity", "logisticspipes:program_compiler")
-			.put("minecraft:logisticspipes.pipes.basic.logisticstilegenericsubmultiblock", "logisticspipes:multiblock")
+			.put("minecraft:logisticspipes.pipes.basic.logisticstilegenericsubmultiblock", "logisticspipes:submultiblock")
 			.build();
 
 	@Override

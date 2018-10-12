@@ -26,6 +26,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
@@ -49,6 +51,9 @@ import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public class DummyContainer extends Container {
+
+	@SideOnly(Side.CLIENT)
+	public LogisticsBaseGuiScreen guiHolderForJEI; // This is not set for every GUI. Only for the one needed by JEI.
 
 	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<>();
 	protected IInventory _playerInventory;

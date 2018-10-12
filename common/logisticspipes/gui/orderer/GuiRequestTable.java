@@ -93,6 +93,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			dimension = GuiOrderer.dimensioncache;
 		}
 		DummyContainer dummy = new DummyContainer(entityPlayer.inventory, _table.matrix);
+		dummy.guiHolderForJEI = this;
+
 		int i = 0;
 		for (int y = 0; y < 3; y++) {
 			for (int x = 0; x < 9; x++) {

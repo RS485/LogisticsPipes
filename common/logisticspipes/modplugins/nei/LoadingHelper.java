@@ -1,4 +1,4 @@
-package logisticspipes.nei;
+package logisticspipes.modplugins.nei;
 
 import logisticspipes.config.Configs;
 

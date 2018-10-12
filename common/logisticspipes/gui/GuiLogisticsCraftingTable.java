@@ -36,6 +36,7 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 	public GuiLogisticsCraftingTable(EntityPlayer player, LogisticsCraftingTableTileEntity crafter) {
 		super(176, 218, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, crafter.matrix);
+		dummy.guiHolderForJEI = this;
 
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {

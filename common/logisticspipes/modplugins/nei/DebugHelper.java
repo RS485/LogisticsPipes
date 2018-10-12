@@ -1,4 +1,4 @@
-package logisticspipes.nei;
+package logisticspipes.modplugins.nei;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -13,7 +13,6 @@ import logisticspipes.config.Configs;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;

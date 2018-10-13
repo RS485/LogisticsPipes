@@ -168,17 +168,6 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public int getDimensionForWorld(World world) {
-		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.getDimension();
-		}
-		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.getDimension();
-		}
-		return 0;
-	}
-
-	@Override
 	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
 		return ServerProxy.getPipe(DimensionManager.getWorld(dimension), x, y, z);
 	}

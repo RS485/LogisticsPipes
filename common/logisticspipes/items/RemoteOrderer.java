@@ -26,7 +26,6 @@ import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.StringUtils;
 
 public class RemoteOrderer extends LogisticsItem {
 
@@ -73,7 +72,7 @@ public class RemoteOrderer extends LogisticsItem {
 				}
 				energyUse += Math.sqrt(Math.pow(pipe.getX() - player.posX, 2) + Math.pow(pipe.getY() - player.posY, 2) + Math.pow(pipe.getZ() - player.posZ, 2));
 				if (pipe.useEnergy(energyUse)) {
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.getWorld())), player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(pipe.getWorld().provider.getDimension()), player);
 					player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 				}
 			}

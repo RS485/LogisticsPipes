@@ -307,7 +307,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
 		}
 	}
 
@@ -325,7 +325,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
 		}
 	}
 

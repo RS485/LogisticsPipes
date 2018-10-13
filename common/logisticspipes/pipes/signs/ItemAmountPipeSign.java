@@ -203,7 +203,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 
 	private void sendUpdatePacket() {
 		if(MainProxy.isServer(pipe.getWorld())) {
-			MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), MainProxy.getDimensionForWorld(pipe.getWorld()), getPacket());
+			MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), pipe.getWorld().provider.getDimension(), getPacket());
 		}
 	}
 }

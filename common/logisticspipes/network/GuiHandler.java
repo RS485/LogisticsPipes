@@ -317,7 +317,7 @@ public class GuiHandler implements IGuiHandler {
 					return null;
 
 				case GuiIDs.GUI_Normal_Orderer_ID:
-					return new NormalGuiOrderer(x, y, z, MainProxy.getDimensionForWorld(world), player);
+					return new NormalGuiOrderer(x, y, z, world.provider.getDimension(), player);
 
 				case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
 					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) {

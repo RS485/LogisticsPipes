@@ -939,7 +939,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(packet, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
 		}
 	}
 

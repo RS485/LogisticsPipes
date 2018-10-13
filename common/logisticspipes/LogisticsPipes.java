@@ -236,11 +236,6 @@ public class LogisticsPipes {
 	@Getter
 	private static TickExecutor globalTickExecutor;
 
-	//Log Requests
-	public static boolean DisplayRequests;
-
-	public static boolean WATCHDOG = false;
-
 	private boolean certificateError = false;
 
 	// other statics
@@ -408,16 +403,18 @@ public class LogisticsPipes {
 	public void initItems(RegistryEvent.Register<Item> event) {
 		IForgeRegistry<Item> registry = event.getRegistry();
 
+		ItemPipeSignCreator.registerPipeSignTypes();
+		ItemModule.loadModules(registry);
+		ItemUpgrade.loadUpgrades(registry);
+		registerPipes(registry);
+
 		registry.register(setName(new LogisticsItemCard(), "item_card"));
 		registry.register(setName(new RemoteOrderer(), "remote_orderer"));
-		ItemPipeSignCreator.registerPipeSignTypes();
 		registry.register(setName(new ItemPipeSignCreator(), "sign_creator"));
 		registry.register(setName(new ItemHUDArmor(), "hud_glasses"));
 		registry.register(setName(new ItemParts(), "parts"));
 		registry.register(setName(new ItemBlankModule(), "module_blank"));
-		ItemModule.loadModules(registry);
 		registry.register(setName(new ItemDisk(), "disk"));
-		ItemUpgrade.loadUpgrades(registry);
 		registry.register(setName(new LogisticsFluidContainer(), "fluid_container"));
 		registry.register(setName(new LogisticsBrokenItem(), "broken_item"));
 		registry.register(setName(new ItemPipeController(), "pipe_controller"));
@@ -430,7 +427,6 @@ public class LogisticsPipes {
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA), "chip_fpga"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW), "chip_fpga_raw"));
 		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.solidBlock), "solid_block"));
-		registerPipes(registry);
 	}
 
 	// TODO move somewhere
@@ -566,50 +562,50 @@ public class LogisticsPipes {
 	}
 
 	public void registerPipes(IForgeRegistry<Item> registry) {
-		createPipe(registry, "basic", PipeItemsBasicLogistics::new, "Basic Logistics Pipe");
-		createPipe(registry, "request", PipeItemsRequestLogistics::new, "Request Logistics Pipe");
-		createPipe(registry, "provider", PipeItemsProviderLogistics::new, "Provider Logistics Pipe");
-		createPipe(registry, "crafting", PipeItemsCraftingLogistics::new, "Crafting Logistics Pipe");
-		createPipe(registry, "satellite", PipeItemsSatelliteLogistics::new, "Satellite Logistics Pipe");
-		createPipe(registry, "supplier", PipeItemsSupplierLogistics::new, "Supplier Logistics Pipe");
-		createPipe(registry, "chassis_mk1", PipeLogisticsChassiMk1::new, "Logistics Chassi Mk1");
-		createPipe(registry, "chassis_mk2", PipeLogisticsChassiMk2::new, "Logistics Chassi Mk2");
-		createPipe(registry, "chassis_mk3", PipeLogisticsChassiMk3::new, "Logistics Chassi Mk3");
-		createPipe(registry, "chassis_mk4", PipeLogisticsChassiMk4::new, "Logistics Chassi Mk4");
-		createPipe(registry, "chassis_mk5", PipeLogisticsChassiMk5::new, "Logistics Chassi Mk5");
-		createPipe(registry, "crafting_mk2", PipeItemsCraftingLogisticsMk2::new, "Crafting Logistics Pipe MK2");
-		createPipe(registry, "request_mk2", PipeItemsRequestLogisticsMk2::new, "Request Logistics Pipe MK2");
-		createPipe(registry, "remote_orderer", PipeItemsRemoteOrdererLogistics::new, "Remote Orderer Pipe");
-		createPipe(registry, "provider_mk2", PipeItemsProviderLogisticsMk2::new, "Provider Logistics Pipe MK2");
-		createPipe(registry, "apiarist_analyzer", PipeItemsApiaristAnalyser::new, "Apiarist Logistics Analyser Pipe");
-		createPipe(registry, "apiarist_sink", PipeItemsApiaristSink::new, "Apiarist Logistics Analyser Pipe");
-		createPipe(registry, "inventory_system_connector", PipeItemsInvSysConnector::new, "Logistics Inventory System Connector");
-		createPipe(registry, "system_entrance", PipeItemsSystemEntranceLogistics::new, "Logistics System Entrance Pipe");
-		createPipe(registry, "system_destination", PipeItemsSystemDestinationLogistics::new, "Logistics System Destination Pipe");
-		createPipe(registry, "crafting_mk3", PipeItemsCraftingLogisticsMk3::new, "Crafting Logistics Pipe MK3");
-		createPipe(registry, "firewall", PipeItemsFirewall::new, "Firewall Logistics Pipe");
+		registerPipe(registry, "basic", PipeItemsBasicLogistics::new);
+		registerPipe(registry, "request", PipeItemsRequestLogistics::new);
+		registerPipe(registry, "provider", PipeItemsProviderLogistics::new);
+		registerPipe(registry, "crafting", PipeItemsCraftingLogistics::new);
+		registerPipe(registry, "satellite", PipeItemsSatelliteLogistics::new);
+		registerPipe(registry, "supplier", PipeItemsSupplierLogistics::new);
+		registerPipe(registry, "chassis_mk1", PipeLogisticsChassiMk1::new);
+		registerPipe(registry, "chassis_mk2", PipeLogisticsChassiMk2::new);
+		registerPipe(registry, "chassis_mk3", PipeLogisticsChassiMk3::new);
+		registerPipe(registry, "chassis_mk4", PipeLogisticsChassiMk4::new);
+		registerPipe(registry, "chassis_mk5", PipeLogisticsChassiMk5::new);
+		registerPipe(registry, "crafting_mk2", PipeItemsCraftingLogisticsMk2::new);
+		registerPipe(registry, "request_mk2", PipeItemsRequestLogisticsMk2::new);
+		registerPipe(registry, "remote_orderer", PipeItemsRemoteOrdererLogistics::new);
+		registerPipe(registry, "provider_mk2", PipeItemsProviderLogisticsMk2::new);
+		registerPipe(registry, "apiarist_analyzer", PipeItemsApiaristAnalyser::new);
+		registerPipe(registry, "apiarist_sink", PipeItemsApiaristSink::new);
+		registerPipe(registry, "inventory_system_connector", PipeItemsInvSysConnector::new);
+		registerPipe(registry, "system_entrance", PipeItemsSystemEntranceLogistics::new);
+		registerPipe(registry, "system_destination", PipeItemsSystemDestinationLogistics::new);
+		registerPipe(registry, "crafting_mk3", PipeItemsCraftingLogisticsMk3::new);
+		registerPipe(registry, "firewall", PipeItemsFirewall::new);
 
-		createPipe(registry, "fluid_basic", PipeFluidBasic::new, "Basic Logistics Fluid Pipe");
-		createPipe(registry, "fluid_supplier", PipeItemsFluidSupplier::new, "Fluid Supplier Logistics Pipe");
-		createPipe(registry, "fluid_insertion", PipeFluidInsertion::new, "Logistics Fluid Insertion Pipe");
-		createPipe(registry, "fluid_provider", PipeFluidProvider::new, "Logistics Fluid Provider Pipe");
-		createPipe(registry, "fluid_request", PipeFluidRequestLogistics::new, "Logistics Fluid Request Pipe");
-		createPipe(registry, "fluid_extractor", PipeFluidExtractor::new, "Logistics Fluid Extractor Pipe");
-		createPipe(registry, "fluid_satellite", PipeFluidSatellite::new, "Logistics Fluid Satellite Pipe");
-		createPipe(registry, "fluid_supplier_mk2", PipeFluidSupplierMk2::new, "Logistics Fluid Supplier Pipe Mk2");
+		registerPipe(registry, "fluid_basic", PipeFluidBasic::new);
+		registerPipe(registry, "fluid_supplier", PipeItemsFluidSupplier::new);
+		registerPipe(registry, "fluid_insertion", PipeFluidInsertion::new);
+		registerPipe(registry, "fluid_provider", PipeFluidProvider::new);
+		registerPipe(registry, "fluid_request", PipeFluidRequestLogistics::new);
+		registerPipe(registry, "fluid_extractor", PipeFluidExtractor::new);
+		registerPipe(registry, "fluid_satellite", PipeFluidSatellite::new);
+		registerPipe(registry, "fluid_supplier_mk2", PipeFluidSupplierMk2::new);
 
-		createPipe(registry, "request_table", PipeBlockRequestTable::new, "Request Table");
+		registerPipe(registry, "request_table", PipeBlockRequestTable::new);
 
-		createPipe(registry, "transport_basic", PipeItemsBasicTransport::new, "Basic Transport Pipe");
+		registerPipe(registry, "transport_basic", PipeItemsBasicTransport::new);
 
-		createPipe(registry, "hs_curve", HSTubeCurve::new, "High Speed Tube Curve");
-		createPipe(registry, "hs_speedup", HSTubeSpeedup::new, "High Speed Tube Speedup");
-		createPipe(registry, "hs_s_curve", HSTubeSCurve::new, "High Speed Tube S-Curve");
-		createPipe(registry, "hs_line", HSTubeLine::new, "High Speed Tube Line");
-		createPipe(registry, "hs_gain", HSTubeGain::new, "High Speed Tube Gain");
+		registerPipe(registry, "hs_curve", HSTubeCurve::new);
+		registerPipe(registry, "hs_speedup", HSTubeSpeedup::new);
+		registerPipe(registry, "hs_s_curve", HSTubeSCurve::new);
+		registerPipe(registry, "hs_line", HSTubeLine::new);
+		registerPipe(registry, "hs_gain", HSTubeGain::new);
 	}
 
-	protected void createPipe(IForgeRegistry<Item> registry, String name, Function<Item, ? extends CoreUnroutedPipe> constructor, String descr) {
+	protected void registerPipe(IForgeRegistry<Item> registry, String name, Function<Item, ? extends CoreUnroutedPipe> constructor) {
 		final ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(registry, name, constructor);
 		final CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
 		if (pipe instanceof CoreRoutedPipe) {

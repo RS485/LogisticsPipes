@@ -147,7 +147,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void WorldLoad(WorldEvent.Load event) {
 		if (MainProxy.isServer(event.getWorld())) {
-			int dim = MainProxy.getDimensionForWorld(event.getWorld());
+			int dim = event.getWorld().provider.getDimension();
 			if (!LogisticsEventListener.WorldLoadTime.containsKey(dim)) {
 				LogisticsEventListener.WorldLoadTime.put(dim, System.currentTimeMillis());
 			}
@@ -161,7 +161,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void WorldUnload(WorldEvent.Unload event) {
 		if (MainProxy.isServer(event.getWorld())) {
-			int dim = MainProxy.getDimensionForWorld(event.getWorld());
+			int dim = event.getWorld().provider.getDimension();
 			SimpleServiceLocator.routerManager.dimensionUnloaded(dim);
 		}
 	}

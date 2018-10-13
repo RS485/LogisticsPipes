@@ -23,8 +23,8 @@ import org.apache.commons.lang3.NotImplementedException;
 
 public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem {
 
-	public LogisticsSolidBlockItem(Block par1) {
-		super(par1);
+	public LogisticsSolidBlockItem(Block block) {
+		super(block);
 		setHasSubtypes(true);
 		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}

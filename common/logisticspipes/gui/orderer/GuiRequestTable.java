@@ -25,7 +25,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
@@ -88,7 +87,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		_table = table;
 		_entityPlayer = entityPlayer;
 		if (GuiOrderer.cachetime + 100 < System.currentTimeMillis()) {
-			dimension = MainProxy.getDimensionForWorld(_table.getWorld());
+			dimension = _table.getWorld().provider.getDimension();
 		} else {
 			dimension = GuiOrderer.dimensioncache;
 		}

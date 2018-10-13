@@ -43,7 +43,7 @@ public class ChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('l', "gemLapis"),
 				new RecipeManager.RecipeIndex('r', "dustRedstone"));
 
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.craftingSignCreator),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.signCreator),
 				new RecipeManager.RecipeLayout(
 						"b b",
 						" s ",

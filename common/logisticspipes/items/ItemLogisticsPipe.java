@@ -64,11 +64,6 @@ public class ItemLogisticsPipe extends LogisticsItem {
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack));
-	}
-
-	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Block block = LPBlocks.pipe;
 

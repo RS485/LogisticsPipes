@@ -411,7 +411,7 @@ public class LogisticsPipes {
 		registry.register(setName(new LogisticsItemCard(), "item_card"));
 		registry.register(setName(new RemoteOrderer(), "remote_orderer"));
 		ItemPipeSignCreator.registerPipeSignTypes();
-		registry.register(setName(new ItemPipeSignCreator(), "crafting_sign_creator"));
+		registry.register(setName(new ItemPipeSignCreator(), "sign_creator"));
 		registry.register(setName(new ItemHUDArmor(), "hud_glasses"));
 		registry.register(setName(new ItemParts(), "parts"));
 		registry.register(setName(new ItemBlankModule(), "module_blank"));

@@ -134,8 +134,4 @@ public class RemoteOrderer extends LogisticsItem {
 		}
 	}
 
-	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack));
-	}
 }

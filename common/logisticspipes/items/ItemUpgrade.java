@@ -84,7 +84,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(registry, "sneaky_combination", CombinedSneakyUpgrade::new);
 		registerUpgrade(registry, "sneaky", SneakyUpgradeConfig::new);
 		registerUpgrade(registry, "speed", SpeedUpgrade::new);
-		registerUpgrade(registry, "connection", ConnectionUpgradeConfig::new);
+		registerUpgrade(registry, "disconnection", ConnectionUpgradeConfig::new);
 
 		registerUpgrade(registry, "satellite_advanced", AdvancedSatelliteUpgrade::new);
 		registerUpgrade(registry, "fluid_crafting", FluidCraftingUpgrade::new);
@@ -92,12 +92,12 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(registry, "pattern", PatternUpgrade::new);
 		registerUpgrade(registry, "fuzzy", FuzzyUpgrade::new);
 		registerUpgrade(registry, "power_transportation", PowerTransportationUpgrade::new);
-		registerUpgrade(registry, "power_supplier_bc", BCPowerSupplierUpgrade::new);
+		registerUpgrade(registry, "power_supplier_mj", BCPowerSupplierUpgrade::new);
 		registerUpgrade(registry, "power_supplier_rf", RFPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_ic2_lv", IC2LVPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_ic2_mv", IC2MVPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_ic2_hv", IC2HVPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_ic2_ev", IC2EVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, "power_supplier_eu_lv", IC2LVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, "power_supplier_eu_mv", IC2MVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, "power_supplier_eu_hv", IC2HVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, "power_supplier_eu_ev", IC2EVPowerSupplierUpgrade::new);
 		registerUpgrade(registry, "cc_remote_control", CCRemoteControlUpgrade::new);
 		registerUpgrade(registry, "crafting_monitoring", CraftingMonitoringUpgrade::new);
 		registerUpgrade(registry, "opaque", OpaqueUpgrade::new);

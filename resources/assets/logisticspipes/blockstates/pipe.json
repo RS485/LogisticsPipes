@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"normal": { "model": "logisticspipes:logisticsPipeBlock" }
+		"normal": { "model": "logisticspipes:pipe" }
 	}
 }

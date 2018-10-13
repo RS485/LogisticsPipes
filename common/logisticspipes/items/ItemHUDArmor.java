@@ -93,7 +93,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 
 	@Override

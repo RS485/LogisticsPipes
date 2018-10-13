@@ -152,8 +152,8 @@ public class LPItems {
 	@ObjectHolder("logisticspipes:remote_orderer")
 	public static RemoteOrderer remoteOrderer;
 
-	@ObjectHolder("logisticspipes:crafting_sign_creator")
-	public static ItemPipeSignCreator craftingSignCreator;
+	@ObjectHolder("logisticspipes:sign_creator")
+	public static ItemPipeSignCreator signCreator;
 
 	@ObjectHolder("logisticspipes:disk")
 	public static ItemDisk disk;

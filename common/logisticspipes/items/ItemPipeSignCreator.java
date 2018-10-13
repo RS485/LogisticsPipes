@@ -110,15 +110,6 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
-		if (!itemstack.hasTagCompound()) {
-			itemstack.setTagCompound(new NBTTagCompound());
-		}
-		int mode = itemstack.getTagCompound().getInteger("CreatorMode");
-		return StringUtils.translate(getUnlocalizedName(itemstack) + "." + mode);
-	}
-
-	@Override
 	public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
 		ItemStack stack = player.inventory.getCurrentItem();
 		if (MainProxy.isClient(world)) {

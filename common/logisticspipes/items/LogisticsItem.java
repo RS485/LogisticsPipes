@@ -98,6 +98,6 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 }

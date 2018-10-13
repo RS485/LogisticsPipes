@@ -31,35 +31,35 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
 		LogisticsSolidBlock.BlockType forMeta = LogisticsSolidBlock.BlockType.getForMeta(stack.getItemDamage());
-		String x = getUnlocalozedName(forMeta);
+		String x = getUnlocalizedName(forMeta);
 		if (x != null) return x;
 		return super.getUnlocalizedName(stack);
 	}
 
-	private String getUnlocalozedName(LogisticsSolidBlock.BlockType forMeta) {
+	private String getUnlocalizedName(LogisticsSolidBlock.BlockType forMeta) {
 		switch (forMeta) {
 			case SOLDERING_STATION:
-				return "tile.solderingstation";
+				return "tile.logisticspipes.soldering_station.name";
 			case LOGISTICS_POWER_JUNCTION:
-				return "tile.logisticspowerjunction";
+				return "tile.logisticspipes.power_junction.name";
 			case LOGISTICS_SECURITY_STATION:
-				return "tile.logisticssecuritystation";
+				return "tile.logisticspipes.security_station.name";
 			case LOGISTICS_AUTOCRAFTING_TABLE:
-				return "tile.logisticscraftingtable";
+				return "tile.logisticspipes.crafting_table.name";
 			case LOGISTICS_FUZZYCRAFTING_TABLE:
-				return "tile.logisticsfuzzycraftingtable";
+				return "tile.logisticspipes.fuzzy_crafting_table.name";
 			case LOGISTICS_STATISTICS_TABLE:
-				return "tile.logisticsstatisticstable";
+				return "tile.logisticspipes.statistics_table.name";
 			case LOGISTICS_RF_POWERPROVIDER:
-				return "tile.logisticstepowerprovider";
+				return "tile.logisticspipes.power_provider_rf.name";
 			case LOGISTICS_IC2_POWERPROVIDER:
-				return "tile.logisticsic2powerprovider";
+				return "tile.logisticspipes.power_provider_eu.name";
 			case LOGISTICS_BC_POWERPROVIDER:
-				return "tile.logisticsbcpowerprovider";
+				return "tile.logisticspipes.power_provider_mj.name";
 			case LOGISTICS_PROGRAM_COMPILER:
-				return "tile.logisticsprogramcompiler";
+				return "tile.logisticspipes.program_compiler.name";
 			case LOGISTICS_BLOCK_FRAME:
-				return "tile.logisticsblankblock";
+				return "tile.logisticspipes.blank_block.name";
 		}
 		return null;
 	}
@@ -110,7 +110,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER,
 				LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER,
 				LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER)) {
-			ModelResourceLocation resourceLocation = new ModelResourceLocation("logisticspipes:" + getUnlocalozedName(block), "inventory");
+			ModelResourceLocation resourceLocation = new ModelResourceLocation("logisticspipes:" + getUnlocalizedName(block), "inventory");
 			ModelLoader.setCustomModelResourceLocation(this, block.getMeta(), resourceLocation);
 			LogisticsBlockModel.nameTextureIdMap.put(resourceLocation, block);
 		}

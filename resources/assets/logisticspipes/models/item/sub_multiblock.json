@@ -1,5 +1,5 @@
 {
-	"parent": "logisticspipes:block/logisticsSubMultiBlock",
+	"parent": "logisticspipes:block/sub_multiblock",
 	"display": {
 		"thirdperson": {
 			"rotation": [ 10, -45, 170 ],

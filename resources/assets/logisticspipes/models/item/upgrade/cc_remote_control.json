@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/itemupgrade/ccremotecontrol"
+		"layer0": "logisticspipes:items/upgrade/cc_remote_control"
 	}
 }

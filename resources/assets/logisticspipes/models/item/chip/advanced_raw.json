@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/chips/advancedMicrocontrollerRaw"
+		"layer0": "logisticspipes:items/chip/advanced_raw"
 	}
 }

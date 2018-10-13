@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/itemupgrade/powertransportic2-mv"
+		"layer0": "logisticspipes:items/upgrade/power_supplier_eu_mv"
 	}
 }

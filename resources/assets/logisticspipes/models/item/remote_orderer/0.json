@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/remoteordereritem/0"
+		"layer0": "logisticspipes:items/remote_orderer/0"
 	}
 }

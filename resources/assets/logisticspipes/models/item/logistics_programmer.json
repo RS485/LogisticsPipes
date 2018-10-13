@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/logisticsprogrammer"
+		"layer0": "logisticspipes:items/logistics_programmer"
 	}
 }

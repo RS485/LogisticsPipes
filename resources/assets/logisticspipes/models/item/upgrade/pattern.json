@@ -1,6 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/itemupgrade/placementrules"
+		"layer0": "logisticspipes:items/upgrade/pattern"
 	}
 }

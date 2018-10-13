@@ -1,7 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/itemModule/ModuleEnchantmentSinkMK2"
+		"layer0": "logisticspipes:items/module/enchantment_sink_mk2"
 	}
 }
-

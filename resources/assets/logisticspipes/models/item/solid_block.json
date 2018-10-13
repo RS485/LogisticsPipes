@@ -1,5 +1,5 @@
 {
-	"parent": "logisticspipes:block/logisticsSolidBlock",
+	"parent": "logisticspipes:block/solid_block",
 	"display": {
 		"thirdperson": {
 			"rotation": [ 10, -45, 170 ],

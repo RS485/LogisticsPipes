@@ -1,7 +1,6 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "logisticspipes:items/itemModule/ModuleAdvancedExtractorMK2"
+		"layer0": "logisticspipes:items/module/extractor_advanced_mk2"
 	}
 }
-

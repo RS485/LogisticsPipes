@@ -119,7 +119,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(registry, "provider_mk2", ModuleProviderMk2::new);
 		registerModule(registry, "electric_manager", ModuleElectricManager::new);
 		registerModule(registry, "electric_buffer", ModuleElectricBuffer::new);
-		registerModule(registry, "apiarist_analyser", ModuleApiaristAnalyser::new);
+		registerModule(registry, "apiarist_analyzer", ModuleApiaristAnalyser::new);
 		registerModule(registry, "apiarist_sink", ModuleApiaristSink::new);
 		registerModule(registry, "apiarist_refiller", ModuleApiaristRefiller::new);
 		registerModule(registry, "apiarist_terminus", ModuleApiaristTerminus::new);

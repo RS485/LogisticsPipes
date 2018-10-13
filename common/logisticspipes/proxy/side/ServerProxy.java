@@ -269,8 +269,4 @@ public class ServerProxy implements IProxy {
 	@Override
 	public void initModelLoader() {}
 
-	@Override
-	public LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem) {
-		return logisticsSolidBlockItem;
-	}
 }

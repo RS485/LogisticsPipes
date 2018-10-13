@@ -429,7 +429,7 @@ public class LogisticsPipes {
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW), "chip_advanced_raw"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA), "chip_fpga"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW), "chip_fpga_raw"));
-		registry.register(MainProxy.proxy.registerSolidBlockModel(new LogisticsSolidBlockItem(LPBlocks.solidBlock)).setRegistryName(LPBlocks.solidBlock.getRegistryName()));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.solidBlock), "solid_block"));
 		registerPipes(registry);
 	}
 

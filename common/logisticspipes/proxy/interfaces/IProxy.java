@@ -61,5 +61,4 @@ public interface IProxy {
 
 	void initModelLoader();
 
-	LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem);
 }

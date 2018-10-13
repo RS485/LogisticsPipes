@@ -2,6 +2,7 @@ package logisticspipes.items;
 
 import java.util.Arrays;
 
+import logisticspipes.interfaces.ILogisticsItem;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -18,13 +19,13 @@ import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.LogisticsBlockModel;
 import logisticspipes.utils.string.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
 
-public class LogisticsSolidBlockItem extends ItemBlock {
+public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem {
 
 	public LogisticsSolidBlockItem(Block par1) {
 		super(par1);
 		setHasSubtypes(true);
-		setUnlocalizedName("logisticssolidblock");
 		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
 
@@ -98,7 +99,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public LogisticsSolidBlockItem registerModels() {
+	public void registerModels() {
 		for(LogisticsSolidBlock.BlockType block: Arrays.asList(LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME,
 				LogisticsSolidBlock.BlockType.SOLDERING_STATION,
 				LogisticsSolidBlock.BlockType.LOGISTICS_POWER_JUNCTION,
@@ -110,10 +111,15 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER,
 				LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER,
 				LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER)) {
-			ModelResourceLocation resourceLocation = new ModelResourceLocation("logisticspipes:" + getUnlocalizedName(block), "inventory");
+			ModelResourceLocation resourceLocation = new ModelResourceLocation(getRegistryName(), "inventory");
 			ModelLoader.setCustomModelResourceLocation(this, block.getMeta(), resourceLocation);
 			LogisticsBlockModel.nameTextureIdMap.put(resourceLocation, block);
 		}
-		return this;
+	}
+
+	@Override
+	public String getModelPath() {
+		// TODO split this block into one block for each variant
+		throw new NotImplementedException("not implemented");
 	}
 }

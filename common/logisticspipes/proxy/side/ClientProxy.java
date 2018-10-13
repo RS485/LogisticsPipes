@@ -272,8 +272,4 @@ public class ClientProxy implements IProxy {
 		ModelLoaderRegistry.registerLoader(new FluidContainerRenderer.FluidContainerRendererModelLoader());
 	}
 
-	@Override
-	public LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem) {
-		return logisticsSolidBlockItem.registerModels();
-	}
 }

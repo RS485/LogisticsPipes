@@ -111,7 +111,7 @@ public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem
 				LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER,
 				LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER,
 				LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER)) {
-			ModelResourceLocation resourceLocation = new ModelResourceLocation(getRegistryName(), "inventory");
+			ModelResourceLocation resourceLocation = new ModelResourceLocation(getRegistryName().toString() + "." + block.getMeta(), "inventory");
 			ModelLoader.setCustomModelResourceLocation(this, block.getMeta(), resourceLocation);
 			LogisticsBlockModel.nameTextureIdMap.put(resourceLocation, block);
 		}

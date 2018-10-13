@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
+import logisticspipes.recipes.*;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -158,11 +159,6 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
-import logisticspipes.recipes.CraftingRecipes;
-import logisticspipes.recipes.ModuleChippedCraftingRecipes;
-import logisticspipes.recipes.PipeChippedCraftingRecipes;
-import logisticspipes.recipes.RecipeManager;
-import logisticspipes.recipes.UpgradeChippedCraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
@@ -458,7 +454,7 @@ public class LogisticsPipes {
 	}
 
 	private void registerRecipes() {
-
+		RecipeManager.recipeProvider.add(new LPChipRecipes());
 		RecipeManager.recipeProvider.add(new UpgradeChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new ModuleChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new PipeChippedCraftingRecipes());

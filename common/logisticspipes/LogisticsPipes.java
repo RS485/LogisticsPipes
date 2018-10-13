@@ -158,12 +158,7 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
-import logisticspipes.recipes.BlockChippedCraftingRecipes;
-import logisticspipes.recipes.ChippedCraftingRecipes;
-import logisticspipes.recipes.CraftingPartRecipes;
-import logisticspipes.recipes.CraftingParts;
 import logisticspipes.recipes.CraftingRecipes;
-import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.ModuleChippedCraftingRecipes;
 import logisticspipes.recipes.PipeChippedCraftingRecipes;
 import logisticspipes.recipes.RecipeManager;
@@ -265,7 +260,9 @@ public class LogisticsPipes {
 	@CapabilityInject(IFluidHandler.class)
 	public static Capability<IFluidHandler> FLUID_HANDLER_CAPABILITY = null;
 
-	@Mod.EventHandler
+
+
+ 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		registerRecipes(); // TODO data fileS!!!!!
 
@@ -304,7 +301,6 @@ public class LogisticsPipes {
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 
-		RecipeManager.registerRecipeClasses();
 		LPDataFixer.INSTANCE.init();
 	}
 
@@ -462,33 +458,10 @@ public class LogisticsPipes {
 	}
 
 	private void registerRecipes() {
-		/*
-		CraftingParts parts = SimpleServiceLocator.buildCraftProxy.getRecipeParts();
-		//NO BC => NO RECIPES (for now)
-		if (parts != null) {
-			SimpleServiceLocator.IC2Proxy.addCraftingRecipes(parts);
-			SimpleServiceLocator.forestryProxy.addCraftingRecipes(parts);
-			SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes(parts);
-			SimpleServiceLocator.ccProxy.addCraftingRecipes(parts);
-			SimpleServiceLocator.buildCraftProxy.addCraftingRecipes(parts);
 
-			SolderingStationRecipes.loadRecipe(parts);
-			RecipeManager.loadRecipes();
-		}
-		*/
-
-		if(true) { // TODO: Add Config Option
-			CraftingPartRecipes.craftingPartList.add(new CraftingParts(
-					new ItemStack(LPItems.chipFPGA, 1),
-					new ItemStack(LPItems.chipBasic, 1),
-					new ItemStack(LPItems.chipAdvanced, 1)));
-			RecipeManager.recipeProvider.add(new LPChipRecipes());
-		}
-		RecipeManager.recipeProvider.add(new BlockChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new UpgradeChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new ModuleChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new PipeChippedCraftingRecipes());
-		RecipeManager.recipeProvider.add(new ChippedCraftingRecipes());
 		RecipeManager.recipeProvider.add(new CraftingRecipes());
 		RecipeManager.loadRecipes();
 

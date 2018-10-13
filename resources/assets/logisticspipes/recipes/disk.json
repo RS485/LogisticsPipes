@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iri",
+    "rgr",
+    "iri"
+  ],
+  "key": {
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "nuggetGold"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:disk"
+  }
+}

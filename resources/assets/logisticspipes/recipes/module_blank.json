@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "r",
+    "p",
+    "g"
+  ],
+  "key": {
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "p": {
+      "type": "forge:ore_dict",
+      "ore": "paper"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "nuggetGold"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:module_blank"
+  }
+}

@@ -108,14 +108,6 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 
 	@Override
 	protected void loadRecipes(CraftingParts parts) {
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.pipeBasic),
-				new RecipeManager.RecipeLayoutSmall(
-						"f",
-						"p"
-				),
-				new RecipeManager.RecipeIndex('f', parts.getChipFpga()),
-				new RecipeManager.RecipeIndex('p', new ItemStack(LPItems.pipeTransportBasic)));
-
 		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LPItems.pipeRequest, LPItems.pipeBasic);
 		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LPItems.pipeProvider, LPItems.pipeBasic);
 		registerPipeRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LPItems.pipeCrafting, LPItems.pipeBasic);
@@ -239,40 +231,6 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 
 	@Override
 	protected void loadPlainRecipes() {
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.tubeHSLine, 3),
-				new RecipeManager.RecipeLayoutSmaller(
-						"ppp"
-				),
-				new RecipeManager.RecipeIndex('p', LPItems.pipeTransportBasic));
-
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.tubeHSSpeedup),
-				new RecipeManager.RecipeLayoutSmaller(
-						"ppp"
-				),
-				new RecipeManager.RecipeIndex('p', LPItems.tubeHSLine));
-
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.tubeHSCurve),
-				new RecipeManager.RecipeLayout(
-						"ppp",
-						"p  ",
-						"p  "
-				),
-				new RecipeManager.RecipeIndex('p', LPItems.tubeHSLine));
-
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.tubeHSSCurve),
-				new RecipeManager.RecipeLayoutSmall(
-						"pp ",
-						" pp"
-				),
-				new RecipeManager.RecipeIndex('p', LPItems.tubeHSLine));
-
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.tubeHSGain),
-				new RecipeManager.RecipeLayout(
-						"p ",
-						"pp",
-						" p"
-				),
-				new RecipeManager.RecipeIndex('p', LPItems.tubeHSLine));
 
 	}
 }

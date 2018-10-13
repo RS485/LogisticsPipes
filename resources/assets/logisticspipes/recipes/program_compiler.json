@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "logisticspipes:solid_block",
+    "data": 14
+  },
+  "key": {
+    "c": {
+      "type": "logisticspipes:part",
+      "part": "chip_basic"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "f": {
+      "item": "logisticspipes:solid_block",
+      "data": 15
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "l": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    }
+  },
+  "pattern": [
+    " c ",
+    "rfr",
+    "ili"
+  ]
+}

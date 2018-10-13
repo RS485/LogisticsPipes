@@ -115,7 +115,7 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.BASIC, LPItems.pipeSupplier, LPItems.pipeBasic);
 		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LPItems.pipeCraftingMk2, LPItems.pipeCrafting);
 		registerPipeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LPItems.pipeRequestMk2, LPItems.pipeRequest);
-		registerPipeRecipe(parts, RecipeType.ENDER_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LPItems.remoteOrderer, LPItems.pipeBasic);
+		registerPipeRecipe(parts, RecipeType.ENDER_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LPItems.pipeRemoteOrderer, LPItems.pipeBasic);
 		registerPipeRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_2, LPItems.pipeProviderMk2, LPItems.pipeProvider);
 		registerPipeRecipe(parts, RecipeType.ENDER_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.TIER_3, LPItems.pipeInvSystemConnector, LPItems.pipeBasic);
 

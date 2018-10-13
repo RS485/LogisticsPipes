@@ -30,7 +30,7 @@ import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.SearchBar;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -46,7 +46,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 
 	public final EntityPlayer _entityPlayer;
 	public ItemDisplay itemDisplay;
-	private SearchBar search;
+	private InputBar search;
 
 	protected String _title = "Request items";
 
@@ -98,14 +98,14 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new SearchBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new InputBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, xCenter, bottom - 24, 49, new int[] { 1, 10, 64, 64 }, true);
 		}
-		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100);
+		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, xCenter, bottom - 24);
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 			mc.fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, Color.getValue(Color.GREY));
 		}
 
-		itemDisplay.renderAmount(xCenter, bottom - 24, getStackAmount());
+		itemDisplay.renderAmount(getStackAmount());
 		//SearchInput
 		search.renderSearchBar();
 
@@ -248,15 +248,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
-		if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
-			itemDisplay.setMaxAmount();
-		} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-d
-			itemDisplay.resetAmount();
-		} else if (i == 201) { //PgUp
-			itemDisplay.prevPage();
-		} else if (i == 209) { //PgDn
-			itemDisplay.nextPage();
-		} else {
+		if (!itemDisplay.keyTyped(c, i)) {
 			// Track everything except Escape when in search bar
 			if (i == 1 || !search.handleKey(c, i)) {
 				super.keyTyped(c, i);

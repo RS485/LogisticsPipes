@@ -69,15 +69,15 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		TAB_BUTTON_2.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
 		if (itemDisplay_1 == null) {
-			itemDisplay_1 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay_1 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
 		}
-		itemDisplay_1.reposition(guiLeft + 10, guiTop + 40, xSize - 20, 20);
+		itemDisplay_1.reposition(guiLeft + 10, guiTop + 40, xSize - 20, 20, 0, 0);
 
 		if (itemDisplay_2 == null) {
-			itemDisplay_2 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay_2 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
 			itemDisplay_2.setItemList(new ArrayList<>());
 		}
-		itemDisplay_2.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125);
+		itemDisplay_2.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125, 0, 0);
 
 		updateItemList();
 	}

@@ -17,14 +17,13 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ItemDisplay;
-import logisticspipes.utils.gui.SearchBar;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -34,7 +33,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	private final String PREFIX = "gui.networkstatistics.add.";
 
 	ItemDisplay itemDisplay;
-	SearchBar search;
+	InputBar search;
 	private final LogisticsStatisticsTileEntity tile;
 
 	public GuiAddTracking(LogisticsStatisticsTileEntity tile) {
@@ -56,14 +55,14 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 21, 26, 10, "Sort")); // Sort
 
 		if (search == null) {
-			search = new SearchBar(fontRenderer, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
+			search = new InputBar(fontRenderer, getBaseScreen(), guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
 		}
 		search.reposition(guiLeft + 10, bottom - 58, right - guiLeft - 20, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
 		}
-		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 80);
+		itemDisplay.reposition(guiLeft + 10, guiTop + 18, xSize - 20, ySize - 80, 0, 0);
 	}
 
 	@Override
@@ -152,7 +151,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 
 	public void handlePacket(List<ItemIdentifierStack> identList) {
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
 		}
 		itemDisplay.setItemList(identList);
 	}

@@ -367,9 +367,9 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			leftButton = addButton(new SmallGuiButton(1, guiLeft + 95, guiTop + 26, 10, 10, "<"));
 			rightButton = addButton(new SmallGuiButton(2, guiLeft + 165, guiTop + 26, 10, 10, ">"));
 			if (_itemDisplay_5 == null) {
-				_itemDisplay_5 = new ItemDisplay(null, fontRenderer, GuiPipeController.this, null, 10, 40, 20, 60, new int[]{1, 1, 1, 1}, true);
+				_itemDisplay_5 = new ItemDisplay(null, fontRenderer, GuiPipeController.this, null, 10, 40, 20, 60, 0, 0, 0, new int[]{1, 1, 1, 1}, true);
 			}
-			_itemDisplay_5.reposition(10, 40, 20, 60);
+			_itemDisplay_5.reposition(10, 40, 20, 60, 0, 0);
 		}
 
 		@Override

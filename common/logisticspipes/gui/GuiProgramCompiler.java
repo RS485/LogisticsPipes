@@ -24,7 +24,7 @@ import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.SearchBar;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.TextListDisplay;
 import logisticspipes.utils.string.StringUtils;
@@ -39,7 +39,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 	private final TextListDisplay programList;
 	private final TextListDisplay programListLarge;
 	private SmallGuiButton programmerButton;
-	private SearchBar search;
+	private InputBar search;
 
 	public GuiProgramCompiler(EntityPlayer player, LogisticsProgramCompilerTileEntity compiler) {
 		super(180, 190, 0, 0);
@@ -143,7 +143,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		buttonList.add(new SmallGuiButton(4, guiLeft + 116, guiTop + 90, 15, 10, "\\/"));
 		buttonList.add(programmerButton = new SmallGuiButton(5, guiLeft + 132, guiTop + 90, 40, 10, "Compile"));
 
-		search = new SearchBar(fontRenderer, this, guiLeft + 30, guiTop + 11, 120, 16);
+		search = new InputBar(fontRenderer, this, guiLeft + 30, guiTop + 11, 120, 16);
 	}
 
 	@Override

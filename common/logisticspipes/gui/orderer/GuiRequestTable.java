@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
@@ -55,7 +54,7 @@ import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.SearchBar;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -73,7 +72,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	public int dimension;
 	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	private SmallGuiButton Macrobutton;
-	private SearchBar search;
+	private InputBar search;
 	private boolean showRequest = true;
 	private int startLeft;
 	private int startXSize;
@@ -159,14 +158,14 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		(sycleButtons[1] = addButton(new SmallGuiButton(22, guiLeft + 124, guiTop + 42, 15, 10, "\\/"))).visible = false;
 
 		if (search == null) {
-			search = new SearchBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
+			search = new InputBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
 		}
 		search.reposition(guiLeft + 205, bottom - 78, 200, 15);
 
 		if (itemDisplay == null) {
-			itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 205, guiTop + 18, 200, ySize - 100, right - 104, bottom - 24, 36, new int[] { 1, 10, 64, 64 }, true);
 		}
-		itemDisplay.reposition(guiLeft + 205, guiTop + 18, 200, ySize - 100);
+		itemDisplay.reposition(guiLeft + 205, guiTop + 18, 200, ySize - 100, right - 104, bottom - 24);
 
 		startLeft = guiLeft;
 		startXSize = xSize;
@@ -206,7 +205,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 				mc.fontRenderer.drawString("Popup", guiLeft + 225, bottom - 56, Color.getValue(Color.GREY));
 			}
 
-			itemDisplay.renderAmount(right - 103, bottom - 24, getStackAmount());
+			itemDisplay.renderAmount(getStackAmount());
 			//SearchInput
 			search.renderSearchBar();
 
@@ -638,15 +637,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
-		if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
-			itemDisplay.setMaxAmount();
-		} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-d
-			itemDisplay.resetAmount();
-		} else if (i == 201) { //PgUp
-			itemDisplay.prevPage();
-		} else if (i == 209) { //PgDn
-			itemDisplay.nextPage();
-		} else {
+		if (!itemDisplay.keyTyped(c, i)) {
 			// Track everything except Escape when in search bar
 			if (i == 1 || !search.handleKey(c, i)) {
 				super.keyTyped(c, i);

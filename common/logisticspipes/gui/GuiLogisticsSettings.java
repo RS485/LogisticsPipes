@@ -5,11 +5,10 @@ import logisticspipes.config.PlayerConfig;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
-import logisticspipes.utils.gui.SearchBar;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,8 +33,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
 	private class PipeRenderSettings extends TabSubGui {
 
-		private SearchBar renderDistance;
-		private SearchBar contentRenderDistance;
+		private InputBar renderDistance;
+		private InputBar contentRenderDistance;
 		private GuiCheckBox useNewRendererButton;
 		private GuiCheckBox useFallbackRendererButton;
 
@@ -45,13 +44,13 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void initTab() {
 			PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
 			if (renderDistance == null) {
-				renderDistance = new SearchBar(fontRenderer, getBaseScreen(), 15, 75, 30, 15, false, true, true);
-				renderDistance.searchinput1 = config.getRenderPipeDistance() + "";
+				renderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 75, 30, 15, false, true, InputBar.Align.RIGHT);
+				renderDistance.input1 = config.getRenderPipeDistance() + "";
 			}
 			renderDistance.reposition(15, 80, 30, 15);
 			if (contentRenderDistance == null) {
-				contentRenderDistance = new SearchBar(fontRenderer, getBaseScreen(), 15, 105, 30, 15, false, true, true);
-				contentRenderDistance.searchinput1 = config.getRenderPipeContentDistance() + "";
+				contentRenderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 105, 30, 15, false, true, InputBar.Align.RIGHT);
+				contentRenderDistance.input1 = config.getRenderPipeContentDistance() + "";
 			}
 			contentRenderDistance.reposition(15, 110, 30, 15);
 			//useNewRendererButton = (GuiCheckBox) addButton(new GuiCheckBox(0, guiLeft + 15, guiTop + 30, 16, 16, config.isUseNewRenderer()));

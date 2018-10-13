@@ -1,5 +1,6 @@
 package logisticspipes.utils.gui;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -58,7 +59,8 @@ public class ItemDisplay {
 	@Getter
 	private int page = 0;
 	private int maxPage = 0;
-	private int requestCount = 1;
+	//private int requestCount = 1;
+	private InputBar requestCountBar;
 	private Object[] tooltip = null;
 	private boolean listbyserver = false;
 
@@ -66,14 +68,14 @@ public class ItemDisplay {
 	private final FontRenderer fontRenderer;
 	private final LogisticsBaseGuiScreen screen;
 	private final ISpecialItemRenderer renderer;
-	private int left, top, height, width;
+	private int left, top, height, width, amountPosLeft, amountPosTop, amountWidth;
 	private int itemsPerPage;
 	private final int[] amountChangeMode;
 	private final boolean shiftPageChange;
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
 	private static DisplayOption option = DisplayOption.ID;
 
-	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int[] amountChangeMode, boolean shiftPageChange) {
+	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int amountPosLeft, int amountPosTop, int amountWidth, int[] amountChangeMode, boolean shiftPageChange) {
 		this.search = search;
 		this.fontRenderer = fontRenderer;
 		this.screen = screen;
@@ -82,20 +84,29 @@ public class ItemDisplay {
 		this.top = top;
 		this.width = width;
 		this.height = height;
+		this.amountPosLeft = amountPosLeft;
+		this.amountPosTop = amountPosTop;
+		this.amountWidth = amountWidth;
 		itemsPerPage = this.width * this.height / (20 * 20);
 		if (amountChangeMode.length != 4) {
 			throw new UnsupportedOperationException("amountChangeMode.length needs to be 4");
 		}
 		this.amountChangeMode = amountChangeMode;
 		this.shiftPageChange = shiftPageChange;
+		this.requestCountBar = new InputBar(this.fontRenderer, screen, amountPosLeft - (amountWidth / 2), amountPosTop - 5, amountWidth, 12, false, true, InputBar.Align.CENTER);
+		this.requestCountBar.input1 = "1";
+		this.requestCountBar.minNumber = 1;
 	}
 
-	public void reposition(int left, int top, int width, int height) {
+	public void reposition(int left, int top, int width, int height, int amountPosLeft, int amountPosTop) {
 		this.left = left;
 		this.top = top;
 		this.width = width;
 		this.height = height;
+		this.amountPosLeft = amountPosLeft;
+		this.amountPosTop = amountPosTop;
 		itemsPerPage = this.width * this.height / (20 * 20);
+		this.requestCountBar.reposition(amountPosLeft - (this.amountWidth / 2), amountPosTop - 2, this.amountWidth, 12);
 	}
 
 	public void setItemList(Collection<ItemIdentifierStack> allItems) {
@@ -224,10 +235,16 @@ public class ItemDisplay {
 		return count;
 	}
 
-	public void renderAmount(int x, int y, int stackAmount) {
+	public void renderAmount(int stackAmount) {
+		int requestCount = 0;
+		try {
+			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
+		} catch (Exception ignored) {}
 		String StackrequestCount = "" + (requestCount / stackAmount) + "+" + (requestCount % stackAmount);
-		fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount + "") / 2, y, 0x404040);
-		fontRenderer.drawString(StackrequestCount + "", x - fontRenderer.getStringWidth(StackrequestCount + "") / 2, y + 10, 0x404040);
+		//fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount + "") / 2, y, 0x404040);
+		fontRenderer.drawString(StackrequestCount + "", this.amountPosLeft - fontRenderer.getStringWidth(StackrequestCount + "") / 2, this.amountPosTop + 11, 0x404040);
+
+		requestCountBar.renderSearchBar();
 	}
 
 	public void renderItemArea(double zLevel) {
@@ -363,80 +380,88 @@ public class ItemDisplay {
 					prevPage();
 				}
 			}
-		} else if (isShift && !isControl && !isShiftPageChange()) {
-			if (wheel > 0) {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(4)));
-				} else {
-					if (requestCount == 1) {
-						requestCount -= 1;
+		} else if(!requestCountBar.isFocused()) {
+			int requestCount = 1;
+			try {
+				requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
+			} catch (Exception ignored) {}
+			if (isShift && !isControl && !isShiftPageChange()) {
+				if (wheel > 0) {
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(4)));
+					} else {
+						if (requestCount == 1) {
+							requestCount -= 1;
+						}
+						requestCount += wheel * getAmountChangeMode(4);
 					}
-					requestCount += wheel * getAmountChangeMode(4);
+				} else {
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						if (requestCount == 1) {
+							requestCount -= 1;
+						}
+						requestCount += -(wheel * getAmountChangeMode(4));
+					} else {
+						requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(4));
+					}
 				}
-			} else {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					if (requestCount == 1) {
-						requestCount -= 1;
+			} else if (!isControl) {
+				if (wheel > 0) {
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(1)));
+					} else {
+						requestCount += wheel * getAmountChangeMode(1);
 					}
-					requestCount += -(wheel * getAmountChangeMode(4));
 				} else {
-					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(4));
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						requestCount += -(wheel * getAmountChangeMode(1));
+					} else {
+						requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(1));
+					}
+				}
+			} else if (isControl && !isShift) {
+				if (wheel > 0) {
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(2));
+					} else {
+						if (requestCount == 1) {
+							requestCount -= 1;
+						}
+						requestCount += wheel * getAmountChangeMode(2);
+					}
+				} else {
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						if (requestCount == 1) {
+							requestCount -= 1;
+						}
+						requestCount += -wheel * getAmountChangeMode(2);
+					} else {
+						requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(2));
+					}
+				}
+			} else if (isControl && isShift) {
+				if (wheel > 0) {
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(3));
+					} else {
+						if (requestCount == 1) {
+							requestCount -= 1;
+						}
+						requestCount += wheel * getAmountChangeMode(3);
+					}
+				} else {
+					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+						if (requestCount == 1) {
+							requestCount -= 1;
+						}
+						requestCount += -wheel * getAmountChangeMode(3);
+					} else {
+						requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(3));
+					}
 				}
 			}
-		} else if (!isControl) {
-			if (wheel > 0) {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(1)));
-				} else {
-					requestCount += wheel * getAmountChangeMode(1);
-				}
-			} else {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount += -(wheel * getAmountChangeMode(1));
-				} else {
-					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(1));
-				}
-			}
-		} else if (isControl && !isShift) {
-			if (wheel > 0) {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(2));
-				} else {
-					if (requestCount == 1) {
-						requestCount -= 1;
-					}
-					requestCount += wheel * getAmountChangeMode(2);
-				}
-			} else {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					if (requestCount == 1) {
-						requestCount -= 1;
-					}
-					requestCount += -wheel * getAmountChangeMode(2);
-				} else {
-					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(2));
-				}
-			}
-		} else if (isControl && isShift) {
-			if (wheel > 0) {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(3));
-				} else {
-					if (requestCount == 1) {
-						requestCount -= 1;
-					}
-					requestCount += wheel * getAmountChangeMode(3);
-				}
-			} else {
-				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					if (requestCount == 1) {
-						requestCount -= 1;
-					}
-					requestCount += -wheel * getAmountChangeMode(3);
-				} else {
-					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(3));
-				}
-			}
+			requestCountBar.input1 = Integer.toString(requestCount);
+			requestCountBar.input2 = "";
 		}
 	}
 
@@ -453,12 +478,14 @@ public class ItemDisplay {
 	}
 
 	public void resetAmount() {
-		requestCount = 1;
+		requestCountBar.input1 = "1";
+		requestCountBar.input2 = "";
 	}
 
 	public void setMaxAmount() {
 		if (selectedItem != null && selectedItem.getStackSize() != 0) {
-			requestCount = selectedItem.getStackSize();
+			requestCountBar.input1 = Integer.toString(selectedItem.getStackSize());
+			requestCountBar.input2 = "";
 		}
 	}
 
@@ -479,14 +506,26 @@ public class ItemDisplay {
 	}
 
 	public void add(int i) {
+		int requestCount = 1;
+		try {
+			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
+		} catch (Exception ignored) {}
 		if (i != 1 && requestCount == 1) {
 			requestCount -= 1;
 		}
 		requestCount += getAmountChangeMode(i);
+		requestCountBar.input1 = Integer.toString(requestCount);
+		requestCountBar.input2 = "";
 	}
 
 	public void sub(int i) {
+		int requestCount = 1;
+		try {
+			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
+		} catch (Exception ignored) {}
 		requestCount = Math.max(1, requestCount - getAmountChangeMode(i));
+		requestCountBar.input1 = Integer.toString(requestCount);
+		requestCountBar.input2 = "";
 	}
 
 	public ItemIdentifierStack getSelectedItem() {
@@ -494,10 +533,17 @@ public class ItemDisplay {
 	}
 
 	public int getRequestCount() {
+		int requestCount = 1;
+		try {
+			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
+		} catch (Exception ignored) {}
 		return requestCount;
 	}
 
 	public boolean handleClick(int x, int y, int k) {
+		if(requestCountBar.handleClick(x, y, k)) {
+			return true;
+		}
 		x -= left;
 		y -= top;
 		if (x < 0 || y < 0 || x > width || y > height) {
@@ -511,5 +557,25 @@ public class ItemDisplay {
 			}
 		}
 		return false;
+	}
+
+	public boolean keyTyped(char c, int i) {
+		if(!requestCountBar.handleKey(c, i)) {
+			if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
+				setMaxAmount();
+				return true;
+			} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-d
+				resetAmount();
+				return true;
+			} else if (i == 201) { //PgUp
+				prevPage();
+				return true;
+			} else if (i == 209) { //PgDn
+				nextPage();
+				return true;
+			}
+			return false;
+		}
+		return true;
 	}
 }

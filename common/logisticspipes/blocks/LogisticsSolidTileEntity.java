@@ -146,7 +146,6 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public boolean canConnect(EnumFacing dir) {
 		TileEntity tileEntity = new WorldCoordinatesWrapper(this).getAdjacentFromDirection(dir).tileEntity;

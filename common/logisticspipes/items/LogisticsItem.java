@@ -30,23 +30,6 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 	}
 
-	@SideOnly(Side.CLIENT)
-	public final void registerModels() {
-		int mc = getModelCount();
-		for (int i = 0; i < mc; i++) {
-			String modelPath = getModelPath();
-			if (mc > 1) {
-				String resourcePath = getRegistryName().getResourcePath();
-				if (modelPath.matches(String.format(".*%s/%s", resourcePath, resourcePath))) {
-					modelPath = String.format("%s/%d", modelPath.substring(0, modelPath.length() - resourcePath.length() - 1), i);
-				} else {
-					modelPath = String.format("%s.%d", modelPath, i);
-				}
-			}
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(new ResourceLocation(getRegistryName().getResourceDomain(), modelPath), "inventory"));
-		}
-	}
-
 	@Override
 	public String getModelPath() {
 		String modelFile = getRegistryName().getResourcePath();

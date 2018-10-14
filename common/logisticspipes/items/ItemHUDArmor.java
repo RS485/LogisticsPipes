@@ -1,6 +1,5 @@
 package logisticspipes.items;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,7 +15,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ISpecialArmor;
 
 import logisticspipes.LogisticsPipes;
@@ -96,13 +94,4 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 
-	@Override
-	public void registerModels() {
-		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation("logisticspipes:" + getModelPath(), "inventory"));
-	}
-
-	@Override
-	public String getModelPath() {
-		return getRegistryName().getResourcePath();
-	}
 }

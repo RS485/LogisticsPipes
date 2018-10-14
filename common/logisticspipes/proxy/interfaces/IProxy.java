@@ -1,8 +1,6 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -54,9 +52,6 @@ public interface IProxy {
 	public void openFluidSelectGui(int slotId);
 
 	default void registerModels() {}
-
-	@Deprecated
-	void registerModels(ILogisticsItem logisticsItem);
 
 	void registerTextures();
 

@@ -250,9 +250,6 @@ public class ServerProxy implements IProxy {
 	public void openFluidSelectGui(int slotId) {}
 
 	@Override
-	public void registerModels(ILogisticsItem logisticsItem) {}
-
-	@Override
 	public void registerTextures() {}
 
 	@Override

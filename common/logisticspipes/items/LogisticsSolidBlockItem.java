@@ -1,25 +1,16 @@
 package logisticspipes.items;
 
-import java.util.Arrays;
-
 import logisticspipes.interfaces.ILogisticsItem;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.newpipe.LogisticsBlockModel;
 import logisticspipes.utils.string.StringUtils;
-import org.apache.commons.lang3.NotImplementedException;
 
 public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem {
 
@@ -98,28 +89,8 @@ public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void registerModels() {
-		for(LogisticsSolidBlock.BlockType block: Arrays.asList(LogisticsSolidBlock.BlockType.LOGISTICS_BLOCK_FRAME,
-				LogisticsSolidBlock.BlockType.SOLDERING_STATION,
-				LogisticsSolidBlock.BlockType.LOGISTICS_POWER_JUNCTION,
-				LogisticsSolidBlock.BlockType.LOGISTICS_SECURITY_STATION,
-				LogisticsSolidBlock.BlockType.LOGISTICS_AUTOCRAFTING_TABLE,
-				LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE,
-				LogisticsSolidBlock.BlockType.LOGISTICS_STATISTICS_TABLE,
-				LogisticsSolidBlock.BlockType.LOGISTICS_RF_POWERPROVIDER,
-				LogisticsSolidBlock.BlockType.LOGISTICS_IC2_POWERPROVIDER,
-				LogisticsSolidBlock.BlockType.LOGISTICS_BC_POWERPROVIDER,
-				LogisticsSolidBlock.BlockType.LOGISTICS_PROGRAM_COMPILER)) {
-			ModelResourceLocation resourceLocation = new ModelResourceLocation(getRegistryName().toString() + "." + block.getMeta(), "inventory");
-			ModelLoader.setCustomModelResourceLocation(this, block.getMeta(), resourceLocation);
-			LogisticsBlockModel.nameTextureIdMap.put(resourceLocation, block);
-		}
-	}
-
 	@Override
-	public String getModelPath() {
-		// TODO split this block into one block for each variant
-		throw new NotImplementedException("not implemented");
+	public int getModelCount() {
+		return 16;
 	}
 }

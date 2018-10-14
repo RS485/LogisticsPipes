@@ -10,6 +10,9 @@ import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 
 import logisticspipes.LPBlocks;
+import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.items.LogisticsSolidBlockItem;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -19,6 +22,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
@@ -26,6 +30,7 @@ import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -51,7 +56,24 @@ public class LogisticsBlockModel implements IModel {
 				if(modelLocation instanceof ModelResourceLocation) {
 					ResourceLocation rl = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
 					if (((ModelResourceLocation) modelLocation).getVariant().equals("inventory")) {
-						return LogisticsBlockModel.nameTextureIdMap.containsKey(modelLocation);
+						int index = 0;
+						String resourcePath = rl.getResourcePath();
+						if (resourcePath.contains(".")) {
+							int i = resourcePath.lastIndexOf(".");
+							String a = resourcePath.substring(0, i);
+							String b = resourcePath.substring(i + 1);
+							try {
+								index = Integer.parseInt(b);
+							} catch (NumberFormatException ignored) {
+								return false;
+							}
+							resourcePath = a;
+						}
+						Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(rl.getResourceDomain(), resourcePath));
+						if (item instanceof LogisticsSolidBlockItem) {
+							nameTextureIdMap.put((ModelResourceLocation) modelLocation, LogisticsSolidBlock.BlockType.getForMeta(index));
+							return true;
+						}
 					}
 					if (rl.equals(LPBlocks.solidBlock.getRegistryName())) {
 						return true;

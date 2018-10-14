@@ -47,7 +47,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -74,7 +73,6 @@ import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.config.Configs;
 import logisticspipes.config.PlayerConfig;
 import logisticspipes.datafixer.LPDataFixer;
-import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
@@ -446,11 +444,7 @@ public class LogisticsPipes {
 
 	@SubscribeEvent
 	public void onModelLoad(ModelRegistryEvent e) {
-		// TODO don't have regsiterModels in the item class it makes me sad, guess this works for now though
-		ForgeRegistries.ITEMS.getValuesCollection().stream()
-				.filter(item -> item.getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID))
-				.filter(item -> item instanceof ILogisticsItem)
-				.forEach(item -> MainProxy.proxy.registerModels((ILogisticsItem) item));
+		MainProxy.proxy.registerModels();
 	}
 
 	private void registerRecipes() {

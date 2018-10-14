@@ -4,29 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.world.IBlockAccess;
 
 import lombok.Getter;
-import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.operation.LPRotation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.object3d.operation.LPUVScale;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsNewSolidBlockWorldRenderer {
 

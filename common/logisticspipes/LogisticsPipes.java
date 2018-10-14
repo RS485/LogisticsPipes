@@ -578,7 +578,7 @@ public class LogisticsPipes {
 		if (pipe.getClass() != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(pipe.getClass())) {
 			if (pipe.getClass() != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(pipe.getClass())) {
 				resetRecipeList.add(new Pair<>(res, LPItems.pipeFluidBasic));
-			} else {
+			} else if(pipe.getClass() != PipeBlockRequestTable.class) {
 				resetRecipeList.add(new Pair<>(res, LPItems.pipeBasic));
 			}
 		}

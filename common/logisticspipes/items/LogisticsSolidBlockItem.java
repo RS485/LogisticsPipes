@@ -31,34 +31,34 @@ public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem
 	private String getUnlocalizedName(LogisticsSolidBlock.BlockType forMeta) {
 		switch (forMeta) {
 			case SOLDERING_STATION:
-				return "tile.logisticspipes.soldering_station.name";
+				return "tile.logisticspipes.soldering_station";
 			case LOGISTICS_POWER_JUNCTION:
-				return "tile.logisticspipes.power_junction.name";
+				return "tile.logisticspipes.power_junction";
 			case LOGISTICS_SECURITY_STATION:
-				return "tile.logisticspipes.security_station.name";
+				return "tile.logisticspipes.security_station";
 			case LOGISTICS_AUTOCRAFTING_TABLE:
-				return "tile.logisticspipes.crafting_table.name";
+				return "tile.logisticspipes.crafting_table";
 			case LOGISTICS_FUZZYCRAFTING_TABLE:
-				return "tile.logisticspipes.fuzzy_crafting_table.name";
+				return "tile.logisticspipes.fuzzy_crafting_table";
 			case LOGISTICS_STATISTICS_TABLE:
-				return "tile.logisticspipes.statistics_table.name";
+				return "tile.logisticspipes.statistics_table";
 			case LOGISTICS_RF_POWERPROVIDER:
-				return "tile.logisticspipes.power_provider_rf.name";
+				return "tile.logisticspipes.power_provider_rf";
 			case LOGISTICS_IC2_POWERPROVIDER:
-				return "tile.logisticspipes.power_provider_eu.name";
+				return "tile.logisticspipes.power_provider_eu";
 			case LOGISTICS_BC_POWERPROVIDER:
-				return "tile.logisticspipes.power_provider_mj.name";
+				return "tile.logisticspipes.power_provider_mj";
 			case LOGISTICS_PROGRAM_COMPILER:
-				return "tile.logisticspipes.program_compiler.name";
+				return "tile.logisticspipes.program_compiler";
 			case LOGISTICS_BLOCK_FRAME:
-				return "tile.logisticspipes.blank_block.name";
+				return "tile.logisticspipes.blank_block";
 		}
 		return null;
 	}
 
 	@Override
 	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack));
+		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name");
 	}
 
 	@Override

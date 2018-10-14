@@ -36,16 +36,16 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 				NBTTagCompound nbt = stack.getTagCompound();
 				String target = nbt.getString(RECIPE_TARGET);
 				if (!target.isEmpty()) {
-					Item target_item = REGISTRY.getObject(new ResourceLocation(target));
-					if(target_item instanceof ItemModule) {
+					Item targetItem = REGISTRY.getObject(new ResourceLocation(target));
+					if(targetItem instanceof ItemModule) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForModule"));
-						tooltip.add(StringUtils.translate(target_item.getUnlocalizedName()));
-					} else if(target_item instanceof ItemUpgrade) {
+						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
+					} else if(targetItem instanceof ItemUpgrade) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForUpgrade"));
-						tooltip.add(StringUtils.translate(target_item.getUnlocalizedName()));
-					} else if(target_item instanceof ItemLogisticsPipe) {
+						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
+					} else if(targetItem instanceof ItemLogisticsPipe) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForPipe"));
-						tooltip.add(StringUtils.translate(target_item.getUnlocalizedName()));
+						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
 					} else {
 						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown"));
 					}

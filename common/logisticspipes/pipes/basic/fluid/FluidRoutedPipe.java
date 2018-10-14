@@ -11,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import logisticspipes.LPConstants;
@@ -33,6 +34,7 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.TankUtil;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
@@ -136,7 +138,17 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) {
 			return true;
 		}
-		if (!(tile instanceof IFluidHandler)) {
+		boolean fluidTile = false;
+		if(tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir)) {
+			IFluidHandler fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir);
+			if(fluidHandler != null) {
+				fluidTile = true;
+			}
+		}
+		if (tile instanceof IFluidHandler) {
+			fluidTile = true;
+		}
+		if(!fluidTile) {
 			return false;
 		}
 		if (!this.canPipeConnect(tile, dir)) {

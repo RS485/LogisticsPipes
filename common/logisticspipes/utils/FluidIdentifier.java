@@ -126,11 +126,8 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 					}
 				}
 			}
-			HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = FluidIdentifier._fluidIdentifierTagCache.get(fluidID);
-			if (fluidNBTList == null) {
-				fluidNBTList = new HashMap<>(16, 0.5f);
-				FluidIdentifier._fluidIdentifierTagCache.put(fluidID, fluidNBTList);
-			}
+			HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = FluidIdentifier._fluidIdentifierTagCache
+					.computeIfAbsent(fluidID, k -> new HashMap<>(16, 0.5f));
 			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound) tag.copy());
 			int id = FluidIdentifier.getUnusedId();
 			FluidIdentifier unknownFluid = new FluidIdentifier(fluidID, FluidRegistry.getFluidName(fluid), finaltag, id);
@@ -173,6 +170,9 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 	}
 
 	public static FluidIdentifier get(FluidStack stack) {
+		if(stack == null) {
+			return null;
+		}
 		FluidIdentifier proposal = null;
 		IAddInfoProvider prov = null;
 		if(stack instanceof IAddInfoProvider) {

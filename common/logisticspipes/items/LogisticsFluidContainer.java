@@ -18,6 +18,7 @@ import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvancedExistance {
 
@@ -48,6 +49,13 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 			}
 		}
 		return super.getUnlocalizedName(par1ItemStack);
+	}
+
+	@Override
+	public String getItemStackDisplayName(ItemStack itemstack) {
+		String unlocalizedName = getUnlocalizedName(itemstack);
+		String unlocalizedNameInefficiently = getUnlocalizedNameInefficiently(itemstack); // Fix for Logistics fluid container naming
+		return StringUtils.translate(unlocalizedName + (unlocalizedName.equals(unlocalizedNameInefficiently) ? ".name" : "")).trim();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

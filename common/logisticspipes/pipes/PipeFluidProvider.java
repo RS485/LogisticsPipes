@@ -86,7 +86,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				}
 			}
 			if (fallback) {
-				if (!util.containsTanks()) {
+				if (util.containsTanks()) {
 					util.forEachFluid(fluidStack -> {
 						if (amountToSend.get() <= 0) {
 							return;
@@ -147,7 +147,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				}
 			}
 			if (fallback) {
-				if (!util.containsTanks()) {
+				if (util.containsTanks()) {
 					util.forEachFluid(liquid -> {
 						if (liquid.getFluid() != null) {
 							FluidIdentifier ident = liquid.getFluid();
@@ -212,7 +212,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				}
 			}
 			if (fallback) {
-				if (!util.containsTanks()) {
+				if (util.containsTanks()) {
 					util.forEachFluid(liquid -> {
 						if (liquid.getFluid() != null) {
 							if (fluid.equals(liquid.getFluid())) {
@@ -270,7 +270,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 					.collect(Collectors.toList()));
 			}
 			if (fallback) {
-				if (!util.containsTanks()) {
+				if (util.containsTanks()) {
 					util.forEachFluid(liquid -> {
 						if (liquid.getFluid() != null) {
 							if (util.canDrain(liquid.getFluid())) {

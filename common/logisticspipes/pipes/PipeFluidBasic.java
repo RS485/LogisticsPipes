@@ -55,7 +55,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 			return 0; //Don't sink when the gui is open
 		}
 		FluidIdentifier ident = stack.getFluid();
-		if (filterInv.getStackInSlot(0) == null) {
+		if (filterInv.getIDStackInSlot(0) == null) {
 			return 0;
 		}
 		if (!ident.equals(FluidIdentifier.get(filterInv.getIDStackInSlot(0).getItem()))) {

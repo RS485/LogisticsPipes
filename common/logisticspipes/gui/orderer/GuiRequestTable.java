@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -24,7 +25,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
@@ -87,7 +87,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		_table = table;
 		_entityPlayer = entityPlayer;
 		if (GuiOrderer.cachetime + 100 < System.currentTimeMillis()) {
-			dimension = MainProxy.getDimensionForWorld(_table.getWorld());
+			dimension = _table.getWorld().provider.getDimension();
 		} else {
 			dimension = GuiOrderer.dimensioncache;
 		}
@@ -564,7 +564,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			return;
 		}
 		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, guiLeft, guiTop);
-		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LogisticsPipes.LogisticsItemDisk);
+		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,8 +1,6 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -35,8 +33,6 @@ public interface IProxy {
 
 	public void sendNameUpdateRequest(EntityPlayer player);
 
-	public int getDimensionForWorld(World world);
-
 	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player);
 
 	public void sendBroadCast(String message);
@@ -55,11 +51,10 @@ public interface IProxy {
 
 	public void openFluidSelectGui(int slotId);
 
-	void registerModels(ILogisticsItem logisticsItem);
+	default void registerModels() {}
 
 	void registerTextures();
 
 	void initModelLoader();
 
-	LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem);
 }

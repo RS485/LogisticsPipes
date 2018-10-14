@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
+import logisticspipes.LPItems;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -123,10 +124,6 @@ public class MainProxy {
 		return MainProxy.proxy.getWorld();
 	}
 
-	public static int getDimensionForWorld(World world) {
-		return MainProxy.proxy.getDimensionForWorld(world);
-	}
-
 	public static void createChannels() {
 		MainProxy.channels = NetworkRegistry.INSTANCE.newChannel(MainProxy.networkChannelName, new PacketHandler());
 		for (Side side : Side.values()) {
@@ -181,7 +178,7 @@ public class MainProxy {
 	}
 
 	public static void sendPacketToAllWatchingChunk(TileEntity tile, ModernPacket packet) {
-		sendPacketToAllWatchingChunk(tile.getPos().getX(), tile.getPos().getZ(), MainProxy.getDimensionForWorld(tile.getWorld()), packet);
+		sendPacketToAllWatchingChunk(tile.getPos().getX(), tile.getPos().getZ(), tile.getWorld().provider.getDimension(), packet);
 	}
 
 	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, ModernPacket packet) {
@@ -194,7 +191,7 @@ public class MainProxy {
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
 		if (players != null) {
 			for (EntityPlayer player : players.players()) {
-				if (MainProxy.getDimensionForWorld(player.world) == dimensionId) {
+				if (player.world.provider.getDimension() == dimensionId) {
 					MainProxy.sendPacketToPlayer(packet, player);
 				}
 			}
@@ -317,6 +314,6 @@ public class MainProxy {
 	}
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsPipeControllerItem;
+		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
 	}
 }

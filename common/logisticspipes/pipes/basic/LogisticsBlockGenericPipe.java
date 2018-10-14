@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import logisticspipes.LPBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -44,7 +46,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -61,6 +62,7 @@ import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.math.MatrixTranformations;
+import net.minecraftforge.registries.IForgeRegistry;
 import network.rs485.logisticspipes.utils.block.BoundingBoxDelegateBlockState;
 import network.rs485.logisticspipes.utils.block.RenderListDelegateBlockState;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -71,7 +73,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	public static InternalRayTraceResult bypassPlayerTrace = null;
 	public static boolean ignoreSideRayTrace = false;
-	public static Map<Item, Class<? extends CoreUnroutedPipe>> pipes = new HashMap<>();
+	public static Map<Item, Function<Item, ? extends CoreUnroutedPipe>> pipes = new HashMap<>();
 	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<>();
 	private static long lastRemovedDate = -1;
 	protected final Random rand = new Random();
@@ -96,7 +98,6 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public LogisticsBlockGenericPipe() {
 		super(Material.GLASS);
 		setRenderAllSides();
-		setUnlocalizedName("logisticsblockgenericpipe");
 		IBlockState state = this.blockState.getBaseState()
 				.withProperty(rotationProperty, 0)
 				.withProperty(modelTypeProperty, PipeRenderModel.NONE);
@@ -156,13 +157,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	/* Registration ******************************************************** */
-	public static ItemLogisticsPipe registerPipe(Class<? extends CoreUnroutedPipe> clas) {
+	public static ItemLogisticsPipe registerPipe(IForgeRegistry<Item> registry, String name, Function<Item, ? extends CoreUnroutedPipe> constructor) {
 		ItemLogisticsPipe item = new ItemLogisticsPipe();
-		item.setUnlocalizedName(clas.getSimpleName());
-		item.setRegistryName(item.getUnlocalizedName());
+		LogisticsPipes.setName(item, String.format("pipe_%s", name));
 
-
-		LogisticsBlockGenericPipe.pipes.put(item, clas);
+		LogisticsBlockGenericPipe.pipes.put(item, constructor);
 
 		CoreUnroutedPipe dummyPipe = LogisticsBlockGenericPipe.createPipe(item);
 		if (dummyPipe != null) {
@@ -171,8 +170,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			item.setDummyPipe(dummyPipe);
 		}
 
-		MainProxy.proxy.registerModels(item);
-		ForgeRegistries.ITEMS.register(item);
+		registry.register(item);
 		return item;
 	}
 
@@ -181,13 +179,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	public static CoreUnroutedPipe createPipe(Item key) {
-		Class<? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
+		Function<Item, ? extends CoreUnroutedPipe> pipe = LogisticsBlockGenericPipe.pipes.get(key);
 		if (pipe != null) {
-			try {
-				return pipe.getConstructor(Item.class).newInstance(key);
-			} catch (ReflectiveOperationException e) {
-				LogisticsPipes.log.error("Could not construct class " + pipe.getSimpleName() + " for key " + key, e);
-			}
+			return pipe.apply(key);
 		} else {
 			LogisticsPipes.log.warn("Detected pipe with unknown key (" + key + "). This should not have happend.");
 		}
@@ -230,7 +224,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 							((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
 							MainProxy.sendPacketToAllWatchingChunk(subTile, ((LogisticsTileGenericSubMultiBlock) subTile).getLPDescriptionPacket());
 						} else {
-							world.setBlockState(pos.getBlockPos(), LogisticsPipes.LogisticsSubMultiBlock.getDefaultState(), 0);
+							world.setBlockState(pos.getBlockPos(), LPBlocks.subMultiblock.getDefaultState(), 0);
 							subTile = world.getTileEntity(pos.getBlockPos());
 							if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
 								((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
@@ -278,8 +272,8 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				return null;
 			}
 			boolean changed = false;
-			if (worldCache.getBlockState(posCache) != null || worldCache.getBlockState(posCache).getBlock() != LogisticsPipes.LogisticsPipeBlock) {
-				worldCache.setBlockState(posCache, LogisticsPipes.LogisticsPipeBlock.getDefaultState());
+			if (worldCache.getBlockState(posCache) != null || worldCache.getBlockState(posCache).getBlock() != LPBlocks.pipe) {
+				worldCache.setBlockState(posCache, LPBlocks.pipe.getDefaultState());
 				changed = true;
 			}
 			if (worldCache.getTileEntity(posCache) != tileCache) {
@@ -902,7 +896,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		EnumFacing sideHit = target.sideHit;
 
-		Block block = LogisticsPipes.LogisticsPipeBlock;
+		Block block = LPBlocks.pipe;
 		float b = 0.1F;
 		double px = target.hitVec.x + rand.nextDouble() * (state.getBoundingBox(world, pos).maxX - state.getBoundingBox(world, pos).minX - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minX;
 		double py = target.hitVec.y + rand.nextDouble() * (state.getBoundingBox(world, pos).maxY - state.getBoundingBox(world, pos).minY - (b * 2.0F)) + b + state.getBoundingBox(world, pos).minY;

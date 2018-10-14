@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "cd",
+    "dc"
+  ],
+  "key": {
+    "c": {
+      "item": "logisticspipes:chip_basic_raw"
+    },
+    "d": {
+      "type": "forge:ore_dict",
+      "ore": "gemDiamond"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:chip_advanced_raw"
+  }
+}

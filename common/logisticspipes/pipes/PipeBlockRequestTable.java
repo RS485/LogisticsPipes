@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -178,7 +179,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if (diskInv.getStackInSlot(0) == null) {
-			if (!entityplayer.getHeldItemMainhand().isEmpty() && entityplayer.getHeldItemMainhand().getItem().equals(LogisticsPipes.LogisticsItemDisk)) {
+			if (!entityplayer.getHeldItemMainhand().isEmpty() && entityplayer.getHeldItemMainhand().getItem().equals(LPItems.disk)) {
 				diskInv.setInventorySlotContents(0, entityplayer.getHeldItemMainhand());
 				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, ItemStack.EMPTY);
 				flag = false;

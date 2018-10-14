@@ -1,19 +1,15 @@
 package logisticspipes.ticks;
 
-import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.LPBlocks;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.LogisticsRenderPipe;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
@@ -25,7 +21,6 @@ import logisticspipes.utils.LPPositionSet;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -47,7 +42,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
-import codechicken.lib.render.CCRenderState;
 import org.lwjgl.opengl.GL11;
 
 public class RenderTickHandler {
@@ -126,7 +120,7 @@ public class RenderTickHandler {
 							globalPos.addToAll(orientation.getOffset());
 
 							for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
-								if (!player.getEntityWorld().mayPlace(LogisticsPipes.LogisticsPipeBlock, pos.getBlockPos(), false, side, player)) {
+								if (!player.getEntityWorld().mayPlace(LPBlocks.pipe, pos.getBlockPos(), false, side, player)) {
 									TileEntity tile = player.getEntityWorld().getTileEntity(pos.getBlockPos());
 									boolean canPlace = false;
 									if (tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -144,7 +138,7 @@ public class RenderTickHandler {
 							return;
 						}
 					} else {
-						if (!player.getEntityWorld().mayPlace(LogisticsPipes.LogisticsPipeBlock, bPos, false, side, player)) {
+						if (!player.getEntityWorld().mayPlace(LPBlocks.pipe, bPos, false, side, player)) {
 							isFreeSpace = false;
 						}
 					}

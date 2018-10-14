@@ -1,15 +1,13 @@
 package logisticspipes.logistics;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPItems;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.interfaces.routing.IProvideFluids;
 import logisticspipes.items.LogisticsFluidContainer;
@@ -26,9 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class LogisticsFluidManager implements ILogisticsFluidManager {
 
@@ -66,7 +61,7 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 	@Override
 	public ItemIdentifierStack getFluidContainer(FluidIdentifierStack stack) {
-		ItemStack item = new ItemStack(LogisticsPipes.LogisticsFluidContainer, 1);
+		ItemStack item = new ItemStack(LPItems.fluidContainer, 1);
 		NBTTagCompound nbt = new NBTTagCompound();
 		stack.makeFluidStack().writeToNBT(nbt);
 		item.setTagCompound(nbt);

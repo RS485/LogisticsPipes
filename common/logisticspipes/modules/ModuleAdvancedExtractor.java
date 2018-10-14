@@ -47,9 +47,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 @CCType(name = "Advanced Extractor Module")
 public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
@@ -327,9 +324,4 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		return false;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleAdvancedExtractor";
-	}
 }

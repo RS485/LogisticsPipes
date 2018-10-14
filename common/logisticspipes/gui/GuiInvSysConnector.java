@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -13,7 +14,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.InvSysConContentRequest;
@@ -47,7 +47,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 			if (itemStack == null) {
 				return false;
 			}
-			if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+			if (itemStack.getItem() != LPItems.itemCard) {
 				return false;
 			}
 			return itemStack.getItemDamage() == LogisticsItemCard.FREQ_CARD;

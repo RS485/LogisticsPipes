@@ -14,9 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -148,12 +145,6 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	@Override
 	public boolean recievePassive() {
 		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleActiveSupplier";
 	}
 
 	/* TRIGGER INTERFACE */

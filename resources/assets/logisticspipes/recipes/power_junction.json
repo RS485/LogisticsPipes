@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " c ",
+    "rfr",
+    "ibi"
+  ],
+  "key": {
+    "c": {
+      "type": "logisticspipes:part",
+      "part": "chip_basic"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "f": {
+      "item": "logisticspipes:solid_block",
+      "data": 15
+    },
+    "b": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:solid_block",
+    "data": 1
+  }
+}

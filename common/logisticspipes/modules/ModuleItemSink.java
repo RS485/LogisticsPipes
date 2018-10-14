@@ -45,9 +45,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 @CCType(name = "ItemSink Module")
 public class ModuleItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
@@ -280,12 +277,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		return true;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleItemSink";
-	}
-
 	public void setIgnoreData(BitSet ignoreData) {
 		this.ignoreData = ignoreData;
 	}
@@ -316,7 +307,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
 		}
 	}
 
@@ -334,7 +325,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(_world.getWorld()), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
 		}
 	}
 

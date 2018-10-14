@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sg",
+    "gs"
+  ],
+  "key": {
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "sand"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:chip_basic_raw"
+  },
+  "conditions": [
+    {
+      "type": "logisticspipes:ore_exists",
+      "ore": "!ingotCopper"
+    }
+  ]
+}

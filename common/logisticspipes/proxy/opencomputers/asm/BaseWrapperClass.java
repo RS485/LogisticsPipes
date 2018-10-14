@@ -4,14 +4,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCDirectCall;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
@@ -440,7 +438,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		} else if (object instanceof CoreRoutedPipe) {
 			DoubleCoordinates pos = ((CoreRoutedPipe) object).getLPPosition();
 			nbt.setString("Type", "CoreRoutedPipe");
-			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((CoreRoutedPipe) object).getWorld()));
+			nbt.setInteger("Dim", ((CoreRoutedPipe) object).getWorld().provider.getDimension());
 			nbt.setInteger("X", pos.getXInt());
 			nbt.setInteger("Y", pos.getYInt());
 			nbt.setInteger("Z", pos.getZInt());
@@ -456,7 +454,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 		} else if (object instanceof LogisticsSolidTileEntity) {
 			DoubleCoordinates pos = ((LogisticsSolidTileEntity) object).getLPPosition();
 			nbt.setString("Type", "LogisticsSolidTileEntity");
-			nbt.setInteger("Dim", MainProxy.getDimensionForWorld(((LogisticsSolidTileEntity) object).getWorld()));
+			nbt.setInteger("Dim", ((LogisticsSolidTileEntity) object).getWorld().provider.getDimension());
 			nbt.setInteger("X", pos.getXInt());
 			nbt.setInteger("Y", pos.getYInt());
 			nbt.setInteger("Z", pos.getZInt());

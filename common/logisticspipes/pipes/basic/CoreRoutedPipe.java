@@ -25,12 +25,12 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import logisticspipes.LPItems;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -109,7 +109,6 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
@@ -664,7 +663,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 					tosend.add(new ParticleCount(Particles.values()[i], queuedParticles[i]));
 				}
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()),
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(),
 					PacketHandler.getPacket(ParticleFX.class).setParticles(tosend).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			if (Minecraft.isFancyGraphicsEnabled()) {
@@ -810,7 +809,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 					routerIntId = UUID.fromString(routerId);
 				}
 				router = SimpleServiceLocator.routerManager
-						.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), false);
+						.getOrCreateRouter(routerIntId, getWorld().provider.getDimension(), getX(), getY(), getZ(), false);
 			}
 		}
 		return router;
@@ -887,7 +886,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.remoteOrderer) {
 			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openRequest) {
 					entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
@@ -1645,13 +1644,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			}
 		}
 		ModernPacket packet = PacketHandler.getPacket(PipeSignTypes.class).setTypes(types).setTilePos(container);
-		MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+		MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
 		MainProxy.sendPacketToPlayer(packet, player);
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] != null) {
 				packet = signItem[i].getPacket();
 				if (packet != null) {
-					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
+					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
 					MainProxy.sendPacketToPlayer(packet, player);
 				}
 			}

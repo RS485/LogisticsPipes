@@ -2,7 +2,7 @@ package logisticspipes.gui.hud;
 
 import java.io.IOException;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPItems;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.network.PacketHandler;
@@ -61,7 +61,7 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		if (player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).getItem() != LogisticsPipes.LogisticsHUDArmor) {
+		if (player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).getItem() != LPItems.hudGlasses) {
 			mc.player.closeScreen();
 		}
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);

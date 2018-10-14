@@ -8,9 +8,8 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.LPItems;
 import logisticspipes.gui.modules.ModuleBaseGui;
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.cpipe.CPipeCleanupImport;
@@ -28,7 +27,6 @@ import logisticspipes.utils.string.StringUtils;
 import lombok.Getter;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -402,7 +400,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
-				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsUpgrades.get(FluidCraftingUpgrade.class));
+				ItemStack stack = new ItemStack(LPItems.upgrades.get(FluidCraftingUpgrade.class));
 				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				itemRender.renderItemOverlayIntoGUI(fontRenderer, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -510,7 +508,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
-				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsUpgrades.get(CraftingByproductUpgrade.class));
+				ItemStack stack = new ItemStack(LPItems.upgrades.get(CraftingByproductUpgrade.class));
 				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				itemRender.renderItemOverlayIntoGUI(fontRenderer, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -543,7 +541,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
-				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsUpgrades.get(CraftingCleanupUpgrade.class));
+				ItemStack stack = new ItemStack(LPItems.upgrades.get(CraftingCleanupUpgrade.class));
 				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				itemRender.renderItemOverlayIntoGUI(fontRenderer, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);

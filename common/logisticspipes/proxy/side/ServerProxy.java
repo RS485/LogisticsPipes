@@ -168,17 +168,6 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public int getDimensionForWorld(World world) {
-		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.getDimension();
-		}
-		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.getDimension();
-		}
-		return 0;
-	}
-
-	@Override
 	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
 		return ServerProxy.getPipe(DimensionManager.getWorld(dimension), x, y, z);
 	}
@@ -261,16 +250,9 @@ public class ServerProxy implements IProxy {
 	public void openFluidSelectGui(int slotId) {}
 
 	@Override
-	public void registerModels(ILogisticsItem logisticsItem) {}
-
-	@Override
 	public void registerTextures() {}
 
 	@Override
 	public void initModelLoader() {}
 
-	@Override
-	public LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem) {
-		return logisticsSolidBlockItem;
-	}
 }

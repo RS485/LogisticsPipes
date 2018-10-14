@@ -3,7 +3,6 @@ package logisticspipes.items;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,10 +16,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
@@ -30,15 +26,17 @@ import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.StringUtils;
 
 public class RemoteOrderer extends LogisticsItem {
 
-	@SideOnly(Side.CLIENT)
-	public void registerModels() {
-		for (int i = 0; i < 17; i++) {
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation("logisticspipes:" + getUnlocalizedName().replace("item.", "") + "/" + i, "inventory"));
-		}
+	@Override
+	public String getModelSubdir() {
+		return "remote_orderer";
+	}
+
+	@Override
+	public int getModelCount() {
+		return 17;
 	}
 
 	@Override
@@ -74,7 +72,7 @@ public class RemoteOrderer extends LogisticsItem {
 				}
 				energyUse += Math.sqrt(Math.pow(pipe.getX() - player.posX, 2) + Math.pow(pipe.getY() - player.posY, 2) + Math.pow(pipe.getZ() - player.posZ, 2));
 				if (pipe.useEnergy(energyUse)) {
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.getWorld())), player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(pipe.getWorld().provider.getDimension()), player);
 					player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 				}
 			}
@@ -135,8 +133,4 @@ public class RemoteOrderer extends LogisticsItem {
 		}
 	}
 
-	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack));
-	}
 }

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
@@ -61,7 +60,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		Security security = new Security(dummy);
 		Statistics statistics = new Statistics();
 		//Logic logic = new Logic();
-		addHiddenSlot(dummy.addRestrictedSlot(0, pipe.container.logicController.diskInv, 14, 36, LogisticsPipes.LogisticsItemDisk)); //Keep it for now, but hidden. Maybe it will be used again later
+		addHiddenSlot(dummy.addRestrictedSlot(0, pipe.container.logicController.diskInv, 14, 36, LPItems.disk)); //Keep it for now, but hidden. Maybe it will be used again later
 		Tasks tasks = new Tasks();
 
 
@@ -162,7 +161,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
-			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsUpgrades.get(SneakyUpgradeConfig.class), 1);
+			ItemStack stack = new ItemStack(LPItems.upgrades.get(SneakyUpgradeConfig.class), 1);
 			itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -207,7 +206,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 						if (itemStack == null) {
 							return false;
 						}
-						if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+						if (itemStack.getItem() != LPItems.itemCard) {
 							return false;
 						}
 						if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {

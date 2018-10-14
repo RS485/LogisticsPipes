@@ -1,0 +1,8 @@
+{
+  "conditions": {
+    "ore_exists": "logisticspipes.recipes.conditions.ConditionOreExists"
+  },
+  "ingredients": {
+    "part": "logisticspipes.recipes.ingredients.IngredientPart"
+  }
+}

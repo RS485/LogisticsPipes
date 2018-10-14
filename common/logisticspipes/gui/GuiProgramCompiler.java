@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -12,7 +13,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.ItemModule;
@@ -47,8 +47,8 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 		DummyContainer dummy = new DummyContainer(player.inventory, compiler.getInventory());
 
-		dummy.addRestrictedSlot(0, compiler.getInventory(), 10, 10, LogisticsPipes.LogisticsItemDisk);
-		dummy.addRestrictedSlot(1, compiler.getInventory(), 154, 10, LogisticsPipes.LogisticsProgrammer);
+		dummy.addRestrictedSlot(0, compiler.getInventory(), 10, 10, LPItems.disk);
+		dummy.addRestrictedSlot(1, compiler.getInventory(), 154, 10, LPItems.logisticsProgrammer);
 
 		dummy.addNormalSlotsForPlayerInventory(10, 105);
 
@@ -105,7 +105,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 				Item selItem = Item.REGISTRY.getObject(sel);
 				if (selItem != null) {
-					return StringUtils.translate(selItem.getUnlocalizedName());
+					return StringUtils.translate(selItem.getUnlocalizedName() + ".name");
 				}
 				return "UNDEFINED";
 			}
@@ -208,10 +208,10 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 		if(compiler.getCurrentTask() != null) {
 			fontRenderer.drawString(StringUtils.translate("gui.compiler.processing"), guiLeft + 10, guiTop + 39, 0x000000);
-			String name = null;
+			String name;
 			Item item = Item.REGISTRY.getObject(compiler.getCurrentTask());
 			if(item != null) {
-				name = Item.REGISTRY.getObject(compiler.getCurrentTask()).getUnlocalizedName();
+				name = Item.REGISTRY.getObject(compiler.getCurrentTask()).getUnlocalizedName() + ".name";
 			} else {
 				name = "gui.compiler." + compiler.getCurrentTask().toString().replace(':', '.');
 			}
@@ -260,9 +260,9 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		List<ResourceLocation> result = list.tagList.stream().flatMap(
 				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new ResourceLocation(((NBTTagString) nbtBase).getString()))
 						.stream())
-				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getUnlocalizedName()).toLowerCase().contains(search.getContent().toLowerCase()))
+				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getUnlocalizedName() + ".name").toLowerCase().contains(search.getContent().toLowerCase()))
 				.sorted(Comparator.comparing(o -> getSortingClass(Item.REGISTRY.getObject((ResourceLocation) o)))
-						.thenComparing(o -> StringUtils.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName()).toLowerCase())
+						.thenComparing(o -> StringUtils.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName() + ".name").toLowerCase())
 				)
 				.collect(Collectors.toList());
 		return result;

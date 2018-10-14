@@ -16,7 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public class FluidGuiOrderer extends GuiOrderer {
 
 	public FluidGuiOrderer(PipeFluidRequestLogistics pipe, EntityPlayer entityPlayer) {
-		super(pipe.getX(), pipe.getY(), pipe.getZ(), MainProxy.getDimensionForWorld(pipe.getWorld()), entityPlayer);
+		super(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().provider.getDimension(), entityPlayer);
 		_title = "Request Fluid";
 		refreshItems();
 	}

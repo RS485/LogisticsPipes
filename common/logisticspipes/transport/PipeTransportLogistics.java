@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -98,7 +96,7 @@ public class PipeTransportLogistics {
 			chunk = getWorld().getChunkFromBlockCoords(container.getPos());
 			ItemBufferSyncPacket packet = PacketHandler.getPacket(ItemBufferSyncPacket.class);
 			packet.setTilePos(container);
-			_itemBuffer.setPacketType(packet, MainProxy.getDimensionForWorld(getWorld()), container.getX(), container.getZ());
+			_itemBuffer.setPacketType(packet, getWorld().provider.getDimension(), container.getX(), container.getZ());
 		}
 	}
 
@@ -773,7 +771,7 @@ public class PipeTransportLogistics {
 	}
 
 	private void sendItemPacket(LPTravelingItemServer item) {
-		if (MainProxy.isAnyoneWatching(container.getPos(), MainProxy.getDimensionForWorld(getWorld()))) {
+		if (MainProxy.isAnyoneWatching(container.getPos(), getWorld().provider.getDimension())) {
 			if (!LPTravelingItem.clientSideKnownIDs.get(item.getId())) {
 				MainProxy.sendPacketToAllWatchingChunk(container, (PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemIdentifierStack()).setTravelId(item.getId())));
 				LPTravelingItem.clientSideKnownIDs.set(item.getId());

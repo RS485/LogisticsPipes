@@ -1,7 +1,6 @@
 package logisticspipes.gui;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.LPItems;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -9,7 +8,6 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 
 public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 
@@ -20,7 +18,7 @@ public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 			if (itemStack == null) {
 				return false;
 			}
-			if (itemStack.getItem() != LogisticsPipes.LogisticsItemCard) {
+			if (itemStack.getItem() != LPItems.itemCard) {
 				return false;
 			}
 			if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {

@@ -3,6 +3,8 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LPBlocks;
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.modules.ModuleBaseGui;
@@ -43,7 +45,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
@@ -54,14 +56,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.DimensionManager;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -123,17 +126,6 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void sendNameUpdateRequest(EntityPlayer player) {
 		//Not Client Side
-	}
-
-	@Override
-	public int getDimensionForWorld(World world) {
-		if (world instanceof WorldServer) {
-			return ((WorldServer) world).provider.getDimension();
-		}
-		if (world instanceof WorldClient) {
-			return ((WorldClient) world).provider.getDimension();
-		}
-		return 0;
 	}
 
 	@Override
@@ -252,15 +244,34 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public void registerModels(ILogisticsItem logisticsItem) {
-		logisticsItem.registerModels();
+	public void registerModels() {
+		ForgeRegistries.ITEMS.getValuesCollection().stream()
+				.filter(item -> item.getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID))
+				.filter(item -> item instanceof ILogisticsItem)
+				.forEach(item -> registerModels((ILogisticsItem)item));
+	}
+
+	private void registerModels(ILogisticsItem item) {
+		int mc = item.getModelCount();
+		for (int i = 0; i < mc; i++) {
+			String modelPath = item.getModelPath();
+			if (mc > 1) {
+				String resourcePath = item.getItem().getRegistryName().getResourcePath();
+				if (modelPath.matches(String.format(".*%s/%s", resourcePath, resourcePath))) {
+					modelPath = String.format("%s/%d", modelPath.substring(0, modelPath.length() - resourcePath.length() - 1), i);
+				} else {
+					modelPath = String.format("%s.%d", modelPath, i);
+				}
+			}
+			ModelLoader.setCustomModelResourceLocation(item.getItem(), i, new ModelResourceLocation(new ResourceLocation(item.getItem().getRegistryName().getResourceDomain(), modelPath), "inventory"));
+		}
 	}
 
 	@Override
 	public void registerTextures() {
 		LogisticsPipes.textures.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewRenderPipe.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
-		LogisticsPipes.LogisticsSolidBlock.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
+		LPBlocks.solidBlock.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewPipeModel.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 	}
 
@@ -271,8 +282,4 @@ public class ClientProxy implements IProxy {
 		ModelLoaderRegistry.registerLoader(new FluidContainerRenderer.FluidContainerRendererModelLoader());
 	}
 
-	@Override
-	public LogisticsSolidBlockItem registerSolidBlockModel(LogisticsSolidBlockItem logisticsSolidBlockItem) {
-		return logisticsSolidBlockItem.registerModels();
-	}
 }

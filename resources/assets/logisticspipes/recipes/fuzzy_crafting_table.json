@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "c",
+    "t"
+  ],
+  "key": {
+    "c": {
+      "type": "logisticspipes:part",
+      "part": "chip_basic"
+    },
+    "t": {
+      "item": "logisticspipes:solid_block",
+      "data": 15
+    }
+  },
+  "result": {
+    "item": "logisticspipes:solid_block",
+    "data": 4
+  }
+}

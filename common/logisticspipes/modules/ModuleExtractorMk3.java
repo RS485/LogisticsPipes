@@ -2,13 +2,6 @@ package logisticspipes.modules;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class ModuleExtractorMk3 extends ModuleExtractorMk2 {
 
 	public ModuleExtractorMk3() {
@@ -35,9 +28,4 @@ public class ModuleExtractorMk3 extends ModuleExtractorMk2 {
 		return ItemSendMode.Fast;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public String getModuleModelPath() {
-		return "itemModule/ModuleExtractorMk3";
-	}
 }

@@ -23,7 +23,7 @@ public class UpgradeModuleUpgrade implements IPipeUpgrade {
 
 	@Override
 	public String[] getAllowedPipes() {
-		return new String[] { "chassi" };
+		return new String[] { "chassis" };
 	}
 
 	@Override

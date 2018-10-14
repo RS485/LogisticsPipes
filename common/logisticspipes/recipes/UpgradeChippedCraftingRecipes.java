@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import logisticspipes.LPItems;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,31 +14,8 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
-import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.modules.ModuleAdvancedExtractor;
-import logisticspipes.modules.ModuleAdvancedExtractorMK2;
-import logisticspipes.modules.ModuleAdvancedExtractorMK3;
-import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.modules.ModuleCrafterMK2;
-import logisticspipes.modules.ModuleCrafterMK3;
-import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
-import logisticspipes.modules.ModuleEnchantmentSink;
-import logisticspipes.modules.ModuleExtractor;
-import logisticspipes.modules.ModuleExtractorMk2;
-import logisticspipes.modules.ModuleExtractorMk3;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.modules.ModuleModBasedItemSink;
-import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.modules.ModulePassiveSupplier;
-import logisticspipes.modules.ModulePolymorphicItemSink;
-import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.ModuleProviderMk2;
-import logisticspipes.modules.ModuleQuickSort;
-import logisticspipes.modules.ModuleTerminus;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
 import logisticspipes.pipes.upgrades.ConnectionUpgradeConfig;
@@ -62,9 +40,9 @@ public class UpgradeChippedCraftingRecipes extends CraftingPartRecipes {
 	}
 
 	private void registerUpgradeRecipe(CraftingParts parts, RecipeType type, ResourceLocation recipeCategory, Class<? extends IPipeUpgrade> upgradeClass) {
-		Item upgrade = LogisticsPipes.LogisticsUpgrades.get(upgradeClass);
+		Item upgrade = LPItems.upgrades.get(upgradeClass);
 
-		ItemStack programmerStack = new ItemStack(LogisticsPipes.LogisticsProgrammer);
+		ItemStack programmerStack = new ItemStack(LPItems.logisticsProgrammer);
 		programmerStack.setTagCompound(new NBTTagCompound());
 		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, upgrade.getRegistryName().toString());
 		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);

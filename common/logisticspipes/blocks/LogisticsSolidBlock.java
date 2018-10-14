@@ -52,7 +52,6 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsSolidBlock extends BlockContainer {
 
-
 	public static final PropertyEnum<BlockType> metaProperty = PropertyEnum.create("block_sub_type", BlockType.class);
 	public static final PropertyInteger rotationProperty = PropertyInteger.create("rotation", 0, 3);
 	public static final PropertyInteger textureIndexProperty = PropertyInteger.create("texture_index", 0, 11);
@@ -111,7 +110,6 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public LogisticsSolidBlock() {
 		super(Material.IRON);
 		setHardness(6.0F);
-		setUnlocalizedName("logisticssolidblock");
 		IBlockState state = this.blockState.getBaseState().withProperty(metaProperty, BlockType.SOLDERING_STATION)
 				.withProperty(rotationProperty, 0)
 				.withProperty(textureIndexProperty, 0);
@@ -246,18 +244,18 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(TextureMap par1IIconRegister) {
-		LogisticsSolidBlock.newTextures[0] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/baseTexture")); // Base
-		LogisticsSolidBlock.newTextures[1] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/solderTexture")); // SOLDERING_STATION
-		LogisticsSolidBlock.newTextures[9] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/solderTexture_active")); // SOLDERING_STATION Active
-		LogisticsSolidBlock.newTextures[2] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerTexture")); // LOGISTICS_POWER_JUNCTION
-		LogisticsSolidBlock.newTextures[3] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/securityTexture")); // LOGISTICS_SECURITY_STATION
-		LogisticsSolidBlock.newTextures[4] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/craftingTexture")); // LOGISTICS_AUTOCRAFTING_TABLE
-		LogisticsSolidBlock.newTextures[5] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/fuzzycraftingTexture")); // LOGISTICS_FUZZYCRAFTING_TABLE
-		LogisticsSolidBlock.newTextures[6] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/statisticsTexture")); // LOGISTICS_STATISTICS_TABLE
-		LogisticsSolidBlock.newTextures[7] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerRFTexture")); // LOGISTICS_RF_POWERPROVIDER
-		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerIC2Texture")); // LOGISTICS_IC2_POWERPROVIDER
-		LogisticsSolidBlock.newTextures[10] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/powerBCTexture")); // LOGISTICS_BC_POWERPROVIDER
-		LogisticsSolidBlock.newTextures[11] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:lpsolidblock/compilerTexture")); // LOGISTICS_PROGRAM_COMPILER
+		LogisticsSolidBlock.newTextures[0] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/base")); // Base
+		LogisticsSolidBlock.newTextures[1] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/soldering_station")); // SOLDERING_STATION
+		LogisticsSolidBlock.newTextures[9] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/soldering_station_active")); // SOLDERING_STATION Active
+		LogisticsSolidBlock.newTextures[2] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/power_junction")); // LOGISTICS_POWER_JUNCTION
+		LogisticsSolidBlock.newTextures[3] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/security_station")); // LOGISTICS_SECURITY_STATION
+		LogisticsSolidBlock.newTextures[4] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/crafting_table")); // LOGISTICS_AUTOCRAFTING_TABLE
+		LogisticsSolidBlock.newTextures[5] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/fuzzy_crafting_table")); // LOGISTICS_FUZZYCRAFTING_TABLE
+		LogisticsSolidBlock.newTextures[6] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/statistics_table")); // LOGISTICS_STATISTICS_TABLE
+		LogisticsSolidBlock.newTextures[7] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/power_provider_rf")); // LOGISTICS_RF_POWERPROVIDER
+		LogisticsSolidBlock.newTextures[8] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/power_provider_eu")); // LOGISTICS_IC2_POWERPROVIDER
+		LogisticsSolidBlock.newTextures[10] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/power_provider_mj")); // LOGISTICS_BC_POWERPROVIDER
+		LogisticsSolidBlock.newTextures[11] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:solid_block/program_compiler")); // LOGISTICS_PROGRAM_COMPILER
 	}
 
 	public static TextureAtlasSprite getNewIcon(BlockType type) {

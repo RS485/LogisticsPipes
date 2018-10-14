@@ -46,7 +46,7 @@ public class FluidContainerRenderer implements IModel {
 
 		@Override
 		public boolean accepts(@Nonnull ResourceLocation modelLocation) {
-			return modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().equals("models/item/logisticsfluidcontainer");
+			return modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().equals("models/item/fluid_container");
 		}
 
 		@Override

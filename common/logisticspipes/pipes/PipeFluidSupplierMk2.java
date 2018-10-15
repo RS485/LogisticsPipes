@@ -19,6 +19,7 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -120,7 +121,9 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 			//How much do I want?
 			Map<FluidIdentifier, Integer> wantFluids = new HashMap<>();
-			FluidIdentifier fIdent = FluidIdentifier.get(dummyInventory.getIDStackInSlot(0).getItem());
+			ItemIdentifierStack stack = dummyInventory.getIDStackInSlot(0);
+			if (stack == null) return;
+			FluidIdentifier fIdent = FluidIdentifier.get(stack.getItem());
 			wantFluids.put(fIdent, amount);
 
 			//How much do I have?

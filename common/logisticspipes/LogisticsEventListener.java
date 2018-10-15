@@ -1,6 +1,5 @@
 package logisticspipes;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,7 +70,6 @@ public class LogisticsEventListener {
 
 	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<>();
 	public static Map<ChunkPos, PlayerCollectionList> watcherList = new ConcurrentHashMap<>();
-	int taskCount = 0;
 	public static Map<PlayerIdentifier, PlayerConfig> playerConfigs = new HashMap<>();
 
 	@SubscribeEvent
@@ -89,7 +87,7 @@ public class LogisticsEventListener {
 	 */
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void textureHook(TextureStitchEvent.Pre event) throws IOException {
+	public void textureHook(TextureStitchEvent.Pre event) {
 		LogisticsPipes.textures.registerBlockIcons(event.getMap());
 	}
 
@@ -277,7 +275,6 @@ public class LogisticsEventListener {
 				if (times > 10) {
 					return;
 				}
-				assert playerEntity != null;
 
 				VersionChecker checker = LogisticsPipes.versionChecker;
 

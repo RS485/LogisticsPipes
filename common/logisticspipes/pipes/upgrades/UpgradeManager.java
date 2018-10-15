@@ -27,6 +27,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.SimpleStackInventory;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -66,6 +67,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	private int craftingCleanup = 0;
 	private boolean hasLogicControll = false;
 	private boolean hasUpgradeModuleUpgarde = false;
+	private int actionSpeedUpgrade = 0;
+	private int itemExtractionUpgrade = 0;
+	private int itemStackExtractionUpgrade = 0;
+
 	private boolean[] guiUpgrades = new boolean[18];
 
 	private boolean needsContainerPositionUpdate = false;
@@ -152,6 +157,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		craftingCleanup = 0;
 		hasLogicControll = false;
 		hasUpgradeModuleUpgarde = false;
+		actionSpeedUpgrade = 0;
+		itemExtractionUpgrade = 0;
+		itemStackExtractionUpgrade = 0;
+
 		guiUpgrades = new boolean[18];
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
@@ -195,6 +204,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				hasLogicControll = true;
 			} else if (upgrade instanceof UpgradeModuleUpgrade) {
 				hasUpgradeModuleUpgarde = true;
+			} else if (upgrade instanceof ActionSpeedUpgrade) {
+				actionSpeedUpgrade += inv.getStackInSlot(i).getCount();
+			} else if (upgrade instanceof ItemExtractionUpgrade) {
+				itemExtractionUpgrade += inv.getStackInSlot(i).getCount();
+			} else if (upgrade instanceof ItemStackExtractionUpgrade) {
+				itemStackExtractionUpgrade += inv.getStackInSlot(i).getCount();
 			}
 			if(upgrade instanceof IConfigPipeUpgrade) {
 				guiUpgrades[i] = true;
@@ -202,6 +217,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
 		craftingCleanup = Math.min(craftingCleanup, ItemUpgrade.MAX_CRAFTING_CLEANUP);
+		itemExtractionUpgrade = Math.min(itemExtractionUpgrade, ItemUpgrade.MAX_ITEM_EXTRACTION);
+		itemStackExtractionUpgrade = Math.min(itemStackExtractionUpgrade, ItemUpgrade.MAX_ITEM_STACK_EXTRACTION);
 		if (combinedBuffer != isCombinedSneakyUpgrade) {
 			needsContainerPositionUpdate = true;
 		}
@@ -352,7 +369,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				inv.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(inv);
 				return true;
-			} else if (ItemIdentifier.get(item).equals(ItemIdentifier.get(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)))) {
+		} else if (ItemIdentifier.get(item).equals(ItemIdentifier.get(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)))) {
 				if (item.getCount() < inv.getInventoryStackLimit()) {
 					item.grow(1);
 					entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1);
@@ -485,5 +502,20 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	@Override
 	public DoubleCoordinates getPipePosition() {
 		return pipe.getLPPosition();
+	}
+
+	@Override
+	public int getActionSpeedUpgrade() {
+		return actionSpeedUpgrade;
+	}
+
+	@Override
+	public int getItemExtractionUpgrade() {
+		return itemExtractionUpgrade;
+	}
+
+	@Override
+	public int getItemStackExtractionUpgrade() {
+		return itemStackExtractionUpgrade;
 	}
 }

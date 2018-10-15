@@ -31,4 +31,10 @@ public interface ISlotUpgradeManager {
 	IPipeUpgrade getUpgrade(int slot);
 
 	DoubleCoordinates getPipePosition();
+
+	int getActionSpeedUpgrade();
+
+	int getItemExtractionUpgrade();
+
+	int getItemStackExtractionUpgrade();
 }

@@ -22,6 +22,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -152,21 +153,26 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	protected int neededEnergy() {
-		return 1;
-	}
-
-	protected ItemSendMode itemSendMode() {
-		return ItemSendMode.Normal;
+		return (int) (1 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()))	;
 	}
 
 	protected int itemsToExtract() {
-		// if active and you have an order, then run at active speed, else fallback to passive send
-		//return (isActive & _service.getOrderManager().peekAtTopRequest(null)!=null)?8:1;
-		return 8;
+		return 8 * (int) Math.pow(2, getUpgradeManager().getItemExtractionUpgrade());
 	}
 
 	protected int stacksToExtract() {
-		return 1;
+		return getUpgradeManager().getItemStackExtractionUpgrade();
+	}
+
+	protected ItemSendMode itemSendMode() {
+		return getUpgradeManager().getItemExtractionUpgrade() > 0 ? ItemSendMode.Fast : ItemSendMode.Normal;
+	}
+
+	protected ISlotUpgradeManager getUpgradeManager() {
+		if (_service == null) {
+			return null;
+		}
+		return _service.getUpgradeManager(slot, positionInt);
 	}
 
 	@Override

@@ -30,6 +30,9 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	private boolean hasByproductExtractor = false;
 	private boolean hasPatternUpgrade = false;
 	private int craftingCleanup = 0;
+	private int actionSpeedUpgrade = 0;
+	private int itemExtractionUpgrade = 0;
+	private int itemStackExtractionUpgrade = 0;
 
 	public ModuleUpgradeManager(PipeLogisticsChassi pipe, UpgradeManager parent) {
 		this.pipe = pipe;
@@ -134,10 +137,18 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 				hasPatternUpgrade = true;
 			} else if (upgrade instanceof CraftingCleanupUpgrade) {
 				craftingCleanup += inv.getStackInSlot(i).getCount();
+			} else if (upgrade instanceof ActionSpeedUpgrade) {
+				actionSpeedUpgrade += inv.getStackInSlot(i).getCount();
+			} else if (upgrade instanceof ItemExtractionUpgrade) {
+				itemExtractionUpgrade += inv.getStackInSlot(i).getCount();
+			} else if (upgrade instanceof ItemStackExtractionUpgrade) {
+				itemStackExtractionUpgrade += inv.getStackInSlot(i).getCount();
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
 		craftingCleanup = Math.min(craftingCleanup, ItemUpgrade.MAX_CRAFTING_CLEANUP);
+		itemExtractionUpgrade = Math.min(itemExtractionUpgrade, ItemUpgrade.MAX_ITEM_EXTRACTION);
+		itemStackExtractionUpgrade = Math.min(itemStackExtractionUpgrade, ItemUpgrade.MAX_ITEM_STACK_EXTRACTION);
 		if (needUpdate) {
 			pipe.connectionUpdate();
 			if (pipe.container != null) {
@@ -175,5 +186,19 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		boolean needUpdate = upgrades[slot].needsUpdate();
 		upgrades[slot] = null;
 		return needUpdate;
+	}
+	@Override
+	public int getActionSpeedUpgrade() {
+		return actionSpeedUpgrade;
+	}
+
+	@Override
+	public int getItemExtractionUpgrade() {
+		return itemExtractionUpgrade;
+	}
+
+	@Override
+	public int getItemStackExtractionUpgrade() {
+		return itemStackExtractionUpgrade;
 	}
 }

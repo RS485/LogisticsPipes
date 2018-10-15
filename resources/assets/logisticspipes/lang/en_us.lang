@@ -271,6 +271,9 @@ item.logisticspipes.upgrade_logic_controller.name=Logic Controller Upgrade
 item.logisticspipes.upgrade_module_upgrade.name=Module Upgrade
 item.logisticspipes.upgrade_sneaky.name=Sneaky Upgrade
 item.logisticspipes.upgrade_disconnection.name=Disconnection Upgrade
+item.logisticspipes.upgrade_action_speed.name=Action Speed Upgrade
+item.logisticspipes.upgrade_item_extraction.name=Item Extraction Upgrade
+item.logisticspipes.upgrade_item_stack_extraction.name=ItemStack Extraction Upgrade
 
 #Upgrade info
 
@@ -280,7 +283,10 @@ item.upgrade.info.pipe=Can be applied to %cYELLOW {0} %cRESET %cGRAY pipes
 item.upgrade.info.module=Can be applied to %cYELLOW {0} %cRESET %cGRAY modules
 item.upgrade.info.all=All
 item.upgrade.info.crafting=Crafting
+item.upgrade.info.provider=Provider
 item.upgrade.info.itemsink=Item Sink
+item.upgrade.info.extractor=Extractor
+item.upgrade.info.aextractor=Advanced Extractor
 item.upgrade.info.supplier=Supplier
 item.upgrade.info.requestblock=Request Block
 item.upgrade.info.chassis=Chassis

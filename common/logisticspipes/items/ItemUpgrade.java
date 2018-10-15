@@ -19,6 +19,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import org.lwjgl.input.Keyboard;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.pipes.upgrades.ActionSpeedUpgrade;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CCRemoteControlUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
@@ -29,6 +30,8 @@ import logisticspipes.pipes.upgrades.CraftingMonitoringUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.FuzzyUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import logisticspipes.pipes.upgrades.ItemExtractionUpgrade;
+import logisticspipes.pipes.upgrades.ItemStackExtractionUpgrade;
 import logisticspipes.pipes.upgrades.LogicControllerUpgrade;
 import logisticspipes.pipes.upgrades.OpaqueUpgrade;
 import logisticspipes.pipes.upgrades.PatternUpgrade;
@@ -49,6 +52,8 @@ public class ItemUpgrade extends LogisticsItem {
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
 	public static final int MAX_CRAFTING_CLEANUP = 4;
+	public static final int MAX_ITEM_EXTRACTION = 8;
+	public static final int MAX_ITEM_STACK_EXTRACTION = 8;
 
 	private static class Upgrade {
 
@@ -104,6 +109,9 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(registry, "crafting_cleanup", CraftingCleanupUpgrade::new);
 		registerUpgrade(registry, "logic_controller", LogicControllerUpgrade::new);
 		registerUpgrade(registry, "module_upgrade", UpgradeModuleUpgrade::new);
+		registerUpgrade(registry, "action_speed", ActionSpeedUpgrade::new);
+		registerUpgrade(registry, "item_extraction", ItemExtractionUpgrade::new);
+		registerUpgrade(registry, "item_stack_extraction", ItemStackExtractionUpgrade::new);
 	}
 
 	public static void registerUpgrade(IForgeRegistry<Item> registry, String name, Supplier<? extends IPipeUpgrade> upgradeConstructor) {

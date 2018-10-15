@@ -14,6 +14,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
@@ -140,19 +141,26 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	}
 
 	protected int ticksToAction() {
-		return 100;
-	}
-
-	protected int itemsToExtract() {
-		return 1;
+		return 80 / (int) (Math.pow(2, getUpgradeManager().getActionSpeedUpgrade()));
 	}
 
 	protected int neededEnergy() {
-		return 6;
+		return (int) (5 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()))	;
+	}
+
+	protected int itemsToExtract() {
+		return (int) Math.pow(2, getUpgradeManager().getItemExtractionUpgrade());
 	}
 
 	protected ItemSendMode itemSendMode() {
-		return ItemSendMode.Normal;
+		return getUpgradeManager().getItemExtractionUpgrade() > 0 ? ItemSendMode.Fast : ItemSendMode.Normal;
+	}
+
+	protected ISlotUpgradeManager getUpgradeManager() {
+		if (_service == null) {
+			return null;
+		}
+		return _service.getUpgradeManager(slot, positionInt);
 	}
 
 	@Override

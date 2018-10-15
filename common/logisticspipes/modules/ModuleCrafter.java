@@ -1448,15 +1448,15 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	protected int neededEnergy() {
-		return 10;
+		return (int) (10 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()))	;
 	}
 
 	protected int itemsToExtract() {
-		return 1;
+		return (int) Math.pow(2, getUpgradeManager().getItemExtractionUpgrade());
 	}
 
 	protected int stacksToExtract() {
-		return 1;
+		return getUpgradeManager().getItemStackExtractionUpgrade();
 	}
 
 	public List<AdjacentTileEntity> locateCrafters() {

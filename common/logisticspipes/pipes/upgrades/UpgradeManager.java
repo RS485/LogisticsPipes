@@ -352,7 +352,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				inv.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(inv);
 				return true;
-			} else if (item.getItemDamage() == entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItemDamage()) {
+			} else if (ItemIdentifier.get(item).equals(ItemIdentifier.get(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)))) {
 				if (item.getCount() < inv.getInventoryStackLimit()) {
 					item.grow(1);
 					entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1);

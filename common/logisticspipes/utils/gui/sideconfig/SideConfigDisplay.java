@@ -224,11 +224,11 @@ public abstract class SideConfigDisplay {
 			Block block = bs.getBlock();
 			if (block != null) {
 				if(block instanceof LogisticsBlockGenericPipe) {
-					cachedLPBlockTrace = LPBlocks.pipe.doRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
+					cachedLPBlockTrace = LPBlocks.pipe.doRayTrace(world, bc.getBlockPos(), start.toVec3d(), end.toVec3d());
 				} else {
 					cachedLPBlockTrace = null;
 				}
-				RayTraceResult hit = block.collisionRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), new Vec3d(start.x, start.y, start.z), new Vec3d(end.x, end.y, end.z));
+				RayTraceResult hit = block.collisionRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), start.toVec3d(), end.toVec3d());
 				if (hit != null) {
 					hits.add(hit);
 				}
@@ -236,7 +236,7 @@ public abstract class SideConfigDisplay {
 		}
 		LogisticsBlockGenericPipe.ignoreSideRayTrace = false;
 		selection = null;
-		RayTraceResult hit = getClosestHit(new Vec3d(start.x, start.y, start.z), hits);
+		RayTraceResult hit = getClosestHit(start.toVec3d(), hits);
 		if (hit != null) {
 			TileEntity te = world.getTileEntity(hit.getBlockPos());
 			if(te != null) {

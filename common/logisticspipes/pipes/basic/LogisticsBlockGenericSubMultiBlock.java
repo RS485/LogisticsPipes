@@ -176,7 +176,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, worldIn, mainPipe.getPos(), Minecraft.getMinecraft().player)))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(worldIn, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.map(mainPipe -> pipe.getSelectedBoundingBox(state, worldIn, mainPipe.getPos()))
 					.findFirst();
 		}
@@ -203,7 +203,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.map(mainPipe -> pipe.addDestroyEffects(world, mainPipe.getPos(), manager))
 					.findFirst();
 		}
@@ -220,7 +220,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, world, mainPipe.getPos(), player)))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(world, mainPipe.getPos(), player)))
 					.map(mainPipe -> pipe.getPickBlock(state, target, world, mainPipe.getPos(), player))
 					.findFirst();
 
@@ -284,7 +284,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			Optional<LogisticsTileGenericPipe> result = mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(state, world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
+					.filter(mainPipe -> Objects.nonNull(pipe.doRayTrace(world, mainPipe.getPos(), Minecraft.getMinecraft().player)))
 					.findFirst();
 
 			result.ifPresent(mainPipe -> addHitEffects(mainPipe, state, world, target, manager));

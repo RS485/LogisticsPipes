@@ -515,6 +515,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		}
 
 		return hits.stream()
+			.filter(Objects::nonNull)
 			.min(Comparator.comparing(r -> r.hitVec.squareDistanceTo(start)))
 			.map(r -> new InternalRayTraceResult(Part.PIPE, r, pipe.getCompleteBox(), null))
 			.orElse(null);

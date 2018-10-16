@@ -161,7 +161,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	protected int stacksToExtract() {
-		return getUpgradeManager().getItemStackExtractionUpgrade();
+		return 1 + getUpgradeManager().getItemStackExtractionUpgrade();
 	}
 
 	protected ItemSendMode itemSendMode() {

@@ -11,7 +11,6 @@ import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
@@ -271,14 +270,13 @@ public class ClientProxy implements IProxy {
 	public void registerTextures() {
 		LogisticsPipes.textures.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewRenderPipe.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
-		LPBlocks.solidBlock.registerBlockIcons(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewPipeModel.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 	}
 
 	@Override
 	public void initModelLoader() {
 		ModelLoaderRegistry.registerLoader(new LogisticsNewPipeModel.LogisticsNewPipeModelLoader());
-		ModelLoaderRegistry.registerLoader(new LogisticsBlockModel.LogisticsBlockModelLoader());
+		ModelLoaderRegistry.registerLoader(new LogisticsBlockModel.Loader());
 		ModelLoaderRegistry.registerLoader(new FluidContainerRenderer.FluidContainerRendererModelLoader());
 	}
 

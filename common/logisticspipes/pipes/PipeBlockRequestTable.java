@@ -609,10 +609,4 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		this.rotation = rotation;
 	}
 
-	@Override
-	public int getFrontTexture() {
-		//Unused for Pipes
-		return 0;
-	}
-
 }

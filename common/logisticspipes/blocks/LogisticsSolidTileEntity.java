@@ -101,9 +101,8 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 		return rotation;
 	}
 
-	@Override
-	public int getFrontTexture() {
-		return 0;
+	public boolean isActive() {
+		return false;
 	}
 
 	@Override

@@ -395,12 +395,8 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public int getFrontTexture() {
-		if (heat > 0) {
-			return 3;
-		} else {
-			return 8;
-		}
+	public boolean isActive() {
+		return heat > 0;
 	}
 
 	@Override

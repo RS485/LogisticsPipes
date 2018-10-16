@@ -43,5 +43,4 @@ public interface IRotationProvider {
 		}
 	}
 
-	public int getFrontTexture();
 }

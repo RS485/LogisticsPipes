@@ -12,11 +12,6 @@ If you want to understand the sheer amount of changes we have made to the source
 Credits for the code goes to all [contributors](https://github.com/RS485/LogisticsPipes/contributors).
 Credits for the idea and basic code goes to Krapht.
 
-## Also check out
-
-* https://github.com/Krapht/LogisticsPipesRedux
-* https://github.com/Bitterholz/LP2
-
 ## Translate
 
 See [this repo](https://github.com/RS485/LogisticsPipes-Language) for translations.
@@ -27,4 +22,4 @@ See our [Jenkins](http://ci.rs485.network/).
 
 ## Contact
 
-Get in touch with us on IRC via esper.net and join #RS485
+Get in touch with us on Discord [RS485](https://discord.gg/6vPP3A8)

@@ -15,6 +15,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.pipe.ChassiGuiProvider;
 import logisticspipes.network.packets.chassis.ChassisGUI;
+import logisticspipes.network.packets.gui.OpenUpgradePacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.MainProxy;
@@ -27,6 +28,7 @@ import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
@@ -37,6 +39,9 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	private final EntityPlayer _player;
 	private final IInventory _moduleInventory;
 	//private final GuiScreen _previousGui;
+
+	private final Slot[] upgradeslot = new Slot[16];
+	private GuiButton[] upgradeConfig = new GuiButton[16];
 
 	private int left;
 	private int top;
@@ -80,12 +85,8 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 				final int fI = i;
 				ModuleUpgradeManager upgradeManager = _chassiPipe.getModuleUpgradeManager(i);
-				dummy.addRestrictedSlot(0, upgradeManager.getInv(), 145, 9 + i * 20, itemStack -> {
-					return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
-				});
-				dummy.addRestrictedSlot(1, upgradeManager.getInv(), 165, 9 + i * 20, itemStack -> {
-					return ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI);
-				});
+				upgradeslot[i*2] = dummy.addUpgradeSlot(0, upgradeManager, 0, 145, 9 + i * 20, itemStack -> ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI));
+				upgradeslot[i*2+1] = dummy.addUpgradeSlot(1, upgradeManager, 1, 165, 9 + i * 20, itemStack -> ChassiGuiProvider.checkStack(itemStack, _chassiPipe, fI));
 			}
 		}
 
@@ -115,10 +116,17 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				continue;
 			}
 			ItemStack module = _moduleInventory.getStackInSlot(i);
-			if (module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
+			if (module.isEmpty() || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton) buttonList.get(i)).visible = false;
 			} else {
 				((SmallGuiButton) buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
+			}
+
+			if (hasUpgradeModuleUpgarde) {
+				upgradeConfig[i*2] = addButton(new SmallGuiButton(100 + i, guiLeft + 134, guiTop + 12 + i * 20, 10, 10, "!"));
+				upgradeConfig[i*2].visible = _chassiPipe.getModuleUpgradeManager(i).hasGuiUpgrade(0);
+				upgradeConfig[i*2+1] = addButton(new SmallGuiButton(120 + i, guiLeft + 182, guiTop + 12 + i * 20, 10, 10, "!"));
+				upgradeConfig[i*2+1].visible = _chassiPipe.getModuleUpgradeManager(i).hasGuiUpgrade(1);
 			}
 		}
 	}
@@ -133,6 +141,11 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				MainProxy.sendPacketToServer(packet);
 			}
 		}
+		for(int i=0;i<upgradeConfig.length;i++) {
+			if (upgradeConfig[i] == guibutton) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenUpgradePacket.class).setSlot(upgradeslot[i]));
+			}
+		}
 	}
 
 	@Override
@@ -145,6 +158,9 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			} else {
 				((SmallGuiButton) buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
+		}
+		for(int i=0;i<upgradeConfig.length;i++) {
+			upgradeConfig[i].visible = _chassiPipe.getModuleUpgradeManager(i/2).hasGuiUpgrade(i%2);
 		}
 		if (_chassiPipe.getChassiSize() > 0) {
 			mc.fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);

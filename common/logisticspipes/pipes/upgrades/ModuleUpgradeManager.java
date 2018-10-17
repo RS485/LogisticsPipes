@@ -34,6 +34,8 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	private int itemExtractionUpgrade = 0;
 	private int itemStackExtractionUpgrade = 0;
 
+	private boolean[] guiUpgrades = new boolean[2];
+
 	public ModuleUpgradeManager(PipeLogisticsChassi pipe, UpgradeManager parent) {
 		this.pipe = pipe;
 		this.parent = parent;
@@ -120,6 +122,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		hasByproductExtractor = false;
 		hasPatternUpgrade = false;
 		craftingCleanup = 0;
+		guiUpgrades = new boolean[2];
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if (upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == null) {
@@ -143,6 +146,9 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 				itemExtractionUpgrade += inv.getStackInSlot(i).getCount();
 			} else if (upgrade instanceof ItemStackExtractionUpgrade) {
 				itemStackExtractionUpgrade += inv.getStackInSlot(i).getCount();
+			}
+			if(upgrade instanceof IConfigPipeUpgrade) {
+				guiUpgrades[i] = true;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
@@ -187,6 +193,11 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		upgrades[slot] = null;
 		return needUpdate;
 	}
+
+	public boolean hasGuiUpgrade(int i) {
+		return guiUpgrades[i];
+	}
+
 	@Override
 	public int getActionSpeedUpgrade() {
 		return actionSpeedUpgrade;

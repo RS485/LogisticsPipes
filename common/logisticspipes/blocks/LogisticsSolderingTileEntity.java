@@ -390,6 +390,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		listener.remove(player);
 	}
 
+	@Override
 	public void onBlockBreak() {
 		inv.dropContents(getWorld(), pos);
 	}

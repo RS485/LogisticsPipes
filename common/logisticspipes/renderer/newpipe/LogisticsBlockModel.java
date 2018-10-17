@@ -1,13 +1,13 @@
 package logisticspipes.renderer.newpipe;
 
 import com.google.common.collect.Lists;
-import logisticspipes.LPBlocks;
 import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.blocks.LogisticsSolidBlock.BlockType;
+import logisticspipes.blocks.LogisticsSolidBlock.Type;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.renderer.LogisticsRenderPipe;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -35,76 +35,59 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LogisticsBlockModel implements IModel {
 
 	public static class Loader implements ICustomModelLoader {
 
-		private static final Pattern TYPE_REGEX = Pattern.compile(".*block_sub_type=(\\w+).*");
-
 		@Override
-		public boolean accepts(ResourceLocation modelLocation) {
+		public boolean accepts(@Nonnull ResourceLocation modelLocation) {
 			return getType(modelLocation) != null;
 		}
 
 		@Override
-		public IModel loadModel(ResourceLocation modelLocation) {
-			return new LogisticsBlockModel(getType(modelLocation));
+		@Nonnull
+		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
+			ResourceLocation baseTex = new ResourceLocation(modelLocation.getResourceDomain(), "solid_block/" + modelLocation.getResourcePath());
+			return new LogisticsBlockModel(baseTex, Objects.requireNonNull(getType(modelLocation)));
 		}
 
 		@Nullable
-		private BlockType getType(ResourceLocation modelLocation) {
+		private Type getType(ResourceLocation modelLocation) {
 			if (!(modelLocation instanceof ModelResourceLocation)) return null;
 			ResourceLocation clean = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
 			String variant = ((ModelResourceLocation) modelLocation).getVariant();
 
 			if (variant.equals("inventory")) {
 				// TODO split placement item into seperate items
-				int index = 0;
-				String newPath = clean.getResourcePath();
-				if (newPath.contains(".")) {
-					int i = newPath.lastIndexOf(".");
-					String a = newPath.substring(0, i);
-					String b = newPath.substring(i + 1);
-					try {
-						index = Integer.parseInt(b);
-					} catch (NumberFormatException ignored) {
-						return null;
-					}
-					newPath = a;
-				}
-				Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(clean.getResourceDomain(), newPath));
+				Item item = ForgeRegistries.ITEMS.getValue(clean);
 				if (item instanceof LogisticsSolidBlockItem) {
-					return BlockType.getForMeta(index);
+					return ((LogisticsSolidBlockItem) item).getType();
 				} else return null;
 			} else {
-				// TODO move each block type to seperate block registry entry
-				if (!clean.equals(LPBlocks.solidBlock.getRegistryName())) return null;
-				Matcher matcher = TYPE_REGEX.matcher(variant);
-				if (!matcher.matches()) return null;
-
-				String result = matcher.group(1);
-				return BlockType.getForName(result);
+				Block block = ForgeRegistries.BLOCKS.getValue(clean);
+				if (block instanceof LogisticsSolidBlock) {
+					return ((LogisticsSolidBlock) block).getType();
+				} else return null;
 			}
 		}
 
 		@Override
-		public void onResourceManagerReload(IResourceManager resourceManager) {}
+		public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {}
 	}
 
-	private static final ResourceLocation[] TEXTURES = new ResourceLocation[32];
-
-	private final BlockType type;
 	private final ResourceLocation inactive;
 	private final ResourceLocation active;
 
-	public LogisticsBlockModel(BlockType type) {
-		this.type = type;
-		this.inactive = TEXTURES[type.getMeta()];
-		this.active = TEXTURES[type.getMeta() + 16];
+	public LogisticsBlockModel(ResourceLocation texture, Type type) {
+		this.inactive = texture;
+		if (type.isHasActiveTexture()) {
+			this.active = new ResourceLocation(texture.getResourceDomain(), texture.getResourcePath() + "_active");
+		} else {
+			this.active = texture;
+		}
 	}
 
 	@Override
@@ -112,8 +95,9 @@ public class LogisticsBlockModel implements IModel {
 		return Arrays.asList(inactive, active);
 	}
 
+	@Nonnull
 	@Override
-	public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
 		final List<BakedQuad> quads = Lists.newArrayList();
 
 		TextureAtlasSprite inactiveT = bakedTextureGetter.apply(inactive);
@@ -122,6 +106,7 @@ public class LogisticsBlockModel implements IModel {
 		return new IBakedModel() {
 
 			@Override
+			@Nonnull
 			public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
 				if (side == null) {
 					if (quads.isEmpty()) {
@@ -149,17 +134,20 @@ public class LogisticsBlockModel implements IModel {
 			}
 
 			@Override
+			@Nonnull
 			public TextureAtlasSprite getParticleTexture() {
 				return inactiveT;
 			}
 
 			@Override
+			@Nonnull
 			public ItemOverrideList getOverrides() {
 				return ItemOverrideList.NONE;
 			}
 
 			@Override
-			public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+			@Nonnull
+			public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType cameraTransformType) {
 				return PerspectiveMapWrapper.handlePerspective(this, SimpleServiceLocator.cclProxy.getDefaultBlockState(), cameraTransformType);
 			}
 		};
@@ -193,18 +181,6 @@ public class LogisticsBlockModel implements IModel {
 		}
 
 		return objectsToRender;
-	}
-
-	static {
-		for (BlockType type : BlockType.values()) {
-			String s1 = String.format("logisticspipes:solid_block/%s", type.getName());
-			String s2 = s1;
-
-			if (type.isHasActiveTexture()) s2 += "_active";
-
-			TEXTURES[type.getMeta()] = new ResourceLocation(s1);
-			TEXTURES[type.getMeta() + 16] = new ResourceLocation(s2);
-		}
 	}
 
 }

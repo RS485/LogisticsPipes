@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import logisticspipes.LPBlocks;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -315,6 +315,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		return result;
 	}
 
+	@Override
 	public void onBlockBreak() {
 		inv.dropContents(world, getPos());
 	}
@@ -508,7 +509,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	public boolean isFuzzy() {
-		return world.getBlockState(pos).getValue(LogisticsSolidBlock.metaProperty) == LogisticsSolidBlock.BlockType.LOGISTICS_FUZZYCRAFTING_TABLE;
+		return world.getBlockState(pos).getBlock() == LPBlocks.crafterFuzzy;
 	}
 
 	@Override

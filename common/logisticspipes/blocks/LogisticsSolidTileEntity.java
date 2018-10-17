@@ -1,5 +1,6 @@
 package logisticspipes.blocks;
 
+import logisticspipes.LPBlocks;
 import logisticspipes.LPConstants;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
@@ -16,7 +17,9 @@ import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -45,6 +48,8 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	private Object ccType = null;
 	private boolean init = false;
 	public int rotation = 0;
+
+	private boolean doneBackwardsCompatCheck = false;
 
 	@ModDependentField(modId = LPConstants.openComputersModID)
 	public Node node;
@@ -76,6 +81,8 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 
 	@Override
 	public void update() {
+		tryUpdateBlockFormat();
+
 		if (!addedToNetwork) {
 			addedToNetwork = true;
 			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
@@ -89,11 +96,33 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 		}
 	}
 
+	// backwards compat; TODO remove in 1.13
+	private void tryUpdateBlockFormat() {
+		if (getWorld().isRemote) return;
+		if (doneBackwardsCompatCheck) return;
+
+		if (getBlockType() == LPBlocks.dummy) {
+			getWorld().setBlockState(getPos(), BlockDummy.updateBlockMap.get(getWorld().getBlockState(getPos()).getValue(BlockDummy.PROP_BLOCKTYPE)).getDefaultState());
+		}
+
+		doneBackwardsCompatCheck = true;
+	}
+
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		// backwards compat; TODO remove in 1.13
+		if (oldState.getBlock() == LPBlocks.dummy && newSate.getBlock() instanceof LogisticsSolidBlock) return false;
+
+		return super.shouldRefresh(world, pos, oldState, newSate);
+	}
+
 	@Override
 	public void invalidate() {
 		super.invalidate();
 		SimpleServiceLocator.openComputersProxy.handleInvalidate(this);
 	}
+
+	public void onBlockBreak() {}
 
 	@Override
 	@CCCommand(description = "Returns the LP rotation value for this block")

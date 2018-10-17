@@ -293,7 +293,7 @@ item.upgrade.info.chassis=Chassis
 item.upgrade.info.basic=Basic
 
 # Blocks
-tile.logisticspipes.blank_block.name=Logistics Block Frame
+tile.logisticspipes.frame.name=Logistics Block Frame
 tile.logisticspipes.soldering_station.name=Soldering Station
 tile.logisticspipes.power_junction.name=Logistics Power Junction
 tile.logisticspipes.security_station.name=Logistics Security Station

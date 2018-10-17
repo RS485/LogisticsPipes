@@ -159,6 +159,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(CompilerStatusPacket.class).setCategory(currentTask).setProgress(taskProgress).setDisk(getInventory().getStackInSlot(0)).setProgrammer(getInventory().getStackInSlot(1)).setTilePos(this), playerList);
 	}
 
+	@Override
 	public void onBlockBreak() {
 		inventory.dropContents(world, getPos());
 	}

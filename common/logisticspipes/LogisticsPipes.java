@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
+import logisticspipes.blocks.BlockDummy;
 import logisticspipes.recipes.*;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -416,7 +417,18 @@ public class LogisticsPipes {
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW), "chip_advanced_raw"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA), "chip_fpga"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW), "chip_fpga_raw"));
-		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.solidBlock), "solid_block"));
+
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.frame), "frame"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.solderingStation), "soldering_station"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.powerJunction), "power_junction"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.securityStation), "security_station"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.crafter), "crafting_table"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.crafterFuzzy), "crafting_table_fuzzy"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.statisticsTable), "statistics_table"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.powerProviderRF), "power_provider_rf"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.powerProviderEU), "power_provider_eu"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.powerProviderMJ), "power_provider_mj"));
+		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.programCompiler), "program_compiler"));
 	}
 
 	// TODO move somewhere
@@ -437,7 +449,20 @@ public class LogisticsPipes {
 	public void initBlocks(RegistryEvent.Register<Block> event) {
 		IForgeRegistry<Block> registry = event.getRegistry();
 
-		registry.register(setName(new LogisticsSolidBlock(), "solid_block"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_BLOCK_FRAME), "frame"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.SOLDERING_STATION), "soldering_station"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_POWER_JUNCTION), "power_junction"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_SECURITY_STATION), "security_station"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_AUTOCRAFTING_TABLE), "crafting_table"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_FUZZYCRAFTING_TABLE), "crafting_table_fuzzy"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_STATISTICS_TABLE), "statistics_table"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_RF_POWERPROVIDER), "power_provider_rf"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_IC2_POWERPROVIDER), "power_provider_eu"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_BC_POWERPROVIDER), "power_provider_mj"));
+		registry.register(setName(new LogisticsSolidBlock(LogisticsSolidBlock.Type.LOGISTICS_PROGRAM_COMPILER), "program_compiler"));
+
+		registry.register(setName(new BlockDummy(), "solid_block"));
+
 		registry.register(setName(new LogisticsBlockGenericPipe(), "pipe"));
 		registry.register(setName(new LogisticsBlockGenericSubMultiBlock(), "sub_multiblock"));
 	}

@@ -10,12 +10,10 @@
       "part": "chip_basic"
     },
     "t": {
-      "item": "logisticspipes:solid_block",
-      "data": 15
+      "item": "logisticspipes:frame"
     }
   },
   "result": {
-    "item": "logisticspipes:solid_block",
-    "data": 4
+    "item": "logisticspipes:crafting_table_fuzzy"
   }
 }

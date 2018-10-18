@@ -14,15 +14,13 @@
       "ore": "ingotIron"
     },
     "f": {
-      "item": "logisticspipes:solid_block",
-      "data": 15
+      "item": "logisticspipes:frame"
     },
     "b": {
       "item": "minecraft:blaze_powder"
     }
   },
   "result": {
-    "item": "logisticspipes:solid_block",
-    "data": 0
+    "item": "logisticspipes:soldering_station"
   }
 }

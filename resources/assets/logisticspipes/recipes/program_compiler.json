@@ -1,8 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "result": {
-    "item": "logisticspipes:solid_block",
-    "data": 14
+    "item": "logisticspipes:program_compiler"
   },
   "key": {
     "c": {
@@ -14,8 +13,7 @@
       "ore": "dustRedstone"
     },
     "f": {
-      "item": "logisticspipes:solid_block",
-      "data": 15
+      "item": "logisticspipes:frame"
     },
     "i": {
       "type": "forge:ore_dict",

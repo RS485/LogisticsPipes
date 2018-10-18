@@ -19,15 +19,13 @@
       "ore": "dustRedstone"
     },
     "f": {
-      "item": "logisticspipes:solid_block",
-      "data": 15
+      "item": "logisticspipes:frame"
     },
     "b": {
       "item": "minecraft:redstone_block"
     }
   },
   "result": {
-    "item": "logisticspipes:solid_block",
-    "data": 1
+    "item": "logisticspipes:power_junction"
   }
 }

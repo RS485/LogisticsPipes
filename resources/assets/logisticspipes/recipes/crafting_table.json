@@ -14,15 +14,13 @@
       "ore": "plankWood"
     },
     "f": {
-      "item": "logisticspipes:solid_block",
-      "data": 15
+      "item": "logisticspipes:frame"
     },
     "p": {
       "item": "minecraft:piston"
     }
   },
   "result": {
-    "item": "logisticspipes:solid_block",
-    "data": 3
+    "item": "logisticspipes:crafting_table"
   }
 }

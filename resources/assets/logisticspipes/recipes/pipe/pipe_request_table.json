@@ -11,8 +11,7 @@
       "item": "logisticspipes:pipe_request_mk2"
     },
     "f": {
-      "item": "logisticspipes:solid_block",
-      "data": 15
+      "item": "logisticspipes:frame"
     },
     "k": {
       "item": "minecraft:chest"

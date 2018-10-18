@@ -20,7 +20,6 @@
     }
   },
   "result": {
-    "item": "logisticspipes:solid_block",
-    "data": 15
+    "item": "logisticspipes:frame"
   }
 }

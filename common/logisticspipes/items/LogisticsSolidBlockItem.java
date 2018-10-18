@@ -16,7 +16,6 @@ public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem
 
 	public LogisticsSolidBlockItem(LogisticsSolidBlock block) {
 		super(block);
-		setHasSubtypes(true);
 		setCreativeTab(LogisticsPipes.CREATIVE_TAB_LP);
 		type = block.getType();
 		BlockDummy.updateItemMap.put(type.getMeta(), this);

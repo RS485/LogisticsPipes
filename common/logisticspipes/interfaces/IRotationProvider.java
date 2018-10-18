@@ -27,18 +27,18 @@ public interface IRotationProvider {
 	default void setFacing(EnumFacing facing) {
 		switch(facing) {
 			case NORTH:
-				setRotation(2);
+				setRotation(3);
 				break;
 			case DOWN:
 			case UP:
 			case SOUTH:
-				setRotation(3);
+				setRotation(2);
 				break;
 			case WEST:
-				setRotation(0);
+				setRotation(1);
 				break;
 			case EAST:
-				setRotation(1);
+				setRotation(0);
 				break;
 		}
 	}

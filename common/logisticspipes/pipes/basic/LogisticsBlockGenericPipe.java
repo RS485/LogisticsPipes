@@ -689,7 +689,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			pipe.onBlockPlaced();
 			pipe.onBlockPlacedBy(placer);
 			if (pipe instanceof IRotationProvider) {
-				((IRotationProvider) pipe).setFacing(placer.getHorizontalFacing());
+				((IRotationProvider) pipe).setFacing(placer.getHorizontalFacing().getOpposite());
 			}
 		}
 	}

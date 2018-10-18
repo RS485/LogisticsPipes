@@ -29,6 +29,7 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 
 	@Override
 	public void update() {
+		tryUpdateBlockFormat();
 		if (MainProxy.isClient(world)) {
 			return;
 		}

@@ -97,7 +97,7 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	}
 
 	// backwards compat; TODO remove in 1.13
-	private void tryUpdateBlockFormat() {
+	protected void tryUpdateBlockFormat() {
 		if (getWorld().isRemote) return;
 		if (doneBackwardsCompatCheck) return;
 

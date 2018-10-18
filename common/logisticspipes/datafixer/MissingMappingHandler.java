@@ -157,12 +157,13 @@ public class MissingMappingHandler {
 	@SubscribeEvent
 	public void onMissingItems(RegistryEvent.MissingMappings<Item> e) {
 		for (RegistryEvent.MissingMappings.Mapping<Item> m : e.getMappings()) {
-			String entry = itemIDMap.get(m.key.getResourcePath());
-			if (entry == null) continue;
-			if (ignoreItems.contains(entry)) {
+			String old = m.key.getResourcePath();
+			if (ignoreItems.contains(old)) {
 				m.ignore();
-				return;
+				continue;
 			}
+			String entry = itemIDMap.get(old);
+			if (entry == null) continue;
 			Item value = ForgeRegistries.ITEMS.getValue(new ResourceLocation(LPConstants.LP_MOD_ID, entry));
 			if (value == null) continue;
 			m.remap(value);

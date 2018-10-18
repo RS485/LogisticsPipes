@@ -25,6 +25,7 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 import net.minecraft.item.Item;
@@ -386,19 +387,19 @@ public abstract class BaseWrapperClass extends AbstractValue {
 				return null;
 			});
 		} else if (type.equals("CCItemIdentifierImplementation")) {
-			ItemStack stack = new ItemStack(nbt);
+			ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbt);
 			if (stack != null) {
 				object = new CCItemIdentifierImplementation(ItemIdentifier.get(stack));
 				checkType();
 			}
 		} else if (type.equals("CCItemIdentifierStackImplementation")) {
-			ItemStack stack = new ItemStack(nbt);
+			ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbt);
 			if (stack != null) {
 				object = new CCItemIdentifierStackImplementation(ItemIdentifierStack.getFromStack(stack));
 				checkType();
 			}
 		} else if (type.equals("CCItemIdentifierBuilder")) {
-			ItemStack stack = new ItemStack(nbt);
+			ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbt);
 			if (stack != null) {
 				CCItemIdentifierBuilder builder = new CCItemIdentifierBuilder();
 				builder.setItemID(Double.valueOf(Item.getIdFromItem(stack.getItem())));

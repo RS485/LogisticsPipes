@@ -16,6 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
+
 public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	private ItemStack disk;
@@ -70,7 +72,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 		super.readFromNBT(nbttagcompound);
 		if (nbttagcompound.hasKey("Disk")) {
 			NBTTagCompound item = nbttagcompound.getCompoundTag("Disk");
-			disk = new ItemStack(item);
+			disk = ItemStackLoader.loadAndFixItemStackFromNBT(item);
 		}
 	}
 

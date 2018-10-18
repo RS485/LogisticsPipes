@@ -9,6 +9,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class TrackingTask {
 
@@ -41,7 +42,7 @@ public class TrackingTask {
 			amountRecorded[i] = (((long) amountRecorded_B[i]) << 32) | amountRecorded_A[i];
 		}
 		arrayPos = nbt.getInteger("arrayPos");
-		item = ItemIdentifier.get(new ItemStack(nbt));
+		item = ItemIdentifier.get(ItemStackLoader.loadAndFixItemStackFromNBT(nbt));
 	}
 
 	public void writeToNBT(NBTTagCompound nbt) {

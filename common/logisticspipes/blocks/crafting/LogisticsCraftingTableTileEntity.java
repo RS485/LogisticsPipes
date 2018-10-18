@@ -45,6 +45,8 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
+
 public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IInventory, IGuiTileEntity, ISimpleInventoryEventHandler, IGuiOpenControler {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
@@ -363,7 +365,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			outputFuzzyFlags.use_category = comp.getBoolean("use_category");
 		}
 		if (par1nbtTagCompound.hasKey("targetType")) {
-			targetType = ItemIdentifier.get(new ItemStack(par1nbtTagCompound.getCompoundTag("targetType")));
+			targetType = ItemIdentifier.get(ItemStackLoader.loadAndFixItemStackFromNBT(par1nbtTagCompound.getCompoundTag("targetType")));
 		}
 		cacheRecipe();
 	}

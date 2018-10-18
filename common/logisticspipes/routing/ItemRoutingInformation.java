@@ -17,6 +17,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import lombok.Getter;
 import lombok.Setter;
 
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
+
 public class ItemRoutingInformation {
 
 	public static class DelayComparator implements Comparator<ItemRoutingInformation> {
@@ -66,7 +68,7 @@ public class ItemRoutingInformation {
 		arrived = nbttagcompound.getBoolean("arrived");
 		bufferCounter = nbttagcompound.getInteger("bufferCounter");
 		_transportMode = TransportMode.values()[nbttagcompound.getInteger("transportMode")];
-		ItemStack stack = new ItemStack(nbttagcompound.getCompoundTag("Item"));
+		ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbttagcompound.getCompoundTag("Item"));
 		setItem(ItemIdentifierStack.getFromStack(stack));
 	}
 

@@ -30,6 +30,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
+
 public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pair<ItemStack, Integer>> {
 
 	private ItemStack[] _contents;
@@ -135,7 +137,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 			NBTTagCompound nbttagcompound2 = nbttaglist.getCompoundTagAt(j);
 			int index = nbttagcompound2.getInteger("index");
 			if (index < _contents.length) {
-				_contents[index] = new ItemStack(nbttagcompound2);
+				_contents[index] = ItemStackLoader.loadAndFixItemStackFromNBT(nbttagcompound2);
 			} else {
 				LogisticsPipes.log.fatal("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
 			}

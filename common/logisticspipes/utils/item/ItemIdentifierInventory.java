@@ -40,6 +40,8 @@ import net.minecraft.world.World;
 
 import net.minecraft.util.NonNullList;
 
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
+
 public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>> {
 
 	private Object ccType;
@@ -191,7 +193,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			NBTTagCompound nbttagcompound2 = nbttaglist.getCompoundTagAt(j);
 			int index = nbttagcompound2.getInteger("index");
 			if (index < _contents.length) {
-				ItemStack stack = new ItemStack(nbttagcompound2);
+				ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbttagcompound2);
 				ItemIdentifierStack itemstack = ItemIdentifierStack.getFromStack(stack);
 				if (isValidStack(itemstack)) {
 					_contents[index] = itemstack;

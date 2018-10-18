@@ -66,6 +66,7 @@ import logisticspipes.utils.SyncList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.util.items.ItemStackLoader;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -377,7 +378,7 @@ public class PipeTransportLogistics {
 		NBTTagList nbttaglist2 = nbt.getTagList("buffercontents", 10);
 		for (int i = 0; i < nbttaglist2.tagCount(); i++) {
 			NBTTagCompound nbttagcompound1 = nbttaglist2.getCompoundTagAt(i);
-			_itemBuffer.add(new Triplet<>(ItemIdentifierStack.getFromStack(new ItemStack(nbttagcompound1)), new Pair<>(_bufferTimeOut, 0), null));
+			_itemBuffer.add(new Triplet<>(ItemIdentifierStack.getFromStack(ItemStackLoader.loadAndFixItemStackFromNBT(nbttagcompound1)), new Pair<>(_bufferTimeOut, 0), null));
 		}
 
 	}

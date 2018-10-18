@@ -1,5 +1,6 @@
 package logisticspipes.blocks;
 
+import logisticspipes.items.LogisticsSolidBlockItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -20,6 +21,7 @@ public class BlockDummy extends Block {
 	public static final PropertyInteger PROP_BLOCKTYPE = PropertyInteger.create("block_sub_type", 0, 11);
 
 	static final Map<Integer, LogisticsSolidBlock> updateBlockMap = new HashMap<>();
+	public static final Map<Integer, LogisticsSolidBlockItem> updateItemMap = new HashMap<>();
 
 	public BlockDummy() {
 		super(Material.IRON);

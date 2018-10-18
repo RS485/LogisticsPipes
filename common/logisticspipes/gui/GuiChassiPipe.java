@@ -110,6 +110,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		top = height / 2 - ySize / 2;
 
 		buttonList.clear();
+		upgradeConfig = new GuiButton[_chassiPipe.getChassiSize() * 2];
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			buttonList.add(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!"));
 			if (_moduleInventory == null) {
@@ -159,8 +160,10 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				((SmallGuiButton) buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
 		}
-		for(int i=0;i<upgradeConfig.length;i++) {
-			upgradeConfig[i].visible = _chassiPipe.getModuleUpgradeManager(i/2).hasGuiUpgrade(i%2);
+		if (hasUpgradeModuleUpgarde) {
+			for (int i = 0; i < upgradeConfig.length; i++) {
+				upgradeConfig[i].visible = _chassiPipe.getModuleUpgradeManager(i / 2).hasGuiUpgrade(i % 2);
+			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {
 			mc.fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);

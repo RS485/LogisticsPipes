@@ -15,7 +15,8 @@
     }
   },
   "result": {
-    "item": "logisticspipes:chip_basic_raw"
+    "item": "logisticspipes:chip_basic_raw",
+    "count": 2
   },
   "conditions": [
     {

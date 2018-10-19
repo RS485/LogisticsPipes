@@ -14,6 +14,7 @@
     }
   },
   "result": {
-    "item": "logisticspipes:chip_advanced_raw"
+    "item": "logisticspipes:chip_advanced_raw",
+    "count": 2
   }
 }

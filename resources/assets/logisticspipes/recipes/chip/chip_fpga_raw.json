@@ -28,6 +28,7 @@
     }
   },
   "result": {
-    "item": "logisticspipes:chip_fpga_raw"
+    "item": "logisticspipes:chip_fpga_raw",
+    "count": 16
   }
 }

@@ -2,40 +2,39 @@ package logisticspipes.gui.popup;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.SimpleGraphics;
+import logisticspipes.utils.gui.IItemSearch;
+import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
 
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.item.ItemStack;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 
-import org.lwjgl.opengl.GL11;
+public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 
-public class SelectItemOutOfList extends SubGuiScreen {
+	public static interface IHandleItemChoice {
 
-	public static interface IHandleItemChoise {
-
-		public void handleItemChoise(int slot);
+		public void handleItemChoice(int slot);
 	}
 
-	private final List<ItemIdentifierStack> canidate;
-	private final IHandleItemChoise handler;
-	private int page = 0;
-	private final int maxPage;
-	private Object[] tooltip = null;
+	private final List<ItemIdentifierStack> candidate;
+	private final IHandleItemChoice handler;
+	private ItemDisplay itemDisplay = null;
+	private InputBar search;
 
-	public SelectItemOutOfList(List<ItemIdentifierStack> canidate, IHandleItemChoise handler) {
-		super(152, 200, 0, 0);
-		this.canidate = canidate;
+	public SelectItemOutOfList(List<ItemIdentifierStack> candidate, IHandleItemChoice handler) {
+		super(156, 188, 0, 0);
+		this.candidate = candidate;
 		this.handler = handler;
-		maxPage = (int) Math.round(((canidate.size()) / 80.0D) + 0.5D) - (canidate.size() % 80 == 0 ? 1 : 0);
 	}
 
 	@Override
@@ -43,119 +42,114 @@ public class SelectItemOutOfList extends SubGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new SmallGuiButton(0, guiLeft + 108, guiTop + 5, 10, 10, "<"));
+		buttonList.add(new SmallGuiButton(0, guiLeft + 70, guiTop + 5, 10, 10, "<"));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 138, guiTop + 5, 10, 10, ">"));
+		buttonList.add(new GuiButton(2, guiLeft + 100, bottom - 26, 50, 20, "Select"));
+
+		if (search == null) {
+			search = new InputBar(fontRenderer, this.getBaseScreen(), guiLeft + 7, bottom - 23, right - guiLeft - 64, 15, false);
+		}
+		search.reposition(guiLeft + 7, bottom - 23, right - guiLeft - 64, 15);
+
+		if (itemDisplay == null) {
+			itemDisplay = new ItemDisplay(this, fontRenderer, this.getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 48, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay.setItemList(candidate);
+		}
+		itemDisplay.reposition(guiLeft + 8, guiTop + 18, xSize - 16, ySize - 48, 0, 0);
+
 	}
 
 	@Override
 	protected void renderToolTips(int mouseX, int mouseY, float par3) {
 		if (!hasSubGui()) {
-			GuiGraphics.displayItemToolTip(tooltip, this, zLevel, guiLeft, guiTop);
+			GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, 0, 0);
 		}
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		tooltip = null;
-		int x = 0;
-		int y = -page * 10;
-		for (ItemIdentifierStack stack : canidate) {
-			if (y >= 0) {
-				ItemStack itemStack = stack.makeNormalStack();
-				FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
-				if (font == null) {
-					font = fontRenderer;
-				}
-
-				itemRender.renderItemAndEffectIntoGUI(itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18);
-				// With empty string, because damage value indicator struggles with the depth
-				itemRender.renderItemOverlayIntoGUI(font, itemStack, guiLeft + 5 + x * 18, guiTop + 17 + y * 18, "");
-
-				if (guiLeft + 5 + x * 18 < mouseX && mouseX < guiLeft + 5 + x * 18 + 16 && guiTop + 17 + y * 18 < mouseY && mouseY < guiTop + 17 + y * 18 + 16 && !hasSubGui()) {
-					GL11.glDisable(GL11.GL_LIGHTING);
-					GL11.glDisable(GL11.GL_DEPTH_TEST);
-					GL11.glColorMask(true, true, true, false);
-					SimpleGraphics.drawGradientRect(guiLeft + 5 + x * 18, guiTop + 17 + y * 18, guiLeft + 5 + x * 18 + 16, guiTop + 17 + y * 18 + 16, Color.WHITE_50, Color.WHITE_50, 0.0);
-					GL11.glColorMask(true, true, true, true);
-					GL11.glEnable(GL11.GL_LIGHTING);
-					GL11.glEnable(GL11.GL_DEPTH_TEST);
-					tooltip = new Object[] { guiLeft + mouseX, guiTop + mouseY, itemStack };
-				}
-			}
-
-			x++;
-			if (x > 7) {
-				x = 0;
-				y++;
-			}
-			if (y > 9) {
-				break;
-			}
-		}
-	}
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {}
 
 	@Override
 	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRenderer.drawString(StringUtils.translate("misc.selectType"), guiLeft + 10, guiTop + 6, 0x404040, false); //TODO
-		String pageString = Integer.toString(page + 1) + "/" + Integer.toString(maxPage);
-		fontRenderer.drawString(pageString, guiLeft + 128 - (fontRenderer.getStringWidth(pageString) / 2), guiTop + 6, 0x404040, false);
-		int x = 0;
-		int y = -page * 10;
-		for (ItemIdentifierStack stack : canidate) {
-			if (y >= 0) {
-				GuiGraphics.drawSlotBackground(mc, guiLeft + 4 + x * 18, guiTop + 16 + y * 18);
-			}
-			x++;
-			if (x > 7) {
-				x = 0;
-				y++;
-			}
-			if (y > 9) {
-				break;
-			}
-		}
+		fontRenderer.drawString(StringUtils.translate("misc.selectType"), guiLeft + 8, guiTop + 6, 0x404040, false); //TODO
+
+		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
+
+		//SearchInput
+		search.renderSearchBar();
+
+		//itemDisplay.renderSortMode(xCenter, bottom - 52);
+		itemDisplay.renderItemArea(zLevel);
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		int id = button.id;
 		if (id == 1) {
-			page++;
-			if (page >= maxPage) {
-				page = 0;
-			}
+			itemDisplay.nextPage();
 		} else if (id == 0) {
-			page--;
-			if (page < 0) {
-				page = maxPage - 1;
+			itemDisplay.prevPage();
+		} else if (id == 2) {
+			ItemIdentifierStack stack = itemDisplay.getSelectedItem();
+			int index = candidate.indexOf(stack);
+			handler.handleItemChoice(index);
+			exitGui();
+		}
+	}
+
+	@Override
+	public void handleMouseInputSub() throws IOException {
+		itemDisplay.handleMouse();
+		super.handleMouseInputSub();
+	}
+
+	@Override
+	protected void keyTyped(char par1, int par2) {
+		if (!itemDisplay.keyTyped(par1, par2)) {
+			if (par2 == 1 || !search.handleKey(par1, par2)) {
+				super.keyTyped(par1, par2);
 			}
 		}
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
-		int x = 0;
-		int y = -page * 10;
-		int count = 0;
-		for (ItemIdentifierStack stack : canidate) {
-			if (y >= 0) {
-				if (guiLeft + 5 + x * 18 < mouseX && mouseX < guiLeft + 5 + x * 18 + 16 && guiTop + 17 + y * 18 < mouseY && mouseY < guiTop + 17 + y * 18 + 16) {
-					handler.handleItemChoise(count);
-					exitGui();
+		if(itemDisplay.handleClick(mouseX, mouseY, button)) return;
+		if(search.handleClick(mouseX, mouseY, button)) return;
+		super.mouseClicked(mouseX, mouseY, button);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean itemSearched(ItemIdentifier item) {
+		if (search.isEmpty()) {
+			return true;
+		}
+		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+			return true;
+		}
+		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
+		//Enchantment? Enchantment!
+		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
+		for (Map.Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
+			String enchantname = e.getKey().getName();
+			if (enchantname != null) {
+				if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+					return true;
 				}
 			}
+		}
+		return false;
+	}
 
-			x++;
-			if (x > 7) {
-				x = 0;
-				y++;
-			}
-			count++;
-			if (y > 9) {
-				break;
+	private boolean isSearched(String value, String search) {
+		boolean flag = true;
+		for (String s : search.split(" ")) {
+			if (!value.contains(s)) {
+				flag = false;
 			}
 		}
-		super.mouseClicked(mouseX, mouseY, button);
+		return flag;
 	}
 }

@@ -1,29 +1,30 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " a ",
-    "ifi",
-    "gmg"
+    "gbg",
+    "rsl",
+    "rrl"
   ],
   "key": {
-    "a": {
+    "b": {
       "type": "logisticspipes:part",
-      "part": "chip_advanced"
-    },
-    "i": {
-      "type": "forge:ore_dict",
-      "ore": "ingotIron"
-    },
-    "f": {
-      "type": "logisticspipes:part",
-      "part": "chip_fpga"
+      "part": "chip_basic"
     },
     "g": {
       "type": "forge:ore_dict",
       "ore": "ingotGold"
     },
-    "m": {
-      "item": "logisticspipes:module_blank"
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "blockGlass"
+    },
+    "l": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
     }
   },
   "result": {

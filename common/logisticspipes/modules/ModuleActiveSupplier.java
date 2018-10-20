@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -198,18 +199,17 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getX(), getY(), getZ());
 
-		//@formatter:off
 		worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-				.filter(adjacent -> ((IInventory) adjacent.tileEntity).getSizeInventory() > 0)
-		//@formatter:on
-				.forEach(adjacent -> {
+				.map(adjacent -> {
 					EnumFacing direction = adjacent.direction.getOpposite();
 					if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
 						direction = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
 					}
-					IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent.tileEntity, direction);
-
+					return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent.tileEntity, direction);
+				})
+				.filter(Objects::nonNull)
+				.filter(invUtil -> invUtil.getSizeInventory() > 0)
+				.forEach(invUtil -> {
 					if (_service.getUpgradeManager(slot, positionInt).hasPatternUpgrade()) {
 						createPatternRequest(invUtil);
 					} else {
@@ -312,12 +312,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		//How many do I have?
 		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<>();
 		for (Entry<ItemIdentifier, Integer> item : have.entrySet()) {
-			Integer n = haveUndamaged.get(item.getKey().getUndamaged());
-			if (n == null) {
-				haveUndamaged.put(item.getKey().getUndamaged(), item.getValue());
-			} else {
-				haveUndamaged.put(item.getKey().getUndamaged(), item.getValue() + n);
-			}
+			haveUndamaged.merge(item.getKey().getUndamaged(), item.getValue(), (a, b) -> a + b);
 		}
 
 		//Reduce what I have and what have been requested already

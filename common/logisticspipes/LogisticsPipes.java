@@ -15,6 +15,7 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.recipes.*;
@@ -247,7 +248,7 @@ public class LogisticsPipes {
 	private static LPGlobalCCAccess generalAccess;
 	private static PlayerConfig playerConfig;
 
-	private List<Pair<Item, Item>> resetRecipeList = new ArrayList<>();
+	private List<Supplier<Pair<Item, Item>>> resetRecipeList = new ArrayList<>();
 
 	@CapabilityInject(IItemHandler.class)
 	public static Capability<IItemHandler> ITEM_HANDLER_CAPABILITY = null;
@@ -480,7 +481,9 @@ public class LogisticsPipes {
 		RecipeManager.recipeProvider.add(new CraftingRecipes());
 		RecipeManager.loadRecipes();
 
-		resetRecipeList.forEach(itemItemPair -> registerShapelessResetRecipe(itemItemPair.getValue1(), itemItemPair.getValue2()));
+		resetRecipeList.stream()
+			.map(Supplier::get)
+			.forEach(itemItemPair -> registerShapelessResetRecipe(itemItemPair.getValue1(), itemItemPair.getValue2()));
 	}
 
 	private void loadClasses() {
@@ -602,9 +605,9 @@ public class LogisticsPipes {
 
 		if (pipe.getClass() != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(pipe.getClass())) {
 			if (pipe.getClass() != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(pipe.getClass())) {
-				resetRecipeList.add(new Pair<>(res, LPItems.pipeFluidBasic));
+				resetRecipeList.add(() -> new Pair<>(res, LPItems.pipeFluidBasic));
 			} else if(pipe.getClass() != PipeBlockRequestTable.class) {
-				resetRecipeList.add(new Pair<>(res, LPItems.pipeBasic));
+				resetRecipeList.add(() -> new Pair<>(res, LPItems.pipeBasic));
 			}
 		}
 	}

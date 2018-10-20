@@ -260,10 +260,10 @@ public final class GuiGraphics {
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		buf.pos(x, y + 26, GuiGraphics.zLevel).tex(0, 1);
-		buf.pos(x + 26, y + 26, GuiGraphics.zLevel).tex(1, 1);
-		buf.pos(x + 26, y, GuiGraphics.zLevel).tex(1, 0);
-		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0);
+		buf.pos(x, y + 26, GuiGraphics.zLevel).tex(0, 1).endVertex();
+		buf.pos(x + 26, y + 26, GuiGraphics.zLevel).tex(1, 1).endVertex();
+		buf.pos(x + 26, y, GuiGraphics.zLevel).tex(1, 0).endVertex();
+		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();
 		tess.draw();
 	}
 
@@ -275,10 +275,10 @@ public final class GuiGraphics {
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		buf.pos(x, y + 8, GuiGraphics.zLevel).tex(0, 1);
-		buf.pos(x + 8, y + 8, GuiGraphics.zLevel).tex(1, 1);
-		buf.pos(x + 8, y, GuiGraphics.zLevel).tex(1, 0);
-		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0);
+		buf.pos(x, y + 8, GuiGraphics.zLevel).tex(0, 1).endVertex();
+		buf.pos(x + 8, y + 8, GuiGraphics.zLevel).tex(1, 1).endVertex();
+		buf.pos(x + 8, y, GuiGraphics.zLevel).tex(1, 0).endVertex();
+		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();
 		tess.draw();
 	}
 
@@ -292,10 +292,10 @@ public final class GuiGraphics {
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		buf.pos(x, y + 16, GuiGraphics.zLevel).tex(icon.getMinU(), icon.getMaxV());
-		buf.pos(x + 16, y + 16, GuiGraphics.zLevel).tex(icon.getMaxU(), icon.getMaxV());
-		buf.pos(x + 16, y, GuiGraphics.zLevel).tex(icon.getMaxU(), icon.getMinV());
-		buf.pos(x, y, GuiGraphics.zLevel).tex(icon.getMinU(), icon.getMinV());
+		buf.pos(x, y + 16, GuiGraphics.zLevel).tex(icon.getMinU(), icon.getMaxV()).endVertex();
+		buf.pos(x + 16, y + 16, GuiGraphics.zLevel).tex(icon.getMaxU(), icon.getMaxV()).endVertex();
+		buf.pos(x + 16, y, GuiGraphics.zLevel).tex(icon.getMaxU(), icon.getMinV()).endVertex();
+		buf.pos(x, y, GuiGraphics.zLevel).tex(icon.getMinU(), icon.getMinV()).endVertex();
 		tess.draw();
 	}
 
@@ -308,10 +308,10 @@ public final class GuiGraphics {
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		buf.pos(x, y + 15, GuiGraphics.zLevel).tex(0, 1);
-		buf.pos(x + 14, y + 15, GuiGraphics.zLevel).tex(1, 1);
-		buf.pos(x + 14, y, GuiGraphics.zLevel).tex(1, 0);
-		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0);
+		buf.pos(x, y + 15, GuiGraphics.zLevel).tex(0, 1).endVertex();
+		buf.pos(x + 14, y + 15, GuiGraphics.zLevel).tex(1, 1).endVertex();
+		buf.pos(x + 14, y, GuiGraphics.zLevel).tex(1, 0).endVertex();
+		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();
 		tess.draw();
 
 		GlStateManager.disableBlend();
@@ -326,10 +326,10 @@ public final class GuiGraphics {
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-		buf.pos(x, y + 16, GuiGraphics.zLevel).tex(0, 1);
-		buf.pos(x + 16, y + 16, GuiGraphics.zLevel).tex(1, 1);
-		buf.pos(x + 16, y, GuiGraphics.zLevel).tex(1, 0);
-		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0);
+		buf.pos(x, y + 16, GuiGraphics.zLevel).tex(0, 1).endVertex();
+		buf.pos(x + 16, y + 16, GuiGraphics.zLevel).tex(1, 1).endVertex();
+		buf.pos(x + 16, y, GuiGraphics.zLevel).tex(1, 0).endVertex();
+		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();
 		tess.draw();
 
 		GlStateManager.disableBlend();

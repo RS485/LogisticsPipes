@@ -231,7 +231,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			}
 			ItemStack stack = invUtil.getStackInSlot(slotArray[i]);
 			ItemIdentifierStack have = null;
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				have = ItemIdentifierStack.getFromStack(stack);
 			}
 			int haveCount = 0;

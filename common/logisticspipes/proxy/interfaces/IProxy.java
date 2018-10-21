@@ -21,7 +21,7 @@ public interface IProxy {
 
 	public EntityPlayer getClientPlayer();
 
-	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag);
+	public void addLogisticsPipesOverride(Object par1IIconRegister, int index, String override1, String override2, boolean flag);
 
 	public void registerParticles();
 

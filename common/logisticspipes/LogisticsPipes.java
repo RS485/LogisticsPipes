@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.recipes.*;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -298,6 +299,10 @@ public class LogisticsPipes {
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
 
 		LPDataFixer.INSTANCE.init();
+
+		if(event.getSide() == Side.SERVER) {
+			LogisticsPipes.textures.registerBlockIcons(null);
+		}
 	}
 
 	@Mod.EventHandler

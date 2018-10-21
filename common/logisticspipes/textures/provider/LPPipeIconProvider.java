@@ -40,5 +40,5 @@ public class LPPipeIconProvider implements IIconProvider {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(TextureMap iconRegister) {}
+	public void registerIcons(Object iconRegister) {}
 }

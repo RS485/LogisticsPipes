@@ -11,5 +11,5 @@ public interface IIconProvider {
 	@SideOnly(Side.CLIENT)
 	TextureAtlasSprite getIcon(int iconIndex);
 
-	void registerIcons(TextureMap textureMap);
+	void registerIcons(Object textureMap);
 }

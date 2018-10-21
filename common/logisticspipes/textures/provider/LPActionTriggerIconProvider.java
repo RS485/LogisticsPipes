@@ -41,7 +41,8 @@ public class LPActionTriggerIconProvider implements IIconProvider {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(TextureMap iconRegister) {
+	public void registerIcons(Object icon) {
+		TextureMap iconRegister = (TextureMap) icon;
 		icons[LPActionTriggerIconProvider.actionDisablePipeIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/DisablePipe"));
 		icons[LPActionTriggerIconProvider.triggerCraftingIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/CraftingWaiting"));
 		icons[LPActionTriggerIconProvider.triggerPowerDischargingIconIndex] = iconRegister.registerSprite(new ResourceLocation("logisticspipes:actionTriggers/PowerDischarging"));

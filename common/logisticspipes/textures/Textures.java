@@ -183,8 +183,7 @@ public class Textures {
 	}
 
 	//this gets called with null par1IIconRegister from preinit, and later with non-null from textureprestitch
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(TextureMap par1IIconRegister) {
+	public void registerBlockIcons(Object par1IIconRegister) {
 		//Register Empty Texture for slot 0
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 0, "empty", "", true);
 		MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, 1, "empty", "", true);
@@ -252,13 +251,13 @@ public class Textures {
 		if (MainProxy.isClient() && par1IIconRegister != null) {
 			Textures.LOGISTICS_REQUEST_TABLE = new Object[5];
 			for (int i = 0; i < 5; i++) {
-				Textures.LOGISTICS_REQUEST_TABLE[i] = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/" + i));
+				Textures.LOGISTICS_REQUEST_TABLE[i] = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/" + i));
 			}
-			Textures.LOGISTICS_REQUEST_TABLE_NEW = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/requesttexture"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/routed"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/unrouted"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/empty"));
-			Textures.LOGISTICS_SIDE_SELECTION = par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes:blocks/sideSelection"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/requesttexture"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/routed"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/unrouted"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/empty"));
+			Textures.LOGISTICS_SIDE_SELECTION = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/sideSelection"));
 		}
 
 		if (LPConstants.DEBUG) {
@@ -266,11 +265,11 @@ public class Textures {
 		}
 	}
 
-	public void registerItemIcons(TextureMap textureMap) {
+	public void registerItemIcons(Object textureMap) {
 		Textures.LPactionIconProvider.registerIcons(textureMap);
 	}
 
-	private TextureType registerTexture(TextureMap par1IIconRegister, String fileName) {
+	private TextureType registerTexture(Object par1IIconRegister, String fileName) {
 		return registerTexture(par1IIconRegister, fileName, 1);
 	}
 
@@ -284,7 +283,7 @@ public class Textures {
 	 *            with overlay
 	 */
 
-	private TextureType registerTexture(TextureMap par1IIconRegister, String fileName, int flag) {
+	private TextureType registerTexture(Object par1IIconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
 		texture.normal = index++;
 		texture.powered = texture.normal;
@@ -309,7 +308,7 @@ public class Textures {
 		return texture;
 	}
 
-	private SmallTextureType registerSmallTexture(TextureMap par1IIconRegister, String fileName) {
+	private SmallTextureType registerSmallTexture(Object par1IIconRegister, String fileName) {
 		SmallTextureType texture = new SmallTextureType();
 		texture.normal = index++;
 		texture.fileName = fileName;
@@ -322,7 +321,7 @@ public class Textures {
 		return texture;
 	}
 
-	private int registerSingleTexture(TextureMap par1IIconRegister, String fileName) {
+	private int registerSingleTexture(Object par1IIconRegister, String fileName) {
 		int texture = index++;
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			MainProxy.proxy.addLogisticsPipesOverride(par1IIconRegister, texture, fileName, Textures.LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE, true);

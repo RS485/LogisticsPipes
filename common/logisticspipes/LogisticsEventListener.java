@@ -82,15 +82,6 @@ public class LogisticsEventListener {
 		}
 	}
 
-	/*
-	 * subscribe forge pre stich event to register common texture
-	 */
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void textureHook(TextureStitchEvent.Pre event) {
-		LogisticsPipes.textures.registerBlockIcons(event.getMap());
-	}
-
 	@SubscribeEvent
 	public void onPlayerLeftClickBlock(final PlayerInteractEvent.LeftClickBlock event) {
 		if (MainProxy.isServer(event.getEntityPlayer().world)) {

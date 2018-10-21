@@ -158,14 +158,15 @@ public class ClientProxy implements IProxy {
 	// BuildCraft method end
 
 	@Override
-	public void addLogisticsPipesOverride(TextureMap par1IIconRegister, int index, String override1, String override2, boolean flag) {
+	public void addLogisticsPipesOverride(Object par1IIconRegister, int index, String override1, String override2, boolean flag) {
 		if (par1IIconRegister != null) {
+			TextureMap par1 = (TextureMap) par1IIconRegister;
 			if ("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
-				Textures.LPnewPipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "blocks/pipes/new_texture/"))));
+				Textures.LPnewPipeIconProvider.setIcon(index, par1.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "blocks/pipes/new_texture/"))));
 			} else if (flag) {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1)));
+				Textures.LPpipeIconProvider.setIcon(index, par1.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1)));
 			} else {
-				Textures.LPpipeIconProvider.setIcon(index, par1IIconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
+				Textures.LPpipeIconProvider.setIcon(index, par1.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
 			}
 		}
 	}

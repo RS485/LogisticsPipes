@@ -1,10 +1,14 @@
 package logisticspipes.pipes.basic;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -34,12 +38,15 @@ import static logisticspipes.LPBlocks.pipe;
 import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	protected final Random rand = new Random();
+	public static boolean redirectedToMainPipe = false;
 
 	public LogisticsBlockGenericSubMultiBlock() {
 		super(Material.GLASS);
@@ -49,6 +56,16 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@Override
 	@Nonnull
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, @Nonnull IBlockState state, int fortune) {
+		TileEntity tile = world.getTileEntity(pos);
+		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
+			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
+			return mainPipeList.stream()
+					.filter(Objects::nonNull)
+					.filter(LogisticsTileGenericPipe::isMultiBlock)
+					.map(mainPipe -> pipe.getDrops(world, mainPipe.getPos(), world.getBlockState(mainPipe.getPos()), fortune))
+					.flatMap(Collection::stream)
+					.collect(Collectors.toList());
+		}
 		return Collections.emptyList();
 	}
 
@@ -87,14 +104,36 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
+		if(redirectedToMainPipe) return;
 		TileEntity tile = worldIn.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.forEach(mainPipe -> worldIn.setBlockToAir(mainPipe.getPos()));
+					.forEach(mainPipe ->  {
+						redirectedToMainPipe = true;
+						pipe.breakBlock(worldIn, mainPipe.getBlockPos(), worldIn.getBlockState(mainPipe.getBlockPos()));
+						redirectedToMainPipe = false;
+						worldIn.setBlockToAir(mainPipe.getPos());
+					});
 		}
+	}
+
+	@Override
+	public void dropBlockAsItemWithChance(World world, BlockPos pos, IBlockState state, float chance, int fortune) {
+		if (world.isRemote) {
+			return;
+		}
+		BlockPos mainPipePos = LogisticsBlockGenericPipe.pipeSubMultiRemoved.get(new DoubleCoordinates(pos));
+		if(mainPipePos != null) {
+			pipe.dropBlockAsItemWithChance(world, mainPipePos, null, chance, fortune);
+		}
+	}
+
+	@Override
+	public float getBlockHardness(IBlockState state, World par1World, BlockPos pos) {
+		return Configs.pipeDurability;
 	}
 
 	@Override

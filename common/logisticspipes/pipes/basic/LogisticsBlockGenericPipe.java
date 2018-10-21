@@ -78,6 +78,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public static boolean ignoreSideRayTrace = false;
 	public static Map<Item, Function<Item, ? extends CoreUnroutedPipe>> pipes = new HashMap<>();
 	public static Map<DoubleCoordinates, CoreUnroutedPipe> pipeRemoved = new HashMap<>();
+	public static Map<DoubleCoordinates, BlockPos> pipeSubMultiRemoved = new HashMap<>();
 	private static long lastRemovedDate = -1;
 	protected final Random rand = new Random();
 
@@ -129,6 +130,12 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 		World world = pipe.container.getWorld();
 
+		if (LogisticsBlockGenericPipe.lastRemovedDate != world.getTotalWorldTime()) {
+			LogisticsBlockGenericPipe.lastRemovedDate = world.getTotalWorldTime();
+			LogisticsBlockGenericPipe.pipeRemoved.clear();
+			LogisticsBlockGenericPipe.pipeSubMultiRemoved.clear();
+		}
+
 		if (pipe.isMultiBlock()) {
 			if (pipe.preventRemove()) {
 				throw new UnsupportedOperationException("A multi block can't be protected against removal.");
@@ -143,7 +150,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 						((LogisticsTileGenericSubMultiBlock) tile).removeSubType(equ.getType());
 					}
 					if(((LogisticsTileGenericSubMultiBlock) tile).removeMainPipe(new DoubleCoordinates(pipe))) {
+						LogisticsBlockGenericSubMultiBlock.redirectedToMainPipe = true;
 						pos.setBlockToAir(world);
+						LogisticsBlockGenericSubMultiBlock.redirectedToMainPipe = false;
+						LogisticsBlockGenericPipe.pipeSubMultiRemoved.put(new DoubleCoordinates(pos), pipe.container.getPos());
 					} else {
 						MainProxy.sendPacketToAllWatchingChunk(tile, ((LogisticsTileGenericSubMultiBlock) tile).getLPDescriptionPacket());
 					}
@@ -151,17 +161,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			}
 		}
 
-		if (world == null) {
-			return;
-		}
-
 		BlockPos pos = pipe.container.getPos();
-
-		if (LogisticsBlockGenericPipe.lastRemovedDate != world.getTotalWorldTime()) {
-			LogisticsBlockGenericPipe.lastRemovedDate = world.getTotalWorldTime();
-			LogisticsBlockGenericPipe.pipeRemoved.clear();
-		}
-
 		LogisticsBlockGenericPipe.pipeRemoved.put(new DoubleCoordinates(pos), pipe);
 		world.removeTileEntity(pos);
 	}

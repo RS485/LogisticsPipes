@@ -43,7 +43,7 @@ ant.version = version
 ant.archivesBaseName = archivesBaseName
 
 minecraft {
-    version = "1.12.2-14.23.4.2705"
+    version = "1.12.2-14.23.5.2768"
     runDir = "run/assets"
     replace '%VERSION%', project.version
     replace '%MCVERSION%', project.minecraft.version
@@ -155,7 +155,7 @@ dependencies {
     compile "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+:api"
     compile "appeng:appliedenergistics2:rv5-stable-11:api"
     compileOnly "dan200.computercraft:ComputerCraft:1.80pr1-build5"
-    deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA23"
+    deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA26"
     runtimeOnly "baubles:Baubles:1.12:1.5.2"
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'

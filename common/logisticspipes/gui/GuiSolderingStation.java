@@ -46,7 +46,7 @@ public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 			resultstack = tile.getTagetForRecipe(false);
 		}
 		if (resultstack != null) {
-			ItemIdentifierStack iis = ItemIdentifier.get(resultstack).makeStack(0);
+			ItemIdentifierStack iis = ItemIdentifier.get(resultstack).makeStack(1);
 			List<ItemIdentifierStack> iisl = new LinkedList<>();
 			iisl.add(iis);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui(iisl, null, 0, guiLeft + 141, guiTop + 47, 1, 1, 18, 18, 100.0F, DisplayAmount.NEVER);

@@ -399,10 +399,10 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public ItemIdentifier getUndamaged() {
 		if (_IDIgnoringDamage == null) {
-			if (!unsafeMakeNormalStack(0).isItemStackDamageable()) {
+			if (!unsafeMakeNormalStack(1).isItemStackDamageable()) {
 				_IDIgnoringDamage = this;
 			} else {
-				ItemStack tstack = makeNormalStack(0);
+				ItemStack tstack = makeNormalStack(1);
 				tstack.setItemDamage(0);
 				_IDIgnoringDamage = ItemIdentifier.get(tstack);
 			}
@@ -554,7 +554,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	public ItemStack makeNormalStack(int stackSize) {
 		ItemStack stack = new ItemStack(item, stackSize, itemDamage);
 		if (tag != null) {
-			stack.setTagCompound((NBTTagCompound) tag.copy());
+			stack.setTagCompound(tag.copy());
 		}
 		return stack;
 	}
@@ -565,7 +565,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public int getMaxStackSize() {
 		if (maxStackSize == 0) {
-			ItemStack tstack = unsafeMakeNormalStack(0);
+			ItemStack tstack = unsafeMakeNormalStack(1);
 			int tstacksize = tstack.getMaxStackSize();
 			if (tstack.isItemStackDamageable() && tstack.isItemDamaged()) {
 				tstacksize = 1;
@@ -742,7 +742,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	public boolean isDamageable() {
-		return unsafeMakeNormalStack(0).isItemStackDamageable();
+		return unsafeMakeNormalStack(1).isItemStackDamageable();
 	}
 
 	public boolean isFluidContainer() {

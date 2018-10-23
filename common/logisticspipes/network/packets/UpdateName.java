@@ -51,7 +51,7 @@ public class UpdateName extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeItemIdentifierStack(ident.makeStack(0));
+		output.writeItemIdentifierStack(ident.makeStack(1));
 		output.writeUTF(name);
 	}
 

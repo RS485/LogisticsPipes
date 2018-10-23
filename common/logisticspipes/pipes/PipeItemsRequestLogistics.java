@@ -123,7 +123,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
 		List<ItemStack> list = new ArrayList<>(items.size());
 		for (ItemIdentifier item : items) {
-			ItemStack is = item.unsafeMakeNormalStack(0);
+			ItemStack is = item.unsafeMakeNormalStack(1);
 			list.add(is);
 		}
 		return list;

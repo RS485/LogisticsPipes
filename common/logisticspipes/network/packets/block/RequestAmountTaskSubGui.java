@@ -48,7 +48,7 @@ public class RequestAmountTaskSubGui extends CoordinatesPacket {
 			if (_availableItems.containsKey(item)) {
 				continue;
 			}
-			_allItems.add(item.makeStack(0));
+			_allItems.add(item.makeStack(1));
 		}
 
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AmountTaskSubGui.class).setIdentSet(_allItems), player);

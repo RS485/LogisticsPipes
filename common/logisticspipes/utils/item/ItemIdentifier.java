@@ -1,6 +1,6 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
+ *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -22,21 +22,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import logisticspipes.utils.ReflectionHelper;
+import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import logisticspipes.asm.addinfo.IAddInfo;
 import logisticspipes.asm.addinfo.IAddInfoProvider;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
-import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.utils.FinalNBTTagCompound;
-import logisticspipes.utils.ReflectionHelper;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
@@ -57,6 +54,10 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author Krapht I have no bloody clue what different mods use to differate
@@ -109,7 +110,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		}
 	}
 
-	private static interface IDamagedIdentifierHolder {
+	private interface IDamagedIdentifierHolder {
 
 		ItemIdentifier get(int damage);
 
@@ -247,7 +248,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	private ItemIdentifier _IDIgnoringData = null;
 	private DictItemIdentifier _dict;
 	private boolean canHaveDict = true;
-	private Boolean isRenderListCompatible = null;
 	private String modName;
 	private String creativeTabName;
 
@@ -327,7 +327,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		} else {
 			nextUniqueID = r.uniqueID;
 		}
-		FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound) tag.copy());
+		FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag.copy());
 		ItemKey realKey = new ItemKey(item, damage, finaltag);
 		ItemIdentifier ret = new ItemIdentifier(item, damage, finaltag, nextUniqueID);
 		ItemIdentifier.keyRefMap.put(realKey, new IDReference(realKey, nextUniqueID, ret));
@@ -436,33 +436,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return item.getUnlocalizedName() + "(ID: " + Item.getIdFromItem(item) + ", Damage: " + itemDamage + ")";
 	}
 
+	@Nonnull
 	private String getName(ItemStack stack) {
-		String name = "???";
-		try {
-			name = item.getItemStackDisplayName(stack);
-			if (name == null) {
-				throw new Exception();
-			}
-		} catch (Exception e) {
-			try {
-				name = item.getUnlocalizedName(stack);
-				if (name == null) {
-					throw new Exception();
-				}
-			} catch (Exception e1) {
-				try {
-					name = item.getUnlocalizedName();
-					if (name == null) {
-						throw new Exception();
-					}
-				} catch (Exception e2) {
-					name = "???";
-				}
-			}
-		}
-		return name;
+		return item.getItemStackDisplayName(stack);
 	}
 
+	@Nonnull
 	public String getFriendlyName() {
 		return getName(unsafeMakeNormalStack(1));
 	}
@@ -473,69 +452,37 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public String getModName() {
 		if (modName == null) {
-			ResourceLocation resource = Item.REGISTRY.getNameForObject(item);
-			ModContainer container = null;
-			boolean isMC = resource.getResourceDomain().equals("minecraft"); // TODO: Is This Correct
-			if(!isMC) {
-				for (ModContainer mc : Loader.instance().getModList()) {
-					if (resource.getResourceDomain().toLowerCase().equals(mc.getModId().toLowerCase())) {
-						container = mc;
-						break;
-					}
-				}
+			ResourceLocation rl = item.getRegistryName();
+			assert rl != null;
+			Map<String, ModContainer> modList = Loader.instance().getIndexedModList();
+			ModContainer mc = modList.get(rl.getResourceDomain());
+			if (mc == null) {
+				// get mod that really registered this item
+				Map<ResourceLocation, String> map = ReflectionHelper.invokePrivateMethodCatched(ForgeRegistry.class, ForgeRegistries.ITEMS, "getOverrideOwners", new Class[0], new Object[0]);
+
+				final String key = map.get(rl);
+				if (key != null)
+					mc = modList.get(key);
 			}
-			if(isMC) {
-				modName = "Minecraft";
-			} else if (container == null) {
-				modName = "UNKNOWN";
-			} else {
-				modName = container.getName();
-			}
+
+			modName = mc != null ? mc.getName() : "UNKNOWN";
 		}
 		return modName;
 	}
 
 	public String getCreativeTabName() {
 		if (creativeTabName == null) {
-			try {
-				CreativeTabs tab = null;
-				try {
-					tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Item.class, "tabToDisplayOn", item);
-				} catch (NoSuchFieldException e1) {
-					try {
-						tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Item.class, "field_77701_a", item);
-					} catch (NoSuchFieldException e2) {
-						tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Item.class, "a", item);
-					}
+			CreativeTabs tab = item.getCreativeTab();
+
+			if (tab == null && item instanceof ItemBlock) {
+				Block block = Block.getBlockFromItem(item);
+				if (block != Blocks.AIR) {
+					tab = block.getCreativeTabToDisplayOn();
 				}
-				if (tab == null && item instanceof ItemBlock) {
-					Block block = Block.getBlockFromItem(item);
-					if (block != null) {
-						try {
-							tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Block.class, "displayOnCreativeTab", block);
-						} catch (NoSuchFieldException e1) {
-							try {
-								tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Block.class, "field_149772_a", block);
-							} catch (NoSuchFieldException e2) {
-								tab = ReflectionHelper.getPrivateField(CreativeTabs.class, Block.class, "a", block);
-							}
-						}
-					}
-				}
-				if (tab != null) {
-					try {
-						creativeTabName = ReflectionHelper.getPrivateField(String.class, CreativeTabs.class, "tabLabel", tab);
-					} catch (NoSuchFieldException e1) {
-						try {
-							creativeTabName = ReflectionHelper.getPrivateField(String.class, CreativeTabs.class, "field_78034_o", tab);
-						} catch (NoSuchFieldException e2) {
-							creativeTabName = ReflectionHelper.getPrivateField(String.class, CreativeTabs.class, "o", tab);
-						}
-					}
-				}
-			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e) {}
-			if (creativeTabName == null) {
-				creativeTabName = "UNKNOWN";
+			}
+
+			if (tab != null) {
+				creativeTabName = tab.getTabLabel();
 			}
 		}
 		return creativeTabName;
@@ -597,7 +544,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public static Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws SecurityException, IllegalArgumentException {
 		if (nbt == null) {
 			return null;
 		}
@@ -818,7 +765,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		} else if (nbt instanceof NBTTagList) {
 			sb.append("TagList(data=");
 			for (int i = 0; i < ((NBTTagList) nbt).tagList.size(); i++) {
-				debugDumpTag((NBTBase) (((NBTTagList) nbt).tagList.get(i)), sb);
+				debugDumpTag((((NBTTagList) nbt).tagList.get(i)), sb);
 				if (i < ((NBTTagList) nbt).tagList.size() - 1) {
 					sb.append(",");
 				}

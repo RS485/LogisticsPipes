@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -25,12 +23,10 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
@@ -448,7 +444,7 @@ public class DummyContainer extends Container {
 				if (itemstack6.isEmpty()) {
 					if (slot4.canTakeStack(player)) {
 						inventoryplayer.setInventorySlotContents(dragType, itemstack10);
-						ReflectionHelper.invokePrivateMethodCatched(Void.class, Slot.class, slot4, "onSwapCraft", new Class[]{int.class}, new Object[] {itemstack10.getCount()});
+						ReflectionHelper.invokePrivateMethodCatched(Slot.class, slot4, "onSwapCraft", new Class[]{int.class}, new Object[] {itemstack10.getCount()});
 						slot4.putStack(ItemStack.EMPTY);
 						slot4.onTake(player, itemstack10);
 					}

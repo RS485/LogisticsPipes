@@ -24,6 +24,10 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 
 	static int capacity = 8000;
 
+	public LogisticsFluidContainer() {
+		setMaxStackSize(1);
+	}
+
 	@Override
 	public boolean canExistInNormalInventory(ItemStack stack) {
 		return false;
@@ -32,11 +36,6 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	@Override
 	public boolean canExistInWorld(ItemStack stack) {
 		return false;
-	}
-
-	@Override
-	public int getItemStackLimit() {
-		return 1;
 	}
 
 	@Override

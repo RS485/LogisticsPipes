@@ -32,6 +32,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 		super();
 		setMaxStackSize(1);
 		setMaxDamage(250);
+		setHasSubtypes(true);
 	}
 
 	@Override

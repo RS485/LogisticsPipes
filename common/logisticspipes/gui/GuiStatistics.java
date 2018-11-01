@@ -1,11 +1,5 @@
 package logisticspipes.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.blocks.stats.TrackingTask;
 import logisticspipes.gui.popup.GuiAddTracking;
@@ -21,16 +15,19 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuiStatistics extends LogisticsBaseGuiScreen {
 
@@ -69,12 +66,12 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		TAB_BUTTON_2.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
 		if (itemDisplay_1 == null) {
-			itemDisplay_1 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay_1 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
 		}
 		itemDisplay_1.reposition(guiLeft + 10, guiTop + 40, xSize - 20, 20, 0, 0);
 
 		if (itemDisplay_2 == null) {
-			itemDisplay_2 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
+			itemDisplay_2 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
 			itemDisplay_2.setItemList(new ArrayList<>());
 		}
 		itemDisplay_2.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125, 0, 0);
@@ -90,7 +87,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 	public void updateItemList() {
 		List<ItemIdentifierStack> allItems = tile.tasks.stream().map(task -> task.item.makeStack(1))
-				.collect(Collectors.toList());
+			.collect(Collectors.toList());
 		itemDisplay_1.setItemList(allItems);
 	}
 
@@ -134,7 +131,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int mouse_x, int mouse_y) {
-		GL11.glColor4d(1.0D, 1.0D, 1.0D, 1.0D);
+		GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
 		for (int i = 0; i < TAB_COUNT; i++) {
 			GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
 		}
@@ -145,15 +142,15 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawStatsBackground(mc, guiLeft + 6, guiTop + 3);
 
 		// Second Tab
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GlStateManager.enableRescaleNormal();
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GlStateManager.enableLighting();
+		GlStateManager.enableDepth();
 		RenderHelper.enableGUIStandardItemLighting();
 		ItemStack stack = new ItemStack(Blocks.CRAFTING_TABLE, 0);
 		itemRender.renderItemAndEffectIntoGUI(stack, guiLeft + 31, guiTop + 3);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GlStateManager.disableLighting();
+		GlStateManager.disableDepth();
 		itemRender.zLevel = 0.0F;
 
 		if (current_Tab == 0) {
@@ -169,14 +166,14 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 				}
 				if (task != null) {
 					GuiGraphics.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
-					GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+					GlStateManager.enableRescaleNormal();
 					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
-					GL11.glEnable(GL11.GL_LIGHTING);
-					GL11.glEnable(GL11.GL_DEPTH_TEST);
+					GlStateManager.enableLighting();
+					GlStateManager.enableDepth();
 					RenderHelper.enableGUIStandardItemLighting();
 					itemRender.renderItemAndEffectIntoGUI(task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
-					GL11.glDisable(GL11.GL_LIGHTING);
-					GL11.glDisable(GL11.GL_DEPTH_TEST);
+					GlStateManager.disableLighting();
+					GlStateManager.disableDepth();
 					itemRender.zLevel = 0.0F;
 					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRenderer), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
 
@@ -289,17 +286,17 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
 		if (current_Tab == 0) {
-			if (i == 201) { //PgUp
+			if (i == Keyboard.KEY_PRIOR) { //PgUp
 				itemDisplay_1.prevPage();
-			} else if (i == 209) { //PgDn
+			} else if (i == Keyboard.KEY_NEXT) { //PgDn
 				itemDisplay_1.nextPage();
 			} else {
 				super.keyTyped(c, i);
 			}
 		} else if (current_Tab == 1) {
-			if (i == 201) { //PgUp
+			if (i == Keyboard.KEY_PRIOR) { //PgUp
 				itemDisplay_2.prevPage();
-			} else if (i == 209) { //PgDn
+			} else if (i == Keyboard.KEY_NEXT) { //PgDn
 				itemDisplay_2.nextPage();
 			} else {
 				super.keyTyped(c, i);
@@ -339,7 +336,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
 		super.checkButtons();
-		for (GuiButton button : (List<GuiButton>) buttonList) {
+		for (GuiButton button : buttonList) {
 			if (TAB_BUTTON_1.contains(button)) {
 				button.visible = current_Tab == 0;
 				if (button.displayString.equals("Remove")) {

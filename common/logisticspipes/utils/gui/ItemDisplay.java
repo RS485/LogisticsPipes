@@ -1,6 +1,5 @@
 package logisticspipes.utils.gui;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,11 +21,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -35,7 +32,6 @@ import lombok.Getter;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class ItemDisplay {
 
@@ -248,8 +244,8 @@ public class ItemDisplay {
 	}
 
 	public void renderItemArea(double zLevel) {
-		GL11.glPushMatrix();
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.pushMatrix();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		screen.drawRect(left, top, left + width, top + height, Color.GREY);
 
@@ -265,12 +261,10 @@ public class ItemDisplay {
 		int mouseX = Mouse.getX() * scaleX / mc.displayWidth - left;
 		int mouseY = scaleY - Mouse.getY() * scaleY / mc.displayHeight - top;
 
-		GL11.glTranslatef(left, top, 0.0F);
+		GlStateManager.translate(left, top, 0.0F);
 
 		if (!listbyserver) {
 			int graphic = ((int) (System.currentTimeMillis() / 250) % 5);
-			// GL11.glBindTexture(GL11.GL_TEXTURE_2D,
-			// this.mc.renderEngine.getTexture());
 			screen.getMC().renderEngine.bindTexture(ItemDisplay.TEXTURE);
 			Tessellator tess = Tessellator.getInstance();
 			BufferBuilder buf = tess.getBuffer();
@@ -283,11 +277,7 @@ public class ItemDisplay {
 			buf.pos(xPosition, yPosition, zLevel).tex(0.04, 0.69 + (graphic * 0.03125)).endVertex();
 			tess.draw();
 		} else {
-			//RenderHelper.enableGUIStandardItemLighting();
-			//GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-			//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
-			//GL11.glDisable(GL11.GL_DEPTH_TEST);
-			//GL11.glDisable(GL11.GL_LIGHTING);
+			GlStateManager.enableLighting();
 
 			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
 				ItemIdentifier item = itemIdentifierStack.getItem();
@@ -352,9 +342,8 @@ public class ItemDisplay {
 				}
 			}
 
-			//GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
-		GL11.glPopMatrix();
+		GlStateManager.popMatrix();
 
 	}
 

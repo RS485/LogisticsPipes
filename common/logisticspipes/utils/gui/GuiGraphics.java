@@ -8,8 +8,8 @@
 
 package logisticspipes.utils.gui;
 
-import java.util.List;
-
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -24,16 +24,13 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.Color;
+import java.util.List;
 
 /**
  * Utils class for GUI-related drawing methods.
@@ -58,16 +55,12 @@ public final class GuiGraphics {
 	/**
 	 * Draws the durability bar for GUI items.
 	 *
-	 * @param itemstack
-	 *            the itemstack, from which the durability bar should be drawn
-	 * @param x
-	 *            the x-coordinate for the bar
-	 * @param y
-	 *            the y-coordinate for the bar
-	 * @param zLevel
-	 *            the z-level for the bar
+	 * @param itemstack the itemstack, from which the durability bar should be drawn
+	 * @param x         the x-coordinate for the bar
+	 * @param y         the y-coordinate for the bar
+	 * @param zLevel    the z-level for the bar
 	 * @see net.minecraft.client.renderer.entity.RenderItem#renderItemOverlayIntoGUI(FontRenderer,
-	 *      TextureManager, ItemStack, int, int, String)
+	 * TextureManager, ItemStack, int, int, String)
 	 */
 	public static void drawDurabilityBar(ItemStack itemstack, int x, int y, double zLevel) {
 		if (itemstack.getItem().showDurabilityBar(itemstack)) {
@@ -98,27 +91,27 @@ public final class GuiGraphics {
 		GuiGraphics.zLevel = pzLevel;
 
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		ItemStack var22 = (ItemStack) tooltip[2];
+		ItemStack stack = (ItemStack) tooltip[2];
 
-		List<String> var24;
-		if(mc.currentScreen instanceof GuiContainer) {
-			var24 = SimpleServiceLocator.neiProxy.getItemToolTip(var22, mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL, (GuiContainer) mc.currentScreen);
+		List<String> tooltipLines;
+		if (mc.currentScreen instanceof GuiContainer) {
+			tooltipLines = SimpleServiceLocator.neiProxy.getItemToolTip(stack, mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL, (GuiContainer) mc.currentScreen);
 		} else {
-			var24 = var22.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
+			tooltipLines = stack.getTooltip(mc.player, mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
 		}
 
 		if (tooltip.length > 4) {
-			var24.addAll(1, (List<String>) tooltip[4]);
+			tooltipLines.addAll(1, (List<String>) tooltip[4]);
 		}
 
 		if ((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || (Boolean) tooltip[3])) {
-			var24.add(1, "\u00a77" + ((ItemStack) tooltip[2]).getCount());
+			tooltipLines.add(1, "\u00a77" + ((ItemStack) tooltip[2]).getCount());
 		}
 
-		int var11 = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
-		int var12 = (Integer) tooltip[1] - (forceAdd ? 0 : guiTop) - 12;
-		if (!SimpleServiceLocator.neiProxy.renderItemToolTip(var11, var12, var24, var22.getRarity().rarityColor, var22)) {
-			GuiGraphics.drawToolTip(var11, var12, var24, var22.getRarity().rarityColor);
+		int x = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
+		int y = (Integer) tooltip[1] - (forceAdd ? 0 : guiTop) - 12;
+		if (!SimpleServiceLocator.neiProxy.renderItemToolTip(x, y, tooltipLines, stack.getRarity().rarityColor, stack)) {
+			GuiGraphics.drawToolTip(x, y, tooltipLines, stack.getRarity().rarityColor);
 		}
 
 		GuiGraphics.zLevel = 0;
@@ -130,58 +123,58 @@ public final class GuiGraphics {
 		}
 
 		// use vanilla Minecraft code
-		int var10 = 0;
-		int var11;
-		int var12;
+		int boxWidth = 0;
 
-		for (var11 = 0; var11 < msg.size(); ++var11) {
-			var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(msg.get(var11));
+		for (int i = 0; i < msg.size(); ++i) {
+			int width = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(msg.get(i));
 
-			if (var12 > var10) {
-				var10 = var12;
+			if (width > boxWidth) {
+				boxWidth = width;
 			}
 		}
 
-		var11 = posX + 12;
-		var12 = posY - 12;
-		int var14 = 8;
+		int x = posX + 12;
+		int y = posY - 12;
+		int yHeight = 8;
 
 		if (msg.size() > 1) {
-			var14 += 2 + (msg.size() - 1) * 10;
+			yHeight += 2 + (msg.size() - 1) * 10;
 		}
 
 		GlStateManager.disableDepth();
+		GlStateManager.disableLighting();
+
 		GuiGraphics.zLevel = 300.0F;
-		int var15 = -267386864;
+		int bgColor = 0xf0100010;
+		int frameColor1 = 0x505000ff;
+		int frameColor2 = (frameColor1 & 0xfefefe) >> 1 | frameColor1 & 0xff000000;
 
-		SimpleGraphics.drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15, 0.0);
-		SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15, 0.0);
-		SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15, 0.0);
-		SimpleGraphics.drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15, 0.0);
-		SimpleGraphics.drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15, 0.0);
-		int var16 = 1347420415;
-		int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
-		SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17, 0.0);
-		SimpleGraphics.drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17, 0.0);
-		SimpleGraphics.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16, 0.0);
-		SimpleGraphics.drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17, 0.0);
+		SimpleGraphics.drawGradientRect(x - 3, y - 4, x + boxWidth + 3, y - 3, bgColor, bgColor, 0.0);
+		SimpleGraphics.drawGradientRect(x - 3, y + yHeight + 3, x + boxWidth + 3, y + yHeight + 4, bgColor, bgColor, 0.0);
+		SimpleGraphics.drawGradientRect(x - 3, y - 3, x + boxWidth + 3, y + yHeight + 3, bgColor, bgColor, 0.0);
+		SimpleGraphics.drawGradientRect(x - 4, y - 3, x - 3, y + yHeight + 3, bgColor, bgColor, 0.0);
+		SimpleGraphics.drawGradientRect(x + boxWidth + 3, y - 3, x + boxWidth + 4, y + yHeight + 3, bgColor, bgColor, 0.0);
+		SimpleGraphics.drawGradientRect(x - 3, y - 3 + 1, x - 3 + 1, y + yHeight + 3 - 1, frameColor1, frameColor2, 0.0);
+		SimpleGraphics.drawGradientRect(x + boxWidth + 2, y - 3 + 1, x + boxWidth + 3, y + yHeight + 3 - 1, frameColor1, frameColor2, 0.0);
+		SimpleGraphics.drawGradientRect(x - 3, y - 3, x + boxWidth + 3, y - 3 + 1, frameColor1, frameColor1, 0.0);
+		SimpleGraphics.drawGradientRect(x - 3, y + yHeight + 2, x + boxWidth + 3, y + yHeight + 3, frameColor2, frameColor2, 0.0);
 
-		for (int var18 = 0; var18 < msg.size(); ++var18) {
-			String var19 = msg.get(var18);
+		for (int i = 0; i < msg.size(); ++i) {
+			String line = msg.get(i);
 
-			if (var18 == 0) {
-				var19 = rarityColor.toString() + var19;
+			if (i == 0) {
+				line = rarityColor.toString() + line;
 			} else {
-				var19 = "\u00a77" + var19;
+				line = "\u00a77" + line;
 			}
 
-			FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+			FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(line, x, y, -1);
 
-			if (var18 == 0) {
-				var12 += 2;
+			if (i == 0) {
+				y += 2;
 			}
 
-			var12 += 10;
+			y += 10;
 		}
 
 		GuiGraphics.zLevel = 0.0F;

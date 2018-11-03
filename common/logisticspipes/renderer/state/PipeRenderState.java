@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -14,6 +15,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import logisticspipes.interfaces.IClientState;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.GLRenderList;
 import logisticspipes.renderer.newpipe.RenderEntry;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -34,6 +37,7 @@ public class PipeRenderState implements IClientState {
 	public Cache<LocalCacheType, Object> objectCache = CacheBuilder.newBuilder().build();
 	public boolean forceRenderOldPipe = false;
 	private boolean[] solidSidesCache = new boolean[6];
+	private boolean savedStateHasMCMultiParts = false;
 
 	public int[] buffer = null;
 	public Map<ResourceLocation, GLRenderList> renderLists;
@@ -58,7 +62,7 @@ public class PipeRenderState implements IClientState {
 		return pipeConnectionMatrix.isDirty() || textureMatrix.isDirty();
 	}
 
-	public void checkSolidFaces(IBlockAccess worldIn, BlockPos blockPos) {
+	public void checkForRenderUpdate(IBlockAccess worldIn, BlockPos blockPos) {
 		boolean[] solidSides = new boolean[6];
 		for (EnumFacing dir : EnumFacing.VALUES) {
 			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(blockPos), dir);
@@ -70,6 +74,15 @@ public class PipeRenderState implements IClientState {
 		if (!Arrays.equals(solidSides, solidSidesCache)) {
 			solidSidesCache = solidSides.clone();
 			clearRenderCaches();
+		}
+		DoubleCoordinates pos = new DoubleCoordinates(blockPos);
+		TileEntity tile = pos.getTileEntity(worldIn);
+		if(tile instanceof LogisticsTileGenericPipe) {
+			boolean hasParts = SimpleServiceLocator.mcmpProxy.hasParts((LogisticsTileGenericPipe) tile);
+			if(savedStateHasMCMultiParts != hasParts) {
+				savedStateHasMCMultiParts = hasParts;
+				clearRenderCaches();
+			}
 		}
 	}
 

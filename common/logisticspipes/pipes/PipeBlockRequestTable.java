@@ -609,4 +609,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		this.rotation = rotation;
 	}
 
+	@Override
+	public boolean isMultipartAllowedInPipe() {
+		return false;
+	}
 }

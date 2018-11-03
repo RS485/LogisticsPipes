@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 
@@ -25,18 +26,23 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.client.model.BakedItemModel;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
 import net.minecraftforge.common.model.IModelState;
+import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import com.google.common.cache.Cache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -55,7 +61,6 @@ import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.textures.Textures;
-import network.rs485.logisticspipes.utils.block.RenderListDelegateBlockState;
 
 public class LogisticsNewPipeModel implements IModel {
 
@@ -115,37 +120,62 @@ public class LogisticsNewPipeModel implements IModel {
 	}
 
 	@Override
+	@Nonnull
 	public Collection<ResourceLocation> getDependencies() {
 		return Collections.emptyList();
 	}
 
 	@Override
+	@Nonnull
 	public Collection<ResourceLocation> getTextures() {
 		return Collections.emptyList();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+	@Nonnull
+	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
 		final List<BakedQuad> quads = Lists.newArrayList();
 		return new IBakedModel() {
 
 			@Override
 			@SideOnly(Side.CLIENT)
+			@Nonnull
 			public List<BakedQuad> getQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side, long rand) {
+				List<BakedQuad> result = Collections.emptyList();
+				BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
+				if(layer == BlockRenderLayer.CUTOUT || layer == null || blockstate == null) {
+					result = getLPQuads(blockstate, side);
+				}
+				return addOtherQuads(result, blockstate, side, rand);
+			}
+
+			private List<BakedQuad> addOtherQuads(List<BakedQuad> list, IBlockState blockstate, EnumFacing side, long rand) {
+				if(blockstate != null) {
+					return SimpleServiceLocator.mcmpProxy.addQuads(list, blockstate, side, rand);
+				}
+				return list;
+			}
+
+			private List<BakedQuad> getLPQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side) {
 				if(blockstate != null) {
 					if (side == null) {
-						if (blockstate instanceof RenderListDelegateBlockState) {
-							Object localQuads = ((RenderListDelegateBlockState) blockstate).getObjectCache().getIfPresent(PipeRenderState.LocalCacheType.QUADS);
+						IExtendedBlockState eState = (IExtendedBlockState) blockstate;
+						Cache<PipeRenderState.LocalCacheType, Object> objectCache = eState.getValue(LogisticsBlockGenericPipe.propertyCache);
+						if(objectCache != null) {
+							Object localQuads = objectCache.getIfPresent(PipeRenderState.LocalCacheType.QUADS);
 							if (localQuads instanceof List) {
+								//noinspection unchecked
 								return (List<BakedQuad>) localQuads;
 							}
 						}
-						List<BakedQuad> localQuads = LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(blockstate), format, true);
-						if (blockstate instanceof RenderListDelegateBlockState) {
-							((RenderListDelegateBlockState) blockstate).getObjectCache().put(PipeRenderState.LocalCacheType.QUADS, localQuads);
+						List<BakedQuad> newLocalQuads = LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(blockstate), format, true);
+
+						if(objectCache != null) {
+							objectCache.put(PipeRenderState.LocalCacheType.QUADS, newLocalQuads);
 						}
-						return localQuads;
+
+						return newLocalQuads;
 					}
 				} else {
 					if (quads.isEmpty()) {
@@ -153,7 +183,7 @@ public class LogisticsNewPipeModel implements IModel {
 					}
 					return quads;
 				}
-				return Lists.newArrayList();
+				return Collections.emptyList();
 			}
 
 			@Override
@@ -172,17 +202,20 @@ public class LogisticsNewPipeModel implements IModel {
 			}
 
 			@Override
+			@Nonnull
 			public TextureAtlasSprite getParticleTexture() {
 				return BASE_TEXTURE_SPRITE;
 			}
 
 			@Override
+			@Nonnull
 			public ItemOverrideList getOverrides() {
 				return ItemOverrideList.NONE;
 			}
 
 			@Override
-			public org.apache.commons.lang3.tuple.Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+			@Nonnull
+			public org.apache.commons.lang3.tuple.Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType cameraTransformType) {
 				return PerspectiveMapWrapper.handlePerspective(this, SimpleServiceLocator.cclProxy.getDefaultBlockState(), cameraTransformType);
 			}
 		};
@@ -203,12 +236,16 @@ public class LogisticsNewPipeModel implements IModel {
 					objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation), icon));
 				}
 			}
-		} else if(blockstate instanceof RenderListDelegateBlockState) {
-			RenderListDelegateBlockState lpState = (RenderListDelegateBlockState) blockstate;
-			objectsToRender = lpState.getRenderList();
+		} else if(blockstate instanceof IExtendedBlockState) {
+			IExtendedBlockState lpState = (IExtendedBlockState) blockstate;
+			objectsToRender = lpState.getValue(LogisticsBlockGenericPipe.propertyRenderList);
 		}
 
-		return objectsToRender;
+		if(objectsToRender != null) {
+			return objectsToRender;
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 	private CoreUnroutedPipe getPipe() {

@@ -23,6 +23,6 @@ public class PipeSolidSideCheck extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.world, LTGPCompletionCheck.PIPE);
-		pipe.renderState.checkSolidFaces(player.world, pipe.getPos());
+		pipe.renderState.checkForRenderUpdate(player.world, pipe.getPos());
 	}
 }

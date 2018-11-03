@@ -17,9 +17,7 @@ import logisticspipes.LPBlocks;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
@@ -51,6 +49,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -61,19 +60,23 @@ import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.ltgpmodcompat.LPMicroblockBlock;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.renderer.newpipe.PropertyCache;
+import logisticspipes.renderer.newpipe.PropertyRenderList;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
 import net.minecraftforge.registries.IForgeRegistry;
-import network.rs485.logisticspipes.utils.block.RenderListDelegateBlockState;
+
+import network.rs485.logisticspipes.proxy.mcmp.BlockAccessDelegate;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 import static logisticspipes.LPConstants.PIPE_MAX_POS;
 import static logisticspipes.LPConstants.PIPE_MIN_POS;
 
-public class LogisticsBlockGenericPipe extends BlockContainer {
+public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 	public static boolean ignoreSideRayTrace = false;
 	public static Map<Item, Function<Item, ? extends CoreUnroutedPipe>> pipes = new HashMap<>();
@@ -86,6 +89,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	public static final PropertyEnum<PipeRenderModel> modelTypeProperty = PropertyEnum.create("model_type", PipeRenderModel.class);
 	public static final Map<EnumFacing, PropertyBool> connectionPropertys = Arrays.stream(EnumFacing.values()).collect(Collectors
 			.toMap(key -> key, key -> PropertyBool.create("connection_" + key.ordinal())));
+
+	public static final PropertyRenderList propertyRenderList = new PropertyRenderList();
+	public static final PropertyCache propertyCache = new PropertyCache();
 
 	public static final AxisAlignedBB PIPE_CENTER_BB = new AxisAlignedBB(PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MAX_POS, PIPE_MAX_POS, PIPE_MAX_POS);
 	public static final List<AxisAlignedBB> PIPE_CONN_BB = Arrays.asList(
@@ -324,6 +330,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				}
 			}
 		}
+		mcmpBlockAccess.addDrops(list, world, pos, state, fortune);
 		return list;
 	}
 
@@ -356,6 +363,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				.forEach(bb -> addCollisionBoxToList(pos, entityBox, collidingBoxes, bb));
 		}
 		addCollisionBoxToList(pos, entityBox, collidingBoxes, PIPE_CENTER_BB);
+		mcmpBlockAccess.addCollisionBoxToList(state, world, pos, entityBox, collidingBoxes, entity, isActualState);
 	}
 
 	@Override
@@ -395,8 +403,14 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 		InternalRayTraceResult result = doRayTrace(world, pos, start, end);
 
 		if (result == null) {
-			return null;
+			return mcmpBlockAccess.collisionRayTrace(state, world, pos, start, end);
 		} else {
+			RayTraceResult secondResult = mcmpBlockAccess.collisionRayTrace(state, world, pos, start, end);
+			if(secondResult != null) {
+				if(secondResult.hitVec.distanceTo(start) < result.rayTraceResult.hitVec.distanceTo(start)) {
+					return secondResult;
+				}
+			}
 			return result.rayTraceResult;
 		}
 	}
@@ -579,12 +593,27 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isFullBlock(IBlockState state) {
 		return false;
 	}
 
 	@Override
 	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
+
+	@Override
+	public boolean isNormalCube(IBlockState state) {
+		return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
+
+	@Override
+	public boolean isTopSolid(IBlockState state) {
 		return false;
 	}
 
@@ -601,15 +630,9 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 			if (((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
 				return true;
 			}
-			return ((LogisticsTileGenericPipe) tile).isSolidOnSide(side);
 		}
 
-		return false;
-	}
-
-	@Override
-	public boolean isNormalCube(IBlockState state) {
-		return false;
+		return super.isSideSolid(state, world, pos, side);
 	}
 
 	@Override
@@ -619,7 +642,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	}
 
 	@Override
-	public void dropBlockAsItemWithChance(World world, BlockPos pos, IBlockState state, float chance, int fortune) {
+	public void dropBlockAsItemWithChance(World world, final BlockPos pos, IBlockState state, float chance, int fortune) {
 
 		if (world.isRemote) {
 			return;
@@ -637,11 +660,29 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 				pipe = LogisticsBlockGenericPipe.pipeRemoved.get(new DoubleCoordinates(pos));
 			}
 
+			if(pipe == null) return;
+
 			if (pipe.item != null && (pipe.canBeDestroyed() || pipe.destroyByPlayer())) {
 				for (ItemStack stack : pipe.dropContents()) {
 					spawnAsEntity(world, pos, stack);
 				}
 				spawnAsEntity(world, pos, new ItemStack(pipe.item, 1, damageDropped(state)));
+				ArrayList<ItemStack> list = new ArrayList<>();
+				CoreUnroutedPipe finalPipe = pipe;
+				BlockAccessDelegate worldDelegate = new BlockAccessDelegate(world) {
+
+					@Override
+					public TileEntity getTileEntity(BlockPos testPos) {
+						if (pos == testPos) {
+							return finalPipe.container;
+						}
+						return super.getTileEntity(pos);
+					}
+				};
+				mcmpBlockAccess.addDrops(list, worldDelegate, pos, state, fortune);
+				for (ItemStack stack : list) {
+					spawnAsEntity(world, pos, stack);
+				}
 			} else if (pipe.item != null) {
 				LogisticsBlockGenericPipe.cacheTileToPreventRemoval(pipe);
 			}
@@ -657,6 +698,10 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+		ItemStack pick = super.getPickBlock(state, target, world, pos, player);
+		if(!pick.isEmpty()) {
+			return pick;
+		}
 		InternalRayTraceResult rayTraceResult = doRayTrace(world, pos, player);
 
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
@@ -696,7 +741,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float xOffset, float yOffset, float zOffset) {
-		super.onBlockActivated(world, pos, state, player, hand, side, xOffset, yOffset, zOffset);
+		if(super.onBlockActivated(world, pos, state, player, hand, side, xOffset, yOffset, zOffset)) return true;
 
 		ItemStack heldItem = player.inventory.mainInventory.get(player.inventory.currentItem);
 
@@ -738,6 +783,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager effectRenderer) {
+		if(super.addHitEffects(state, world, target, effectRenderer)) return true;
 		BlockPos pos = target.getBlockPos();
 
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
@@ -788,6 +834,7 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager effectRenderer) {
+		if(super.addDestroyEffects(world, pos, effectRenderer)) return true;
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 		if (pipe == null) {
 			return false;
@@ -837,12 +884,17 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		List<IProperty<?>> list = new ArrayList<>();
-		list.add(rotationProperty);
-		list.add(modelTypeProperty);
-		list.addAll(connectionPropertys.values());
-		IProperty<?>[] props = list.toArray(new IProperty<?>[list.size()]);
-		return new BlockStateContainer(this, props);
+		BlockStateContainer.Builder builder = new BlockStateContainer.Builder(this);
+		builder.add(rotationProperty);
+		builder.add(modelTypeProperty);
+		connectionPropertys.values().forEach(builder::add);
+
+		builder.add(propertyRenderList);
+		builder.add(propertyCache);
+
+		mcmpBlockAccess.addBlockState(builder);
+
+		return builder.build();
 	}
 
 	@Override
@@ -881,11 +933,15 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 
 	@Override
 	public IBlockState getExtendedState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+		state = mcmpBlockAccess.getExtendedState(state, worldIn, pos);
+
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe) && !(pipe instanceof PipeBlockRequestTable)) {
 			LogisticsNewRenderPipe.checkAndCalculateRenderCache(pipe.container);
-			return new RenderListDelegateBlockState(pipe.container.renderState.cachedRenderer, pipe.container.renderState.objectCache, state);
+			state = ((IExtendedBlockState)state).withProperty(propertyRenderList, pipe.container.renderState.cachedRenderer);
+			state = ((IExtendedBlockState)state).withProperty(propertyCache, pipe.container.renderState.objectCache);
+			//return new RenderListDelegateBlockState(pipe.container.renderState.cachedRenderer, pipe.container.renderState.objectCache, state);
 		}
 		return state;
 	}
@@ -893,6 +949,11 @@ public class LogisticsBlockGenericPipe extends BlockContainer {
 	private void checkForRenderChanges(IBlockAccess worldIn, BlockPos blockPos) {
 		TileEntity tile = new DoubleCoordinates(blockPos).getTileEntity(worldIn);
 		if (!(tile instanceof LogisticsTileGenericPipe)) return;
-		((LogisticsTileGenericPipe) tile).renderState.checkSolidFaces(worldIn, blockPos);
+		((LogisticsTileGenericPipe) tile).renderState.checkForRenderUpdate(worldIn, blockPos);
+	}
+
+	@Override
+	public boolean canRenderInLayer(IBlockState state, BlockRenderLayer layer) {
+		return true;
 	}
 }

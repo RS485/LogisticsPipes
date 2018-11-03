@@ -42,6 +42,7 @@ import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.TankUtilFactory;
+import network.rs485.logisticspipes.proxy.mcmp.IMCMPProxy;
 
 public final class SimpleServiceLocator {
 
@@ -243,5 +244,11 @@ public final class SimpleServiceLocator {
 
 	public static void setConfigToolHandler(ConfigToolHandler configToolHandler) {
 		SimpleServiceLocator.configToolHandler = configToolHandler;
+	}
+
+	public static IMCMPProxy mcmpProxy;
+
+	public static void setMCMPProxy(IMCMPProxy proxy) {
+		SimpleServiceLocator.mcmpProxy = proxy;
 	}
 }

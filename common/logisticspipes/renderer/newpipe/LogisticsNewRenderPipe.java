@@ -876,6 +876,8 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 		}
 
+		mountCanidates.removeIf(mount -> SimpleServiceLocator.mcmpProxy.hasParts(pipeTile));
+
 		if (!mountCanidates.isEmpty()) {
 			if (solidSides[EnumFacing.DOWN.ordinal()]) {
 				findOponentOnSameSide(mountCanidates, EnumFacing.DOWN);

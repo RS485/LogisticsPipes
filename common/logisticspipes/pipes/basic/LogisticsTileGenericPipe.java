@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.network.Node;
+import static logisticspipes.pipes.basic.LogisticsBlockGenericPipe.PIPE_CONN_BB;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
 
@@ -48,6 +50,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.block.PipeSolidSideCheck;
 import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.pipes.basic.ltgpmodcompat.LPMicroblockTileEntity;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipeCapabilityProvider;
@@ -61,6 +64,7 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.OrientationsUtil;
+import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
@@ -74,7 +78,7 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 @ModDependentInterface(modId = { LPConstants.cofhCoreModID, LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID},
 		interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral",
 		"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", })
-public class LogisticsTileGenericPipe extends TileEntity
+public class LogisticsTileGenericPipe extends LPMicroblockTileEntity
 		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, */
 		ILogicControllerTile {
 
@@ -115,6 +119,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
 		tdPart = SimpleServiceLocator.thermalDynamicsProxy.getTDPart(this);
 		bcCapProvider = SimpleServiceLocator.buildCraftProxy.getIBCPipeCapabilityProvider(this);
+		imcmpltgpCompanion = SimpleServiceLocator.mcmpProxy.createMCMPCompanionFor(this);
 		renderState = new PipeRenderState();
 	}
 
@@ -151,6 +156,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	public void onChunkUnload() {
+		super.onChunkUnload();
 		if (pipe != null) {
 			pipe.onChunkUnload();
 		}
@@ -160,6 +166,7 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Override
 	public void update() {
+		imcmpltgpCompanion.update();
 		Info superDebug = StackTraceUtil.addSuperTraceInformation("Time: " + getWorld().getWorldTime());
 		Info debug = StackTraceUtil.addTraceInformation("(" + getX() + ", " + getY() + ", " + getZ() + ")", superDebug);
 		if (sendInitPacket && MainProxy.isServer(getWorld())) {
@@ -243,6 +250,11 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	@Override
+	public boolean isMultipartAllowedInPipe() {
+		return !isMultiBlock() && (pipe == null || pipe.isMultipartAllowedInPipe());
+	}
+
+	@Override
 	public NBTTagCompound getUpdateTag() {
 		sendInitPacket = true;
 		NBTTagCompound nbt = super.getUpdateTag();
@@ -264,6 +276,10 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
+		SPacketUpdateTileEntity superPacket = super.getUpdatePacket();
+		if(superPacket != null) {
+			nbt.setTag("LogisticsPipes:SuperUpdatePacket", ReflectionHelper.getPrivateField(SPacketUpdateTileEntity.class, superPacket, "nbt", "field_148860_e"));
+		}
 		try {
 			PacketHandler.addPacketToNBT(getLPDescriptionPacket(), nbt);
 		} catch (Exception e) {
@@ -275,6 +291,9 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		PacketHandler.queueAndRemovePacketFromNBT(packet.getNbtCompound());
+		if(packet.getNbtCompound().hasKey("LogisticsPipes:SuperUpdatePacket")) {
+			super.onDataPacket(net, new SPacketUpdateTileEntity(getPos(), 0, packet.getNbtCompound().getCompoundTag("LogisticsPipes:SuperUpdatePacket")));
+		}
 	}
 
 	@Override
@@ -400,9 +419,15 @@ public class LogisticsTileGenericPipe extends TileEntity
 			return false;
 		}
 
+		AxisAlignedBB aabb = PIPE_CONN_BB.get(side.getIndex());
+		if(SimpleServiceLocator.mcmpProxy.checkIntersectionWith(this, aabb)) {
+			return false;
+		}
+
 		if (SimpleServiceLocator.thermalDynamicsProxy.isBlockedSide(with, side.getOpposite())) {
 			return false;
 		}
+
 		if (with instanceof LogisticsTileGenericPipe) {
 			CoreUnroutedPipe otherPipe = ((LogisticsTileGenericPipe) with).pipe;
 
@@ -413,6 +438,13 @@ public class LogisticsTileGenericPipe extends TileEntity
 			if (!(otherPipe.canPipeConnect(this, side.getOpposite()))) {
 				return false;
 			}
+
+			AxisAlignedBB aabbB = PIPE_CONN_BB.get(side.getOpposite().getIndex());
+			if(SimpleServiceLocator.mcmpProxy.checkIntersectionWith((LogisticsTileGenericPipe) with, aabbB)) {
+				return false;
+			}
+
+
 		}
 		return pipe.canPipeConnect(with, side);
 	}
@@ -557,6 +589,12 @@ public class LogisticsTileGenericPipe extends TileEntity
 	public boolean canConnect(TileEntity to, EnumFacing direction, boolean flag) {
 		if (pipe == null) {
 			return false;
+		}
+		if(direction != null) {
+			AxisAlignedBB aabb = PIPE_CONN_BB.get(direction.getIndex());
+			if(SimpleServiceLocator.mcmpProxy.checkIntersectionWith(this, aabb)) {
+				return false;
+			}
 		}
 		return pipe.canPipeConnect(to, direction, flag);
 	}
@@ -804,11 +842,14 @@ public class LogisticsTileGenericPipe extends TileEntity
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
 		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && facing != null) {
 			if(((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
 		}
 		if (bcCapProvider.hasCapability(capability, facing)) {
+			return true;
+		}
+		if (imcmpltgpCompanion.hasCapability(capability, facing)) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
@@ -816,12 +857,15 @@ public class LogisticsTileGenericPipe extends TileEntity
 
 	@Nullable
 	@Override
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
 		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && facing != null) {
 			return (T)((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing);
 		}
 		if(bcCapProvider.hasCapability(capability, facing)) {
 			return bcCapProvider.getCapability(capability, facing);
+		}
+		if (imcmpltgpCompanion.hasCapability(capability, facing)) {
+			return imcmpltgpCompanion.getCapability(capability, facing);
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -842,10 +886,6 @@ public class LogisticsTileGenericPipe extends TileEntity
 	@SideOnly(Side.CLIENT)
 	public double getMaxRenderDistanceSquared() {
 		return 64 * 4 * 64 * 4;
-	}
-
-	public boolean isSolidOnSide(EnumFacing side) {
-		return false;
 	}
 
 	public Block getBlock() {

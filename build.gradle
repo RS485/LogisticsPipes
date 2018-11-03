@@ -142,12 +142,15 @@ repositories {
         name = "buildcraft"
         url = "https://mod-buildcraft.com/maven"
     }
+    maven {
+		url "http://maven.amadornes.com/"
+	}
 }
 
 dependencies {
     deobfCompile "com.mod-buildcraft:buildcraft:7.99.17"
     compileOnly 'org.projectlombok:lombok:1.16.8'
-    compile 'codechicken:NotEnoughItems:1.12.2-2.4.1.233:deobf'
+    compile 'codechicken:NotEnoughItems:1.12.2-2.4.2.240:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'
     compile 'net.industrial-craft:industrialcraft-2:2.8.97-ex112:api'
@@ -157,6 +160,7 @@ dependencies {
     compileOnly "dan200.computercraft:ComputerCraft:1.80pr1-build5"
     deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA26"
     runtimeOnly "baubles:Baubles:1.12:1.5.2"
+	deobfCompile "MCMultiPart2:MCMultiPart:2.5.3"
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
     testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'

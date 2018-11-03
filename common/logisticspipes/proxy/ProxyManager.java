@@ -12,6 +12,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -19,6 +21,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -28,6 +31,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -84,6 +88,10 @@ import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.recipes.CraftingParts;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.proxy.mcmp.IMCMPProxy;
+import network.rs485.logisticspipes.proxy.mcmp.MCMPProxy;
+import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPBlockAccess;
+import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPLTGPCompanion;
 
 //import logisticspipes.proxy.nei.NEIProxy;
 
@@ -269,6 +277,33 @@ public class ProxyManager {
 			@Override public boolean isBlockedSide(TileEntity with, EnumFacing opposite) {return false;}
 		}, ITDPart.class));
 
+		SimpleServiceLocator.setMCMPProxy(ProxyManager.getWrappedProxy(LPConstants.mcmpModID, IMCMPProxy.class, MCMPProxy.class, new IMCMPProxy() {
+			@Override public IMCMPLTGPCompanion createMCMPCompanionFor(LogisticsTileGenericPipe pipe) {
+				return new IMCMPLTGPCompanion() {
+					@Override public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {return false;}
+					@Nullable @Override public<T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {return null;}
+					@Override public NBTTagCompound getUpdateTag() {return new NBTTagCompound();}
+					@Override public void handleUpdateTag(NBTTagCompound tag) {}
+					@Override public TileEntity getMCMPTileEntity() {return null;}
+					@Override public void update() {}
+				};
+			}
+			@Override public IMCMPBlockAccess createMCMPBlockAccess() {return new IMCMPBlockAccess() {
+					@Override public void addBlockState(BlockStateContainer.Builder builder) {}
+					@Override public IBlockState getExtendedState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {return state;}
+					@Override public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entity, boolean isActualState) {}
+					@Override public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {return null;}
+					@Override public Block getBlock() {return null;}
+					@Override public void addDrops(List<ItemStack> list, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {}
+				};
+			}
+		    @Override public List<BakedQuad> addQuads(List<BakedQuad> list, IBlockState state, EnumFacing side, long rand) {return list;}
+		    @Override public void registerTileEntities() {}
+		    @Override public boolean checkIntersectionWith(LogisticsTileGenericPipe logisticsTileGenericPipe, AxisAlignedBB aabb) {return false;}
+		    @Override public boolean hasParts(LogisticsTileGenericPipe pipeTile) {return false;}
+		    @Override @SideOnly(Side.CLIENT) public void renderTileEntitySpecialRenderer(LogisticsTileGenericPipe tileentity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {}
+		}, IMCMPLTGPCompanion.class));
+
 		final IBounds dummyBounds = new IBounds() {
 			@Override public IVec3 min() {
 				return new IVec3() {
@@ -352,6 +387,7 @@ public class ProxyManager {
 		};
 		Class<?>[] cclSubWrapper = new Class<?>[] {TextureTransformation.class, IRenderState.class, IModel3D.class, ITranslation.class, IVec3.class, IBounds.class};
 		SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!" + LPConstants.cclrenderModID, ICCLProxy.class, CCLProxy.class, dummyCCLProxy, cclSubWrapper));
+
 		SimpleServiceLocator.setConfigToolHandler(new ConfigToolHandler());
 		SimpleServiceLocator.configToolHandler.registerWrapper();
 

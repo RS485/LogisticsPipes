@@ -468,4 +468,8 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public World getWorldForHUD() {
 		return getWorld();
 	}
+
+	public boolean isMultipartAllowedInPipe() {
+		return true;
+	}
 }

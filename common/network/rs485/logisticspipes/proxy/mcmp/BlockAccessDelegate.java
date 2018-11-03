@@ -18,35 +18,18 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package network.rs485.logisticspipes.utils.block;
+package network.rs485.logisticspipes.proxy.mcmp;
 
-import java.util.List;
+import net.minecraft.world.IBlockAccess;
 
-import net.minecraft.block.state.IBlockState;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import lombok.Getter;
 import lombok.experimental.Delegate;
 
-import logisticspipes.renderer.newpipe.RenderEntry;
-import logisticspipes.renderer.state.PipeRenderState;
-
-public class RenderListDelegateBlockState implements IBlockState  {
-
-	@Getter
-	List<RenderEntry> renderList;
-
-
-	@Getter
-	public final Cache<PipeRenderState.LocalCacheType, Object> objectCache;
+public class BlockAccessDelegate implements IBlockAccess {
 
 	@Delegate
-	private final IBlockState state;
+	protected final IBlockAccess access;
 
-	public RenderListDelegateBlockState(List<RenderEntry> renderList, Cache<PipeRenderState.LocalCacheType, Object> objectCache, IBlockState state) {
-		this.renderList = renderList;
-		this.objectCache = objectCache;
-		this.state = state;
+	public BlockAccessDelegate(IBlockAccess access) {
+		this.access = access;
 	}
 }

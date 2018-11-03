@@ -28,7 +28,8 @@
         "gregtech_addon",
         "appliedenergistics",
         "thermalexpansion",
-        "betterstorage"
+        "betterstorage",
+        "mcmultipart"
     ],
     "dependants": [],
     "useDependencyInformation": true

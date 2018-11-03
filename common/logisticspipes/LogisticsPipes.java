@@ -378,6 +378,8 @@ public class LogisticsPipes {
 
 		MainProxy.proxy.registerTileEntities();
 
+		SimpleServiceLocator.mcmpProxy.registerTileEntities();
+
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
 
@@ -504,6 +506,7 @@ public class LogisticsPipes {
 		forName("crazypants.enderio.conduit.item.ItemConduit");
 		forName("crazypants.enderio.conduit.item.NetworkedInventory");
 		forName("crazypants.enderio.conduit.liquid.AbstractLiquidConduit");
+		forName("mcmultipart.block.BlockMultipartContainer");
 	}
 
 	private void forName(String string) {

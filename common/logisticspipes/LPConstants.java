@@ -2,6 +2,7 @@ package logisticspipes;
 
 public class LPConstants {
 
+
 	private LPConstants() {}
 
 	public static final String LP_MOD_ID = "logisticspipes";
@@ -36,6 +37,7 @@ public class LPConstants {
 	public static final String cclrenderModID = "cclrender";
 	public static final String ironChestModID = "ironchest";
 	public static final String cofhCoreModID = "cofhcore";
+	public static final String mcmpModID = "mcmultipart";
 
 	public static boolean COREMOD_LOADED = false;
 

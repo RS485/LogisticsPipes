@@ -444,7 +444,7 @@ public class DummyContainer extends Container {
 				if (itemstack6.isEmpty()) {
 					if (slot4.canTakeStack(player)) {
 						inventoryplayer.setInventorySlotContents(dragType, itemstack10);
-						ReflectionHelper.invokePrivateMethodCatched(Slot.class, slot4, "onSwapCraft", new Class[]{int.class}, new Object[] {itemstack10.getCount()});
+						ReflectionHelper.invokePrivateMethod(Slot.class, slot4, "onSwapCraft", "func_190900_b", new Class[]{int.class}, new Object[] {itemstack10.getCount()});
 						slot4.putStack(ItemStack.EMPTY);
 						slot4.onTake(player, itemstack10);
 					}

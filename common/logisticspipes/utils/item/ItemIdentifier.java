@@ -458,7 +458,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			ModContainer mc = modList.get(rl.getResourceDomain());
 			if (mc == null) {
 				// get mod that really registered this item
-				Map<ResourceLocation, String> map = ReflectionHelper.invokePrivateMethodCatched(ForgeRegistry.class, ForgeRegistries.ITEMS, "getOverrideOwners", new Class[0], new Object[0]);
+				Map<ResourceLocation, String> map = ReflectionHelper.invokePrivateMethod(ForgeRegistry.class, ForgeRegistries.ITEMS, "getOverrideOwners", "getOverrideOwners", new Class[0], new Object[0]);
 
 				final String key = map.get(rl);
 				if (key != null)

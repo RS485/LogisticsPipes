@@ -1,5 +1,6 @@
 package logisticspipes.utils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -7,14 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.SneakyThrows;
+
+import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 
 public class ReflectionHelper {
 
 	private static final Map<Triplet<Class<?>, String, List<Class<?>>>, Method> methodCache = new HashMap<>();
+	private static final Map<Pair<Class<?>, String>, Field> fieldCache = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
-	public static <T> T invokePrivateMethod(Class<?> clazz, Object target, String name, Class<?>[] classes, Object[] objects) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	@SneakyThrows
+	public static <T> T invokePrivateMethod(Class<?> clazz, Object target, String name, String srgName, Class<?>[] classes, Object[] objects) {
 		Triplet<Class<?>, String, List<Class<?>>> key = new Triplet<>(clazz, name, Arrays.asList(classes));
 		Method method = ReflectionHelper.methodCache.get(key);
 		if (method == null) {
@@ -24,7 +30,15 @@ public class ReflectionHelper {
 				try {
 					method = clazz.getMethod(name, classes);
 				} catch (NoSuchMethodException e2) {
-					method = clazz.getDeclaredMethod(name, classes);
+					try {
+						method = clazz.getDeclaredMethod(srgName, classes);
+					} catch (NoSuchMethodException e3) {
+						try {
+							method = clazz.getMethod(srgName, classes);
+						} catch (NoSuchMethodException e4) {
+							method = clazz.getDeclaredMethod(name, classes);
+						}
+					}
 				}
 			}
 			method.setAccessible(true);
@@ -34,12 +48,33 @@ public class ReflectionHelper {
 		return (T) result;
 	}
 
-	public static <T> T invokePrivateMethodCatched(Class<?> clazz, Object target, String name, Class<?>[] classes, Object[] objects) {
-		try {
-			return ReflectionHelper.invokePrivateMethod(clazz, target, name, classes, objects);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+	@SuppressWarnings("unchecked")
+	@SneakyThrows
+	public static <T> T getPrivateField(Class<?> clazz, Object target, String name, String srgName) {
+		Pair<Class<?>, String> key = new Pair<>(clazz, name);
+		Field field = ReflectionHelper.fieldCache.get(key);
+		if (field == null) {
+			try {
+				field = clazz.getDeclaredField(name);
+			} catch (NoSuchFieldException e1) {
+				try {
+					field = clazz.getField(name);
+				} catch (NoSuchFieldException e2) {
+					try {
+						field = clazz.getDeclaredField(srgName);
+					} catch (NoSuchFieldException e3) {
+						try {
+							field = clazz.getField(srgName);
+						} catch (NoSuchFieldException e4) {
+							field = clazz.getDeclaredField(name);
+						}
+					}
+				}
+			}
+			field.setAccessible(true);
+			ReflectionHelper.fieldCache.put(key, field);
 		}
+		Object result = field.get(target);
+		return (T) result;
 	}
-
 }

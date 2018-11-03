@@ -607,6 +607,14 @@ public class LogisticsTileGenericPipe extends LPMicroblockTileEntity
 		return 1;
 	}
 
+	@Override
+	public double getDistanceWeight() {
+		if (this.pipe != null && this.pipe.transport != null) {
+			return this.pipe.transport.getDistanceWeight();
+		}
+		return 1;
+	}
+
 	public int injectItem(ItemStack payload, boolean doAdd, EnumFacing from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnectedCached(from)) {
 			if (doAdd && MainProxy.isServer(getWorld())) {

@@ -179,6 +179,10 @@ public class PipeTransportLogistics {
 		return 1.0F;
 	}
 
+	public double getDistanceWeight() {
+		return 1.0D;
+	}
+
 	public float getYawDiff(LPTravelingItem item) {
 		return 0.0F;
 	}

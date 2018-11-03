@@ -60,6 +60,8 @@ public interface IPipeInformationProvider {
 
 	double getDistance();
 
+	double getDistanceWeight();
+
 	boolean isItemPipe();
 
 	boolean isFluidPipe();

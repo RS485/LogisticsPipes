@@ -102,6 +102,10 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 
 	public abstract float getPipeLength();
 
+	public double getDistanceWeight() {
+		return 1.0 / 8.0;
+	}
+
 	public float getYawDiff(LPTravelingItem item) {
 		return (float) (getItemRenderYaw(getPipeLength(), item) - getItemRenderYaw(0.0F, item));
 	}

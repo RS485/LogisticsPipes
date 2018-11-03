@@ -58,6 +58,13 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 		return super.getPipeLength();
 	}
 
+	public double getDistanceWeight() {
+		if (getMultiPipe() != null) {
+			return getMultiPipe().getDistanceWeight();
+		}
+		return super.getDistanceWeight();
+	}
+
 	@Override
 	public float getYawDiff(LPTravelingItem item) {
 		if (getMultiPipe() != null) {

@@ -113,7 +113,7 @@ public class PathFinder {
 	private final HashSet<DoubleCoordinates> setVisited;
 	private final HashMap<DoubleCoordinates, Double> distances;
 	private final IPaintPath pathPainter;
-	private int pipesVisited;
+	private double pipesVisited;
 
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> powerNodes;
 	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> subPowerProvider;
@@ -126,20 +126,30 @@ public class PathFinder {
 	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(IPipeInformationProvider startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, EnumFacing side) {
 		HashMap<CoreRoutedPipe, ExitRoute> foundPipes = new HashMap<>();
 
-		boolean root = setVisited.size() == 0;
+		final int setVisitedSize = setVisited.size();
+
+		boolean root = setVisitedSize == 0;
 
 		//Reset visited count at top level
-		if (setVisited.size() == 1) {
+		if (setVisitedSize == 1) {
 			pipesVisited = 0;
 		}
 
 		//Break recursion if we have visited a set number of pipes, to prevent client hang if pipes are weirdly configured
-		if (++pipesVisited > maxVisited) {
+		pipesVisited += startPipe.getDistanceWeight() > 0 ? startPipe.getDistanceWeight() : 1;
+		if (pipesVisited > maxVisited) {
 			return foundPipes;
 		}
 
 		//Break recursion after certain amount of nodes visited
-		if (setVisited.size() > maxLength) {
+		if (setVisitedSize > maxLength * 10) {
+			return foundPipes;
+		}
+
+		//Break recursion after certain length of nodes visited
+		//Maximize to 1 so we don't stop at routes with resistor pipes
+		//Check size of setVisited first to speed up the process, so we don't sum the distances all the time
+		if (setVisitedSize > maxLength && distances.values().stream().mapToDouble(i -> Math.max(Math.min(i, 1), 0)).sum() > maxLength) {
 			return foundPipes;
 		}
 
@@ -148,7 +158,7 @@ public class PathFinder {
 		}
 
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call
-		if (startPipe.isRoutingPipe() && setVisited.size() != 0) {
+		if (startPipe.isRoutingPipe() && setVisitedSize != 0) {
 			CoreRoutedPipe rp = startPipe.getRoutingPipe();
 			if (rp.stillNeedReplace()) {
 				return foundPipes;
@@ -169,7 +179,7 @@ public class PathFinder {
 
 		//Visited is checked after, so we can reach the same target twice to allow to keep the shortest path
 		setVisited.add(new DoubleCoordinates(startPipe));
-		distances.put(new DoubleCoordinates(startPipe), startPipe.getDistance());
+		distances.put(new DoubleCoordinates(startPipe), startPipe.getDistance() * startPipe.getDistanceWeight());
 
 		// first check specialPipeConnections (tesseracts, teleports, other connectors)
 		List<ConnectionInformation> pipez = SimpleServiceLocator.specialpipeconnection.getConnectedPipes(startPipe, connectionFlags, side);
@@ -326,7 +336,7 @@ public class PathFinder {
 								//Don't go where we have been before
 								continue;
 							}
-							distances.put(pos, currentPipe.getDistance() + info.getLength());
+							distances.put(pos, (currentPipe.getDistance() * currentPipe.getDistanceWeight()) + info.getLength());
 							result.putAll(getConnectedRoutingPipes(info.getPipe(), nextConnectionFlags, direction));
 							distances.remove(pos);
 						}

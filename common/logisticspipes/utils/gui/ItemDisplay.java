@@ -277,7 +277,6 @@ public class ItemDisplay {
 			buf.pos(xPosition, yPosition, zLevel).tex(0.04, 0.69 + (graphic * 0.03125)).endVertex();
 			tess.draw();
 		} else {
-			GlStateManager.enableLighting();
 
 			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
 				ItemIdentifier item = itemIdentifierStack.getItem();
@@ -330,10 +329,12 @@ public class ItemDisplay {
 					}
 				}
 
+				GlStateManager.enableLighting();
 				// use GuiGraphics to render the ItemStacks
 				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, false, false);
 				itemstackRenderer.setItemIdentStack(itemIdentifierStack).setDisplayAmount(DisplayAmount.HIDE_ONE);
 				itemstackRenderer.renderInGui();
+				GlStateManager.disableLighting();
 
 				x += panelxSize;
 				if (x > width) {

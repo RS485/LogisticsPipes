@@ -14,7 +14,8 @@
       "item": "logisticspipes:frame"
     },
     "k": {
-      "item": "minecraft:chest"
+      "type": "forge:ore_dict",
+      "ore": "chestWood"
     },
     "p": {
       "item": "logisticspipes:pipe_crafting"

@@ -20,7 +20,7 @@ public class AmountTaskSubGui extends InventoryModuleCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiStatistics) {
-			((GuiStatistics) FMLClientHandler.instance().getClient().currentScreen).handlePacket_1(getIdentList());
+			((GuiStatistics) FMLClientHandler.instance().getClient().currentScreen).handlePacket1(getIdentList());
 		}
 	}
 

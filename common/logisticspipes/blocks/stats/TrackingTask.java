@@ -1,6 +1,5 @@
 package logisticspipes.blocks.stats;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;

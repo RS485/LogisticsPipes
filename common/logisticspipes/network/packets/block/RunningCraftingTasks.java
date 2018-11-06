@@ -31,7 +31,7 @@ public class RunningCraftingTasks extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiStatistics) {
-			((GuiStatistics) FMLClientHandler.instance().getClient().currentScreen).handlePacket_2(getIdentList());
+			((GuiStatistics) FMLClientHandler.instance().getClient().currentScreen).handlePacket2(getIdentList());
 		}
 	}
 

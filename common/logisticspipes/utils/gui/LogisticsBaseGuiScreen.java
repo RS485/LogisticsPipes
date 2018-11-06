@@ -508,7 +508,11 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		int lasty = y1;
 		for (int dx = 0; x1 + dx < x2; dx++) {
 			int plotx = x1 + dx;
-			int ploty = y1 + (y2 - y1) / (x2 - x1 - 1) * dx;
+			int ploty;
+
+			if (x2 - x1 == 1) ploty = y1 + (y2 - y1) / (x2 - x1) * dx;
+			else ploty = y1 + (y2 - y1) / (x2 - x1 - 1) * dx;
+
 			drawPoint(plotx, ploty, color);
 			while (lasty < ploty) {
 				drawPoint(plotx, ++lasty, color);

@@ -14,37 +14,40 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.math.Vec2;
 import logisticspipes.utils.string.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.pow;
 
 public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 	private final String PREFIX = "gui.networkstatistics.";
 
-	private final int TAB_COUNT = 2;
-	private int current_Tab;
+	private int currentTab;
+	private final TabTracker tabTracker = new TabTracker();
+	private final TabCrafting tabCrafting = new TabCrafting();
+	private final List<StatisticsTab> tabs = Arrays.asList(tabTracker, tabCrafting);
 
-	private final List<GuiButton> TAB_BUTTON_1 = new ArrayList<>();
-	private final List<GuiButton> TAB_BUTTON_1_2 = new ArrayList<>();
-	private final List<GuiButton> TAB_BUTTON_2 = new ArrayList<>();
 	private final LogisticsStatisticsTileEntity tile;
 
-	private ItemDisplay itemDisplay_1;
-	private ItemDisplay itemDisplay_2;
-
-	private int move_left;
+	private int prevMouseDragX;
+	private int prevMouseDragY;
 
 	public GuiStatistics(final LogisticsStatisticsTileEntity tile) {
 		super(180, 220, 0, 0);
@@ -55,314 +58,500 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		TAB_BUTTON_1.add(addButton(new GuiButton(0, guiLeft + 10, guiTop + 70, 20, 20, "<")));
-		TAB_BUTTON_1.add(addButton(new GuiButton(1, guiLeft + 150, guiTop + 70, 20, 20, ">")));
-		TAB_BUTTON_1.add(addButton(new GuiButton(2, guiLeft + 37, guiTop + 70, 40, 20, "Add")));
-		TAB_BUTTON_1.add(addButton(new GuiButton(3, guiLeft + 83, guiTop + 70, 60, 20, "Remove")));
-		TAB_BUTTON_1_2.add(addButton(new SmallGuiButton(4, guiLeft + 84, guiTop + 205, 10, 10, "<")));
-		TAB_BUTTON_1_2.add(addButton(new SmallGuiButton(5, guiLeft + 96, guiTop + 205, 10, 10, ">")));
-		TAB_BUTTON_2.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, StringUtils.translate(PREFIX + "gettasks"))));
-		TAB_BUTTON_2.add(addButton(new SmallGuiButton(7, guiLeft + 90, guiTop + 65, 10, 10, "<")));
-		TAB_BUTTON_2.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
-		if (itemDisplay_1 == null) {
-			itemDisplay_1 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
-		}
-		itemDisplay_1.reposition(guiLeft + 10, guiTop + 40, xSize - 20, 20, 0, 0);
+		tabs.forEach(StatisticsTab::init);
 
-		if (itemDisplay_2 == null) {
-			itemDisplay_2 = new ItemDisplay(null, fontRenderer, this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
-			itemDisplay_2.setItemList(new ArrayList<>());
-		}
-		itemDisplay_2.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125, 0, 0);
-
-		updateItemList();
+		tabTracker.updateItemList();
 	}
 
 	@Override
 	public void resetSubGui() {
 		super.resetSubGui();
-		updateItemList();
+		tabTracker.updateItemList();
 	}
 
-	public void updateItemList() {
-		List<ItemIdentifierStack> allItems = tile.tasks.stream().map(task -> task.item.makeStack(1))
-			.collect(Collectors.toList());
-		itemDisplay_1.setItemList(allItems);
-	}
-
-	@Override
-	protected void actionPerformed(GuiButton p_146284_1_) {
-		if (p_146284_1_.id == 0) {
-			itemDisplay_1.prevPage();
-		} else if (p_146284_1_.id == 1) {
-			itemDisplay_1.prevPage();
-		} else if (p_146284_1_.id == 2) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestAmountTaskSubGui.class).setTilePos(tile));
-		} else if (p_146284_1_.id == 3 && itemDisplay_1.getSelectedItem() != null) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RemoveAmoundTask.class).setItem(itemDisplay_1.getSelectedItem().getItem()).setTilePos(tile));
-			Iterator<TrackingTask> iter = tile.tasks.iterator();
-			while (iter.hasNext()) {
-				TrackingTask task = iter.next();
-				if (task.item == itemDisplay_1.getSelectedItem().getItem()) {
-					iter.remove();
-					break;
-				}
-			}
-			updateItemList();
-		} else if (p_146284_1_.id == 4) {
-			move_left++;
-			if (move_left >= 24 * 4) {
-				move_left--;
-			}
-		} else if (p_146284_1_.id == 5) {
-			move_left--;
-			if (move_left < 0) {
-				move_left = 0;
-			}
-		} else if (p_146284_1_.id == 6) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRunningCraftingTasks.class).setTilePos(tile));
-		} else if (p_146284_1_.id == 7) {
-			itemDisplay_2.prevPage();
-		} else if (p_146284_1_.id == 8) {
-			itemDisplay_2.prevPage();
-		}
+	private StatisticsTab getActiveTab() {
+		return tabs.get(currentTab);
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int mouse_x, int mouse_y) {
+	protected void actionPerformed(GuiButton button) {
+		getActiveTab().actionPerformed(button);
+	}
+
+	@Override
+	protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+		mouseDrag(mouseX, mouseY, mouseX - prevMouseDragX, mouseY - prevMouseDragY);
+		prevMouseDragX = mouseX;
+		prevMouseDragY = mouseY;
+		super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+	}
+
+	private void mouseDrag(int x, int y, int dx, int dy) {
+		getActiveTab().onMouseDrag(x, y, dx, dy);
+	}
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
 		GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-		for (int i = 0; i < TAB_COUNT; i++) {
+
+		drawBG();
+		getActiveTab().draw(mouseX, mouseY);
+
+		super.drawGuiContainerBackgroundLayer(f, mouseX, mouseY);
+	}
+
+	private void drawBG() {
+		// background
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * currentTab) + 2, guiTop - 2, guiLeft + 27 + (25 * currentTab), guiTop + 38, zLevel, true, true, true, false, true);
+
+		// tab selector panes
+		for (int i = 0; i < tabs.size(); i++) {
 			GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * i) + 2, guiTop - 2, guiLeft + 27 + (25 * i), guiTop + 35, zLevel, false, true, true, false, true);
 		}
-		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop + 20, right, bottom, zLevel, true);
-		GuiGraphics.drawGuiBackGround(mc, guiLeft + (25 * current_Tab) + 2, guiTop - 2, guiLeft + 27 + (25 * current_Tab), guiTop + 38, zLevel, true, true, true, false, true);
 
 		// First Tab
 		GuiGraphics.drawStatsBackground(mc, guiLeft + 6, guiTop + 3);
 
 		// Second Tab
-		GlStateManager.enableRescaleNormal();
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
-		GlStateManager.enableLighting();
-		GlStateManager.enableDepth();
 		RenderHelper.enableGUIStandardItemLighting();
-		ItemStack stack = new ItemStack(Blocks.CRAFTING_TABLE, 0);
+		ItemStack stack = new ItemStack(Blocks.CRAFTING_TABLE, 1);
+		GlStateManager.enableDepth();
 		itemRender.renderItemAndEffectIntoGUI(stack, guiLeft + 31, guiTop + 3);
-		GlStateManager.disableLighting();
 		GlStateManager.disableDepth();
 		itemRender.zLevel = 0.0F;
-
-		if (current_Tab == 0) {
-			itemDisplay_1.renderItemArea(zLevel);
-			itemDisplay_1.renderPageNumber(right - 40, guiTop + 28);
-			if (itemDisplay_1.getSelectedItem() != null) {
-				TrackingTask task = null;
-				for (TrackingTask taskLoop : tile.tasks) {
-					if (taskLoop.item == itemDisplay_1.getSelectedItem().getItem()) {
-						task = taskLoop;
-						break;
-					}
-				}
-				if (task != null) {
-					GuiGraphics.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
-					GlStateManager.enableRescaleNormal();
-					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
-					GlStateManager.enableLighting();
-					GlStateManager.enableDepth();
-					RenderHelper.enableGUIStandardItemLighting();
-					itemRender.renderItemAndEffectIntoGUI(task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
-					GlStateManager.disableLighting();
-					GlStateManager.disableDepth();
-					itemRender.zLevel = 0.0F;
-					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRenderer), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
-
-					int xOrigo = xCenter - 68;
-					int yOrigo = yCenter + 90;
-					drawLine(xOrigo, yOrigo, xOrigo + 150, yOrigo, Color.DARKER_GREY);
-					drawLine(xOrigo, yOrigo, xOrigo, yOrigo - 80, Color.DARKER_GREY);
-					for (int k = -4; k < 5; k++) {
-						int begin = -4;
-						if (k == -4) {
-							begin = -1;
-						}
-						if (k == 0) {
-							begin = -1;
-						}
-						if (k == 4) {
-							begin = -1;
-						}
-						drawLine(xOrigo + begin, yCenter + 50 + k * 10, xOrigo + 5, yCenter + 50 + k * 10, Color.DARKER_GREY);
-					}
-					for (int k = 0; k < 16; k++) {
-						drawLine(xOrigo + k * 10, yOrigo - 4, xOrigo + k * 10, yOrigo + 4, Color.DARKER_GREY);
-					}
-
-					int time_left = 15 + move_left * 15;
-					int time_right = move_left * 15;
-
-					String right = "";
-					String left = "";
-					if (time_right == 0) {
-						right = "Now";
-					} else {
-						if (time_right / 60 != 0) {
-							right += (time_right / 60) + "h";
-						}
-						if (time_right % 60 != 0) {
-							right += (time_right % 60) + "min";
-						}
-					}
-					if (time_left / 60 != 0) {
-						left += (time_left / 60) + "h";
-					}
-					if (time_left % 60 != 0) {
-						left += (time_left % 60) + "min";
-					}
-
-					fontRenderer.drawString(left, xOrigo - 12, yOrigo + 6, 0x404040);
-					fontRenderer.drawString(right, xOrigo + 153 - fontRenderer.getStringWidth(right), yOrigo + 6, 0x404040);
-
-					long[] data = new long[task.amountRecorded.length];
-					int pos = 0;
-					for (int i = task.arrayPos - 1; i >= 0; i--) {
-						data[pos++] = task.amountRecorded[i];
-					}
-					for (int i = task.amountRecorded.length - 1; i >= task.arrayPos; i--) {
-						data[pos++] = task.amountRecorded[i];
-					}
-
-					long lowest = Long.MAX_VALUE;
-					long highest = Long.MIN_VALUE;
-					int first = (15 * move_left);
-
-					for (int i = first; i <= first + 15 && i < data.length; i++) {
-						long point = data[i];
-						if (point > highest) {
-							highest = point;
-						}
-						if (point < lowest) {
-							lowest = point;
-						}
-					}
-
-					double averagey = ((double) highest + lowest) / 2;
-
-					fontRenderer.drawString(StringUtils.getFormatedStackSize(highest, false), xOrigo - 1 - fontRenderer.getStringWidth(StringUtils.getFormatedStackSize(highest, false)), guiTop + 117, 0x404040);
-					fontRenderer.drawString(StringUtils.getFormatedStackSize((long) averagey, false), xOrigo - 1 - fontRenderer.getStringWidth(StringUtils.getFormatedStackSize((long) averagey, false)), yCenter + 46, 0x404040);
-					fontRenderer.drawString(StringUtils.getFormatedStackSize(lowest, false), xOrigo - 1 - fontRenderer.getStringWidth(StringUtils.getFormatedStackSize(lowest, false)), bottom - 23, 0x404040);
-
-					float yScale = 80F / Math.max(highest - lowest, 0.5F);
-					int x = xOrigo + 150;
-					double yOff = data[first] - averagey;
-					int y = (yOrigo - 80 / 2) - (int) (yOff * yScale);
-
-					for (int i = first + 1; i < data.length; i++) {
-						long point = data[i];
-						int x1 = x - 10;
-						if (x1 < guiLeft + 15) {
-							break;
-						}
-						yOff = point - averagey;
-						int y1 = (yOrigo - 80 / 2) - (int) (yOff * yScale);
-
-						drawLine(x1, y1, x, y, Color.RED);
-						drawRect(x - 1, y - 1, x + 2, y + 2, Color.BLACK);
-
-						x = x1;
-						y = y1;
-					}
-					drawRect(x - 1, y - 1, x + 2, y + 2, Color.BLACK);
-				}
-			}
-		} else if (current_Tab == 1) {
-			itemDisplay_2.renderItemArea(zLevel);
-			itemDisplay_2.renderPageNumber(right - 50, guiTop + 66);
-		}
-
-		super.drawGuiContainerBackgroundLayer(f, mouse_x, mouse_y);
 	}
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
-		if (current_Tab == 0) {
-			if (i == Keyboard.KEY_PRIOR) { //PgUp
-				itemDisplay_1.prevPage();
-			} else if (i == Keyboard.KEY_NEXT) { //PgDn
-				itemDisplay_1.nextPage();
-			} else {
-				super.keyTyped(c, i);
-			}
-		} else if (current_Tab == 1) {
-			if (i == Keyboard.KEY_PRIOR) { //PgUp
-				itemDisplay_2.prevPage();
-			} else if (i == Keyboard.KEY_NEXT) { //PgDn
-				itemDisplay_2.nextPage();
-			} else {
-				super.keyTyped(c, i);
-			}
+		super.keyTyped(c, i);
+		getActiveTab().keyTyped(c, i);
+	}
+
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		prevMouseDragX = mouseX;
+		prevMouseDragY = mouseY;
+
+		if (mouseButton == 0 && mouseX > guiLeft && mouseX < guiLeft + 220 && mouseY > guiTop && mouseY < guiTop + 20) {
+			mouseX -= guiLeft + 3;
+			currentTab = max(0, min(mouseX / 25, tabs.size() - 1));
 		} else {
-			super.keyTyped(c, i);
+			getActiveTab().handleClick(mouseX, mouseY, mouseButton);
+			super.mouseClicked(mouseX, mouseY, mouseButton);
 		}
 	}
 
 	@Override
-	protected void mouseClicked(int par1, int par2, int par3) throws IOException {
-		if (par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
-			par1 -= guiLeft + 3;
-			current_Tab = Math.max(0, Math.min(par1 / 25, TAB_COUNT - 1));
-		} else {
-			if (current_Tab == 0) {
-				itemDisplay_1.handleClick(par1, par2, par3);
-			} else if (current_Tab == 1) {
-				itemDisplay_2.handleClick(par1, par2, par3);
-			}
-			super.mouseClicked(par1, par2, par3);
-		}
-	}
-
-	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		super.drawGuiContainerForegroundLayer(par1, par2);
-		if (current_Tab == 0) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
-		} else if (current_Tab == 1) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
-			GuiGraphics.displayItemToolTip(itemDisplay_2.getToolTip(), this, zLevel, guiLeft, guiTop);
-		}
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
+		getActiveTab().drawForegroundLayer(mouseX, mouseY);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
 		super.checkButtons();
-		for (GuiButton button : buttonList) {
-			if (TAB_BUTTON_1.contains(button)) {
-				button.visible = current_Tab == 0;
+		tabs.forEach(StatisticsTab::checkButtons);
+	}
+
+	@Override
+	public void handleMouseInputSub() throws IOException {
+		getActiveTab().onMouseScroll(Mouse.getEventDWheel());
+		super.handleMouseInputSub();
+	}
+
+	public void handlePacket1(List<ItemIdentifierStack> identList) {
+		tabTracker.handlePacket(identList);
+	}
+
+	public void handlePacket2(List<ItemIdentifierStack> identList) {
+		tabCrafting.handlePacket(identList);
+	}
+
+	private interface StatisticsTab {
+
+		void init();
+
+		void draw(int mouseX, int mouseY);
+
+		default void drawForegroundLayer(int mouseX, int mouseY) {}
+
+		default void checkButtons() {}
+
+		default void actionPerformed(GuiButton button) {}
+
+		default void keyTyped(char c, int i) {}
+
+		default void handleClick(int mouseX, int mouseY, int mouseButton) {}
+
+		default void onMouseDrag(int x, int y, int dx, int dy) {}
+
+		default void onMouseScroll(int dw) {}
+
+	}
+
+	private class TabTracker implements StatisticsTab {
+
+		private ItemDisplay itemDisplay;
+
+		private float xViewportOffset;
+		private float yViewportOffset;
+		private float xViewportScale = 15;
+		private float yViewportScale = 15;
+
+		private boolean isDraggingGraph = false;
+		private boolean isDraggingXBar = false;
+		private boolean isDraggingYBar = false;
+
+		private final List<GuiButton> BUTTONS = new ArrayList<>();
+
+		@Override
+		public void init() {
+			BUTTONS.add(addButton(new GuiButton(0, guiLeft + 10, guiTop + 70, 20, 20, "<")));
+			BUTTONS.add(addButton(new GuiButton(1, guiLeft + 150, guiTop + 70, 20, 20, ">")));
+			BUTTONS.add(addButton(new GuiButton(2, guiLeft + 37, guiTop + 70, 40, 20, "Add")));
+			BUTTONS.add(addButton(new GuiButton(3, guiLeft + 83, guiTop + 70, 60, 20, "Remove")));
+
+			if (itemDisplay == null) {
+				itemDisplay = new ItemDisplay(null, fontRenderer, GuiStatistics.this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
+			}
+			itemDisplay.reposition(guiLeft + 10, guiTop + 40, xSize - 20, 20, 0, 0);
+		}
+
+		@Override
+		public void draw(int mouseX, int mouseY) {
+			itemDisplay.renderItemArea(zLevel);
+			itemDisplay.renderPageNumber(right - 40, guiTop + 28);
+			if (itemDisplay.getSelectedItem() != null) {
+				TrackingTask task = null;
+				for (TrackingTask taskLoop : tile.tasks) {
+					if (taskLoop.item == itemDisplay.getSelectedItem().getItem()) {
+						task = taskLoop;
+						break;
+					}
+				}
+
+				if (task != null) {
+					GuiGraphics.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
+					RenderHelper.enableGUIStandardItemLighting();
+					GlStateManager.enableDepth();
+					itemRender.renderItemAndEffectIntoGUI(task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
+					GlStateManager.disableDepth();
+					itemRender.zLevel = 0.0F;
+					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRenderer), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
+
+					int xOrigo = xCenter - 72;
+					int yOrigo = yCenter + 90;
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(xOrigo, yOrigo, 0);
+
+					drawLine(0, 0, 150, 0, Color.DARKER_GREY);
+					drawLine(0, 0, 0, -80, Color.DARKER_GREY);
+
+					drawLine(-4, -90 + 50 + -40, 0, -90 + 50 + -40, Color.DARKER_GREY);
+
+					drawLine(150, -1, 150, 4, Color.DARKER_GREY);
+
+					long[] data = new long[task.amountRecorded.length];
+					System.arraycopy(task.amountRecorded, task.arrayPos, data, 0, task.amountRecorded.length - task.arrayPos);
+					System.arraycopy(task.amountRecorded, 0, data, task.amountRecorded.length - task.arrayPos, task.arrayPos);
+
+					float xViewportCenter = 75;
+					float yViewportCenter = 40;
+
+					int rightLimit = 2; // we want to draw one more graph part past the right edge
+					for (int i = 0; i < data.length; i++) {
+						rightLimit--;
+						if (rightLimit == 0) break;
+
+						float x = i;
+						float y = data[i];
+						float prevX = x;
+						float prevY = y;
+						if (i > 0) {
+							prevX = x - 1;
+							prevY = data[i - 1];
+						}
+
+						x += xViewportOffset;
+						x *= xViewportScale;
+						x += xViewportCenter;
+						prevX += xViewportOffset;
+						prevX *= xViewportScale;
+						prevX += xViewportCenter;
+
+						y -= yViewportOffset;
+						y *= yViewportScale;
+						y += yViewportCenter;
+						prevY -= yViewportOffset;
+						prevY *= yViewportScale;
+						prevY += yViewportCenter;
+
+						if (x <= 150) rightLimit = 2;
+						if (x < 0) continue;
+
+						if (x <= 150) {
+							int interval = max(1, (int) (40 / xViewportScale) + 1);
+							if (i % interval == 0) {
+								String s = formatTime(data.length - i - 1);
+								int w = mc.fontRenderer.getStringWidth(s);
+								drawLine((int) x, -1, (int) x, 4, Color.DARKER_GREY);
+								mc.fontRenderer.drawString(s, (int) x - w / 2f, 6, Color.DARKER_GREY.getValue(), false);
+							}
+						}
+
+						if (y > 0 && y < 80) {
+							drawLine(-4, (int) -y, 0, (int) -y, Color.DARKER_GREY);
+							GlStateManager.pushMatrix();
+							GlStateManager.rotate(90, 0, 0, 1);
+							String s = data[i] + "";
+							int w = mc.fontRenderer.getStringWidth(s);
+							mc.fontRenderer.drawString(s, (int) -y - w / 2f, 6, Color.DARKER_GREY.getValue(), false);
+							GlStateManager.popMatrix();
+						}
+
+						drawGraphPart((int) prevX, (int) prevY, (int) x, (int) y);
+					}
+				}
+				GlStateManager.popMatrix();
+			}
+		}
+
+		@Override
+		public void drawForegroundLayer(int mouseX, int mouseY) {
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+		}
+
+		@Override
+		public void actionPerformed(GuiButton button) {
+			if (button.id == 0) {
+				itemDisplay.prevPage();
+			} else if (button.id == 1) {
+				itemDisplay.prevPage();
+			} else if (button.id == 2) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestAmountTaskSubGui.class).setTilePos(tile));
+			} else if (button.id == 3 && itemDisplay.getSelectedItem() != null) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RemoveAmoundTask.class).setItem(itemDisplay.getSelectedItem().getItem()).setTilePos(tile));
+				Iterator<TrackingTask> iter = tile.tasks.iterator();
+				while (iter.hasNext()) {
+					TrackingTask task = iter.next();
+					if (task.item == itemDisplay.getSelectedItem().getItem()) {
+						iter.remove();
+						break;
+					}
+				}
+				updateItemList();
+			}
+		}
+
+		@Override
+		public void keyTyped(char c, int i) {
+			if (i == Keyboard.KEY_PRIOR) { //PgUp
+				itemDisplay.prevPage();
+			} else if (i == Keyboard.KEY_NEXT) { //PgDn
+				itemDisplay.nextPage();
+			}
+		}
+
+		@Override
+		public void handleClick(int mouseX, int mouseY, int mouseButton) {
+			itemDisplay.handleClick(mouseX, mouseY, mouseButton);
+
+			int xOrigo = xCenter - 72;
+			int yOrigo = yCenter + 90;
+			isDraggingGraph = mouseButton == 0 && mouseX > xOrigo && mouseX < xOrigo + 150 && mouseY < yOrigo && mouseY > yOrigo - 80;
+			isDraggingXBar = mouseButton == 0 && mouseX > xOrigo && mouseX < xOrigo + 150 && mouseY < yOrigo + 16 && mouseY > yOrigo + 4;
+			isDraggingYBar = mouseButton == 0 && mouseX > xOrigo - 16 && mouseX < xOrigo - 4 && mouseY < yOrigo && mouseY > yOrigo - 80;
+		}
+
+		@Override
+		public void checkButtons() {
+			for (GuiButton button : BUTTONS) {
+				button.visible = getActiveTab() == this;
 				if (button.displayString.equals("Remove")) {
-					button.enabled = itemDisplay_1.getSelectedItem() != null;
+					button.enabled = itemDisplay.getSelectedItem() != null;
 				}
 			}
-			if (TAB_BUTTON_1_2.contains(button)) {
-				button.visible = current_Tab == 0 && itemDisplay_1.getSelectedItem() != null;
-			}
-			if (TAB_BUTTON_2.contains(button)) {
-				button.visible = current_Tab == 1;
+		}
+
+		@Override
+		public void onMouseDrag(int x, int y, int dx, int dy) {
+			if (isDraggingGraph) {
+				xViewportOffset += dx / xViewportScale;
+				yViewportOffset += dy / yViewportScale;
+			} else if (isDraggingXBar) {
+				float mul = (float) pow(1.25, dx / 2f);
+				xViewportScale *= mul;
+			} else if (isDraggingYBar) {
+				float mul = (float) pow(1.25, -dy / 2f);
+				yViewportScale *= mul;
 			}
 		}
-	}
 
-	public void handlePacket_1(List<ItemIdentifierStack> identList) {
-		if (hasSubGui() && getSubGui() instanceof GuiAddTracking) {
-			((GuiAddTracking) getSubGui()).handlePacket(identList);
-		} else if (!hasSubGui()) {
-			GuiAddTracking sub = new GuiAddTracking(tile);
-			setSubGui(sub);
-			sub.handlePacket(identList);
+		@Override
+		public void onMouseScroll(int dw) {
+			float mul = (float) pow(1.25, dw / 60f);
+			xViewportScale *= mul;
+			yViewportScale *= mul;
 		}
+
+		private void drawGraphPart(int prevX, int prevY, int x, int y) {
+			Vec2 left = new Vec2(prevX, prevY);
+			Vec2 right = new Vec2(x, y);
+
+			// bounds check
+			{
+				Vec2 min = new Vec2(left.x, min(left.y, right.y));
+				Vec2 max = new Vec2(right.x, max(left.y, right.y));
+
+				if (!(min.x < 150 && max.x > 0 && min.y < 80 && max.y > 0)) return;
+			}
+
+			// clamp to the edges of the graph
+			right = clampCorner(left, right, Vec2.ORIGIN, true);
+			right = clampCorner(left, right, new Vec2(150, 80), false);
+			left = clampCorner(right, left, Vec2.ORIGIN, true);
+			left = clampCorner(right, left, new Vec2(150, 80), false);
+
+			drawLine((int) left.x, (int) -left.y, (int) right.x, (int) -right.y, Color.RED);
+
+			int radius = 2;
+			if (xViewportScale < 4) radius = 1;
+
+			if (prevX >= 0 && prevX <= 150 && prevY >= 0 && prevY <= 80)
+				drawRect(prevX - radius + 1, -prevY - radius + 1, prevX + radius, -prevY + radius, Color.BLACK);
+
+			if (x >= 0 && x <= 150 && y >= 0 && y <= 80)
+				drawRect(x - radius + 1, -y - radius + 1, x + radius, -y + radius, Color.BLACK);
+		}
+
+		private Vec2 clampYPlane(Vec2 v, Vec2 toClamp, float x0, boolean greater) {
+			if (toClamp.x == x0) return toClamp;
+			if (toClamp.x == v.x) return toClamp;
+
+			if ((!greater && toClamp.x < x0) || (greater && toClamp.x > x0)) {
+				return toClamp;
+			}
+
+			Vec2 dir = toClamp.sub(v);
+			dir = dir.div(dir.x); // let dir.x=1 but keep vector's direction
+			float dist = (x0 - toClamp.x);
+			return toClamp.add(dir.mul(dist));
+		}
+
+		@SuppressWarnings("SuspiciousNameCombination")
+		private Vec2 clampXPlane(Vec2 from, Vec2 to, float y0, boolean greater) {
+			final Vec2 vec2 = clampYPlane(new Vec2(from.y, from.x), new Vec2(to.y, to.x), y0, greater);
+			return new Vec2(vec2.y, vec2.x);
+		}
+
+		private Vec2 clampCorner(Vec2 from, Vec2 to, Vec2 corner, boolean greater) {
+			return clampXPlane(from, clampYPlane(from, to, corner.x, greater), corner.y, greater);
+		}
+
+		private String formatTime(int minutes) {
+			if (minutes == 0) return "Now";
+
+			int mins = minutes % 60;
+			minutes /= 60;
+			int hours = minutes;
+
+			StringBuilder sb = new StringBuilder();
+
+			if (hours > 0) sb.append(hours).append("h");
+			if (mins > 0) sb.append(mins).append("min");
+
+			return sb.toString();
+		}
+
+		public void updateItemList() {
+			List<ItemIdentifierStack> allItems = tile.tasks.stream().map(task -> task.item.makeStack(1))
+				.collect(Collectors.toList());
+			itemDisplay.setItemList(allItems);
+		}
+
+		public void handlePacket(List<ItemIdentifierStack> identList) {
+			if (hasSubGui() && getSubGui() instanceof GuiAddTracking) {
+				((GuiAddTracking) getSubGui()).handlePacket(identList);
+			} else if (!hasSubGui()) {
+				GuiAddTracking sub = new GuiAddTracking(tile);
+				setSubGui(sub);
+				sub.handlePacket(identList);
+			}
+		}
+
 	}
 
-	public void handlePacket_2(List<ItemIdentifierStack> identList) {
-		itemDisplay_2.setItemList(identList);
+	private class TabCrafting implements StatisticsTab {
+
+		private ItemDisplay itemDisplay;
+
+		private final List<GuiButton> BUTTONS = new ArrayList<>();
+
+		@Override
+		public void init() {
+			BUTTONS.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, StringUtils.translate(PREFIX + "gettasks"))));
+			BUTTONS.add(addButton(new SmallGuiButton(7, guiLeft + 90, guiTop + 65, 10, 10, "<")));
+			BUTTONS.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
+
+			if (itemDisplay == null) {
+				itemDisplay = new ItemDisplay(null, fontRenderer, GuiStatistics.this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
+				itemDisplay.setItemList(new ArrayList<>());
+			}
+			itemDisplay.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125, 0, 0);
+
+		}
+
+		@Override
+		public void draw(int mouseX, int mouseY) {
+			itemDisplay.renderItemArea(zLevel);
+			itemDisplay.renderPageNumber(right - 50, guiTop + 66);
+		}
+
+		@Override
+		public void drawForegroundLayer(int mouseX, int mouseY) {
+			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), GuiStatistics.this, zLevel, guiLeft, guiTop);
+		}
+
+		@Override
+		public void actionPerformed(GuiButton button) {
+			if (button.id == 6) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRunningCraftingTasks.class).setTilePos(tile));
+			} else if (button.id == 7) {
+				itemDisplay.prevPage();
+			} else if (button.id == 8) {
+				itemDisplay.prevPage();
+			}
+		}
+
+		@Override
+		public void keyTyped(char c, int i) {
+			if (i == Keyboard.KEY_PRIOR) { //PgUp
+				itemDisplay.prevPage();
+			} else if (i == Keyboard.KEY_NEXT) { //PgDn
+				itemDisplay.nextPage();
+			}
+		}
+
+		@Override
+		public void handleClick(int mouseX, int mouseY, int mouseButton) {
+			itemDisplay.handleClick(mouseX, mouseY, mouseButton);
+		}
+
+		@Override
+		public void checkButtons() {
+			for (GuiButton button : BUTTONS) {
+				button.visible = getActiveTab() == this;
+			}
+		}
+
+		public void handlePacket(List<ItemIdentifierStack> identList) {
+			itemDisplay.setItemList(identList);
+		}
+
 	}
+
 }

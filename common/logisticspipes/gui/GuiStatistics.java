@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.pow;
+import static java.lang.Math.round;
 
 public class GuiStatistics extends LogisticsBaseGuiScreen {
 
@@ -81,14 +83,10 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-		mouseDrag(mouseX, mouseY, mouseX - prevMouseDragX, mouseY - prevMouseDragY);
+		getActiveTab().onMouseDrag(mouseX, mouseY, mouseX - prevMouseDragX, mouseY - prevMouseDragY);
 		prevMouseDragX = mouseX;
 		prevMouseDragY = mouseY;
 		super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
-	}
-
-	private void mouseDrag(int x, int y, int dx, int dy) {
-		getActiveTab().onMouseDrag(x, y, dx, dy);
 	}
 
 	@Override
@@ -196,7 +194,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		private ItemDisplay itemDisplay;
 
-		private float xViewportOffset;
+		private float xViewportOffset = -1434;
 		private float yViewportOffset;
 		private float xViewportScale = 15;
 		private float yViewportScale = 15;
@@ -225,13 +223,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 			itemDisplay.renderItemArea(zLevel);
 			itemDisplay.renderPageNumber(right - 40, guiTop + 28);
 			if (itemDisplay.getSelectedItem() != null) {
-				TrackingTask task = null;
-				for (TrackingTask taskLoop : tile.tasks) {
-					if (taskLoop.item == itemDisplay.getSelectedItem().getItem()) {
-						task = taskLoop;
-						break;
-					}
-				}
+				TrackingTask task = getSelectedTask();
 
 				if (task != null) {
 					GuiGraphics.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
@@ -254,9 +246,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 					drawLine(150, -1, 150, 4, Color.DARKER_GREY);
 
-					long[] data = new long[task.amountRecorded.length];
-					System.arraycopy(task.amountRecorded, task.arrayPos, data, 0, task.amountRecorded.length - task.arrayPos);
-					System.arraycopy(task.amountRecorded, 0, data, task.amountRecorded.length - task.arrayPos, task.arrayPos);
+					long[] data = getTaskData(task);
 
 					float xViewportCenter = 75;
 					float yViewportCenter = 40;
@@ -319,6 +309,23 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 			}
 		}
 
+		@Nullable
+		private TrackingTask getSelectedTask() {
+			for (TrackingTask taskLoop : tile.tasks) {
+				if (taskLoop.item == itemDisplay.getSelectedItem().getItem()) {
+					return taskLoop;
+				}
+			}
+			return null;
+		}
+
+		private long[] getTaskData(TrackingTask task) {
+			long[] data = new long[task.amountRecorded.length];
+			System.arraycopy(task.amountRecorded, task.arrayPos, data, 0, task.amountRecorded.length - task.arrayPos);
+			System.arraycopy(task.amountRecorded, 0, data, task.amountRecorded.length - task.arrayPos, task.arrayPos);
+			return data;
+		}
+
 		@Override
 		public void drawForegroundLayer(int mouseX, int mouseY) {
 			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
@@ -357,7 +364,14 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		@Override
 		public void handleClick(int mouseX, int mouseY, int mouseButton) {
-			itemDisplay.handleClick(mouseX, mouseY, mouseButton);
+			if (itemDisplay.handleClick(mouseX, mouseY, mouseButton)) {
+				xViewportOffset = max(-1439, min(xViewportOffset, 0));
+				TrackingTask task = getSelectedTask();
+				if (task != null) {
+					long[] data = getTaskData(task);
+					yViewportOffset = data[round(-xViewportOffset)];
+				}
+			}
 
 			int xOrigo = xCenter - 72;
 			int yOrigo = yCenter + 90;

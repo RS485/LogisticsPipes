@@ -1106,7 +1106,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	public void flagForRoutingUpdate() {
 		_LSAVersion++;
 		//if(LogisticsPipes.DEBUG)
-		//System.out.println("[LogisticsPipes] flag for routing update to "+_LSAVersion+" for Node" +  simpleID);
+		//System.out.println("[LogisticsPipes] targeted for routing update to "+_LSAVersion+" for Node" +  simpleID);
 	}
 
 	private void updateAdjacentAndLsa() {

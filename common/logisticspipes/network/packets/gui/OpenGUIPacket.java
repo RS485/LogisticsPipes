@@ -14,7 +14,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
-public class GUIPacket extends ModernPacket {
+public class OpenGUIPacket extends ModernPacket {
 
 	/**
 	 * GUI Type ID
@@ -37,7 +37,7 @@ public class GUIPacket extends ModernPacket {
 	@Setter
 	private byte[] guiData;
 
-	public GUIPacket(int id) {
+	public OpenGUIPacket(int id) {
 		super(id);
 	}
 
@@ -63,6 +63,6 @@ public class GUIPacket extends ModernPacket {
 
 	@Override
 	public ModernPacket template() {
-		return new GUIPacket(getId());
+		return new OpenGUIPacket(getId());
 	}
 }

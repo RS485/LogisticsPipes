@@ -17,6 +17,7 @@ import logisticspipes.network.packets.block.SecurityRequestCCIdsPacket;
 import logisticspipes.network.packets.block.SecurityStationAutoDestroy;
 import logisticspipes.network.packets.block.SecurityStationCC;
 import logisticspipes.network.packets.block.SecurityStationOpenPlayerRequest;
+import logisticspipes.network.packets.gui.OpenSecurityChannelManagerPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
@@ -91,6 +92,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		buttonList.add(new GuiButton(7, guiLeft + 55, guiTop + 95, 70, 20, StringUtils.translate(GuiSecurityStation.PREFIX + "Authorize")));
 		buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, StringUtils.translate(GuiSecurityStation.PREFIX + "Deauthorize")));
 		buttonList.add(new GuiCheckBox(9, guiLeft + 160, guiTop + 74, 16, 16, _tile.allowAutoDestroy));
+		buttonList.add(new GuiButton(10, guiLeft + 177, guiTop + 230, 95, 20, StringUtils.translate(GuiSecurityStation.PREFIX + "ChannelManager")));
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(PlayerListRequest.class));
 	}
 
@@ -119,6 +121,8 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 			_tile.allowAutoDestroy = !_tile.allowAutoDestroy;
 			refreshCheckBoxes();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(_tile.allowAutoDestroy ? 1 : 0).setBlockPos(_tile.getPos()));
+		} else if (button.id == 10) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenSecurityChannelManagerPacket.class).setBlockPos(_tile.getPos()));
 		} else {
 			super.actionPerformed(button);
 		}

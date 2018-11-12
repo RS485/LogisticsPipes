@@ -2,7 +2,7 @@ package logisticspipes.interfaces.routing;
 
 import logisticspipes.routing.ItemRoutingInformation;
 
-public interface IDirectRoutingConnection {
+public interface IChannelRoutingConnection {
 
 	public int getConnectionResistance();
 

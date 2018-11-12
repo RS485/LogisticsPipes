@@ -29,9 +29,9 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 	private static final float PIPE_MIN_POS = 0.25F;
 	private static final float PIPE_MAX_POS = 0.75F;
 
-	public LogisticsPipeItemRenderer(boolean flag) {
-		newRenderer = new LogisticsNewPipeItemRenderer(flag);
-		renderAsBlock = flag;
+	public LogisticsPipeItemRenderer(boolean targeted) {
+		newRenderer = new LogisticsNewPipeItemRenderer(targeted);
+		renderAsBlock = targeted;
 	}
 
 	private void renderPipeItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {

@@ -11,7 +11,8 @@ package logisticspipes.proxy;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.ISecurityStationManager;
-import logisticspipes.interfaces.routing.IDirectConnectionManager;
+import logisticspipes.interfaces.routing.IChannelConnectionManager;
+import logisticspipes.interfaces.routing.IChannelManagerProvider;
 import logisticspipes.logistics.ILogisticsFluidManager;
 import logisticspipes.logistics.ILogisticsManager;
 import logisticspipes.proxy.interfaces.IBCProxy;
@@ -72,9 +73,9 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.ccProxy = cProxy;
 	}
 
-	public static IDirectConnectionManager connectionManager;
+	public static IChannelConnectionManager connectionManager;
 
-	public static void setDirectConnectionManager(final IDirectConnectionManager conMngr) {
+	public static void setChannelConnectionManager(final IChannelConnectionManager conMngr) {
 		SimpleServiceLocator.connectionManager = conMngr;
 	}
 
@@ -250,5 +251,11 @@ public final class SimpleServiceLocator {
 
 	public static void setMCMPProxy(IMCMPProxy proxy) {
 		SimpleServiceLocator.mcmpProxy = proxy;
+	}
+
+	public static IChannelManagerProvider channelManagerProvider;
+
+	public static void setChannelManagerProvider(IChannelManagerProvider managerProvider) {
+		SimpleServiceLocator.channelManagerProvider = managerProvider;
 	}
 }

@@ -32,8 +32,8 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 	private final boolean renderAsBlock;
 
-	public LogisticsNewPipeItemRenderer(boolean flag) {
-		renderAsBlock = flag;
+	public LogisticsNewPipeItemRenderer(boolean targeted) {
+		renderAsBlock = targeted;
 	}
 
 	private void renderPipeItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {

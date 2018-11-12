@@ -1354,7 +1354,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return router.getId().toString();
 	}
 
-	@CCCommand(description = "Returns the TurtleConnect flag for this Turtle on this LogisticsPipe")
+	@CCCommand(description = "Returns the TurtleConnect targeted for this Turtle on this LogisticsPipe")
 	@CCDirectCall
 	public boolean getTurtleConnect() {
 		if (container instanceof LogisticsTileGenericPipe) {
@@ -1363,7 +1363,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return false;
 	}
 
-	@CCCommand(description = "Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")
+	@CCCommand(description = "Sets the TurtleConnect targeted for this Turtle on this LogisticsPipe")
 	@CCDirectCall
 	public void setTurtleConnect(Boolean flag) {
 		if (container instanceof LogisticsTileGenericPipe) {

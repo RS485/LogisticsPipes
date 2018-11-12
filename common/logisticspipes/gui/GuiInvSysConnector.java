@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
@@ -14,50 +15,48 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import logisticspipes.interfaces.IGUIChannelInformationReceiver;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.InvSysConContentRequest;
+import logisticspipes.network.packets.pipe.InvSysConOpenSelectChannelPopupPacket;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.string.StringUtils;
+import logisticspipes.utils.tuples.Pair;
 
-public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
+public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUIChannelInformationReceiver {
 
 	private static final String PREFIX = "gui.invsyscon.";
 
 	private int page = 0;
 	private final List<ItemIdentifierStack> _allItems = new ArrayList<>();
 	private final PipeItemsInvSysConnector pipe;
-	private int localresistance;
+	private InputBar resistanceCountBar;
+
+	private ChannelInformation connectedChannel = null;
 
 	public GuiInvSysConnector(EntityPlayer player, PipeItemsInvSysConnector pipe) {
-		super(180, 200, 0, 0);
-		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
+		super(180, 220, 0, 0);
+		DummyContainer dummy = new DummyContainer(player.inventory, null);
 
-		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, itemStack -> {
-			if (itemStack == null) {
-				return false;
-			}
-			if (itemStack.getItem() != LPItems.itemCard) {
-				return false;
-			}
-			return itemStack.getItemDamage() == LogisticsItemCard.FREQ_CARD;
-		});
-
-		dummy.addNormalSlotsForPlayerInventory(10, 115);
+		dummy.addNormalSlotsForPlayerInventory(10, 135);
 
 		inventorySlots = dummy;
 		this.pipe = pipe;
-		localresistance = pipe.resistance;
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -65,33 +64,42 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new SmallGuiButton(0, guiLeft + 120, guiTop + 47, 10, 10, "<"));
-		buttonList.add(new SmallGuiButton(1, guiLeft + 160, guiTop + 47, 10, 10, ">"));
-		buttonList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 47, 46, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Refresh")));
-		buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 35, 10, 10, "<"));
-		buttonList.add(new SmallGuiButton(4, guiLeft + 120, guiTop + 35, 10, 10, ">"));
-		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 35, 30, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Save")));
+		buttonList.add(new SmallGuiButton(0, guiLeft + 120, guiTop + 67, 10, 10, "<"));
+		buttonList.add(new SmallGuiButton(1, guiLeft + 160, guiTop + 67, 10, 10, ">"));
+		buttonList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 67, 46, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Refresh")));
+		buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 55, 10, 10, "<"));
+		buttonList.add(new SmallGuiButton(4, guiLeft + 120, guiTop + 55, 10, 10, ">"));
+		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 55, 30, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Save")));
+		buttonList.add(new SmallGuiButton(6, guiLeft + 130, guiTop + 20, 40, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Change")));
+
+		if(this.resistanceCountBar == null) {
+			this.resistanceCountBar = new InputBar(this.fontRenderer, this, guiLeft + 90, guiTop + 55, 30, 12, false, true, InputBar.Align.CENTER);
+			this.resistanceCountBar.input1 = Integer.toString(pipe.resistance);
+			this.resistanceCountBar.minNumber = 0;
+		}
+		this.resistanceCountBar.reposition(guiLeft + 90, guiTop + 55, 30, 12);
+
 		refreshPacket();
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
-		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Color.GREY);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "ConnectionCard") + ":", guiLeft + 10, guiTop + 21, 0x404040);
-		GuiGraphics.drawSlotBackground(mc, guiLeft + 97, guiTop + 16);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 48, 0x404040);
-		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 49, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 35, 0x404040);
-		mc.fontRenderer.drawString(Integer.toString(localresistance), guiLeft + 105 - (mc.fontRenderer.getStringWidth(Integer.toString(localresistance)) / 2), guiTop + 37, 0x404040);
+		drawRect(guiLeft + 9, guiTop + 78, guiLeft + 170, guiTop + 132, Color.GREY);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "ConnectionInformation") + ":", guiLeft + 10, guiTop + 21, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.getCuttedString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Channel") + ": " + (connectedChannel != null ?  connectedChannel.getName() : "UNDEFINED"), 150, this.fontRenderer), guiLeft + 15, guiTop + 38, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 68, 0x404040);
+		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 69, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 55, 0x404040);
+		resistanceCountBar.renderSearchBar();
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, 100.0F, DisplayAmount.ALWAYS);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 79, 9, 27, 18, 18, 100.0F, DisplayAmount.ALWAYS);
 
 		int ppi = 0;
 		int column = 0;
@@ -107,7 +115,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 			}
 			ItemStack st = itemStack.unsafeMakeNormalStack();
 			int x = 9 + 18 * column + guiLeft;
-			int y = 59 + 18 * row + guiTop;
+			int y = 79 + 18 * row + guiTop;
 
 			GL11.glDisable(2896 /*GL_LIGHTING*/);
 
@@ -165,17 +173,47 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 			refreshPacket();
 		} else if (button.id == 3) {
 			for (int i = 0; i < (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? 10 : 1); i++) {
+				int localresistance = 1;
+				try {
+					localresistance = Integer.valueOf(resistanceCountBar.input1 + resistanceCountBar.input2);
+				} catch (Exception ignored) {}
 				if (localresistance > 0) {
 					localresistance--;
 				}
+				resistanceCountBar.input1 = Integer.toString(localresistance);
+				resistanceCountBar.input2 = "";
 			}
 		} else if (button.id == 4) {
-			for (int i = 0; i < (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? 10 : 1); i++) {
-				localresistance++;
-			}
+			int localresistance = 1;
+			try {
+				localresistance = Integer.valueOf(resistanceCountBar.input1 + resistanceCountBar.input2);
+			} catch (Exception ignored) {}
+			localresistance++;
+			resistanceCountBar.input1 = Integer.toString(localresistance);
+			resistanceCountBar.input2 = "";
 		} else if (button.id == 5) {
+			int localresistance = 1;
+			try {
+				localresistance = Integer.valueOf(resistanceCountBar.input1 + resistanceCountBar.input2);
+			} catch (Exception ignored) {}
 			pipe.resistance = localresistance;
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.resistance).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
+		} else if (button.id == 6) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConOpenSelectChannelPopupPacket.class).setTilePos(pipe.container));
+		}
+	}
+
+	@Override
+	protected void mouseClicked(int x, int y, int k) throws IOException {
+		if(!resistanceCountBar.handleClick(x, y, k)) {
+			super.mouseClicked(x, y, k);
+		}
+	}
+
+	@Override
+	public void keyTyped(char c, int i) throws IOException {
+		if(!resistanceCountBar.handleKey(c, i)) {
+			super.keyTyped(c, i);
 		}
 	}
 
@@ -185,6 +223,19 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen {
 	}
 
 	public void handleResistanceAnswer(int resistance) {
-		localresistance = resistance;
+		resistanceCountBar.input1 = Integer.toString(resistance);
+		resistanceCountBar.input2 = "";
+	}
+
+	@Override
+	public void handleChannelInformation(ChannelInformation channel, boolean flag) {
+		if(this.getSubGui() instanceof IGUIChannelInformationReceiver) {
+			((IGUIChannelInformationReceiver) this.getSubGui()).handleChannelInformation(channel, flag);
+		}
+		if(flag) {
+			this.connectedChannel = channel;
+		} else if (this.connectedChannel != null && this.connectedChannel.getChannelIdentifier().equals(channel.getChannelIdentifier())) {
+			this.connectedChannel = channel;
+		}
 	}
 }

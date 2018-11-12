@@ -4,7 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.PopupGuiProvider;
 import logisticspipes.network.exception.TargetNotFoundException;
-import logisticspipes.network.packets.gui.GUIPacket;
+import logisticspipes.network.packets.gui.OpenGUIPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolverUtil;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -79,7 +79,7 @@ public class NewGuiHandler {
 		Container container = guiProvider.getContainer(player);
 		if (container == null) {
 			if (guiProvider instanceof PopupGuiProvider) {
-				GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
+				OpenGUIPacket packet = PacketHandler.getPacket(OpenGUIPacket.class);
 				packet.setGuiID(guiProvider.getId());
 				packet.setWindowID(-2);
 				packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
@@ -91,7 +91,7 @@ public class NewGuiHandler {
 		player.closeContainer();
 		int windowId = player.currentWindowId;
 
-		GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
+		OpenGUIPacket packet = PacketHandler.getPacket(OpenGUIPacket.class);
 		packet.setGuiID(guiProvider.getId());
 		packet.setWindowID(windowId);
 		packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
@@ -104,7 +104,7 @@ public class NewGuiHandler {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void openGui(GUIPacket packet, EntityPlayer player) {
+	public static void openGui(OpenGUIPacket packet, EntityPlayer player) {
 		int guiID = packet.getGuiID();
 		GuiProvider provider = NewGuiHandler.guilist.get(guiID).template();
 		LPDataIOWrapper.provideData(packet.getGuiData(), provider::readData);

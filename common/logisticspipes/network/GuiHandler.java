@@ -150,31 +150,6 @@ public class GuiHandler implements IGuiHandler {
 					}
 					return new DummyContainer(player.inventory, null);
 
-				case GuiIDs.GUI_Inv_Sys_Connector_ID:
-					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) {
-						return null;
-					}
-					dummy = new DummyContainer(player.inventory, ((PipeItemsInvSysConnector) pipe.pipe).inv);
-
-					dummy.addRestrictedSlot(0, ((PipeItemsInvSysConnector) pipe.pipe).inv, 50, 10, itemStack -> {
-						if (itemStack == null) {
-							return false;
-						}
-						if (itemStack.getItem() != LPItems.itemCard) {
-							return false;
-						}
-						if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
-							return false;
-						}
-						return true;
-					});
-
-					dummy.addNormalSlotsForPlayerInventory(0, 50);
-
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector) pipe.pipe).resistance).setBlockPos(pipe.getPos()), player);
-
-					return dummy;
-
 				case GuiIDs.GUI_Freq_Card_ID:
 					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) {
 						return null;
@@ -330,12 +305,6 @@ public class GuiHandler implements IGuiHandler {
 						return null;
 					}
 					return new FluidGuiOrderer(((PipeFluidRequestLogistics) pipe.pipe), player);
-
-				case GuiIDs.GUI_Inv_Sys_Connector_ID:
-					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) {
-						return null;
-					}
-					return new GuiInvSysConnector(player, (PipeItemsInvSysConnector) pipe.pipe);
 
 				case GuiIDs.GUI_Freq_Card_ID:
 					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) {

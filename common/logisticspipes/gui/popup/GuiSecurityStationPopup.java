@@ -24,7 +24,7 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 	private final SecuritySettings activeSetting;
 
 	public GuiSecurityStationPopup(SecuritySettings setting, LogisticsSecurityTileEntity tile) {
-		super(140, 120, 0, 0);
+		super(160, 135, 0, 0);
 		activeSetting = setting;
 		_tile = tile;
 	}
@@ -34,12 +34,13 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new GuiCheckBox(0, guiLeft + 110, guiTop + 26, 16, 16, false));
-		buttonList.add(new GuiCheckBox(1, guiLeft + 110, guiTop + 41, 16, 16, false));
-		buttonList.add(new GuiCheckBox(2, guiLeft + 110, guiTop + 56, 16, 16, false));
-		buttonList.add(new GuiCheckBox(3, guiLeft + 110, guiTop + 71, 16, 16, false));
-		buttonList.add(new GuiCheckBox(4, guiLeft + 110, guiTop + 86, 16, 16, false));
-		buttonList.add(new SmallGuiButton(5, guiLeft + 94, guiTop + 103, 30, 10, StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Close")));
+		buttonList.add(new GuiCheckBox(0, guiLeft + 138, guiTop + 26, 16, 16, false));
+		buttonList.add(new GuiCheckBox(1, guiLeft + 138, guiTop + 41, 16, 16, false));
+		buttonList.add(new GuiCheckBox(2, guiLeft + 138, guiTop + 56, 16, 16, false));
+		buttonList.add(new GuiCheckBox(3, guiLeft + 138, guiTop + 71, 16, 16, false));
+		buttonList.add(new GuiCheckBox(4, guiLeft + 138, guiTop + 86, 16, 16, false));
+		buttonList.add(new GuiCheckBox(5, guiLeft + 138, guiTop + 101, 16, 16, false));
+		buttonList.add(new SmallGuiButton(6, guiLeft + 123, guiTop + 118, 30, 10, StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Close")));
 		refreshCheckBoxes();
 	}
 
@@ -52,6 +53,7 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "AccessRoutingChannels") + ": ", guiLeft + 10, guiTop + 105, 0x404040);
 	}
 
 	@Override
@@ -87,6 +89,12 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
 		} else if (button.id == 5) {
+			activeSetting.accessRoutingChannels = !activeSetting.accessRoutingChannels;
+			refreshCheckBoxes();
+			NBTTagCompound nbt = new NBTTagCompound();
+			activeSetting.writeToNBT(nbt);
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
+		} else if (button.id == 6) {
 			exitGui();
 		} else {
 			super.actionPerformed(button);
@@ -99,5 +107,6 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 		((GuiCheckBox) buttonList.get(2)).setState(activeSetting.openUpgrades);
 		((GuiCheckBox) buttonList.get(3)).setState(activeSetting.openNetworkMonitor);
 		((GuiCheckBox) buttonList.get(4)).setState(activeSetting.removePipes);
+		((GuiCheckBox) buttonList.get(5)).setState(activeSetting.accessRoutingChannels);
 	}
 }

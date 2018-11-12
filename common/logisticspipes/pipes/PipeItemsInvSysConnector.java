@@ -2,12 +2,14 @@ package logisticspipes.pipes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -25,48 +27,62 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDInvSysConnector;
+import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
-import logisticspipes.interfaces.routing.IDirectRoutingConnection;
+import logisticspipes.interfaces.routing.IChannelManager;
+import logisticspipes.interfaces.routing.IChannelRoutingConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.GuiHandler;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.guis.pipe.InvSysConGuiProvider;
+import logisticspipes.network.packets.gui.ChannelInformationPacket;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
+import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.channels.ChannelInformation;
+import logisticspipes.routing.channels.ChannelManager;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
-import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.transactor.ITransactor;
+import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver {
+public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannelRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver,
+		IGuiOpenControler {
 
 	private boolean init = false;
 	private HashMap<ItemIdentifier, List<ItemRoutingInformation>> itemsOnRoute = new HashMap<>();
-	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq. card", 1);
 	public int resistance;
 	public Set<ItemIdentifierStack> oldList = new TreeSet<>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	public final PlayerCollectionList localGuiWatchers = new PlayerCollectionList();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
 	private UUID idbuffer = UUID.randomUUID();
+
+	private UUID connectedChannel;
 
 	public PipeItemsInvSysConnector(Item item) {
 		super(new TransportInvConnection(), item);
@@ -77,12 +93,16 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		super.enabledUpdateEntity();
 		if (!init) {
 			if (hasConnectionUUID()) {
-				if (!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionUUID(), getRouter())) {
-					dropFreqCard();
+				if (!SimpleServiceLocator.connectionManager.addChannelConnection(getConnectionUUID(), getRouter())) {
+					connectedChannel = null;
+					sendChannelInformationToPlayers();
 				}
-				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-				if (CRP != null) {
-					CRP.refreshRender(true);
+				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
+				if (connectedPipes != null) {
+					connectedPipes.forEach(c -> {
+						c.getRouter().update(true, c);
+						c.refreshRender(true);
+					});
 				}
 				getRouter().update(true, this);
 				refreshRender(true);
@@ -92,18 +112,24 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		}
 		if (init && !hasConnectionUUID()) {
 			init = false;
-			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-			if (CRP != null) {
-				CRP.refreshRender(true);
+			List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
+			SimpleServiceLocator.connectionManager.removeChannelConnection(getRouter());
+			if (connectedPipes != null) {
+				connectedPipes.forEach(c -> {
+					c.getRouter().update(true, c);
+					c.refreshRender(true);
+				});
 			}
 		}
 		if (init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
 			init = false;
-			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-			if (CRP != null) {
-				CRP.refreshRender(true);
+			List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
+			SimpleServiceLocator.connectionManager.removeChannelConnection(getRouter());
+			if (connectedPipes != null) {
+				connectedPipes.forEach(c -> {
+					c.getRouter().update(true, c);
+					c.refreshRender(true);
+				});
 			}
 		}
 		if (itemsOnRoute.size() > 0) {
@@ -190,42 +216,16 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		spawnParticle(Particles.OrangeParticle, 4);
 	}
 
+	private static UUID testUUID = UUID.randomUUID();
+
 	@SuppressWarnings("deprecation")
 	private UUID getConnectionUUID() {
-		if (inv != null) {
-			if (inv.getStackInSlot(0) != null) {
-				if (inv.getStackInSlot(0).hasTagCompound()) {
-					if (inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
-						return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
-					}
-				}
-			}
-		}
-		return null;
+		return connectedChannel;
 	}
 
 	@SuppressWarnings("deprecation")
 	private boolean hasConnectionUUID() {
-		if (inv != null) {
-			if (inv.getStackInSlot(0) != null) {
-				if (inv.getStackInSlot(0).hasTagCompound()) {
-					if (inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	@SuppressWarnings("deprecation")
-	private void dropFreqCard() {
-		if (inv.getStackInSlot(0) == null) {
-			return;
-		}
-		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
-		getWorld().spawnEntity(item);
-		inv.clearInventorySlotContents(0);
+		return connectedChannel != null;
 	}
 
 	public Set<ItemIdentifierStack> getExpectedItems() {
@@ -246,43 +246,34 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), getX(), getY(), getZ());
+		NewGuiHandler.getGui(InvSysConGuiProvider.class).setTilePos(this.container).open(entityplayer);
 	}
 
 	@Override
 	public void onAllowedRemoval() {
+		removePipeFromChannel();
+	}
+
+	private void removePipeFromChannel() {
 		if (!stillNeedReplace) {
-			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-			if (CRP != null) {
-				CRP.refreshRender(true);
+			List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
+			SimpleServiceLocator.connectionManager.removeChannelConnection(getRouter());
+			if (connectedPipes != null) {
+				connectedPipes.forEach(c -> c.refreshRender(true));
 			}
 		}
-		dropFreqCard();
 	}
 
 	@Override
 	public void invalidate() {
-		if (!stillNeedReplace) {
-			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-			if (CRP != null) {
-				CRP.refreshRender(true);
-			}
-		}
+		removePipeFromChannel();
 		init = false;
 		super.invalidate();
 	}
 
 	@Override
 	public void onChunkUnload() {
-		if (!stillNeedReplace) {
-			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-			if (CRP != null) {
-				CRP.refreshRender(true);
-			}
-		}
+		removePipeFromChannel();
 		init = false;
 		super.onChunkUnload();
 	}
@@ -290,19 +281,25 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
-		inv.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setInteger("resistance", resistance);
+		if(connectedChannel != null) {
+			nbttagcompound.setString("connectedChannel", connectedChannel.toString());
+		}
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-		inv.readFromNBT(nbttagcompound, "");
 		resistance = nbttagcompound.getInteger("resistance");
+		if(nbttagcompound.hasKey("connectedChannel")) {
+			connectedChannel = UUID.fromString(nbttagcompound.getString("connectedChannel"));
+		} else {
+			connectedChannel = null;
+		}
 	}
 
 	private boolean hasRemoteConnection() {
-		return hasConnectionUUID() && getWorld() != null && SimpleServiceLocator.connectionManager.hasDirectConnection(getRouter());
+		return hasConnectionUUID() && getWorld() != null && SimpleServiceLocator.connectionManager.hasChannelConnection(getRouter());
 	}
 
 	private boolean inventoryConnected() {
@@ -348,11 +345,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public void addItem(ItemRoutingInformation info) {
 		if (info.getItem() != null && info.getItem().getStackSize() > 0 && info.destinationint >= 0) {
 			ItemIdentifier insertedType = info.getItem().getItem();
-			List<ItemRoutingInformation> entry = itemsOnRoute.get(insertedType);
-			if (entry == null) {
-				entry = new LinkedList<>(); // linked list as this is almost always very small, but experiences random removal
-				itemsOnRoute.put(insertedType, entry);
-			}
+			List<ItemRoutingInformation> entry = itemsOnRoute.computeIfAbsent(insertedType, k -> new LinkedList<>());
+			// linked list as this is almost always very small, but experiences random removal
 			entry.add(info);
 			updateContentListener();
 		}
@@ -378,9 +372,27 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		}
 		if (isConnectedInv(tile)) {
 			if (hasRemoteConnection()) {
-				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-				if (CRP instanceof IDirectRoutingConnection) {
-					IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
+				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
+				Optional<CoreRoutedPipe> bestConnection = connectedPipes.stream()
+						.map(con -> new Triplet<>(
+								con,
+								con.getRouter().getExitFor(info.destinationint, info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem()),
+								con.getRouter().getExitFor(getRouterId(), info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem())
+						))
+						.filter(triplet -> triplet.getValue2() != null && triplet.getValue3() != null)
+						.filter(triplet -> triplet.getValue2().exitOrientation != triplet.getValue3().exitOrientation)
+						.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Pair::getValue1);
+				if(!bestConnection.isPresent()) {
+					bestConnection = connectedPipes.stream()
+							.map(con -> new Pair<>(
+									con,
+									con.getRouter().getExitFor(info.destinationint, info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem())
+							))
+							.filter(triplet -> triplet.getValue2() != null)
+							.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Pair::getValue1);
+				}
+				if(bestConnection.isPresent() && bestConnection.get() instanceof IChannelRoutingConnection) {
+					IChannelRoutingConnection pipe = (IChannelRoutingConnection) bestConnection.get();
 					pipe.addItem(info);
 					spawnParticle(Particles.OrangeParticle, 4);
 				}
@@ -435,4 +447,33 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		displayList.addAll(list);
 	}
 
+	public void setChannelFromClient(UUID fromString) {
+		this.connectedChannel = fromString;
+		sendChannelInformationToPlayers();
+	}
+
+	@Override
+	public void guiOpenedByPlayer(EntityPlayer player) {
+		localGuiWatchers.add(player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(this.resistance).setBlockPos(this.getPos()), player);
+
+		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(this.getWorld());
+		Optional<ChannelInformation> channel = manager.getChannels().stream()
+				.filter(chan -> chan.getChannelIdentifier().equals(getConnectionUUID()))
+				.findFirst();
+		channel.ifPresent(chan -> MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChannelInformationPacket.class).setInformation(chan).setTargeted(true), player));
+	}
+
+	@Override
+	public void guiClosedByPlayer(EntityPlayer player) {
+		localGuiWatchers.remove(player);
+	}
+
+	private void sendChannelInformationToPlayers() {
+		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(this.getWorld());
+		Optional<ChannelInformation> channel = manager.getChannels().stream()
+				.filter(chan -> chan.getChannelIdentifier().equals(getConnectionUUID()))
+				.findFirst();
+		channel.ifPresent(chan -> MainProxy.sendToPlayerList(PacketHandler.getPacket(ChannelInformationPacket.class).setInformation(chan).setTargeted(true), localGuiWatchers));
+	}
 }

@@ -394,8 +394,10 @@ gui.fluidsupplier.No=No
 
 gui.invsyscon.Refresh=Refresh
 gui.invsyscon.Save=Save
+gui.invsyscon.Change=Change
+gui.invsyscon.Channel=Channel
 gui.invsyscon.InventorySystemConnector=Inventory System Connector
-gui.invsyscon.ConnectionCard=Connection Card
+gui.invsyscon.ConnectionInformation=Connection Information
 gui.invsyscon.Waitingfor=Waiting for
 gui.invsyscon.Resistance=Resistance
 
@@ -435,6 +437,7 @@ gui.securitystation.pipeRemove=Allow automated Pipe remove
 gui.securitystation.Player=Player
 gui.securitystation.SecurityCards=Security Cards
 gui.securitystation.Inventory=Inventory
+gui.securitystation.ChannelManager=Channel Manager
 gui.securitystation.popup.ccAccess.Remove=Remove
 gui.securitystation.popup.ccAccess.Add=Add
 gui.securitystation.popup.player.Close=Close
@@ -444,6 +447,7 @@ gui.securitystation.popup.player.ActiveRequesting=Active Requesting
 gui.securitystation.popup.player.UpgradePipes=Upgrade Pipes
 gui.securitystation.popup.player.CheckNetwork=Check Network
 gui.securitystation.popup.player.RemovePipes=Remove Pipes
+gui.securitystation.popup.player.AccessRoutingChannels=Access Routing Channels
 
 gui.supplierpipe.TargetInv=Items to keep stocked
 gui.supplierpipe.TargetInvPattern=Items to keep in the specified slots
@@ -485,3 +489,22 @@ gui.settings.pipenewrenderer=Use New Renderer
 gui.settings.pipefallbackrenderer=Use Fallback Renderer
 gui.settings.piperenderdistance=Max. Distance for new Renderer
 gui.settings.pipecontentrenderdistance=Max. Distance for Pipe Content
+
+gui.popup.selectchannel.title=Channel Selection
+
+gui.popup.addchannel.title=Add Channel
+gui.popup.addchannel.name=Name
+gui.popup.addchannel.access=Access rights
+gui.popup.addchannel.public=Public
+gui.popup.addchannel.security=Security Station
+gui.popup.addchannel.private=Private
+gui.popup.addchannel.save=Save
+
+gui.popup.editchannel.title=Edit Channel
+gui.popup.editchannel.save=Save
+gui.popup.editchannel.owner=Owner
+
+gui.popup.managechannel.title=Channel Manager
+gui.popup.managechannel.deletedialog.title=Do you really want to delete this channel?
+gui.popup.managechannel.deletedialog.yes=Yes
+gui.popup.managechannel.deletedialog.no=No

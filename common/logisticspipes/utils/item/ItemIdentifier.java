@@ -63,7 +63,7 @@ import javax.annotation.Nonnull;
  * @author Krapht I have no bloody clue what different mods use to differate
  *         between items except for itemID, there is metadata, damage, and
  *         whatnot. so..... to avoid having to change all my bloody code every
- *         time I need to support a new item flag that would make it a
+ *         time I need to support a new item targeted that would make it a
  *         "different" item, I made this cache here A ItemIdentifier is
  *         immutable, singleton and most importantly UNIQUE!
  */

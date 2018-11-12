@@ -50,7 +50,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.IntStream;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
@@ -68,6 +70,8 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 import logisticspipes.network.IReadListObject;
 import logisticspipes.network.IWriteListObject;
+import logisticspipes.routing.channels.ChannelInformation;
+import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -385,6 +389,30 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
+	public void writeChannelInformation(@Nonnull ChannelInformation channel) {
+		this.writeUTF(channel.getName());
+		this.writeUUID(channel.getChannelIdentifier());
+		this.writePlayerIdentifier(channel.getOwner());
+		this.writeEnum(channel.getRights());
+		this.writeUUID(channel.getResponsibleSecurityID());
+	}
+
+	@Override
+	public void writeUUID(UUID uuid) {
+		this.writeBoolean(uuid != null);
+		if(uuid != null) {
+			this.writeLong(uuid.getMostSignificantBits());
+			this.writeLong(uuid.getLeastSignificantBits());
+		}
+	}
+
+	@Override
+	public void writePlayerIdentifier(@Nonnull PlayerIdentifier playerIdentifier) {
+		this.writeUTF(playerIdentifier.getUsername());
+		this.writeUUID(playerIdentifier.getId());
+	}
+
+	@Override
 	public byte readByte() {
 		return localBuffer.readByte();
 	}
@@ -636,5 +664,23 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		final long[] arr = new long[length];
 		IntStream.range(0, length).forEach(i -> arr[i] = localBuffer.readLong());
 		return arr;
+	}
+
+	@Override
+	public ChannelInformation readChannelInformation() {
+		return new ChannelInformation(this.readUTF(), this.readUUID(), this.readPlayerIdentifier(), this.readEnum(ChannelInformation.AccessRights.class), this.readUUID());
+	}
+
+	@Override
+	public UUID readUUID() {
+		if(!this.readBoolean()) {
+			return null;
+		}
+		return new UUID(this.readLong(), this.readLong());
+	}
+
+	@Override
+	public PlayerIdentifier readPlayerIdentifier() {
+		return PlayerIdentifier.get(this.readUTF(), this.readUUID());
 	}
 }

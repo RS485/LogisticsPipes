@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.recipes.*;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -163,6 +162,7 @@ import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.channels.ChannelManagerProvider;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
@@ -268,7 +268,7 @@ public class LogisticsPipes {
 
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
-		SimpleServiceLocator.setDirectConnectionManager(manager);
+		SimpleServiceLocator.setChannelConnectionManager(manager);
 		SimpleServiceLocator.setSecurityStationManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManager());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
@@ -278,6 +278,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());
 		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
 		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
+		SimpleServiceLocator.setChannelManagerProvider(new ChannelManagerProvider());
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
 		MinecraftForge.EVENT_BUS.register(new LPTickHandler());

@@ -30,7 +30,7 @@ import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
 import logisticspipes.asm.te.LPTileEntityObject;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
-import logisticspipes.interfaces.routing.IDirectRoutingConnection;
+import logisticspipes.interfaces.routing.IChannelRoutingConnection;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -44,6 +44,8 @@ import logisticspipes.routing.pathfinder.IRouteProvider.RouteInfo;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Quartet;
+import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -201,7 +203,7 @@ public class PathFinder {
 			}
 		}
 
-		ArrayDeque<Pair<TileEntity, EnumFacing>> connections = new ArrayDeque<>();
+		ArrayDeque<Quartet<TileEntity, EnumFacing, Integer, Boolean>> connections = new ArrayDeque<>();
 
 		//Recurse in all directions
 		for (EnumFacing direction : EnumFacing.VALUES) {
@@ -239,21 +241,21 @@ public class PathFinder {
 					}
 				}
 			}
-			connections.add(new Pair<>(tile, direction));
+			connections.add(new Quartet<>(tile, direction, 0, false));
 		}
 
 		while (!connections.isEmpty()) {
-			Pair<TileEntity, EnumFacing> pair = connections.pollFirst();
-			TileEntity tile = pair.getValue1();
-			EnumFacing direction = pair.getValue2();
+			Quartet<TileEntity, EnumFacing, Integer, Boolean> quartet = connections.pollFirst();
+			TileEntity tile = quartet.getValue1();
+			EnumFacing direction = quartet.getValue2();
+			int resistance = quartet.getValue3();
+			boolean isDirectConnection = quartet.getValue4();
 			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
-			boolean isDirectConnection = false;
-			int resistance = 0;
 
 			if (root) {
 				Collection<TileEntity> list = SimpleServiceLocator.specialtileconnection.getConnectedPipes(tile);
 				if (!list.isEmpty()) {
-					connections.addAll(list.stream().map(pipe -> new Pair<>(pipe, direction)).collect(Collectors.toList()));
+					connections.addAll(list.stream().map(pipe -> new Quartet<>(pipe, direction, 0, false)).collect(Collectors.toList()));
 					listTileEntity(tile);
 					continue;
 				}
@@ -262,13 +264,12 @@ public class PathFinder {
 				}
 			}
 
-			if (tile instanceof IInventory && startPipe.isRoutingPipe() && startPipe.getRoutingPipe() instanceof IDirectRoutingConnection && startPipe.canConnect(tile, direction, false)) {
-				if (SimpleServiceLocator.connectionManager.hasDirectConnection(startPipe.getRoutingPipe().getRouter())) {
-					CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(startPipe.getRoutingPipe().getRouter());
-					if (CRP != null) {
-						tile = CRP.container;
-						isDirectConnection = true;
-						resistance = ((IDirectRoutingConnection) startPipe.getRoutingPipe()).getConnectionResistance();
+			if (tile instanceof IInventory && startPipe.isRoutingPipe() && startPipe.getRoutingPipe() instanceof IChannelRoutingConnection && startPipe.canConnect(tile, direction, false)) {
+				if (SimpleServiceLocator.connectionManager.hasChannelConnection(startPipe.getRoutingPipe().getRouter())) {
+					List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(startPipe.getRoutingPipe().getRouter());
+					connections.addAll(connectedPipes.stream().map(pipe -> new Quartet<>((TileEntity) pipe.container, direction, ((IChannelRoutingConnection) startPipe.getRoutingPipe()).getConnectionResistance(), true)).collect(Collectors.toList()));
+					if(!connectedPipes.isEmpty()) {
+						continue;
 					}
 				}
 			}
@@ -282,7 +283,7 @@ public class PathFinder {
 			if (currentPipe != null && currentPipe.isRouterInitialized() && (isDirectConnection || SimpleServiceLocator.pipeInformationManager.canConnect(startPipe, currentPipe, direction, true))) {
 
 				listTileEntity(tile);
-				tile = null; // DON'T USE THIS ANYMORE CAN CAUSE TROUBLE WITH MULTIBLOCKS
+
 				if(currentPipe.isMultiBlock()) {
 					currentPipe.getPartsOfPipe().forEach(this::listTileEntity);
 				}
@@ -291,7 +292,7 @@ public class PathFinder {
 					//Don't go where we have been before
 					continue;
 				}
-				if (side != pair.getValue2() && !root) { //Only straight connections for subsystem power
+				if (side != direction && !root) { //Only straight connections for subsystem power
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
 				}
 				if (isDirectConnection) { //ISC doesn't pass power

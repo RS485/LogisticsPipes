@@ -56,8 +56,8 @@ public class PlayerConfig {
 		playerIdent = ident;
 	}
 
-	/*public void setUseFallbackRenderer(boolean flag) {
-		useFallbackRenderer = flag;
+	/*public void setUseFallbackRenderer(boolean targeted) {
+		useFallbackRenderer = targeted;
 	}*/
 
 	public void setRenderPipeDistance(int dist) {
@@ -217,8 +217,8 @@ public class PlayerConfig {
 	}*/
 
 	/*
-	public void setUseNewRenderer(boolean flag) {
-		useNewRenderer = flag;
+	public void setUseNewRenderer(boolean targeted) {
+		useNewRenderer = targeted;
 	}
 	*/
 }

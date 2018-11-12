@@ -14,20 +14,24 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityStationManager;
-import logisticspipes.interfaces.routing.IDirectConnectionManager;
+import logisticspipes.interfaces.routing.IChannelConnectionManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.SecurityStationAuthorizedList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.channels.ChannelConnection;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-public class RouterManager implements IRouterManager, IDirectConnectionManager, ISecurityStationManager {
+public class RouterManager implements IRouterManager, IChannelConnectionManager, ISecurityStationManager {
 
 	private final ArrayList<IRouter> _routersClient = new ArrayList<>();
 	private final ArrayList<IRouter> _routersServer = new ArrayList<>();
@@ -36,7 +40,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	private final WeakHashMap<LogisticsSecurityTileEntity, Void> _security = new WeakHashMap<>();
 	private List<String> _authorized = new LinkedList<>();
 
-	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<>();
+	private final ArrayList<ChannelConnection> channelConnectedPipes = new ArrayList<>();
 
 	@Override
 	public IRouter getRouter(int id) {
@@ -160,96 +164,64 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	}
 
 	@Override
-	public boolean hasDirectConnection(IRouter router) {
-		for (DirectConnection con : connectedPipes) {
-			if (con.Router1 >= 0 && con.Router2 >= 0) {
-				if (con.Router1 == router.getSimpleID()) {
-					return true;
-				} else if (con.Router2 == router.getSimpleID()) {
-					return true;
-				}
-			}
-		}
-		return false;
+	public boolean hasChannelConnection(IRouter router) {
+		return channelConnectedPipes.stream()
+				.filter(con -> con.routers.size() > 1)
+				.anyMatch(con -> con.routers.contains(router.getSimpleID()));
 	}
 
 	@Override
-	public boolean addDirectConnection(UUID ident, IRouter router) {
+	public boolean addChannelConnection(UUID ident, IRouter router) {
 		if (MainProxy.isClient()) {
 			return false;
 		}
-		boolean added = false;
-		for (DirectConnection con : connectedPipes) {
-			if (!ident.equals(con.identifier)) {
-				if (con.Router1 >= 0 && con.Router1 == router.getSimpleID()) {
-					con.Router1 = -1;
-				} else if (con.Router2 >= 0 && con.Router2 == router.getSimpleID()) {
-					con.Router2 = -1;
-				}
-			} else {
-				if (con.Router1 < 0 || con.Router1 == router.getSimpleID()) {
-					con.Router1 = router.getSimpleID();
-					added = true;
-					break;
-				} else if (con.Router2 < 0 || con.Router2 == router.getSimpleID()) {
-					con.Router2 = router.getSimpleID();
-					added = true;
-					break;
-				} else {
-					return false;
-				}
-			}
-		}
-		if (!added) {
-			DirectConnection Dc = new DirectConnection();
-			connectedPipes.add(Dc);
-			Dc.identifier = ident;
-			Dc.Router1 = router.getSimpleID();
+		int routerSimpleID = router.getSimpleID();
+		channelConnectedPipes.forEach(con -> con.routers.remove(routerSimpleID));
+		Optional<ChannelConnection> channel = channelConnectedPipes.stream().filter(con -> con.identifier.equals(ident)).findFirst();
+		if(channel.isPresent()) {
+			channel.get().routers.add(routerSimpleID);
+		} else {
+			ChannelConnection newChannel = new ChannelConnection();
+			channelConnectedPipes.add(newChannel);
+			newChannel.identifier = ident;
+			newChannel.routers.add(routerSimpleID);
 		}
 		return true;
 	}
 
 	@Override
-	public CoreRoutedPipe getConnectedPipe(IRouter router) {
-		int id = -1;
-		for (DirectConnection con : connectedPipes) {
-			if (con.Router1 >= 0 && con.Router2 >= 0) {
-				if (con.Router1 == router.getSimpleID()) {
-					id = con.Router2;
-					break;
-				} else if (con.Router2 == router.getSimpleID()) {
-					id = con.Router1;
-					break;
-				}
-			}
-		}
-		if (id < 0) {
-			return null;
-		}
-		IRouter r = getRouter(id);
-		if (r == null) {
-			return null;
-		}
-		return r.getPipe();
+	public List<CoreRoutedPipe> getConnectedPipes(IRouter router) {
+		Optional<ChannelConnection> channel = channelConnectedPipes.stream()
+				.filter(con -> con.routers.contains(router.getSimpleID()))
+				.findFirst();
+		return channel.
+				map(channelConnection ->
+						channelConnection.routers.stream()
+								.filter(r -> r != router.getSimpleID())
+								.map(r -> getRouter(r).getPipe())
+								.filter(Objects::nonNull)
+								.collect(Collectors.toList())
+				)
+				.orElse(Collections.emptyList());
 	}
 
 	@Override
-	public void removeDirectConnection(IRouter router) {
+	public void removeChannelConnection(IRouter router) {
 		if (MainProxy.isClient()) {
 			return;
 		}
-		for (DirectConnection con : connectedPipes) {
-			if (con.Router1 >= 0 && con.Router1 == router.getSimpleID()) {
-				con.Router1 = -1;
-			} else if (con.Router2 >= 0 && con.Router2 == router.getSimpleID()) {
-				con.Router2 = -1;
-			}
+		Optional<ChannelConnection> channel = channelConnectedPipes.stream()
+				.filter(con -> con.routers.contains(router.getSimpleID()))
+				.findFirst();
+		channel.ifPresent(chan -> chan.routers.remove(router.getSimpleID()));
+		if(channel.filter(chan -> chan.routers.isEmpty()).isPresent()) {
+			channelConnectedPipes.remove(channel.get());
 		}
 	}
 
 	@Override
 	public void serverStopClean() {
-		connectedPipes.clear();
+		channelConnectedPipes.clear();
 		_routersServer.clear();
 		_uuidMap.clear();
 		_security.clear();

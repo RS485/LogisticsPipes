@@ -42,6 +42,7 @@ import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.UUID;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -51,6 +52,8 @@ import net.minecraft.util.ResourceLocation;
 import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IReadListObject;
+import logisticspipes.routing.channels.ChannelInformation;
+import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -131,6 +134,12 @@ public interface LPDataInput {
 	ByteBuf readByteBuf();
 
 	long[] readLongArray();
+
+	ChannelInformation readChannelInformation();
+
+	UUID readUUID();
+
+	PlayerIdentifier readPlayerIdentifier();
 
 	//LPSerializable readSerializable(Class<? extends LPSerializable> serializableClass);
 

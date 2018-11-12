@@ -40,6 +40,9 @@ package network.rs485.logisticspipes.util;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.UUID;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,6 +52,8 @@ import net.minecraft.util.ResourceLocation;
 import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IWriteListObject;
+import logisticspipes.routing.channels.ChannelInformation;
+import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -136,10 +141,15 @@ public interface LPDataOutput {
 
 	void writeBytes(byte[] arr);
 
+	void writeChannelInformation(@Nonnull ChannelInformation channel);
+
+	void writeUUID(UUID uuid);
+
+	void writePlayerIdentifier(@Nonnull PlayerIdentifier playerIdentifier);
+
 	default void writeSerializable(LPFinalSerializable finalSerializable) {
 		finalSerializable.write(this);
 	}
-
 
 	interface LPDataOutputConsumer {
 

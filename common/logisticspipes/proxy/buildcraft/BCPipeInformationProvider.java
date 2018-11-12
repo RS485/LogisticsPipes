@@ -135,7 +135,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean canConnect(TileEntity to, EnumFacing direction, boolean flag) {
+	public boolean canConnect(TileEntity to, EnumFacing direction, boolean targeted) {
 		return SimpleServiceLocator.buildCraftProxy.canPipeConnect(pipe, to, direction);
 	}
 

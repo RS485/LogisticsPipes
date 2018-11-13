@@ -115,15 +115,15 @@ public class LogisticsTileGenericPipe extends LPMicroblockTileEntity
 	private AxisAlignedBB renderBox;
 
 	public LogisticsTileGenericPipe() {
-		preInit();
+		if (SimpleServiceLocator.ccProxy.isCC()) {
+			connections = new HashMap<>();
+		}
 		SimpleServiceLocator.openComputersProxy.initLogisticsTileGenericPipe(this);
 		tdPart = SimpleServiceLocator.thermalDynamicsProxy.getTDPart(this);
 		bcCapProvider = SimpleServiceLocator.buildCraftProxy.getIBCPipeCapabilityProvider(this);
 		imcmpltgpCompanion = SimpleServiceLocator.mcmpProxy.createMCMPCompanionFor(this);
 		renderState = new PipeRenderState();
 	}
-
-	protected void preInit() {}
 
 	@Override
 	public void invalidate() {

@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -103,10 +105,13 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if (name.equals("mcmultipart.block.BlockMultipartContainer")) {
 				return ClassBlockMultipartContainerHandler.handleClass(bytes);
 			}
-			/*
 			if (name.equals("dan200.computercraft.core.lua.LuaJLuaMachine")) {
 				return handleCCLuaJLuaMachine(bytes);
 			}
+			if (name.equals("dan200.computercraft.core.lua.CobaltLuaMachine")) {
+				return handleCCLuaJLuaMachine(bytes);
+			}
+			/*
 			if (name.equals("cofh.thermaldynamics.block.TileTDBase")) {
 				return ClassTileMultiBlockHandler.handleTileMultiBlockClass(bytes);
 			}
@@ -353,7 +358,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if (m.name.equals("toObject") && m.desc.equals("(Lorg/luaj/vm2/LuaValue;)Ljava/lang/Object;")) {
+			if (m.name.equals("toObject") && (m.desc.equals("(Lorg/luaj/vm2/LuaValue;)Ljava/lang/Object;") || m.desc.equals("(Lorg/luaj/vm2/LuaValue;Ljava/util/Map;)Ljava/lang/Object;"))) {
 				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 
 					boolean added = false;
@@ -380,7 +385,33 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
 		}
-		ClassWriter writer = new ClassWriter(0);
+		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS) {
+			protected String getCommonSuperClass(final String type1, final String type2) {
+				Class<?> c, d;
+				ClassLoader classLoader = Launch.classLoader; // Change Classloader to the MC one
+				try {
+					c = Class.forName(type1.replace('/', '.'), false, classLoader);
+					d = Class.forName(type2.replace('/', '.'), false, classLoader);
+				} catch (Exception e) {
+					throw new RuntimeException(e.toString());
+				}
+				if (c.isAssignableFrom(d)) {
+					return type1;
+				}
+				if (d.isAssignableFrom(c)) {
+					return type2;
+				}
+				if (c.isInterface() || d.isInterface()) {
+					return "java/lang/Object";
+				} else {
+					do {
+						c = c.getSuperclass();
+					} while (!c.isAssignableFrom(d));
+					return c.getName().replace('.', '/');
+				}
+			}
+
+		};
 		node.accept(writer);
 		return writer.toByteArray();
 	}

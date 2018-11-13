@@ -57,6 +57,8 @@ import net.minecraftforge.registries.GameData;
 
 import lombok.Getter;
 import net.minecraftforge.registries.IForgeRegistry;
+
+import lombok.SneakyThrows;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
@@ -494,6 +496,7 @@ public class LogisticsPipes {
 			.forEach(itemItemPair -> registerShapelessResetRecipe(itemItemPair.getValue1(), itemItemPair.getValue2()));
 	}
 
+	@SneakyThrows
 	private void loadClasses() {
 		//Try to load all classes to let our checksums get generated
 		forName("net.minecraft.tileentity.TileEntity");
@@ -501,7 +504,6 @@ public class LogisticsPipes {
 		forName("net.minecraft.item.ItemStack");
 		forName("net.minecraftforge.fluids.FluidStack");
 		forName("net.minecraftforge.fluids.Fluid");
-		forName("dan200.computercraft.core.lua.LuaJLuaMachine");
 		forName("cofh.thermaldynamics.block.TileTDBase");
 		forName("cofh.thermaldynamics.duct.item.TravelingItem");
 		forName("crazypants.enderio.conduit.item.ItemConduit");

@@ -38,6 +38,7 @@ import mcmultipart.multipart.PartInfo;
 import logisticspipes.modplugins.mcmp.LPMCMPAddon;
 import logisticspipes.modplugins.mcmp.LPMultipartTile;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.ticks.LPTickHandler;
 
 public class LPTileMultipartContainer extends TileMultipartContainer.Ticking {
 
@@ -109,11 +110,13 @@ public class LPTileMultipartContainer extends TileMultipartContainer.Ticking {
 	@Override
 	protected void updateWorldState() {
 		//super.updateWorldState();
+		LPTickHandler.getWorldInfo(getWorld()).setSkipBlockUpdateForWorld(true);
 		IBlockState prevSt = this.getWorld().getBlockState(this.getPos());
 
 		IBlockState st = this.getWorld().getBlockState(this.getPos());
 		this.getWorld().markAndNotifyBlock(this.getPos(), (Chunk)null, prevSt, st, 1);
 		this.getWorld().checkLight(this.getPos());
+		LPTickHandler.getWorldInfo(getWorld()).setSkipBlockUpdateForWorld(true);
 	}
 
 	@Override

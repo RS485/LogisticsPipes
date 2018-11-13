@@ -81,5 +81,9 @@ public class LPTickHandler {
 		private long worldTick = 0;
 		@Getter
 		private Set<DoubleCoordinates> updateQueued = new HashSet<>();
+
+		@Getter
+		@Setter
+		private boolean skipBlockUpdateForWorld = false;
 	}
 }

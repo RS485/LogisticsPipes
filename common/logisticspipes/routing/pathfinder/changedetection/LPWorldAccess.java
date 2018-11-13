@@ -25,7 +25,7 @@ public class LPWorldAccess implements IWorldEventListener {
 
 	@Override
 	public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
-		TEControl.handleBlockUpdate(world, info, pos.getX(), pos.getY(), pos.getZ());
+		TEControl.handleBlockUpdate(world, info, pos);
 	}
 
 	@Override

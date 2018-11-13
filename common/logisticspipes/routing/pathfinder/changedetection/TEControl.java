@@ -18,6 +18,7 @@ import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
 import logisticspipes.ticks.QueuedTasks;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
@@ -109,32 +110,14 @@ public class TEControl {
 		}
 	}
 
-	private static boolean block = false;
-
-	public static void notifyBlocksOfNeighborChange_Start(World world, int x, int y, int z) {
-		TEControl.block = true;
-		if (!MainProxy.isServer(world)) {
+	public static void handleBlockUpdate(final World world, final LPWorldInfo info, BlockPos blockPos) {
+		if (info.isSkipBlockUpdateForWorld()) {
 			return;
 		}
-		TEControl.handleBlockUpdate(world, LPTickHandler.getWorldInfo(world), x, y, z);
-	}
-
-	public static void notifyBlocksOfNeighborChange_Stop(World world, int x, int y, int z) {
-		TEControl.block = false;
-	}
-
-	public static void notifyBlockOfNeighborChange(World world, int x, int y, int z) {
-		if (TEControl.block) {
-			return;
-		}
-		TEControl.handleBlockUpdate(world, LPTickHandler.getWorldInfo(world), x, y, z);
-	}
-
-	public static void handleBlockUpdate(final World world, final LPWorldInfo info, int x, int y, int z) {
 		if (info.getWorldTick() < 5) {
 			return;
 		}
-		final DoubleCoordinates pos = new DoubleCoordinates(x, y, z);
+		final DoubleCoordinates pos = new DoubleCoordinates(blockPos);
 		if (info.getUpdateQueued().contains(pos)) {
 			return;
 		}

@@ -37,40 +37,4 @@ public class LogisticsASMHookClass {
 			e.printStackTrace();
 		}
 	}
-
-	@SneakyThrows(Exception.class)
-	public static void notifyBlocksOfNeighborChange_Start(World world, int x, int y, int z) {
-		try {
-			TEControl.notifyBlocksOfNeighborChange_Start(world, x, y, z);
-		} catch (Exception e) {
-			if (LPConstants.DEBUG) {
-				throw e;
-			}
-			e.printStackTrace();
-		}
-	}
-
-	@SneakyThrows(Exception.class)
-	public static void notifyBlocksOfNeighborChange_Stop(World world, int x, int y, int z) {
-		try {
-			TEControl.notifyBlocksOfNeighborChange_Stop(world, x, y, z);
-		} catch (Exception e) {
-			if (LPConstants.DEBUG) {
-				throw e;
-			}
-			e.printStackTrace();
-		}
-	}
-
-	@SneakyThrows(Exception.class)
-	public static void notifyBlockOfNeighborChange(World world, int x, int y, int z) {
-		try {
-			TEControl.notifyBlockOfNeighborChange(world, x, y, z);
-		} catch (Exception e) {
-			if (LPConstants.DEBUG) {
-				throw e;
-			}
-			e.printStackTrace();
-		}
-	}
 }

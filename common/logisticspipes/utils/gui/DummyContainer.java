@@ -227,8 +227,8 @@ public class DummyContainer extends Container {
 		if (!from.getHasStack()) {
 			return true;
 		}
-		if (!to.getHasStack() && !ignoreEmpty) {
-			ItemStack out = from.getStack();
+		ItemStack out = from.getStack();
+		if (!to.getHasStack() && !ignoreEmpty && to.isItemValid(out)) {
 			boolean remove = true;
 			if(out.getCount() > to.getSlotStackLimit()) {
 				out = from.decrStackSize(to.getSlotStackLimit());
@@ -243,7 +243,6 @@ public class DummyContainer extends Container {
 		if(from instanceof ModuleSlot || to instanceof ModuleSlot) {
 			return false;
 		}
-		ItemStack out = from.getStack();
 		out = from.onTake(player, out);
 		if (to.getHasStack() && to.getStack().isItemEqual(out) && ItemStack.areItemStackTagsEqual(to.getStack(), from.getStack())) {
 			int free = Math.min(to.getSlotStackLimit(), to.getStack().getMaxStackSize()) - to.getStack().getCount();

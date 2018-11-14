@@ -30,7 +30,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.Environment;
+import li.cil.oc.api.network.ManagedPeripheral;
+import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.SidedEnvironment;
 import static logisticspipes.pipes.basic.LogisticsBlockGenericPipe.PIPE_CONN_BB;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
@@ -41,6 +47,8 @@ import logisticspipes.api.ILPPipe;
 import logisticspipes.api.ILPPipeTile;
 import logisticspipes.asm.ModDependentField;
 import logisticspipes.asm.ModDependentInterface;
+import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.LogicController;
@@ -54,7 +62,9 @@ import logisticspipes.pipes.basic.ltgpmodcompat.LPMicroblockTileEntity;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipeCapabilityProvider;
+import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.IOCTile;
+import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
@@ -79,7 +89,7 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 		interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral",
 		"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", })
 public class LogisticsTileGenericPipe extends LPMicroblockTileEntity
-		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct, ManagedPeripheral, Environment, SidedEnvironment, */
+		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct,*/ ManagedPeripheral, Environment, SidedEnvironment,
 		ILogicControllerTile {
 
 	public int statePacketId = 0;
@@ -643,7 +653,6 @@ public class LogisticsTileGenericPipe extends LPMicroblockTileEntity
 		return pipe.isOpaque();
 	}
 
-	/*
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Node node() {
@@ -694,7 +703,6 @@ public class LogisticsTileGenericPipe extends LPMicroblockTileEntity
 			return node();
 		}
 	}
-	*/
 
 	@Override
 	public Object getOCNode() {

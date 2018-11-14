@@ -15,7 +15,7 @@ public class OpenComputersProxy implements IOpenComputersProxy {
 
 	@Override
 	public void initLogisticsTileGenericPipe(LogisticsTileGenericPipe tile) {
-		//tile.node = Network.newNode(tile, Visibility.Neighbors).withComponent("logisticspipe", Visibility.Neighbors).create(); //TODO Fix OpenComputers
+		tile.node = Network.newNode(tile, Visibility.Neighbors).withComponent("logisticspipe", Visibility.Neighbors).create();
 	}
 
 	@Override

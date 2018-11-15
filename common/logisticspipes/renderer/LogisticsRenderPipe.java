@@ -1,9 +1,9 @@
 package logisticspipes.renderer;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -50,14 +49,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	private static final int LIQUID_STAGES = 40;
 	private static final int MAX_ITEMS_TO_RENDER = 10;
 	private static final ResourceLocation SIGN = new ResourceLocation("textures/entity/sign.png");
-	private static final IntHashMap displayFluidLists = new IntHashMap();
 	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static PlayerConfig config;
 	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false);
-	private static int localItemTestRenderList = -1;
-	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
-	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
 	private ModelSign modelSign;
 	private final PerformanceMeter renderItemStackOnSignPerfMeter = new PerformanceMeter(60, false);
 
@@ -126,7 +121,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 		}
 
-		if(!inHand) {
+		if (!inHand) {
 			SimpleServiceLocator.mcmpProxy.renderTileEntitySpecialRenderer(tileentity, x, y, z, partialTicks, destroyStage, alpha);
 		}
 	}
@@ -220,7 +215,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		GL11.glPopMatrix();
 	}
 
-	public void doRenderItem(ItemStack itemstack, World world, double x, double y, double z, float light, float renderScale, double boxScale, double yaw, double pitch, double yawForPitch, float partialTickTime) {
+	public void doRenderItem(@Nonnull ItemStack itemstack, World world, double x, double y, double z, float light, float renderScale, double boxScale, double yaw, double pitch, double yawForPitch, float partialTickTime) {
 		LogisticsRenderPipe.boxRenderer.doRenderItem(itemstack, light, x, y, z, boxScale, yaw, pitch, yawForPitch);
 
 		GL11.glPushMatrix();

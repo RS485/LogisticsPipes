@@ -8,6 +8,7 @@
 
 package logisticspipes.utils.gui;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -603,9 +604,9 @@ public class DummyContainer extends Container {
 		return currentlyEquippedStack;
 	}
 
-	public void handleDummyClick(Slot slot, int slotId, ItemStack currentlyEquippedStack, int mouseButton, ClickType shiftMode, EntityPlayer entityplayer) {
+	public void handleDummyClick(Slot slot, int slotId, @Nonnull ItemStack currentlyEquippedStack, int mouseButton, ClickType shiftMode, EntityPlayer entityplayer) {
 		if (slot instanceof FluidSlot) {
-			if (currentlyEquippedStack != null) {
+			if (!currentlyEquippedStack.isEmpty()) {
 				FluidIdentifier ident = FluidIdentifier.get(currentlyEquippedStack);
 				if (ident != null) {
 					if (mouseButton == 0) {

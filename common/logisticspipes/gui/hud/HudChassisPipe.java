@@ -1,5 +1,12 @@
 package logisticspipes.gui.hud;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import net.minecraftforge.fml.client.FMLClientHandler;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -11,13 +18,6 @@ import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
-
-import org.lwjgl.opengl.GL11;
 
 public class HudChassisPipe extends BasicHUDGui {
 
@@ -165,7 +165,7 @@ public class HudChassisPipe extends BasicHUDGui {
 		}
 		for (int i = 0; i < moduleInventory.getSizeInventory(); i++) {
 			ItemStack stack = moduleInventory.getStackInSlot(i);
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				return true;
 			}
 		}

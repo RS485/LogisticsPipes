@@ -1,12 +1,12 @@
 package logisticspipes.proxy.recipeproviders;
 
-import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.item.ItemIdentifierInventory;
-
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 
 public class SolderingStation implements ICraftingRecipeProvider {
 
@@ -39,7 +39,7 @@ public class SolderingStation implements ICraftingRecipeProvider {
 			inventory.setInventorySlotContents(i, newStack);
 		}
 
-		inventory.compact_first(9);
+		inventory.compactFirst(9);
 
 		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			if (inventory.getStackInSlot(i) != null) {

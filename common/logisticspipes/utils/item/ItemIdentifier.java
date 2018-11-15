@@ -1,6 +1,6 @@
 /**
  * Copyright (c) Krapht, 2011
- *
+ * <p>
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -8,6 +8,7 @@
 
 package logisticspipes.utils.item;
 
+import javax.annotation.Nonnull;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -22,21 +23,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import logisticspipes.utils.ReflectionHelper;
-import net.minecraft.init.Blocks;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
-import logisticspipes.asm.addinfo.IAddInfo;
-import logisticspipes.asm.addinfo.IAddInfoProvider;
-import logisticspipes.items.LogisticsFluidContainer;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
-import logisticspipes.utils.FinalNBTTagCompound;
-
-import lombok.AllArgsConstructor;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -54,10 +44,21 @@ import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistry;
 
-import javax.annotation.Nonnull;
+import lombok.AllArgsConstructor;
+
+import logisticspipes.asm.addinfo.IAddInfo;
+import logisticspipes.asm.addinfo.IAddInfoProvider;
+import logisticspipes.items.LogisticsFluidContainer;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
+import logisticspipes.utils.FinalNBTTagCompound;
+import logisticspipes.utils.ReflectionHelper;
 
 /**
  * @author Krapht I have no bloody clue what different mods use to differate
@@ -254,8 +255,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	public static boolean allowNullsForTesting;
 
 	private static ItemIdentifier getOrCreateSimple(Item item, ItemIdentifier proposal) {
-		if(proposal != null) {
-			if(proposal.item == item && proposal.itemDamage == 0 && proposal.tag == null) {
+		if (proposal != null) {
+			if (proposal.item == item && proposal.itemDamage == 0 && proposal.tag == null) {
 				return proposal;
 			}
 		}
@@ -270,8 +271,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	private static ItemIdentifier getOrCreateDamage(Item item, int damage, ItemIdentifier proposal) {
-		if(proposal != null) {
-			if(proposal.item == item && proposal.itemDamage == damage && proposal.tag == null) {
+		if (proposal != null) {
+			if (proposal.item == item && proposal.itemDamage == damage && proposal.tag == null) {
 				return proposal;
 			}
 		}
@@ -361,21 +362,22 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	@SuppressWarnings("ConstantConditions")
+	@Nonnull
 	public static ItemIdentifier get(ItemStack itemStack) {
-		if ((itemStack == null || itemStack.isEmpty()) && ItemIdentifier.allowNullsForTesting) {
+		if (itemStack.isEmpty() && ItemIdentifier.allowNullsForTesting) {
 			return null;
 		}
 		ItemIdentifier proposal = null;
 		IAddInfoProvider prov = null;
-		if(((Object)itemStack) instanceof IAddInfoProvider && !itemStack.hasTagCompound()) {
+		if (((Object) itemStack) instanceof IAddInfoProvider && !itemStack.hasTagCompound()) {
 			prov = (IAddInfoProvider) (Object) itemStack;
 			ItemStackAddInfo info = prov.getLogisticsPipesAddInfo(ItemStackAddInfo.class);
-			if(info != null) {
+			if (info != null) {
 				proposal = info.ident;
 			}
 		}
 		ItemIdentifier ident = ItemIdentifier.get(itemStack.getItem(), itemStack.getItemDamage(), itemStack.getTagCompound(), proposal);
-		if(ident != proposal && prov != null && !itemStack.hasTagCompound()) {
+		if (ident != proposal && prov != null && !itemStack.hasTagCompound()) {
 			prov.setLogisticsPipesAddInfo(new ItemStackAddInfo(ident));
 		}
 		return ident;
@@ -488,16 +490,19 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return creativeTabName;
 	}
 
+	@Nonnull
 	public ItemIdentifierStack makeStack(int stackSize) {
 		return new ItemIdentifierStack(this, stackSize);
 	}
 
+	@Nonnull
 	public ItemStack unsafeMakeNormalStack(int stackSize) {
 		ItemStack stack = new ItemStack(item, stackSize, itemDamage);
 		stack.setTagCompound(tag);
 		return stack;
 	}
 
+	@Nonnull
 	public ItemStack makeNormalStack(int stackSize) {
 		ItemStack stack = new ItemStack(item, stackSize, itemDamage);
 		if (tag != null) {
@@ -506,6 +511,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return stack;
 	}
 
+	@Nonnull
 	public EntityItem makeEntityItem(int stackSize, World world, double x, double y, double z) {
 		return new EntityItem(world, x, y, z, makeNormalStack(stackSize));
 	}
@@ -545,9 +551,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	@SuppressWarnings("rawtypes")
 	public static Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws SecurityException, IllegalArgumentException {
-		if (nbt == null) {
-			return null;
-		}
+		if (nbt == null) return null;
+
 		if (nbt instanceof NBTTagByte) {
 			HashMap<Object, Object> map = new HashMap<>();
 			map.put("type", "NBTTagByte");
@@ -663,7 +668,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	public boolean equals(ItemIdentifier that) {
-		if(that == null) return false;
+		if (that == null) return false;
 		return item == that.item && itemDamage == that.itemDamage && uniqueID == that.uniqueID;
 	}
 
@@ -731,19 +736,19 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			return;
 		}
 		if (nbt instanceof NBTTagByte) {
-			sb.append("TagByte(data=" + ((NBTTagByte) nbt).getByte() + ")");
+			sb.append("TagByte(data=").append(((NBTTagByte) nbt).getByte()).append(")");
 		} else if (nbt instanceof NBTTagShort) {
-			sb.append("TagShort(data=" + ((NBTTagShort) nbt).getShort() + ")");
+			sb.append("TagShort(data=").append(((NBTTagShort) nbt).getShort()).append(")");
 		} else if (nbt instanceof NBTTagInt) {
-			sb.append("TagInt(data=" + ((NBTTagInt) nbt).getInt() + ")");
+			sb.append("TagInt(data=").append(((NBTTagInt) nbt).getInt()).append(")");
 		} else if (nbt instanceof NBTTagLong) {
-			sb.append("TagLong(data=" + ((NBTTagLong) nbt).getLong() + ")");
+			sb.append("TagLong(data=").append(((NBTTagLong) nbt).getLong()).append(")");
 		} else if (nbt instanceof NBTTagFloat) {
-			sb.append("TagFloat(data=" + ((NBTTagFloat) nbt).getFloat() + ")");
+			sb.append("TagFloat(data=").append(((NBTTagFloat) nbt).getFloat()).append(")");
 		} else if (nbt instanceof NBTTagDouble) {
-			sb.append("TagDouble(data=" + ((NBTTagDouble) nbt).getDouble() + ")");
+			sb.append("TagDouble(data=").append(((NBTTagDouble) nbt).getDouble()).append(")");
 		} else if (nbt instanceof NBTTagString) {
-			sb.append("TagString(data=\"" + ((NBTTagString) nbt).getString() + "\")");
+			sb.append("TagString(data=\"").append(((NBTTagString) nbt).getString()).append("\")");
 		} else if (nbt instanceof NBTTagByteArray) {
 			sb.append("TagByteArray(data=");
 			for (int i = 0; i < ((NBTTagByteArray) nbt).getByteArray().length; i++) {
@@ -776,7 +781,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			Object[] oe = ((NBTTagCompound) nbt).tagMap.entrySet().toArray();
 			for (int i = 0; i < oe.length; i++) {
 				Entry<String, NBTBase> e = (Entry<String, NBTBase>) (oe[i]);
-				sb.append("\"" + e.getKey() + "\"=");
+				sb.append("\"").append(e.getKey()).append("\"=");
 				debugDumpTag((e.getValue()), sb);
 				if (i < oe.length - 1) {
 					sb.append(",");
@@ -784,7 +789,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			}
 			sb.append(")");
 		} else {
-			sb.append(nbt.getClass().getName() + "(?)");
+			sb.append(nbt.getClass().getName()).append("(?)");
 		}
 	}
 

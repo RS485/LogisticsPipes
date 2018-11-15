@@ -1,16 +1,10 @@
 package logisticspipes.modplugins.nei;
 
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
-
-import logisticspipes.config.Configs;
-import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
@@ -31,18 +25,19 @@ import net.minecraft.nbt.NBTTagString;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 import org.lwjgl.input.Keyboard;
 
+import logisticspipes.config.Configs;
+import logisticspipes.utils.item.ItemIdentifier;
+
 public class DebugHelper implements IContainerTooltipHandler {
 
 	private static long lastTime = 0;
 
 	@Override
-	public void handleTooltip(GuiScreen gui, int mousex, int mousey, List<String> currenttip) {
-
-	}
+	public void handleTooltip(GuiScreen gui, int mousex, int mousey, List<String> currenttip) {}
 
 	@Override
 	public void handleItemDisplayName(GuiScreen gui, ItemStack itemstack, List<String> currenttip) {
-		if (Configs.TOOLTIP_INFO && itemstack != null) {
+		if (Configs.TOOLTIP_INFO && itemstack != null && !itemstack.isEmpty()) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if (DebugHelper.lastTime + 1000 < System.currentTimeMillis()) {
 					DebugHelper.lastTime = System.currentTimeMillis();
@@ -80,7 +75,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void addNBTToTree(NBTBase nbt, DefaultMutableTreeNode node) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	private void addNBTToTree(NBTBase nbt, DefaultMutableTreeNode node) throws SecurityException, IllegalArgumentException {
 		if (nbt == null) {
 			return;
 		}
@@ -93,7 +88,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 			int i = 0;
 			for (byte byt : ((NBTTagByteArray) nbt).getByteArray()) {
-				content.add(new DefaultMutableTreeNode("[" + i + "]: " + Byte.toString(byt)));
+				content.add(new DefaultMutableTreeNode("[" + i + "]: " + byt));
 				i++;
 			}
 			node.add(content);

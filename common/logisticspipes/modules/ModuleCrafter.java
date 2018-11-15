@@ -1488,7 +1488,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		for (int i = 10; i < _cleanupInventory.getSizeInventory(); i++) {
 			_cleanupInventory.setInventorySlotContents(i, (ItemStack) null);
 		}
-		_cleanupInventory.compact_first(10);
+		_cleanupInventory.compactFirst(10);
 		_cleanupInventory.recheckStackLimit();
 		cleanupModeIsExclude = false;
 	}

@@ -1,9 +1,26 @@
 package logisticspipes.blocks.crafting;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCraftResult;
+import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.ITextComponent;
+
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import logisticspipes.LPBlocks;
 import logisticspipes.api.IRoutedPowerProvider;
@@ -26,25 +43,6 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCraftResult;
-import net.minecraft.inventory.SlotCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.ITextComponent;
-
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IInventory, IGuiTileEntity, ISimpleInventoryEventHandler, IGuiOpenControler {
@@ -122,27 +120,29 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			targetType = null;
 		}
 		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
-		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
+		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && MainProxy.isServer(getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 	}
 
 	public void cycleRecipe(boolean down) {
 		cacheRecipe();
-		if (targetType == null) {
-			return;
-		}
+		if (targetType == null) return;
+
 		cache = null;
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(placedBy);
+
 		for (int i = 0; i < 9; i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
+
 		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
 			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
+
 		if (list.size() > 1) {
 			boolean found = false;
 			IRecipe prev = null;
@@ -169,18 +169,23 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				}
 				prev = recipe;
 			}
+
 			if (cache == null) {
 				cache = list.get(0);
 			}
+
 			craftInv = new AutoCraftingInventory(placedBy);
 			for (int i = 0; i < 9; i++) {
 				craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 			}
+
 			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
 		}
-		if (!guiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
+
+		if (!guiWatcher.isEmpty() && MainProxy.isServer(getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
+
 		cacheRecipe();
 	}
 
@@ -285,7 +290,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {
 
 			@Override
-			protected void onCrafting(ItemStack stack) {
+			protected void onCrafting(@Nonnull ItemStack stack) {
 				IInventory tmp = this.inventory;
 				vanillaResult.setRecipeUsed(cache);
 				this.inventory = vanillaResult;
@@ -407,7 +412,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
 		if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return true;
 		}
@@ -416,7 +421,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	@Nullable
 	@Override
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
 		if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return (T) invWrapper;
 		}
@@ -434,22 +439,25 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getStackInSlot(int i) {
 		return inv.getStackInSlot(i);
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack decrStackSize(int i, int j) {
 		return inv.decrStackSize(i, j);
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack removeStackFromSlot(int i) {
 		return inv.removeStackFromSlot(i);
 	}
 
 	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack) {
+	public void setInventorySlotContents(int i, @Nonnull ItemStack itemstack) {
 		inv.setInventorySlotContents(i, itemstack);
 	}
 
@@ -459,18 +467,18 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(@Nonnull EntityPlayer entityplayer) {
 		return true;
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player) {}
+	public void openInventory(@Nonnull EntityPlayer player) {}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {}
+	public void closeInventory(@Nonnull EntityPlayer player) {}
 
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, @Nonnull ItemStack itemstack) {
 		if (i < 9 && i >= 0) {
 			ItemIdentifierStack stack = matrix.getIDStackInSlot(i);
 			if (stack != null && !itemstack.isEmpty()) {

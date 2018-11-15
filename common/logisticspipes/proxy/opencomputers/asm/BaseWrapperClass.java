@@ -5,6 +5,19 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import net.minecraftforge.common.DimensionManager;
+
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.prefab.AbstractValue;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -27,19 +40,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.DimensionManager;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.prefab.AbstractValue;
 
 public abstract class BaseWrapperClass extends AbstractValue {
 
@@ -388,22 +388,22 @@ public abstract class BaseWrapperClass extends AbstractValue {
 			});
 		} else if (type.equals("CCItemIdentifierImplementation")) {
 			ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbt);
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				object = new CCItemIdentifierImplementation(ItemIdentifier.get(stack));
 				checkType();
 			}
 		} else if (type.equals("CCItemIdentifierStackImplementation")) {
 			ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbt);
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				object = new CCItemIdentifierStackImplementation(ItemIdentifierStack.getFromStack(stack));
 				checkType();
 			}
 		} else if (type.equals("CCItemIdentifierBuilder")) {
 			ItemStack stack = ItemStackLoader.loadAndFixItemStackFromNBT(nbt);
-			if (stack != null) {
+			if (!stack.isEmpty()) {
 				CCItemIdentifierBuilder builder = new CCItemIdentifierBuilder();
 				builder.setItemID(Double.valueOf(Item.getIdFromItem(stack.getItem())));
-				builder.setItemData(Double.valueOf(stack.getItemDamage()));
+				builder.setItemData((double) stack.getItemDamage());
 				object = builder;
 				checkType();
 			}

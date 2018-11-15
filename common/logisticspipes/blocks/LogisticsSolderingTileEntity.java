@@ -104,7 +104,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		ItemStack[] array = getRecipeForTaget();
 		if (array != null) {
 			for (ItemStack stack : array) {
-				if (stack != null) {
+				if (!stack.isEmpty()) {
 					list.addLast(ItemIdentifier.get(stack).makeStack(1));
 				} else {
 					list.addLast(null);
@@ -125,12 +125,12 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 			for (int i = 0; i < 9; i++) {
 				ItemStack recipestack = recipe.source[i];
 				ItemStack inputStack = inv.getStackInSlot(i);
-				if (recipestack == null) {
-					if (inputStack != null) {
+				if (recipestack.isEmpty()) {
+					if (!inputStack.isEmpty()) {
 						match = false;
 					}
 					continue;
-				} else if (inputStack == null) {
+				} else if (inputStack.isEmpty()) {
 					match = false;
 					continue;
 				} else {
@@ -159,11 +159,11 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 				ItemStack recipestack = recipe.source[i];
 				ItemStack inputStack = inv.getStackInSlot(i);
 				if (recipestack == null) {
-					if (inputStack != null) {
+					if (!inputStack.isEmpty()) {
 						match = false;
 					}
 					continue;
-				} else if (inputStack == null) {
+				} else if (inputStack.isEmpty()) {
 					match = false;
 					continue;
 				} else {

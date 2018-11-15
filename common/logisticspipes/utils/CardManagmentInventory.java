@@ -1,15 +1,16 @@
 package logisticspipes.utils;
 
-import logisticspipes.items.ItemModule;
-import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
+
+import logisticspipes.items.ItemModule;
+import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 
 public class CardManagmentInventory implements IInventory {
 
@@ -79,14 +80,14 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	@Override
-	public void setInventorySlotContents(int i, ItemStack itemstack) {
+	public void setInventorySlotContents(int i, @Nonnull ItemStack itemstack) {
 		if (i > -1 && i < 4) {
-			if (i == 0 && itemstack != null && inv.getStackInSlot(1) != null && inv.getStackInSlot(2) == null && inv.getStackInSlot(1).getItemDamage() == itemstack.getItemDamage()) {
+			if (i == 0 && !itemstack.isEmpty() && inv.getStackInSlot(1) != null && inv.getStackInSlot(2) == null && inv.getStackInSlot(1).getItemDamage() == itemstack.getItemDamage()) {
 				itemstack.setTagCompound(inv.getStackInSlot(1).getTagCompound());
 				inv.setInventorySlotContents(2, itemstack);
 				return;
 			}
-			if (i == 1 && itemstack != null && inv.getStackInSlot(0) != null && inv.getStackInSlot(2) == null && inv.getStackInSlot(0).getItemDamage() == itemstack.getItemDamage()) {
+			if (i == 1 && !itemstack.isEmpty() && inv.getStackInSlot(0) != null && inv.getStackInSlot(2) == null && inv.getStackInSlot(0).getItemDamage() == itemstack.getItemDamage()) {
 				itemstack.setTagCompound(inv.getStackInSlot(0).getTagCompound());
 				inv.setInventorySlotContents(2, itemstack);
 				return;

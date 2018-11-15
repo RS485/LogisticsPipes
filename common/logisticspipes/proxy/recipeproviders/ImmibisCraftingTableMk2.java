@@ -1,11 +1,5 @@
 package logisticspipes.proxy.recipeproviders;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.CraftingUtil;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -13,6 +7,12 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.utils.CraftingUtil;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 
 public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 
@@ -65,11 +65,11 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 				for (int i = 0; i < 9; i++) {
 					ItemStack slotStack = inventory.getStackInSlot(i);
 					inventory.clearInventorySlotContents(i);
-					if (slotStack != null && slotStack.getItem() != null) {
+					if (!slotStack.isEmpty()) {
 						int count = 1;
 						for (int j = i + 1; j < 9; j++) {
 							ItemStack tempStack = inventory.getStackInSlot(j);
-							if (tempStack != null && ItemIdentifier.get(slotStack).equals(ItemIdentifier.get(tempStack))) {
+							if (!tempStack.isEmpty() && ItemIdentifier.get(slotStack).equals(ItemIdentifier.get(tempStack))) {
 								inventory.clearInventorySlotContents(j);
 								count++;
 							}
@@ -80,7 +80,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 					}
 				}
 
-				ItemStack result = null;
+				ItemStack result = ItemStack.EMPTY;
 				for (IRecipe r : CraftingUtil.getRecipeList()) {
 					if (r.matches(tempCraftingInv, tile.getWorld())) {
 						result = r.getCraftingResult(tempCraftingInv);

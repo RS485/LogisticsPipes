@@ -1,7 +1,8 @@
 package logisticspipes.items;
 
-import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -39,15 +40,15 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack par1ItemStack) {
-		FluidIdentifierStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(par1ItemStack));
-		if (stack != null) {
-			String s = stack.makeFluidStack().getFluid().getUnlocalizedName();
+	public String getUnlocalizedName(ItemStack stack) {
+		FluidIdentifierStack fluidStack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack));
+		if (fluidStack != null) {
+			String s = fluidStack.makeFluidStack().getFluid().getUnlocalizedName();
 			if (s != null) {
 				return s;
 			}
 		}
-		return super.getUnlocalizedName(par1ItemStack);
+		return super.getUnlocalizedName(stack);
 	}
 
 	@Override
@@ -57,7 +58,6 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 		return StringUtils.translate(unlocalizedName + (unlocalizedName.equals(unlocalizedNameInefficiently) ? ".name" : "")).trim();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
@@ -72,7 +72,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	}
 
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+	public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
 		// don't add to creative tabs in any way
 	}
 }

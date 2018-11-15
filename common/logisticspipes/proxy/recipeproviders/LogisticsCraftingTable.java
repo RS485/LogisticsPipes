@@ -1,16 +1,16 @@
 package logisticspipes.proxy.recipeproviders;
 
+import java.util.BitSet;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-
-import java.util.BitSet;
 
 public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 
@@ -39,15 +39,15 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 			if (i >= inventory.getSizeInventory() - 2) {
 				break;
 			}
-			final ItemStack newStack = bench.matrix.getStackInSlot(i) == null ? null : bench.matrix.getStackInSlot(i).copy();
-			if (newStack != null && newStack.getCount() > 1) {
+			final ItemStack newStack = bench.matrix.getStackInSlot(i).copy();
+			if (!newStack.isEmpty() && newStack.getCount() > 1) {
 				newStack.setCount(1);
 			}
 			inventory.setInventorySlotContents(i, newStack);
 		}
 
 		if (!bench.isFuzzy()) {
-			inventory.compact_first(9);
+			inventory.compactFirst(9);
 		}
 
 		return true;

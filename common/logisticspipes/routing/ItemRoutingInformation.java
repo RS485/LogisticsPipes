@@ -5,18 +5,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.routing.order.IDistanceTracker;
-import logisticspipes.utils.item.ItemIdentifierStack;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.order.IDistanceTracker;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class ItemRoutingInformation {
@@ -38,7 +37,7 @@ public class ItemRoutingInformation {
 		that.bufferCounter = bufferCounter;
 		that._doNotBuffer = _doNotBuffer;
 		that._transportMode = _transportMode;
-		that.jamlist = new ArrayList(jamlist);
+		that.jamlist = new ArrayList<>(jamlist);
 		that.tracker = tracker;
 		that.targetInfo = targetInfo;
 		that.item = getItem().clone();
@@ -104,8 +103,6 @@ public class ItemRoutingInformation {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("(").append(item).append(", ").append(destinationint).append(", ").append(destinationUUID).append(", ").append(_transportMode).append(", ").append(jamlist).append(", ").append(delay).append(", ").append(tracker);
-		return builder.toString();
+		return String.format("(%s, %d, %s, %s, %s, %d, %s)", item, destinationint, destinationUUID, _transportMode, jamlist, delay, tracker);
 	}
 }

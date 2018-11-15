@@ -3,19 +3,19 @@ package logisticspipes.gui;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.item.ItemStackRenderer;
-import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
 public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 
@@ -42,10 +42,10 @@ public class GuiSolderingStation extends LogisticsBaseGuiScreen {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		ItemStackRenderer.renderItemIdentifierStackListIntoGui(tile.getRecipeForTagetAsItemIdentifierStackList(), null, 0, guiLeft + 44, guiTop + 17, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER);
 		ItemStack resultstack = tile.getTargetForTaget();
-		if (resultstack == null) {
+		if (resultstack.isEmpty()) {
 			resultstack = tile.getTagetForRecipe(false);
 		}
-		if (resultstack != null) {
+		if (!resultstack.isEmpty()) {
 			ItemIdentifierStack iis = ItemIdentifier.get(resultstack).makeStack(1);
 			List<ItemIdentifierStack> iisl = new LinkedList<>();
 			iisl.add(iis);

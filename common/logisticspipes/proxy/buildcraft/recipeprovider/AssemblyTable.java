@@ -106,7 +106,7 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 
 		}
 		// Compact
-		inventory.compact_first(9);
+		inventory.compactFirst(9);
 
 		return true;
 	}

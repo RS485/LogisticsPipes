@@ -19,11 +19,8 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 @Accessors(chain = true)
 public class LaserData {
 
-	@NonNull
 	private int posX;
-	@NonNull
 	private int posY;
-	@NonNull
 	private int posZ;
 	@NonNull
 	private EnumFacing dir;

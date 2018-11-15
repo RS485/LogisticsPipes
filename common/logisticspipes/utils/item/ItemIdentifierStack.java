@@ -8,19 +8,19 @@
 
 package logisticspipes.utils.item;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
+
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
 
 public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>, ILPCCTypeHolder {
 
@@ -64,10 +64,12 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return _item.unsafeMakeNormalStack(stackSize);
 	}
 
+	@Nonnull
 	public ItemStack makeNormalStack() {
 		return _item.makeNormalStack(stackSize);
 	}
 
+	@Nonnull
 	public EntityItem makeEntityItem(World world, double x, double y, double z) {
 		return _item.makeEntityItem(stackSize, world, x, y, z);
 	}
@@ -92,7 +94,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 
 	@Override
 	public String toString() {
-		return new StringBuilder(Integer.toString(getStackSize())).append("x ").append(_item.toString()).toString();
+		return String.format("%dx %s", getStackSize(), _item.toString());
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return new ItemIdentifierStack(_item, getStackSize());
 	}
 
-	public String getFriendlyName(	) {
+	public String getFriendlyName() {
 		return getStackSize() + " " + _item.getFriendlyName();
 	}
 

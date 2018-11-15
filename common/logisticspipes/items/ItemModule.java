@@ -1,10 +1,28 @@
 package logisticspipes.items;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import net.minecraftforge.registries.IForgeRegistry;
+
+import org.lwjgl.input.Keyboard;
 
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
@@ -51,24 +69,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import net.minecraftforge.registries.IForgeRegistry;
-import org.lwjgl.input.Keyboard;
 
 public class ItemModule extends LogisticsItem {
 
@@ -144,22 +144,22 @@ public class ItemModule extends LogisticsItem {
 		registry.register(mod);
 	}
 
-	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
-		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null);
+	private void openConfigGui(ItemStack stack, EntityPlayer player, World world) {
+		LogisticsModule module = getModuleForItem(stack, null, null, null);
 		if (module != null && module.hasGui()) {
-			if (par1ItemStack != null && par1ItemStack.getCount() > 0) {
-				ItemModuleInformationManager.readInformation(par1ItemStack, module);
-				module.registerPosition(ModulePositionType.IN_HAND, par2EntityPlayer.inventory.currentItem);
-				((LogisticsGuiModule) module).getInHandGuiProviderForModule().open(par2EntityPlayer);
+			if (stack != null && stack.getCount() > 0) {
+				ItemModuleInformationManager.readInformation(stack, module);
+				module.registerPosition(ModulePositionType.IN_HAND, player.inventory.currentItem);
+				((LogisticsGuiModule) module).getInHandGuiProviderForModule().open(player);
 			}
 		}
 	}
 
 	@Override
-	public boolean hasEffect(ItemStack par1ItemStack) {
-		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null);
+	public boolean hasEffect(@Nonnull ItemStack stack) {
+		LogisticsModule module = getModuleForItem(stack, null, null, null);
 		if (module != null) {
-			if (par1ItemStack != null && par1ItemStack.getCount() > 0) {
+			if (stack.getCount() > 0) {
 				return module.hasEffect();
 			}
 		}
@@ -167,19 +167,21 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(final World par2World, final EntityPlayer par3EntityPlayer, final EnumHand hand) {
-		if (MainProxy.isServer(par3EntityPlayer.world)) {
-			openConfigGui(par3EntityPlayer.getHeldItem(hand), par3EntityPlayer, par2World);
+	@Nonnull
+	public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, @Nonnull final EnumHand hand) {
+		if (MainProxy.isServer(player.world)) {
+			openConfigGui(player.getHeldItem(hand), player, world);
 		}
-		return super.onItemRightClick(par2World, par3EntityPlayer, hand);
+		return super.onItemRightClick(world, player, hand);
 	}
 
 	@Override
+	@Nonnull
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (MainProxy.isServer(player.world)) {
 			TileEntity tile = world.getTileEntity(pos);
 			if (tile instanceof LogisticsTileGenericPipe) {
-				if (player.getDisplayName().equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
+				if (player.getDisplayName().getUnformattedText().equals("ComputerCraft")) { // Allow turtle to place modules in pipes.
 					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 					if (LogisticsBlockGenericPipe.isValid(pipe)) {
 						pipe.blockActivated(player);
@@ -192,6 +194,7 @@ public class ItemModule extends LogisticsItem {
 		return EnumActionResult.PASS;
 	}
 
+	@Nullable
 	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IWorldProvider world, IPipeServiceProvider service) {
 		if (itemStack == null) {
 			return null;
@@ -217,11 +220,12 @@ public class ItemModule extends LogisticsItem {
 		return "module";
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		if (stack.hasTagCompound()) {
 			NBTTagCompound nbt = stack.getTagCompound();
+			assert nbt != null;
+
 			if (nbt.hasKey("informationList")) {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);

@@ -8,6 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraftforge.oredict.OreDictionary;
+
 import logisticspipes.gui.hud.modules.HUDOreDictItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -31,14 +39,6 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.oredict.OreDictionary;
 
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
@@ -106,27 +106,25 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		oreHudList = new ArrayList<>(oreList.size());
 		for (String orename : oreList) {
 			List<ItemStack> items = OreDictionary.getOres(orename);
-			ItemStack stackForHud = null;
+			ItemStack stackForHud = ItemStack.EMPTY;
 			for (ItemStack stack : items) {
-				if (stack != null) {
-					if (stackForHud == null) {
-						stackForHud = stack;
-					}
-					if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-						oreItemIdMap.put(stack.getItem(), new TreeSet<>());
-					} else {
-						Set<Integer> damageSet = oreItemIdMap.get(stack.getItem());
-						if (damageSet == null) {
-							damageSet = new TreeSet<>();
-							damageSet.add(stack.getItemDamage());
-							oreItemIdMap.put(stack.getItem(), damageSet);
-						} else if (!damageSet.isEmpty()) {
-							damageSet.add(stack.getItemDamage());
-						}
+				if (stackForHud.isEmpty()) {
+					stackForHud = stack;
+				}
+				if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+					oreItemIdMap.put(stack.getItem(), new TreeSet<>());
+				} else {
+					Set<Integer> damageSet = oreItemIdMap.get(stack.getItem());
+					if (damageSet == null) {
+						damageSet = new TreeSet<>();
+						damageSet.add(stack.getItemDamage());
+						oreItemIdMap.put(stack.getItem(), damageSet);
+					} else if (!damageSet.isEmpty()) {
+						damageSet.add(stack.getItemDamage());
 					}
 				}
 			}
-			if (stackForHud != null) {
+			if (!stackForHud.isEmpty()) {
 				ItemStack t = stackForHud.copy();
 				if (t.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					t.setItemDamage(0);

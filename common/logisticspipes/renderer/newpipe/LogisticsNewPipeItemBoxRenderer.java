@@ -1,27 +1,25 @@
 package logisticspipes.renderer.newpipe;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.lwjgl.opengl.GL11;
 
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.opengl.GL11;
 
 public class LogisticsNewPipeItemBoxRenderer {
 
@@ -32,7 +30,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<>();
 
 	@SideOnly(Side.CLIENT)
-	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch, double yawForPitch) {
+	public void doRenderItem(@Nonnull ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch, double yawForPitch) {
 		if(LogisticsNewRenderPipe.innerTransportBox == null) return;
 		GL11.glPushMatrix();
 
@@ -64,7 +62,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		GL11.glScaled(1 / boxScale, 1 / boxScale, 1 / boxScale);
 		GL11.glTranslated(-0.5, -0.5, -0.5);
 
-		if (itemstack != null && itemstack.getItem() instanceof LogisticsFluidContainer) {
+		if (itemstack.getItem() instanceof LogisticsFluidContainer) {
 			FluidIdentifierStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(itemstack));
 			if (f != null) {
 				/*

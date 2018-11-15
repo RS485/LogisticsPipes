@@ -8,14 +8,8 @@
 
 package logisticspipes.utils.item;
 
+import javax.annotation.Nonnull;
 import java.util.List;
-
-import logisticspipes.LPItems;
-import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.IItemSearch;
-import logisticspipes.utils.gui.SimpleGraphics;
-import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPane;
@@ -37,12 +31,19 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.lwjgl.opengl.GL11;
+
+import logisticspipes.LPItems;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.IItemSearch;
+import logisticspipes.utils.gui.SimpleGraphics;
+import logisticspipes.utils.string.StringUtils;
 
 @Data
 @Accessors(chain = true)
@@ -55,7 +56,7 @@ public class ItemStackRenderer {
 	private FontRenderer fontRenderer;
 	private RenderEntityItem itemEntityRenderer;
 
-	private ItemStack itemstack;
+	@Nonnull private ItemStack itemstack = ItemStack.EMPTY;
 	private ItemIdentifierStack itemIdentStack;
 	private int posX;
 	private int posY;
@@ -79,14 +80,9 @@ public class ItemStackRenderer {
 		this.ignoreDepth = ignoreDepth;
 		renderManager = Minecraft.getMinecraft().getRenderManager();
 		fontRenderer = renderManager.getFontRenderer();
-		if (fontRenderer == null) {
-			fontRenderer = Minecraft.getMinecraft().fontRenderer;
-		}
 		world = renderManager.world;
 		texManager = renderManager.renderEngine;
-		if (texManager == null) {
-			texManager = Minecraft.getMinecraft().getTextureManager();
-		}
+		if (texManager == null) texManager = Minecraft.getMinecraft().getTextureManager();
 		renderItem = Minecraft.getMinecraft().getRenderItem();
 		itemEntityRenderer = new RenderEntityItem(renderManager, renderItem);
 		scaleX = 1.0F;
@@ -135,7 +131,7 @@ public class ItemStackRenderer {
 			int x = left + xSize * column;
 			int y = top + ySize * row + 1;
 
-			if (itemstack != null) {
+			if (!itemstack.isEmpty()) {
 				itemStackRenderer.setItemstack(itemstack).setPosX(x).setPosY(y);
 				itemStackRenderer.renderInGui();
 			}
@@ -149,7 +145,6 @@ public class ItemStackRenderer {
 	}
 
 	public void renderInGui() {
-		assert itemstack != null || itemIdentStack != null;
 		assert displayAmount != null;
 		assert renderItem != null;
 		assert texManager != null;
@@ -177,7 +172,7 @@ public class ItemStackRenderer {
 
 		renderItem.zLevel += zLevel;
 
-		if(itemIdentStack != null) {
+		if (itemIdentStack != null) {
 			if (itemIdentStack.getStackSize() < 1) {
 				itemstack = itemIdentStack.getItem().unsafeMakeNormalStack(1);
 			} else {
@@ -197,7 +192,7 @@ public class ItemStackRenderer {
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.setupGuiTransform(posX, posY, bakedmodel.isGui3d());
-		bakedmodel = net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(bakedmodel, ItemCameraTransforms.TransformType.GUI, false);
+		bakedmodel = ForgeHooksClient.handleCameraTransforms(bakedmodel, ItemCameraTransforms.TransformType.GUI, false);
 		renderItem.renderItem(itemstack, bakedmodel);
 		GlStateManager.disableAlpha();
 		GlStateManager.disableRescaleNormal();
@@ -249,17 +244,14 @@ public class ItemStackRenderer {
 	}
 
 	private void setupGuiTransform(int xPosition, int yPosition, boolean isGui3d) {
-		GlStateManager.translate((float)xPosition, (float)yPosition, 100.0F + renderItem.zLevel);
+		GlStateManager.translate((float) xPosition, (float) yPosition, 100.0F + renderItem.zLevel);
 		GlStateManager.translate(8.0F, 8.0F, 0.0F);
 		GlStateManager.scale(1.0F, -1.0F, 1.0F);
 		GlStateManager.scale(16.0F, 16.0F, 16.0F);
 
-		if (isGui3d)
-		{
+		if (isGui3d) {
 			GlStateManager.enableLighting();
-		}
-		else
-		{
+		} else {
 			GlStateManager.disableLighting();
 		}
 	}
@@ -272,7 +264,7 @@ public class ItemStackRenderer {
 		assert scaleZ != 0.0F;
 
 		if (entityitem == null || !ItemStack.areItemStacksEqual(entityitem.getItem(), itemstack)) {
-			if (itemstack == null) {
+			if (itemstack.isEmpty()) {
 				throw new RuntimeException("No EntityItem and no ItemStack, I do not know what to render!");
 			} else {
 				if (world == null) {
@@ -288,10 +280,10 @@ public class ItemStackRenderer {
 		if (item instanceof ItemBlock) {
 			Block block = ((ItemBlock) item).getBlock();
 			if (block instanceof BlockPane) {
-				GL11.glScalef(0.5F, 0.5F, 0.5F);
+				GlStateManager.scale(0.5F, 0.5F, 0.5F);
 			}
 		} else if (item == LPItems.requestTable) {
-			GL11.glScalef(0.5F, 0.5F, 0.5F);
+			GlStateManager.scale(0.5F, 0.5F, 0.5F);
 		}
 
 		itemEntityRenderer.doRender(entityitem, posX, posY, zLevel, 0.0F, partialTickTime);
@@ -302,4 +294,5 @@ public class ItemStackRenderer {
 		ALWAYS,
 		NEVER,
 	}
+
 }

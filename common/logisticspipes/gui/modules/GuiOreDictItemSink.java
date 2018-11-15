@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+
+import net.minecraftforge.oredict.OreDictionary;
+
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
@@ -11,12 +17,6 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-
-import net.minecraftforge.oredict.OreDictionary;
 
 public class GuiOreDictItemSink extends ModuleBaseGui {
 
@@ -53,8 +53,8 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 159, guiTop + 5, 10, 10, ""));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 159, guiTop + 17, 10, 10, ""));
-		((GuiButton) buttonList.get(0)).enabled = true;
-		((GuiButton) buttonList.get(1)).enabled = true;
+		buttonList.get(0).enabled = true;
+		buttonList.get(1).enabled = true;
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 
-		if (tmpInv.getStackInSlot(0) != null) {
+		if (!tmpInv.getStackInSlot(0).isEmpty()) {
 			List<String> oreNames = getOreNames(tmpInv.getStackInSlot(0));
 			oreNames.stream().filter(name -> !unsunkNames.contains(name)).forEach(name -> unsunkNames.add(name));
 			tmpInv.clearInventorySlotContents(0);

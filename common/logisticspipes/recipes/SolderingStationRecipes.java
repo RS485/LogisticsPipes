@@ -30,14 +30,14 @@ public class SolderingStationRecipes {
 		/*
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[] {
 				parts.getChipTear1(),
-				null,
+				ItemStack.EMPTY,
 				parts.getChipTear1(),
 				new ItemStack(LogisticsPipes.ModuleItem,1,0),
 				new ItemStack(Items.ender_pearl,1),
 				new ItemStack(LogisticsPipes.ModuleItem,1,0),
-				null,
-				null,
-				null },
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY },
 				new ItemStack(LogisticsPipes.LogisticsItemCard,2,0), stack-> {
 					stack.stackTagCompound = new NBTTagCompound();
 					stack.stackTagCompound.setString("UUID", UUID.randomUUID().toString());
@@ -45,14 +45,14 @@ public class SolderingStationRecipes {
 
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[] {
 				new ItemStack(LogisticsPipes.LogisticsParts,1,0),
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(LogisticsPipes.LogisticsParts,1,0),
 				new ItemStack(LogisticsPipes.LogisticsParts,1,1),
 				new ItemStack(LogisticsPipes.LogisticsParts,1,2),
 				new ItemStack(LogisticsPipes.LogisticsParts,1,1),
-				null,
-				null,
-				null },
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY },
 				new ItemStack(LogisticsPipes.LogisticsHUDArmor,1,0), null));
 
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[]{
@@ -68,27 +68,27 @@ public class SolderingStationRecipes {
 				new ItemStack(LogisticsPipes.LogisticsParts,1,1), null));
 
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[]{
-				null,
-				null,
-				null,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
 				new ItemStack(Items.diamond,1,0),
 				new ItemStack(Items.diamond,1,0),
 				new ItemStack(Items.diamond,1,0),
-				null,
-				null,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
 				parts.getChipTear3() },
 				new ItemStack(LogisticsPipes.LogisticsParts,1,0), null));
 
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[]{
-				null,
+				ItemStack.EMPTY,
 				parts.getChipTear3(),
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(Items.diamond,1,0),
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(Items.diamond,1,0),
-				null,
-				null,
-				null },
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY },
 				new ItemStack(LogisticsPipes.LogisticsParts,1,2), null));
 
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[]{
@@ -96,7 +96,7 @@ public class SolderingStationRecipes {
 				new ItemStack(Blocks.hopper,1),
 				new ItemStack(Blocks.hopper,1),
 				new ItemStack(Blocks.hopper,1),
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(Blocks.hopper,1),
 				new ItemStack(Blocks.hopper,1),
 				new ItemStack(Blocks.hopper,1),
@@ -104,13 +104,13 @@ public class SolderingStationRecipes {
 				new ItemStack(LogisticsPipes.LogisticsParts,1,3), null));
 
 		SolderingStationRecipes.recipes.add(new SolderingStationRecipe(new ItemStack[]{
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(LogisticsPipes.LogisticsParts,1,3),
-				null,
-				null,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
 				parts.getChipTear3(),
-				null,
-				null,
+				ItemStack.EMPTY,
+				ItemStack.EMPTY,
 				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2,1),null },
 				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk3,1), null));
 
@@ -118,11 +118,11 @@ public class SolderingStationRecipes {
 				new ItemStack(Blocks.nether_brick,1),
 				parts.getChipTear3(),
 				new ItemStack(Blocks.nether_brick,1),
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(LogisticsPipes.LogisticsBasicPipe,1),
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(Blocks.nether_brick,1),
-				null,
+				ItemStack.EMPTY,
 				new ItemStack(Blocks.nether_brick,1) },
 				new ItemStack(LogisticsPipes.LogisticsFirewallPipe,1), null));
 

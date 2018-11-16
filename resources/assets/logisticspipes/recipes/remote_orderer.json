@@ -2,8 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "gbg",
-    "rsl",
-    "rrl"
+    "lsl",
+    "rrr"
   ],
   "key": {
     "b": {

@@ -1,14 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "gbg",
+    "aga",
     "rsl",
     "rrl"
   ],
   "key": {
     "b": {
       "type": "logisticspipes:part",
-      "part": "chip_basic"
+      "part": "chip_advanced"
     },
     "g": {
       "type": "forge:ore_dict",

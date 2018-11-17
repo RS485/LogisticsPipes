@@ -153,6 +153,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public boolean shouldRenderInPass(int pass) {
+		if (this.getMultipartContainer() == null) return super.shouldRenderInPass(pass);
 		return this.getMultipartContainer().shouldRenderInPass(pass) || super.shouldRenderInPass(pass);
 	}
 
@@ -181,7 +182,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public void validate() {
 		super.validate();
-		this.getMultipartContainer().validate();
+		if (this.getMultipartContainer() != null) this.getMultipartContainer().validate();
 	}
 
 	// IMultipartContainer implementation below

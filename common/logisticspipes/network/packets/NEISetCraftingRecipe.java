@@ -1,5 +1,7 @@
 package logisticspipes.network.packets;
 
+import java.util.Arrays;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,10 +15,9 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class NEISetCraftingRecipe extends CoordinatesPacket {
@@ -53,7 +54,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 		for (int i = 0; i < content.length; i++) {
 			final ItemStack itemstack = content[i];
 
-			if (itemstack != null) {
+			if (itemstack != null && !itemstack.isEmpty()) {
 				output.writeByte(i);
 				output.writeInt(Item.getIdFromItem(itemstack.getItem()));
 				output.writeInt(itemstack.getCount());
@@ -69,6 +70,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 		super.readData(input);
 
 		content = new ItemStack[input.readInt()];
+		Arrays.fill(content, ItemStack.EMPTY); // initialize array with empty stacks
 
 		byte index = input.readByte();
 

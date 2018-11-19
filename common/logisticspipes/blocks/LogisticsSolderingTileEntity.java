@@ -72,7 +72,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		return getRecipeForTaget(inv.getStackInSlot(11));
 	}
 
-	public ItemStack[] getRecipeForTaget(@Nonnull ItemStack target) {
+	public ItemStack[] getRecipeForTaget(ItemStack target) {
 		if (target == null || target.isEmpty()) {
 			return null;
 		}
@@ -197,7 +197,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	private boolean hasWork() {
-		return getTagetForRecipe(false) != null && inv.getStackInSlot(9) != null;
+		return !getTagetForRecipe(false).isEmpty() && !inv.getStackInSlot(9).isEmpty();
 	}
 
 	private void updateHeat() {
@@ -223,12 +223,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		if (hasWork && heat < 100) {
 			boolean usedEnergy = false;
 			if (Configs.LOGISTICS_POWER_USAGE_DISABLED) {
-				if (heat < 100) {
-					heat += 5;
-				}
-				if (heat > 100) {
-					heat = 100;
-				}
+				heat = Math.min(100, heat + 5);
 				usedEnergy = true;
 			} else {
 				for (EnumFacing dir : EnumFacing.VALUES) {
@@ -243,10 +238,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 					}
 					CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
 					if (pipe.useEnergy(50)) {
-						heat += 5;
-						if (heat > 100) {
-							heat = 100;
-						}
+						heat = Math.min(100, heat + 5);
 						updateHeat();
 						usedEnergy = true;
 						break;
@@ -254,10 +246,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 				}
 			}
 			if (!usedEnergy && getWorld().getTotalWorldTime() % 5 == 0) {
-				heat--;
-				if (heat < 0) {
-					heat = 0;
-				}
+				heat = Math.max(0, heat - 1);
 				updateHeat();
 			}
 		} else if (!hasWork && heat > 0) {
@@ -340,26 +329,30 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getStackInSlot(int var1) {
 		return inv.getStackInSlot(var1);
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack decrStackSize(int var1, int var2) {
 		return inv.decrStackSize(var1, var2);
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack removeStackFromSlot(int index) {
 		return inv.removeStackFromSlot(index);
 	}
 
 	@Override
-	public void setInventorySlotContents(int var1, ItemStack var2) {
+	public void setInventorySlotContents(int var1, @Nonnull ItemStack var2) {
 		inv.setInventorySlotContents(var1, var2);
 	}
 
 	@Override
+	@Nonnull
 	public String getName() {
 		return inv.getName();
 	}
@@ -370,17 +363,17 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer var1) {
+	public boolean isUsableByPlayer(@Nonnull EntityPlayer var1) {
 		return inv.isUsableByPlayer(var1);
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player) {
+	public void openInventory(@Nonnull EntityPlayer player) {
 		inv.openInventory(player);
 	}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {
+	public void closeInventory(@Nonnull EntityPlayer player) {
 		inv.closeInventory(player);
 	}
 
@@ -410,12 +403,13 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
+	@Nonnull
 	public ITextComponent getDisplayName() {
 		return inv.getDisplayName();
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, @Nonnull ItemStack itemstack) {
 		return true;
 	}
 
@@ -446,8 +440,9 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public int[] getSlotsForFace(EnumFacing face) {
-		return new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	@Nonnull
+	public int[] getSlotsForFace(@Nonnull EnumFacing face) {
+		return new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 	}
 
 	@Override
@@ -456,12 +451,12 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 	}
 
 	@Override
-	public boolean canInsertItem(int index, ItemStack itemStack, EnumFacing direction) {
+	public boolean canInsertItem(int index, @Nonnull ItemStack itemStack, @Nonnull EnumFacing direction) {
 		return index < 10;
 	}
 
 	@Override
-	public boolean canExtractItem(int index, ItemStack itemStack, EnumFacing direction) {
+	public boolean canExtractItem(int index, @Nonnull ItemStack itemStack, @Nonnull EnumFacing direction) {
 		return index == 10;
 	}
 }

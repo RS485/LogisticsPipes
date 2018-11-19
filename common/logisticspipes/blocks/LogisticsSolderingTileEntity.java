@@ -1,5 +1,6 @@
 package logisticspipes.blocks;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 
 	public boolean areStacksEmpty() {
 		for (int i = 0; i < 9; i++) {
-			if (inv.getStackInSlot(i) != null) {
+			if (!inv.getStackInSlot(i).isEmpty()) {
 				return false;
 			}
 		}
@@ -71,8 +72,8 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		return getRecipeForTaget(inv.getStackInSlot(11));
 	}
 
-	public ItemStack[] getRecipeForTaget(ItemStack target) {
-		if (target == null) {
+	public ItemStack[] getRecipeForTaget(@Nonnull ItemStack target) {
+		if (target == null || target.isEmpty()) {
 			return null;
 		}
 		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
@@ -83,20 +84,22 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		return null;
 	}
 
+	@Nonnull
 	public ItemStack getTargetForTaget() {
 		return getTargetForTaget(inv.getStackInSlot(11));
 	}
 
-	public ItemStack getTargetForTaget(ItemStack target) {
-		if (target == null) {
-			return null;
+	@Nonnull
+	public ItemStack getTargetForTaget(@Nonnull ItemStack target) {
+		if (target.isEmpty()) {
+			return ItemStack.EMPTY;
 		}
 		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
 			if (target.getItem() == recipe.result.getItem() && target.getItemDamage() == recipe.result.getItemDamage()) {
 				return recipe.result;
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	public List<ItemIdentifierStack> getRecipeForTagetAsItemIdentifierStackList() {
@@ -118,6 +121,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 		return var1.getItem() == var2.getItem() && var1.getItemDamage() == var2.getItemDamage();
 	}
 
+	@Nonnull
 	public ItemStack getTagetForRecipe(boolean remove) {
 		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
 			boolean match = true;
@@ -137,7 +141,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 					if (!itemEquals(recipestack, inputStack)) {
 						match = false;
 					} else {
-						if (remove && ((getTagetForRecipe(false) != null && itemEquals(getTagetForRecipe(false), recipe.result)) || removeThis)) {
+						if (remove && ((!getTagetForRecipe(false).isEmpty() && itemEquals(getTagetForRecipe(false), recipe.result)) || removeThis)) {
 							inputStack.shrink(1);
 							inv.setInventorySlotContents(i, inputStack);
 							removeThis = true;
@@ -149,7 +153,7 @@ public class LogisticsSolderingTileEntity extends LogisticsSolidTileEntity imple
 				return recipe.result.copy();
 			}
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	public ICraftingResultHandler getHandlerForRecipe() {

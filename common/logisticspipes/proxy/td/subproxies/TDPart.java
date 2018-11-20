@@ -1,95 +1,90 @@
-/*
 package logisticspipes.proxy.td.subproxies;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import cofh.thermaldynamics.duct.TDDucts;
+import cofh.thermaldynamics.duct.tiles.DuctToken;
+import cofh.thermaldynamics.duct.tiles.TileDuctItem;
+
+import logisticspipes.proxy.td.LPDuctUnitItem;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.td.LPItemDuct;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import net.minecraft.util.EnumFacing;
-
-import cofh.thermaldynamics.core.TickHandler;
-
 public class TDPart implements ITDPart {
+	public static boolean callSuperSideBlock = false;
 
 	private final LogisticsTileGenericPipe pipe;
-	private final LPItemDuct[] thermalDynamicsDucts;
+	private final TileDuctItem thermalDynamicsDucts;
+    private final LPDuctUnitItem lpDuctUnit;
 
-	public TDPart(LogisticsTileGenericPipe pipe) {
+    public TDPart(LogisticsTileGenericPipe pipe) {
 		this.pipe = pipe;
-		thermalDynamicsDucts = new LPItemDuct[6];
-	}
+		thermalDynamicsDucts = new TileDuctItem.Basic.Transparent() {
 
-	@Override
-	public TileEntity getInternalDuctForSide(EnumFacing opposite) {
-		if (opposite.ordinal() < 6) {
-			LPItemDuct duct = thermalDynamicsDucts[opposite.ordinal()];
-			if (duct == null) {
-				duct = thermalDynamicsDucts[opposite.ordinal()] = new LPItemDuct(pipe, opposite);
-				if (MainProxy.isServer(pipe.getWorld())) {
-					TickHandler.addMultiBlockToCalculate(duct);
+			@Override
+			public boolean isSideBlocked(int side) {
+				if(callSuperSideBlock) {
+					return super.isSideBlocked(side);
 				}
-				duct.setworld(pipe.getWorld());
-				duct.setPos(pipe.getPos());
-				duct.validate();
-				DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipe), opposite);
-				duct.onNeighborTileChange(pos.getXInt(), pos.getYInt(), pos.getZInt());
+				return lpDuctUnit.isLPBlockedSide(side, false);
 			}
-			return duct;
-		}
-		return null;
+		};
+        lpDuctUnit = new LPDuctUnitItem(thermalDynamicsDucts, TDDucts.itemBasic, pipe);
+		thermalDynamicsDucts.addDuctUnits(DuctToken.ITEMS, lpDuctUnit);
 	}
 
 	@Override
-	public void setworld_LP(World world) {
-		for (int i = 0; i < 6; i++) {
-			if (thermalDynamicsDucts[i] != null) {
-				thermalDynamicsDucts[i].setworld(world);
-				thermalDynamicsDucts[i].setPos(pipe.getPos());
-			}
+	public TileEntity getInternalDuct() {
+		return thermalDynamicsDucts;
+	}
+
+	@Override
+	public void setWorld_LP(World world) {
+		if (thermalDynamicsDucts != null) {
+			thermalDynamicsDucts.setWorld(world);
+			thermalDynamicsDucts.setPos(pipe.getPos());
+			thermalDynamicsDucts.validate();
+//			thermalDynamicsDucts.onNeighborBlockChange();
 		}
 	}
 
 	@Override
 	public void invalidate() {
-		for (int i = 0; i < 6; i++) {
-			if (thermalDynamicsDucts[i] != null) {
-				thermalDynamicsDucts[i].invalidate();
-			}
+		if (thermalDynamicsDucts != null) {
+			thermalDynamicsDucts.invalidate();
 		}
 	}
 
 	@Override
 	public void onChunkUnload() {
-		for (int i = 0; i < 6; i++) {
-			if (thermalDynamicsDucts[i] != null) {
-				thermalDynamicsDucts[i].onChunkUnload();
-			}
+		if (thermalDynamicsDucts != null) {
+			thermalDynamicsDucts.onChunkUnload();
 		}
 	}
 
 	@Override
 	public void scheduleNeighborChange() {
-		for (int i = 0; i < 6; i++) {
-			if (thermalDynamicsDucts[i] != null) {
-				thermalDynamicsDucts[i].onNeighborBlockChange();
-			}
+		if (thermalDynamicsDucts != null) {
+			thermalDynamicsDucts.onNeighborBlockChange();
 		}
 	}
 
 	@Override
 	public void connectionsChanged() {
-		for (int i = 0; i < 6; i++) {
-			if (thermalDynamicsDucts[i] != null && thermalDynamicsDucts[i].myGrid != null) {
-				thermalDynamicsDucts[i].myGrid.destroyAndRecreate();
-			}
+		if (thermalDynamicsDucts != null) {
+			thermalDynamicsDucts.onNeighborBlockChange();
 		}
 	}
 
+	@Override
+	public boolean isLPSideBlocked(int i) {
+		return lpDuctUnit.isLPBlockedSide(i, false);
+	}
+
+	@Override
+	public void setPos(BlockPos pos) {
+		thermalDynamicsDucts.setPos(pos);
+	}
 }
-*/

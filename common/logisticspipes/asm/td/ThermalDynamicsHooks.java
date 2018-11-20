@@ -1,36 +1,19 @@
-/*
 package logisticspipes.asm.td;
-
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.renderer.LogisticsRenderPipe;
-import logisticspipes.routing.ItemRoutingInformation;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 
-import net.minecraft.util.EnumFacing;
-
-import cofh.thermaldynamics.block.TileTDBase;
-import cofh.thermaldynamics.duct.item.TileItemDuct;
 import cofh.thermaldynamics.duct.item.TravelingItem;
+
+import logisticspipes.renderer.LogisticsRenderPipe;
+import logisticspipes.routing.ItemRoutingInformation;
 
 public class ThermalDynamicsHooks {
 
-	public static TileEntity checkGetTileEntity(TileEntity tile, int side, TileTDBase source) {
-		if (source instanceof TileItemDuct) {
-			if (tile instanceof LogisticsTileGenericPipe) {
-				LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;
-				return pipe.tdPart.getInternalDuctForSide(EnumFacing.getFront(side).getOpposite());
-			}
-		}
-		return tile;
-	}
-
 	public static void travelingItemToNBT(TravelingItem travelingItem, NBTTagCompound paramNBTTagCompound) {
-		if (travelingItem.lpRoutingInformation != null) {
+		if (((ILPTravelingItemInfo)travelingItem).getLPRoutingInfoAddition() != null) {
 			NBTTagCompound save = new NBTTagCompound();
-			((ItemRoutingInformation) travelingItem.lpRoutingInformation).writeToNBT(save);
+			((ItemRoutingInformation) ((ILPTravelingItemInfo)travelingItem).getLPRoutingInfoAddition()).writeToNBT(save);
 			paramNBTTagCompound.setTag("LPRoutingInformation", save);
 		}
 	}
@@ -39,27 +22,24 @@ public class ThermalDynamicsHooks {
 		if (!paramNBTTagCompound.hasKey("LPRoutingInformation")) {
 			return;
 		}
-		travelingItem.lpRoutingInformation = new ItemRoutingInformation();
-		((ItemRoutingInformation) travelingItem.lpRoutingInformation).readFromNBT(paramNBTTagCompound.getCompoundTag("LPRoutingInformation"));
+		((ILPTravelingItemInfo)travelingItem).setLPRoutingInfoAddition(new ItemRoutingInformation());
+		((ItemRoutingInformation) ((ILPTravelingItemInfo)travelingItem).getLPRoutingInfoAddition()).readFromNBT(paramNBTTagCompound.getCompoundTag("LPRoutingInformation"));
 	}
 
 	public static void renderItemTransportBox(TravelingItem item) {
-		/*if (!LogisticsRenderPipe.config.isUseNewRenderer()) {
-			return;
-		}* /
 		if (item.stack.hasTagCompound()) {
 			if (item.stack.getTagCompound().getString("LogsitcsPipes_ITEM_ON_TRANSPORTATION").equals("YES")) {
-				double scale = 0.65 / 0.6;
+				double scale = 0.59 / 0.6;
 				LogisticsRenderPipe.boxRenderer.doRenderItem(null, 10, 0, 0, 0, scale, 0, 0, 0);
 			}
 		}
 	}
 
 	public static ItemStack handleItemSendPacket(ItemStack stack, TravelingItem item) {
-		if (item.stack == null) {
+		if (item.stack == null || item.stack.isEmpty()) {
 			return null;
 		}
-		if (item.lpRoutingInformation != null) {
+		if (((ILPTravelingItemInfo)item).getLPRoutingInfoAddition() != null) {
 			stack = stack.copy();
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());
@@ -69,4 +49,3 @@ public class ThermalDynamicsHooks {
 		return stack;
 	}
 }
-*/

@@ -1,5 +1,7 @@
 package logisticspipes.asm.td;
 
+import net.minecraft.client.renderer.GlStateManager;
+
 import logisticspipes.asm.util.ASMHelper;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -19,8 +21,8 @@ public class ClassRenderDuctItemsHandler {
 		reader.accept(node, 0);
 
 		boolean noChecksumMatch = false;
-		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "renderTravelingItems", "(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V");
-		if (!"200CEA4577399EED0689ED20BE6B4D065E1B2E29".equals(sumHandleEvent) && !"2AA29BD8490065CAEB36AE72C3BFD99054DED33E".equals(sumHandleEvent)) {
+		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "renderTravelingItems", "(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/DuctUnitItem;Lnet/minecraft/world/World;DDDF)V");
+		if (!"2A56C07E15F612A425E4B4D8C16DEB7545947688".equals(sumHandleEvent) && !"TODO".equals(sumHandleEvent)) {
 			noChecksumMatch = true;
 		}
 		if (noChecksumMatch) {
@@ -29,7 +31,7 @@ public class ClassRenderDuctItemsHandler {
 			FMLCommonHandler.instance().exitJava(1, true);
 		}
 
-		node.methods.stream().filter(m -> m.name.equals("renderTravelingItems") && m.desc.equals("(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/TileItemDuct;Lnet/minecraft/world/World;DDDF)V"))
+		node.methods.stream().filter(m -> m.name.equals("renderTravelingItems") && m.desc.equals("(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/DuctUnitItem;Lnet/minecraft/world/World;DDDF)V"))
 				.forEach(m -> {
 					MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions
 							.toArray(new String[0])) {
@@ -37,17 +39,11 @@ public class ClassRenderDuctItemsHandler {
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
 							super.visitMethodInsn(opcode, owner, name, desc, itf);
-							if (owner.equals("org/lwjgl/opengl/GL11") && name.equals("glScalef") && desc
+							if (owner.equals("net/minecraft/client/renderer/GlStateManager") && (name.equals("scale") || name.equals("scale")) && desc //TODO
 									.equals("(FFF)V")) {
 								Label l = new Label();
 								visitLabel(l);
-								if ("200CEA4577399EED0689ED20BE6B4D065E1B2E29".equals(sumHandleEvent)) {
-									visitVarInsn(Opcodes.ALOAD, 12);
-								} else if ("2AA29BD8490065CAEB36AE72C3BFD99054DED33E".equals(sumHandleEvent)) {
-									visitVarInsn(Opcodes.ALOAD, 11);
-								} else {
-									throw new UnsupportedOperationException();
-								}
+								visitVarInsn(Opcodes.ALOAD, 11);
 								this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/td/ThermalDynamicsHooks", "renderItemTransportBox", "(Lcofh/thermaldynamics/duct/item/TravelingItem;)V", false);
 							}
 						}

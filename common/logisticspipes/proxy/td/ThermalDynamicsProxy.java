@@ -1,36 +1,43 @@
-/*
 package logisticspipes.proxy.td;
+
+import java.util.List;
+
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.pipeline.IVertexOperation;
+import codechicken.lib.texture.TextureUtils;
+import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.uv.IconTransformation;
+
+import cofh.thermaldynamics.duct.tiles.TileDuctItem;
+import cofh.thermaldynamics.render.RenderDuct;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ITDProxy;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
+import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.td.subproxies.TDPart;
+import logisticspipes.renderer.newpipe.RenderEntry;
 
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cofh.repack.codechicken.lib.render.CCRenderState;
-import cofh.repack.codechicken.lib.render.uv.IconTransformation;
-import cofh.repack.codechicken.lib.vec.Translation;
-import cofh.thermaldynamics.duct.item.TileItemDuct;
-import cofh.thermaldynamics.render.RenderDuct;
-
 public class ThermalDynamicsProxy implements ITDProxy {
 
-	private IconTransformation connectionTextureBasic;
-	private IconTransformation connectionTextureActive;
-	private IconTransformation connectionTextureInactive;
+	private TextureTransformation connectionTextureBasic;
+	private TextureTransformation connectionTextureActive;
+	private TextureTransformation connectionTextureInactive;
 
 	@Override
 	public void registerPipeInformationProvider() {
-		SimpleServiceLocator.pipeInformationManager.registerProvider(TileItemDuct.class, TDDuctInformationProvider.class);
+		SimpleServiceLocator.pipeInformationManager.registerProvider(TileDuctItem.class, TDDuctInformationProvider.class);
 	}
 
 	@Override
@@ -45,15 +52,15 @@ public class ThermalDynamicsProxy implements ITDProxy {
 
 	@Override
 	public boolean isItemDuct(TileEntity tile) {
-		return tile instanceof TileItemDuct;
+		return tile instanceof TileDuctItem;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, RenderBlocks renderer) {
+	public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, List<RenderEntry> renderList) {
 		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (pipeTile.renderState.pipeConnectionMatrix.isTDConnected(dir)) {
-				IconTransformation texture = connectionTextureBasic;
+				TextureTransformation texture = connectionTextureBasic;
 				if (pipeTile.renderState.textureMatrix.isRouted()) {
 					if (pipeTile.renderState.textureMatrix.isRoutedInDir(dir)) {
 						texture = connectionTextureActive;
@@ -62,31 +69,30 @@ public class ThermalDynamicsProxy implements ITDProxy {
 					}
 				}
 				double move = 0.25;
-				Translation localTranslation = new Translation(pipeTile.xCoord + 0.5D + dir.offsetX * move, pipeTile.yCoord + 0.5D + dir.offsetY * move, pipeTile.zCoord + 0.5D + dir.offsetZ * move);
-				RenderDuct.modelConnection[2][dir.ordinal()].render(new CCRenderState.IVertexOperation[] { localTranslation, texture });
+				LPTranslation localTranslation = new LPTranslation(0.5D + dir.getDirectionVec().getX() * move, 0.5D + dir.getDirectionVec().getY() * move, 0.5D + dir.getDirectionVec().getZ() * move);
+				renderList.add(new RenderEntry(SimpleServiceLocator.cclProxy.wrapModel(RenderDuct.modelConnection[2][dir.ordinal()]), localTranslation, texture));
 			}
 		}
 	}
 
 	@Override
-	public void registerTextures(IIconRegister iconRegister) {
+	public void registerTextures(TextureMap iconRegister) {
 		if (connectionTextureBasic == null) {
-			connectionTextureBasic = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/ThermalDynamicsConnection-Basic"));
-			connectionTextureActive = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/ThermalDynamicsConnection-Active"));
-			connectionTextureInactive = new IconTransformation(iconRegister.registerIcon("logisticspipes:" + "pipes/ThermalDynamicsConnection-Inactive"));
+			connectionTextureBasic = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/thermaldynamicsconnection-basic")));
+			connectionTextureActive = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/thermaldynamicsconnection-active")));
+			connectionTextureInactive = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/thermaldynamicsconnection-inactive")));
 		} else {
-			connectionTextureBasic.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/ThermalDynamicsConnection-Basic");
-			connectionTextureActive.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/ThermalDynamicsConnection-Active");
-			connectionTextureInactive.icon = iconRegister.registerIcon("logisticspipes:" + "pipes/ThermalDynamicsConnection-Inactive");
+			connectionTextureBasic.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/thermaldynamicsconnection-basic")));
+			connectionTextureActive.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/thermaldynamicsconnection-active")));
+			connectionTextureInactive.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/thermaldynamicsconnection-inactive")));
 		}
 	}
 
 	@Override
 	public boolean isBlockedSide(TileEntity with, EnumFacing opposite) {
-		if (!(with instanceof TileItemDuct)) {
+		if (!(with instanceof TileDuctItem)) {
 			return false;
 		}
-		return ((TileItemDuct) with).isBlockedSide(opposite.ordinal());
+		return ((TileDuctItem) with).isSideBlocked(opposite.ordinal());
 	}
 }
-*/

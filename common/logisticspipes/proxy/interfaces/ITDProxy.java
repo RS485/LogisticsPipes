@@ -1,7 +1,10 @@
 package logisticspipes.proxy.interfaces;
 
+import java.util.List;
+
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.td.subproxies.ITDPart;
+import logisticspipes.renderer.newpipe.RenderEntry;
 
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.tileentity.TileEntity;
@@ -22,7 +25,7 @@ public interface ITDProxy {
 	boolean isItemDuct(TileEntity tile);
 
 	@SideOnly(Side.CLIENT)
-	void renderPipeConnections(LogisticsTileGenericPipe pipeTile);
+	void renderPipeConnections(LogisticsTileGenericPipe pipeTile, List<RenderEntry> renderList);
 
 	@SideOnly(Side.CLIENT)
 	void registerTextures(TextureMap iconRegister);

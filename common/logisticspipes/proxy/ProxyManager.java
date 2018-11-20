@@ -84,9 +84,11 @@ import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.OpenComputersProxy;
+import logisticspipes.proxy.td.ThermalDynamicsProxy;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.recipes.CraftingParts;
+import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.proxy.mcmp.IMCMPProxy;
 import network.rs485.logisticspipes.proxy.mcmp.MCMPProxy;
@@ -258,21 +260,23 @@ public class ProxyManager {
 			@Override public boolean isWrench(Item item) {return false;}
 		}));*/
 
-		SimpleServiceLocator.setThermalDynamicsProxy(ProxyManager.getWrappedProxy(LPConstants.thermalDynamicsModID, ITDProxy.class, null /*ThermalDynamicsProxy.class */, new ITDProxy() {
+		SimpleServiceLocator.setThermalDynamicsProxy(ProxyManager.getWrappedProxy(LPConstants.thermalDynamicsModID, ITDProxy.class, ThermalDynamicsProxy.class, new ITDProxy() {
 			@Override public ITDPart getTDPart(final LogisticsTileGenericPipe pipe) {
 				return new ITDPart() {
-					@Override public TileEntity getInternalDuctForSide(EnumFacing opposite) {return pipe;}
+					@Override public TileEntity getInternalDuct() {return pipe;}
 					@Override public void setWorld_LP(World world) {}
 					@Override public void invalidate() {}
 					@Override public void onChunkUnload() {}
 					@Override public void scheduleNeighborChange() {}
 					@Override public void connectionsChanged() {}
+					@Override public boolean isLPSideBlocked(int i) {return false;}
+					@Override public void setPos(BlockPos pos) {}
 				};
 			}
 			@Override public boolean isActive() {return false;}
 			@Override public void registerPipeInformationProvider() {}
 			@Override public boolean isItemDuct(TileEntity tile) {return false;}
-			@Override @SideOnly(Side.CLIENT) public void renderPipeConnections(LogisticsTileGenericPipe pipeTile) {}
+			@Override @SideOnly(Side.CLIENT) public void renderPipeConnections(LogisticsTileGenericPipe pipeTile, List<RenderEntry> list) {}
 			@Override public void registerTextures(TextureMap iconRegister) {}
 			@Override public boolean isBlockedSide(TileEntity with, EnumFacing opposite) {return false;}
 		}, ITDPart.class));

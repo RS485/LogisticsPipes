@@ -1,10 +1,16 @@
-/*
 package logisticspipes.proxy.td;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
+import cofh.core.util.helpers.BlockHelper;
+import cofh.thermaldynamics.duct.item.DuctUnitItem;
+import cofh.thermaldynamics.duct.item.GridItem;
+import cofh.thermaldynamics.duct.item.TravelingItem;
+import cofh.thermaldynamics.duct.tiles.DuctToken;
+import cofh.thermaldynamics.duct.tiles.IDuctHolder;
+import cofh.thermaldynamics.duct.tiles.TileDuctItem;
+import cofh.thermaldynamics.multiblock.Route;
+import cofh.thermaldynamics.multiblock.RouteCache;
 
+import logisticspipes.asm.td.ILPTravelingItemInfo;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -17,29 +23,27 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import net.minecraft.util.EnumFacing;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.IntegerCoordinates;
 
-import cofh.lib.util.helpers.BlockHelper;
-import cofh.thermaldynamics.block.TileTDBase;
-import cofh.thermaldynamics.duct.item.TileItemDuct;
-import cofh.thermaldynamics.duct.item.TravelingItem;
-import cofh.thermaldynamics.multiblock.Route;
-import cofh.thermaldynamics.multiblock.RouteCache;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class TDDuctInformationProvider implements IPipeInformationProvider, IRouteProvider {
 
-	private final TileItemDuct duct;
+	private final TileDuctItem duct;
 
-	public TDDuctInformationProvider(TileItemDuct duct) {
+	public TDDuctInformationProvider(TileDuctItem duct) {
 		this.duct = duct;
 	}
 
@@ -120,28 +124,34 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 
 	@Override
 	public boolean isOutputOpen(EnumFacing direction) {
-		return duct.isSideConnected((byte) direction.ordinal());
+		return duct.getDuct(DuctToken.ITEMS).isSideConnected((byte) direction.ordinal());
 	}
 
 	@Override
 	public boolean canConnect(TileEntity to, EnumFacing direction, boolean ignoreSystemDisconnect) {
-		TileEntity connection = duct.getAdjTileEntitySafe(direction.ordinal());
-		if (!(connection instanceof TileTDBase)) {
+		TileEntity connection = CoordinateUtils.add(new DoubleCoordinates(duct.getPos()), direction).getTileEntity(duct.getWorld());
+		if (duct.isSideBlocked((byte) direction.ordinal())) {
 			return false;
 		}
-		if (duct.isBlockedSide(direction.ordinal())) {
+		if (!(connection instanceof IDuctHolder)) {
 			return false;
 		}
-		if (connection instanceof LPItemDuct) {
-			return !((LPItemDuct) connection).isLPBlockedSide(direction.getOpposite().ordinal(), ignoreSystemDisconnect);
+		DuctUnitItem connectedDuct = ((IDuctHolder) connection).getDuct(DuctToken.ITEMS);
+		if (connectedDuct instanceof LPDuctUnitItem) {
+			return !((LPDuctUnitItem) connectedDuct).isLPBlockedSide(direction.getOpposite().ordinal(), ignoreSystemDisconnect);
 		} else {
-			return !((TileTDBase) connection).isBlockedSide(direction.getOpposite().ordinal());
+			return !connectedDuct.parent.isSideBlocked(direction.getOpposite().ordinal());
 		}
 	}
 
 	@Override
 	public double getDistance() {
-		return Math.max(duct.getDuctType().pathWeight, 0);
+		return Math.max(duct.getDuct(DuctToken.ITEMS).getDuctLength(), 0);
+	}
+
+	@Override
+	public double getDistanceWeight() {
+		return Math.max(duct.getDuct(DuctToken.ITEMS).getWeight(), 0);
 	}
 
 	@Override
@@ -160,7 +170,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double traveled, double max, List<DoubleCoordinates> visited) {
+	public double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double traveled, double max,
+			List<DoubleCoordinates> visited) {
 		if (traveled >= max) {
 			return Integer.MAX_VALUE;
 		}
@@ -168,11 +179,12 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 		if (destination == null) {
 			return Integer.MAX_VALUE;
 		}
-		Iterable<Route> paramIterable = duct.getCache(true).outputRoutes;
+		LinkedList<Route<DuctUnitItem, GridItem>> paramIterable = duct.getDuct(DuctToken.ITEMS)
+				.getCache(true).outputRoutes;
 		double closesedConnection = Integer.MAX_VALUE;
-		for (Route localRoute1 : paramIterable) {
-			if (localRoute1.endPoint instanceof LPItemDuct) {
-				LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
+		for (Route<DuctUnitItem, GridItem> localRoute1 : paramIterable) {
+			if (localRoute1.endPoint instanceof LPDuctUnitItem) {
+				LPDuctUnitItem lpDuct = (LPDuctUnitItem) localRoute1.endPoint;
 
 				if (traveled + localRoute1.pathWeight > max) {
 					continue;
@@ -184,7 +196,9 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				}
 				visited.add(pos);
 
-				double distance = lpDuct.pipe.getDistanceTo(destinationint, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
+				double distance = lpDuct.pipe
+						.getDistanceTo(destinationint, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(),
+								ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
 
 				visited.remove(pos);
 
@@ -208,7 +222,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			if (destination == null) {
 				return false;
 			}
-			RouteCache routes = duct.getCache(true);
+			RouteCache routes = duct.getDuct(DuctToken.ITEMS).getCache(true);
 			Iterable<Route> paramIterable = routes.outputRoutes;
 			Route route = null;
 			Object cache = null;
@@ -228,8 +242,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				List<DoubleCoordinates> visited = new ArrayList<>();
 				visited.add(new DoubleCoordinates(from));
 				for (Route localRoute1 : paramIterable) {
-					if (localRoute1.endPoint instanceof LPItemDuct) {
-						LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
+					if (localRoute1.endPoint instanceof LPDuctUnitItem) {
+						LPDuctUnitItem lpDuct = (LPDuctUnitItem) localRoute1.endPoint;
 
 						double max = Integer.MAX_VALUE;
 						if (closesedConnection != null) {
@@ -242,12 +256,16 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 						}
 						visited.add(pos);
 
-						double distance = lpDuct.pipe.getDistanceTo(id, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(), item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active, localRoute1.pathWeight, max,
-								visited);
+						double distance = lpDuct.pipe
+								.getDistanceTo(id, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(),
+										item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active,
+										localRoute1.pathWeight, max,
+										visited);
 
 						visited.remove(pos);
 
-						if (distance != Integer.MAX_VALUE && (closesedConnection == null || distance + localRoute1.pathDirections.size() < closesedConnection.getValue1())) {
+						if (distance != Integer.MAX_VALUE && (closesedConnection == null || distance + localRoute1.pathDirections.size() < closesedConnection
+								.getValue1())) {
 							closesedConnection = new Pair<>(distance + localRoute1.pathWeight, localRoute1);
 						}
 					}
@@ -260,9 +278,9 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getObject() != null) {
 					((ILPTEInformation) duct).getObject().getCacheHolder().setCache(CacheTypes.Routing, key, route);
 				}
-				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct, route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 / * Speed * / );
-				travelItem.lpRoutingInformation = serverItem.getInfo();
-				duct.insertNewItem(travelItem);
+				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct.getDuct(DuctToken.ITEMS), route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 /* Speed */ );
+				((ILPTravelingItemInfo)travelItem).setLPRoutingInfoAddition(serverItem.getInfo());
+				duct.getDuct(DuctToken.ITEMS).insertNewItem(travelItem);
 				return true;
 			}
 		} else {
@@ -273,8 +291,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 
 	@Override
 	public void refreshTileCacheOnSide(EnumFacing side) {
-		if(duct.myGrid == null) return;
-		duct.myGrid.destroyAndRecreate();
+		if (duct.getDuct(DuctToken.ITEMS).getGrid() == null) return;
+		duct.getDuct(DuctToken.ITEMS).getGrid().destroyAndRecreate();
 	}
 
 	@Override
@@ -290,17 +308,17 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	@Override
 	public List<RouteInfo> getConnectedPipes(EnumFacing from) {
 		List<RouteInfo> list = new ArrayList<>();
-		if (duct.internalGrid == null) {
+		if (duct.getDuct(DuctToken.ITEMS).getGrid() == null) {
 			return null;
 		}
-		Iterable<Route> paramIterable = duct.getCache(true).outputRoutes;
-		for (Route localRoute1 : paramIterable) {
-			if (localRoute1.endPoint instanceof LPItemDuct) {
-				LPItemDuct lpDuct = (LPItemDuct) localRoute1.endPoint;
-				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
+		LinkedList<Route<DuctUnitItem, GridItem>> paramIterable = duct.getDuct(DuctToken.ITEMS).getCache(true).outputRoutes;
+		for (Route<DuctUnitItem, GridItem> localRoute1 : paramIterable) {
+			if (localRoute1.endPoint instanceof LPDuctUnitItem) {
+				LPDuctUnitItem lpDuct = (LPDuctUnitItem) localRoute1.endPoint;
+				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight,
+						EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
 			}
 		}
 		return list;
 	}
 }
-*/

@@ -58,6 +58,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.block.PipeSolidSideCheck;
 import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.pipes.basic.ltgpmodcompat.LPDuctHolderTileEntity;
 import logisticspipes.pipes.basic.ltgpmodcompat.LPMicroblockTileEntity;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -88,14 +89,13 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 @ModDependentInterface(modId = { LPConstants.cofhCoreModID, LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID},
 		interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral",
 		"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", })
-public class LogisticsTileGenericPipe extends LPMicroblockTileEntity
+public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct,*/ ManagedPeripheral, Environment, SidedEnvironment,
 		ILogicControllerTile {
 
 	public int statePacketId = 0;
 	public final PipeRenderState renderState;
 	public final CoreState coreState = new CoreState();
-	public final ITDPart tdPart;
 	public final IBCPipeCapabilityProvider bcCapProvider;
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 	public Set<DoubleCoordinates> subMultiBlock = new HashSet<>();

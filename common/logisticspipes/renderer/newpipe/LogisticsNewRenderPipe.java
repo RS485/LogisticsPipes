@@ -931,6 +931,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				}
 			}
 		}
+		SimpleServiceLocator.thermalDynamicsProxy.renderPipeConnections(pipeTile, objectsToRender);
 	}
 
 	private static void findOponentOnSameSide(List<PipeMount> mountCanidates, EnumFacing dir) {

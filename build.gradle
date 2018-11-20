@@ -145,6 +145,10 @@ repositories {
     maven {
 		url "http://maven.amadornes.com/"
 	}
+	maven {
+		name = "CoFH Maven"
+		url = "http://maven.covers1624.net"
+	}
 }
 
 dependencies {
@@ -158,6 +162,8 @@ dependencies {
     compile "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+:api"
     compile "appeng:appliedenergistics2:rv5-stable-11:api"
     compileOnly "dan200.computercraft:ComputerCraft:1.80pr1-build5"
+	compileOnly "cofh:CoFHCore:1.12.2-4.5.2.+:universal"
+    compileOnly "cofh:ThermalDynamics:1.12.2-2.5.1.+:universal"
     deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA26"
     runtimeOnly "baubles:Baubles:1.12:1.5.2"
 	deobfCompile "MCMultiPart2:MCMultiPart:2.5.3"

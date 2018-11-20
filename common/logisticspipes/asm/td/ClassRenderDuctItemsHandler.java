@@ -39,7 +39,7 @@ public class ClassRenderDuctItemsHandler {
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
 							super.visitMethodInsn(opcode, owner, name, desc, itf);
-							if (owner.equals("net/minecraft/client/renderer/GlStateManager") && (name.equals("scale") || name.equals("scale")) && desc //TODO
+							if (owner.equals("net/minecraft/client/renderer/GlStateManager") && (name.equals("scale") || name.equals("func_179152_a")) && desc
 									.equals("(FFF)V")) {
 								Label l = new Label();
 								visitLabel(l);

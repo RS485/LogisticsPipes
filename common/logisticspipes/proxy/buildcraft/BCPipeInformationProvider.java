@@ -1,18 +1,20 @@
-/*
 package logisticspipes.proxy.buildcraft;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
+import logisticspipes.LPConstants;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.tileentity.TileEntity;
@@ -20,57 +22,54 @@ import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
-import buildcraft.core.CoreConstants;
-import buildcraft.core.lib.TileBuffer;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.PipeTransportFluids;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.PipeTransportPower;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
-import buildcraft.transport.pipes.PipeItemsDiamond;
-import buildcraft.transport.pipes.PipeItemsIron;
-import buildcraft.transport.pipes.PipeItemsObsidian;
-import buildcraft.transport.pipes.PipeStructureCobblestone;
+import buildcraft.api.transport.pipe.PipeApi;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourDiamondItem;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourDirectional;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourIron;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourObsidian;
+import buildcraft.transport.pipe.flow.PipeFlowItems;
+import buildcraft.transport.pipe.flow.TravellingItem;
+import buildcraft.transport.tile.TilePipeHolder;
+import sun.plugin.dom.core.CoreConstants;
 
 public class BCPipeInformationProvider implements IPipeInformationProvider {
 
-	private final TileGenericPipe pipe;
+	private final TilePipeHolder pipe;
 
-	public BCPipeInformationProvider(TileGenericPipe pipe) {
+	public BCPipeInformationProvider(TilePipeHolder pipe) {
 		this.pipe = pipe;
 	}
 
 	@Override
 	public boolean isCorrect(ConnectionPipeType type) {
-		if (pipe == null || pipe.pipe == null || !SimpleServiceLocator.buildCraftProxy.isActive()) {
+		if (pipe == null || pipe.getPipe() == null || !SimpleServiceLocator.buildCraftProxy.isActive()) {
 			return false;
 		}
 
 		boolean precheck = false;
 		if (type == ConnectionPipeType.UNDEFINED) {
-			precheck = pipe.pipe.transport instanceof PipeTransportItems || pipe.pipe.transport instanceof PipeTransportFluids;
+			precheck = pipe.getPipe().getDefinition().flowType == PipeApi.flowItems || pipe.getPipe().getDefinition().flowType == PipeApi.flowFluids;
 		} else if (type == ConnectionPipeType.ITEM) {
-			precheck = pipe.pipe.transport instanceof PipeTransportItems;
+			precheck = pipe.getPipe().getDefinition().flowType == PipeApi.flowItems;
 		} else if (type == ConnectionPipeType.FLUID) {
-			precheck = pipe.pipe.transport instanceof PipeTransportFluids;
+			precheck = pipe.getPipe().getDefinition().flowType == PipeApi.flowFluids;
 		}
 		return precheck;
 	}
 
 	@Override
 	public int getX() {
-		return pipe.xCoord;
+		return pipe.getPipePos().getX();
 	}
 
 	@Override
 	public int getY() {
-		return pipe.yCoord;
+		return pipe.getPipePos().getY();
 	}
 
 	@Override
 	public int getZ() {
-		return pipe.zCoord;
+		return pipe.getPipePos().getZ();
 	}
 
 	@Override
@@ -80,7 +79,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean isRouterInitialized() {
-		return pipe.initialized;
+		return pipe.getPipe() != null;
 	}
 
 	@Override
@@ -95,7 +94,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public TileEntity getNextConnectedTile(EnumFacing direction) {
-		return pipe.getTile(direction);
+		return pipe.getNeighbourTile(direction);
 	}
 
 	@Override
@@ -116,27 +115,28 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	@Override
 	public boolean divideNetwork() {
 		//Obsidian seperates networks
-		return pipe.pipe instanceof PipeItemsObsidian || pipe.pipe instanceof PipeStructureCobblestone;
+		return (pipe.getPipe().getDefinition().flowType == PipeApi.flowItems && pipe.getPipe().getBehaviour() instanceof PipeBehaviourObsidian) || pipe.getPipe().getDefinition().flowType == PipeApi.flowStructure;
 	}
 
 	@Override
 	public boolean powerOnly() {
-		return pipe.pipe instanceof PipeItemsDiamond;
+		return (pipe.getPipe().getDefinition().flowType == PipeApi.flowItems && pipe.getPipe().getBehaviour() instanceof PipeBehaviourDiamondItem);
 	}
 
 	@Override
 	public boolean isOnewayPipe() {
-		return pipe.pipe instanceof PipeItemsIron;
+		return (pipe.getPipe().getDefinition().flowType == PipeApi.flowItems && pipe.getPipe().getBehaviour() instanceof PipeBehaviourIron);
 	}
 
 	@Override
 	public boolean isOutputOpen(EnumFacing direction) {
-		return pipe.pipe.outputOpen(direction);
+		EnumFacing point = ReflectionHelper.invokePrivateMethod(PipeBehaviourDirectional.class, pipe.getPipe().getBehaviour(), "getCurrentDir", "getCurrentDir", new Class[0], new Object[0]);
+		return point == direction;
 	}
 
 	@Override
 	public boolean canConnect(TileEntity to, EnumFacing direction, boolean targeted) {
-		return SimpleServiceLocator.buildCraftProxy.canPipeConnect(pipe, to, direction);
+		return pipe.getPipe().isConnected(direction);
 	}
 
 	@Override
@@ -145,18 +145,23 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
+	public double getDistanceWeight() {
+		return 1;
+	}
+
+	@Override
 	public boolean isItemPipe() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportItems && SimpleServiceLocator.buildCraftProxy.isActive();
+		return pipe != null && pipe.getPipe() != null && pipe.getPipe().getDefinition().flowType == PipeApi.flowItems && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 
 	@Override
 	public boolean isFluidPipe() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportFluids && SimpleServiceLocator.buildCraftProxy.isActive();
+		return pipe != null && pipe.getPipe() != null && pipe.getPipe().getDefinition().flowType == PipeApi.flowFluids && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 
 	@Override
 	public boolean isPowerPipe() {
-		return pipe != null && pipe.pipe != null && pipe.pipe.transport instanceof PipeTransportPower && SimpleServiceLocator.buildCraftProxy.isActive();
+		return pipe != null && pipe.getPipe() != null && pipe.getPipe().getDefinition().flowType == PipeApi.flowPower && SimpleServiceLocator.buildCraftProxy.isActive();
 	}
 
 	@Override
@@ -188,18 +193,18 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public boolean acceptItem(LPTravelingItem item, TileEntity from) {
-		if (BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
-			TravelingItem bcItem;
+		if (pipe != null && pipe.getPipe() != null && pipe.getPipe().getDefinition().flowType == PipeApi.flowItems) {
+			TravellingItem bcItem;
 			if (item instanceof LPTravelingItemServer) {
-				LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem();
+				LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem(item.getItemIdentifierStack().makeNormalStack());
 				lpBCItem.setRoutingInformation(((LPTravelingItemServer) item).getInfo());
-				lpBCItem.saveToExtraNBTData();
+				//lpBCItem.saveToExtraNBTData();
 				bcItem = lpBCItem;
 			} else {
 				return true;
 			}
 
-			DoubleCoordinates p = new DoubleCoordinates(pipe.xCoord + 0.5F, pipe.yCoord + CoreConstants.PIPE_MIN_POS, pipe.zCoord + 0.5F);
+			DoubleCoordinates p = new DoubleCoordinates(pipe.getPos().getX() + 0.5F, pipe.getPos().getY() + LPConstants.PIPE_MIN_POS, pipe.getPos().getZ() + 0.5F);
 			double move;
 			if (item.output.getOpposite() == EnumFacing.DOWN) {
 				move = 0.24;
@@ -210,12 +215,15 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			}
 			CoordinateUtils.add(p, item.output.getOpposite(), move);
 
-			bcItem.setPosition(p.getXCoord(), p.getYCoord(), p.getZCoord());
-			bcItem.setSpeed(item.getSpeed());
-			if (item.getItemIdentifierStack() != null) {
-				bcItem.setItemStack(item.getItemIdentifierStack().makeNormalStack());
-			}
-			((PipeTransportItems) pipe.pipe.transport).injectItem(bcItem, item.output);
+			ReflectionHelper.setPrivateField(TravellingItem.class, bcItem, "side", "side", item.output.getOpposite());
+			ReflectionHelper.setPrivateField(TravellingItem.class, bcItem, "toCenter", "toCenter", true);
+			ReflectionHelper.setPrivateField(TravellingItem.class, bcItem, "speed", "speed", item.getSpeed());
+//			bcItem.colour = onInsert.colour;
+			ReflectionHelper.invokePrivateMethod(TravellingItem.class, bcItem, "genTimings", "genTimings", new Class[]{int.class, int.class}, new Object[]{from.getWorld().getTotalWorldTime(), 0});
+			EnumSet<EnumFacing> tried = ReflectionHelper.getPrivateField(TravellingItem.class, bcItem, "tried", "tried");
+			tried.add(item.output.getOpposite());
+
+			ReflectionHelper.invokePrivateMethod(PipeFlowItems.class, pipe.getPipe().getFlow(), "addItemTryMerge", "addItemTryMerge", new Class[]{TravellingItem.class}, new Object[]{bcItem});
 			return true;
 		}
 		return false;
@@ -223,10 +231,7 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 
 	@Override
 	public void refreshTileCacheOnSide(EnumFacing side) {
-		TileBuffer[] cache = pipe.getTileCache();
-		if (cache != null) {
-			cache[side.ordinal()].refresh();
-		}
+
 	}
 
 	@Override
@@ -239,4 +244,3 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 		return Stream.empty();
 	}
 }
-*/

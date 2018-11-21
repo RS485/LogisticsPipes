@@ -51,6 +51,18 @@ public class ReflectionHelper {
 	@SuppressWarnings("unchecked")
 	@SneakyThrows
 	public static <T> T getPrivateField(Class<?> clazz, Object target, String name, String srgName) {
+		Field field = getField(clazz, name, srgName);
+		Object result = field.get(target);
+		return (T) result;
+	}
+
+	@SneakyThrows
+	public static void setPrivateField(Class<?> clazz, Object target, String name, String srgName, Object value) {
+		Field field = getField(clazz, name, srgName);
+		field.set(target, value);
+	}
+
+	private static Field getField(Class<?> clazz, String name, String srgName) throws NoSuchFieldException {
 		Pair<Class<?>, String> key = new Pair<>(clazz, name);
 		Field field = ReflectionHelper.fieldCache.get(key);
 		if (field == null) {
@@ -74,7 +86,6 @@ public class ReflectionHelper {
 			field.setAccessible(true);
 			ReflectionHelper.fieldCache.put(key, field);
 		}
-		Object result = field.get(target);
-		return (T) result;
+		return field;
 	}
 }

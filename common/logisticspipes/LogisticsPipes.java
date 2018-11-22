@@ -505,7 +505,7 @@ public class LogisticsPipes {
 		forName("net.minecraftforge.fluids.FluidStack");
 		forName("net.minecraftforge.fluids.Fluid");
 		forName("cofh.thermaldynamics.block.TileTDBase");
-		Class.forName("cofh.thermaldynamics.duct.item.TravelingItem");
+		forName("cofh.thermaldynamics.duct.item.TravelingItem");
 		forName("crazypants.enderio.conduit.item.ItemConduit");
 		forName("crazypants.enderio.conduit.item.NetworkedInventory");
 		forName("crazypants.enderio.conduit.liquid.AbstractLiquidConduit");

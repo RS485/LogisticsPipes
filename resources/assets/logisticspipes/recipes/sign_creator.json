@@ -19,6 +19,7 @@
     }
   },
   "result": {
-    "item": "logisticspipes:sign_creator"
+    "item": "logisticspipes:sign_creator",
+    "data": 0
   }
 }

@@ -17,6 +17,8 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -60,6 +62,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.pathfinder.changedetection.TEControl;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.VersionChecker;
@@ -80,6 +83,17 @@ public class LogisticsEventListener {
 			ItemStack stack = ((EntityItem) event.getEntity()).getItem(); //Get ItemStack
 			if (!stack.isEmpty() && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
+			}
+			if(stack.hasTagCompound()) {
+				for(Map.Entry<String, NBTBase> tagEntry : stack.getTagCompound().tagMap.entrySet()) {
+					if(tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
+						ItemRoutingInformation info = new ItemRoutingInformation();
+						info.readFromNBT((NBTTagCompound) tagEntry.getValue());
+						info.setItemTimedout();
+						((EntityItem) event.getEntity()).setItem(info.getItem().makeNormalStack());
+						break;
+					}
+				}
 			}
 		}
 	}

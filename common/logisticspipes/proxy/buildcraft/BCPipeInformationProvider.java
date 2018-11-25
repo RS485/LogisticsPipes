@@ -11,17 +11,21 @@ import logisticspipes.LPConstants;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
 
+import buildcraft.api.transport.pipe.IFlowItems;
 import buildcraft.api.transport.pipe.PipeApi;
 import buildcraft.transport.pipe.behaviour.PipeBehaviourDiamondItem;
 import buildcraft.transport.pipe.behaviour.PipeBehaviourDirectional;
@@ -194,36 +198,21 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	@Override
 	public boolean acceptItem(LPTravelingItem item, TileEntity from) {
 		if (pipe != null && pipe.getPipe() != null && pipe.getPipe().getDefinition().flowType == PipeApi.flowItems) {
-			TravellingItem bcItem;
-			if (item instanceof LPTravelingItemServer) {
-				LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem(item.getItemIdentifierStack().makeNormalStack());
-				lpBCItem.setRoutingInformation(((LPTravelingItemServer) item).getInfo());
-				//lpBCItem.saveToExtraNBTData();
-				bcItem = lpBCItem;
-			} else {
+			if (!(item instanceof LPTravelingItemServer)) {
 				return true;
 			}
+			ItemRoutingInformation routingInformation = ((LPTravelingItemServer) item).getInfo();
+			NBTTagCompound routingData = new NBTTagCompound();
+			routingInformation.storeToNBT(routingData);
 
-			DoubleCoordinates p = new DoubleCoordinates(pipe.getPos().getX() + 0.5F, pipe.getPos().getY() + LPConstants.PIPE_MIN_POS, pipe.getPos().getZ() + 0.5F);
-			double move;
-			if (item.output.getOpposite() == EnumFacing.DOWN) {
-				move = 0.24;
-			} else if (item.output.getOpposite() == EnumFacing.UP) {
-				move = 0.74;
-			} else {
-				move = 0.49;
+			ItemStack transportStack = item.getItemIdentifierStack().makeNormalStack();
+			if (!transportStack.hasTagCompound()) {
+				transportStack.setTagCompound(new NBTTagCompound());
 			}
-			CoordinateUtils.add(p, item.output.getOpposite(), move);
+			transportStack.getTagCompound().setTag("logisticspipes:routingdata_buildcraft", routingData);
 
-			ReflectionHelper.setPrivateField(TravellingItem.class, bcItem, "side", "side", item.output.getOpposite());
-			ReflectionHelper.setPrivateField(TravellingItem.class, bcItem, "toCenter", "toCenter", true);
-			ReflectionHelper.setPrivateField(TravellingItem.class, bcItem, "speed", "speed", item.getSpeed());
-//			bcItem.colour = onInsert.colour;
-			ReflectionHelper.invokePrivateMethod(TravellingItem.class, bcItem, "genTimings", "genTimings", new Class[]{int.class, int.class}, new Object[]{from.getWorld().getTotalWorldTime(), 0});
-			EnumSet<EnumFacing> tried = ReflectionHelper.getPrivateField(TravellingItem.class, bcItem, "tried", "tried");
-			tried.add(item.output.getOpposite());
-
-			ReflectionHelper.invokePrivateMethod(PipeFlowItems.class, pipe.getPipe().getFlow(), "addItemTryMerge", "addItemTryMerge", new Class[]{TravellingItem.class}, new Object[]{bcItem});
+			IFlowItems itemPipe = (IFlowItems) pipe.getPipe().getFlow();
+			itemPipe.insertItemsForce(transportStack, item.output.getOpposite(), null, item.getSpeed());
 			return true;
 		}
 		return false;

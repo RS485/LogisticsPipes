@@ -129,6 +129,7 @@ public class ProxyManager {
 				};
 			}
 			@Override public Object createMjReceiver(@Nonnull LogisticsPowerJunctionTileEntity te) {return null;}
+			@Override public boolean isBuildCraftPipe(TileEntity tile) {return false;}
 		}, IBCPipeCapabilityProvider.class));
 
 		SimpleServiceLocator.setForestryProxy(ProxyManager.getWrappedProxy(LPConstants.forestryModID, IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {

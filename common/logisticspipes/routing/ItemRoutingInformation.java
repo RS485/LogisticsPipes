@@ -2,7 +2,9 @@ package logisticspipes.routing;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import net.minecraft.item.ItemStack;
@@ -101,8 +103,38 @@ public class ItemRoutingInformation {
 		}
 	}
 
+	public void setItemTimedout() {
+		delay = MainProxy.getGlobalTick() - 1;
+		if (tracker != null) {
+			tracker.setDelay(delay);
+		}
+	}
+
 	@Override
 	public String toString() {
 		return String.format("(%s, %d, %s, %s, %s, %d, %s)", item, destinationint, destinationUUID, _transportMode, jamlist, delay, tracker);
 	}
+
+	public void storeToNBT(NBTTagCompound nbtTagCompound) {
+		UUID uuid = UUID.randomUUID();
+		nbtTagCompound.setString("StoreUUID", uuid.toString());
+		this.writeToNBT(nbtTagCompound);
+		storeMap.put(uuid, this);
+	}
+
+	public static ItemRoutingInformation restoreFromNBT(NBTTagCompound nbtTagCompound) {
+		if(nbtTagCompound.hasKey("StoreUUID")) {
+			UUID uuid = UUID.fromString(nbtTagCompound.getString("StoreUUID"));
+			if (storeMap.containsKey(uuid)) {
+				ItemRoutingInformation result = storeMap.get(uuid);
+				storeMap.remove(uuid);
+				return result;
+			}
+		}
+		ItemRoutingInformation info = new ItemRoutingInformation();
+		info.readFromNBT(nbtTagCompound);
+		return info;
+	}
+
+	private static final Map<UUID, ItemRoutingInformation> storeMap = new HashMap<>();
 }

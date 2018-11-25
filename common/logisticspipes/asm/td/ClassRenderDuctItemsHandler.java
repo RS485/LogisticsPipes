@@ -22,7 +22,7 @@ public class ClassRenderDuctItemsHandler {
 
 		boolean noChecksumMatch = false;
 		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "renderTravelingItems", "(Ljava/util/Iterator;Lcofh/thermaldynamics/duct/item/DuctUnitItem;Lnet/minecraft/world/World;DDDF)V");
-		if (!"2A56C07E15F612A425E4B4D8C16DEB7545947688".equals(sumHandleEvent) && !"TODO".equals(sumHandleEvent)) {
+		if (!"2A56C07E15F612A425E4B4D8C16DEB7545947688".equals(sumHandleEvent) && !"0D05E26AC037D652294BE9923BAC446C87AA6A1D".equals(sumHandleEvent)) {
 			noChecksumMatch = true;
 		}
 		if (noChecksumMatch) {

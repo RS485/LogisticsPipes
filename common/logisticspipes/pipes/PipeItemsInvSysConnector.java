@@ -14,9 +14,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -307,7 +305,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 			EnumFacing dir = EnumFacing.VALUES[i];
 			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 			TileEntity tile = p.getTileEntity(getWorld());
-			if (tile instanceof IInventory && this.container.canPipeConnect(tile, dir)) {
+			if (tile != null && tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir.getOpposite()) && this.container.canPipeConnect(tile, dir)) {
 				return true;
 			}
 		}
@@ -357,7 +355,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 			EnumFacing dir = EnumFacing.VALUES[i];
 			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 			TileEntity lTile = p.getTileEntity(getWorld());
-			if (lTile instanceof IInventory) {
+			if (lTile != null && lTile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir.getOpposite())) {
 				if (lTile == tile) {
 					return this.container.canPipeConnect(lTile, dir);
 				}

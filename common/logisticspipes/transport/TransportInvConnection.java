@@ -1,11 +1,15 @@
 package logisticspipes.transport;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class TransportInvConnection extends PipeTransportLogistics {
 
@@ -20,7 +24,7 @@ public class TransportInvConnection extends PipeTransportLogistics {
 
 	@Override
 	protected void insertedItemStack(ItemRoutingInformation info, TileEntity tile) {
-		if (tile instanceof IInventory) {
+		if (tile != null && tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, CoordinateUtils.getDirectionFromTo(new DoubleCoordinates(getPipe().container.getPos()), new DoubleCoordinates(tile)).getOpposite())) {
 			((PipeItemsInvSysConnector) container.pipe).handleItemEnterInv(info, tile);
 		}
 	}

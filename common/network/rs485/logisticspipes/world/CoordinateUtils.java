@@ -95,4 +95,31 @@ public final class CoordinateUtils {
 		IntegerCoordinates ret = new IntegerCoordinates(coords);
 		return CoordinateUtils.add(ret, direction, times);
 	}
+
+	public static EnumFacing getDirectionFromTo(DoubleCoordinates source, DoubleCoordinates target) {
+		double xDiff = target.getXCoord() - source.getXCoord();
+		double yDiff = target.getYCoord() - source.getYCoord();
+		double zDiff = target.getZCoord() - source.getZCoord();
+		if(xDiff != 0 && yDiff == 0 && zDiff == 0) {
+			if(xDiff > 0) {
+				return EnumFacing.EAST;
+			} else {
+				return EnumFacing.WEST;
+			}
+		} else if(xDiff == 0 && yDiff != 0 && zDiff == 0) {
+			if(yDiff > 0) {
+				return EnumFacing.UP;
+			} else {
+				return EnumFacing.DOWN;
+			}
+		} else if(xDiff == 0 && yDiff == 0 && zDiff != 0) {
+			if(zDiff > 0) {
+				return EnumFacing.SOUTH;
+			} else {
+				return EnumFacing.NORTH;
+			}
+		} else {
+			return null;
+		}
+	}
 }

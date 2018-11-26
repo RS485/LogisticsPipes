@@ -1,13 +1,22 @@
 package logisticspipes.proxy.buildcraft;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Stream;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
-import logisticspipes.LPConstants;
+import buildcraft.api.transport.pipe.IFlowItems;
+import buildcraft.api.transport.pipe.PipeApi;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourDiamondItem;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourDirectional;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourIron;
+import buildcraft.transport.pipe.behaviour.PipeBehaviourObsidian;
+import buildcraft.transport.tile.TilePipeHolder;
+
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -17,24 +26,7 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
-
-import buildcraft.api.transport.pipe.IFlowItems;
-import buildcraft.api.transport.pipe.PipeApi;
-import buildcraft.transport.pipe.behaviour.PipeBehaviourDiamondItem;
-import buildcraft.transport.pipe.behaviour.PipeBehaviourDirectional;
-import buildcraft.transport.pipe.behaviour.PipeBehaviourIron;
-import buildcraft.transport.pipe.behaviour.PipeBehaviourObsidian;
-import buildcraft.transport.pipe.flow.PipeFlowItems;
-import buildcraft.transport.pipe.flow.TravellingItem;
-import buildcraft.transport.tile.TilePipeHolder;
-import sun.plugin.dom.core.CoreConstants;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class BCPipeInformationProvider implements IPipeInformationProvider {
 

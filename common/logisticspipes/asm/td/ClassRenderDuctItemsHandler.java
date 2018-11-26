@@ -1,9 +1,5 @@
 package logisticspipes.asm.td;
 
-import net.minecraft.client.renderer.GlStateManager;
-
-import logisticspipes.asm.util.ASMHelper;
-
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import org.objectweb.asm.ClassReader;
@@ -12,6 +8,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
+
+import logisticspipes.asm.util.ASMHelper;
 
 public class ClassRenderDuctItemsHandler {
 

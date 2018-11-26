@@ -508,3 +508,7 @@ gui.popup.managechannel.title=Channel Manager
 gui.popup.managechannel.deletedialog.title=Do you really want to delete this channel?
 gui.popup.managechannel.deletedialog.yes=Yes
 gui.popup.managechannel.deletedialog.no=No
+
+itemstackinfo.lprouteditem=%cRED Item with stored LogisticsPipes routing information
+itemstackinfo.lproutediteminfo=%cYELLOW Drop to remove routing information and get original items back
+itemstackinfo.lprouteditemtype=Stored item

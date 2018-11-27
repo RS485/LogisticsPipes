@@ -1132,7 +1132,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {
-		if (connectionNeedsChecking > 2) {
+		if (connectionNeedsChecking == 2) {
 			ensureChangeListenerAttachedToPipe(pipe);
 
 			Info info = null;
@@ -1149,8 +1149,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 			ensureChangeListenerAttachedToPipe(pipe);
 		}
-		if (connectionNeedsChecking > 0) {
-			connectionNeedsChecking++;
+		if (connectionNeedsChecking == 1) {
+			connectionNeedsChecking = 2;
 		}
 		handleQueuedTasks(pipe);
 		updateInterests();

@@ -492,11 +492,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		Map<EnumFacing, List<CoreRoutedPipe>> pipeDirections = new HashMap<>();
 
 		for (Entry<CoreRoutedPipe, ExitRoute> entry : adjacent.entrySet()) {
-			List<CoreRoutedPipe> list = pipeDirections.get(entry.getValue().exitOrientation);
-			if (list == null) {
-				list = new ArrayList<>();
-				pipeDirections.put(entry.getValue().exitOrientation, list);
-			}
+			List<CoreRoutedPipe> list = pipeDirections.computeIfAbsent(entry.getValue().exitOrientation, k -> new ArrayList<>());
 			list.add(entry.getKey());
 		}
 
@@ -1136,7 +1132,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {
-		if (connectionNeedsChecking == 2) {
+		if (connectionNeedsChecking > 2) {
+			ensureChangeListenerAttachedToPipe(pipe);
+
 			Info info = null;
 			if (LPConstants.DEBUG) {
 				info = StackTraceUtil.addTraceInformation(causedBy.toString());
@@ -1148,29 +1146,37 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			if (LPConstants.DEBUG) {
 				info.end();
 			}
+
+			ensureChangeListenerAttachedToPipe(pipe);
 		}
-		if (connectionNeedsChecking == 1) {
-			connectionNeedsChecking = 2;
+		if (connectionNeedsChecking > 0) {
+			connectionNeedsChecking++;
 		}
 		handleQueuedTasks(pipe);
 		updateInterests();
 		if (doFullRefresh) {
-			if (pipe.container instanceof ILPTEInformation && ((ILPTEInformation) pipe.container).getObject() != null) {
-				if (!((ILPTEInformation) pipe.container).getObject().changeListeners.contains(localChangeListener)) {
-					((ILPTEInformation) pipe.container).getObject().changeListeners.add(localChangeListener);
-				}
-			}
+			ensureChangeListenerAttachedToPipe(pipe);
 
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {
 				//updateAdjacentAndLsa();
 				updateLsa();
 			}
+
+			ensureChangeListenerAttachedToPipe(pipe);
 			ensureRouteTableIsUpToDate(false);
 			return;
 		}
 		if (Configs.MULTI_THREAD_NUMBER > 0) {
 			ensureRouteTableIsUpToDate(false);
+		}
+	}
+
+	private void ensureChangeListenerAttachedToPipe(CoreRoutedPipe pipe) {
+		if (pipe.container instanceof ILPTEInformation && ((ILPTEInformation) pipe.container).getObject() != null) {
+			if (!((ILPTEInformation) pipe.container).getObject().changeListeners.contains(localChangeListener)) {
+				((ILPTEInformation) pipe.container).getObject().changeListeners.add(localChangeListener);
+			}
 		}
 	}
 

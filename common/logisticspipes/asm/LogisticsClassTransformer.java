@@ -119,17 +119,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if (name.equals("cofh.thermaldynamics.render.RenderDuctItems")) {
 				return ClassRenderDuctItemsHandler.handleRenderDuctItemsClass(bytes);
 			}
-			/*
-			if (name.equals("crazypants.enderio.conduit.item.ItemConduit")) {
-				return ClassItemConduitHandler.handleItemConduitClass(bytes);
-			}
-			if (name.equals("crazypants.enderio.conduit.item.NetworkedInventory")) {
-				return ClassNetworkedInventoryHandler.handleNetworkedInventoryClass(bytes);
-			}
-			if (name.equals("crazypants.enderio.conduit.liquid.AbstractLiquidConduit")) {
-				return ClassAbstractLiquidConduitHandler.handleAbstractLiquidConduitClass(bytes);
-			}
-			*/
 			if (!name.startsWith("logisticspipes.")) {
 				return bytes;
 			}

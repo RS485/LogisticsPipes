@@ -1,9 +1,19 @@
 package logisticspipes.proxy.buildcraft;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.IMjReceiver;
 import buildcraft.api.mj.MjAPI;
+import buildcraft.transport.tile.TilePipeHolder;
+
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.interfaces.ILPItemAcceptor;
+import logisticspipes.pipes.basic.ItemInsertionHandler;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.recipeprovider.AssemblyTable;
@@ -13,8 +23,8 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.specialinventoryhandler.BuildCraftTransactorHandler;
 import logisticspipes.recipes.CraftingParts;
-
-import javax.annotation.Nonnull;
+import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.transport.LPTravelingItem;
 
 public class BuildCraftProxy implements IBCProxy {
 
@@ -24,12 +34,21 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public void registerPipeInformationProvider() {
-		//SimpleServiceLocator.pipeInformationManager.registerProvider(TilePipeHolder.class, BCPipeInformationProvider.class);
+		SimpleServiceLocator.pipeInformationManager.registerProvider(TilePipeHolder.class, BCPipeInformationProvider.class);
 	}
 
 	@Override
 	public void initProxy() {
-		//PipeEventBus.registerGlobalHandler(new BCEventHandler());
+		ItemInsertionHandler.ACCEPTORS.add((pipe, from, stack) -> {
+			if(stack.hasTagCompound() && stack.getTagCompound().hasKey("logisticspipes:routingdata_buildcraft")) {
+				NBTTagCompound routingData = stack.getTagCompound().getCompoundTag("logisticspipes:routingdata_buildcraft");
+				ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(routingData);
+				LPTravelingItem item = new LPTravelingItem.LPTravelingItemServer(info);
+				item.output = from.getOpposite();
+				return pipe.acceptItem(item, null);
+			}
+			return false;
+		});
 	}
 
 	@Override
@@ -88,5 +107,10 @@ public class BuildCraftProxy implements IBCProxy {
 				return true;
 			}
 		};
+	}
+
+	@Override
+	public boolean isBuildCraftPipe(TileEntity tile) {
+		return tile instanceof TilePipeHolder;
 	}
 }

@@ -1,6 +1,7 @@
 package logisticspipes;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,6 +18,8 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -27,6 +30,7 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
@@ -60,12 +64,15 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.pathfinder.changedetection.TEControl;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
+import logisticspipes.utils.string.ChatColor;
+import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
@@ -80,6 +87,16 @@ public class LogisticsEventListener {
 			ItemStack stack = ((EntityItem) event.getEntity()).getItem(); //Get ItemStack
 			if (!stack.isEmpty() && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
+			}
+			if(stack.hasTagCompound()) {
+				for(Map.Entry<String, NBTBase> tagEntry : stack.getTagCompound().tagMap.entrySet()) {
+					if(tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
+						ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT((NBTTagCompound) tagEntry.getValue());
+						info.setItemTimedout();
+						((EntityItem) event.getEntity()).setItem(info.getItem().getItem().makeNormalStack(stack.getCount()));
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -302,5 +319,21 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void onBlockUpdate(BlockEvent.NeighborNotifyEvent event) {
 		TEControl.handleBlockUpdate(event.getWorld(), LPTickHandler.getWorldInfo(event.getWorld()), event.getPos());
+	}
+
+	@SubscribeEvent
+	public void onItemStackToolTip(ItemTooltipEvent event) {
+		if(event.getItemStack().hasTagCompound()) {
+			for(Map.Entry<String, NBTBase> tagEntry : event.getItemStack().getTagCompound().tagMap.entrySet()) {
+				if(tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
+					ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT((NBTTagCompound) tagEntry.getValue());
+					List<String> list = event.getToolTip();
+					list.set(0, ChatColor.RED + "!!! " + ChatColor.WHITE + list.get(0) + ChatColor.RED + " !!!" + ChatColor.WHITE);
+					list.add(1, StringUtils.translate("itemstackinfo.lprouteditem"));
+					list.add(2, StringUtils.translate("itemstackinfo.lproutediteminfo"));
+					list.add(3, StringUtils.translate("itemstackinfo.lprouteditemtype") + ": " + info.getItem().toString());
+				}
+			}
+		}
 	}
 }

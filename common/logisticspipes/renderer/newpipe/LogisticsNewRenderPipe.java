@@ -688,7 +688,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		for (EnumFacing dir : EnumFacing.VALUES) {
 			if (renderState.pipeConnectionMatrix.isConnected(dir) || pipeTile.pipe.hasSpecialPipeEndAt(dir)) {
 				connectionCount++;
-				if (renderState.pipeConnectionMatrix.isTDConnected(dir)) {
+				if (renderState.pipeConnectionMatrix.isTDConnected(dir) || renderState.pipeConnectionMatrix.isBCConnected(dir)) {
 					I3DOperation[] texture = new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture };
 					if (renderState.textureMatrix.isRouted()) {
 						if (renderState.textureMatrix.isRoutedInDir(dir)) {

@@ -12,14 +12,15 @@ import net.minecraftforge.common.capabilities.Capability;
 import buildcraft.api.transport.IInjectable;
 import buildcraft.api.transport.pipe.PipeApi;
 
+import logisticspipes.pipes.basic.ItemInsertionHandler;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 public class BCPipeCapabilityProvider implements IBCPipeCapabilityProvider, IInjectable {
 
-	private final LogisticsTileGenericPipe logsitcsPipe;
+	private final LogisticsTileGenericPipe logisticsPipe;
 
-	public BCPipeCapabilityProvider(LogisticsTileGenericPipe logsitcsPipe) {
-		this.logsitcsPipe = logsitcsPipe;
+	public BCPipeCapabilityProvider(LogisticsTileGenericPipe logisticsPipe) {
+		this.logisticsPipe = logisticsPipe;
 	}
 
 	@Override
@@ -44,6 +45,9 @@ public class BCPipeCapabilityProvider implements IBCPipeCapabilityProvider, IInj
 	@Nonnull
 	@Override
 	public ItemStack injectItem(@Nonnull ItemStack stack, boolean doAdd, EnumFacing from, EnumDyeColor color, double speed) {
-		return logsitcsPipe.insertItem(from, stack);
+		if(doAdd) {
+			return ItemInsertionHandler.handleItemInsetion(logisticsPipe, from, stack);
+		}
+		return ItemStack.EMPTY;
 	}
 }

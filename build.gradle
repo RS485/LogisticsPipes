@@ -152,7 +152,7 @@ repositories {
 }
 
 dependencies {
-    deobfCompile "com.mod-buildcraft:buildcraft:7.99.17"
+    deobfCompile "com.mod-buildcraft:buildcraft:7.99.19"
     compileOnly 'org.projectlombok:lombok:1.16.8'
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.2.240:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'

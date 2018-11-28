@@ -158,7 +158,6 @@ dependencies {
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'
     compile 'net.industrial-craft:industrialcraft-2:2.8.97-ex112:api'
-    compile 'net.sengir.forestry:forestry_1.12.2:5.8.1.339:api'
     compile "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+:api"
     compile "appeng:appliedenergistics2:rv5-stable-11:api"
     compileOnly "dan200.computercraft:ComputerCraft:1.80pr1-build5"

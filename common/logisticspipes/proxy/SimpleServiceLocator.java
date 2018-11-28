@@ -24,7 +24,6 @@ import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
-import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
@@ -59,12 +58,6 @@ public final class SimpleServiceLocator {
 
 	public static void setElectricItemProxy(final IIC2Proxy ic2Proxy) {
 		SimpleServiceLocator.IC2Proxy = ic2Proxy;
-	}
-
-	public static IForestryProxy forestryProxy;
-
-	public static void setForestryProxy(final IForestryProxy fProxy) {
-		SimpleServiceLocator.forestryProxy = fProxy;
 	}
 
 	public static ICCProxy ccProxy;

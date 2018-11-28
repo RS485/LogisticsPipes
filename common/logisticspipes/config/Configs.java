@@ -37,7 +37,6 @@ public class Configs {
 	public static boolean ENABLE_RESEARCH_SYSTEM = false;
 
 	public static boolean TOOLTIP_INFO = LPConstants.DEBUG;
-	public static boolean MANDATORY_CARPENTER_RECIPES = true;
 	public static boolean ENABLE_PARTICLE_FX = true;
 
 	// GuiOrderer Popup setting
@@ -131,12 +130,6 @@ public class Configs {
 						"Set the default configuration for the popup of the Orderer Gui. Should it be used?")
 						.getBoolean(false);
 
-		Configs.MANDATORY_CARPENTER_RECIPES = Configs.CONFIGURATION
-				.get(Configuration.CATEGORY_GENERAL,
-						"mandatoryCarpenterRecipes",
-						Configs.MANDATORY_CARPENTER_RECIPES,
-						"Whether or not the Carpenter is required to craft Forestry related pipes/modules.")
-						.getBoolean(false);
 		Configs.ENABLE_PARTICLE_FX = Configs.CONFIGURATION.get(Configuration.CATEGORY_GENERAL,
 				"enableParticleFX", Configs.ENABLE_PARTICLE_FX,
 				"Whether or not special particles will spawn.")

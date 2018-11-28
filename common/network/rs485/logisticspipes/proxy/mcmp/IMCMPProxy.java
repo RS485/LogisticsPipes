@@ -44,6 +44,7 @@ public interface IMCMPProxy {
 
 	IMCMPBlockAccess createMCMPBlockAccess();
 
+	@SideOnly(Side.CLIENT)
 	List<BakedQuad> addQuads(List<BakedQuad> list, IBlockState state, EnumFacing side, long rand);
 
 	void registerTileEntities();

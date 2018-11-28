@@ -71,6 +71,9 @@ import network.rs485.logisticspipes.proxy.mcmp.subproxy.MCMPLTGPCompanion;
 
 public class MCMPProxy implements IMCMPProxy {
 
+	@SideOnly(Side.CLIENT)
+	private ModelMultipartContainer modelMultipartContainer;
+
 	public MCMPProxy() {
 		MCMPHooks.mcmpGetTEHook = (world, pos) -> {
 			TileEntity tile = world.getTileEntity(pos);
@@ -86,8 +89,6 @@ public class MCMPProxy implements IMCMPProxy {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	private final ModelMultipartContainer modelMultipartContainer  = new ModelMultipartContainer();
-
 	@Override
 	public IMCMPLTGPCompanion createMCMPCompanionFor(LogisticsTileGenericPipe pipe) {
 		return new MCMPLTGPCompanion(pipe);
@@ -99,7 +100,9 @@ public class MCMPProxy implements IMCMPProxy {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> addQuads(List<BakedQuad> list, IBlockState state, EnumFacing side, long rand) {
+		if(modelMultipartContainer == null) modelMultipartContainer = new ModelMultipartContainer();
 		List<BakedQuad> newQuads = modelMultipartContainer.getQuads(state, side, rand);
 		if(newQuads.isEmpty()) return list;
 		return Stream.concat(list.stream(), modelMultipartContainer.getQuads(state, side, rand).stream()).collect(Collectors.toList());

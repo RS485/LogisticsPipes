@@ -129,11 +129,6 @@ public class ProxyManager {
 		}, IBCPipeCapabilityProvider.class));
 
 		SimpleServiceLocator.setElectricItemProxy(ProxyManager.getWrappedProxy(LPConstants.ic2ModID, IIC2Proxy.class, IC2Proxy.class, new IIC2Proxy() {
-			@Override public boolean isElectricItem(ItemStack stack) {return false;}
-			@Override public boolean isSimilarElectricItem(ItemStack stack, ItemStack template) {return false;}
-			@Override public boolean isFullyCharged(ItemStack stack) {return false;}
-			@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
-			@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
 			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public boolean hasIC2() {return false;}
 			@Override public void registerToEneryNet(TileEntity tile) {}

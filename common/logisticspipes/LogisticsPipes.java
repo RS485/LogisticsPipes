@@ -107,8 +107,6 @@ import logisticspipes.pipes.PipeFluidProvider;
 import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
-import logisticspipes.pipes.PipeItemsApiaristAnalyser;
-import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
@@ -579,8 +577,6 @@ public class LogisticsPipes {
 		registerPipe(registry, "request_mk2", PipeItemsRequestLogisticsMk2::new);
 		registerPipe(registry, "remote_orderer", PipeItemsRemoteOrdererLogistics::new);
 		registerPipe(registry, "provider_mk2", PipeItemsProviderLogisticsMk2::new);
-		registerPipe(registry, "apiarist_analyzer", PipeItemsApiaristAnalyser::new);
-		registerPipe(registry, "apiarist_sink", PipeItemsApiaristSink::new);
 		registerPipe(registry, "inventory_system_connector", PipeItemsInvSysConnector::new);
 		registerPipe(registry, "system_entrance", PipeItemsSystemEntranceLogistics::new);
 		registerPipe(registry, "system_destination", PipeItemsSystemDestinationLogistics::new);

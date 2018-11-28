@@ -18,7 +18,6 @@ public abstract class CraftingPartRecipes implements IRecipeProvider {
 			// NO BC => NO RECIPES (for now)
 			if (parts != null) {
 				SimpleServiceLocator.IC2Proxy.addCraftingRecipes(parts);
-				SimpleServiceLocator.forestryProxy.addCraftingRecipes(parts);
 				SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes(parts);
 				SimpleServiceLocator.ccProxy.addCraftingRecipes(parts);
 				SimpleServiceLocator.buildCraftProxy.addCraftingRecipes(parts);

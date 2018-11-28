@@ -107,8 +107,6 @@ import logisticspipes.pipes.PipeFluidProvider;
 import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
-import logisticspipes.pipes.PipeItemsApiaristAnalyser;
-import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
@@ -149,7 +147,6 @@ import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.SpecialTankHandlerManager;
 import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.endercore.EnderCoreProgressProvider;
-import logisticspipes.proxy.forestry.ForestryProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
@@ -362,7 +359,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
 		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
 
-		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider(LPConstants.forestryModID, "Generic", ForestryProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider(LPConstants.thermalExpansionModID, "Generic", ThermalExpansionProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider(LPConstants.ic2ModID, "Generic", IC2ProgressProvider.class));
 		//SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("EnderIO", "Generic", EnderIOProgressProvider.class));
@@ -579,8 +575,6 @@ public class LogisticsPipes {
 		registerPipe(registry, "request_mk2", PipeItemsRequestLogisticsMk2::new);
 		registerPipe(registry, "remote_orderer", PipeItemsRemoteOrdererLogistics::new);
 		registerPipe(registry, "provider_mk2", PipeItemsProviderLogisticsMk2::new);
-		registerPipe(registry, "apiarist_analyzer", PipeItemsApiaristAnalyser::new);
-		registerPipe(registry, "apiarist_sink", PipeItemsApiaristSink::new);
 		registerPipe(registry, "inventory_system_connector", PipeItemsInvSysConnector::new);
 		registerPipe(registry, "system_entrance", PipeItemsSystemEntranceLogistics::new);
 		registerPipe(registry, "system_destination", PipeItemsSystemDestinationLogistics::new);

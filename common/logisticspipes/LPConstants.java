@@ -26,7 +26,6 @@ public class LPConstants {
 	public static final String bcTransportModID = "buildcrafttransport";
 	public static final String railcraftModID = "railcraft";
 	public static final String tubestuffModID = "tubestuff";
-	public static final String forestryModID = "forestry";
 	public static final String thermalExpansionModID = "thermalexpansion";
 	public static final String enderCoreModID = "endercore";
 	public static final String betterStorageModID = "betterstorage";

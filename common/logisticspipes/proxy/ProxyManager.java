@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -56,7 +55,6 @@ import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.ccl.CCLProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
 import logisticspipes.proxy.factorization.FactorizationProxy;
-import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic.IronChestProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
@@ -67,7 +65,6 @@ import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IFactorizationProxy;
-import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
@@ -89,7 +86,6 @@ import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.recipes.CraftingParts;
 import logisticspipes.renderer.newpipe.RenderEntry;
-import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.proxy.mcmp.IMCMPProxy;
 import network.rs485.logisticspipes.proxy.mcmp.MCMPProxy;
 import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPBlockAccess;
@@ -132,43 +128,7 @@ public class ProxyManager {
 			@Override public boolean isBuildCraftPipe(TileEntity tile) {return false;}
 		}, IBCPipeCapabilityProvider.class));
 
-		SimpleServiceLocator.setForestryProxy(ProxyManager.getWrappedProxy(LPConstants.forestryModID, IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
-			@Override public boolean isBee(ItemStack item) {return false;}
-			@Override public boolean isBee(ItemIdentifier item) {return false;}
-			@Override public boolean isAnalysedBee(ItemStack item) {return false;}
-			@Override public boolean isAnalysedBee(ItemIdentifier item) {return false;}
-			@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
-			@Override public boolean isKnownAlleleId(String uid, World world) {return false;}
-			@Override public String getAlleleName(String uid) {return "";}
-			@Override public String getFirstAlleleId(ItemStack bee) {return "";}
-			@Override public String getSecondAlleleId(ItemStack bee) {return "";}
-			@Override public boolean isDrone(ItemStack bee) {return false;}
-			@Override public boolean isFlyer(ItemStack bee) {return false;}
-			@Override public boolean isPrincess(ItemStack bee) {return false;}
-			@Override public boolean isQueen(ItemStack bee) {return false;}
-			@Override public boolean isPurebred(ItemStack bee) {return false;}
-			@Override public boolean isNocturnal(ItemStack bee) {return false;}
-			@Override public boolean isPureNocturnal(ItemStack bee) {return false;}
-			@Override public boolean isPureFlyer(ItemStack bee) {return false;}
-			@Override public boolean isCave(ItemStack bee) {return false;}
-			@Override public boolean isPureCave(ItemStack bee) {return false;}
-			@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase(Locale.US).replace("_", " ");}
-			@Override @SideOnly(Side.CLIENT) public TextureAtlasSprite getIconIndexForAlleleId(String id, int phase) {return null;}
-			@Override @SideOnly(Side.CLIENT) public int getColorForAlleleId(String id, int phase) {return 16777215;}
-			@Override @SideOnly(Side.CLIENT) public int getRenderPassesForAlleleId(String id) {return 0;}
-			@Override public void addCraftingRecipes(CraftingParts parts) {}
-			@Override public String getNextAlleleId(String uid, World world) {return "";}
-			@Override public String getPrevAlleleId(String uid, World world) {return "";}
-			@Override @SideOnly(Side.CLIENT) public TextureAtlasSprite getIconFromTextureManager(String name) {return null;}
-			@Override public void syncTracker(World world, EntityPlayer player) {}
-		}));
-
 		SimpleServiceLocator.setElectricItemProxy(ProxyManager.getWrappedProxy(LPConstants.ic2ModID, IIC2Proxy.class, IC2Proxy.class, new IIC2Proxy() {
-			@Override public boolean isElectricItem(ItemStack stack) {return false;}
-			@Override public boolean isSimilarElectricItem(ItemStack stack, ItemStack template) {return false;}
-			@Override public boolean isFullyCharged(ItemStack stack) {return false;}
-			@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
-			@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
 			@Override public void addCraftingRecipes(CraftingParts parts) {}
 			@Override public boolean hasIC2() {return false;}
 			@Override public void registerToEneryNet(TileEntity tile) {}

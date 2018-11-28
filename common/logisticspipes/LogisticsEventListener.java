@@ -322,6 +322,7 @@ public class LogisticsEventListener {
 	}
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void onItemStackToolTip(ItemTooltipEvent event) {
 		if(event.getItemStack().hasTagCompound()) {
 			for(Map.Entry<String, NBTBase> tagEntry : event.getItemStack().getTagCompound().tagMap.entrySet()) {

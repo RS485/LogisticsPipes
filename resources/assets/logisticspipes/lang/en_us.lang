@@ -102,16 +102,6 @@ item.logisticspipes.pipe_remote_orderer.tip2= - Lets you manually request items 
 item.logisticspipes.pipe_remote_orderer.tip3= - Can pull from any Item Source
 item.logisticspipes.pipe_remote_orderer.tip4= - You must right click a Remote Orderer on this pipe.
 
-item.logisticspipes.pipe_apiarist_analyzer.name=Bee Analyzer Logistics Pipe
-item.logisticspipes.pipe_apiarist_analyzer.tip1=Type: Passive Destination
-item.logisticspipes.pipe_apiarist_analyzer.tip2= - A passive destination for un-analyzed bees
-item.logisticspipes.pipe_apiarist_analyzer.tip3= - Allows for automatic analyzing
-
-item.logisticspipes.pipe_apiarist_sink.name=BeeSink Logistics Pipe
-item.logisticspipes.pipe_apiarist_sink.tip1=Type: Passive Destination
-item.logisticspipes.pipe_apiarist_sink.tip2= - A passive destination for analyzed bees
-item.logisticspipes.pipe_apiarist_sink.tip3= - Can filter based on genetic properties and genome.
-
 item.logisticspipes.pipe_inventory_system_connector.name=Logistics Inventory System Connector
 item.logisticspipes.pipe_inventory_system_connector.tip1=Type: Bridge
 item.logisticspipes.pipe_inventory_system_connector.tip2= - Connects two logistics networks together
@@ -175,12 +165,6 @@ item.logisticspipes.module_extractor_mk3.name=Extractor MK3 Module
 item.logisticspipes.module_extractor_advanced_mk3.name=Advanced Extractor MK3
 item.logisticspipes.module_provider.name=Provider Module
 item.logisticspipes.module_provider_mk2.name=Provider Module MK2
-item.logisticspipes.module_electric_manager.name=Electric Manager Module
-item.logisticspipes.module_electric_buffer.name=Electric Buffer Module
-item.logisticspipes.module_apiarist_analyser.name=Bee Analyzer Module
-item.logisticspipes.module_apiarist_sink.name=BeeSink Module
-item.logisticspipes.module_apiarist_refiller.name=Apiary Refiller Module
-item.logisticspipes.module_apiarist_terminus.name=Drone Terminus Module
 item.logisticspipes.module_item_sink_mod.name=Mod Based ItemSink Module
 item.logisticspipes.module_item_sink_oredict.name=OreDict ItemSink Module
 item.logisticspipes.module_thaumic_aspect_sink.name=Thaumic AspectSink Module

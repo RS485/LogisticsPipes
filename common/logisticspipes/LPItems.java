@@ -88,13 +88,6 @@ public class LPItems {
 	@ObjectHolder("logisticspipes:pipe_request_table")
 	public static Item requestTable;
 
-	// Logistics Apiarist's Pipes
-	@ObjectHolder("logisticspipes:pipe_apiarist_analyzer")
-	public static Item pipeApiaristAnalyzer;
-
-	@ObjectHolder("logisticspipes:pipe_apiarist_sink")
-	public static Item pipeApiaristSink;
-
 	// Logistics Fluid Pipes
 	@ObjectHolder("logisticspipes:pipe_fluid_basic")
 	public static Item pipeFluidBasic;

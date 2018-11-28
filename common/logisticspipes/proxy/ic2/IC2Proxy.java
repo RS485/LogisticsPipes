@@ -134,32 +134,6 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public void addCraftingRecipes(CraftingParts parts) {
 		/*
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { "CGC", "rBr", "CrC", Character.valueOf('C'), IC2Items.getItem("advancedCircuit"), Character.valueOf('G'), parts.getGearTear2(), Character.valueOf('r'), Items.redstone, Character.valueOf('B'),
-				new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { " G ", "rBr", "CrC", Character.valueOf('C'), IC2Items.getItem("advancedCircuit"), Character.valueOf('G'), parts.getChipTear2(), Character.valueOf('r'), Items.redstone, Character.valueOf('B'),
-				new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGD", "rBr", "DrC", Character.valueOf('C'), IC2Items.getItem("electronicCircuit"), Character.valueOf('D'), IC2Items.getItem("reBattery"), Character.valueOf('G'), parts.getGearTear2(),
-				Character.valueOf('r'), Items.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGD", "rBr", "DrC", Character.valueOf('C'), IC2Items.getItem("electronicCircuit"), Character.valueOf('D'), IC2Items.getItem("chargedReBattery"), Character.valueOf('G'),
-				parts.getGearTear2(), Character.valueOf('r'), Items.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER),
-				new Object[] { "CGc", "rBr", "DrC", Character.valueOf('C'), IC2Items.getItem("electronicCircuit"), Character.valueOf('c'), IC2Items.getItem("reBattery"), Character.valueOf('D'), IC2Items.getItem("chargedReBattery"), Character.valueOf('G'), parts.getGearTear2(), Character.valueOf('r'),
-						Items.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER),
-				new Object[] { "CGc", "rBr", "DrC", Character.valueOf('C'), IC2Items.getItem("electronicCircuit"), Character.valueOf('c'), IC2Items.getItem("chargedReBattery"), Character.valueOf('D'), IC2Items.getItem("reBattery"), Character.valueOf('G'), parts.getGearTear2(), Character.valueOf('r'),
-						Items.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { " G ", "rBr", "DrC", Character.valueOf('C'), IC2Items.getItem("electronicCircuit"), Character.valueOf('D'), IC2Items.getItem("reBattery"), Character.valueOf('G'), parts.getChipTear2(),
-				Character.valueOf('r'), Items.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
-		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { " G ", "rBr", "DrC", Character.valueOf('C'), IC2Items.getItem("electronicCircuit"), Character.valueOf('D'), IC2Items.getItem("chargedReBattery"), Character.valueOf('G'),
-				parts.getChipTear2(), Character.valueOf('r'), Items.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
-
 		CraftingRecipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
 				new Object[] { "PSP", "OBO", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), Character.valueOf('S'), IC2Items.getItem("energyStorageUpgrade"), Character.valueOf('O'), IC2Items.getItem("overclockerUpgrade"), Character.valueOf('T'),
 						IC2Items.getItem("transformerUpgrade"), Character.valueOf('P'), Items.paper });

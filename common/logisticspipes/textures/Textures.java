@@ -51,8 +51,6 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_REQUESTERMK2_TEXTURE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_PROVIDERMK2_TEXTURE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE = Textures.empty;
-	public static TextureType LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE = Textures.empty;
-	public static TextureType LOGISTICSPIPE_APIARIST_SINK_TEXTURE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_INVSYSCON_CON_TEXTURE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE = Textures.empty;
 	public static TextureType LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE = Textures.empty;
@@ -101,8 +99,6 @@ public class Textures {
 	public static String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE = "pipes/liquid_supplier";
 	public static String LOGISTICSPIPE_LIQUIDSUPPLIER_MK2_TEXTURE_FILE = "pipes/liquid_supplier_mk2";
 	public static String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE = "pipes/remote_orderer";
-	public static String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE = "pipes/analyzer";
-	public static String LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE = "pipes/beesink";
 	public static String LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE = "pipes/invsyscon_con";
 	public static String LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE = "pipes/invsyscon_dis";
 	public static String LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE = "pipes/invsyscon_mis";
@@ -215,8 +211,6 @@ public class Textures {
 		Textures.LOGISTICSPIPE_REQUESTERMK2_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
 		Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
 		Textures.LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
-		Textures.LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
-		Textures.LOGISTICSPIPE_APIARIST_SINK_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE);
 		Textures.LOGISTICSPIPE_INVSYSCON_CON_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE);
 		Textures.LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE);
 		Textures.LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE = registerTexture(par1IIconRegister, Textures.LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE);

@@ -10,12 +10,8 @@ public final class SinkReply {
 		OreDictItemSink,
 		EnchantmentItemSink,
 		Terminus,
-		APIARIST_BeeSink,
-		APIARIST_Analyser,
 		ItemSink,
 		PassiveSupplier,
-		ElectricBuffer,
-		ElectricManager,
 	}
 
 	public enum BufferMode {

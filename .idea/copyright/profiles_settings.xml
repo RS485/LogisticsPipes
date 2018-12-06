@@ -1,0 +1,7 @@
+<component name="CopyrightManager">
+  <settings>
+    <module2copyright>
+      <element module="network.rs485 package" copyright="RS485 Dual MIT MMPL" />
+    </module2copyright>
+  </settings>
+</component>

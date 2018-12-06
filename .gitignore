@@ -1,6 +1,9 @@
 # IDEA project output path
 /classes
 
+# Except the dummy jar
+!/LogisticsPipes_dummy.jar
+
 # Created by https://www.gitignore.io/api/java,gradle,kotlin,forgegradle,intellij+iml
 # Edit at https://www.gitignore.io/?templates=java,gradle,kotlin,forgegradle,intellij+iml
 

@@ -1,9 +1,6 @@
 # IDEA project output path
 /classes
 
-# Except the dummy jar
-!/LogisticsPipes_dummy.jar
-
 # Created by https://www.gitignore.io/api/java,gradle,kotlin,forgegradle,intellij+iml
 # Edit at https://www.gitignore.io/?templates=java,gradle,kotlin,forgegradle,intellij+iml
 
@@ -84,7 +81,6 @@ fabric.properties
 
 *.iml
 modules.xml
-.idea/misc.xml
 *.ipr
 
 ### Java ###
@@ -101,33 +97,20 @@ modules.xml
 .mtj.tmp/
 
 # Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+#*.jar
+#*.war
+#*.nar
+#*.ear
+#*.zip
+#*.tar.gz
+#*.rar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-### Kotlin ###
-# Compiled class file
-
-# Log file
-
-# BlueJ files
-
-# Mobile Tools for Java (J2ME)
-
-# Package Files #
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-
 ### Gradle ###
 .gradle
-/build/
+build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -140,8 +123,5 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
-
-### Gradle Patch ###
-**/build/
 
 # End of https://www.gitignore.io/api/java,gradle,kotlin,forgegradle,intellij+iml

@@ -5,9 +5,9 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="LogisticsPipes_api" target="1.8" />
-      <module name="LogisticsPipes_main" target="1.8" />
-      <module name="LogisticsPipes_test" target="1.8" />
+      <module name="network.rs485.logisticspipes.LogisticsPipes.api" target="1.8" />
+      <module name="network.rs485.logisticspipes.LogisticsPipes.main" target="1.8" />
+      <module name="network.rs485.logisticspipes.LogisticsPipes.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

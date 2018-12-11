@@ -2,7 +2,12 @@ package logisticspipes.pipes.basic;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagFloat;
+import net.minecraft.util.EnumFacing;
 
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
@@ -10,12 +15,6 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagFloat;
-
-import net.minecraft.util.EnumFacing;
-
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
 
@@ -59,16 +58,12 @@ public class PowerSupplierHandler {
 		if (SimpleServiceLocator.powerProxy.isAvailable() && pipe.getUpgradeManager().hasRFPowerSupplierUpgrade()) {
 			//Use Buffer
 
-			Stream<AdjacentTileEntity> adjacentTileEntityStream = new WorldCoordinatesWrapper(pipe.container).getAdjacentTileEntities();
+			List<AdjacentTileEntity> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).getAdjacentTileEntities().collect(Collectors.toList());
 
 			double globalNeed = 0;
-			double[] need = new double[(int) adjacentTileEntityStream.count()];
-			adjacentTileEntityStream = new WorldCoordinatesWrapper(pipe.container).getAdjacentTileEntities();
+			double[] need = new double[adjacentTileEntities.size()];
 			int i = 0;
-			Iterator<AdjacentTileEntity> adjacentIt = adjacentTileEntityStream.iterator();
-			while (adjacentIt.hasNext()) {
-				AdjacentTileEntity adjacent = adjacentIt.next();
-
+			for (AdjacentTileEntity adjacent : adjacentTileEntities) {
 				if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
 					if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
 						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
@@ -81,10 +76,7 @@ public class PowerSupplierHandler {
 			if (globalNeed != 0 && !Double.isNaN(globalNeed)) {
 				double fullfillable = Math.min(1, internalBufferRF / globalNeed);
 				i = 0;
-				adjacentIt = adjacentTileEntityStream.iterator();
-				while (adjacentIt.hasNext()) {
-					AdjacentTileEntity adjacent = adjacentIt.next();
-
+				for (AdjacentTileEntity adjacent : adjacentTileEntities) {
 					if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite())) {
 						if (pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)) {
 							ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.tileEntity, adjacent.direction.getOpposite());
@@ -179,7 +171,7 @@ public class PowerSupplierHandler {
 					AdjacentTileEntity adjacent = adjacentIt.next();
 
 					if (SimpleServiceLocator.IC2Proxy.isEnergySink(adjacent.tileEntity) && pipe.canPipeConnect(adjacent.tileEntity, adjacent.direction)
-							&& SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.tileEntity, pipe.container, adjacent.direction.getOpposite())) { // TODO pipe.container must be IEnergySource
+						&& SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.tileEntity, pipe.container, adjacent.direction.getOpposite())) { // TODO pipe.container must be IEnergySource
 						if (internalBufferIC2 + 1 < need[i] * fullfillable) {
 							return;
 						}

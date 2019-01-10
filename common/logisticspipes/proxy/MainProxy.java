@@ -2,6 +2,7 @@ package logisticspipes.proxy;
 
 import java.io.File;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
@@ -16,8 +17,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
@@ -29,7 +31,6 @@ import lombok.Getter;
 
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.PacketInboundHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -37,6 +38,7 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.utils.LPFakePlayer;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 
@@ -52,6 +54,8 @@ public class MainProxy {
 
 	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<>();
 	public static final String networkChannelName = "LogisticsPipes";
+	
+	private static HashMap<Integer, LPFakePlayer> worldFakePlayer = new HashMap<>();
 
 	private static Side getEffectiveSide() {
 		Thread thr = Thread.currentThread();
@@ -265,9 +269,22 @@ public class MainProxy {
 		return false;
 	}
 
-	public static EntityPlayer getFakePlayer(TileEntity tile) {
-		return new FakePlayer(tile);
-	}
+	public static FakePlayer getFakePlayer(World world) {
+        if (worldFakePlayer.containsKey(world.provider.getDimension()))
+            return worldFakePlayer.get(world.provider.getDimension());
+        if (world instanceof WorldServer) {
+        	LPFakePlayer fakePlayer = new LPFakePlayer((WorldServer) world);
+            worldFakePlayer.put(world.provider.getDimension(), fakePlayer);
+            return fakePlayer;
+        }
+        return null;
+    }
+	
+	public static FakePlayer getFakePlayer(World world, BlockPos pos) {
+        FakePlayer player = getFakePlayer(world);
+        if (player != null) player.setPositionAndRotation(pos.getX(), pos.getY(), pos.getZ(), 90, 90);
+        return player;
+    }
 
 	public static File getLPFolder() {
 		return new File(DimensionManager.getCurrentSaveRootDirectory(), "LogisticsPipes");

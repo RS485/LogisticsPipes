@@ -284,7 +284,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		result = recipe.getCraftingResult(crafter);
 		if (fake == null) {
-			fake = MainProxy.getFakePlayer(this);
+			fake = MainProxy.getFakePlayer(this.world);
 		}
 		result = result.copy();
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {

@@ -3,10 +3,14 @@ package logisticspipes.proxy;
 import java.io.File;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Maps;
 import logisticspipes.LPItems;
+import logisticspipes.entity.FakePlayerLP;
+import lombok.val;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -20,7 +24,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
@@ -38,7 +44,6 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.ticks.RoutingTableUpdateThread;
-import logisticspipes.utils.LPFakePlayer;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 
@@ -53,9 +58,9 @@ public class MainProxy {
 	public static EnumMap<Side, FMLEmbeddedChannel> channels;
 
 	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<>();
+	private static Map<Integer, FakePlayerLP> fakePlayers = Maps.newHashMap();
+
 	public static final String networkChannelName = "LogisticsPipes";
-	
-	private static HashMap<Integer, LPFakePlayer> worldFakePlayer = new HashMap<>();
 
 	private static Side getEffectiveSide() {
 		Thread thr = Thread.currentThread();
@@ -269,22 +274,19 @@ public class MainProxy {
 		return false;
 	}
 
-	public static FakePlayer getFakePlayer(World world) {
-        if (worldFakePlayer.containsKey(world.provider.getDimension()))
-            return worldFakePlayer.get(world.provider.getDimension());
-        if (world instanceof WorldServer) {
-        	LPFakePlayer fakePlayer = new LPFakePlayer((WorldServer) world);
-            worldFakePlayer.put(world.provider.getDimension(), fakePlayer);
-            return fakePlayer;
-        }
-        return null;
-    }
-	
-	public static FakePlayer getFakePlayer(World world, BlockPos pos) {
-        FakePlayer player = getFakePlayer(world);
-        if (player != null) player.setPositionAndRotation(pos.getX(), pos.getY(), pos.getZ(), 90, 90);
-        return player;
-    }
+	public static FakePlayer getFakePlayer(World world){
+		val dimId = world.provider.getDimension();
+		if(fakePlayers.containsKey(dimId))
+			return fakePlayers.get(dimId);
+
+		if(world instanceof WorldServer){
+			FakePlayerLP fp = new FakePlayerLP((WorldServer) world);
+			fakePlayers.put(dimId, fp);
+			return fp;
+		}
+
+		return null;
+	}
 
 	public static File getLPFolder() {
 		return new File(DimensionManager.getCurrentSaveRootDirectory(), "LogisticsPipes");
@@ -332,5 +334,10 @@ public class MainProxy {
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
 		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
+	}
+
+	@SubscribeEvent
+	public static void OnWorldUnload(WorldEvent.Unload event){
+		fakePlayers.entrySet().removeIf(entry -> entry.getValue().world == event.getWorld());
 	}
 }

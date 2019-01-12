@@ -41,6 +41,7 @@ import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.SlotCrafting;
@@ -51,6 +52,8 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 
@@ -61,7 +64,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public SimpleStackInventory toSortInv = new SimpleStackInventory(1, "Sorting Slot", 64);
 	private InventoryCraftResult vanillaResult = new InventoryCraftResult();
 	private IRecipe cache;
-	private EntityPlayer fake;
+	private EntityPlayerMP fake;
 	private int delay = 0;
 	private int tick = 0;
 	private int rotation;
@@ -429,7 +432,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		}
 		result = cache.getCraftingResult(crafter);
 		if (fake == null) {
-			fake = MainProxy.getFakePlayer(container);
+			fake = MainProxy.getFakePlayer(container.getWorld());
 		}
 		result = result.copy();
 
@@ -612,5 +615,11 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public boolean isMultipartAllowedInPipe() {
 		return false;
+	}
+
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload worldEvent){
+		if(fake.world== worldEvent.getWorld())
+			fake = null;
 	}
 }

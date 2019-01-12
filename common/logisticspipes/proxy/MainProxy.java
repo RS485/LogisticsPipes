@@ -11,6 +11,8 @@ import com.google.common.collect.Maps;
 import logisticspipes.LPItems;
 import logisticspipes.entity.FakePlayerLP;
 import lombok.val;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -25,6 +27,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
@@ -281,6 +284,12 @@ public class MainProxy {
 
 		if(world instanceof WorldServer){
 			FakePlayerLP fp = new FakePlayerLP((WorldServer) world);
+			fakePlayers.put(dimId, fp);
+			return fp;
+		}
+
+		if(world instanceof WorldClient){
+			FakePlayerLP fp = new FakePlayerLP(FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimId));
 			fakePlayers.put(dimId, fp);
 			return fp;
 		}

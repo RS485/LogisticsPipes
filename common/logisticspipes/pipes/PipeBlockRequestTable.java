@@ -432,7 +432,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		}
 		result = cache.getCraftingResult(crafter);
 		if (fake == null) {
-			fake = MainProxy.getFakePlayer(container.getWorld());
+			fake = MainProxy.getFakePlayer(getWorld());
 		}
 		result = result.copy();
 

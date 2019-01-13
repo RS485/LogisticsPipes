@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.SlotCrafting;
@@ -19,6 +20,8 @@ import net.minecraft.util.text.ITextComponent;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
@@ -58,7 +61,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	public DictResource[] fuzzyFlags = new DictResource[9];
 	public DictResource outputFuzzyFlags = new DictResource(null, null);
 	private IRecipe cache;
-	private EntityPlayer fake;
+	private EntityPlayerMP fake;
 	private PlayerIdentifier placedBy = null;
 
 	private InvWrapper invWrapper = new InvWrapper(this);
@@ -284,7 +287,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 		result = recipe.getCraftingResult(crafter);
 		if (fake == null) {
-			fake = MainProxy.getFakePlayer(this);
+			fake = MainProxy.getFakePlayer(this.world);
 		}
 		result = result.copy();
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {
@@ -550,5 +553,11 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	@Override
 	public ITextComponent getDisplayName() {
 		return null;
+	}
+
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload worldEvent) {
+		if (fake.world == worldEvent.getWorld())
+			fake = null;
 	}
 }

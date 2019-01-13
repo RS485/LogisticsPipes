@@ -2,10 +2,17 @@ package logisticspipes.proxy;
 
 import java.io.File;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Maps;
 import logisticspipes.LPItems;
+import logisticspipes.entity.FakePlayerLP;
+import lombok.val;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -16,9 +23,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
@@ -29,7 +40,6 @@ import lombok.Getter;
 
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.PacketInboundHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -51,6 +61,8 @@ public class MainProxy {
 	public static EnumMap<Side, FMLEmbeddedChannel> channels;
 
 	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<>();
+	private static Map<Integer, FakePlayerLP> fakePlayers = Maps.newHashMap();
+
 	public static final String networkChannelName = "LogisticsPipes";
 
 	private static Side getEffectiveSide() {
@@ -265,8 +277,21 @@ public class MainProxy {
 		return false;
 	}
 
-	public static EntityPlayer getFakePlayer(TileEntity tile) {
-		return new FakePlayer(tile);
+	public static FakePlayer getFakePlayer(World world) {
+		int dimId = world.provider.getDimension();
+		if (fakePlayers.containsKey(dimId))
+			return fakePlayers.get(dimId);
+		if (world instanceof WorldServer) {
+			FakePlayerLP fp = new FakePlayerLP((WorldServer) world);
+			fakePlayers.put(dimId, fp);
+			return fp;
+		}
+		if (world instanceof WorldClient) {
+			FakePlayerLP fp = new FakePlayerLP(FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimId));
+			fakePlayers.put(dimId, fp);
+			return fp;
+		}
+		return null;
 	}
 
 	public static File getLPFolder() {
@@ -315,5 +340,10 @@ public class MainProxy {
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
 		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
+	}
+
+	@SubscribeEvent
+	public static void onWorldUnload(WorldEvent.Unload event) {
+		fakePlayers.entrySet().removeIf(entry -> entry.getValue().world == event.getWorld());
 	}
 }

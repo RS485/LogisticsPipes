@@ -619,7 +619,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload worldEvent) {
-		if (fake.world== worldEvent.getWorld())
+		if (fake.world == worldEvent.getWorld())
 			fake = null;
 	}
 }

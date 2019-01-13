@@ -277,23 +277,20 @@ public class MainProxy {
 		return false;
 	}
 
-	public static FakePlayer getFakePlayer(World world){
-		val dimId = world.provider.getDimension();
-		if(fakePlayers.containsKey(dimId))
+	public static FakePlayer getFakePlayer(World world) {
+		int dimId = world.provider.getDimension();
+		if (fakePlayers.containsKey(dimId))
 			return fakePlayers.get(dimId);
-
-		if(world instanceof WorldServer){
+		if (world instanceof WorldServer) {
 			FakePlayerLP fp = new FakePlayerLP((WorldServer) world);
 			fakePlayers.put(dimId, fp);
 			return fp;
 		}
-
-		if(world instanceof WorldClient){
+		if (world instanceof WorldClient) {
 			FakePlayerLP fp = new FakePlayerLP(FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimId));
 			fakePlayers.put(dimId, fp);
 			return fp;
 		}
-
 		return null;
 	}
 
@@ -346,7 +343,7 @@ public class MainProxy {
 	}
 
 	@SubscribeEvent
-	public static void OnWorldUnload(WorldEvent.Unload event){
+	public static void onWorldUnload(WorldEvent.Unload event) {
 		fakePlayers.entrySet().removeIf(entry -> entry.getValue().world == event.getWorld());
 	}
 }

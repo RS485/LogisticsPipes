@@ -29,27 +29,18 @@ public class FakePlayerLP extends FakePlayer {
 
     @Override
     public ITextComponent getDisplayName() {
-
         return new TextComponentString(getName());
     }
 
     @Override
-    public void onUpdate() {
-
-    }
+    public void onUpdate() { }
 
     @Override
-    public void unlockRecipes(List<IRecipe> p_192021_1_) {
-
-    }
+    public void unlockRecipes(List<IRecipe> p_192021_1_) { }
 
     @Override
-    public void unlockRecipes(ResourceLocation[] p_193102_1_) {
-
-    }
+    public void unlockRecipes(ResourceLocation[] p_193102_1_) { }
 
     @Override
-    public void resetRecipes(List<IRecipe> p_192022_1_) {
-
-    }
+    public void resetRecipes(List<IRecipe> p_192022_1_) { }
 }

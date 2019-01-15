@@ -58,11 +58,7 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsGuiModule implement
 		if (tabSet == null) {
 			buildModIdSet();
 		}
-		if (tabSet.contains(item.getCreativeTabName())) {
-			if (_service.canUseEnergy(5)) {
-				return _sinkReply;
-			}
-		}
+		// TODO: Creative tab name is only available client side..
 		return null;
 	}
 
@@ -190,6 +186,7 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsGuiModule implement
 
 	@Override
 	public String getStringForItem(ItemIdentifier ident) {
-		return ident.getCreativeTabName();
+		// TODO: Creative tab label is only available client side..
+		return "";
 	}
 }

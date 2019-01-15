@@ -54,6 +54,7 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -63,8 +64,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
 import static io.netty.buffer.Unpooled.buffer;
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 
@@ -75,6 +74,7 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+@ParametersAreNonnullByDefault
 public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	private static final Charset UTF_8 = Charset.forName("utf-8");
@@ -86,15 +86,18 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		localBuffer = buffer;
 	}
 
+	@Nonnull
 	private static LPDataIOWrapper getInstance(ByteBuf buffer) {
 		if (buffer.hasMemoryAddress()) {
-			LPDataIOWrapper instance = BUFFER_WRAPPER_MAP.get(buffer.memoryAddress());
-			if (instance == null) {
-				instance = new LPDataIOWrapper(buffer);
-				BUFFER_WRAPPER_MAP.put(buffer.memoryAddress(), instance);
+			synchronized (BUFFER_WRAPPER_MAP) {
+				LPDataIOWrapper instance = BUFFER_WRAPPER_MAP.get(buffer.memoryAddress());
+				if (instance == null) {
+					instance = new LPDataIOWrapper(buffer);
+					BUFFER_WRAPPER_MAP.put(buffer.memoryAddress(), instance);
+				}
+				++instance.reference;
+				return instance;
 			}
-			++instance.reference;
-			return instance;
 		} else {
 			return new LPDataIOWrapper(buffer);
 		}
@@ -110,6 +113,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		dataBuffer.release();
 	}
 
+	@Nonnull
 	public static byte[] collectData(LPDataOutputConsumer dataOutputConsumer) {
 		ByteBuf dataBuffer = buffer();
 		LPDataIOWrapper lpData = getInstance(dataBuffer);
@@ -143,15 +147,17 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	private void unsetBuffer() {
 		if (localBuffer.hasMemoryAddress()) {
-			if (--reference < 1) {
-				BUFFER_WRAPPER_MAP.remove(localBuffer.memoryAddress());
+			synchronized (BUFFER_WRAPPER_MAP) {
+				if (--reference < 1) {
+					BUFFER_WRAPPER_MAP.remove(localBuffer.memoryAddress());
+				}
 			}
 		}
 		localBuffer = null;
 	}
 
 	@Override
-	public void writeByteArray(byte[] arr) {
+	public void writeByteArray(@Nullable byte[] arr) {
 		if (arr == null) {
 			writeInt(-1);
 		} else {
@@ -160,6 +166,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		}
 	}
 
+	@Nullable
 	@Override
 	public byte[] readByteArray() {
 		final int length = readInt();
@@ -216,7 +223,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeUTF(String s) {
+	public void writeUTF(@Nullable String s) {
 		if (s == null) {
 			writeInt(-1);
 		} else {
@@ -225,7 +232,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeFacing(EnumFacing direction) {
+	public void writeFacing(@Nullable EnumFacing direction) {
 		if (direction == null) {
 			writeByte(Byte.MIN_VALUE);
 		} else {
@@ -234,8 +241,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeResourceLocation(ResourceLocation resource) {
-		if(resource == null) {
+	public void writeResourceLocation(@Nullable ResourceLocation resource) {
+		if (resource == null) {
 			writeBoolean(false);
 		} else {
 			writeBoolean(true);
@@ -260,14 +267,11 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public void writeBitSet(BitSet bits) {
-		if (bits == null) {
-			throw new NullPointerException("BitSet may not be null");
-		}
 		writeByteArray(bits.toByteArray());
 	}
 
 	@Override
-	public void writeNBTTagCompound(NBTTagCompound tag) {
+	public void writeNBTTagCompound(@Nullable NBTTagCompound tag) {
 		if (tag == null) {
 			writeByte(0);
 		} else {
@@ -283,7 +287,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeBooleanArray(boolean[] arr) {
+	public void writeBooleanArray(@Nullable boolean[] arr) {
 		if (arr == null) {
 			writeInt(-1);
 		} else if (arr.length == 0) {
@@ -300,7 +304,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeIntArray(int[] arr) {
+	public void writeIntArray(@Nullable int[] arr) {
 		if (arr == null) {
 			writeInt(-1);
 		} else {
@@ -324,7 +328,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeItemIdentifier(ItemIdentifier item) {
+	public void writeItemIdentifier(@Nullable ItemIdentifier item) {
 		if (item == null) {
 			writeInt(0);
 		} else {
@@ -335,7 +339,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeItemIdentifierStack(ItemIdentifierStack stack) {
+	public void writeItemIdentifierStack(@Nullable ItemIdentifierStack stack) {
 		if (stack == null) {
 			writeInt(-1);
 		} else {
@@ -345,7 +349,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public <T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler) {
+	public <T> void writeCollection(@Nullable Collection<T> collection, IWriteListObject<T> handler) {
 		if (collection == null) {
 			writeInt(-1);
 		} else {
@@ -363,16 +367,12 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public void writeByteBuf(ByteBuf otherBuffer) {
-		if (otherBuffer == null) {
-			throw new NullPointerException("Other buffer may not be null");
-		}
-
 		writeInt(otherBuffer.readableBytes());
 		localBuffer.writeBytes(otherBuffer, otherBuffer.readableBytes());
 	}
 
 	@Override
-	public void writeLongArray(long[] arr) {
+	public void writeLongArray(@Nullable long[] arr) {
 		if (arr == null) {
 			writeInt(-1);
 		} else {
@@ -389,7 +389,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeChannelInformation(@Nonnull ChannelInformation channel) {
+	public void writeChannelInformation(ChannelInformation channel) {
 		this.writeUTF(channel.getName());
 		this.writeUUID(channel.getChannelIdentifier());
 		this.writePlayerIdentifier(channel.getOwner());
@@ -398,16 +398,16 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeUUID(UUID uuid) {
+	public void writeUUID(@Nullable UUID uuid) {
 		this.writeBoolean(uuid != null);
-		if(uuid != null) {
+		if (uuid != null) {
 			this.writeLong(uuid.getMostSignificantBits());
 			this.writeLong(uuid.getLeastSignificantBits());
 		}
 	}
 
 	@Override
-	public void writePlayerIdentifier(@Nonnull PlayerIdentifier playerIdentifier) {
+	public void writePlayerIdentifier(PlayerIdentifier playerIdentifier) {
 		this.writeUTF(playerIdentifier.getUsername());
 		this.writeUUID(playerIdentifier.getId());
 	}
@@ -447,6 +447,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return localBuffer.readBoolean();
 	}
 
+	@Nullable
 	@Override
 	public String readUTF() {
 		byte[] arr = readByteArray();
@@ -457,6 +458,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		}
 	}
 
+	@Nullable
 	@Override
 	public EnumFacing readFacing() {
 		byte b = localBuffer.readByte();
@@ -469,14 +471,16 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return EnumFacing.VALUES[b];
 	}
 
+	@Nullable
 	@Override
 	public ResourceLocation readResourceLocation() {
-		if(readBoolean()) {
+		if (readBoolean()) {
 			return new ResourceLocation(Objects.requireNonNull(readUTF()));
 		}
 		return null;
 	}
 
+	@Nonnull
 	@Override
 	public <T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz) {
 		EnumSet<T> types = EnumSet.noneOf(clazz);
@@ -492,6 +496,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return types;
 	}
 
+	@Nonnull
 	@Override
 	public BitSet readBitSet() {
 		byte[] arr = readByteArray();
@@ -502,8 +507,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		}
 	}
 
-	@Override
 	@Nullable
+	@Override
 	public NBTTagCompound readNBTTagCompound() {
 		boolean isEmpty = (readByte() == 0);
 		if (isEmpty) {
@@ -518,6 +523,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return null;
 	}
 
+	@Nullable
 	@Override
 	public boolean[] readBooleanArray() {
 		final int bitCount = localBuffer.readInt();
@@ -539,6 +545,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return arr;
 	}
 
+	@Nullable
 	@Override
 	public int[] readIntArray() {
 		final int length = localBuffer.readInt();
@@ -551,6 +558,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return arr;
 	}
 
+	@Nonnull
 	@Override
 	public byte[] readBytes(int length) {
 		byte[] arr = new byte[length];
@@ -558,6 +566,32 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return arr;
 	}
 
+	@Nullable
+	@Override
+	public ItemIdentifier readItemIdentifier() {
+		final int itemId = readInt();
+		if (itemId == 0) {
+			return null;
+		}
+
+		int damage = readInt();
+		NBTTagCompound tag = readNBTTagCompound();
+		return ItemIdentifier.get(Item.getItemById(itemId), damage, tag);
+	}
+
+	@Nullable
+	@Override
+	public ItemIdentifierStack readItemIdentifierStack() {
+		int stacksize = readInt();
+		if (stacksize == -1) {
+			return null;
+		}
+
+		ItemIdentifier item = readItemIdentifier();
+		return new ItemIdentifierStack(item, stacksize);
+	}
+
+	@Nonnull
 	@Override
 	public ItemStack readItemStack() {
 		final int itemId = readInt();
@@ -574,29 +608,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return stack;
 	}
 
-	@Override
-	public ItemIdentifier readItemIdentifier() {
-		final int itemId = readInt();
-		if (itemId == 0) {
-			return null;
-		}
-
-		int damage = readInt();
-		NBTTagCompound tag = readNBTTagCompound();
-		return ItemIdentifier.get(Item.getItemById(itemId), damage, tag);
-	}
-
-	@Override
-	public ItemIdentifierStack readItemIdentifierStack() {
-		int stacksize = readInt();
-		if (stacksize == -1) {
-			return null;
-		}
-
-		ItemIdentifier item = readItemIdentifier();
-		return new ItemIdentifierStack(item, stacksize);
-	}
-
+	@Nullable
 	@Override
 	public <T> ArrayList<T> readArrayList(IReadListObject<T> reader) {
 		int size = readInt();
@@ -611,6 +623,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return list;
 	}
 
+	@Nullable
 	@Override
 	public <T> LinkedList<T> readLinkedList(IReadListObject<T> reader) {
 		int size = readInt();
@@ -625,6 +638,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return list;
 	}
 
+	@Nullable
 	@Override
 	public <T> Set<T> readSet(IReadListObject<T> handler) {
 		int size = readInt();
@@ -639,11 +653,13 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return set;
 	}
 
+	@Nullable
 	@Override
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) {
 		return clazz.getEnumConstants()[localBuffer.readInt()];
 	}
 
+	@Nonnull
 	@Override
 	public ByteBuf readByteBuf() {
 		byte[] arr = readByteArray();
@@ -654,6 +670,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		}
 	}
 
+	@Nullable
 	@Override
 	public long[] readLongArray() {
 		final int length = localBuffer.readInt();
@@ -666,19 +683,22 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		return arr;
 	}
 
+	@Nonnull
 	@Override
 	public ChannelInformation readChannelInformation() {
 		return new ChannelInformation(this.readUTF(), this.readUUID(), this.readPlayerIdentifier(), this.readEnum(ChannelInformation.AccessRights.class), this.readUUID());
 	}
 
+	@Nullable
 	@Override
 	public UUID readUUID() {
-		if(!this.readBoolean()) {
+		if (!this.readBoolean()) {
 			return null;
 		}
 		return new UUID(this.readLong(), this.readLong());
 	}
 
+	@Nonnull
 	@Override
 	public PlayerIdentifier readPlayerIdentifier() {
 		return PlayerIdentifier.get(this.readUTF(), this.readUUID());

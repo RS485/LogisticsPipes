@@ -154,6 +154,7 @@ repositories {
 dependencies {
     deobfCompile "com.mod-buildcraft:buildcraft:7.99.19"
     compileOnly 'org.projectlombok:lombok:1.16.8'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.2.240:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'

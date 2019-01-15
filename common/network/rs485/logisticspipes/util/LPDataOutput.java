@@ -41,8 +41,8 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.UUID;
-
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -57,6 +57,7 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+@ParametersAreNonnullByDefault
 public interface LPDataOutput {
 
 	/**
@@ -103,35 +104,35 @@ public interface LPDataOutput {
 	 *
 	 * @see java.io.DataOutput#writeUTF(String)
 	 */
-	void writeUTF(String s);
+	void writeUTF(@Nullable String s);
 
-	void writeByteArray(byte[] arr);
+	void writeByteArray(@Nullable byte[] arr);
 
 	void writeByteBuf(ByteBuf buffer);
 
-	void writeIntArray(int[] arr);
+	void writeIntArray(@Nullable int[] arr);
 
-	void writeLongArray(long[] arr);
+	void writeLongArray(@Nullable long[] arr);
 
-	void writeBooleanArray(boolean[] arr);
+	void writeBooleanArray(@Nullable boolean[] arr);
 
-	void writeFacing(EnumFacing direction);
+	void writeFacing(@Nullable EnumFacing direction);
 
-	void writeResourceLocation(ResourceLocation resource);
+	void writeResourceLocation(@Nullable ResourceLocation resource);
 
 	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 
 	void writeBitSet(BitSet bits);
 
-	void writeNBTTagCompound(NBTTagCompound tag);
+	void writeNBTTagCompound(@Nullable NBTTagCompound tag);
 
 	void writeItemStack(ItemStack itemstack);
 
-	void writeItemIdentifier(ItemIdentifier item);
+	void writeItemIdentifier(@Nullable ItemIdentifier item);
 
-	void writeItemIdentifierStack(ItemIdentifierStack stack);
+	void writeItemIdentifierStack(@Nullable ItemIdentifierStack stack);
 
-	<T> void writeCollection(Collection<T> collection, IWriteListObject<T> handler);
+	<T> void writeCollection(@Nullable Collection<T> collection, IWriteListObject<T> handler);
 
 	default <T extends LPFinalSerializable> void writeCollection(Collection<T> collection) {
 		writeCollection(collection, LPDataOutput::writeSerializable);
@@ -141,11 +142,11 @@ public interface LPDataOutput {
 
 	void writeBytes(byte[] arr);
 
-	void writeChannelInformation(@Nonnull ChannelInformation channel);
+	void writeChannelInformation(ChannelInformation channel);
 
-	void writeUUID(UUID uuid);
+	void writeUUID(@Nullable UUID uuid);
 
-	void writePlayerIdentifier(@Nonnull PlayerIdentifier playerIdentifier);
+	void writePlayerIdentifier(PlayerIdentifier playerIdentifier);
 
 	default void writeSerializable(LPFinalSerializable finalSerializable) {
 		finalSerializable.write(this);

@@ -43,6 +43,9 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -57,8 +60,10 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+@ParametersAreNonnullByDefault
 public interface LPDataInput {
 
+	@Nullable
 	byte[] readByteArray();
 
 	/**
@@ -99,46 +104,67 @@ public interface LPDataInput {
 	/**
 	 * @see java.io.DataInput#readUTF()
 	 */
+	@Nullable
 	String readUTF();
 
+	@Nullable
 	EnumFacing readFacing();
 
+	@Nullable
 	ResourceLocation readResourceLocation();
 
+	@Nonnull
 	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz);
 
+	@Nonnull
 	BitSet readBitSet();
 
+	@Nullable
 	NBTTagCompound readNBTTagCompound();
 
+	@Nullable
 	boolean[] readBooleanArray();
 
+	@Nullable
 	int[] readIntArray();
 
+	@Nonnull
 	byte[] readBytes(int length);
 
+	@Nullable
 	ItemIdentifier readItemIdentifier();
 
+	@Nullable
 	ItemIdentifierStack readItemIdentifierStack();
 
+	@Nonnull
 	ItemStack readItemStack();
 
+	@Nullable
 	<T> ArrayList<T> readArrayList(IReadListObject<T> reader);
 
+	@Nullable
 	<T> LinkedList<T> readLinkedList(IReadListObject<T> reader);
 
+	@Nullable
 	<T> Set<T> readSet(IReadListObject<T> handler);
 
+	@Nullable
 	<T extends Enum<T>> T readEnum(Class<T> clazz);
 
+	@Nonnull
 	ByteBuf readByteBuf();
 
+	@Nullable
 	long[] readLongArray();
 
+	@Nonnull
 	ChannelInformation readChannelInformation();
 
+	@Nullable
 	UUID readUUID();
 
+	@Nonnull
 	PlayerIdentifier readPlayerIdentifier();
 
 	//LPSerializable readSerializable(Class<? extends LPSerializable> serializableClass);

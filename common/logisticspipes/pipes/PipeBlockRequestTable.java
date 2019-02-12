@@ -53,7 +53,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -474,7 +473,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	public ItemStack getResultForClick() {
-		if(!getWorld().isRemote) {
+		if(MainProxy.isServer(getWorld())) {
 			ItemStack result = getOutput(true);
 			if (result.isEmpty()) {
 				result = getOutput(false);

@@ -286,11 +286,6 @@ public class MainProxy {
 			fakePlayers.put(dimId, fp);
 			return fp;
 		}
-		if (world instanceof WorldClient) {
-			FakePlayerLP fp = new FakePlayerLP(FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimId));
-			fakePlayers.put(dimId, fp);
-			return fp;
-		}
 		return null;
 	}
 

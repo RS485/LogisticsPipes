@@ -110,10 +110,12 @@ public final class StringUtils {
 			s = stackSize + "";
 		} else if (stackSize < 100000) {
 			s = stackSize / 1000 + "K";
-		} else if (stackSize < 1000000) {
-			s = "0M" + stackSize / 100000;
-		} else {
+		} else if (stackSize < 10000000) {
+			s = (int)stackSize / 1000000 + "M" + (stackSize - ((int)stackSize / 1000000) * 1000000) / 100000;
+		} else if (stackSize < 100000000) {
 			s = stackSize / 1000000 + "M";
+		} else {
+			s = (int)stackSize / 1000000000 + "G" + (stackSize - ((int)stackSize / 1000000000) * 1000000000) / 100000000;
 		}
 		return s;
 	}

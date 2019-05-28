@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Minecraft Server" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="GradleStartServer" />
-    <module name="network.rs485.logisticspipes.LogisticsPipes.main" />
+    <module name="LogisticsPipes.main" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/assets" />
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />

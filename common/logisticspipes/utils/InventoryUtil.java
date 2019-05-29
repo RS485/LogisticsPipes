@@ -60,7 +60,6 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public Map<ItemIdentifier, Integer> getItemsAndCount()
 	{
-		//System.out.println("I am searching inventory from " + _cropStart + " to " + (_inventory.getSlots() -  _cropEnd));
 		Map<ItemIdentifier, Integer> items = new LinkedHashMap<>();
 		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++)
 		{
@@ -69,7 +68,6 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			if (stack.isEmpty())
 				continue;
 
-			//System.out.println("Found " + stack + "in slot " + i);
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
 			int stackSize = stack.getCount() - (_hideOnePerStack ? 1 : 0);
 			Integer currentSize = items.get(itemId);

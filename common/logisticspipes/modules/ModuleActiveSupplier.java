@@ -310,16 +310,16 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		_service.getDebug().log("Supplier: Start calculating supply request");
 		//System.out.println("Supplier: Start calculating supply request");
 		//How many do I want?
-		HashMap<ItemIdentifier, Integer> needed = new HashMap<>(dummyInventory.getItemsAndCount());	///needed e un map care contine ce iteme vreau sa am pe lista la supply
+		HashMap<ItemIdentifier, Integer> needed = new HashMap<>(dummyInventory.getItemsAndCount());
 		_service.getDebug().log("Supplier: Needed: " + needed);
 		//System.out.println("Supplier: Needed: " + needed);
 
 		//How many do I have?
-		Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();	//invUtil e inventarul tinta, have e un map care vede cate iteme am in el
+		Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
 		_service.getDebug().log("Supplier: Have:   " + have);
 		//System.out.println("Supplier: Have:   " + have);
 
-		//efectiv mergeuiesc 2 iteme identice cu meta diferit
+
 		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<>();	//cam ca si have numa fara meta
 		for (Entry<ItemIdentifier, Integer> item : have.entrySet()) {
 			haveUndamaged.merge(item.getKey().getUndamaged(), item.getValue(), (a, b) -> a + b);
@@ -328,12 +328,12 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		//Reduce what I have and what have been requested already
 		for (Entry<ItemIdentifier, Integer> item : needed.entrySet())
 		{
-			Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());	//haveCount = cate iteme din felu ala am, se ignora meta(damage)
+			Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
 
-			if (haveCount == null)	//daca nu am itemul in inventar setez contoru pe 0
+			if (haveCount == null)
 				haveCount = 0;
 
-			int spaceAvailable = invUtil.roomForItem(item.getKey());	//cat loc am pentru item in inventar
+			int spaceAvailable = invUtil.roomForItem(item.getKey());
 			if (_requestMode == SupplyMode.Infinite)
 			{
 				Integer requestedCount = _requestedItems.get(item.getKey());

@@ -41,6 +41,7 @@ import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -200,6 +201,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getX(), getY(), getZ());
 
 		worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
+				.filter(adjacent -> !(adjacent.tileEntity instanceof LogisticsTileGenericPipe))
 				.map(adjacent -> {
 					EnumFacing direction = adjacent.direction.getOpposite();
 					if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {

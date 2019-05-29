@@ -58,21 +58,26 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
-	public Map<ItemIdentifier, Integer> getItemsAndCount() {
+	public Map<ItemIdentifier, Integer> getItemsAndCount()
+	{
+		//System.out.println("I am searching inventory from " + _cropStart + " to " + (_inventory.getSlots() -  _cropEnd));
 		Map<ItemIdentifier, Integer> items = new LinkedHashMap<>();
-		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
+		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++)
+		{
 			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack.isEmpty()) {
+
+			if (stack.isEmpty())
 				continue;
-			}
+
+			//System.out.println("Found " + stack + "in slot " + i);
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
 			int stackSize = stack.getCount() - (_hideOnePerStack ? 1 : 0);
 			Integer currentSize = items.get(itemId);
-			if (currentSize == null) {
+			if (currentSize == null)
 				items.put(itemId, stackSize - (_hideOne ? 1 : 0));
-			} else {
+			else
 				items.put(itemId, currentSize + stackSize);
-			}
+
 		}
 		return items;
 	}

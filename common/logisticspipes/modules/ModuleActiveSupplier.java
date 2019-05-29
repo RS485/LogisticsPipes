@@ -41,6 +41,7 @@ import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -190,21 +191,26 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public void tick() {
-		if (!_service.isNthTick(100)) {
+	public void tick()
+	{
+		if (!_service.isNthTick(100))
 			return;
-		}
+
 
 		_requestedItems.values().stream().filter(amount -> amount > 0).forEach(amount -> _service.spawnParticle(Particles.VioletParticle, 2));
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getX(), getY(), getZ());
 
 		worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-				.map(adjacent -> {
+				.map(adjacent ->
+				{
 					EnumFacing direction = adjacent.direction.getOpposite();
 					if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
 						direction = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
 					}
+					if(adjacent.tileEntity instanceof LogisticsTileGenericPipe)
+						return null; //we do not want to insert into other connected pipe
+
 					return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent.tileEntity, direction);
 				})
 				.filter(Objects::nonNull)
@@ -299,30 +305,37 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		}
 	}
 
-	private void createSupplyRequest(IInventoryUtil invUtil) {
+	private void createSupplyRequest(IInventoryUtil invUtil)
+	{
 		_service.getDebug().log("Supplier: Start calculating supply request");
+		//System.out.println("Supplier: Start calculating supply request");
 		//How many do I want?
-		HashMap<ItemIdentifier, Integer> needed = new HashMap<>(dummyInventory.getItemsAndCount());
+		HashMap<ItemIdentifier, Integer> needed = new HashMap<>(dummyInventory.getItemsAndCount());	///needed e un map care contine ce iteme vreau sa am pe lista la supply
 		_service.getDebug().log("Supplier: Needed: " + needed);
+		//System.out.println("Supplier: Needed: " + needed);
 
 		//How many do I have?
-		Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
+		Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();	//invUtil e inventarul tinta, have e un map care vede cate iteme am in el
 		_service.getDebug().log("Supplier: Have:   " + have);
+		//System.out.println("Supplier: Have:   " + have);
 
-		//How many do I have?
-		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<>();
+		//efectiv mergeuiesc 2 iteme identice cu meta diferit
+		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<>();	//cam ca si have numa fara meta
 		for (Entry<ItemIdentifier, Integer> item : have.entrySet()) {
 			haveUndamaged.merge(item.getKey().getUndamaged(), item.getValue(), (a, b) -> a + b);
 		}
 
 		//Reduce what I have and what have been requested already
-		for (Entry<ItemIdentifier, Integer> item : needed.entrySet()) {
-			Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
-			if (haveCount == null) {
+		for (Entry<ItemIdentifier, Integer> item : needed.entrySet())
+		{
+			Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());	//haveCount = cate iteme din felu ala am, se ignora meta(damage)
+
+			if (haveCount == null)	//daca nu am itemul in inventar setez contoru pe 0
 				haveCount = 0;
-			}
-			int spaceAvailable = invUtil.roomForItem(item.getKey());
-			if (_requestMode == SupplyMode.Infinite) {
+
+			int spaceAvailable = invUtil.roomForItem(item.getKey());	//cat loc am pentru item in inventar
+			if (_requestMode == SupplyMode.Infinite)
+			{
 				Integer requestedCount = _requestedItems.get(item.getKey());
 				if (requestedCount != null) {
 					spaceAvailable -= requestedCount;
@@ -331,7 +344,8 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 				continue;
 
 			}
-			if (spaceAvailable == 0 || (_requestMode == SupplyMode.Bulk50 && haveCount > item.getValue() / 2) || (_requestMode == SupplyMode.Bulk100 && haveCount >= item.getValue())) {
+			if (spaceAvailable == 0 || (_requestMode == SupplyMode.Bulk50 && haveCount > item.getValue() / 2) || (_requestMode == SupplyMode.Bulk100 && haveCount >= item.getValue()))
+			{
 				item.setValue(0);
 				continue;
 			}
@@ -347,6 +361,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		}
 
 		_service.getDebug().log("Supplier: Missing:   " + needed);
+		//System.out.println("Supplier: Missing:   " + needed);
 
 		setRequestFailed(false);
 

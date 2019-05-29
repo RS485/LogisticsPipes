@@ -19,7 +19,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+
+import appeng.api.storage.IMEInventoryHandler;
 
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -52,7 +55,14 @@ public class InventoryUtilFactory {
 		return getHidingInventoryUtil(adj.tileEntity, adj.direction.getOpposite(), false, false, 0, 0);
 	}
 
-	public IInventoryUtil getInventoryUtil(TileEntity inv, EnumFacing dir) {
+	public IInventoryUtil getInventoryUtil(TileEntity inv, EnumFacing dir)
+	{
+		/*int defaultend = 0;
+		if(inv != null && inv.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir))
+		{
+			IItemHandler itemhandler = inv.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir);
+			defaultend = itemhandler.getSlots();
+		}*/
 		return getHidingInventoryUtil(inv, dir, false, false, 0, 0);
 	}
 

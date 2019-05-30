@@ -8,6 +8,7 @@
 
 package logisticspipes.utils.item;
 
+import javax.annotation.Nonnull;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -48,8 +48,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.ForgeRegistry;
 
 import lombok.AllArgsConstructor;
@@ -474,7 +472,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return modName;
 	}
 
-	@SideOnly(Side.CLIENT)
 	public String getCreativeTabName() {
 		if (creativeTabName == null) {
 			CreativeTabs tab = item.getCreativeTab();
@@ -487,7 +484,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			}
 
 			if (tab != null) {
-				creativeTabName = tab.getTabLabel();
+				creativeTabName = tab.tabLabel;
 			}
 		}
 		return creativeTabName;
@@ -727,9 +724,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			getUndamaged().debugDumpData(isClient);
 		}
 		System.out.println("Mod: " + getModName());
-		if (isClient) {
-			System.out.println("CreativeTab: " + getCreativeTabName());
-		}
+		System.out.println("CreativeTab: " + getCreativeTabName());
 		if (getDictIdentifiers() != null) {
 			getDictIdentifiers().debugDumpData(isClient);
 		}

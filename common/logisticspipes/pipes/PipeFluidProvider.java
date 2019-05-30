@@ -177,12 +177,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 		}
 		return result;
 	}
-
-	@Override
-	public boolean disconnectPipe(TileEntity tile, EnumFacing dir) {
-		return SimpleServiceLocator.pipeInformationManager.isFluidPipe(tile);
-	}
-
+	
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_LIQUID_PROVIDER;

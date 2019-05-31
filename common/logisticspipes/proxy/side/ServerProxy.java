@@ -255,4 +255,9 @@ public class ServerProxy implements IProxy {
 	@Override
 	public void initModelLoader() {}
 
+	@Override
+	public int getRenderIndex() {
+		return 0;
+	}
+
 }

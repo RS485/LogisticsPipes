@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.ITubeOrientation;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.object3d.operation.*;
 
 import net.minecraft.client.particle.ParticleManager;
@@ -567,12 +568,12 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			LogisticsNewRenderPipe.statusTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-status")));
 			LogisticsNewRenderPipe.statusBCTexture = SimpleServiceLocator.cclProxy.createIconTransformer(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-status-BC")));
 		} else {
-			LogisticsNewRenderPipe.basicPipeTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel")));
-			LogisticsNewRenderPipe.inactiveTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel-inactive")));
-			LogisticsNewRenderPipe.innerBoxTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/InnerBox")));
-			LogisticsNewRenderPipe.glassCenterTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/Glass_Texture_Center")));
-			LogisticsNewRenderPipe.statusTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel-status")));
-			LogisticsNewRenderPipe.statusBCTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "pipes/PipeModel-status-BC")));
+			LogisticsNewRenderPipe.basicPipeTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel")));
+			LogisticsNewRenderPipe.inactiveTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-inactive")));
+			LogisticsNewRenderPipe.innerBoxTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/InnerBox")));
+			LogisticsNewRenderPipe.glassCenterTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/Glass_Texture_Center")));
+			LogisticsNewRenderPipe.statusTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-status")));
+			LogisticsNewRenderPipe.statusBCTexture.update(iconRegister.registerSprite(new ResourceLocation("logisticspipes", "blocks/pipes/PipeModel-status-BC")));
 		}
 	}
 
@@ -616,6 +617,10 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	public static boolean checkAndCalculateRenderCache(LogisticsTileGenericPipe pipeTile) {
 		PipeRenderState renderState = pipeTile.renderState;
 
+		if (renderState.cachedRenderIndex != MainProxy.proxy.getRenderIndex()) {
+			renderState.clearRenderCaches();
+		}
+
 		if (renderState.cachedRenderer == null) {
 			List<RenderEntry> objectsToRender = new ArrayList<>();
 
@@ -626,6 +631,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				pipeTile.pipe.getSpecialRenderer().renderToList(pipeTile.pipe, objectsToRender);
 			}
 
+			renderState.cachedRenderIndex = MainProxy.proxy.getRenderIndex();
 			renderState.cachedRenderer = Collections.unmodifiableList(objectsToRender);
 			return true;
 		}

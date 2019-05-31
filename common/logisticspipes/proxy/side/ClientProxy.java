@@ -70,6 +70,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ClientProxy implements IProxy {
 
+	int renderIndex = 0;
 
 	@Override
 	public String getSide() {
@@ -273,6 +274,7 @@ public class ClientProxy implements IProxy {
 		LogisticsNewRenderPipe.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewPipeModel.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 		SimpleServiceLocator.thermalDynamicsProxy.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
+		renderIndex++;
 	}
 
 	@Override
@@ -280,6 +282,11 @@ public class ClientProxy implements IProxy {
 		ModelLoaderRegistry.registerLoader(new LogisticsNewPipeModel.LogisticsNewPipeModelLoader());
 		ModelLoaderRegistry.registerLoader(new LogisticsBlockModel.Loader());
 		ModelLoaderRegistry.registerLoader(new FluidContainerRenderer.FluidContainerRendererModelLoader());
+	}
+
+	@Override
+	public int getRenderIndex() {
+		return renderIndex;
 	}
 
 }

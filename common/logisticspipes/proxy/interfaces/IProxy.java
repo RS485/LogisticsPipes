@@ -57,4 +57,5 @@ public interface IProxy {
 
 	void initModelLoader();
 
+	int getRenderIndex();
 }

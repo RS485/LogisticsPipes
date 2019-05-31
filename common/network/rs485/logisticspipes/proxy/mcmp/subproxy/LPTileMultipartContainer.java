@@ -22,8 +22,10 @@ package network.rs485.logisticspipes.proxy.mcmp.subproxy;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -44,21 +46,26 @@ public class LPTileMultipartContainer extends TileMultipartContainer.Ticking {
 
 	private static final Field isInWorldField;
 	private static final Field partsField;
+	private static final Field tickingPartsField;
 
 	static {
 		try {
 			isInWorldField = TileMultipartContainer.class.getDeclaredField("isInWorld");
 			partsField = TileMultipartContainer.class.getDeclaredField("parts");
+			tickingPartsField = TileMultipartContainer.Ticking.class.getDeclaredField("tickingParts");
 		} catch (NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}
 		isInWorldField.setAccessible(true);
 		partsField.setAccessible(true);
+		tickingPartsField.setAccessible(true);
 	}
 
 	private final LogisticsTileGenericPipe pipe;
 	private Map<IPartSlot, PartInfo> parts = null;
 	private PartInfo partInfo = null;
+
+	private final Set<ITickable> superTickingParts;
 
 	@SneakyThrows({IllegalAccessException.class})
 	public LPTileMultipartContainer(LogisticsTileGenericPipe pipe) {
@@ -67,6 +74,8 @@ public class LPTileMultipartContainer extends TileMultipartContainer.Ticking {
 		isInWorldField.set(this, false);
 		this.setWorld(pipe.getWorld());
 		this.setPos(pipe.getBlockPos());
+
+		superTickingParts = (Set<ITickable>) tickingPartsField.get(this);
 	}
 
 	@Override
@@ -109,6 +118,7 @@ public class LPTileMultipartContainer extends TileMultipartContainer.Ticking {
 
 	@Override
 	protected void updateWorldState() {
+		if(this.superTickingParts.isEmpty()) return; //
 		//super.updateWorldState();
 		LPTickHandler.getWorldInfo(getWorld()).setSkipBlockUpdateForWorld(true);
 		IBlockState prevSt = this.getWorld().getBlockState(this.getPos());

@@ -315,7 +315,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (_cachedAdjacentInventories == null) {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
 			_cachedAdjacentInventories = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)).map(adjacent -> adjacent.tileEntity)
+					.filter(adjacent -> adjacent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) && !(adjacent.tileEntity instanceof LogisticsTileGenericPipe))
+					.map(adjacent -> adjacent.tileEntity)
 					.collect(Collectors.toList());
 		}
 		return _cachedAdjacentInventories;

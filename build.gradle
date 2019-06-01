@@ -12,10 +12,12 @@ buildscript {
         }
     }
     dependencies {
-		classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
+apply plugin: 'kotlin'
 apply plugin: 'net.minecraftforge.gradle.forge'
 //apply plugin: 'curseforge'
 
@@ -65,25 +67,9 @@ jar {
 
 // configure  the source folders
 sourceSets {
-    main {
-        java {
-            srcDir 'common'
-        }
-        resources {
-            srcDir 'resources'
-        }
-    }
-    api {
-        java {
-            srcDir 'dummy'
-            srcDir 'api'
-        }
-    }
-    test {
-        java {
-            srcDir 'test'
-        }
-    }
+    main.java.srcDirs += 'common'
+    main.resources.srcDirs += 'resources'
+    api.java.srcDirs += 'dummy'
 }
 
 test {
@@ -125,6 +111,9 @@ repositories {
         url = "http://dvs1.progwml6.com/files/maven"
     }
     maven {
+        url "http://maven.shadowfacts.net/"
+    }
+    maven {
         url = "https://cc.crzd.me/maven/"
     }
     maven {
@@ -154,6 +143,7 @@ repositories {
 dependencies {
     deobfCompile "com.mod-buildcraft:buildcraft:7.99.19"
     compileOnly 'org.projectlombok:lombok:1.16.8'
+    compile group: "net.shadowfacts", name: "Forgelin", version: "1.8.2"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.2.240:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'

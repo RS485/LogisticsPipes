@@ -1,4 +1,6 @@
 language: java
+install: ./gradlew clean setupCiWorkspace
+script: ./gradlew build
 jdk:
   - oraclejdk8
 before_cache:

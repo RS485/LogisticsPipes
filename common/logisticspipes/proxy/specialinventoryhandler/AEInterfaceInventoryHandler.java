@@ -86,12 +86,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return getItemsAndCount(false);
 	}
 
-	private HashMap<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
-		HashMap<ItemIdentifier, Integer> result;
+	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
+		Map<ItemIdentifier, Integer> result;
 		if (linked) {
 			result = new LinkedHashMap<>();
 		} else {
@@ -246,40 +246,35 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 }
 
-class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase>
-{
+class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase> {
+
 	@CapabilityInject(IStorageMonitorableAccessor.class)
 	public static final Capability<IStorageMonitorableAccessor> STORAGE_MONITORABLE_ACCESSOR_CAPABILITY = null;
 
 	private IStorageMonitorableAccessor instance = STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getDefaultInstance();
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
-	{
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
 		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY;
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
-	{
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY ? STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.<T> cast(this.instance) : null;
 	}
 
 	@Override
-	public NBTBase serializeNBT()
-	{
+	public NBTBase serializeNBT() {
 		return STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getStorage().writeNBT(STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, this.instance, null);
 	}
 
 	@Override
-	public void deserializeNBT(NBTBase nbt)
-	{
+	public void deserializeNBT(NBTBase nbt) {
 		STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getStorage().readNBT(STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, this.instance, null, nbt);
 	}
 }
 
-class LPActionSource implements IActionSource
-{
+class LPActionSource implements IActionSource {
 
 	IGridHost host;
 	public LPActionSource(AEInterfaceInventoryHandler invh) {

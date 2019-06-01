@@ -68,10 +68,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean isType(TileEntity tile, EnumFacing dir) {
-		if(tile  instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir)) {
-			return true;
-		}
-		return false;
+		return tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
 	}
 
 	@Override

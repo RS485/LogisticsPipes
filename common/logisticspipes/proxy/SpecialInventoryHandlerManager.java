@@ -19,8 +19,7 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 
-		if (Loader.isModLoaded("AppliedEnergistics2-Core") || Loader.isModLoaded("appliedenergistics2-core")) {
-			System.out.println("Loaded AE2!");		//TODO remove this
+		if (Loader.isModLoaded("appliedenergistics2")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
 

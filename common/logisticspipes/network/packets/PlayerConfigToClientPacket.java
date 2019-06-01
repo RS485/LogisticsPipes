@@ -2,23 +2,20 @@ package logisticspipes.network.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class PlayerConfigToClientPacket extends ModernPacket {
 
-	@Getter
 	@Setter
-	private PlayerConfig config;
+	private ClientConfiguration config;
 
 	public PlayerConfigToClientPacket(int id) {
 		super(id);
@@ -26,7 +23,7 @@ public class PlayerConfigToClientPacket extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
-		LogisticsPipes.getClientPlayerConfig().readData(input);
+		LogisticsPipes.getClientPlayerConfig().read(input);
 	}
 
 	@Override
@@ -34,7 +31,7 @@ public class PlayerConfigToClientPacket extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		config.writeData(output);
+		config.write(output);
 	}
 
 	@Override

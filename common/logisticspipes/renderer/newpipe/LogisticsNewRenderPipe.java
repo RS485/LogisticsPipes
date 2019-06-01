@@ -1,46 +1,28 @@
 package logisticspipes.renderer.newpipe;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import logisticspipes.interfaces.ITubeOrientation;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.object3d.operation.*;
-
-import net.minecraft.client.particle.ParticleManager;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.pipefxhandlers.EntityModelFX;
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IBounds;
-import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.interfaces.IVec3;
-import logisticspipes.renderer.state.PipeRenderState;
-import logisticspipes.textures.Textures;
-import logisticspipes.utils.tuples.Quartet;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -50,6 +32,33 @@ import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ITubeOrientation;
+import logisticspipes.pipefxhandlers.EntityModelFX;
+import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IBounds;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
+import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
+import logisticspipes.proxy.object3d.operation.LPScale;
+import logisticspipes.proxy.object3d.operation.LPTranslation;
+import logisticspipes.proxy.object3d.operation.LPUVScale;
+import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
+import logisticspipes.proxy.object3d.operation.LPUVTranslation;
+import logisticspipes.renderer.state.PipeRenderState;
+import logisticspipes.textures.Textures;
+import logisticspipes.utils.tuples.Quartet;
+import network.rs485.logisticspipes.config.ClientConfiguration;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
@@ -577,7 +586,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 	}
 
-	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+	private ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 
 	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float partialTickTime, double distance) {
 		boolean inHand = false;

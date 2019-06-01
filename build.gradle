@@ -145,6 +145,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.16.8'
     compile group: "net.shadowfacts", name: "Forgelin", version: "1.8.2"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.google.code.gson:gson:2.8.0' // update this, when Forge is updated
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.2.240:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'

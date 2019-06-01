@@ -3,7 +3,6 @@ package logisticspipes.renderer;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -28,7 +27,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 
 	public static int renderPass = -1;
 
-	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+	private ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 	private LogisticsNewPipeWorldRenderer newRenderer = new LogisticsNewPipeWorldRenderer();
 
 	public static boolean renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {

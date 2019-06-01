@@ -17,8 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import logisticspipes.blocks.BlockDummy;
-import logisticspipes.recipes.*;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -54,15 +52,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.GameData;
-
-import lombok.Getter;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
+import logisticspipes.blocks.BlockDummy;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -75,7 +73,6 @@ import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.config.Configs;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.datafixer.LPDataFixer;
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
@@ -158,6 +155,12 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.proxy.te.ThermalExpansionProgressProvider;
+import logisticspipes.recipes.CraftingRecipes;
+import logisticspipes.recipes.LPChipRecipes;
+import logisticspipes.recipes.ModuleChippedCraftingRecipes;
+import logisticspipes.recipes.PipeChippedCraftingRecipes;
+import logisticspipes.recipes.RecipeManager;
+import logisticspipes.recipes.UpgradeChippedCraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
@@ -179,6 +182,8 @@ import logisticspipes.utils.StaticResolverUtil;
 import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.grow.TickExecutor;
+import network.rs485.logisticspipes.config.ClientConfiguration;
+import network.rs485.logisticspipes.config.ServerConfigurationManager;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -246,7 +251,8 @@ public class LogisticsPipes {
 
 	private Queue<Runnable> postInitRun = new LinkedList<>();
 	private static LPGlobalCCAccess generalAccess;
-	private static PlayerConfig playerConfig;
+	private static ClientConfiguration playerConfig;
+	private static ServerConfigurationManager serverConfigManager;
 
 	private List<Supplier<Pair<Item, Item>>> resetRecipeList = new ArrayList<>();
 
@@ -533,7 +539,7 @@ public class LogisticsPipes {
 		if (globalTickExecutor != null) {
 			globalTickExecutor.shutdownNow();
 		}
-		LogisticsEventListener.serverShutdown();
+		LogisticsPipes.serverConfigManager = null;
 	}
 
 	@Mod.EventHandler
@@ -636,10 +642,17 @@ public class LogisticsPipes {
 		GameData.register_impl(recipe);
 	}
 
-	public static PlayerConfig getClientPlayerConfig() {
+	public static ClientConfiguration getClientPlayerConfig() {
 		if (LogisticsPipes.playerConfig == null) {
-			LogisticsPipes.playerConfig = new PlayerConfig(true, null);
+			LogisticsPipes.playerConfig = new ClientConfiguration();
 		}
 		return LogisticsPipes.playerConfig;
+	}
+
+	public static ServerConfigurationManager getServerConfigManager() {
+ 		if (LogisticsPipes.serverConfigManager == null) {
+ 			LogisticsPipes.serverConfigManager = new ServerConfigurationManager();
+		}
+ 		return LogisticsPipes.serverConfigManager;
 	}
 }

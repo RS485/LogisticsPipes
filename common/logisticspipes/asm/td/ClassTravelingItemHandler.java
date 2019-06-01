@@ -27,7 +27,7 @@ public class ClassTravelingItemHandler {
 		if (!"512A30E22A9C24032AAE7CE51271339A4F68D344".equals(sumHandleEvent1) && !"2166AB8FF647A90701787CCCFB4CD1C065BE640D".equals(sumHandleEvent1)) {
 			noChecksumMatch = true;
 		}
-		if (!"E8DD6BEB9676D079E6C97FF8206283E766147E45".equals(sumHandleEvent2) && !"BB4178915C3A10EBAC5158B8742592388E47B181".equals(sumHandleEvent2)) {
+		if (!"E8DD6BEB9676D079E6C97FF8206283E766147E45".equals(sumHandleEvent2) && !"BB4178915C3A10EBAC5158B8742592388E47B181".equals(sumHandleEvent2) && !"0151577E2B8CF9BF2D528A309D5AE919308ABE03".equals(sumHandleEvent2)) {
 			noChecksumMatch = true;
 		}
 		if (!"98A853547FA1771D6D7D63E0458960405DFEE092".equals(sumHandleEvent3)) {

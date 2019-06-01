@@ -35,6 +35,7 @@ public class PipeRenderState implements IClientState {
 
 	public List<RenderEntry> cachedRenderer = null;
 	public Cache<LocalCacheType, Object> objectCache = CacheBuilder.newBuilder().build();
+	public int cachedRenderIndex = -1;
 	public boolean forceRenderOldPipe = false;
 	private boolean[] solidSidesCache = new boolean[6];
 	private boolean savedStateHasMCMultiParts = false;

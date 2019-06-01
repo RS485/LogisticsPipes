@@ -1,4 +1,3 @@
-/*
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
@@ -14,8 +13,10 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
@@ -23,32 +24,42 @@ import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.storage.IStorageMonitorable;
+import appeng.api.storage.IStorageMonitorableAccessor;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
+import appeng.api.util.AEPartLocation;
 
-*/
+
 /*
  * Compatibility for Applied Energistics
  * http://www.minecraftforum.net/topic/1625015-151-applied-energistics-rv-10-f-and-rv-9-i/
- *//*
+ */
 
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
-	private final ITileStorageMonitorable tile;
+	private final TileEntity tile;
+	private  IStorageMonitorableAccessor acc;
+	//private final IStorageMonitorable plm;
 	private final boolean hideOnePerStack;
-	private final MachineSource source;
+	//private final MachineSource source;
+	public final IActionSource source;
 	private final EnumFacing dir;
 	public boolean init = false;
 	LinkedList<Entry<ItemIdentifier, Integer>> cached;
+
+	@CapabilityInject(IStorageMonitorableAccessor.class)
+	static Capability<IStorageMonitorableAccessor> STORAGE_MONITORABLE_ACCESSOR = null;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		if (dir.equals(null)) {
 			throw new IllegalArgumentException("The direction must not be unknown");
 		}
-		this.tile = (ITileStorageMonitorable) tile;
+
+		this.tile = tile;
+		this.acc =  tile.getCapability(STORAGE_MONITORABLE_ACCESSOR, null);
 		this.hideOnePerStack = hideOnePerStack || hideOne;
-		source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
+		source = new LPActionHost(((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir)));
 		this.dir = dir;
 	}
 
@@ -67,7 +78,10 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return tile instanceof ITileStorageMonitorable && tile instanceof IGridHost;
+		if(tile instanceof IGridHost && tile.hasCapability(STORAGE_MONITORABLE_ACCESSOR, null))
+			return true;
+		return false;
+		//return tile instanceof ITileStorageMonitorable && tile instanceof IGridHost;
 	}
 
 	@Override
@@ -87,11 +101,11 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		} else {
 			result = new HashMap<>();
 		}
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if (tmp == null || tmp.getInventory() == null || tmp.getInventory().getStorageList() == null) {
 			return result;
 		}
-		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
+		for (IAEItemStack items : tmp.getInventory().getStorageList()) {
 			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
 			Integer count = result.get(ident);
 			if (count != null) {
@@ -266,4 +280,4 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		}
 	}
 }
-*/
+

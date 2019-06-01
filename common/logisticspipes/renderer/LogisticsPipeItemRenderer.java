@@ -2,7 +2,6 @@
 package logisticspipes.renderer;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemRenderer;
@@ -21,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 public class LogisticsPipeItemRenderer implements IItemRenderer {
 
-	private PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+	private ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 	private LogisticsNewPipeItemRenderer newRenderer;
 
 	private final boolean renderAsBlock;

@@ -60,7 +60,6 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-@ParametersAreNonnullByDefault
 public interface LPDataInput {
 
 	@Nullable

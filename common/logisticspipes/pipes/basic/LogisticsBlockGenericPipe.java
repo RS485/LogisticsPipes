@@ -13,9 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
-import logisticspipes.LPBlocks;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -52,10 +49,16 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.IForgeRegistry;
 
+import static logisticspipes.LPConstants.PIPE_MAX_POS;
+import static logisticspipes.LPConstants.PIPE_MIN_POS;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import logisticspipes.LPBlocks;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -67,14 +70,10 @@ import logisticspipes.renderer.newpipe.PropertyCache;
 import logisticspipes.renderer.newpipe.PropertyRenderList;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.LPPositionSet;
-import net.minecraftforge.registries.IForgeRegistry;
-
+import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.proxy.mcmp.BlockAccessDelegate;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
-
-import static logisticspipes.LPConstants.PIPE_MAX_POS;
-import static logisticspipes.LPConstants.PIPE_MIN_POS;
 
 public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
@@ -840,7 +839,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 			return false;
 		}
 
-		PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+		ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 		//if (config.isUseNewRenderer()) {
 			LogisticsNewRenderPipe.renderDestruction(pipe, world, pos.getX(), pos.getY(), pos.getZ(), effectRenderer);
 		/*} else {

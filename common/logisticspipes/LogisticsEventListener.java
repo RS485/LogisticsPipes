@@ -1,7 +1,6 @@
 package logisticspipes;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -49,7 +48,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.config.Configs;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
@@ -73,13 +71,13 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
 
 	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<>();
 	public static Map<ChunkPos, PlayerCollectionList> watcherList = new ConcurrentHashMap<>();
-	public static Map<PlayerIdentifier, PlayerConfig> playerConfigs = new HashMap<>();
 
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
@@ -196,19 +194,13 @@ public class LogisticsEventListener {
 		}
 
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
-		PlayerConfig config = LogisticsEventListener.getPlayerConfig(PlayerIdentifier.get(event.player));
+		ClientConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(PlayerIdentifier.get(event.player));
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PlayerConfigToClientPacket.class).setConfig(config), event.player);
 	}
 
 	@SubscribeEvent
 	public void onPlayerLogout(PlayerLoggedOutEvent event) {
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
-		PlayerIdentifier ident = PlayerIdentifier.get(event.player);
-		PlayerConfig config = LogisticsEventListener.getPlayerConfig(ident);
-		if (config != null) {
-			config.writeToFile();
-		}
-		LogisticsEventListener.playerConfigs.remove(ident);
 	}
 
 	@AllArgsConstructor
@@ -299,21 +291,6 @@ public class LogisticsEventListener {
 				}
 			});
 		}
-	}
-
-	public static void serverShutdown() {
-		LogisticsEventListener.playerConfigs.values().forEach(PlayerConfig::writeToFile);
-		LogisticsEventListener.playerConfigs.clear();
-	}
-
-	public static PlayerConfig getPlayerConfig(PlayerIdentifier ident) {
-		PlayerConfig config = LogisticsEventListener.playerConfigs.get(ident);
-		if (config == null) {
-			config = new PlayerConfig(ident);
-			config.readFromFile();
-			LogisticsEventListener.playerConfigs.put(ident, config);
-		}
-		return config;
 	}
 
 	@SubscribeEvent

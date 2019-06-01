@@ -74,7 +74,6 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-@ParametersAreNonnullByDefault
 public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	private static final Charset UTF_8 = Charset.forName("utf-8");
@@ -603,7 +602,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		int damage = readInt();
 		ItemStack stack = new ItemStack(Item.getItemById(itemId), stackSize, damage);
 		// may be null, see code
-		//noinspection ConstantConditions
 		stack.setTagCompound(readNBTTagCompound());
 		return stack;
 	}

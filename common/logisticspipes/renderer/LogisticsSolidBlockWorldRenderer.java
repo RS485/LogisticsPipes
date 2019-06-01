@@ -12,12 +12,11 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.config.PlayerConfig;
 import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
 
 public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHandler {
 
-	public PlayerConfig config;
+	public ClientConfiguration config;
 	LogisticsNewSolidBlockWorldRenderer newRenderer = new LogisticsNewSolidBlockWorldRenderer();
 
 	public LogisticsSolidBlockWorldRenderer() {

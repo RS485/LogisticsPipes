@@ -1,14 +1,5 @@
 package logisticspipes.gui;
 
-import logisticspipes.LPItems;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.PlayerConfig;
-import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.GuiCheckBox;
-import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
-import logisticspipes.utils.gui.InputBar;
-import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -17,6 +8,18 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import logisticspipes.LPItems;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.PlayerConfigToServerPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiCheckBox;
+import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
+import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.config.ClientConfiguration;
 
 public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
@@ -43,15 +46,15 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void initTab() {
-			PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+			ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 			if (renderDistance == null) {
 				renderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 75, 30, 15, false, true, InputBar.Align.RIGHT);
-				renderDistance.input1 = config.getRenderPipeDistance() + "";
+				renderDistance.input1 = Integer.toString(config.getRenderPipeDistance());
 			}
 			renderDistance.reposition(15, 80, 30, 15);
 			if (contentRenderDistance == null) {
 				contentRenderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 105, 30, 15, false, true, InputBar.Align.RIGHT);
-				contentRenderDistance.input1 = config.getRenderPipeContentDistance() + "";
+				contentRenderDistance.input1 = Integer.toString(config.getRenderPipeContentDistance());
 			}
 			contentRenderDistance.reposition(15, 110, 30, 15);
 			//useNewRendererButton = (GuiCheckBox) addButton(new GuiCheckBox(0, guiLeft + 15, guiTop + 30, 16, 16, config.isUseNewRenderer()));
@@ -109,7 +112,7 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void guiClose() {
-			PlayerConfig config = LogisticsPipes.getClientPlayerConfig();
+			ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 			try {
 				config.setRenderPipeDistance(Integer.valueOf(renderDistance.getContent()));
 				config.setRenderPipeContentDistance(Integer.valueOf(contentRenderDistance.getContent()));
@@ -118,7 +121,10 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 			}
 			//config.setUseNewRenderer(useNewRendererButton.getState());
 			//config.setUseFallbackRenderer(useFallbackRendererButton.getState());
-			config.sendUpdate();
+
+			MainProxy.sendPacketToServer(
+					PacketHandler.getPacket(PlayerConfigToServerPacket.class).setConfig(config));
+
 		}
 	}
 }

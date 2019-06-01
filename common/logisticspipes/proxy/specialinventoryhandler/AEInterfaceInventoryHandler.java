@@ -50,7 +50,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		if (dir.equals(null)) {
 			throw new IllegalArgumentException("The direction must not be unknown");
 		}
-		//System.out.println("Constructor...");
 
 		this.tile =  tile;
 		this.hideOnePerStack = hideOnePerStack || hideOne;
@@ -92,7 +91,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	private HashMap<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
-		//System.out.println("Querying items... l=" + linked);
 		HashMap<ItemIdentifier, Integer> result;
 		if (linked) {
 			result = new LinkedHashMap<>();
@@ -108,7 +106,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 		IItemList<IAEItemStack> items = tmp.getInventory(channel).getStorageList();
 		for (IAEItemStack item : items) {
-			//System.out.println(item);
 			ItemIdentifier ident = ItemIdentifier.get(item.createItemStack());
 			Integer count = result.get(ident);
 			if (count != null) {
@@ -122,7 +119,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
-		//System.out.println("Get single item " + item);
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null) {
@@ -138,7 +134,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
-		//System.out.println("Contains undamaged: " + itemIdent.item);
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null || tmp.getInventory(channel).getStorageList() == null) {
@@ -161,7 +156,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier itemIdent, int count) {
-		//System.out.println("Room for item: " + itemIdent.makeNormalStack(count) + ", s=" + count);
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null) {
@@ -184,7 +178,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
-		//System.out.println("Get items ");
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		Set<ItemIdentifier> result = new TreeSet<>();
 		IStorageMonitorable tmp = acc.getInventory(source);
@@ -204,12 +197,10 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		if (cached == null) {
 			initCache();
 		}
-		//System.out.println("Get size: " + cached.size());
 		return cached.size();
 	}
 
 	public void initCache() {
-		//System.out.println("Init cache ");
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
 		cached = new LinkedList<>();
 		cached.addAll(map.entrySet().stream().collect(Collectors.toList()));
@@ -217,7 +208,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		//System.out.println("Get stack in slot " + i);
 		if (cached == null) {
 			initCache();
 		}
@@ -230,7 +220,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		//System.out.println("Dec stack size " + i + " " + j);
 		if (cached == null) {
 			initCache();
 		}
@@ -242,7 +231,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
-		//System.out.println("ADD " + stack + " " + doAdd);
 		ItemStack st = stack.copy();
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IAEItemStack tst = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(stack);

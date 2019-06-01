@@ -113,16 +113,16 @@ processResources {
 
 repositories {
     maven {
+        name = "RS485 Cache"
+        url = "https://rs485.network/maven-cache/"
+    }
+    maven {
         name = 'CB Repo'
         url = "http://chickenbones.net/maven/"
     }
     maven {
         name = "JEI Maven."
         url = "http://dvs1.progwml6.com/files/maven"
-    }
-    maven {
-        name = "player"
-        url = "http://maven.ic2.player.to"
     }
     maven {
         url = "https://cc.crzd.me/maven/"

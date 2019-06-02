@@ -121,7 +121,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		if (tmp == null || tmp.getInventory(channel) == null) {
 			return null;
 		}
-		IAEItemStack stack = AEApi.instance().storage().getStorageChannel( IItemStorageChannel.class).createStack(item.makeNormalStack(1));
+		IAEItemStack stack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(item.makeNormalStack(1));
 		IAEItemStack extract = tmp.getInventory(channel).extractItems(stack, Actionable.MODULATE, source);
 		if (extract == null) {
 			return null;

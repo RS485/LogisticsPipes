@@ -222,7 +222,10 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 					break;
 				}
 
-				jamList.add(reply.getValue1());
+				if(count <= 0) {
+					jamList.add(reply.getValue1());
+				}
+
 				reply = _service.hasDestination(item.getKey(), true, jamList);
 			}
 			return;

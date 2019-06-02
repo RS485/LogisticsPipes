@@ -4,6 +4,7 @@ import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.StorageDrawersInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 
 import net.minecraftforge.fml.common.Loader;
 
@@ -18,9 +19,9 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 
-/*		if (Loader.isModLoaded("AppliedEnergistics2-Core") || Loader.isModLoaded("appliedenergistics2-core")) {
+		if (Loader.isModLoaded("appliedenergistics2")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
-		}*/
+		}
 
 		if (Loader.isModLoaded("storagedrawers")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new StorageDrawersInventoryHandler());

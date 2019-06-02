@@ -1,54 +1,61 @@
-/*
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
-import logisticspipes.utils.item.ItemIdentifier;
+import javax.annotation.Nonnull;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGridHost;
-import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
+import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.IStorageMonitorable;
+import appeng.api.storage.IStorageMonitorableAccessor;
+import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.api.util.AECableType;
+import appeng.api.storage.data.IItemList;
 
-*/
-/*
- * Compatibility for Applied Energistics
- * http://www.minecraftforum.net/topic/1625015-151-applied-energistics-rv-10-f-and-rv-9-i/
- *//*
-
+import logisticspipes.utils.item.ItemIdentifier;
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
-	private final ITileStorageMonitorable tile;
-	private final boolean hideOnePerStack;
-	private final MachineSource source;
-	private final EnumFacing dir;
 	public boolean init = false;
+	private final boolean hideOnePerStack;
+	private final TileEntity tile;
+	private final EnumFacing dir;
+	private IStorageMonitorableAccessor acc = null;
+	private LPActionSource source;
+	public IGridHost host;
 	LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		if (dir.equals(null)) {
 			throw new IllegalArgumentException("The direction must not be unknown");
 		}
-		this.tile = (ITileStorageMonitorable) tile;
+
+		this.tile =  tile;
 		this.hideOnePerStack = hideOnePerStack || hideOne;
-		source = new MachineSource(new LPActionHost(((IGridHost) tile).getGridNode(dir)));
+		this.acc = tile.getCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
+		host = (IGridHost) tile;
+		source = new LPActionSource(this);
 		this.dir = dir;
 	}
 
@@ -60,14 +67,14 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean init() {
-		init = true;
-		return true;
+	public boolean isType(TileEntity tile, EnumFacing dir) {
+		return tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
 	}
 
 	@Override
-	public boolean isType(TileEntity tile) {
-		return tile instanceof ITileStorageMonitorable && tile instanceof IGridHost;
+	public boolean init() {
+		init = true;
+		return true;
 	}
 
 	@Override
@@ -87,73 +94,52 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		} else {
 			result = new HashMap<>();
 		}
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
+
+		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if ((tmp == null) || (tmp.getInventory(channel) == null) || (tmp.getInventory(channel).getStorageList() == null)) {
 			return result;
 		}
-		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
-			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
+
+		IItemList<IAEItemStack> items = tmp.getInventory(channel).getStorageList();
+		for (IAEItemStack item : items) {
+			ItemIdentifier ident = ItemIdentifier.get(item.createItemStack());
 			Integer count = result.get(ident);
 			if (count != null) {
-				result.put(ident, (int) (count + items.getStackSize() - (hideOnePerStack ? 1 : 0)));
+				result.put(ident, (int) (count + item.getStackSize() - (hideOnePerStack ? 1 : 0)));
 			} else {
-				result.put(ident, (int) (items.getStackSize() - (hideOnePerStack ? 1 : 0)));
+				result.put(ident, (int) (item.getStackSize() - (hideOnePerStack ? 1 : 0)));
 			}
 		}
 		return result;
 	}
 
 	@Override
-	public Set<ItemIdentifier> getItems() {
-		Set<ItemIdentifier> result = new TreeSet<>();
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
-			return result;
-		}
-		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
-			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
-			result.add(ident);
-		}
-		return result;
-	}
-
-	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null) {
+		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if (tmp == null || tmp.getInventory(channel) == null) {
 			return null;
 		}
-		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(1));
-		IAEItemStack extract = tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source);
+		IAEItemStack stack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(item.makeNormalStack(1));
+		IAEItemStack extract = tmp.getInventory(channel).extractItems(stack, Actionable.MODULATE, source);
 		if (extract == null) {
 			return null;
 		}
-		return extract.getItemStack();
+		return extract.createItemStack();
 	}
 
 	@Override
-	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null) {
-			return null;
-		}
-		IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
-		IAEItemStack extract = tmp.getItemInventory().extractItems(stack, Actionable.MODULATE, source);
-		if (extract == null) {
-			return null;
-		}
-		return extract.getItemStack();
-	}
-
-	@Override
-	public boolean containsUndamagedItem(ItemIdentifier item) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null || tmp.getItemInventory().getStorageList() == null) {
+	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if (tmp == null || tmp.getInventory(channel) == null || tmp.getInventory(channel).getStorageList() == null) {
 			return false;
 		}
-		for (IAEItemStack items : tmp.getItemInventory().getStorageList()) {
-			ItemIdentifier ident = ItemIdentifier.get(items.getItemStack());
-			if (ident.equals(item)) {
+		IItemList<IAEItemStack> items = tmp.getInventory(channel).getStorageList();
+		for (IAEItemStack item : items) {
+			ItemIdentifier ident = ItemIdentifier.get(item.createItemStack());
+			if (ident.equals(itemIdent)) {
 				return true;
 			}
 		}
@@ -166,14 +152,15 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier item, int count) {
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null) {
+	public int roomForItem(ItemIdentifier itemIdent, int count) {
+		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if (tmp == null || tmp.getInventory(channel) == null) {
 			return 0;
 		}
 		while (count > 0) {
-			IAEItemStack stack = AEApi.instance().storage().createItemStack(item.makeNormalStack(count));
-			if (tmp.getItemInventory().canAccept(stack)) {
+			IAEItemStack stack = AEApi.instance().storage().getStorageChannel( IItemStorageChannel.class).createStack(itemIdent.makeNormalStack(count));
+			if (tmp.getInventory(channel).canAccept(stack)) {
 				return count;
 			}
 			count--;
@@ -182,24 +169,24 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
-		ItemStack st = stack.copy();
-		IAEItemStack tst = AEApi.instance().storage().createItemStack(stack);
-
-		IStorageMonitorable tmp = tile.getMonitorable(dir, source);
-		if (tmp == null || tmp.getItemInventory() == null) {
-			return st;
-		}
-		IAEItemStack overflow = tmp.getItemInventory().injectItems(tst, Actionable.MODULATE, source);
-		if (overflow != null) {
-			st.stackSize -= overflow.getStackSize();
-		}
-		return st;
+	public boolean isSpecialInventory() {
+		return true;
 	}
 
 	@Override
-	public boolean isSpecialInventory() {
-		return true;
+	public Set<ItemIdentifier> getItems() {
+		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+		Set<ItemIdentifier> result = new TreeSet<>();
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if (tmp == null || tmp.getInventory(channel) == null || tmp.getInventory(channel).getStorageList() == null) {
+			return result;
+		}
+		IItemList<IAEItemStack> items = tmp.getInventory(channel).getStorageList();
+		for (IAEItemStack item : items) {
+			ItemIdentifier ident = ItemIdentifier.get(item.createItemStack());
+			result.add(ident);
+		}
+		return result;
 	}
 
 	@Override
@@ -239,31 +226,74 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		return extracted;
 	}
 
-	private class LPActionHost implements IActionHost {
-
-		public IGridNode node;
-
-		public LPActionHost(IGridNode node) {
-			this.node = node;
+	@Override
+	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+		ItemStack st = stack.copy();
+		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+		IAEItemStack tst = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(stack);
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if (tmp == null || tmp.getInventory(channel) == null) {
+			return st;
 		}
-
-		@Override
-		public void securityBreak() {}
-
-		@Override
-		public IGridNode getGridNode(EnumFacing paramEnumFacing) {
-			return null;
+		IAEItemStack overflow = tmp.getInventory(channel).injectItems(tst, Actionable.MODULATE, source);
+		if (overflow != null) {
+			st.setCount((int)(st.getCount() - overflow.getStackSize()));
 		}
-
-		@Override
-		public AECableType getCableConnectionType(EnumFacing paramEnumFacing) {
-			return null;
-		}
-
-		@Override
-		public IGridNode getActionableNode() {
-			return node;
-		}
+		return st;
 	}
 }
-*/
+
+class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase> {
+
+	@CapabilityInject(IStorageMonitorableAccessor.class)
+	public static final Capability<IStorageMonitorableAccessor> STORAGE_MONITORABLE_ACCESSOR_CAPABILITY = null;
+
+	private IStorageMonitorableAccessor instance = STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getDefaultInstance();
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY;
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY ? STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.<T> cast(this.instance) : null;
+	}
+
+	@Override
+	public NBTBase serializeNBT() {
+		return STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getStorage().writeNBT(STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, this.instance, null);
+	}
+
+	@Override
+	public void deserializeNBT(NBTBase nbt) {
+		STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getStorage().readNBT(STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, this.instance, null, nbt);
+	}
+}
+
+class LPActionSource implements IActionSource {
+
+	IGridHost host;
+	public LPActionSource(AEInterfaceInventoryHandler invh) {
+		host = invh.host;
+	}
+
+	@Nonnull
+	@Override
+	public Optional<EntityPlayer> player() {
+		return Optional.empty();
+	}
+
+	@Nonnull
+	@Override
+	public Optional<IActionHost> machine() {
+		return Optional.ofNullable((IActionHost) this.host);
+	}
+
+	@Nonnull
+	@Override
+	public <T> Optional<T> context(@Nonnull Class<T> key) {
+		return Optional.empty();
+	}
+}
+

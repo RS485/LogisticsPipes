@@ -23,8 +23,7 @@ package network.rs485.logisticspipes.proxy.mcmp.subproxy;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
-
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ITickable;
@@ -32,7 +31,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import mcmultipart.api.multipart.IMultipartTile;
 import mcmultipart.api.slot.EnumCenterSlot;
@@ -86,10 +84,11 @@ public class LPTileMultipartContainer extends TileMultipartContainer.Ticking {
 		return this.getWorld();
 	}
 
-	@Nonnull
+	@SuppressWarnings("NullableProblems") // TileEntity#getWorld should be @Nullable
+	@Nullable
 	@Override
 	public World getWorld() {
-		return pipe.getWorld();
+		return pipe.hasWorld() ? pipe.getWorld() : super.getWorld();
 	}
 
 	@Override

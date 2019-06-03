@@ -45,6 +45,8 @@ class ClientConfiguration : LPSerializable {
     var renderPipeDistance = 48
     var renderPipeContentDistance = 24
 
+    var hasCraftedLPItem = false // Server Side Config option
+
     override fun write(output: LPDataOutput) {
         output.writeInt(renderPipeDistance)
         output.writeInt(renderPipeContentDistance)

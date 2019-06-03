@@ -77,7 +77,7 @@ class ServerConfigurationManager {
         return internalRepresentation.playerConfigurations.keys
     }
 
-    fun getPlayerConfiguration(identifier: PlayerIdentifier): ClientConfiguration? {
+    fun getPlayerConfiguration(identifier: PlayerIdentifier): ClientConfiguration {
         return internalRepresentation.playerConfigurations[identifier] ?: ClientConfiguration()
     }
 

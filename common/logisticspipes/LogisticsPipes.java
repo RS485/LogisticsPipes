@@ -106,13 +106,10 @@ import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
-import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
-import logisticspipes.pipes.PipeItemsProviderLogisticsMk2;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
@@ -577,14 +574,11 @@ public class LogisticsPipes {
 		registerPipe(registry, "chassis_mk3", PipeLogisticsChassiMk3::new);
 		registerPipe(registry, "chassis_mk4", PipeLogisticsChassiMk4::new);
 		registerPipe(registry, "chassis_mk5", PipeLogisticsChassiMk5::new);
-		registerPipe(registry, "crafting_mk2", PipeItemsCraftingLogisticsMk2::new);
 		registerPipe(registry, "request_mk2", PipeItemsRequestLogisticsMk2::new);
 		registerPipe(registry, "remote_orderer", PipeItemsRemoteOrdererLogistics::new);
-		registerPipe(registry, "provider_mk2", PipeItemsProviderLogisticsMk2::new);
 		registerPipe(registry, "inventory_system_connector", PipeItemsInvSysConnector::new);
 		registerPipe(registry, "system_entrance", PipeItemsSystemEntranceLogistics::new);
 		registerPipe(registry, "system_destination", PipeItemsSystemDestinationLogistics::new);
-		registerPipe(registry, "crafting_mk3", PipeItemsCraftingLogisticsMk3::new);
 		registerPipe(registry, "firewall", PipeItemsFirewall::new);
 
 		registerPipe(registry, "fluid_basic", PipeFluidBasic::new);

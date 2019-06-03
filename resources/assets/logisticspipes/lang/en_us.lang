@@ -502,3 +502,8 @@ gui.popup.managechannel.deletedialog.no=No
 itemstackinfo.lprouteditem=%cRED Item with stored LogisticsPipes routing information
 itemstackinfo.lproutediteminfo=%cYELLOW Drop to remove routing information and get original items back
 itemstackinfo.lprouteditemtype=Stored item
+
+book.quickstart.title=LogisticsPipes Start Info
+book.quickstart.1=Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
+book.quickstart.2=Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
+book.quickstart.3=Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor

@@ -16,9 +16,12 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +40,7 @@ import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
@@ -46,6 +50,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import thaumcraft.common.lib.events.CraftingEvents;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IItemAdvancedExistance;
@@ -312,6 +317,39 @@ public class LogisticsEventListener {
 					list.add(1, StringUtils.translate("itemstackinfo.lprouteditem"));
 					list.add(2, StringUtils.translate("itemstackinfo.lproutediteminfo"));
 					list.add(3, StringUtils.translate("itemstackinfo.lprouteditemtype") + ": " + info.getItem().toString());
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onItemCrafting(PlayerEvent.ItemCraftedEvent event) {
+		if(!event.crafting.isEmpty()) {
+			if(event.crafting.getItem().getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID)) {
+				PlayerIdentifier identifier = PlayerIdentifier.get(event.player);
+				ClientConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
+				if(!config.getHasCraftedLPItem() || LPConstants.DEBUG) { // TODO: Reverse this before merging so that you never get a book in the dev environment
+					ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
+					NBTTagList bookTagList = new NBTTagList();
+
+					int index = 1;
+					String key = "book.quickstart." + index;
+					String translation = StringUtils.translate(key);
+					while(!key.equals(translation)) {
+						bookTagList.appendTag(new NBTTagString("{\"text\":\"" + translation.replace("\"", "\\\"") +"\"}"));
+
+						key = "book.quickstart." + ++index;
+						translation = StringUtils.translate(key);
+					}
+
+					book.setTagInfo("pages", bookTagList);
+					book.setTagInfo("author", new NBTTagString("LP Team"));
+					book.setTagInfo("title", new NBTTagString(StringUtils.translate("book.quickstart.title")));
+
+					event.player.addItemStackToInventory(book);
+
+					config.setHasCraftedLPItem(true);
+					LogisticsPipes.getServerConfigManager().setClientConfiguration(identifier, config);
 				}
 			}
 		}

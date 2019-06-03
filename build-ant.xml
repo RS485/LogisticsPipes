@@ -6,8 +6,6 @@
 	<property name="antcontlib.dir"       value="${build.dir}/antcontlib"/>
 	<property name="resource.dir"         value="${build.dir}/resources/main"/>
 	
-	<property name="sign.dir"             value="/var/jenkins_home/.sign" />
-	
 	<property name="languageDownload"     value="https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"/>
 	
 	<property name="downloadserver"       value="http://rs485.theZorro266.com"/>
@@ -30,17 +28,6 @@
 				<pathelement location="${antcontlib.dir}/ant-contrib/ant-contrib-${antcont.version}.jar"/>
 			</classpath>
 		</taskdef>
-	</target>
-
-	<target name="loadFingerprints" depends="loadAntContrib, sourceMainJava">
-		<if>
-			<available file="${sign.dir}/.fingerprint"/>
-			<then>
-				<echo message="Loading FingerPrint"/>
-				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
-				<replace file="${build.dir}/sources/main/java/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
-			</then>
-		</if>
 	</target>
 
 	<target name="downloadLang" depends="loadAntContrib">
@@ -73,20 +60,5 @@
 			</fileset>
 		</copy>
 		<delete dir="${download.dir}/language/"/>
-	</target>
-
-	<target name="signJars" depends="loadFingerprints, deobfJar, sourceJar, jar">
-		<if>
-			<available file="${sign.dir}/.fingerprint"/>
-			<then>
-				<echo message="Loading SignSettings"/>
-				<loadfile property="key" srcFile="${sign.dir}/.key"/>
-				<signjar alias="RS485" keystore="${sign.dir}/.keystore" storepass="${key}">
-					<path>
-						<fileset dir="${result.dir}" includes="**/*.jar" />
-					</path>
-				</signjar>
-			</then>
-		</if>
 	</target>
 </project>

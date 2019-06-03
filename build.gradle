@@ -19,6 +19,7 @@ buildscript {
 
 apply plugin: 'kotlin'
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'signing'
 //apply plugin: 'curseforge'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -182,19 +183,29 @@ task copyLPDummy(type: Copy) {
     into 'run/assets/mods'
 }
 
-//task sourceJar(type: Jar, dependsOn: 'jar') {
-//    from sourceSets.main.allSource
-//    classifier = 'src'
-//}
+task replaceFingerprint(type: Copy) {
+    dependsOn sourceMainJava
+    mustRunAfter sourceMainJava
+    compileJava.mustRunAfter replaceFingerprint
+
+    from "common/logisticspipes/LogisticsPipes.java"
+    into "$buildDir/sources/main/java/logisticspipes/"
+    filter {
+        line -> line.replaceAll(
+                "%------------CERTIFICATE-SUM-----------%",
+                "*/ certificateFingerprint=\"${findProperty('LogisticsPipes.fingerprint')}\", /*")
+    }
+
+}
 
 //curse {
-//    displayName = 'Logistics Pipes 0.10.0 (BC7) build ' + System.getenv().BUILD_NUMBER
+//    displayName = 'Logistics Pipes ${project.version} build ' + System.getenv().BUILD_NUMBER
 //
 //    projectId = '232838'
-//    apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
+//    apiKey = project.findProperty('curseForgeApiKey')
 //    releaseType = 'release'
 //
-//    changelog = project.hasProperty('changelog') ? project.changelog : ''
+//    changelog = project.findProperty('changelog')
 //}
 
 artifacts {
@@ -203,7 +214,55 @@ artifacts {
     archives jar
 }
 
-//tasks.compileApiJava.dependsOn('extract')
-tasks.compileJava.dependsOn('loadFingerprints')
+task enableSigningTasks {
+    doFirst {
+        tasks.withType(Sign) {
+            enabled = true
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign jar
+    sign deobfJar
+    sign sourceJar
+}
+
+task sign {
+    dependsOn reobfJar
+    dependsOn replaceFingerprint
+    dependsOn enableSigningTasks
+    dependsOn(tasks.withType(Sign))
+}
+
+tasks.withType(Sign) {
+    // disable signing by default
+    enabled = false
+    mustRunAfter enableSigningTasks
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    taskGraph.allTasks.each {
+        if (it instanceof Sign) {
+            def inputFiles = it.getInputFiles()
+            it.doFirst {
+                // see https://ant.apache.org/manual/Tasks/signjar.html for arguments
+                // ForgeGradle also uses ant.signjar: https://fckaf.de/DCw
+                inputFiles.each { file ->
+                    ant.signjar(
+                            jar: file,
+                            alias: "1",
+                            storetype: findProperty("LogisticsPipes.storetype"),
+                            keystore: findProperty("LogisticsPipes.keystore"),
+                            storepass: findProperty("LogisticsPipes.storepass"),
+                            verbose: "true",
+                            preservelastmodified: "true"
+                    )
+                }
+            }
+        }
+    }
+}
+
 tasks.processResources.dependsOn('integrateLang')
-tasks.assemble.dependsOn('deobfJar', 'sourceJar', 'signJars')

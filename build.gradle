@@ -240,11 +240,12 @@ tasks.withType(Sign) {
     // disable signing by default
     enabled = false
     mustRunAfter enableSigningTasks
+    ext.useJarsigner = (name != "signSourceJar") // dont sign source jar, it doesn't have classes
 }
 
 gradle.taskGraph.whenReady { taskGraph ->
     taskGraph.allTasks.each {
-        if (it instanceof Sign) {
+        if (it instanceof Sign && it.useJarsigner) {
             def inputFiles = it.getInputFiles()
             it.doFirst {
                 // see https://ant.apache.org/manual/Tasks/signjar.html for arguments

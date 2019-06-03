@@ -183,21 +183,6 @@ task copyLPDummy(type: Copy) {
     into 'run/assets/mods'
 }
 
-task replaceFingerprint(type: Copy) {
-    dependsOn sourceMainJava
-    mustRunAfter sourceMainJava
-    compileJava.mustRunAfter replaceFingerprint
-
-    from "common/logisticspipes/LogisticsPipes.java"
-    into "$buildDir/sources/main/java/logisticspipes/"
-    filter {
-        line -> line.replaceAll(
-                "%------------CERTIFICATE-SUM-----------%",
-                "*/ certificateFingerprint=\"${findProperty('LogisticsPipes.fingerprint')}\", /*")
-    }
-
-}
-
 //curse {
 //    displayName = 'Logistics Pipes ${project.version} build ' + System.getenv().BUILD_NUMBER
 //
@@ -230,8 +215,6 @@ signing {
 }
 
 task sign {
-    dependsOn reobfJar
-    dependsOn replaceFingerprint
     dependsOn enableSigningTasks
     dependsOn(tasks.withType(Sign))
 }

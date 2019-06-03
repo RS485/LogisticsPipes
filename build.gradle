@@ -166,7 +166,7 @@ dependencies {
 
 task deobfJar(type: Jar, dependsOn: 'jar') {
     from sourceSets.main.output
-    classifier = 'dev'
+    classifier = 'deobf'
     manifest {
         attributes(
             'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',

@@ -22,6 +22,7 @@ import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.guis.block.ProgramCompilerGui;
 import logisticspipes.network.packets.block.CompilerStatusPacket;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
@@ -64,6 +65,8 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	private ResourceLocation currentTask = null;
 	@Getter
 	private double taskProgress = 0;
+	@Getter
+	private boolean wasAbleToConsumePower = false;
 
 	@Getter
 	private SimpleStackInventory inventory = new SimpleStackInventory(2, "programcompilerinv", 64);
@@ -92,13 +95,24 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		this.taskType = taskType;
 		currentTask = category;
 		taskProgress = 0;
+		wasAbleToConsumePower = true;
 		updateClient();
 	}
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		playerList.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CompilerStatusPacket.class).setCategory(currentTask).setProgress(taskProgress).setDisk(getInventory().getStackInSlot(0)).setProgrammer(getInventory().getStackInSlot(1)).setTilePos(this), player);
+		MainProxy.sendPacketToPlayer(getClientUpdatePacket(), player);
+	}
+
+	private CoordinatesPacket getClientUpdatePacket() {
+		return PacketHandler.getPacket(CompilerStatusPacket.class)
+				.setCategory(currentTask)
+				.setProgress(taskProgress)
+				.setWasAbleToConsumePower(wasAbleToConsumePower)
+				.setDisk(getInventory().getStackInSlot(0))
+				.setProgrammer(getInventory().getStackInSlot(1))
+				.setTilePos(this);
 	}
 
 	@Override
@@ -125,6 +139,9 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 					CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
 					if (pipe.useEnergy(10)) {
 						taskProgress += 0.01;
+						wasAbleToConsumePower = true;
+					} else {
+						wasAbleToConsumePower = false;
 					}
 				}
 				if (taskProgress >= 1) {
@@ -149,6 +166,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 					taskType = "";
 					currentTask = null;
 					taskProgress = 0;
+					wasAbleToConsumePower = false;
 				}
 				updateClient();
 			}
@@ -156,7 +174,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	}
 
 	public void updateClient() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(CompilerStatusPacket.class).setCategory(currentTask).setProgress(taskProgress).setDisk(getInventory().getStackInSlot(0)).setProgrammer(getInventory().getStackInSlot(1)).setTilePos(this), playerList);
+		MainProxy.sendToPlayerList(getClientUpdatePacket(), playerList);
 	}
 
 	@Override
@@ -169,6 +187,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		getInventory().setInventorySlotContents(1, compilerStatusPacket.getProgrammer());
 		currentTask = compilerStatusPacket.getCategory();
 		taskProgress = compilerStatusPacket.getProgress();
+		wasAbleToConsumePower = compilerStatusPacket.isWasAbleToConsumePower();
 	}
 
 	@Override

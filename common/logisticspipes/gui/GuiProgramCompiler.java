@@ -211,7 +211,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			String name;
 			Item item = Item.REGISTRY.getObject(compiler.getCurrentTask());
 			if(item != null) {
-				name = Item.REGISTRY.getObject(compiler.getCurrentTask()).getUnlocalizedName() + ".name";
+				name = item.getUnlocalizedName() + ".name";
 			} else {
 				name = "gui.compiler." + compiler.getCurrentTask().toString().replace(':', '.');
 			}
@@ -221,6 +221,12 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			drawRect(guiLeft + 9, guiTop + 50, guiLeft + 171, guiTop + 66, Color.BLACK);
 			drawRect(guiLeft + 10, guiTop + 51, guiLeft + 170, guiTop + 65, Color.WHITE);
 			drawRect(guiLeft + 11, guiTop + 52, guiLeft + 11 + (int)(158 * compiler.getTaskProgress()), guiTop + 64, Color.GREEN);
+
+			if(!compiler.isWasAbleToConsumePower()) {
+				fontRenderer.drawString(StringUtils.translate("gui.compiler.nopower.1"), guiLeft + 68, guiTop + 10, 0x000000);
+				fontRenderer.drawString(StringUtils.translate("gui.compiler.nopower.2"), guiLeft + 35, guiTop + 20, 0x000000);
+			}
+
 			buttonList.forEach(b -> b.visible = false);
 		} else {
 			buttonList.forEach(b -> b.visible = true);

@@ -47,11 +47,15 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 						tooltip.add(StringUtils.translate("tooltip.programmerForPipe"));
 						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
 					} else {
-						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown"));
+						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.1"));
+						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.2"));
+						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.3"));
 					}
 				}
 			} else {
-				tooltip.add(StringUtils.translate("tooltip.programmerForUnknown"));
+				tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.1"));
+				tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.2"));
+				tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.3"));
 			}
 		}
 		super.addInformation(stack, worldIn, tooltip, flagIn);

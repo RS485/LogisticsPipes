@@ -32,6 +32,10 @@ public class CompilerStatusPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
+	private boolean wasAbleToConsumePower;
+
+	@Getter
+	@Setter
 	private ItemStack disk;
 
 	@Getter
@@ -49,6 +53,7 @@ public class CompilerStatusPacket extends CoordinatesPacket {
 		super.writeData(output);
 		output.writeResourceLocation(category);
 		output.writeDouble(progress);
+		output.writeBoolean(wasAbleToConsumePower);
 		output.writeItemStack(disk);
 		output.writeItemStack(programmer);
 	}
@@ -58,6 +63,7 @@ public class CompilerStatusPacket extends CoordinatesPacket {
 		super.readData(input);
 		category = input.readResourceLocation();
 		progress = input.readDouble();
+		wasAbleToConsumePower = input.readBoolean();
 		disk = input.readItemStack();
 		programmer = input.readItemStack();
 	}

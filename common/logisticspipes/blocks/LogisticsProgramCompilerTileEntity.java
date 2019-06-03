@@ -138,7 +138,15 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 					}
 					CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
 					if (pipe.useEnergy(10)) {
-						taskProgress += 0.01;
+						if (taskType.equals("category")) {
+							taskProgress += 0.0005;
+						} else if (taskType.equals("program")) {
+							taskProgress += 0.0025;
+						} else if (taskType.equals("flash")) {
+							taskProgress += 0.01;
+						} else {
+							taskProgress += 1;
+						}
 						wasAbleToConsumePower = true;
 					} else {
 						wasAbleToConsumePower = false;

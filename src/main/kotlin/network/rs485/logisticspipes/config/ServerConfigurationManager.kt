@@ -77,12 +77,22 @@ class ServerConfigurationManager {
         return internalRepresentation.playerConfigurations.keys
     }
 
-    fun getPlayerConfiguration(identifier: PlayerIdentifier): ClientConfiguration {
-        return internalRepresentation.playerConfigurations[identifier] ?: ClientConfiguration()
+    fun getPlayerConfiguration(identifier: PlayerIdentifier): PlayerConfiguration {
+        return internalRepresentation.playerConfigurations[identifier] ?: PlayerConfiguration()
     }
 
     fun setClientConfiguration(identifier: PlayerIdentifier, configuration: ClientConfiguration) {
         val newConfigurations = internalRepresentation.playerConfigurations.toMutableMap()
+        if(newConfigurations[identifier] == null) {
+            newConfigurations[identifier] = PlayerConfiguration()
+        }
+        newConfigurations[identifier]?.merge(configuration)
+        internalRepresentation.playerConfigurations = newConfigurations
+        writeChange()
+    }
+
+    fun setPlayerConfiguration(identifier: PlayerIdentifier, configuration: PlayerConfiguration) {
+        val newConfigurations = HashMap(internalRepresentation.playerConfigurations)
         newConfigurations[identifier] = configuration
         internalRepresentation.playerConfigurations = newConfigurations
         writeChange()

@@ -50,7 +50,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import thaumcraft.common.lib.events.CraftingEvents;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IItemAdvancedExistance;
@@ -77,6 +76,7 @@ import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.config.ClientConfiguration;
+import network.rs485.logisticspipes.config.PlayerConfiguration;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
@@ -328,7 +328,7 @@ public class LogisticsEventListener {
 		if(!event.crafting.isEmpty()) {
 			if(event.crafting.getItem().getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID)) {
 				PlayerIdentifier identifier = PlayerIdentifier.get(event.player);
-				ClientConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
+				PlayerConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
 				if(!config.getHasCraftedLPItem() || LPConstants.DEBUG) { // TODO: Reverse this before merging so that you never get a book in the dev environment
 					ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
 					NBTTagList bookTagList = new NBTTagList();
@@ -350,7 +350,7 @@ public class LogisticsEventListener {
 					event.player.addItemStackToInventory(book);
 
 					config.setHasCraftedLPItem(true);
-					LogisticsPipes.getServerConfigManager().setClientConfiguration(identifier, config);
+					LogisticsPipes.getServerConfigManager().setPlayerConfiguration(identifier, config);
 				}
 			}
 		}

@@ -43,25 +43,24 @@ import logisticspipes.utils.PlayerIdentifier
 import java.lang.reflect.Type
 import java.util.*
 
-private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, ClientConfiguration>>, JsonDeserializer<Map<PlayerIdentifier, ClientConfiguration>> {
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Map<PlayerIdentifier, ClientConfiguration>? {
+private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, PlayerConfiguration>>, JsonDeserializer<Map<PlayerIdentifier, PlayerConfiguration>> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Map<PlayerIdentifier, PlayerConfiguration>? {
         if (json.isJsonNull) {
             return null
         } else if (!json.isJsonObject) {
             throw JsonParseException("Expected an object from a map")
         }
 
-
         return json.asJsonObject.entrySet().associate { (key, value) ->
             if (value !is JsonObject) throw JsonParseException("Expected values in map object to be objects")
             Pair(
                     PlayerIdentifier.get(value["name"].asString, UUID.fromString(key)),
-                    context.deserialize<ClientConfiguration>(value["config"], ClientConfiguration::class.java)
+                    context.deserialize<PlayerConfiguration>(value["config"], PlayerConfiguration::class.java)
             )
         }
     }
 
-    override fun serialize(src: Map<PlayerIdentifier, ClientConfiguration>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+    override fun serialize(src: Map<PlayerIdentifier, PlayerConfiguration>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         if (src == null) {
             return JsonNull.INSTANCE
         }
@@ -70,7 +69,7 @@ private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, 
             src.keys.forEach {
                 this.add(it.id.toString(), JsonObject().apply {
                     this.add("name", JsonPrimitive(it.username))
-                    this.add("config", context.serialize(src[it], ClientConfiguration::class.java))
+                    this.add("config", context.serialize(src[it], PlayerConfiguration::class.java))
                 })
             }
         }
@@ -79,5 +78,5 @@ private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, 
 
 internal class ServerConfiguration {
     @JsonAdapter(ServerConfigurationAdapter::class)
-    var playerConfigurations: Map<PlayerIdentifier, ClientConfiguration> = emptyMap()
+    var playerConfigurations: Map<PlayerIdentifier, PlayerConfiguration> = emptyMap()
 }

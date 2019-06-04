@@ -115,7 +115,7 @@ public class RequestHandler {
 			if (_availableItems.containsKey(item)) {
 				continue;
 			}
-			_allItems.add(item.makeStack(1));
+			_allItems.add(item.makeStack(0));
 		}
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), player);
 	}

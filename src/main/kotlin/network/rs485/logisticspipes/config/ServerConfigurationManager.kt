@@ -47,7 +47,6 @@ import java.io.FileNotFoundException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.*
-import kotlin.collections.HashMap
 
 class ServerConfigurationManager {
     private val fileName = "logisticspipes.json"
@@ -83,7 +82,7 @@ class ServerConfigurationManager {
     }
 
     fun setClientConfiguration(identifier: PlayerIdentifier, configuration: ClientConfiguration) {
-        val newConfigurations = HashMap(internalRepresentation.playerConfigurations)
+        val newConfigurations = internalRepresentation.playerConfigurations.toMutableMap()
         newConfigurations[identifier] = configuration
         internalRepresentation.playerConfigurations = newConfigurations
         writeChange()

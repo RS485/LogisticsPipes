@@ -42,7 +42,6 @@ import com.google.gson.annotations.JsonAdapter
 import logisticspipes.utils.PlayerIdentifier
 import java.lang.reflect.Type
 import java.util.*
-import kotlin.collections.HashMap
 
 private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, ClientConfiguration>>, JsonDeserializer<Map<PlayerIdentifier, ClientConfiguration>> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Map<PlayerIdentifier, ClientConfiguration>? {
@@ -52,17 +51,13 @@ private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, 
             throw JsonParseException("Expected an object from a map")
         }
 
-        return HashMap<PlayerIdentifier, ClientConfiguration>().run {
-            json.asJsonObject.entrySet().map {
-                if (!it.value.isJsonObject) {
-                    throw JsonParseException("Expected values in map object to be objects")
-                }
-                val obj = it.value.asJsonObject
-                PlayerIdentifier.get(obj["name"].asString, UUID.fromString(it.key)) to obj["config"]
-            }.forEach {
-                this[it.first] = context.deserialize(it.second, ClientConfiguration::class.java)
-            }
-            this
+
+        return json.asJsonObject.entrySet().associate { (key, value) ->
+            if (value !is JsonObject) throw JsonParseException("Expected values in map object to be objects")
+            Pair(
+                    PlayerIdentifier.get(value["name"].asString, UUID.fromString(key)),
+                    context.deserialize<ClientConfiguration>(value["config"], ClientConfiguration::class.java)
+            )
         }
     }
 
@@ -71,15 +66,13 @@ private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, 
             return JsonNull.INSTANCE
         }
 
-        return JsonObject().run {
+        return JsonObject().apply {
             src.keys.forEach {
-                this.add(it.id.toString(), JsonObject().run {
+                this.add(it.id.toString(), JsonObject().apply {
                     this.add("name", JsonPrimitive(it.username))
                     this.add("config", context.serialize(src[it], ClientConfiguration::class.java))
-                    this
                 })
             }
-            this
         }
     }
 }

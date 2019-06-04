@@ -174,16 +174,18 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void watchChunk(Watch event) {
-		if (!LogisticsEventListener.watcherList.containsKey(event.getChunk())) {
-			LogisticsEventListener.watcherList.put(event.getChunk(), new PlayerCollectionList());
+		ChunkPos pos = event.getChunkInstance().getPos();
+		if (!LogisticsEventListener.watcherList.containsKey(pos)) {
+			LogisticsEventListener.watcherList.put(pos, new PlayerCollectionList());
 		}
-		LogisticsEventListener.watcherList.get(event.getChunk()).add(event.getPlayer());
+		LogisticsEventListener.watcherList.get(pos).add(event.getPlayer());
 	}
 
 	@SubscribeEvent
 	public void unWatchChunk(UnWatch event) {
-		if (LogisticsEventListener.watcherList.containsKey(event.getChunk())) {
-			LogisticsEventListener.watcherList.get(event.getChunk()).remove(event.getPlayer());
+		ChunkPos pos = event.getChunkInstance().getPos();
+		if (LogisticsEventListener.watcherList.containsKey(pos)) {
+			LogisticsEventListener.watcherList.get(pos).remove(event.getPlayer());
 		}
 	}
 

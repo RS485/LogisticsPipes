@@ -328,7 +328,7 @@ public class LogisticsEventListener {
 			if(event.crafting.getItem().getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID)) {
 				PlayerIdentifier identifier = PlayerIdentifier.get(event.player);
 				PlayerConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
-				if(!config.getHasCraftedLPItem() || LPConstants.DEBUG) { // TODO: Reverse this before merging so that you never get a book in the dev environment
+				if(!config.getHasCraftedLPItem() && !LPConstants.DEBUG) {
 					ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
 					NBTTagList bookTagList = new NBTTagList();
 

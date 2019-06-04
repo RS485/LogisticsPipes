@@ -1464,8 +1464,10 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			//@formatter:off
 			cachedCrafters = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ())
 					.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-					.collect(Collectors.toList());
+					.filter(adjacent ->
+							adjacent.tileEntity instanceof IInventory
+							|| SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent.tileEntity, adjacent.direction.getOpposite()) != null
+					).collect(Collectors.toList());
 			//formatter:on
 		}
 

@@ -123,6 +123,7 @@ public class LogisticsEventListener {
 		}
 	}
 
+	@SubscribeEvent
 	public void onPlayerLeftClickBlock(final PlayerInteractEvent.RightClickBlock event) {
 		if (MainProxy.isServer(event.getEntityPlayer().world)) {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().world, event.getPos());

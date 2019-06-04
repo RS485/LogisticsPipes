@@ -503,7 +503,12 @@ itemstackinfo.lprouteditem=%cRED Item with stored LogisticsPipes routing informa
 itemstackinfo.lproutediteminfo=%cYELLOW Drop to remove routing information and get original items back
 itemstackinfo.lprouteditemtype=Stored item
 
-book.quickstart.title=LogisticsPipes Start Info
-book.quickstart.1=Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
-book.quickstart.2=Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
-book.quickstart.3=Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor
+book.quickstart.title=Logistics Pipes 0.10 Info
+book.quickstart.1=<It's been a long time. How have you been?>\nFirst off, thanks for playing Logistics Pipes. A lot of changes have been made since the last release of LP in Minecraft 1.7.10. We'll try to explain some of these in this book. If you like to read them, go to the next page.
+book.quickstart.2=I hope you already have your Logistics Power Junction set up and crafted your first Basic Logistics Pipes :)\nIf not, go for it. Now you might have recognized that all pipes and modules now need something called a Logistics Programmer.
+book.quickstart.3=The Logistics Programmer is an item that wont be used up in any crafting recipes, but you need to set it up first. That is to be done with a Logistics Program Compiler. I know, I know, it sounds complicated. But it really isn't. Craft both of these and a Logistics Disk.
+book.quickstart.4=Now you place the Logistics Program Compiler (further just compiler) next to a Logistics Basic Pipe that is by other pipes or directly connected to the Power Junction, because the compiler needs power and takes that from the network.
+book.quickstart.5=The compiler can be used to research new types of pipes or modules. Insert the Logistics Disk on the top left. Then you are able to unlock different tiers of pipe types. Let's start with Basic. Researching takes some time, so relax and get some coffee.
+book.quickstart.6=After unlocking a tier, you should be able to see the different pipe or module or upgrade names on the right. You can now compile each of these, which takes a shorter amount of time. Compiling makes those programs flashable on the Logistics Programmer.
+book.quickstart.7=To flash a program, simply insert the Logistics Programmer into the top right slot and flash one of those programs onto the programmer. Afterwards you can use this programmer in the crafting of that pipe or module. Module programs can be found within the Chassis tiers.
+book.quickstart.8=Now you might be asking, where the Mk2 and Mk3 pipes and modules are. They are gone, but you can recreate their bonuses by adding upgrades to your pipes and modules.

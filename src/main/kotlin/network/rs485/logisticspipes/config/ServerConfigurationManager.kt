@@ -83,10 +83,7 @@ class ServerConfigurationManager {
 
     fun setClientConfiguration(identifier: PlayerIdentifier, configuration: ClientConfiguration) {
         val newConfigurations = internalRepresentation.playerConfigurations.toMutableMap()
-        if(newConfigurations[identifier] == null) {
-            newConfigurations[identifier] = PlayerConfiguration()
-        }
-        newConfigurations[identifier]?.merge(configuration)
+        newConfigurations.computeIfAbsent(identifier) { PlayerConfiguration() }.merge(configuration)
         internalRepresentation.playerConfigurations = newConfigurations
         writeChange()
     }

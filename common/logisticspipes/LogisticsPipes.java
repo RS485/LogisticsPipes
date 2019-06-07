@@ -76,6 +76,7 @@ import logisticspipes.config.Configs;
 import logisticspipes.datafixer.LPDataFixer;
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
+import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -427,6 +428,9 @@ public class LogisticsPipes {
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW), "chip_advanced_raw"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA), "chip_fpga"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW), "chip_fpga_raw"));
+
+		//working on it
+		registry.register(setName(new ItemGuideBook(), "guide_book"));
 
 		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.frame), "frame"));
 		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.solderingStation), "soldering_station"));

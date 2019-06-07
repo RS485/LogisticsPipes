@@ -2,6 +2,7 @@ package logisticspipes;
 
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
+import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsProgrammer;
@@ -113,6 +114,9 @@ public class LPItems {
 	@ObjectHolder("logisticspipes:pipe_fluid_extractor")
 	public static Item pipeFluidExtractor;
 
+	//working on it
+	@ObjectHolder("logisticspipes:guide_book")
+	public static ItemGuideBook itemGuideBook;
 
 	//Transport Pipes
 	@ObjectHolder("logisticspipes:pipe_transport_basic")

@@ -10,16 +10,17 @@ import net.minecraft.world.World;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 
-public class ItemGuideBook extends LogisticsItem{
-	public ItemGuideBook(){
+public class ItemGuideBook extends LogisticsItem {
+
+	public ItemGuideBook() {
 		this.setMaxStackSize(1);
 	}
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 		ItemStack itemstack = player.getHeldItem(hand);
-		if(!world.isRemote){return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);}
+		if (!world.isRemote) {return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);}
 		player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Guide_Book_ID, world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
-		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+		return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 	}
 }

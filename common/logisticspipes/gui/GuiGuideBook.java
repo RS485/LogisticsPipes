@@ -2,14 +2,11 @@ package logisticspipes.gui;
 
 import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiSlider;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.Sys;
 
 import logisticspipes.LPConstants;
 import logisticspipes.utils.string.StringUtils;
@@ -22,95 +19,97 @@ public class GuiGuideBook extends GuiScreen {
 	private boolean dragging = false;
 	private int mouseX, mouseY;
 
+	//Slider vars
+	private float sliderProgress = 0.0F;
+	private int sliderTopY = 0;
+	private int sliderBotY = 0;
+
 	//Book vars
-	private int PAGE = 1;
-	private int PAGE_MAX = 10;
-	private int MAX_LENGTH = 50;
+	private int page = 1;
+	private int pageMax = 10;
+	private int maxLength = 50;
 
 	public GuiGuideBook() {
 		super();
 	}
 
-	/** Draw a background container sized based on x, and y size. This is not 1:1 scale.*/
+	/**
+	 * Draw a background container sized based on x, and y size. This is not 1:1 scale.
+	 * TODO use stretch on a single draw instead of successive draws.
+	 */
+
 	protected void drawGuiBackgroundLayer(int x, int y) {
+		/**Setting slider constraints*/
+		sliderTopY = this.height * 1 / 8;
+		sliderBotY = this.height * 7 / 8 - 21 - slider.height;
+		slider.x = this.width * 7 / 8 - 17 - slider.width;
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		/**Background*/
 		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
-		int xRem = x;
-		int yRem = y;
-		int eight = 8;
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0.0F, 0.0F, -2.0F);
 		this.drawDefaultBackground();
 		GlStateManager.popMatrix();
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(-x*4, -y*4, -1.0F);
-		/**This is the darker background like the inventory has. Check whether this is wanted or not.*/
-		GlStateManager.translate(this.width / 2, this.height / 2, 0.0F);
+		int tileSize = 32;
 		/**TopLeft*/
-		drawTexturedModalRect(0, 0, 0, 0, eight * 4, eight * 4);
-		xRem -= 4;
+		drawTexturedModalRect(this.width * 1 / 8, this.height * 1 / 8, 0, 0, tileSize, tileSize);
 		/**TopRight*/
-		drawTexturedModalRect(eight * (x - 4), 0, eight * 4, 0, eight * 4, eight * 4);
-		xRem -= 4;
+		drawTexturedModalRect(this.width * 7 / 8 - tileSize, this.height * 1 / 8, tileSize, 0, tileSize, tileSize);
 		/**BottomLeft*/
-		drawTexturedModalRect(0, eight * (y - 4), 0, eight * 4, eight * 4, eight * 4);
-		yRem -= 4;
+		drawTexturedModalRect(this.width * 1 / 8, this.height * 7 / 8 - tileSize, 0, tileSize, tileSize, tileSize);
 		/**BottomRight*/
-		yRem -= 4;
-		drawTexturedModalRect(eight * (x - 4), eight * (y - 4), eight * 4, eight * 4, eight * 4, eight * 4);
-		/** Top & Bottom/ */
-		for(int i = 0; i < xRem; i++){
-			drawTexturedModalRect(eight * (i + 4), 0, eight * 3, 0, eight * 2, eight * 4);
-			drawTexturedModalRect(eight * (i + 4), eight * (y - 4), eight * 3, eight * 4, eight * 2, eight * 4);
-		}
-		/**Left, Right & Background*/
-		for(int j = 0; j < yRem; j++) {
-			drawTexturedModalRect(0, eight * (j + 4), 0, eight * 3, eight * 4, eight * 2);
-			drawTexturedModalRect(eight * (x - 4), eight * (j + 4), eight * 4, eight * 3, eight * 4, eight * 2);
-			for(int i = 0; i < xRem; i++){
-				drawTexturedModalRect(eight * (i + 4), eight * (j + 4), eight * 3, eight * 3, eight * 2, eight * 2);
-			}
-		}
+		drawTexturedModalRect(this.width * 7 / 8 - tileSize, (this.height * 1 / 8 + tileSize) + (this.height * 6 / 8 - 2 * tileSize), tileSize, tileSize, tileSize, tileSize);
 		GlStateManager.popMatrix();
+		/** Top & Bottom */
+		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8, 24, 0, 8, tileSize, this.width * 6 / 8 - 2 * tileSize, tileSize, 256.0F, 256.0F);
+		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 7 / 8 - tileSize, 24, tileSize, 8, tileSize, this.width * 6 / 8 - 2 * tileSize, tileSize, 256.0F, 256.0F);
+		/**Left & Right*/
+		drawScaledCustomSizeModalRect(this.width * 1 / 8, this.height * 1 / 8 + tileSize, 0, 24, tileSize, 8, tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
+		drawScaledCustomSizeModalRect(this.width * 7 / 8 - tileSize, this.height * 1 / 8 + tileSize, tileSize, 24, tileSize, 8, tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
+		/**Background*/
+		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8 + tileSize, 24, 24, 8, 8, this.width * 6 / 8 - 2 * tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
 	}
 
-	public void drawGuiForeGroundLayer(){
+	public void drawGuiForeGroundLayer() {
+
+		/**Foreground stuff*/
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(1.0F, 1.0F, 10.0F);
-		drawCenteredString(this.fontRenderer, StringUtils.translate("book.quickstart.title").trim(), this.width / 2, (((-((this.height/4)*3)/8)*4)+this.height/2) + 4, 16777215);
-		drawCenteredString(this.fontRenderer, "Page " + PAGE + " out of " + PAGE_MAX, this.width / 2, this.height - 25, 16777215);
+		drawCenteredString(this.fontRenderer, StringUtils.translate("book.quickstart.title").trim(), this.width / 2, this.height * 1 / 8 + 4, 0xFFFFFF);
+		drawCenteredString(this.fontRenderer, "Page " + page + " out of " + pageMax, this.width / 2, this.height - 25, 0xFFFFFF);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		String delimiter = "\\\\n";
-		String currentPage = StringUtils.translate("book.quickstart." + PAGE);
-		MAX_LENGTH = this.width - 75 - (((-((this.width/4)*3)/8)*4)+this.width/2)*2;
+		String currentPage = StringUtils.translate("book.quickstart." + page);
+		/** Could be less than 75, this is already thinking about the slider button.*/
+		maxLength = this.width * 3 / 4 - 75;
 		String[] currentPageLines = currentPage.split(delimiter);
 		String line;
 		int line_number = 0;
 		int length = 0;
-		for(String sentence : currentPageLines){
-			do{
-				line = fontRenderer.trimStringToWidth(sentence, MAX_LENGTH);
+		for (String sentence : currentPageLines) {
+			do {
+				line = fontRenderer.trimStringToWidth(sentence, maxLength);
 				length = line.length();
-				if(fontRenderer.getStringWidth(sentence) > MAX_LENGTH){
-					line = fontRenderer.trimStringToWidth(sentence, MAX_LENGTH);
-					if(line.charAt(line.length()-1) != ' '){
-						if(line.charAt(line.length()-2) != ' '){
-							line = line.substring(0, line.length()-1) + '-';
-							length-=1;
-						}else{
-							line = line.substring(0, line.length()-1) + ' ';
-							length-=1;
+				if (fontRenderer.getStringWidth(sentence) > maxLength) {
+					line = fontRenderer.trimStringToWidth(sentence, maxLength);
+					if (line.charAt(line.length() - 1) != ' ') {
+						if (line.charAt(line.length() - 2) != ' ') {
+							line = line.substring(0, line.length() - 1) + '-';
+							length -= 1;
+						} else {
+							line = line.substring(0, line.length() - 1) + ' ';
+							length -= 1;
 						}
 					}
-					if(line.charAt(0) == ' ') line = line.substring(1);
+					if (line.charAt(0) == ' ') line = line.substring(1);
 					sentence = sentence.substring(length);
-				}
-				else{
+				} else {
 					line = sentence;
 					sentence = "";
 				}
-				drawString(this.fontRenderer, line, (((-((this.width/4)*3)/8)*4)+this.width/2) + 24, (((-((this.height/4)*3)/8)*4)+this.height/2) + 24 + (10 * line_number++), 16777215);
-			}while(sentence.length() != 0);
+				drawString(this.fontRenderer, line, this.width * 1 / 8 + 24, this.height * 1 / 8 + 24 + (10 * line_number++), 0xFFFFFF);
+			} while (sentence.length() != 0);
 			line_number++;
 		}
 		GlStateManager.popMatrix();
@@ -118,8 +117,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-
-		this.drawGuiBackgroundLayer(((this.width/4)*3)/8, ((this.height/4)*3)/8);
+		this.drawGuiBackgroundLayer(this.width * 3 / 32, this.height * 3 / 32);
 		this.drawGuiForeGroundLayer();
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
@@ -127,30 +125,53 @@ public class GuiGuideBook extends GuiScreen {
 	@Override
 	public void initGui() {
 		this.buttonList.clear();
-		this.nextPageBtn = this.addButton(new GuiButton(0, this.width / 2 +100, this.height - 30 , 20, 20,">"));
-		this.prevPageBtn = this.addButton(new GuiButton(1, this.width / 2 -120, this.height - 30, 20, 20,"<"));
-		this.slider = this.addButton(new GuiButton(2, this.width - 30, 30, 20, 20, "|||"));
+		this.nextPageBtn = this.addButton(new GuiButton(0, this.width / 2 + 100, this.height - 30, 20, 20, ">"));
+		this.prevPageBtn = this.addButton(new GuiButton(1, this.width / 2 - 120, this.height - 30, 20, 20, "<"));
+		this.slider = this.addButton(new GuiButton(2, 0, this.height * 1 / 8 + 20, 20, 20, "|||"));
+		//defaultSlider();
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
-		if(button.id == 0) {
-			if(PAGE < PAGE_MAX) PAGE++;
+		if (button.id == 0) {
+			if (page < pageMax) page++;
+			sliderProgress = 0.0F;
+			updateSlider();
 		}
-		if(button.id == 1) {
-			if(PAGE > 1) PAGE--;
+		if (button.id == 1) {
+			if (page > 1) page--;
+			sliderProgress = 0.0F;
+			updateSlider();
 		}
 	}
 
-	protected void updateSlider(GuiButton button){
-		if(dragging){
-			slider.y = mouseY - slider.height/2;
+	protected void defaultSlider() {
+		slider.y = sliderTopY;
+	}
+
+	protected void updateSlider() {
+		if (dragging && slider.y >= sliderTopY && slider.y <= sliderBotY) {
+			if (mouseY < sliderTopY + slider.height / 2) {
+				slider.y = sliderTopY;
+				sliderProgress = (slider.y - sliderTopY) / (sliderBotY - sliderTopY);
+			} else if (mouseY > sliderBotY - slider.height / 2) {
+				slider.y = sliderBotY;
+				sliderProgress = (slider.y - sliderTopY) / (sliderBotY - sliderTopY);
+			} else {
+				slider.y = mouseY - slider.height / 2;
+				float top = (slider.y - sliderTopY);
+				float bot = (sliderBotY - sliderTopY);
+				sliderProgress = top / bot;
+			}
+			System.out.println(sliderProgress);
+		} else {
+			slider.y = (int) (sliderTopY + (sliderBotY - sliderTopY) * sliderProgress);
 		}
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		if(slider.isMouseOver()) this.dragging = true;
+		if (slider.isMouseOver()) this.dragging = true;
 		super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
@@ -158,8 +179,7 @@ public class GuiGuideBook extends GuiScreen {
 	protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
-		/** Only needed for slider implementation*/
-		updateSlider(slider);
+		updateSlider();
 		super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 	}
 

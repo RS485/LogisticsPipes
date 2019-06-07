@@ -27,6 +27,9 @@ public class GuiIDs {
 		public static final int GUI_Module_OreDict_ItemSink_ID = 43;
 	 */
 
+	//Guide Book
+	public static final int GUI_Guide_Book_ID = 30;
+
 	//Devices
 	public static final int GUI_Normal_Orderer_ID = 31;
 	public static final int GUI_OrdererStats_ID = 32;

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -134,6 +135,16 @@ public class GuiGuideBook extends GuiScreen {
 				drawString(this.fontRenderer, text.get(i), textX, drawY, 0xFFFFFF);
 			}
 		}
+
+		GlStateManager.popMatrix();
+		/** Top & Bottom */
+		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8, 24, 0, 8, tileSize, this.width * 6 / 8 - 2 * tileSize, tileSize, 256.0F, 256.0F);
+		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 7 / 8 - tileSize, 24, tileSize, 8, tileSize, this.width * 6 / 8 - 2 * tileSize, tileSize, 256.0F, 256.0F);
+		/**Left & Right*/
+		drawScaledCustomSizeModalRect(this.width * 1 / 8, this.height * 1 / 8 + tileSize, 0, 24, tileSize, 8, tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
+		drawScaledCustomSizeModalRect(this.width * 7 / 8 - tileSize, this.height * 1 / 8 + tileSize, tileSize, 24, tileSize, 8, tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
+		/**Background*/
+		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8 + tileSize, 24, 24, 8, 8, this.width * 6 / 8 - 2 * tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
 	}
 
 	private void drawPageBorder() {
@@ -235,7 +246,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		ItemGuideBook.setCurrentPage(page.getIndex(), sliderProgress, hand);
+		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), page.getIndex(), sliderProgress, hand);
 		super.onGuiClosed();
 	}
 

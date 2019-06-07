@@ -244,15 +244,14 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
+		if (ID == -1) {
+			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
+		}
 
 		TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
 		LogisticsTileGenericPipe pipe = null;
 		if (tile instanceof LogisticsTileGenericPipe) {
 			pipe = (LogisticsTileGenericPipe) tile;
-		}
-
-		if (ID == -1) {
-			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
 		}
 
 		if (ID < 110 && ID > 0) {

@@ -262,8 +262,8 @@ public class GuiHandler implements IGuiHandler {
 			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
 		}
 
-		if(ID == GuiIDs.GUI_Guide_Book_ID){
-			return new GuiGuideBook();
+		if (ID == GuiIDs.GUI_Guide_Book_ID) {
+			return new GuiGuideBook(player.getHeldItemMainhand());
 		}
 
 		if (ID < 110 && ID > 0) {

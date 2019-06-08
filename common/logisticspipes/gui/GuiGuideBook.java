@@ -2,10 +2,11 @@ package logisticspipes.gui;
 
 import java.io.IOException;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.LPConstants;
@@ -16,33 +17,53 @@ public class GuiGuideBook extends GuiScreen {
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	private GuiButton nextPageBtn, prevPageBtn, slider;
-	private boolean dragging = false;
+
 	private int mouseX, mouseY;
+	private final ItemStack book;
 
 	//Slider vars
-	private float sliderProgress = 0.0F;
-	private int sliderTopY = 0;
-	private int sliderBotY = 0;
+	private boolean dragging = false;
+	private boolean draggable = false;
+	private float sliderProgress;
+	private int sliderTopY;
+	private int sliderBotY;
 
 	//Book vars
-	private int page = 1;
+	private int page;
 	private int pageMax = 10;
-	private int maxLength = 50;
+	private int maxLength;
+	private int textX, textY;
+	private int maxLines;
 
-	public GuiGuideBook() {
+	public GuiGuideBook(ItemStack book) {
 		super();
+		this.book = book;
+		if (book.hasTagCompound()) {
+			NBTTagCompound nbtTagCompound = book.getTagCompound();
+			this.page = nbtTagCompound.getInteger("page");
+			this.sliderProgress = nbtTagCompound.getFloat("sliderProgress");
+			if (this.page == 0) {
+				this.page = 1;
+				this.sliderProgress = 0.0F;
+				nbtTagCompound.setInteger("page", 1);
+				nbtTagCompound.setFloat("sliderProgress", sliderProgress);
+			}
+		} else {
+			NBTTagCompound nbtTagCompound = new NBTTagCompound();
+			this.page = 1;
+			this.sliderProgress = 0.0F;
+			nbtTagCompound.setInteger("page", 1);
+			nbtTagCompound.setFloat("sliderProgress", sliderProgress);
+			book.setTagCompound(nbtTagCompound);
+		}
 	}
 
 	/**
-	 * Draw a background container sized based on x, and y size. This is not 1:1 scale.
+	 * Draw a background container sized based on window width and height.
 	 * TODO use stretch on a single draw instead of successive draws.
 	 */
 
-	protected void drawGuiBackgroundLayer(int x, int y) {
-		/**Setting slider constraints*/
-		sliderTopY = this.height * 1 / 8;
-		sliderBotY = this.height * 7 / 8 - 21 - slider.height;
-		slider.x = this.width * 7 / 8 - 17 - slider.width;
+	protected void drawGuiBackgroundLayer() {
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		/**Background*/
 		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
@@ -51,38 +72,58 @@ public class GuiGuideBook extends GuiScreen {
 		this.drawDefaultBackground();
 		GlStateManager.popMatrix();
 		GlStateManager.pushMatrix();
+		/**Drawing Constants*/
+		float textureSide$x = 256.0F;
+		float textureSide$y = 256.0F;
 		int tileSize = 32;
+		int borderSize = tileSize / 2;
+		int acrossX = this.width * 6 / 8 - 2 * tileSize;
+		int acrossY = this.height * 6 / 8 - 2 * tileSize;
+		int leftX = this.width * 1 / 8;
+		int topY = this.height * 1 / 8;
+		int rightX = this.width * 7 / 8 - tileSize;
+		int bottomY = (topY + tileSize) + (acrossY);
 		/**TopLeft*/
-		drawTexturedModalRect(this.width * 1 / 8, this.height * 1 / 8, 0, 0, tileSize, tileSize);
+		drawScaledCustomSizeModalRect(leftX, topY, 0, 0, tileSize, tileSize, tileSize, tileSize, textureSide$x, textureSide$y);
 		/**TopRight*/
-		drawTexturedModalRect(this.width * 7 / 8 - tileSize, this.height * 1 / 8, tileSize, 0, tileSize, tileSize);
+		drawScaledCustomSizeModalRect(rightX, topY, tileSize, 0, tileSize, tileSize, tileSize, tileSize, textureSide$x, textureSide$y);
 		/**BottomLeft*/
-		drawTexturedModalRect(this.width * 1 / 8, this.height * 7 / 8 - tileSize, 0, tileSize, tileSize, tileSize);
+		drawScaledCustomSizeModalRect(leftX, bottomY, 0, tileSize, tileSize, tileSize, tileSize, tileSize, textureSide$x, textureSide$y);
 		/**BottomRight*/
-		drawTexturedModalRect(this.width * 7 / 8 - tileSize, (this.height * 1 / 8 + tileSize) + (this.height * 6 / 8 - 2 * tileSize), tileSize, tileSize, tileSize, tileSize);
-		GlStateManager.popMatrix();
+		drawScaledCustomSizeModalRect(rightX, bottomY, tileSize, tileSize, tileSize, tileSize, tileSize, tileSize, textureSide$x, textureSide$y);
 		/** Top & Bottom */
-		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8, 24, 0, 8, tileSize, this.width * 6 / 8 - 2 * tileSize, tileSize, 256.0F, 256.0F);
-		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 7 / 8 - tileSize, 24, tileSize, 8, tileSize, this.width * 6 / 8 - 2 * tileSize, tileSize, 256.0F, 256.0F);
+		drawScaledCustomSizeModalRect(leftX + tileSize, topY, 24, 0, 8, tileSize, acrossX, tileSize, textureSide$x, textureSide$y);
+		drawScaledCustomSizeModalRect(leftX + tileSize, bottomY, 24, tileSize, 8, tileSize, acrossX, tileSize, textureSide$x, textureSide$y);
 		/**Left & Right*/
-		drawScaledCustomSizeModalRect(this.width * 1 / 8, this.height * 1 / 8 + tileSize, 0, 24, tileSize, 8, tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
-		drawScaledCustomSizeModalRect(this.width * 7 / 8 - tileSize, this.height * 1 / 8 + tileSize, tileSize, 24, tileSize, 8, tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
+		drawScaledCustomSizeModalRect(leftX, topY + tileSize, 0, 24, tileSize, 8, tileSize, acrossY, textureSide$x, textureSide$y);
+		drawScaledCustomSizeModalRect(rightX, topY + tileSize, tileSize, 24, tileSize, 8, tileSize, acrossY, textureSide$x, textureSide$y);
 		/**Background*/
-		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8 + tileSize, 24, 24, 8, 8, this.width * 6 / 8 - 2 * tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
+		drawScaledCustomSizeModalRect(leftX + tileSize, topY + tileSize, 24, 24, 8, 8, acrossX, acrossY, textureSide$x, textureSide$y);
+		/**Setting slider constraints*/
+		sliderTopY = topY + borderSize;
+		sliderBotY = bottomY + borderSize - slider.height;
+		slider.x = rightX + borderSize - slider.height;
+		/**Setting text constraints*/
+		maxLength = acrossX + 3 / 2 * borderSize - slider.width;
+		textX = leftX + 24;
+		textY = topY + 24;
+		maxLines = (acrossY - borderSize) / 10;
+		GlStateManager.popMatrix();
 	}
 
-	public void drawGuiForeGroundLayer() {
+	/**
+	 * Draw a foreground layer containing all the titles and all the text.
+	 * TODO maybe work on the newline algorithm.
+	 */
 
-		/**Foreground stuff*/
+	protected void drawGuiForeGroundLayer() {
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(1.0F, 1.0F, 10.0F);
+		GlStateManager.translate(0.0F, 0.0F, 10.0F);
 		drawCenteredString(this.fontRenderer, StringUtils.translate("book.quickstart.title").trim(), this.width / 2, this.height * 1 / 8 + 4, 0xFFFFFF);
 		drawCenteredString(this.fontRenderer, "Page " + page + " out of " + pageMax, this.width / 2, this.height - 25, 0xFFFFFF);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		String delimiter = "\\\\n";
 		String currentPage = StringUtils.translate("book.quickstart." + page);
-		/** Could be less than 75, this is already thinking about the slider button.*/
-		maxLength = this.width * 3 / 4 - 75;
 		String[] currentPageLines = currentPage.split(delimiter);
 		String line;
 		int line_number = 0;
@@ -108,16 +149,20 @@ public class GuiGuideBook extends GuiScreen {
 					line = sentence;
 					sentence = "";
 				}
-				drawString(this.fontRenderer, line, this.width * 1 / 8 + 24, this.height * 1 / 8 + 24 + (10 * line_number++), 0xFFFFFF);
+				drawString(this.fontRenderer, line, textX, textY + (10 * line_number++), 0xFFFFFF);
 			} while (sentence.length() != 0);
 			line_number++;
+		}
+		if (line_number < maxLines) {
+			this.draggable = false;
+			slider.enabled = false;
 		}
 		GlStateManager.popMatrix();
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		this.drawGuiBackgroundLayer(this.width * 3 / 32, this.height * 3 / 32);
+		this.drawGuiBackgroundLayer();
 		this.drawGuiForeGroundLayer();
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
@@ -127,8 +172,9 @@ public class GuiGuideBook extends GuiScreen {
 		this.buttonList.clear();
 		this.nextPageBtn = this.addButton(new GuiButton(0, this.width / 2 + 100, this.height - 30, 20, 20, ">"));
 		this.prevPageBtn = this.addButton(new GuiButton(1, this.width / 2 - 120, this.height - 30, 20, 20, "<"));
-		this.slider = this.addButton(new GuiButton(2, 0, this.height * 1 / 8 + 20, 20, 20, "|||"));
-		//defaultSlider();
+		this.slider = this.addButton(new GuiButton(2, 0, this.height * 1 / 8 + 16, 20, 20, "|||"));
+		this.drawGuiBackgroundLayer();
+		updateSlider();
 	}
 
 	@Override
@@ -145,26 +191,21 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	protected void defaultSlider() {
-		slider.y = sliderTopY;
-	}
-
 	protected void updateSlider() {
-		if (dragging && slider.y >= sliderTopY && slider.y <= sliderBotY) {
+		if (dragging && draggable) {
 			if (mouseY < sliderTopY + slider.height / 2) {
 				slider.y = sliderTopY;
-				sliderProgress = (slider.y - sliderTopY) / (sliderBotY - sliderTopY);
-			} else if (mouseY > sliderBotY - slider.height / 2) {
+				sliderProgress = (slider.y - sliderTopY) / (float) (sliderBotY - sliderTopY);
+			} else if (mouseY > sliderBotY + slider.height / 2) {
 				slider.y = sliderBotY;
-				sliderProgress = (slider.y - sliderTopY) / (sliderBotY - sliderTopY);
+				sliderProgress = (slider.y - sliderTopY) / (float) (sliderBotY - sliderTopY);
 			} else {
 				slider.y = mouseY - slider.height / 2;
-				float top = (slider.y - sliderTopY);
-				float bot = (sliderBotY - sliderTopY);
-				sliderProgress = top / bot;
+				sliderProgress = (slider.y - sliderTopY) / (float) (sliderBotY - sliderTopY);
 			}
 			System.out.println(sliderProgress);
 		} else {
+			if (draggable == false) slider.enabled = false;
 			slider.y = (int) (sliderTopY + (sliderBotY - sliderTopY) * sliderProgress);
 		}
 	}
@@ -187,5 +228,13 @@ public class GuiGuideBook extends GuiScreen {
 	protected void mouseReleased(int mouseX, int mouseY, int state) {
 		this.dragging = false;
 		super.mouseReleased(mouseX, mouseY, state);
+	}
+
+	@Override
+	public void onGuiClosed() {
+		NBTTagCompound nbtTagCompound = book.getTagCompound();
+		nbtTagCompound.setInteger("page", page);
+		nbtTagCompound.setFloat("sliderProgress", sliderProgress);
+		super.onGuiClosed();
 	}
 }

@@ -159,9 +159,14 @@ dependencies {
     deobfCompile "thaumcraft:Thaumcraft:1.12.2:6.1.BETA26"
     runtimeOnly "baubles:Baubles:1.12:1.5.2"
 	deobfCompile "MCMultiPart2:MCMultiPart:2.5.3"
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.hamcrest:java-hamcrest:2.0.0.0'
-    testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+    testImplementation "org.junit.jupiter:junit-jupiter:5.4.2"
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 task deobfJar(type: Jar, dependsOn: 'jar') {

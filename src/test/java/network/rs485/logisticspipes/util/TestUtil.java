@@ -2,8 +2,7 @@ package network.rs485.logisticspipes.util;
 
 import io.netty.buffer.ByteBuf;
 import static io.netty.buffer.Unpooled.buffer;
-import static org.junit.Assert.assertArrayEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class TestUtil {
 
@@ -18,7 +17,7 @@ public class TestUtil {
 		return data;
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testGetBytesFromInteger() throws Exception {
 		assertArrayEquals(new byte[] { 0, 0, 0, 0 }, getBytesFromInteger(0));
 		assertArrayEquals(new byte[] { 1, 2, 3, 4 }, getBytesFromInteger(16909060));

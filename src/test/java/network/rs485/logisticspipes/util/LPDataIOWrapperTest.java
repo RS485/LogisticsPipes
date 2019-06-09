@@ -15,18 +15,17 @@ import io.netty.buffer.Unpooled;
 import static io.netty.buffer.Unpooled.buffer;
 import static io.netty.buffer.Unpooled.directBuffer;
 import static io.netty.buffer.Unpooled.wrappedBuffer;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("unused")
 public class LPDataIOWrapperTest {
 
 	private static final String BUFFER_EMPTY_MSG = "Buffer must be empty";
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testDirectBuffer() {
 		ByteBuf directBuf = directBuffer();
 
@@ -40,21 +39,21 @@ public class LPDataIOWrapperTest {
 			assertEquals(13, input.readByte());
 		});
 
-		assertEquals(BUFFER_EMPTY_MSG, 0, directBuf.readableBytes());
+		assertEquals(0, directBuf.readableBytes(), BUFFER_EMPTY_MSG);
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testProvideByteData() {
 		int result = 16909060;
 
 		LPDataIOWrapper.provideData(TestUtil.getBytesFromInteger(result), input -> {
 			assertEquals(result, input.readInt());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testProvideByteBufData() {
 		int result = 1234;
 
@@ -62,31 +61,31 @@ public class LPDataIOWrapperTest {
 
 		LPDataIOWrapper.provideData(dataBuffer, dataInput -> assertEquals(result, dataInput.readInt()));
 
-		assertEquals(BUFFER_EMPTY_MSG, 0, dataBuffer.readableBytes());
+		assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 
 		dataBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteData() {
 		ByteBuf dataBuffer = buffer(Integer.BYTES);
 
 		LPDataIOWrapper.writeData(dataBuffer, dataOutput -> dataOutput.writeInt(5));
 		assertEquals(5, dataBuffer.readInt());
 
-		assertEquals(BUFFER_EMPTY_MSG, 0, dataBuffer.readableBytes());
+		assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 
 		dataBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testCollectData() {
 		byte[] arr = LPDataIOWrapper.collectData(dataOutput -> dataOutput.writeInt(7890));
 
 		assertArrayEquals(TestUtil.getBytesFromInteger(7890), arr);
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteByteArray() {
 		ByteBuf dataBuffer = buffer(Integer.BYTES * 2);
 		byte[] arr = TestUtil.getBytesFromInteger(-1);
@@ -96,12 +95,12 @@ public class LPDataIOWrapperTest {
 		assertEquals(4, dataBuffer.readInt());
 		assertEquals(-1, dataBuffer.readInt());
 
-		assertEquals(BUFFER_EMPTY_MSG, 0, dataBuffer.readableBytes());
+		assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 
 		dataBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullByteArray() {
 		ByteBuf dataBuffer = Unpooled.buffer();
 
@@ -109,12 +108,12 @@ public class LPDataIOWrapperTest {
 
 		LPDataIOWrapper.provideData(dataBuffer, input -> assertNull(input.readByteArray()));
 
-		assertEquals(BUFFER_EMPTY_MSG, 0, dataBuffer.readableBytes());
+		assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 
 		dataBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testReadByteArray() {
 		ByteBuf dataBuffer = buffer(Integer.BYTES * 2);
 
@@ -126,12 +125,12 @@ public class LPDataIOWrapperTest {
 			assertArrayEquals(TestUtil.getBytesFromInteger(-1), bytes);
 		});
 
-		assertEquals(BUFFER_EMPTY_MSG, 0, dataBuffer.readableBytes());
+		assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 
 		dataBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteByte() {
 		byte value = 0x6f;
 		ByteBuf testBuffer = buffer(Byte.BYTES);
@@ -147,7 +146,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteByteInt() {
 		int byteValue = 0x6f;
 		ByteBuf testBuffer = buffer(Byte.BYTES);
@@ -163,7 +162,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteShort() {
 		short value = 0x6f0f;
 		ByteBuf testBuffer = buffer(Short.BYTES);
@@ -179,7 +178,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteShortInt() {
 		int shortValue = 0x6f0f;
 		ByteBuf testBuffer = buffer(Short.BYTES);
@@ -195,7 +194,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteInt() {
 		int value = 0x6f0f9f3f;
 		ByteBuf testBuffer = buffer(Integer.BYTES);
@@ -211,7 +210,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteLong() {
 		long value = 0x6f0f9f3f6f0f9f3fL;
 		ByteBuf testBuffer = buffer(Long.BYTES);
@@ -227,7 +226,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteFloat() {
 		float value = 0.123456F;
 		ByteBuf testBuffer = buffer(Float.BYTES);
@@ -243,7 +242,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testWriteDouble() {
 		double value = 0.1234567890123456;
 		ByteBuf testBuffer = buffer(Double.BYTES);
@@ -259,7 +258,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	@SuppressWarnings("ConstantConditions")
 	public void testWriteBoolean() {
 		boolean value = true;
@@ -276,7 +275,7 @@ public class LPDataIOWrapperTest {
 		compareBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testUTF() {
 		String value = "◘ËTest♀StringßüöäÜÖÄ";
 
@@ -285,22 +284,22 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(value, input.readUTF());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullUTF() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeUTF(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readUTF());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testForgeDirection() {
 		EnumFacing value = EnumFacing.UP;
 		ByteBuf testBuffer = buffer(Long.BYTES);
@@ -310,24 +309,24 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(testBuffer, input -> {
 			assertEquals(value, input.readFacing());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 
 		testBuffer.release();
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullForgeDirection() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeFacing(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readFacing());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testBitSet() {
 		BitSet value = new BitSet(9);
 		value.set(3, true);
@@ -339,16 +338,17 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(value, input.readBitSet());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test(expected = NullPointerException.class)
+	@org.junit.jupiter.api.Test
 	public void testNullBitSet() {
-		LPDataIOWrapper.collectData(output -> output.writeBitSet(null));
+		assertThrows(NullPointerException.class, () ->
+				LPDataIOWrapper.collectData(output -> output.writeBitSet(null)));
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testBooleanArray() {
 		boolean[] arr = new boolean[] { true, false, true, true };
 
@@ -357,11 +357,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertArrayEquals(arr, input.readBooleanArray());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testEmptyBooleanArray() {
 		boolean[] arr = new boolean[0];
 
@@ -370,32 +370,33 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertArrayEquals(arr, input.readBooleanArray());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullBooleanArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeBooleanArray(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readBooleanArray());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test(expected = NullPointerException.class)
+	@org.junit.jupiter.api.Test
 	public void testInvalidBooleanArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> {
 			output.writeInt(12);
 			output.writeByteArray(null);
 		});
 
-		LPDataIOWrapper.provideData(data, LPDataInput::readBooleanArray);
+		assertThrows(NullPointerException.class, () ->
+				LPDataIOWrapper.provideData(data, LPDataInput::readBooleanArray));
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testIntArray() {
 		int[] arr = new int[] { 12, 13, 13513, Integer.MAX_VALUE, Integer.MIN_VALUE };
 
@@ -404,22 +405,22 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertArrayEquals(arr, input.readIntArray());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullIntArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeIntArray(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readIntArray());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testByteBuf() {
 		byte[] arr = TestUtil.getBytesFromInteger(741893247);
 		ByteBuf testBuffer = buffer(arr.length);
@@ -433,26 +434,28 @@ public class LPDataIOWrapperTest {
 			LPDataIOWrapper.provideData(input.readByteBuf(), bufferInput -> {
 				assertArrayEquals(arr, bufferInput.readBytes(arr.length));
 
-				assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) bufferInput).localBuffer.readableBytes());
+				assertEquals(0, ((LPDataIOWrapper) bufferInput).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 			});
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test(expected = NullPointerException.class)
+	@org.junit.jupiter.api.Test
 	public void testNullByteBuf() {
-		LPDataIOWrapper.collectData(output -> output.writeByteBuf(null));
+		assertThrows(NullPointerException.class, () ->
+				LPDataIOWrapper.collectData(output -> output.writeByteBuf(null)));
 	}
 
-	@Test(expected = NullPointerException.class)
+	@org.junit.jupiter.api.Test
 	public void testInvalidByteBuf() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeByteArray(null));
 
-		LPDataIOWrapper.provideData(data, LPDataInput::readByteBuf);
+		assertThrows(NullPointerException.class, () ->
+				LPDataIOWrapper.provideData(data, LPDataInput::readByteBuf));
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testLongArray() {
 		long[] arr = new long[] { 12L, 13L, 1351312398172398L, Long.MAX_VALUE, Long.MIN_VALUE };
 
@@ -461,22 +464,22 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertArrayEquals(arr, input.readLongArray());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullLongArray() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeLongArray(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readLongArray());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testReadShort() {
 		short value = 12;
 
@@ -486,11 +489,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(dataBuffer, input -> {
 			assertEquals(value, input.readShort());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testReadLong() {
 		long value = 1092347801374L;
 
@@ -500,11 +503,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(dataBuffer, input -> {
 			assertEquals(value, input.readLong());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testReadFloat() {
 		float value = 0.123456F;
 
@@ -514,11 +517,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(dataBuffer, input -> {
 			assertEquals(value, input.readFloat(), 0.000001F);
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testReadDouble() {
 		double value = 0.1234567890123456D;
 
@@ -528,11 +531,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(dataBuffer, input -> {
 			assertEquals(value, input.readDouble(), 0.000000000000001);
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	@SuppressWarnings("ConstantConditions")
 	public void testBoolean() {
 		boolean value = true;
@@ -542,11 +545,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(value, input.readBoolean());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNBTTagCompound() {
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setBoolean("bool", true);
@@ -566,33 +569,33 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(tag, input.readNBTTagCompound());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullNBTTagCompound() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeNBTTagCompound(null));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readNBTTagCompound());
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testEmptyItemStack() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeItemStack(ItemStack.EMPTY));
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(input.readItemStack(), ItemStack.EMPTY);
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testArrayList() {
 		ArrayList<String> arrayList = new ArrayList<>();
 		arrayList.add("drölf");
@@ -604,11 +607,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(arrayList, input.readArrayList(LPDataInput::readUTF));
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullArrayList() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
 				LPDataOutput::writeUTF));
@@ -616,11 +619,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readArrayList(LPDataInput::readUTF));
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testLinkedList() {
 		LinkedList<String> linkedList = new LinkedList<>();
 		linkedList.add("drölf");
@@ -632,11 +635,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(linkedList, input.readLinkedList(LPDataInput::readUTF));
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullLinkedList() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
 				LPDataOutput::writeUTF));
@@ -644,11 +647,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readLinkedList(LPDataInput::readUTF));
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testSet() {
 		HashSet<String> set = new HashSet<>();
 		set.add("drölf");
@@ -660,11 +663,11 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertEquals(set, input.readSet(LPDataInput::readUTF));
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testNullSet() {
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
 				LPDataOutput::writeUTF));
@@ -672,7 +675,7 @@ public class LPDataIOWrapperTest {
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readSet(LPDataInput::readUTF));
 
-			assertEquals(BUFFER_EMPTY_MSG, 0, ((LPDataIOWrapper) input).localBuffer.readableBytes());
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
 }

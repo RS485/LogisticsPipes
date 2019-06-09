@@ -41,7 +41,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import logisticspipes.LogisticsPipes
 import logisticspipes.utils.PlayerIdentifier
-import net.minecraftforge.fml.server.FMLServerHandler
+import net.minecraftforge.fml.common.FMLCommonHandler
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Files
@@ -56,7 +56,7 @@ class ServerConfigurationManager {
     private val internalRepresentation: ServerConfiguration
 
     init {
-        configFile = File(FMLServerHandler.instance().savesDirectory, fileName)
+        configFile = File(FMLCommonHandler.instance().savesDirectory, fileName)
         internalRepresentation = try {
             configFile.bufferedReader(Charsets.UTF_8).use {
                 gson.fromJson(gson.newJsonReader(it), ServerConfiguration::class.java)

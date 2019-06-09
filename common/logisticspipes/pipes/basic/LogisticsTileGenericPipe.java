@@ -79,6 +79,7 @@ import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.proxy.PipeInventoryConnectionChecker;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -91,6 +92,8 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct,*/ ManagedPeripheral, Environment, SidedEnvironment,
 		ILogicControllerTile {
+
+	public static PipeInventoryConnectionChecker pipeInventoryConnectionChecker = new PipeInventoryConnectionChecker();
 
 	public int statePacketId = 0;
 	public final PipeRenderState renderState;
@@ -871,7 +874,9 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			if(((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
 		}
 		if (capability == LogisticsPipes.ITEM_HANDLER_CAPABILITY) {
-			return true;
+			if (facing == null || pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(getTile(facing))) {
+				return true;
+			}
 		}
 		if (bcCapProvider.hasCapability(capability, facing)) {
 			return true;
@@ -894,7 +899,9 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			if(facing == null) {
 				return (T) itemInsertionHandlerNull;
 			}
-			return (T) itemInsertionHandlers.get(facing);
+			if (pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(getTile(facing))) {
+				return (T) itemInsertionHandlers.get(facing);
+			}
 		}
 		if(bcCapProvider.hasCapability(capability, facing)) {
 			return bcCapProvider.getCapability(capability, facing);

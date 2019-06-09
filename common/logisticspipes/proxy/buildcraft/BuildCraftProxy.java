@@ -9,6 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.IMjReceiver;
 import buildcraft.api.mj.MjAPI;
+import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.transport.tile.TilePipeHolder;
 
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
@@ -39,6 +40,8 @@ public class BuildCraftProxy implements IBCProxy {
 
 	@Override
 	public void initProxy() {
+		LogisticsTileGenericPipe.pipeInventoryConnectionChecker.addSupportedClassType(TileBC_Neptune.class);
+
 		ItemInsertionHandler.ACCEPTORS.add((pipe, from, stack) -> {
 			if(stack.hasTagCompound() && stack.getTagCompound().hasKey("logisticspipes:routingdata_buildcraft")) {
 				NBTTagCompound routingData = stack.getTagCompound().getCompoundTag("logisticspipes:routingdata_buildcraft");

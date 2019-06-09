@@ -325,19 +325,19 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void onItemCrafting(PlayerEvent.ItemCraftedEvent event) {
-		if(!event.crafting.isEmpty()) {
-			if(event.crafting.getItem().getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID)) {
+		if (event.player.isServerWorld() && !event.crafting.isEmpty()) {
+			if (event.crafting.getItem().getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID)) {
 				PlayerIdentifier identifier = PlayerIdentifier.get(event.player);
 				PlayerConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
-				if(!config.getHasCraftedLPItem() && !LPConstants.DEBUG) {
+				if (!config.getHasCraftedLPItem() && !LPConstants.DEBUG) {
 					ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
 					NBTTagList bookTagList = new NBTTagList();
 
 					int index = 1;
 					String key = "book.quickstart." + index;
 					String translation = StringUtils.translate(key);
-					while(!key.equals(translation)) {
-						bookTagList.appendTag(new NBTTagString("{\"text\":\"" + translation.replace("\"", "\\\"") +"\"}"));
+					while (!key.equals(translation)) {
+						bookTagList.appendTag(new NBTTagString("{\"text\":\"" + translation.replace("\"", "\\\"") + "\"}"));
 
 						key = "book.quickstart." + ++index;
 						translation = StringUtils.translate(key);

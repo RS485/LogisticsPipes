@@ -14,19 +14,18 @@ buildscript {
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'de.undercouch:gradle-download-task:3.4.3'
     }
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'signing'
+apply plugin: 'de.undercouch.download'
 //apply plugin: 'curseforge'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
-
-//ant.importBuild 'download-api.xml'
-ant.importBuild 'build-ant.xml'
 
 version = "0.10.1"
 group= "network.rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -41,9 +40,6 @@ if (ENV.BUILD_NUMBER) {
 } else {
     version += ".99999"
 }
-
-ant.version = version
-ant.archivesBaseName = archivesBaseName
 
 minecraft {
     version = "1.12.2-14.23.5.2768"
@@ -254,4 +250,23 @@ gradle.taskGraph.whenReady { taskGraph ->
     }
 }
 
-tasks.processResources.dependsOn('integrateLang')
+task downloadLanguage(type: Download) {
+    onlyIfModified true
+    quiet true
+    src "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
+    dest new File(temporaryDir, "language.zip")
+}
+
+task extractLanguage(dependsOn: downloadLanguage, type: Copy) {
+    from(zipTree(downloadLanguage.dest)) {
+        include "**/**.lang"
+        includeEmptyDirs = false
+    }
+    into temporaryDir
+}
+
+task language(dependsOn: extractLanguage, type: Copy) {
+    processResources.dependsOn language
+    from new File(extractLanguage.destinationDir, "LogisticsPipes-Language-master")
+    into new File(buildDir, "resources/main/assets/logisticspipes/lang/")
+}

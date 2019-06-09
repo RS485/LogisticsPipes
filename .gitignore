@@ -1,5 +1,6 @@
 # IDEA project output path
 /classes
+/logs
 
 # Created by https://www.gitignore.io/api/java,gradle,kotlin,forgegradle,intellij+iml
 # Edit at https://www.gitignore.io/?templates=java,gradle,kotlin,forgegradle,intellij+iml

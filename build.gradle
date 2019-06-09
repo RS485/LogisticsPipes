@@ -188,16 +188,6 @@ task copyLPDummy(type: Copy) {
     into 'run/assets/mods'
 }
 
-//curse {
-//    displayName = 'Logistics Pipes ${project.version} build ' + System.getenv().BUILD_NUMBER
-//
-//    projectId = '232838'
-//    apiKey = project.findProperty('curseForgeApiKey')
-//    releaseType = 'release'
-//
-//    changelog = project.findProperty('changelog')
-//}
-
 curseforge {
     apiKey = project.hasProperty('LogisticsPipes.curseForgeApiKey') ? project.findProperty("LogisticsPipes.curseForgeApiKey") : '0'
     project {

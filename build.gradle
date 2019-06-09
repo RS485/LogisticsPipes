@@ -210,7 +210,7 @@ curseforge {
         }
 
         mainArtifact(jar) {
-            displayName = 'Logistics Pipes ${version} build ' + System.getenv().BUILD_NUMBER
+            displayName = 'Logistics Pipes ' + project.version + ' build ' + System.getenv().BUILD_NUMBER
         }
     }
 }

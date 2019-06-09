@@ -41,7 +41,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import logisticspipes.LogisticsPipes
 import logisticspipes.utils.PlayerIdentifier
-import net.minecraftforge.common.DimensionManager
+import net.minecraftforge.fml.server.FMLServerHandler
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Files
@@ -56,9 +56,7 @@ class ServerConfigurationManager {
     private val internalRepresentation: ServerConfiguration
 
     init {
-        val world = DimensionManager.getWorld(0) ?: throw UnsupportedOperationException("Dimension 0 doesn't have a world")
-
-        configFile = File(world.saveHandler.worldDirectory, fileName)
+        configFile = File(FMLServerHandler.instance().savesDirectory, fileName)
         internalRepresentation = try {
             configFile.bufferedReader(Charsets.UTF_8).use {
                 gson.fromJson(gson.newJsonReader(it), ServerConfiguration::class.java)

@@ -30,21 +30,21 @@ public class SetCurrentPagePacket extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ItemStack book = player.inventory.getStackInSlot(slot);
-		book.setTagCompound(nbt);;
+		book.setTagCompound(nbt);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
+		super.readData(input);
 		nbt = input.readNBTTagCompound();
 		slot = input.readInt();
-		super.readData(input);
 	}
 
 	@Override
 	public void writeData(LPDataOutput output) {
+		super.writeData(output);
 		output.writeNBTTagCompound(nbt);
 		output.writeInt(slot);
-		super.writeData(output);
 	}
 
 	@Override

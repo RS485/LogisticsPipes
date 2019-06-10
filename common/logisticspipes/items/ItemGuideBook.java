@@ -27,8 +27,8 @@ public class ItemGuideBook extends LogisticsItem {
 		nbt.setFloat("sliderProgress", 0.0F);
 	}
 
-	public static void setCurrentPage(int page, float sliderProgress, EnumHand hand) {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setHand(hand).setSliderProgress(sliderProgress).setPage(page));
+	public static void setCurrentPage(int slot, EntityPlayer player, NBTTagCompound nbt){
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SetCurrentPagePacket.class).setNbt(nbt).setSlot(slot), player);
 	}
 
 	@Nonnull

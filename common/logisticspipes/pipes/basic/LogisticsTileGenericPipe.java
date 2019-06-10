@@ -874,8 +874,11 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			if(((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
 		}
 		if (capability == LogisticsPipes.ITEM_HANDLER_CAPABILITY) {
-			if (facing == null || pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(getTile(facing))) {
-				return true;
+			TileEntity tile = getTile(facing);
+			if(tile != null) {
+				if (facing == null || pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(tile)) {
+					return true;
+				}
 			}
 		}
 		if (bcCapProvider.hasCapability(capability, facing)) {
@@ -899,8 +902,11 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			if(facing == null) {
 				return (T) itemInsertionHandlerNull;
 			}
-			if (pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(getTile(facing))) {
-				return (T) itemInsertionHandlers.get(facing);
+			TileEntity tile = getTile(facing);
+			if(tile != null) {
+				if (pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(tile)) {
+					return (T) itemInsertionHandlers.get(facing);
+				}
 			}
 		}
 		if(bcCapProvider.hasCapability(capability, facing)) {

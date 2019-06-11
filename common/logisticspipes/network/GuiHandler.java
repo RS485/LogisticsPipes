@@ -41,6 +41,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -263,7 +264,10 @@ public class GuiHandler implements IGuiHandler {
 		}
 
 		if (ID == GuiIDs.GUI_Guide_Book_ID) {
-			return new GuiGuideBook();
+			if (x == EnumHand.MAIN_HAND.ordinal())
+				return new GuiGuideBook(EnumHand.MAIN_HAND);
+			if (x == EnumHand.OFF_HAND.ordinal())
+				return new GuiGuideBook(EnumHand.OFF_HAND);
 		}
 
 		if (ID < 110 && ID > 0) {

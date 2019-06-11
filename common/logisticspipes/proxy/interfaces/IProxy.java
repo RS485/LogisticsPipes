@@ -9,6 +9,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 public interface IProxy {
@@ -50,6 +51,8 @@ public interface IProxy {
 	public boolean checkSinglePlayerOwner(String commandSenderName);
 
 	public void openFluidSelectGui(int slotId);
+
+	public void openGuiFromItem(int guiId, EnumHand hand);
 
 	default void registerModels() {}
 

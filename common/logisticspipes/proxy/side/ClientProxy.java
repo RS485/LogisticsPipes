@@ -7,11 +7,13 @@ import logisticspipes.LPBlocks;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCraftingPipe;
+import logisticspipes.gui.GuiGuideBook;
 import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.pipefxhandlers.Particles;
@@ -51,6 +53,7 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -134,9 +137,10 @@ public class ClientProxy implements IProxy {
 	}
 
 	// BuildCraft method
+
 	/**
 	 * Retrieves pipe at specified coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param x
 	 * @param y
@@ -245,11 +249,20 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
+	public void openGuiFromItem(int guiId, EnumHand hand) {
+		Minecraft mc = Minecraft.getMinecraft();
+		EntityPlayer player = mc.player;
+		World world = mc.world;
+		BlockPos pos = player.getPosition();
+		player.openGui(LogisticsPipes.instance, guiId, world, hand.ordinal(), pos.getY(), pos.getZ());
+	}
+
+	@Override
 	public void registerModels() {
 		ForgeRegistries.ITEMS.getValuesCollection().stream()
 				.filter(item -> item.getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID))
 				.filter(item -> item instanceof ILogisticsItem)
-				.forEach(item -> registerModels((ILogisticsItem)item));
+				.forEach(item -> registerModels((ILogisticsItem) item));
 	}
 
 	private void registerModels(ILogisticsItem item) {

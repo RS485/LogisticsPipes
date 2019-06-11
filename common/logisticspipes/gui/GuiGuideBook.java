@@ -10,11 +10,12 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLSync;
-import scala.actors.threadpool.Arrays;
+
+import java.util.Arrays;
 
 import logisticspipes.LPConstants;
 import logisticspipes.items.ItemGuideBook;
@@ -34,10 +35,10 @@ public class GuiGuideBook extends GuiScreen {
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	private GuiButton nextPageBtn, prevPageBtn, slider;
-	private int itemSlot;
 
 	private int mouseX, mouseY;
 	private ItemStack book;
+	private EnumHand hand;
 
 	//Slider vars
 	private boolean dragging = false;
@@ -55,7 +56,7 @@ public class GuiGuideBook extends GuiScreen {
 	private int maxLines;
 
 	//Text vars
-	List<String> text = new ArrayList<>();
+	private List<String> text = new ArrayList<>();
 
 	//Drawing Constants
 	private final float textureSide$x = 256.0F;
@@ -64,8 +65,9 @@ public class GuiGuideBook extends GuiScreen {
 	private final int borderSize = tileSize / 2;
 	private int acrossX, acrossY, leftX, topY, rightX, bottomY;
 
-	public GuiGuideBook() {
+	public GuiGuideBook(EnumHand hand) {
 		super();
+		this.hand = hand;
 	}
 
 	protected void splitLines() {
@@ -88,21 +90,21 @@ public class GuiGuideBook extends GuiScreen {
 							while (line.charAt(length - 1) != ' ') {
 								length--;
 							}
-							line = line.substring(0, length-1);
+							line = line.substring(0, length - 1);
 							sentence = sentence.substring(length);
-						}else{
-							line = line.substring(0, length-1);
+						} else {
+							line = line.substring(0, length - 1);
 							sentence = sentence.substring(length);
 						}
 					} else {
 						line = sentence;
 						sentence = "";
 					}
-				}else{
+				} else {
 					line = sentence;
 					sentence = "";
 				}
-				if(line.charAt(0) == ' ') line = line.substring(1);
+				if (line.charAt(0) == ' ') line = line.substring(1);
 				text.add(line);
 			} while (sentence.length() != 0);
 		}
@@ -203,14 +205,15 @@ public class GuiGuideBook extends GuiScreen {
 		textY = topY + 24;
 		maxLines = (acrossY + borderSize) / 10;
 		/**Getting information from item NBT*/
-		book = mc.player.inventory.getStackInSlot(itemSlot);
+		if (hand == EnumHand.MAIN_HAND)
+			book = mc.player.getHeldItemMainhand();
+		else
+			book = mc.player.getHeldItemOffhand();
 		if (book.hasTagCompound()) {
-			System.out.println("Book has nbt");
 			NBTTagCompound nbtTagCompound = book.getTagCompound();
 			this.page = nbtTagCompound.getInteger("page");
 			this.sliderProgress = nbtTagCompound.getFloat("sliderProgress");
 		} else {
-			System.out.println("Book doesn't have NBT");
 			this.page = 1;
 			this.sliderProgress = 0.0F;
 		}
@@ -221,6 +224,11 @@ public class GuiGuideBook extends GuiScreen {
 		this.slider = this.addButton(new GuiButton(2, rightX + borderSize - sliderHeight, sliderTopY + (int) ((sliderBotY - sliderTopY) * sliderProgress), sliderWidth, sliderHeight, "|||"));
 		/**Splitting current page*/
 		splitLines();
+	}
+
+	@Override
+	public boolean doesGuiPauseGame() {
+		return false;
 	}
 
 	@Override
@@ -261,10 +269,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
-		nbtTagCompound.setInteger("page", page);
-		nbtTagCompound.setFloat("sliderProgress", sliderProgress);
-		ItemGuideBook.setCurrentPage(itemSlot, mc.player, nbtTagCompound);
+		ItemGuideBook.setCurrentPage(page, sliderProgress, hand);
 		super.onGuiClosed();
 	}
 
@@ -303,7 +308,6 @@ public class GuiGuideBook extends GuiScreen {
 				slider.y = mouseY - slider.height / 2;
 				sliderProgress = (slider.y - sliderTopY) / (float) (sliderBotY - sliderTopY);
 			}
-			System.out.println(sliderProgress);
 		} else {
 			if (draggable == false) slider.enabled = false;
 			slider.y = (int) (sliderTopY + (sliderBotY - sliderTopY) * sliderProgress);

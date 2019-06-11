@@ -51,7 +51,7 @@ public interface IProxy {
 
 	void openFluidSelectGui(int slotId);
 
-	void openGuideBookGui(EnumHand hand);
+	public void openGuideBookGui(EnumHand hand);
 
 	default void registerModels() {}
 

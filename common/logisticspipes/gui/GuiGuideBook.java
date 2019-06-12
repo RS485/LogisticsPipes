@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
@@ -237,10 +238,9 @@ public class GuiGuideBook extends GuiScreen {
 		if (button.id == 0) {
 			if (page < pageMax) {
 				page++;
-				prevPageBtn.enabled = true;
 			}
-			if (page == pageMax) nextPageBtn.enabled = false;
-			else nextPageBtn.enabled = true;
+			this.nextPageBtn.enabled = page != pageMax;
+			this.prevPageBtn.enabled = page != 1;
 			sliderProgress = 0.0F;
 			updateSlider();
 			text = splitLines(StringUtils.translate("book.quickstart." + page), fontRenderer, maxLength);
@@ -248,10 +248,9 @@ public class GuiGuideBook extends GuiScreen {
 		if (button.id == 1) {
 			if (page > 1) {
 				page--;
-				nextPageBtn.enabled = true;
 			}
-			if (page == 1) prevPageBtn.enabled = false;
-			else prevPageBtn.enabled = true;
+			this.nextPageBtn.enabled = page != pageMax;
+			this.prevPageBtn.enabled = page != 1;
 			sliderProgress = 0.0F;
 			updateSlider();
 			text = splitLines(StringUtils.translate("book.quickstart." + page), fontRenderer, maxLength);
@@ -313,16 +312,7 @@ public class GuiGuideBook extends GuiScreen {
 	 */
 	protected void updateSlider() {
 		if (dragging && draggable) {
-			if (mouseY < sliderTopY + slider.height / 2) {
-				slider.y = sliderTopY;
-				sliderProgress = (slider.y - sliderTopY) / (float) (sliderBotY - sliderTopY);
-			} else if (mouseY > sliderBotY + slider.height / 2) {
-				slider.y = sliderBotY;
-				sliderProgress = (slider.y - sliderTopY) / (float) (sliderBotY - sliderTopY);
-			} else {
-				slider.y = mouseY - slider.height / 2;
-				sliderProgress = (slider.y - sliderTopY) / (float) (sliderBotY - sliderTopY);
-			}
+			slider.y = MathHelper.clamp(mouseY - slider.height / 2, sliderTopY, sliderBotY);
 		} else {
 			if (draggable == false) slider.enabled = false;
 			slider.y = (int) (sliderTopY + (sliderBotY - sliderTopY) * sliderProgress);

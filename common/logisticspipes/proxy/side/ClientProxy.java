@@ -251,10 +251,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void openGuiFromItem(int guiId, EnumHand hand) {
 		Minecraft mc = Minecraft.getMinecraft();
-		EntityPlayer player = mc.player;
-		World world = mc.world;
-		BlockPos pos = player.getPosition();
-		player.openGui(LogisticsPipes.instance, guiId, world, hand.ordinal(), pos.getY(), pos.getZ());
+		mc.displayGuiScreen(new GuiGuideBook(hand));
 	}
 
 	@Override

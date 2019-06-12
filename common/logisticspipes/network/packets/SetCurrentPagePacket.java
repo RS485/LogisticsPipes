@@ -4,20 +4,23 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import lombok.Getter;
 import lombok.Setter;
+import sun.rmi.runtime.Log;
 
+import logisticspipes.LPConstants;
+import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemGuideBook;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-/**
- * TODO make this right
- */
 
 @StaticResolve
 public class SetCurrentPagePacket extends ModernPacket {
@@ -41,13 +44,8 @@ public class SetCurrentPagePacket extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ItemStack book;
-		if (hand == EnumHand.MAIN_HAND) {
-			if (!(player.getHeldItemMainhand().getItem().getClass() == ItemGuideBook.class)) return;
-			book = player.getHeldItemMainhand();
-		} else {
-			if (!(player.getHeldItemOffhand().getItem().getClass() == ItemGuideBook.class)) return;
-			book = player.getHeldItemOffhand();
-		}
+		book = player.getHeldItem(hand);
+		if (book.getItem() != LPItems.itemGuideBook) return;
 		NBTTagCompound nbt = book.getTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);

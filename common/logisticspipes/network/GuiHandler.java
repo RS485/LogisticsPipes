@@ -6,7 +6,6 @@ import logisticspipes.gui.GuiFluidBasic;
 import logisticspipes.gui.GuiFluidSupplierMk2Pipe;
 import logisticspipes.gui.GuiFluidSupplierPipe;
 import logisticspipes.gui.GuiFreqCardContent;
-import logisticspipes.gui.GuiGuideBook;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSatellitePipe;
@@ -41,7 +40,6 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -261,13 +259,6 @@ public class GuiHandler implements IGuiHandler {
 
 		if (ID == -1) {
 			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
-		}
-
-		if (ID == GuiIDs.GUI_Guide_Book_ID) {
-			if (x == EnumHand.MAIN_HAND.ordinal())
-				return new GuiGuideBook(EnumHand.MAIN_HAND);
-			if (x == EnumHand.OFF_HAND.ordinal())
-				return new GuiGuideBook(EnumHand.OFF_HAND);
 		}
 
 		if (ID < 110 && ID > 0) {

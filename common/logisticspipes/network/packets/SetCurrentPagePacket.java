@@ -58,9 +58,14 @@ public class SetCurrentPagePacket extends ModernPacket {
 		if (book.getItem() != LPItems.itemGuideBook) return;
 >>>>>>> Formatting fixes
 		NBTTagCompound nbt = book.getTagCompound();
+		if(nbt == null) nbt = new NBTTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);
+<<<<<<< feature/custom-guide-book
 >>>>>>> Remade some key parts
+=======
+		book.setTagCompound(nbt);
+>>>>>>> Ready for Review
 	}
 
 	@Override

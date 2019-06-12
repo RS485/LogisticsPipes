@@ -7,15 +7,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.SetCurrentPagePacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.side.ClientProxy;
 
 public class ItemGuideBook extends LogisticsItem {
 
@@ -40,10 +37,14 @@ public class ItemGuideBook extends LogisticsItem {
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand) {
 		ItemStack itemstack = player.getHeldItem(hand);
 <<<<<<< feature/custom-guide-book
+<<<<<<< feature/custom-guide-book
 		if (world.isRemote) MainProxy.proxy.openGuideBookGui(hand);
 =======
 		if (world.isRemote) MainProxy.proxy.openGuiFromItem(GuiIDs.GUI_Guide_Book_ID, hand);
 >>>>>>> Remade some key parts
+=======
+		if (world.isRemote) MainProxy.proxy.openGuideBookGui(hand);
+>>>>>>> Ready for Review
 		return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 	}
 }

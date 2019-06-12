@@ -53,6 +53,7 @@ import lombok.Setter;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.items.ItemGuideBook;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerConfigToClientPacket;
@@ -91,9 +92,9 @@ public class LogisticsEventListener {
 			if (!stack.isEmpty() && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
 			}
-			if(stack.hasTagCompound()) {
-				for(Map.Entry<String, NBTBase> tagEntry : stack.getTagCompound().tagMap.entrySet()) {
-					if(tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
+			if (stack.hasTagCompound()) {
+				for (Map.Entry<String, NBTBase> tagEntry : stack.getTagCompound().tagMap.entrySet()) {
+					if (tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
 						ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT((NBTTagCompound) tagEntry.getValue());
 						info.setItemTimedout();
 						((EntityItem) event.getEntity()).setItem(info.getItem().getItem().makeNormalStack(stack.getCount()));
@@ -309,9 +310,9 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onItemStackToolTip(ItemTooltipEvent event) {
-		if(event.getItemStack().hasTagCompound()) {
-			for(Map.Entry<String, NBTBase> tagEntry : event.getItemStack().getTagCompound().tagMap.entrySet()) {
-				if(tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
+		if (event.getItemStack().hasTagCompound()) {
+			for (Map.Entry<String, NBTBase> tagEntry : event.getItemStack().getTagCompound().tagMap.entrySet()) {
+				if (tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
 					ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT((NBTTagCompound) tagEntry.getValue());
 					List<String> list = event.getToolTip();
 					list.set(0, ChatColor.RED + "!!! " + ChatColor.WHITE + list.get(0) + ChatColor.RED + " !!!" + ChatColor.WHITE);
@@ -330,23 +331,7 @@ public class LogisticsEventListener {
 				PlayerIdentifier identifier = PlayerIdentifier.get(event.player);
 				PlayerConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
 				if (!config.getHasCraftedLPItem() && !LPConstants.DEBUG) {
-					ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
-					NBTTagList bookTagList = new NBTTagList();
-
-					int index = 1;
-					String key = "book.quickstart." + index;
-					String translation = StringUtils.translate(key);
-					while (!key.equals(translation)) {
-						bookTagList.appendTag(new NBTTagString("{\"text\":\"" + translation.replace("\"", "\\\"") + "\"}"));
-
-						key = "book.quickstart." + ++index;
-						translation = StringUtils.translate(key);
-					}
-
-					book.setTagInfo("pages", bookTagList);
-					book.setTagInfo("author", new NBTTagString("LP Team"));
-					book.setTagInfo("title", new NBTTagString(StringUtils.translate("book.quickstart.title")));
-
+					ItemStack book = new ItemStack(LPItems.itemGuideBook, 1);
 					event.player.addItemStackToInventory(book);
 
 					config.setHasCraftedLPItem(true);

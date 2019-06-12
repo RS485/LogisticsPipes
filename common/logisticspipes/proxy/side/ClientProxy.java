@@ -249,7 +249,7 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public void openGuiFromItem(int guiId, EnumHand hand) {
+	public void openGuideBookGui(EnumHand hand) {
 		Minecraft mc = Minecraft.getMinecraft();
 		mc.displayGuiScreen(new GuiGuideBook(hand));
 	}

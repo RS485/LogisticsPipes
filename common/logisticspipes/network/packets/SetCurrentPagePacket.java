@@ -47,8 +47,10 @@ public class SetCurrentPagePacket extends ModernPacket {
 		book = player.getHeldItem(hand);
 		if (book.getItem() != LPItems.itemGuideBook) return;
 		NBTTagCompound nbt = book.getTagCompound();
+		if(nbt == null) nbt = new NBTTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);
+		book.setTagCompound(nbt);
 	}
 
 	@Override

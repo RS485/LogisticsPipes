@@ -93,8 +93,7 @@ public class GuiGuideBook extends GuiScreen {
 							line = line.substring(0, length - 1);
 							sentence = sentence.substring(length);
 						} else {
-							line = line.substring(0, length - 1);
-							sentence = sentence.substring(length);
+							sentence = sentence.substring(length + 1);
 						}
 					} else {
 						line = sentence;
@@ -104,7 +103,6 @@ public class GuiGuideBook extends GuiScreen {
 					line = sentence;
 					sentence = "";
 				}
-				if (line.charAt(0) == ' ') line = line.substring(1);
 				text.add(line);
 			} while (sentence.length() != 0);
 		}
@@ -195,8 +193,8 @@ public class GuiGuideBook extends GuiScreen {
 		acrossY = this.height * 6 / 8 - 2 * tileSize;
 		leftX = this.width * 1 / 8;
 		topY = this.height * 1 / 8;
-		rightX = this.width * 7 / 8 - tileSize;
-		bottomY = (topY + tileSize) + (acrossY);
+		rightX = (leftX + tileSize) + (acrossX); // Does not work
+		bottomY = (topY + tileSize) + (acrossY); // Does work
 		// Setting slider constraints
 		sliderTopY = topY + borderSize;
 		sliderBotY = bottomY + borderSize - sliderHeight;
@@ -293,14 +291,14 @@ public class GuiGuideBook extends GuiScreen {
 		acrossY = h * 6 / 8 - 2 * tileSize;
 		leftX = w * 1 / 8;
 		topY = h * 1 / 8;
-		rightX = w * 7 / 8 - tileSize;
+		rightX = (leftX + tileSize) + (acrossX);
 		bottomY = (topY + tileSize) + (acrossY);
 		// Setting slider constraints
 		sliderTopY = topY + borderSize;
 		sliderBotY = bottomY + borderSize - slider.height;
 		slider.x = rightX + borderSize - slider.height;
 		// Setting text constraints
-		maxLength = acrossX + 3 / 2 * borderSize - slider.width;
+		maxLength = (int) (acrossX + (3 / (float) 2) * borderSize - slider.width);
 		textX = leftX + 24;
 		textY = topY + 24;
 		maxLines = (acrossY + borderSize) / 10;
@@ -310,9 +308,9 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	/*
-	* Make the slider button follow the mouse if the click was performed over it as well as
-	* calculate sliderProgress based on the slider position between it's max and min Y.
-	*/
+	 * Make the slider button follow the mouse if the click was performed over it as well as
+	 * calculate sliderProgress based on the slider position between it's max and min Y.
+	 */
 	protected void updateSlider() {
 		if (dragging && draggable) {
 			if (mouseY < sliderTopY + slider.height / 2) {

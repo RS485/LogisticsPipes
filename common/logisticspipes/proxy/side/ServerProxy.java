@@ -252,7 +252,7 @@ public class ServerProxy implements IProxy {
 	public void openFluidSelectGui(int slotId) {}
 
 	@Override
-	public void openGuiFromItem(int guiId, EnumHand hand) {}
+	public void openGuideBookGui(EnumHand hand) {}
 
 	@Override
 	public void registerTextures() {}

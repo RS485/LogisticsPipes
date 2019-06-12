@@ -323,6 +323,54 @@ lp.hud.config.satellite.enabled=Enabled Satellite.
 lp.hud.config.satellite.disabled=Disabled Satellite.
 
 # GUI
+# - General
+# -- Buttons
+gui.general.button.left_arrow=<
+gui.general.button.right_arrow=>
+gui.general.button.plus1=+
+gui.general.button.plus2=++
+gui.general.button.plus3=+++
+gui.general.button.minus1=-
+gui.general.button.minus2=--
+gui.general.button.minus3=---
+gui.general.button.upper_x=X
+gui.general.button.tilda=~
+
+# - Request General
+# -- Title
+gui.request.title=Request items
+# -- Buttons
+gui.request.button.request=Request
+gui.request.button.both=Both
+gui.request.button.craft=Craft
+gui.request.button.supply=Supply
+gui.request.button.content=Content
+gui.request.button.refresh=Refresh
+gui.request.button.sort=Sort
+gui.request.button.hide=Hide
+gui.request.button.show=Show
+gui.request.button.disk=Disk
+gui.request.button.more=more
+# -- Text
+gui.request.text.popup=Popup
+gui.request.text.list=List
+gui.request.text.upper_id=ID
+gui.request.text.request_type=Request Type
+gui.request.text.send_router_id=Send to Router ID
+gui.request.text.request_id=Request ID
+# --- Message
+gui.request.text.message.you_are_missing=You are missing:
+gui.request.text.message.request_success=Request successful!
+gui.request.text.message.missing=Missing
+gui.request.text.message.components=Components
+
+
+
+
+
+
+
+
 
 gui.itemsink.Yes=Yes
 gui.itemsink.No=No

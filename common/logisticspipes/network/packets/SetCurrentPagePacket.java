@@ -14,10 +14,6 @@ import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
-/**
- * TODO make this right
- */
-
 @StaticResolve
 public class SetCurrentPagePacket extends ModernPacket {
 
@@ -41,6 +37,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		ItemStack book;
 <<<<<<< feature/custom-guide-book
+<<<<<<< feature/custom-guide-book
 		book = player.getHeldItem(hand);
 		if (book.getItem() != LPItems.itemGuideBook) return;
 		NBTTagCompound nbt = book.getTagCompound();
@@ -56,6 +53,10 @@ public class SetCurrentPagePacket extends ModernPacket {
 			if (!(player.getHeldItemOffhand().getItem().getClass() == ItemGuideBook.class)) return;
 			book = player.getHeldItemOffhand();
 		}
+=======
+		book = player.getHeldItem(hand);
+		if (book.getItem() != LPItems.itemGuideBook) return;
+>>>>>>> Formatting fixes
 		NBTTagCompound nbt = book.getTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);

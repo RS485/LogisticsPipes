@@ -34,21 +34,21 @@ import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 
-import org.lwjgl.input.Keyboard;
-
 public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
 
+	public static final String PREFIX = "gui.request.";
 	public final EntityPlayer _entityPlayer;
 	public ItemDisplay itemDisplay;
 	private InputBar search;
 
-	protected String _title = "Request items";
+	protected String _title = StringUtils.translate(this.PREFIX + "titleItems");
 
 	public final int xCoord;
 	public final int yCoord;
@@ -84,7 +84,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		super.initGui();
 
 		buttonList.clear();
-		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50, 20, "Request")); // Request
+		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50, 20, StringUtils.translate(this.PREFIX + "buttonRequest"))); // Request
 		buttonList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10, 10, ">")); // Next page
 		buttonList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
 		buttonList.add(new SmallGuiButton(10, xCenter - 51, bottom - 15, 26, 10, "---")); // -64
@@ -95,7 +95,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		buttonList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
 		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
 
-		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, "Sort")); // Sort
+		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, StringUtils.translate(this.PREFIX + "buttonSort"))); // Sort
 
 		if (search == null) {
 			search = new InputBar(fontRenderer, this, guiLeft + 30, bottom - 78, right - guiLeft - 58, 15);
@@ -121,9 +121,9 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		if (buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox) buttonList.get(9)).getState()) {
-			mc.fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, 0x404040);
+			mc.fontRenderer.drawString(StringUtils.translate(this.PREFIX + "textPopup"), guiLeft + 25, bottom - 56, 0x404040);
 		} else {
-			mc.fontRenderer.drawString("Popup", guiLeft + 25, bottom - 56, Color.getValue(Color.GREY));
+			mc.fontRenderer.drawString(StringUtils.translate(this.PREFIX + "textPopup"), guiLeft + 25, bottom - 56, Color.getValue(Color.GREY));
 		}
 
 		itemDisplay.renderAmount(getStackAmount());
@@ -142,7 +142,8 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, guiLeft, guiTop);
 	}
 
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings({"unchecked", "Duplicates"})
 	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if (search.isEmpty()) {
@@ -193,9 +194,9 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 			control = control.getSubGui();
 		}
 		if (error) {
-			control.setSubGui(new GuiRequestPopup(_entityPlayer, "You are missing:", items));
+			control.setSubGui(new GuiRequestPopup(_entityPlayer, StringUtils.translate(this.PREFIX + "textYouAreMissing"), items));
 		} else {
-			control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!", items));
+			control.setSubGui(new GuiRequestPopup(_entityPlayer, StringUtils.translate(this.PREFIX + "textRequestSuccess"), items));
 		}
 	}
 
@@ -203,7 +204,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		while (control.hasSubGui()) {
 			control = control.getSubGui();
 		}
-		control.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used, "Missing: ", missing));
+		control.setSubGui(new GuiRequestPopup(_entityPlayer, StringUtils.translate(this.PREFIX + "textComponents") + ": ", used, StringUtils.translate("textMissing") + ": ", missing));
 	}
 
 	@Override

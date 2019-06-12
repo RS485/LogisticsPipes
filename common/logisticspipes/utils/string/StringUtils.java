@@ -103,6 +103,7 @@ public final class StringUtils {
 	}
 
 	public static String getFormatedStackSize(long stackSize, boolean forceDisplayNumber) {
+		/* TODO localized units */
 		String s;
 		if (stackSize == 1 && !forceDisplayNumber) {
 			s = "";

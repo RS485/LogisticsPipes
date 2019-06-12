@@ -7,11 +7,14 @@ import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class NormalGuiOrderer extends GuiOrderer {
+
+	private static final String PREFIX = "gui.request.";
 
 	private enum DisplayOptions {
 		Both,
@@ -30,11 +33,12 @@ public class NormalGuiOrderer extends GuiOrderer {
 	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
-		buttonList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, "Refresh")); // Refresh
-		buttonList.add(new SmallGuiButton(13, guiLeft + 10, bottom - 28, 46, 10, "Content")); // Component
-		buttonList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
+		buttonList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, StringUtils.translate(this.PREFIX + "buttonRefresh"))); // Refresh
+		buttonList.add(new SmallGuiButton(13, guiLeft + 10, bottom - 28, 46, 10, StringUtils.translate(this.PREFIX + "buttonContent"))); // Component
+		buttonList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, StringUtils.translate(this.PREFIX + "buttonBoth"))); // [Both], Craft & Supply
 	}
 
+	@SuppressWarnings("Duplicates")
 	@Override
 	public void refreshItems() {
 		int integer;
@@ -55,6 +59,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(OrdererRefreshRequestPacket.class).setInteger(integer).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 	}
 
+	@SuppressWarnings("Duplicates")
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		super.actionPerformed(guibutton);
@@ -63,15 +68,15 @@ public class NormalGuiOrderer extends GuiOrderer {
 			switch (displayOptions) {
 				case Both:
 					displayOptions = DisplayOptions.CraftOnly;
-					displayString = "Craft";
+					displayString = StringUtils.translate(this.PREFIX + "buttonCraft");
 					break;
 				case CraftOnly:
 					displayOptions = DisplayOptions.SupplyOnly;
-					displayString = "Supply";
+					displayString = StringUtils.translate(this.PREFIX + "buttonSupply");
 					break;
 				case SupplyOnly:
 					displayOptions = DisplayOptions.Both;
-					displayString = "Both";
+					displayString = StringUtils.translate(this.PREFIX + "buttonBoth");
 					break;
 			}
 			guibutton.displayString = displayString;

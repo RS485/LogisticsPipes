@@ -13,6 +13,7 @@ import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +22,8 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvider {
+
+	private static final String PREFIX = "gui.request.";
 
 	public PipeItemsRequestLogisticsMk2 pipe;
 	private SmallGuiButton Macrobutton;
@@ -35,7 +38,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(Macrobutton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, "Disk"));
+		buttonList.add(Macrobutton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, StringUtils.translate(this.PREFIX + "buttonDisk")));
 		Macrobutton.enabled = false;
 	}
 

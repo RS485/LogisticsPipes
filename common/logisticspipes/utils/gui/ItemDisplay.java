@@ -15,6 +15,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
 
 import net.minecraft.client.Minecraft;
@@ -203,7 +204,19 @@ public class ItemDisplay {
 		boolean up = true;
 		if (name.endsWith("_DOWN")) {
 			name = name.substring(0, name.length() - 5);
+
 			up = false;
+		}
+		switch (name) {
+			case "ID":
+				name = StringUtils.translate("gui.item_display.upperID");
+				break;
+			case "NAME":
+				name = StringUtils.translate("gui.item_display.upperName");
+				break;
+			case "SIZE":
+				name = StringUtils.translate("gui.item_display.upperSize");
+				break;
 		}
 		name += !up ? " /\\" : " \\/";
 		fontRenderer.drawString(name, x - fontRenderer.getStringWidth(name) / 2, y, 0x404040);
@@ -217,7 +230,7 @@ public class ItemDisplay {
 		if (page > maxPage) {
 			page = maxPage;
 		}
-		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
+		String pageString = StringUtils.translate("gui.item_display.page") + " " + (page + 1) + " / " + (maxPage + 1);
 		fontRenderer.drawString(pageString, x - fontRenderer.getStringWidth(pageString) / 2, y, 0x404040);
 	}
 
@@ -271,9 +284,12 @@ public class ItemDisplay {
 			buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 			int xPosition = (width / 2) - 50;
 			int yPosition = 40;
-			buf.pos(xPosition, yPosition + 100, zLevel).tex(0.04, 0.72 + (graphic * 0.03125)).endVertex();;
-			buf.pos(xPosition + 100, yPosition + 100, zLevel).tex(0.08, 0.72 + (graphic * 0.03125)).endVertex();;
-			buf.pos(xPosition + 100, yPosition, zLevel).tex(0.08, 0.69 + (graphic * 0.03125)).endVertex();;
+			buf.pos(xPosition, yPosition + 100, zLevel).tex(0.04, 0.72 + (graphic * 0.03125)).endVertex();
+			;
+			buf.pos(xPosition + 100, yPosition + 100, zLevel).tex(0.08, 0.72 + (graphic * 0.03125)).endVertex();
+			;
+			buf.pos(xPosition + 100, yPosition, zLevel).tex(0.08, 0.69 + (graphic * 0.03125)).endVertex();
+			;
 			buf.pos(xPosition, yPosition, zLevel).tex(0.04, 0.69 + (graphic * 0.03125)).endVertex();
 			tess.draw();
 		} else {
@@ -306,7 +322,7 @@ public class ItemDisplay {
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
 					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARKER_GREY);
 
-					if(itemIdentifierStack.getStackSize() > 0) {
+					if (itemIdentifierStack.getStackSize() > 0) {
 						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.unsafeMakeNormalStack() };
 					} else {
 						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.getItem().unsafeMakeNormalStack(1) };
@@ -370,7 +386,7 @@ public class ItemDisplay {
 					prevPage();
 				}
 			}
-		} else if(!requestCountBar.isFocused()) {
+		} else if (!requestCountBar.isFocused()) {
 			int requestCount = 1;
 			try {
 				requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
@@ -531,7 +547,7 @@ public class ItemDisplay {
 	}
 
 	public boolean handleClick(int x, int y, int k) {
-		if(requestCountBar.handleClick(x, y, k)) {
+		if (requestCountBar.handleClick(x, y, k)) {
 			return true;
 		}
 		x -= left;
@@ -550,7 +566,7 @@ public class ItemDisplay {
 	}
 
 	public boolean keyTyped(char c, int i) {
-		if(!requestCountBar.handleKey(c, i)) {
+		if (!requestCountBar.handleKey(c, i)) {
 			if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
 				setMaxAmount();
 				return true;

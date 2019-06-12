@@ -9,15 +9,18 @@ import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class FluidGuiOrderer extends GuiOrderer {
 
+	private static final String PREFIX = "gui.request.";
+
 	public FluidGuiOrderer(PipeFluidRequestLogistics pipe, EntityPlayer entityPlayer) {
 		super(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().provider.getDimension(), entityPlayer);
-		_title = "Request Fluid";
+		_title = StringUtils.translate(this.PREFIX + "titleFluids");
 		refreshItems();
 	}
 
@@ -26,7 +29,7 @@ public class FluidGuiOrderer extends GuiOrderer {
 	public void initGui() {
 		boolean setItemDisplay = itemDisplay == null;
 		super.initGui();
-		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
+		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, StringUtils.translate(this.PREFIX + "buttonRefresh"))); // Refresh
 		if (setItemDisplay) {
 			itemDisplay = new ItemDisplay(this, fontRenderer, this, this, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, xCenter, bottom - 24, 49, new int[] { 1, 1000, 16000, 100 }, false);
 		}

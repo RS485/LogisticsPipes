@@ -2,6 +2,7 @@ package logisticspipes;
 
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
+import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsProgrammer;
@@ -15,7 +16,9 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
+
 import net.minecraft.item.Item;
+
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 import java.util.HashMap;
@@ -113,7 +116,6 @@ public class LPItems {
 	@ObjectHolder("logisticspipes:pipe_fluid_extractor")
 	public static Item pipeFluidExtractor;
 
-
 	//Transport Pipes
 	@ObjectHolder("logisticspipes:pipe_transport_basic")
 	public static Item pipeTransportBasic;
@@ -187,4 +189,6 @@ public class LPItems {
 	@ObjectHolder("logisticspipes:chip_fpga_raw")
 	public static ItemLogisticsChips chipFPGARaw;
 
+	@ObjectHolder("logisticspipes:guide_book")
+	public static ItemGuideBook itemGuideBook;
 }

@@ -207,6 +207,7 @@ item.logisticspipes.chip_advanced.name=Advanced Chip
 item.logisticspipes.chip_advanced_raw.name=Raw Advanced Chip
 item.logisticspipes.chip_fpga.name=FPGA
 item.logisticspipes.chip_fpga_raw.name=Raw FPGA
+item.logisticspipes.guide_book.name=Logistics Pipes' Guide Book
 
 # Tooltips
 tooltip.brokenItem.1=This is an useless item

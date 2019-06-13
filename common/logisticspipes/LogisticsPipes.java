@@ -75,6 +75,7 @@ import logisticspipes.config.Configs;
 import logisticspipes.datafixer.LPDataFixer;
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
+import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -257,9 +258,7 @@ public class LogisticsPipes {
 	@CapabilityInject(IFluidHandler.class)
 	public static Capability<IFluidHandler> FLUID_HANDLER_CAPABILITY = null;
 
-
-
- 	@Mod.EventHandler
+	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		registerRecipes(); // TODO data fileS!!!!!
 
@@ -301,7 +300,7 @@ public class LogisticsPipes {
 
 		LPDataFixer.INSTANCE.init();
 
-		if(event.getSide() == Side.SERVER) {
+		if (event.getSide() == Side.SERVER) {
 			LogisticsPipes.textures.registerBlockIcons(null);
 		}
 	}
@@ -414,6 +413,7 @@ public class LogisticsPipes {
 		registry.register(setName(new ItemDisk(), "disk"));
 		registry.register(setName(new LogisticsFluidContainer(), "fluid_container"));
 		registry.register(setName(new LogisticsBrokenItem(), "broken_item"));
+		registry.register(setName(new ItemGuideBook(), "guide_book"));
 		registry.register(setName(new ItemPipeController(), "pipe_controller"));
 		registry.register(setName(new ItemPipeManager(), "pipe_manager"));
 		registry.register(setName(new ItemLogisticsProgrammer(), "logistics_programmer"));
@@ -423,7 +423,6 @@ public class LogisticsPipes {
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_ADVANCED_RAW), "chip_advanced_raw"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA), "chip_fpga"));
 		registry.register(setName(new ItemLogisticsChips(ItemLogisticsChips.ITEM_CHIP_FPGA_RAW), "chip_fpga_raw"));
-
 		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.frame), "frame"));
 		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.powerJunction), "power_junction"));
 		registry.register(setName(new LogisticsSolidBlockItem(LPBlocks.securityStation), "security_station"));
@@ -485,8 +484,8 @@ public class LogisticsPipes {
 		RecipeManager.loadRecipes();
 
 		resetRecipeList.stream()
-			.map(Supplier::get)
-			.forEach(itemItemPair -> registerShapelessResetRecipe(itemItemPair.getValue1(), itemItemPair.getValue2()));
+				.map(Supplier::get)
+				.forEach(itemItemPair -> registerShapelessResetRecipe(itemItemPair.getValue1(), itemItemPair.getValue2()));
 	}
 
 	@SneakyThrows
@@ -605,7 +604,7 @@ public class LogisticsPipes {
 		if (pipe.getClass() != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(pipe.getClass())) {
 			if (pipe.getClass() != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(pipe.getClass())) {
 				resetRecipeList.add(() -> new Pair<>(res, LPItems.pipeFluidBasic));
-			} else if(pipe.getClass() != PipeBlockRequestTable.class) {
+			} else if (pipe.getClass() != PipeBlockRequestTable.class) {
 				resetRecipeList.add(() -> new Pair<>(res, LPItems.pipeBasic));
 			}
 		}
@@ -638,9 +637,9 @@ public class LogisticsPipes {
 	}
 
 	public static ServerConfigurationManager getServerConfigManager() {
- 		if (LogisticsPipes.serverConfigManager == null) {
- 			LogisticsPipes.serverConfigManager = new ServerConfigurationManager();
+		if (LogisticsPipes.serverConfigManager == null) {
+			LogisticsPipes.serverConfigManager = new ServerConfigurationManager();
 		}
- 		return LogisticsPipes.serverConfigManager;
+		return LogisticsPipes.serverConfigManager;
 	}
 }

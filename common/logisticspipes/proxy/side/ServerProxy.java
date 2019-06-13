@@ -26,6 +26,7 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -173,9 +174,10 @@ public class ServerProxy implements IProxy {
 	}
 
 	// BuildCraft method
+
 	/**
 	 * Retrieves pipe at specified coordinates if any.
-	 * 
+	 *
 	 * @param world
 	 * @param x
 	 * @param y
@@ -248,6 +250,9 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void openFluidSelectGui(int slotId) {}
+
+	@Override
+	public void openGuideBookGui(EnumHand hand) {}
 
 	@Override
 	public void registerTextures() {}

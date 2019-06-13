@@ -125,6 +125,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		super.update();
 		if(MainProxy.isServer(world)) {
 			if (currentTask != null) {
+				wasAbleToConsumePower = false;
 				for (EnumFacing dir : EnumFacing.VALUES) {
 					if(dir == EnumFacing.UP) continue;
 					DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
@@ -148,8 +149,6 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 							taskProgress += 1;
 						}
 						wasAbleToConsumePower = true;
-					} else {
-						wasAbleToConsumePower = false;
 					}
 				}
 				if (taskProgress >= 1) {

@@ -45,7 +45,6 @@ public class LogisticsSolidBlock extends Block {
 	private final Type type;
 
 	public enum Type {
-		SOLDERING_STATION(0, LogisticsSolderingTileEntity::new, true),
 		LOGISTICS_POWER_JUNCTION(1, LogisticsPowerJunctionTileEntity::new),
 		LOGISTICS_SECURITY_STATION(2, LogisticsSecurityTileEntity::new),
 		LOGISTICS_AUTOCRAFTING_TABLE(3, LogisticsCraftingTableTileEntity::new),

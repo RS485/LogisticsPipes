@@ -22,7 +22,6 @@ public abstract class CraftingPartRecipes implements IRecipeProvider {
 				SimpleServiceLocator.ccProxy.addCraftingRecipes(parts);
 				SimpleServiceLocator.buildCraftProxy.addCraftingRecipes(parts);
 
-				SolderingStationRecipes.loadRecipe(parts);
 				RecipeManager.loadRecipes();
 			}
 			*/

@@ -15,9 +15,6 @@ public class LPBlocks {
 	@GameRegistry.ObjectHolder("logisticspipes:frame")
 	public static LogisticsSolidBlock frame;
 
-	@GameRegistry.ObjectHolder("logisticspipes:soldering_station")
-	public static LogisticsSolidBlock solderingStation;
-
 	@GameRegistry.ObjectHolder("logisticspipes:power_junction")
 	public static LogisticsSolidBlock powerJunction;
 

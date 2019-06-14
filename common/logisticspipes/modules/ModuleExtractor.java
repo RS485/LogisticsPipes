@@ -161,7 +161,8 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation);
 
 		for (int i = 0; i < targetUtil.getSizeInventory(); i++) {
-
+			boolean extracted = true;
+			
 			ItemStack slot = targetUtil.getStackInSlot(i);
 			if (slot.isEmpty()) {
 				continue;
@@ -192,6 +193,8 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
 				if (stackToSend.isEmpty() || stackToSend.getCount() == 0) {
+					// problem to extract, skip and move on
+					extracted = false;
 					break;
 				}
 				count = stackToSend.getCount();
@@ -207,7 +210,9 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 				jamList.add(reply.getValue1());
 				reply = _service.hasDestination(ItemIdentifier.get(slot), true, jamList);
 			}
-			break;
+			if (extracted) {
+				break;
+			}
 		}
 	}
 

@@ -184,6 +184,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 	private void checkExtract(IInventoryUtil invUtil) {
 		Map<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
+		int itemsleft = itemsToExtract();
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
 			if (!CanExtract(item.getKey().makeNormalStack(item.getValue()))) {
 				continue;
@@ -194,7 +195,6 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				continue;
 			}
 
-			int itemsleft = itemsToExtract();
 			while (reply != null) {
 				int count = Math.min(itemsleft, item.getValue());
 				count = Math.min(count, item.getKey().getMaxStackSize());
@@ -228,7 +228,9 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 				reply = _service.hasDestination(item.getKey(), true, jamList);
 			}
-			return;
+			if (itemsleft <= 0) {
+				return;
+			}
 		}
 	}
 

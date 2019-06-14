@@ -1,14 +1,22 @@
 package logisticspipes.network.packets;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.Minecraft;
+import java.util.Objects;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.LPItems;
+import logisticspipes.gui.guidebook.GuiGuideBook;
+import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -23,11 +31,15 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private int page;
+	private int page, chapter, division;
 
 	@Getter
 	@Setter
 	private EnumHand hand;
+
+	@Getter
+	@Setter
+	private ArrayList<SavedTab> savedTabs;
 
 	public SetCurrentPagePacket(int id) {
 		super(id);
@@ -38,10 +50,14 @@ public class SetCurrentPagePacket extends ModernPacket {
 		ItemStack book;
 		book = player.getHeldItem(hand);
 		if (book.isEmpty() || book.getItem() != LPItems.itemGuideBook) return;
-		NBTTagCompound nbt = book.getTagCompound();
-		if (nbt == null) nbt = new NBTTagCompound();
+		NBTTagCompound nbt = book.hasTagCompound() ? Objects.requireNonNull(book.getTagCompound()) : new NBTTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);
+		nbt.setInteger("chapter", chapter);
+		nbt.setInteger("division", division);
+		NBTTagList tagList = new NBTTagList();
+		for (SavedTab tab : savedTabs) tagList.appendTag(tab.toTag());
+		nbt.setTag("bookmarks", tagList);
 		book.setTagCompound(nbt);
 	}
 
@@ -51,6 +67,13 @@ public class SetCurrentPagePacket extends ModernPacket {
 		hand = input.readEnum(EnumHand.class);
 		sliderProgress = input.readFloat();
 		page = input.readInt();
+		chapter = input.readInt();
+		division = input.readInt();
+		savedTabs.clear();
+		int size = input.readInt();
+		for (int i = 0; i < size; i++) {
+			savedTabs.add(new SavedTab().fromBytes(input));
+		}
 	}
 
 	@Override
@@ -59,6 +82,10 @@ public class SetCurrentPagePacket extends ModernPacket {
 		output.writeEnum(hand);
 		output.writeFloat(sliderProgress);
 		output.writeInt(page);
+		output.writeInt(chapter);
+		output.writeInt(division);
+		output.writeInt(savedTabs.size());
+		for (SavedTab tab : savedTabs) tab.toBytes(output);
 	}
 
 	@Override

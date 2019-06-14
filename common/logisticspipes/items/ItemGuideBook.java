@@ -1,5 +1,6 @@
 package logisticspipes.items;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,7 +15,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import logisticspipes.LPItems;
-import logisticspipes.gui.GuiGuideBook;
+import logisticspipes.gui.guidebook.GuiGuideBook;
+import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.SetCurrentPagePacket;
 import logisticspipes.proxy.MainProxy;
@@ -23,18 +25,24 @@ import logisticspipes.utils.GuideBookContents;
 public class ItemGuideBook extends LogisticsItem {
 
 	public ItemGuideBook() {
-		this.setMaxStackSize(1);
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setInteger("page", 1);
-		nbt.setFloat("sliderProgress", 0.0F);
+		this.maxStackSize = 1;
 	}
 
-	public static void setCurrentPage(ItemStack stack, int pageIndex, float sliderProgress, EnumHand hand) {
+	public static void setCurrentPage(ItemStack stack, SavedTab page, ArrayList<SavedTab> tabs, EnumHand hand) {
 		if (!stack.isEmpty() && stack.getItem() == LPItems.itemGuideBook) {
 			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
-			tag.setInteger("page", pageIndex);
-			tag.setFloat("sliderProgress", sliderProgress);
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setPage(pageIndex).setSliderProgress(sliderProgress).setHand(hand));
+			tag.setFloat("sliderProgress", page.getProgress());
+			tag.setInteger("page", page.getPage());
+			tag.setInteger("chapter", page.getChapter());
+			tag.setInteger("division", page.getDivision());
+			tag.setInteger("bookmarks", tabs.size());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
+				.setHand(hand)
+				.setSliderProgress(page.getProgress())
+				.setPage(page.getPage())
+				.setChapter(page.getChapter())
+				.setDivision(page.getDivision())
+				.setSavedTabs(tabs));
 		}
 	}
 

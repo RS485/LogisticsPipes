@@ -23,7 +23,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private int page;
+	private int page, chapter;
 
 	@Getter
 	@Setter
@@ -42,6 +42,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		if (nbt == null) nbt = new NBTTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);
+		nbt.setInteger("chapter", chapter);
 		book.setTagCompound(nbt);
 	}
 
@@ -51,6 +52,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		hand = input.readEnum(EnumHand.class);
 		sliderProgress = input.readFloat();
 		page = input.readInt();
+		chapter = input.readInt();
 	}
 
 	@Override
@@ -59,6 +61,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		output.writeEnum(hand);
 		output.writeFloat(sliderProgress);
 		output.writeInt(page);
+		output.writeInt(chapter);
 	}
 
 	@Override

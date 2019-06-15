@@ -246,7 +246,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), page.getIndex(), sliderProgress, hand);
+		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), page.getIndex(), 0, sliderProgress, hand);
 		super.onGuiClosed();
 	}
 

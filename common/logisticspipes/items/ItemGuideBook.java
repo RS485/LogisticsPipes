@@ -23,18 +23,17 @@ import logisticspipes.utils.GuideBookContents;
 public class ItemGuideBook extends LogisticsItem {
 
 	public ItemGuideBook() {
-		this.setMaxStackSize(1);
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setInteger("page", 1);
-		nbt.setFloat("sliderProgress", 0.0F);
+		this.maxStackSize = 1;
 	}
 
-	public static void setCurrentPage(ItemStack stack, int pageIndex, float sliderProgress, EnumHand hand) {
+	public static void setCurrentPage(ItemStack stack, int pageIndex, int chapter, float sliderProgress, EnumHand hand) {
 		if (!stack.isEmpty() && stack.getItem() == LPItems.itemGuideBook) {
 			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
 			tag.setInteger("page", pageIndex);
+			tag.setInteger("chapter", chapter);
 			tag.setFloat("sliderProgress", sliderProgress);
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setPage(pageIndex).setSliderProgress(sliderProgress).setHand(hand));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
+					.setPage(pageIndex).setChapter(chapter).setSliderProgress(sliderProgress).setHand(hand));
 		}
 	}
 

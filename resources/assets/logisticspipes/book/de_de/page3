@@ -1,0 +1,1 @@
+Jetzt setze den Logistics Program Compiler (im Weiteren nur noch Compiler genannt) neben eine Logistics Basic Pipe, die (durch andere Pipes oder direkt) mit einer Power Junction verbunden ist, denn der Compiler braucht Strom und nimmt diesen aus dem LP-Netzwerk.

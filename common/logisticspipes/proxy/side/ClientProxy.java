@@ -40,6 +40,7 @@ import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.GuideBookContents;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -251,7 +252,10 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void openGuideBookGui(EnumHand hand) {
 		Minecraft mc = Minecraft.getMinecraft();
-		mc.displayGuiScreen(new GuiGuideBook(hand));
+		GuideBookContents gbc = GuideBookContents.load();
+		if (gbc != null) {
+			mc.displayGuiScreen(new GuiGuideBook(hand, gbc));
+		}
 	}
 
 	@Override

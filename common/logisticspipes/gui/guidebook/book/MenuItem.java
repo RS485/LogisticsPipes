@@ -3,7 +3,11 @@ package logisticspipes.gui.guidebook.book;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -14,7 +18,7 @@ import logisticspipes.LPConstants;
 import logisticspipes.gui.guidebook.GuiGuideBook;
 import logisticspipes.utils.string.StringUtils;
 
-public class MenuItem {
+public class MenuItem{
 
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
@@ -67,6 +71,7 @@ public class MenuItem {
 	}
 
 	public void drawMenuItem(Minecraft mc,  int mouseX, int mouseY, int x, int y, int sizeX, int sizeY, boolean text) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F);
 		drawMenuItemFrame(mc, mouseX, mouseY, x, y, sizeX, sizeY);
 		int icon$sizeX, icon$sizeY, icon$offSetX, icon$offSetY;
 		double icon$scaleX, icon$scaleY;
@@ -79,22 +84,24 @@ public class MenuItem {
 			icon$offSetX = (sizeX - icon$sizeX) / 2;
 			icon$offSetY = (sizeY - icon$sizeY) / 2;
 		}else{
-			icon$sizeX = (int) (sizeX * 2 / 3.0D);
-			icon$sizeY = (int) (sizeY * 2 / 3.0D);
-			icon$scaleX = icon$sizeX / 16;
-			icon$scaleY = icon$sizeY / 16;
+			icon$scaleX = 1.0;
+			icon$scaleY = 1.0;
+			icon$sizeX = 16 * (int) icon$scaleX;
+			icon$sizeY = 16 * (int) icon$scaleY;
 			icon$offSetX = (sizeX - icon$sizeX) / 2;
 			icon$offSetY = (sizeY - icon$sizeY) / 2;
 		}
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(x + icon$offSetX, y + icon$offSetY, 1.0F);
+		GlStateManager.translate(x + icon$offSetX, y + icon$offSetY, z$text);
 		GlStateManager.scale(icon$scaleX, icon$scaleY, 0);
+		RenderHelper.enableGUIStandardItemLighting();
 		mc.getRenderItem().renderItemAndEffectIntoGUI(this.icon, 0, 0);
+		//mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRenderer, this.icon, 0, 0, this.title);
+		RenderHelper.disableStandardItemLighting();
 		GlStateManager.scale(1/icon$scaleX, 1/icon$scaleY, 0);
 		GlStateManager.popMatrix();
 	}
 
-	@SuppressWarnings("Duplicates")
 	public void drawMenuItemFrame(Minecraft mc,  int mouseX, int mouseY, int x, int y, int sizeX, int sizeY) {
 		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
 		{
@@ -118,15 +125,34 @@ public class MenuItem {
 			// Fill: Middle
 			GuiGuideBook.drawRepeatingSquare(btn$bgX0, btn$bgY0, btn$bgX1, btn$bgY1, z$text - 1, atlas$btn$bgU0, atlas$btn$bgV0 + (i * j * 32), atlas$btn$bgU1, atlas$btn$bgV1 + (i * j * 32), false);
 			// Corners: TopLeft, TopRight, BottomLeft & BottomRight
-			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y0, btn$x1, btn$y1, z$text, atlas$btn$u0, atlas$btn$v0 + (i * j * 16), atlas$btn$u1, atlas$btn$v1 + (i * j * 16), true);
-			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y0, btn$x3, btn$y1, z$text, atlas$btn$u2, atlas$btn$v0 + (i * j * 16), atlas$btn$u3, atlas$btn$v1 + (i * j * 16), true);
-			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y2, btn$x1, btn$y3, z$text, atlas$btn$u0, atlas$btn$v2 + (i * j * 16), atlas$btn$u1, atlas$btn$v3 + (i * j * 16), true);
-			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y2, btn$x3, btn$y3, z$text, atlas$btn$u2, atlas$btn$v2 + (i * j * 16), atlas$btn$u3, atlas$btn$v3 + (i * j * 16), true);
+			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y0, btn$x1, btn$y1, z$text, atlas$btn$u0, atlas$btn$v0 + (i * j * 16), atlas$btn$u1, atlas$btn$v1 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y0, btn$x3, btn$y1, z$text, atlas$btn$u2, atlas$btn$v0 + (i * j * 16), atlas$btn$u3, atlas$btn$v1 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y2, btn$x1, btn$y3, z$text, atlas$btn$u0, atlas$btn$v2 + (i * j * 16), atlas$btn$u1, atlas$btn$v3 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y2, btn$x3, btn$y3, z$text, atlas$btn$u2, atlas$btn$v2 + (i * j * 16), atlas$btn$u3, atlas$btn$v3 + (i * j * 16));
 			// Edges: Top, Bottom, Left & Right
-			GuiGuideBook.drawStretchingSquare(btn$x1, btn$y0, btn$x2, btn$y1, z$text, atlas$btn$u1, atlas$btn$v0 + (i * j * 16), atlas$btn$u2, atlas$btn$v1 + (i * j * 16), true);
-			GuiGuideBook.drawStretchingSquare(btn$x1, btn$y2, btn$x2, btn$y3, z$text, atlas$btn$u1, atlas$btn$v2 + (i * j * 16), atlas$btn$u2, atlas$btn$v3 + (i * j * 16), true);
-			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y1, btn$x1, btn$y2, z$text, atlas$btn$u0, atlas$btn$v1 + (i * j * 16), atlas$btn$u1, atlas$btn$v2 + (i * j * 16), true);
-			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y1, btn$x3, btn$y2, z$text, atlas$btn$u2, atlas$btn$v1 + (i * j * 16), atlas$btn$u3, atlas$btn$v2 + (i * j * 16), true);
+			GuiGuideBook.drawStretchingSquare(btn$x1, btn$y0, btn$x2, btn$y1, z$text, atlas$btn$u1, atlas$btn$v0 + (i * j * 16), atlas$btn$u2, atlas$btn$v1 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btn$x1, btn$y2, btn$x2, btn$y3, z$text, atlas$btn$u1, atlas$btn$v2 + (i * j * 16), atlas$btn$u2, atlas$btn$v3 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y1, btn$x1, btn$y2, z$text, atlas$btn$u0, atlas$btn$v1 + (i * j * 16), atlas$btn$u1, atlas$btn$v2 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y1, btn$x3, btn$y2, z$text, atlas$btn$u2, atlas$btn$v1 + (i * j * 16), atlas$btn$u3, atlas$btn$v2 + (i * j * 16));
 		}
+	}
+
+	public void playPressSound(SoundHandler soundHandlerIn)
+	{
+		soundHandlerIn.playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+	}
+
+	public boolean mousePressed()
+	{
+		return this.enabled && this.hovering;
+	}
+
+	public EnumMenuItemType getType(){
+		return EnumMenuItemType.TILE;
+	}
+
+	public enum EnumMenuItemType{
+		TILE,
+		TEXT
 	}
 }

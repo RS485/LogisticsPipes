@@ -181,7 +181,24 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		// never route item stack to crafting module. 
+		
+		// not crafting
+		if (!waitingForCraft) {
+			return null;
+		}
+
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+			return null;
+		}
+
+		for ( int i = 0; i< 10 ; ++i) {
+			ItemIdentifierStack idStackInSlot = _dummyInventory.getIDStackInSlot(i);
+
+			if (idStackInSlot != null && idStackInSlot.getItem().getUndamaged() ==  item.getUndamaged()) {
+				return new SinkReply(_sinkReply, spaceFor(item, includeInTransit), areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
+			}
+		}
+
 		return null;
 	}
 

@@ -95,9 +95,12 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * @param includeInTransit
 	 *            inclide the "in transit" items? -- true for a destination
 	 *            search, false for a sink check.
+	 * @param forcePassive
+	 *            check for passive routing only, in case this method is redirected to other sinks
 	 * @return SinkReply whether the module sinks the item or not
 	 */
-	public abstract SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit);
+	public abstract SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
+			boolean forcePassive);
 
 	/**
 	 * Returns submodules. Normal modules don't have submodules

@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
@@ -58,14 +59,11 @@ public class ModuleSatellite extends LogisticsModule {
 	private int spaceFor(ItemIdentifier item, boolean includeInTransit) {
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(pipe.container);
 
-		//@formatter:off
 		int count = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> adjacent.tileEntity instanceof IInventory)
-		//@formatter:on
-				.map(adjacent -> {
-					IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent);
-					return util.roomForItem(item, 9999);
-				}).reduce(Integer::sum).orElse(0);
+				.map(adjacent -> SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent))
+				.filter(Objects::nonNull)
+				.map(util -> util.roomForItem(item, 9999))
+				.reduce(Integer::sum).orElse(0);
 
 		if (includeInTransit) {
 			count -= pipe.countOnRoute(item);

@@ -61,6 +61,7 @@ public class GuiGuideBook extends GuiScreen {
 	private GuiButton nextPageBtn, prevPageBtn;
 	private GuiGuideBookSlider slider;
 	private GuiGuideBookTexturedButton home, prev;
+	private int mouseX, mouseY;
 
 	//////// Experimental variables
 	//// Book
@@ -81,6 +82,9 @@ public class GuiGuideBook extends GuiScreen {
 	private final int gui$tagWidth = 24, gui$tagHeight = 24, gui$fullTagHeight = 32;
 	//// Usable area
 	private int area$x0, area$y0, area$x1, area$y1, area$acrossX, area$acrossY;
+	//// Menu Tiles and Text sizes
+	private int tile$spacing, tile$max;
+	private final int tile$size = 40;
 
 	//////// Texture atlas constants
 	//// Atlas
@@ -99,10 +103,12 @@ public class GuiGuideBook extends GuiScreen {
 		super();
 		this.hand = hand;
 		book = new GuideBook("book");
+		this.book.loadBook();
+		this.getDataFromNBT();
 	}
 
-	protected void drawCurrentEvent(int mouseX, int mouseY) {
-		if(currentChapter == -1) drawMenu(mouseX, mouseY);
+	protected void drawCurrentEvent() {
+		if(currentChapter == -1) drawMenu();
 		else drawPage(book.menuItems.get(currentChapter).pages.get(currentPage));
 	}
 
@@ -177,6 +183,14 @@ public class GuiGuideBook extends GuiScreen {
 		area$acrossX = area$x1 - area$x0;
 		area$acrossY = area$y1 - area$y0;
 		// End usable area
+		// Menu tiles and text
+		tile$max = area$acrossX/tile$size;
+		int test = area$acrossX%tile$size;
+		while((area$acrossX%tile$size)<=(5*(tile$max-1))){
+			tile$max--;
+		}
+		tile$spacing = area$acrossX%tile$size/(tile$max-1);
+		// End menu
 	}
 
 	protected void getDataFromNBT() {
@@ -194,12 +208,12 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	/* ********************************* trying new stuff ************************************************************************* */
-
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 		this.drawTransparentOverlay();
-		this.drawMenu(mouseX, mouseY);
+		this.drawCurrentEvent();
 		slider.drawButton(mc, mouseX, mouseY, partialTicks);
 		home.drawTexturedButton(mc, GUI_BOOK_TEXTURE, 40, 64, z$titleButtons);
 		home.drawTexturedButtonForegroundLayer(mc, mouseX, mouseY, GUI_BOOK_TEXTURE, 128, 0, 16);
@@ -209,10 +223,9 @@ public class GuiGuideBook extends GuiScreen {
 	@Override
 	public void initGui() {
 		this.calculateConstraints();
-		this.getDataFromNBT();
+
 		this.slider = this.addButton(new GuiGuideBookSlider(0, gui$sliderX, gui$sliderY0, gui$sliderY1, z$titleButtons, 0.0F, gui$sliderWidth, gui$sliderHeight));
 		this.home = this.addButton(new GuiGuideBookTexturedButton(1, gui$x3 - gui$tagWidth, gui$y0 - gui$tagHeight, gui$tagWidth, gui$fullTagHeight));
-		this.book.loadBook();
 	}
 
 	@Override
@@ -226,7 +239,6 @@ public class GuiGuideBook extends GuiScreen {
 		super.onGuiClosed();
 	}
 
-
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
 		if(button.id == this.home.id){
@@ -234,29 +246,56 @@ public class GuiGuideBook extends GuiScreen {
 			this.currentPageCount = 0;
 			this.currentChapter = -1;
 			this.currentSliderProgress = 0.0F;
+			System.out.println("Home");
+		}
+	}
+
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		if (mouseButton == 0 && currentChapter == -1)
+		{
+			for (MenuItem item: book.menuItems)
+			{
+				if (item.mousePressed())
+				{
+					item.playPressSound(this.mc.getSoundHandler());
+					this.pressedItem(item);
+				}
+			}
+		}
+	}
+
+	private void pressedItem(MenuItem item) {
+		if(item.getType() == MenuItem.EnumMenuItemType.TILE){
+			selectChapter(item);
 		}
 	}
 
 	// TODO work better on this!!
-	protected void drawMenu(int mouseX, int mouseY){
-		int area$totalY = 0;
-		int area$totalX = 0;
-		int area$tileCount = 0;
+	protected void drawMenu(){
+		int area$currentY = 0;
+		int tile$count = 0;
 		boolean hadTile = false;
 		for(int index = 0; index < book.menuItems.size(); index++){
 			switch (book.menuItemsType.get(index)){
 				case "text":
 					if(hadTile) {
-						area$totalY += 20;
+						area$currentY += tile$size;
 						hadTile = false;
+						tile$count = 0;
 					}
-					book.menuItems.get(index).drawMenuItem(mc, mouseX, mouseY, gui$x1, gui$y1 + area$totalY, gui$x2 - gui$x1, 25, true);
-					area$totalY += 50;
-					area$tileCount = 0;
+					book.menuItems.get(index).drawMenuItem(mc, mouseX, mouseY, gui$x1, gui$y1 + area$currentY, area$acrossX, 20, true);
+					area$currentY += 20;
 					break;
 				case "item":
-					book.menuItems.get(index).drawMenuItemFrame(mc, mouseX, mouseY,gui$x1 + 45 * area$tileCount, gui$y1 + area$totalY, 40, 40);
-					area$tileCount++;
+					if(tile$count > tile$max){
+						area$currentY += tile$size + tile$spacing;
+						tile$count = 0;
+					}
+					book.menuItems.get(index).drawMenuItem(mc, mouseX, mouseY,gui$x1 + (tile$size + tile$spacing) * tile$count, gui$y1 + area$currentY, tile$size, tile$size, false);
+					tile$count++;
+					hadTile = true;
 					break;
 			}
 		}
@@ -267,24 +306,11 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	protected void selectChapter(MenuItem item){
-		// Do what needs doing when change chapter
+		currentPage = 0;
+		currentSliderProgress = 0.0F;
+		currentChapter = item.getIndex();
+		currentPageCount = item.getPageCount();
 	}
-
-	/*				this.renderItem.renderItemAndEffectIntoGUI(this.icon, (int) ((this.x + 5) * 1 / itemScale), (int) ((this.y + 5) * 1 / itemScale));
-				this.renderItem.renderItemOverlayIntoGUI(this.fontRenderer, this.icon, (int) ((this.x + 5) * 1 / itemScale), (int) ((this.y + 5) * 1 / itemScale), this.title);
-*/
-
-	/*
-	 * Enum of what can be being drawn in the gui
-	 * - MENU - Group of MenuItems tiles
-	 * - LIST - List of ListedPages
-	 * - PAGE - Page, could be any kind of page
-	 *//*
-	enum EnumDrawState {
-		MENU,
-		LIST,
-		PAGE
-	}*/
 
 	/* *********************************************** draw functions with a twist *********************************************** */
 
@@ -299,6 +325,7 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	public static void drawStretchingSquare(int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1, boolean blend) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F);
 		u0 *= atlas$widthScale;
 		v0 *= atlas$heightScale;
 		u1 *= atlas$widthScale;
@@ -324,6 +351,7 @@ public class GuiGuideBook extends GuiScreen {
 	 */
 
 	public static void drawRepeatingSquare(int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1, boolean blend) {
+		GlStateManager.color(1.0F, 1.0F, 1.0F);
 		if (x1 - x0 <= u1 - u0 && y1 - y0 <= v1 - v0) {
 			drawStretchingSquare(x0, y0, x1, y1, z, u0, v0, u1, v1, blend);
 			return;

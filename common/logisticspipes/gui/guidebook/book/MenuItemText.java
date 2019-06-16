@@ -20,7 +20,7 @@ public class MenuItemText extends MenuItem{
 	}
 
 	@Override
-	public void drawMenuItemFrame(int x, int y, int sizeX, int sizeY, Minecraft mc, int mouseX, int mouseY) {
-		super.drawMenuItemFrame(x, y, sizeX, sizeY, mc, mouseX, mouseY);
+	public void drawMenuItem(Minecraft mc,  int mouseX, int mouseY, int x, int y, int sizeX, int sizeY, boolean text) {
+		//super.drawMenuItem(mc, mouseX, mouseY, x, y, sizeX, sizeY, text);
 	}
 }

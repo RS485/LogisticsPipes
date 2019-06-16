@@ -250,12 +250,12 @@ public class GuiGuideBook extends GuiScreen {
 						area$totalY += 20;
 						hadTile = false;
 					}
-					book.menuItems.get(index).drawMenuItem(gui$x1, gui$y1 + area$totalY, gui$x2 - gui$x1, 25, true);
+					book.menuItems.get(index).drawMenuItem(mc, mouseX, mouseY, gui$x1, gui$y1 + area$totalY, gui$x2 - gui$x1, 25, true);
 					area$totalY += 50;
 					area$tileCount = 0;
 					break;
 				case "item":
-					book.menuItems.get(index).drawMenuItemFrame(gui$x1 + 45 * area$tileCount, gui$y1 + area$totalY, 40, 40, mc, mouseX, mouseY);
+					book.menuItems.get(index).drawMenuItemFrame(mc, mouseX, mouseY,gui$x1 + 45 * area$tileCount, gui$y1 + area$totalY, 40, 40);
 					area$tileCount++;
 					break;
 			}

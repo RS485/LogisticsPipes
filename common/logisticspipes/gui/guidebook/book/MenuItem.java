@@ -3,6 +3,7 @@ package logisticspipes.gui.guidebook.book;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -65,12 +66,36 @@ public class MenuItem {
 		}
 	}
 
-	public void drawMenuItem(int x, int y, int sizeX, int sizeY, boolean text) {
-
+	public void drawMenuItem(Minecraft mc,  int mouseX, int mouseY, int x, int y, int sizeX, int sizeY, boolean text) {
+		drawMenuItemFrame(mc, mouseX, mouseY, x, y, sizeX, sizeY);
+		int icon$sizeX, icon$sizeY, icon$offSetX, icon$offSetY;
+		double icon$scaleX, icon$scaleY;
+		if(text){
+			//TODO text in tile
+			icon$sizeX = 1;
+			icon$sizeY = 1;
+			icon$scaleX = icon$sizeX / 16;
+			icon$scaleY = icon$sizeY / 16;
+			icon$offSetX = (sizeX - icon$sizeX) / 2;
+			icon$offSetY = (sizeY - icon$sizeY) / 2;
+		}else{
+			icon$sizeX = (int) (sizeX * 2 / 3.0D);
+			icon$sizeY = (int) (sizeY * 2 / 3.0D);
+			icon$scaleX = icon$sizeX / 16;
+			icon$scaleY = icon$sizeY / 16;
+			icon$offSetX = (sizeX - icon$sizeX) / 2;
+			icon$offSetY = (sizeY - icon$sizeY) / 2;
+		}
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x + icon$offSetX, y + icon$offSetY, 1.0F);
+		GlStateManager.scale(icon$scaleX, icon$scaleY, 0);
+		mc.getRenderItem().renderItemAndEffectIntoGUI(this.icon, 0, 0);
+		GlStateManager.scale(1/icon$scaleX, 1/icon$scaleY, 0);
+		GlStateManager.popMatrix();
 	}
 
 	@SuppressWarnings("Duplicates")
-	public void drawMenuItemFrame(int x, int y, int sizeX, int sizeY, Minecraft mc,  int mouseX, int mouseY) {
+	public void drawMenuItemFrame(Minecraft mc,  int mouseX, int mouseY, int x, int y, int sizeX, int sizeY) {
 		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
 		{
 			btn$bgX0 = x + 1;

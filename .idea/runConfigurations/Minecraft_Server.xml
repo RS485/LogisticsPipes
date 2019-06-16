@@ -2,7 +2,7 @@
   <configuration default="false" name="Minecraft Server" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="GradleStartServer" />
     <module name="LogisticsPipes.main" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/assets" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/assets_server" />
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />
     <method v="2">

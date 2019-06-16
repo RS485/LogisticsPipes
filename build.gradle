@@ -183,7 +183,12 @@ task deobfJar(type: Jar, dependsOn: 'jar') {
     }
 }
 
-task copyLPDummy(type: Copy) {
+task copyLPDummyServer(type: Copy) {
+    from 'LogisticsPipes_dummy.jar'
+    into 'run/assets_server/mods'
+}
+
+task copyLPDummy(dependsOn: copyLPDummyServer, type: Copy) {
     from 'LogisticsPipes_dummy.jar'
     into 'run/assets/mods'
 }

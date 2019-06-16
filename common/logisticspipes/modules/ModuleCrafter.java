@@ -191,7 +191,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			return null;
 		}
 
-		for ( int i = 0; i< 10 ; ++i) {
+		for ( int i = 0; i< 9 ; ++i) {
 			ItemIdentifierStack idStackInSlot = _dummyInventory.getIDStackInSlot(i);
 
 			if (idStackInSlot != null && idStackInSlot.getItem().getUndamaged() ==  item.getUndamaged()) {

@@ -1,6 +1,7 @@
 package logisticspipes.gui.guidebook;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -16,10 +17,13 @@ public class GuiGuideBookSlider extends GuiButton {
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	@Getter
-	@Setter
 	private float progress;
 	private boolean dragging;
 	public int max, min;
+
+	public void setProgress(float progress){
+		this.y = (int)((this.max-this.min)*progress);
+	}
 
 	public GuiGuideBookSlider(int buttonId, int x, int yTop, int yBot, float z, float progress, int widthIn, int heightIn) {
 		super(buttonId, x, yTop, widthIn, heightIn, "");
@@ -29,6 +33,11 @@ public class GuiGuideBookSlider extends GuiButton {
 		this.max = yTop;
 		this.min = yBot - heightIn;
 		this.y = (int) (max + (min - max) * progress);
+	}
+
+	public void reset(){
+		this.y = max;
+		this.progress = 0.0F;
 	}
 
 	@Override
@@ -49,6 +58,7 @@ public class GuiGuideBookSlider extends GuiButton {
 	protected void mouseDragged(Minecraft mc, int mouseX, int mouseY) {
 		if(dragging){
 			this.y = (int) MathHelper.clamp(mouseY - this.height / 2.0F, this.max, this.min);
+			this.progress = (1.0F * (this.y - this.max))/(this.min - this.max);
 		}
 		super.mouseDragged(mc, mouseX, mouseY);
 	}
@@ -56,6 +66,7 @@ public class GuiGuideBookSlider extends GuiButton {
 	@Override
 	public void mouseReleased(int mouseX, int mouseY) {
 		if(dragging){
+			this.y = (int) MathHelper.clamp(mouseY - this.height / 2.0F, this.max, this.min);
 			dragging = false;
 		}
 		super.mouseReleased(mouseX, mouseY);
@@ -67,5 +78,10 @@ public class GuiGuideBookSlider extends GuiButton {
 			dragging = true;
 		}
 		return super.mousePressed(mc, mouseX, mouseY);
+	}
+
+	@Override
+	public void playPressSound(SoundHandler soundHandlerIn) {
+		return;
 	}
 }

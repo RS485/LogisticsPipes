@@ -23,33 +23,15 @@ public class ItemGuideBook extends LogisticsItem {
 		nbt.setFloat("sliderProgress", 0.0F);
 	}
 
-<<<<<<< feature/custom-guide-book
-<<<<<<< feature/custom-guide-book
-	public static void setCurrentPage(int slot, EntityPlayer player, NBTTagCompound nbt){
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SetCurrentPagePacket.class).setNbt(nbt).setSlot(slot), player);
-=======
-	public static void setCurrentPage(int page, float sliderProgress, EnumHand hand) {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setHand(hand).setSliderProgress(sliderProgress).setPage(page));
->>>>>>> Remade some key parts
-=======
-	public static void setCurrentPage(int page,int chapter, float sliderProgress, EnumHand hand) {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setHand(hand).setSliderProgress(sliderProgress).setPage(page).setChapter(chapter));
->>>>>>> Major changes to the rendering and book structure
+	public static void setCurrentPage(GuiGuideBook.PageInformation page, EnumHand hand) {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setHand(hand).setSliderProgress(page.getProgress()).setPage(page.getPage()).setChapter(page.getChapter()).setDivision(page.getDivision()));
 	}
 
 	@Nonnull
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand) {
 		ItemStack itemstack = player.getHeldItem(hand);
-<<<<<<< feature/custom-guide-book
-<<<<<<< feature/custom-guide-book
 		if (world.isRemote) MainProxy.proxy.openGuideBookGui(hand);
-=======
-		if (world.isRemote) MainProxy.proxy.openGuiFromItem(GuiIDs.GUI_Guide_Book_ID, hand);
->>>>>>> Remade some key parts
-=======
-		if (world.isRemote) MainProxy.proxy.openGuideBookGui(hand);
->>>>>>> Ready for Review
 		return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
 	}
 }

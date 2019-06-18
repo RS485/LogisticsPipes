@@ -4,10 +4,26 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+<<<<<<< feature/custom-guide-book
+<<<<<<< feature/custom-guide-book
+import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.fml.common.registry.GameRegistry;
+=======
+>>>>>>> Remade some key parts
+=======
+import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.fml.common.registry.GameRegistry;
+>>>>>>> Formatting fixes
 
 import lombok.Getter;
 import lombok.Setter;
+import sun.rmi.runtime.Log;
 
+<<<<<<< feature/custom-guide-book
+<<<<<<< feature/custom-guide-book
+import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
@@ -23,7 +39,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private int page, chapter;
+	private int page, chapter, division;
 
 	@Getter
 	@Setter
@@ -36,40 +52,18 @@ public class SetCurrentPagePacket extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ItemStack book;
-<<<<<<< feature/custom-guide-book
-<<<<<<< feature/custom-guide-book
 		book = player.getHeldItem(hand);
 		if (book.getItem() != LPItems.itemGuideBook) return;
-		NBTTagCompound nbt = book.getTagCompound();
-		if (nbt == null) nbt = new NBTTagCompound();
-		nbt.setFloat("sliderProgress", sliderProgress);
-		nbt.setInteger("page", page);
-		book.setTagCompound(nbt);
-=======
-		if (hand == EnumHand.MAIN_HAND) {
-			if (!(player.getHeldItemMainhand().getItem().getClass() == ItemGuideBook.class)) return;
-			book = player.getHeldItemMainhand();
-		} else {
-			if (!(player.getHeldItemOffhand().getItem().getClass() == ItemGuideBook.class)) return;
-			book = player.getHeldItemOffhand();
+		NBTTagCompound nbt;
+		if(book.hasTagCompound()){
+			nbt = book.getTagCompound();
+		}else{
+			nbt = new NBTTagCompound();
 		}
-=======
-		book = player.getHeldItem(hand);
-		if (book.getItem() != LPItems.itemGuideBook) return;
->>>>>>> Formatting fixes
-		NBTTagCompound nbt = book.getTagCompound();
-		if(nbt == null) nbt = new NBTTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);
-<<<<<<< feature/custom-guide-book
-<<<<<<< feature/custom-guide-book
->>>>>>> Remade some key parts
-=======
-=======
 		nbt.setInteger("chapter", chapter);
->>>>>>> Major changes to the rendering and book structure
-		book.setTagCompound(nbt);
->>>>>>> Ready for Review
+		nbt.setInteger("division", division);
 	}
 
 	@Override
@@ -79,6 +73,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		sliderProgress = input.readFloat();
 		page = input.readInt();
 		chapter = input.readInt();
+		division = input.readInt();
 	}
 
 	@Override
@@ -88,6 +83,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		output.writeFloat(sliderProgress);
 		output.writeInt(page);
 		output.writeInt(chapter);
+		output.writeInt(division);
 	}
 
 	@Override

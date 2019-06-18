@@ -83,11 +83,11 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
 				if (!ItemIdentifier.get(itemStack).equals(itemIdent)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 				int value = (Integer) BarrelInventoryHandler.getItemCount.invoke(_tile, new Object[] {});
 				if (value - (_hideOnePerStack ? 1 : 0) < count) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 				BarrelInventoryHandler.setItemCount.invoke(_tile, value - count);
 				ItemStack ret = itemStack.copy();
@@ -136,7 +136,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
 				if (!ItemIdentifier.get(itemStack).equals(itemIdent)) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 				int value = (Integer) BarrelInventoryHandler.getItemCount.invoke(_tile, new Object[] {});
 				if (value > (_hideOnePerStack ? 1 : 0)) {

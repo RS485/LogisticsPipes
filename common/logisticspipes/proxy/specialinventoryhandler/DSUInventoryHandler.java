@@ -56,7 +56,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack items = _tile.getStoredItemType();
 		if (items == null || !ItemIdentifier.get(items).equals(itemIdent)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		if (_hideOnePerStack) {
 			items.shrink(1);
@@ -171,7 +171,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if (i != 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return _tile.getStoredItemType();
 	}
@@ -179,7 +179,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (i != 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return getMultipleItems(ItemIdentifier.get(_tile.getStoredItemType()), j);
 	}

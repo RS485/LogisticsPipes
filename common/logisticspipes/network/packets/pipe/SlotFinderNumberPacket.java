@@ -96,7 +96,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 				if (resultIndex == -1) {
 					for (int i = 0; i < util.getSizeInventory(); i++) {
 						ItemStack stack = util.getStackInSlot(i);
-						if (stack == null) {
+						if (stack.isEmpty()) {
 							continue;
 						}
 						if (ItemIdentifier.get(stack).equals(ItemIdentifier.get(dummyStack)) && stack.getCount() == dummyStack.getCount()) {

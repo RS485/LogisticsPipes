@@ -32,15 +32,15 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {
-			return null;
+			return ItemStack.EMPTY;
 		}
-		ItemStack stack = null;
+		ItemStack stack = ItemStack.EMPTY;
 		for (int i = 0; i < count; i++) {
-			if (stack == null) {
+			if (stack.isEmpty()) {
 				stack = getSingleItem(itemIdent);
 			} else {
 				ItemStack newstack = getSingleItem(itemIdent);
-				if (newstack == null) {
+				if (newstack.isEmpty()) {
 					break;
 				}
 				stack.grow(newstack.getCount());

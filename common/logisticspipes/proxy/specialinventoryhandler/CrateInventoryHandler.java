@@ -80,7 +80,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
 		if (count <= (_hideOnePerStack ? 1 : 0)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return _tile.extractItems(itemIdent.makeNormalStack(1), 1);
 	}
@@ -157,7 +157,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		}
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		if (entry.getValue() == 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
@@ -172,7 +172,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		ItemStack extracted = null;
 		int count = _tile.getItemCount(stack);
 		if (count <= (_hideOnePerStack ? 1 : 0)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		extracted = _tile.extractItems(stack, 1);
 		entry.setValue(entry.getValue() - j);

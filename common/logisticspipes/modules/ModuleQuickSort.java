@@ -164,7 +164,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 
 			ItemStack slot = invUtil.getStackInSlot(lastStackLookedAt);
 
-			while (slot == null) {
+			while (slot == null || slot.isEmpty()) {
 				lastStackLookedAt++;
 				if (lastStackLookedAt >= invUtil.getSizeInventory()) {
 					lastStackLookedAt = 0;

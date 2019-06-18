@@ -115,7 +115,9 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			}
 			ItemStack removed = _inventory.extractItem(i, itemsToSplit, false);
 			if (outputStack == null) {
-				outputStack = removed;
+				if (removed.getCount() > 0) {
+					outputStack = removed;
+				}
 			} else {
 				outputStack.setCount(outputStack.getCount() + removed.getCount());
 			}

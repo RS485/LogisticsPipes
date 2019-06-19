@@ -98,7 +98,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
 		if (itemCount(item) < count) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		ItemStack outputStack = ItemStack.EMPTY;
 		boolean first = true;
@@ -114,7 +114,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 				continue;
 			}
 			ItemStack removed = _inventory.extractItem(i, itemsToSplit, false);
-			if (outputStack == ItemStack.EMPTY ) {
+			if (outputStack.isEmpty()) {
 				outputStack = removed;
 			} else {
 				outputStack.setCount(outputStack.getCount() + removed.getCount());

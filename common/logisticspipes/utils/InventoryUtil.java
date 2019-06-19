@@ -100,7 +100,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		if (itemCount(item) < count) {
 			return null;
 		}
-		ItemStack outputStack = null;
+		ItemStack outputStack = ItemStack.EMPTY;
 		boolean first = true;
 
 		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd && count > 0; i++) {
@@ -114,10 +114,8 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 				continue;
 			}
 			ItemStack removed = _inventory.extractItem(i, itemsToSplit, false);
-			if (outputStack == null) {
-				if (removed.getCount() > 0) {
-					outputStack = removed;
-				}
+			if (outputStack == ItemStack.EMPTY ) {
+				outputStack = removed;
 			} else {
 				outputStack.setCount(outputStack.getCount() + removed.getCount());
 			}

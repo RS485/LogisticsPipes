@@ -98,7 +98,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
 		if (itemCount(item) < count) {
-			return ItemStack.EMPTY;
+			return null;
 		}
 		ItemStack outputStack = ItemStack.EMPTY;
 		boolean first = true;

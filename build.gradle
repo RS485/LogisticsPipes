@@ -99,6 +99,7 @@ processResources {
 }
 
 repositories {
+    jcenter()
     maven {
         name = "RS485 Cache"
         url = "https://rs485.network/maven-cache/"
@@ -144,9 +145,9 @@ repositories {
 dependencies {
     deobfCompile "com.mod-buildcraft:buildcraft:7.99.19"
     compileOnly 'org.projectlombok:lombok:1.16.8'
-    compile group: "net.shadowfacts", name: "Forgelin", version: "1.8.2"
+    implementation "net.shadowfacts:Forgelin:1.8.3"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-    implementation 'com.google.code.gson:gson:2.8.0' // update this, when Forge is updated
+    implementation "com.google.code.gson:gson:2.8.0" // update this together with Forge/Minecraft
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.2.240:deobf'
     compile 'codechicken:CodeChickenLib:1.12.2-3.1.7.340:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.2.126:deobf'

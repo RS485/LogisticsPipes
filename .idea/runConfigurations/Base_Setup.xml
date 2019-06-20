@@ -12,6 +12,7 @@
         <list>
           <option value="copyLPDummy" />
           <option value="setupDecompWorkspace" />
+          <option value="assemble" />
         </list>
       </option>
       <option name="vmOptions" value="" />

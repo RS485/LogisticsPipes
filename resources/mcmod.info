@@ -12,13 +12,13 @@
     "screenshots": [],
     "requiredMods": [
         "forge@[10.12.1.1079,)",
-        "codechickenlib",
-        "forgelin"
+        "codechickenlib@[3.2.2.355,)",
+        "forgelin@[1.8.2,)"
     ],
     "dependencies": [
         "forge@[10.12.1.1079,)",
-        "codechickenlib",
-        "forgelin",
+        "codechickenlib@[3.2.2.355,)",
+        "forgelin@[1.8.2,)",
         "buildcraftcore",
         "buildcrafttransport",
         "buildcraftsilicon",

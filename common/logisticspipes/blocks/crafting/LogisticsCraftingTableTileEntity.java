@@ -202,7 +202,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		if (cache == null) {
 			cacheRecipe();
 			if (cache == null) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 		}
 		int[] toUse = new int[9];
@@ -229,7 +229,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 					}
 				}
 				//Not enough material
-				return null;
+				return ItemStack.EMPTY;
 			}
 		AutoCraftingInventory crafter = new AutoCraftingInventory(placedBy);
 		for (int i = 0; i < 9; i++) {
@@ -250,33 +250,33 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 					}
 				}
 				if(recipe == null) {
-					return null;
+					return ItemStack.EMPTY;
 				}
 			} else {
-				return null; //Fix MystCraft
+				return ItemStack.EMPTY; //Fix MystCraft
 			}
 		}
 		ItemStack result = recipe.getCraftingResult(crafter);
 		if (result.isEmpty()) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		if(isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
 			if (!outputFuzzyFlags.matches(ItemIdentifier.get(result), IResource.MatchSettings.NORMAL)) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 			if (!outputFuzzyFlags.matches(wanted.getAsItem(), IResource.MatchSettings.NORMAL)) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 		} else {
 			if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 			if (!wanted.matches(resultInv.getIDStackInSlot(0).getItem(), IResource.MatchSettings.WITHOUT_NBT)) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 		}
 		if (!power.useEnergy(Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		crafter = new AutoCraftingInventory(placedBy);
 		for (int i = 0; i < 9; i++) {

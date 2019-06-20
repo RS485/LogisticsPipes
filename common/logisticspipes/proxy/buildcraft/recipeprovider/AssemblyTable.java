@@ -57,7 +57,7 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 					nextRecipe = (AssemblyRecipeBasic) r;
 					break;
 				}
-				if (output != null && r.getOutputPreviews().stream().anyMatch(it -> ItemStack.areItemStacksEqual(output, it))) {
+				if (!output.isEmpty() && r.getOutputPreviews().stream().anyMatch(it -> ItemStack.areItemStacksEqual(output, it))) {
 					if (!r.getOutputs(inputs.toNonNullList()).isEmpty()) {
 						takeNext = true;
 					}

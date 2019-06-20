@@ -1396,30 +1396,30 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 		}
 		if (wanteditem == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		int available = invUtil.itemCount(wanteditem);
 		if (available == 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		if (!_service.useEnergy(neededEnergy() * Math.min(64, available))) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return invUtil.getMultipleItems(wanteditem, Math.min(64, available));
 	}
 
 	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, IResource wanteditem, int count, EnumFacing dir) {
 		ItemStack extracted = extractFromInventory(tile, wanteditem, count, dir);
-		if (extracted != null) {
+		if (!extracted.isEmpty()) {
 			return extracted;
 		}
-		ItemStack retstack = null;
+		ItemStack retstack = ItemStack.EMPTY;
 		while (count > 0) {
 			ItemStack stack = tile.getOutput(wanteditem, _service);
-			if (stack == null || stack.getCount() == 0) {
+			if (stack .isEmpty() || stack.getCount() == 0) {
 				break;
 			}
-			if (retstack == null) {
+			if (retstack.isEmpty()) {
 				if(!wanteditem.matches(ItemIdentifier.get(stack), wanteditem instanceof ItemResource ? IResource.MatchSettings.WITHOUT_NBT : IResource.MatchSettings.NORMAL)) {
 					break;
 				}
@@ -1435,7 +1435,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				break;
 			}
 
-			if (retstack == null) {
+			if (retstack.isEmpty()) {
 				retstack = stack;
 			} else {
 				retstack.grow(stack.getCount());

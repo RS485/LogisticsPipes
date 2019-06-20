@@ -213,7 +213,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				}
 
 				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
-				if (stackToSend == null || stackToSend.isEmpty()) {
+				if (stackToSend.isEmpty()) {
 					break;
 				}
 				count = stackToSend.getCount();
@@ -239,7 +239,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		for (int i = 0; i < _filterInventory.getSizeInventory(); i++) {
 
 			ItemStack stack = _filterInventory.getStackInSlot(i);
-			if ((stack != null) && (stack.getItem() == item.getItem())) {
+			if ((!stack.isEmpty()) && (stack.getItem() == item.getItem())) {
 				if (item.getItem().isDamageable()) {
 					return areItemsIncluded();
 				}

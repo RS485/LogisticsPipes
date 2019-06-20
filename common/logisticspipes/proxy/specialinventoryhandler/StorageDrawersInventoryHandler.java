@@ -111,7 +111,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
-		ItemStack stack = null;
+		ItemStack stack = ItemStack.EMPTY;
 
 		if (_smartGroup != null) {
 			ItemStack protoStack = itemIdent.makeNormalStack(1);
@@ -121,7 +121,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 					continue;
 				}
 
-				if (stack == null) {
+				if (stack.isEmpty()) {
 					stack = drawer.getStoredItemCopy();
 					stack.setCount(0);
 				}
@@ -151,7 +151,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			}
 
 			if (ItemIdentifier.get(drawer.getStoredItemPrototype()).equals(itemIdent)) {
-				if (stack == null) {
+				if (stack.isEmpty()) {
 					stack = drawer.getStoredItemCopy();
 					stack.setCount(0);
 				}
@@ -428,17 +428,17 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (!_drawer.isDrawerEnabled(i)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
 		IDrawer drawer = _drawer.getDrawer(i);
 		if (drawer == null || drawer.isEmpty()) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
 		ItemStack stack = drawer.getStoredItemCopy();
-		if (stack == null) {
-			return null;
+		if (stack.isEmpty()) {
+			return ItemStack.EMPTY;
 		}
 
 		int avail = Math.min(j, drawer.getStoredItemCount());

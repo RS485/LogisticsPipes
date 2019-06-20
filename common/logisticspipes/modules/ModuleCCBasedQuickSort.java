@@ -135,7 +135,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 		ItemStack slot = invUtil.getStackInSlot(lastStackLookedAt);
 
-		while (slot == null) {
+		while (slot.isEmpty()) {
 			lastStackLookedAt++;
 			if (lastStackLookedAt >= invUtil.getSizeInventory()) {
 				lastStackLookedAt = 0;
@@ -193,7 +193,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		}
 		ItemIdentifier ident = list.get(0).getStack().getItem();
 		ItemStack stack = invUtil.getStackInSlot(slot);
-		if (stack == null || !ItemIdentifier.get(stack).equals(ident)) {
+		if (stack.isEmpty() || !ItemIdentifier.get(stack).equals(ident)) {
 			return false;
 		}
 		final IRouter source = _service.getRouter();
@@ -242,7 +242,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 				continue;
 			}
 			stack = invUtil.getStackInSlot(slot);
-			if (stack == null || stack.getCount() <= 0) {
+			if (stack.isEmpty() || stack.getCount() <= 0) {
 				continue;
 			}
 			int amount = Math.min(stack.getCount(), sink.getCanSink());

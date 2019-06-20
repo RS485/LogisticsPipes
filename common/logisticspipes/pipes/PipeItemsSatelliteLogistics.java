@@ -106,7 +106,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			IInventoryUtil inv = this.getPointedInventory();
 			if (inv != null) {
 				for (int i = 0; i < inv.getSizeInventory(); i++) {
-					if (inv.getStackInSlot(i) != null) {
+					if (!inv.getStackInSlot(i).isEmpty()) {
 						addToList(ItemIdentifierStack.getFromStack(inv.getStackInSlot(i)));
 					}
 				}

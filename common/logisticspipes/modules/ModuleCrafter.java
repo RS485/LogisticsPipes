@@ -1318,7 +1318,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		} else  if (adjacent.tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, adjacent.direction.getOpposite())) {
 			return extractFromInventory(adjacent.tileEntity, item, amount, adjacent.direction);
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	private ItemStack extractFiltered(AdjacentTileEntity adjacent, ItemIdentifierInventory inv, boolean isExcluded, int filterInvLimit) {
@@ -1345,16 +1345,16 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				}
 			}
 			if(toExtract == null) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 			itemToExtract = toExtract;
 		}
 		int available = invUtil.itemCount(itemToExtract);
 		if (available == 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		if (!_service.useEnergy(neededEnergy() * Math.min(count, available))) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return invUtil.getMultipleItems(itemToExtract, Math.min(count, available));
 	}
@@ -1416,7 +1416,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		ItemStack retstack = ItemStack.EMPTY;
 		while (count > 0) {
 			ItemStack stack = tile.getOutput(wanteditem, _service);
-			if (stack .isEmpty() || stack.getCount() == 0) {
+			if (stack.isEmpty() || stack.getCount() == 0) {
 				break;
 			}
 			if (retstack.isEmpty()) {

@@ -1175,14 +1175,14 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if ((!_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
 			if (getUpgradeManager().getCrafterCleanup() > 0) {
 				List<AdjacentTileEntity> crafters = locateCrafters();
-				ItemStack extracted = null;
+				ItemStack extracted = ItemStack.EMPTY;
 				for (AdjacentTileEntity adjacentCrafter : crafters) {
 					extracted = extractFiltered(adjacentCrafter, _cleanupInventory, cleanupModeIsExclude, getUpgradeManager().getCrafterCleanup() * 3);
-					if (extracted != null && extracted.getCount() > 0) {
+					if (!extracted.isEmpty() && extracted.getCount() > 0) {
 						break;
 					}
 				}
-				if (extracted != null && extracted.getCount() > 0) {
+				if (!extracted.isEmpty() && extracted.getCount() > 0) {
 					_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), EnumFacing.UP);
 					_service.getCacheHolder().trigger(CacheTypes.Inventory);
 				}
@@ -1214,16 +1214,16 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			int maxtosend = Math.min(itemsleft, nextOrder.getResource().stack.getStackSize());
 			maxtosend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
-			ItemStack extracted = null;
+			ItemStack extracted = ItemStack.EMPTY;
 			AdjacentTileEntity adjacent = null;
 			for (AdjacentTileEntity adjacentCrafter : adjacentCrafters) {
 				adjacent = adjacentCrafter;
 				extracted = extract(adjacent, nextOrder.getResource(), maxtosend);
-				if (extracted != null && extracted.getCount() > 0) {
+				if (!extracted.isEmpty() && extracted.getCount() > 0) {
 					break;
 				}
 			}
-			if (extracted == null || extracted.getCount() == 0) {
+			if (extracted.isEmpty() || extracted.getCount() == 0) {
 				_service.getItemOrderManager().deferSend();
 				break;
 			}
@@ -1325,7 +1325,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (adjacent.tileEntity.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, adjacent.direction.getOpposite())) {
 			return extractFromInventoryFiltered(adjacent.tileEntity, inv, isExcluded, filterInvLimit, adjacent.direction);
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	private ItemStack extractFromInventory(TileEntity inv, IResource wanteditem, int count, EnumFacing dir) {

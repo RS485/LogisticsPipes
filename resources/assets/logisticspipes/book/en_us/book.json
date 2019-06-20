@@ -43,6 +43,7 @@
         },{
           "title": "Modules",
           "item": "logisticspipes:module_extractor",
+          "type": "list",
           "pages": "1"
         },{
           "title": "Pipes",

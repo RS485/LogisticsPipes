@@ -9,12 +9,11 @@ import net.minecraft.util.ResourceLocation
 import java.io.IOException
 import java.io.InputStreamReader
 
-class GuideBookContents private constructor(val lang: String, val divisions: ArrayList<Division> = ArrayList(), val title: String) {
+class GuideBookContents private constructor(val lang: String, val divisions: List<Division> = mutableListOf(), val title: String) {
 
     companion object {
 
         private val rm = Minecraft.getMinecraft().resourceManager
-
 
 
         @JvmStatic
@@ -25,9 +24,7 @@ class GuideBookContents private constructor(val lang: String, val divisions: Arr
                 res.use {
                     val json = JsonParser().parse(InputStreamReader(res.inputStream)).asJsonObject
                     val title = json.get("title").asString
-                    val divs = json.get("divisions").asJsonArray
-                    val divisions: ArrayList<Division> = ArrayList()
-                    for((index, div) in divs.withIndex()) divisions.add(Division(lang, div.asJsonObject, index))
+                    val divisions = json.get("divisions").asJsonArray.withIndex().map { (sIndex, divs) -> Division(lang, divs.asJsonObject, sIndex) }
                     return GuideBookContents(lang, divisions, title)
                 }
             } catch (e: IOException) {
@@ -43,26 +40,37 @@ class GuideBookContents private constructor(val lang: String, val divisions: Arr
             return null
         }
 
+
     }
 
-    class Page(val index: Int, val text: String)
+    fun getDivision(index: Int): Division{
+        return divisions[index]
+    }
 
-    class Chapter(val lang: String, val parentTitle: String, json: JsonObject, pindex: Int, index: Int){
-        val title = json.get("title").asString
-        val item = json.get("item").asString
-        val pages = json.get("pages").asInt
-        val parentindex = pindex
-        val index = index
+    fun getChapter(dindex: Int, index: Int): Chapter?{
+        return getDivision(dindex).getChapter(index)
+    }
+
+    fun getPage(dindex: Int, cindex: Int, index: Int): Page?{
+        return getDivision(dindex).getChapter(cindex)?.getPage(index)
+    }
+
+    class Page(val dindex:Int, val cindex: Int, val index: Int, val text: String)
+
+    class Chapter(private val lang: String, val parentTitle: String, json: JsonObject, val dindex: Int, val cindex: Int) {
+        val title = json["title"].asString
+        val item = json["item"].asString
+        val nPages = json["pages"].asInt
 
         fun getPage(index: Int): Page? {
             var par = parentTitle.replace("[^A-z]".toRegex(), "_").toLowerCase()
             var cha = title.replace("[^A-z]".toRegex(), "_").toLowerCase()
-            if (index !in 0 until pages) return null
+            if (index !in 0 until nPages) return null
             try {
                 val res = rm.getResource(ResourceLocation(LPConstants.LP_MOD_ID, "book/$lang/$par/$cha/page$index"))
                 res.use {
                     val text = res.inputStream.bufferedReader().readLines().joinToString("\n")
-                    return Page(index, text)
+                    return Page(dindex, cindex, index, text)
                 }
             } catch (e: IOException) {
                 LogisticsPipes.log.error("Couldn't find page $par/$cha/page$index for language '$lang'!")
@@ -72,17 +80,12 @@ class GuideBookContents private constructor(val lang: String, val divisions: Arr
     }
 
 
-    class Division constructor(val lang: String, json: JsonObject, index: Int){
+    class Division constructor(lang: String, json: JsonObject, val dindex: Int) {
         val title: String = json.get("title").asString
-        val chas = json.get("chapters").asJsonArray
-        val chapters: ArrayList<Chapter> = ArrayList()
-        val index = index
+        val chapters = json.get("chapters").asJsonArray.withIndex().map { (sIndex, cha) -> Chapter(lang, title, cha.asJsonObject, dindex, sIndex) }
+        val nChapters = chapters.size
 
-        init {
-            for ((sIndex, cha) in chas.withIndex()) chapters.add(Chapter(lang, title, cha.asJsonObject, index, sIndex))
-        }
-
-        fun getChapter(index: Int): Chapter?{
+        fun getChapter(index: Int): Chapter? {
             return chapters[index]
         }
     }

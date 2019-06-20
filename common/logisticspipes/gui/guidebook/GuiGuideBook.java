@@ -62,15 +62,20 @@ public class GuiGuideBook extends GuiScreen {
 	//////// Buttons
 	private GuiGuideBookSlider slider;
 	private GuiGuideBookTexturedButton home, prevPage, nextPage;
+	private int maxTabs = 10;
+	private ArrayList<GuiGuideBookTabButton> tabList;
+	private SavedTabs savedTabs;
 	///////
 	private int mouseX, mouseY;
 	private ArrayList<MenuItemsDivision> divisionsList;
-	private PageInformation page;
+	private State state;
+	private PageInformation currentPage;
+	private PageState page;
+	private MenuState menu;
 	private String title;
 
 	//////// Experimental variables
 	//// Book
-	private int currentPageCount;
 	private EnumHand hand;
 
 	//////// Drawing variables
@@ -105,12 +110,16 @@ public class GuiGuideBook extends GuiScreen {
 		super();
 		this.hand = hand;
 		this.gbc = gbc;
-		this.page = new PageInformation();
+		this.currentPage = new PageInformation();
+		this.page = new PageState();
+		this.menu = new MenuState();
 		this.divisionsList = new ArrayList<>();
+		this.savedTabs = new SavedTabs(maxTabs);
+		this.tabList = new ArrayList<>();
 		for (GuideBookContents.Division div : gbc.getDivisions()) {
 			divisionsList.add(new MenuItemsDivision());
 			for (GuideBookContents.Chapter chapter : div.getChapters()) {
-				divisionsList.get(div.getIndex()).getList().add(new MenuItem(chapter));
+				divisionsList.get(div.getDindex()).getList().add(new MenuItem(chapter));
 			}
 		}
 	}
@@ -120,12 +129,7 @@ public class GuiGuideBook extends GuiScreen {
 	 */
 	protected void drawCurrentEvent() {
 		int yOffset = slider.enabled ? -(int) (MathHelper.clamp(slider.getProgress() * (area$currentlyDrawnY - area$acrossY), 0, area$currentlyDrawnY - area$acrossY)) : 0;
-		if (page.getDivision() == -1) {
-			area$currentlyDrawnY = drawMenu(yOffset);
-		} else {
-			area$currentlyDrawnY = drawPage(gbc.getDivisions().get(page.getDivision()).getChapter(page.getChapter()).getPage(page.getPage()), yOffset);
-			this.drawPageCount();
-		}
+		area$currentlyDrawnY = state.draw(mc, mouseX, mouseY, yOffset);
 	}
 
 	/*
@@ -187,16 +191,12 @@ public class GuiGuideBook extends GuiScreen {
 		if (loadedNBT) return;
 		ItemStack bookItemStack = mc.player.getHeldItem(hand);
 		if (bookItemStack.hasTagCompound()) {
+			state = page;
 			NBTTagCompound nbtTagCompound = bookItemStack.getTagCompound();
-			this.page.setPage(nbtTagCompound.getInteger("page"));
-			this.page.setChapter(nbtTagCompound.getInteger("chapter"));
-			this.page.setDivision(nbtTagCompound.getInteger("division"));
-			this.page.setProgress(nbtTagCompound.getFloat("sliderProgress"));
+			currentPage.page = gbc.getPage(nbtTagCompound.getInteger("division"), nbtTagCompound.getInteger("chapter"), nbtTagCompound.getInteger("page"));
+			currentPage.setProgress(nbtTagCompound.getFloat("sliderProgress"));
 		} else {
-			this.page.setPage(0);
-			this.page.setChapter(0);
-			this.page.setDivision(-1);
-			this.page.setProgress(0.0F);
+			state = menu;
 		}
 		loadedNBT = true;
 	}
@@ -209,6 +209,7 @@ public class GuiGuideBook extends GuiScreen {
 		this.drawCurrentEvent();
 		slider.enabled = area$currentlyDrawnY > area$acrossY;
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		for (GuiGuideBookTabButton tab : tabList) tab.drawButton(mc, mouseX, mouseY, partialTicks);
 		this.drawGuiScroll();
 		if (prevPage.visible && nextPage.visible) this.drawCenteredArrowUnderlay(area$offsetCenterX * 2);
 		this.drawTitle();
@@ -216,20 +217,19 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void initGui() {
+		this.tabList.clear();
 		this.getDataFromNBT();
-		if (page.getDivision() != -1) this.currentPageCount = gbc.getDivisions().get(page.getDivision()).getChapter(page.getChapter()).getPages();
 		this.calculateConstraints();
 		this.updateTitle();
-		this.slider = this.addButton(new GuiGuideBookSlider(0, gui$sliderX, gui$sliderY0, gui$sliderY1, z$titleButtons, page.getProgress(), gui$sliderWidth, gui$sliderHeight));
+		this.slider = this.addButton(new GuiGuideBookSlider(0, gui$sliderX, gui$sliderY0, gui$sliderY1, z$titleButtons, currentPage.getProgress(), gui$sliderWidth, gui$sliderHeight));
 		this.slider.enabled = false;
-		this.home = this.addButton(new GuiGuideBookTexturedButton(1, gui$x3 - gui$tagWidth, gui$y0 - gui$tagHeight, gui$tagWidth, gui$fullTagHeight, 40, 64, z$titleButtons, 128, 0, 16, 16, false, GuiGuideBookTexturedButton.EnumButtonType.TAB));
-		this.home.visible = page.getDivision() != -1;
+		this.home = this.addButton(new GuiGuideBookTexturedButton(1, gui$x3 - gui$tagWidth, gui$y0 - gui$tagHeight, gui$tagWidth, gui$fullTagHeight, 16, 64, z$titleButtons, 128, 0, 16, 16, false, GuiGuideBookTexturedButton.EnumButtonType.TAB));
 		this.prevPage = this.addButton(new GuiGuideBookTexturedButton(2, area$xCenter - area$offsetCenterX, gui$y3 - 12, gui$arrowWidth, gui$arrowHeight, 0, 0, z$titleButtons, 144, 0, 24, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
-		this.prevPage.visible = page.getDivision() != -1;
-		this.prevPage.enabled = page.getDivision() != 0;
 		this.nextPage = this.addButton(new GuiGuideBookTexturedButton(3, area$xCenter + area$offsetCenterX - gui$arrowWidth, gui$y3 - 12, gui$arrowWidth, gui$arrowHeight, 0, 0, z$titleButtons, 168, 0, 24, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
-		this.nextPage.visible = page.getDivision() != -1;
-		this.nextPage.enabled = page.getPage() < currentPageCount - 1;
+		for (int i = 0; i < maxTabs; i++) {
+			tabList.add(new GuiGuideBookTabButton(i, gui$x3 - 2 - 2 * gui$tagWidth - (i * gui$tagWidth), gui$y0, gui$tagWidth, gui$tagHeight, ""));
+		}
+		this.updateButtonVisibility();
 	}
 
 	@Override
@@ -239,8 +239,8 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		page.setProgress(slider.getProgress());
-		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), page, hand);
+		currentPage.setProgress(slider.getProgress());
+		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), currentPage, hand);
 		super.onGuiClosed();
 	}
 
@@ -248,15 +248,8 @@ public class GuiGuideBook extends GuiScreen {
 	protected void actionPerformed(GuiButton button) throws IOException {
 		switch (button.id) {
 			case 1:
-				this.page.setPage(0);
-				this.currentPageCount = 0;
-				this.page.setChapter(0);
-				this.page.setDivision(-1);
-				this.page.setProgress(0.0F);
+				state = menu;
 				slider.reset();
-				home.visible = false;
-				nextPage.visible = false;
-				prevPage.visible = false;
 				break;
 			case 2:
 				prevPage();
@@ -268,101 +261,98 @@ public class GuiGuideBook extends GuiScreen {
 				break;
 		}
 		updateTitle();
-		updateArrows();
+		updateButtonVisibility();
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		if (mouseButton == 0 && page.getDivision() == -1) {
+		if (state == menu)
 			for (MenuItemsDivision div : divisionsList) {
 				for (MenuItem item : div.getList()) {
 					if (item.mousePressed()) {
 						item.playPressSound(this.mc.getSoundHandler());
 						this.pressedItem(item);
+						updateButtonVisibility();
+						return;
 					}
 				}
 			}
-			super.mouseClicked(mouseX, mouseY, mouseButton);
-		} else {
-			super.mouseClicked(mouseX, mouseY, mouseButton);
+		for (GuiGuideBookTabButton tab : tabList) {
+			if (tab.mousePressed(mc, mouseX, mouseY)) {
+				tab.playPressSound(this.mc.getSoundHandler());
+				if (!tab.isSet && state != menu) {
+					PageInformation setPage = new PageInformation();
+					setPage.page = currentPage.page;
+					setPage.progress = currentPage.progress;
+					if (savedTabs.addTab(new SavedTab(setPage, state))) {
+						tab.isSet = true;
+						if (tab.isSet) tab.isActive = true;
+					}else{
+						return;
+					}
+				} else if(tab.isSet && !tab.isActive){
+					SavedTab info = new SavedTab(savedTabs.tabs.get(tab.id).page, savedTabs.tabs.get(tab.id).state);
+					state = page;
+					currentPage.set(info);
+				}
+				updateButtonVisibility();
+				return;
+			}
 		}
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		updateButtonVisibility();
 	}
 
 	private void pressedItem(MenuItem item) {
 		selectChapter(item);
 	}
 
-	protected int drawMenu(int yOffset) {
-		int area$currentY = 0;
-		for (GuideBookContents.Division div : gbc.getDivisions()) {
-			drawMenuText(mc, area$x0, area$y0 + area$currentY + yOffset, area$acrossX, 19, div.getTitle());
-			area$currentY += 20;
-			for (int chapterIndex = 0; chapterIndex < div.getChapters().size(); chapterIndex++) {
-				divisionsList.get(div.getIndex()).getList().get(chapterIndex).drawMenuItem(mc, mouseX, mouseY, area$x0 + (chapterIndex % tile$max * (tile$size + tile$spacing)), area$y0 + area$currentY + yOffset, tile$size, tile$size, false);
-				if ((area$y0 + area$currentY + yOffset < area$y1) && (area$y0 + area$currentY + yOffset >= area$y0)) divisionsList.get(div.getIndex()).getList().get(chapterIndex).drawTitle(mc, mouseX, mouseY, (area$y0 + area$currentY + yOffset + tile$size < area$y1));
-				if ((chapterIndex + 1) % tile$max == 0) area$currentY += tile$spacing + tile$size;
-				if (chapterIndex == div.getChapters().size() - 1) area$currentY += tile$size;
-			}
-		}
-		return area$currentY;
-	}
-
-	protected int drawPage(GuideBookContents.Page page, int yOffset) {
-		String unformattedText = page.getText();
-		ArrayList<String> text = StringUtils.splitLines(unformattedText, fontRenderer, area$acrossX);
-		int area$currentY = 0;
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(0, 0, z$text);
-		for (String line : text) {
-			fontRenderer.drawString(line, area$x0, area$y0 + area$currentY + yOffset, 0xFFFFFF);
-			area$currentY += 10;
-		}
-		GlStateManager.popMatrix();
-
-		return area$currentY;
-	}
-
 	protected void selectChapter(MenuItem item) {
-		page.setPage(0);
-		page.setChapter(item.getChapter().getIndex());
-		page.setDivision(item.getChapter().getParentindex());
-		page.setProgress(0.0F);
-		currentPageCount = item.getChapter().getPages();
-		if (page.getDivision() != -1) {
-			home.visible = true;
-			prevPage.visible = true;
-			nextPage.visible = true;
-		}
+		currentPage.set(item);
+		state = page;
 		updateTitle();
-		updateArrows();
+		updateButtonVisibility();
 	}
 
 	protected void updateTitle() {
 		String title = "";
 		title += gbc.getTitle();
-		if (page.getDivision() == -1) title += ": Menu";
+		if (state == menu) title += ": Menu";
 		else {
-			title += ": " + gbc.getDivisions().get(page.getDivision()).getTitle();
-			if (page.getChapter() != -1) {
-				title += " - " + gbc.getDivisions().get(page.getDivision()).getChapter(page.getChapter()).getTitle();
+			title += ": " + gbc.getDivision(currentPage.getDivision()).getTitle();
+			if (currentPage.getChapter() != -1) {
+				title += " - " + gbc.getDivision(currentPage.getDivision()).getChapter(currentPage.getChapter()).getTitle();
 			}
 		}
 		this.title = title;
 	}
 
-	protected void updateArrows() {
-		prevPage.enabled = page.getPage() != 0;
-		nextPage.enabled = page.getPage() < currentPageCount - 1;
+	protected void updateButtonVisibility() {
+		this.prevPage.enabled = currentPage.getIndex() != 0;
+		this.prevPage.visible = state == page;
+		this.nextPage.enabled = currentPage.getIndex() < currentPage.getPageCount() - 1;
+		this.nextPage.visible = state == page;
+		this.home.visible = state != menu;
+		for(GuiGuideBookTabButton tab: tabList){
+			tab.visible = false;
+			tab.isActive = false;
+		}
+		for (int i = 0; i < savedTabs.tabs.size(); i++) {
+			tabList.get(i).visible = true;
+			tabList.get(i).isSet = true;
+			tabList.get(i).isActive = equals(savedTabs.tabs.get(i), new SavedTab(currentPage, state));
+		}
+		if (savedTabs.tabs.size() < maxTabs) tabList.get(savedTabs.tabs.size()).visible = true;
 	}
 
 	protected void nextPage() {
-		if (nextPage.enabled) page.nextPage();
-		updateArrows();
+		if (nextPage.enabled) currentPage.nextPage();
+		updateButtonVisibility();
 	}
 
 	protected void prevPage() {
-		if (prevPage.enabled) page.prevPage();
-		updateArrows();
+		if (prevPage.enabled) currentPage.prevPage();
+		updateButtonVisibility();
 	}
 
 	/* *********************************************** draw functions with a twist *********************************************** */
@@ -383,7 +373,7 @@ public class GuiGuideBook extends GuiScreen {
 	protected void drawPageCount() {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0.0F, 0.0F, z$titleButtons);
-		this.drawCenteredString(this.fontRenderer, page.getPage() + 1 + "/" + currentPageCount, this.width / 2, gui$y2 + 13, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, currentPage.getIndex() + 1 + "/" + currentPage.getPageCount(), this.width / 2, gui$y2 + 13, 0xFFFFFF);
 		GlStateManager.popMatrix();
 	}
 
@@ -485,8 +475,19 @@ public class GuiGuideBook extends GuiScreen {
 	 * The vertex(xy) and vertex1(xy) translate to vertex(uv) and vertex1(uv) in the texture atlas.
 	 * The Y increases from the top to the bottom. Blend optional
 	 */
+
 	public static void drawStretchingSquare(int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1, boolean blend) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F);
+		drawStretchingSquare(x0, y0, x1, y1, z, u0, v0, u1, v1, blend, 0xFFFFFF);
+	}
+
+	public static void drawStretchingSquare(int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1, boolean blend, int color) {
+
+		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+
+		float r = (color >> 16 & 255) / 255.0F;
+		float g = (color >> 8 & 255) / 255.0F;
+		float b = (color & 255) / 255.0F;
+
 		u0 *= atlas$widthScale;
 		v0 *= atlas$heightScale;
 		u1 *= atlas$widthScale;
@@ -494,6 +495,7 @@ public class GuiGuideBook extends GuiScreen {
 		// Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
 		if (blend) GlStateManager.enableBlend();
 		if (blend) GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.color(r, g, b, 1.0F);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
@@ -503,6 +505,7 @@ public class GuiGuideBook extends GuiScreen {
 		bufferbuilder.pos(x0, y0, z).tex(u0, v0).endVertex();
 		tessellator.draw();
 		if (blend) GlStateManager.disableBlend();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	/*
@@ -510,10 +513,14 @@ public class GuiGuideBook extends GuiScreen {
 	 * If the texture size is smaller than the draw size the texture will be repeated until it fills all the area to be drawn.
 	 * The Y increases from the top to the bottom.
 	 */
+
 	public static void drawRepeatingSquare(int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1, boolean blend) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F);
+		drawRepeatingSquare(x0, y0, x1, y1, z, u0, v0, u1, v1, blend, 0xFFFFFF);
+	}
+
+	public static void drawRepeatingSquare(int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1, boolean blend, int color) {
 		if (x1 - x0 <= u1 - u0 && y1 - y0 <= v1 - v0) {
-			drawStretchingSquare(x0, y0, x1, y1, z, u0, v0, u1, v1, blend);
+			drawStretchingSquare(x0, y0, x1, y1, z, u0, v0, u1, v1, blend, color);
 			return;
 		}
 		int x = x1 - x0;
@@ -527,13 +534,13 @@ public class GuiGuideBook extends GuiScreen {
 		for (int i = 0; i <= timesY; i++) {
 			for (int j = 0; j <= timesX; j++) {
 				if (j == timesX && i == timesY) {
-					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + (i * v) + remainderY, z, u0, v0, u0 + remainderX, v0 + remainderY, blend);
+					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + (i * v) + remainderY, z, u0, v0, u0 + remainderX, v0 + remainderY, blend, color);
 				} else if (j == timesX) {
-					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + ((i + 1) * v), z, u0, v0, u0 + remainderX, v1, blend);
+					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + ((i + 1) * v), z, u0, v0, u0 + remainderX, v1, blend, color);
 				} else if (i == timesY) {
-					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + (i * v) + remainderY, z, u0, v0, u1, v0 + remainderY, blend);
+					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + (i * v) + remainderY, z, u0, v0, u1, v0 + remainderY, blend, color);
 				} else {
-					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + ((i + 1) * v), z, u0, v0, u1, v1, blend);
+					drawStretchingSquare(x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + ((i + 1) * v), z, u0, v0, u1, v1, blend, color);
 				}
 			}
 		}
@@ -584,6 +591,10 @@ public class GuiGuideBook extends GuiScreen {
 		fontRendererIn.drawStringWithShadow(text, (float) (x - fontRendererIn.getStringWidth(text) / 2), (float) y, color);
 	}
 
+	boolean equals(SavedTab a, SavedTab b) {
+		return a.page.getPage() == b.page.getPage() && a.page.getChapter() == b.page.getChapter() && a.page.getDivision() == b.page.getDivision() && a.state == b.state;
+	}
+
 	public class MenuItemsDivision {
 
 		@Getter
@@ -598,15 +609,58 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	public class SavedTabs {
+	public interface State {
 
-		@Setter
-		private int activeP;
-		public ArrayList<PageInformation> bookVariables;
+		int draw(Minecraft mc, int mouseX, int mouseY, int yOffset);
+	}
 
-		public SavedTabs() {
-			bookVariables = new ArrayList<>();
-			for (int i = 0; i < 10; i++) bookVariables.add(new PageInformation());
+	public class MenuState implements State {
+
+		public MenuState() {
+			super();
+		}
+
+		@Override
+		public int draw(Minecraft mc, int mouseX, int mouseY, int yOffset) {
+			int area$currentY = 0;
+			mouseX = mouseX < gui$x0 || mouseX > gui$x3 ? 0 : mouseX;
+			mouseY = mouseY < gui$y0 || mouseY > gui$y3 ? 0 : mouseY;
+			for (GuideBookContents.Division div : gbc.getDivisions()) {
+				drawMenuText(mc, area$x0, area$y0 + area$currentY + yOffset, area$acrossX, 19, div.getTitle());
+				area$currentY += 20;
+				for (int chapterIndex = 0; chapterIndex < div.getChapters().size(); chapterIndex++) {
+					divisionsList.get(div.getDindex()).getList().get(chapterIndex).drawMenuItem(mc, mouseX, mouseY, area$x0 + (chapterIndex % tile$max * (tile$size + tile$spacing)), area$y0 + area$currentY + yOffset, tile$size, tile$size, false);
+					int tileBottom = (area$y0 + area$currentY + yOffset + tile$size);
+					int maxBottom = area$y1;
+					boolean above = tileBottom > maxBottom;
+					divisionsList.get(div.getDindex()).getList().get(chapterIndex).drawTitle(mc, mouseX, mouseY, above);
+					if ((chapterIndex + 1) % tile$max == 0) area$currentY += tile$spacing + tile$size;
+					if (chapterIndex == div.getChapters().size() - 1) area$currentY += tile$size;
+				}
+			}
+			return area$currentY;
+		}
+	}
+
+	public class PageState implements State {
+
+		@Override
+		public int draw(Minecraft mc, int mouseX, int mouseY, int yOffset) {
+			String unformattedText = currentPage.page.getText();
+			ArrayList<String> text = StringUtils.splitLines(unformattedText, fontRenderer, area$acrossX);
+			int area$currentY = 0;
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0, 0, z$text);
+			for (String line : text) {
+				fontRenderer.drawString(line, area$x0, area$y0 + area$currentY + yOffset, 0xFFFFFF);
+				area$currentY += 10;
+			}
+			GlStateManager.popMatrix();
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0.0F, 0.0F, z$titleButtons);
+			drawPageCount();
+			GlStateManager.popMatrix();
+			return area$currentY;
 		}
 	}
 
@@ -614,24 +668,111 @@ public class GuiGuideBook extends GuiScreen {
 
 		@Getter
 		@Setter
-		int page, chapter, division;
+		GuideBookContents.Page page;
 		@Getter
 		@Setter
 		float progress;
 
-		public void nextPage(){
-			page++;
+		public int getIndex() {
+			return page.getIndex();
 		}
 
-		public void prevPage(){
-			page--;
+		public int getChapter() {
+			return page.getCindex();
+		}
+
+		public int getDivision() {
+			return page.getDindex();
+		}
+
+		public int getPageCount() {
+			return gbc.getDivision(page.getDindex()).getChapter(page.getCindex()).getNPages();
+		}
+
+		public void changePage(PageInformation pageInfo) {
+			this.page = pageInfo.page;
+			this.progress = pageInfo.progress;
+		}
+
+		public void set(SavedTab tab){
+			page = tab.page.page;
+			progress = tab.page.progress;
+			updateTitle();
+		}
+
+		public void set(MenuItem item) {
+			set(item.getChapter().getDindex(), item.getChapter().getCindex(), 0, 0.0F);
+		}
+
+		public void set(int dindex, int cindex, int index, float progress) {
+			this.page = gbc.getDivision(dindex).getChapter(cindex).getPage(index);
+			this.progress = progress;
+			updateTitle();
+		}
+
+		public void nextPage() {
+			page = gbc.getDivision(page.getDindex()).getChapter(page.getCindex()).getPage(page.getIndex() + 1);
+		}
+
+		public void prevPage() {
+			page = gbc.getDivision(page.getDindex()).getChapter(page.getCindex()).getPage(page.getIndex() - 1);
 		}
 
 		public PageInformation() {
-			page = 0;
-			chapter = 0;
-			division = -1;
+			page = new GuideBookContents.Page(-1, 0, 0, "");
 			progress = 0.0F;
+		}
+	}
+
+	public class SavedTab {
+
+		public GuiGuideBook.PageInformation page;
+		public GuiGuideBook.State state;
+		public int color;
+
+		public void setTab(GuiGuideBook.PageInformation page, GuiGuideBook.State state) {
+			this.page = page;
+			this.state = state;
+		}
+
+		public SavedTab(PageInformation page, State state) {
+			this.page = page;
+			this.state = state;
+			this.color = 0xFF0000;
+		}
+
+		public SavedTab() {
+			page = new PageInformation();
+			state = new PageState();
+			this.color = 0xFF0000;
+		}
+	}
+
+	public class SavedTabs {
+
+		public ArrayList<SavedTab> tabs;
+		private int maxTabs;
+
+		public boolean addTab(SavedTab tab) {
+			if (tabs.size() > maxTabs - 1) return false;
+			for (SavedTab setTab : tabs) {
+				if (equals(tab, setTab)) return false;
+			}
+			tabs.add(tab);
+			return true;
+		}
+
+		public void removeTab(int tabIndex) {
+			tabs.remove(tabIndex);
+		}
+
+		boolean equals(SavedTab a, SavedTab b) {
+			return a.page.getPage() == b.page.getPage() && a.page.getChapter() == b.page.getChapter() && a.page.getDivision() == b.page.getDivision() && a.state == b.state;
+		}
+
+		public SavedTabs(int maxTabs) {
+			tabs = new ArrayList<>();
+			this.maxTabs = maxTabs;
 		}
 	}
 }

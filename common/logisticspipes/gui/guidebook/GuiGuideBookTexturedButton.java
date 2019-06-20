@@ -87,7 +87,7 @@ public class GuiGuideBookTexturedButton extends GuiButton {
 	public void drawTexturedButtonForegroundLayer(Minecraft mc, int mouseX, int mouseY, ResourceLocation resource, int u0, int v0, int sizeX, int sizeY) {
 		if (visible) {
 			mc.getTextureManager().bindTexture(resource);
-			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height - 8;
+			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int i = (!this.hasDisabledState && this.hovered) || (this.hasDisabledState && this.enabled && hovered)? 1 : 0;
 			int j = (this.hasDisabledState && !this.enabled) ? 2 : 0;
 			int offSetX = (this.width - sizeX) / 2;

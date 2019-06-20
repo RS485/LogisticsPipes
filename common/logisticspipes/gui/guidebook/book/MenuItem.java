@@ -113,7 +113,7 @@ public class MenuItem {
 	}
 	public void drawTitle(Minecraft mc, int mouseX, int mouseY, boolean above){
 		if (hovering) {
-			GuiGuideBook.drawBoxedCenteredString(mc, chapter.getTitle(), mouseX, above?btn$y0-1:btn$y3+ 1, 20);
+			GuiGuideBook.drawBoxedCenteredString(mc, chapter.getTitle(), mouseX, above?btn$y0-19:btn$y3+ 1, 20);
 		}
 	}
 

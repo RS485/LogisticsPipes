@@ -26,15 +26,15 @@ public class ItemGuideBook extends LogisticsItem {
 		this.maxStackSize = 1;
 	}
 
-	public static void setCurrentPage(ItemStack stack, GuiGuideBook.PageInformation page, EnumHand hand) {
+	public static void setCurrentPage(ItemStack stack, GuiGuideBook.SavedTab page, EnumHand hand) {
 		if (!stack.isEmpty() && stack.getItem() == LPItems.itemGuideBook) {
 			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
 			tag.setFloat("sliderProgress", page.getProgress());
-			tag.setInteger("page", page.getIndex());
+			tag.setInteger("page", page.getPage());
 			tag.setInteger("chapter", page.getChapter());
 			tag.setInteger("division", page.getDivision());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
-					.setHand(hand).setSliderProgress(page.getProgress()).setPage(page.getIndex()).setChapter(page.getChapter()).setDivision(page.getDivision()));
+					.setHand(hand).setSliderProgress(page.getProgress()).setPage(page.getPage()).setChapter(page.getChapter()).setDivision(page.getDivision()));
 		}
 	}
 

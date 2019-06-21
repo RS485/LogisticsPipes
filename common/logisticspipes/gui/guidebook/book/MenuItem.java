@@ -1,7 +1,5 @@
 package logisticspipes.gui.guidebook.book;
 
-import java.util.ArrayList;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
@@ -17,36 +15,30 @@ import lombok.Getter;
 import logisticspipes.LPConstants;
 import logisticspipes.gui.guidebook.GuiGuideBook;
 import logisticspipes.utils.GuideBookContents;
-import logisticspipes.utils.string.StringUtils;
 
 public class MenuItem {
 
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	// Getting constants
-	private final int z$titleButtons = 15; // Title and Buttons Z
-	private final int z$frame = 10; // Frame Z
-	private final int z$text = 5;// Text/Information Z
-	private final int z$background = 0;  // Background Z
+	private final int zText = 5;
 
-	//// Information storage
+	// Information storage
 	@Getter
 	private GuideBookContents.Chapter chapter;
 
-	//// Drawing variables
-	public boolean visiible, hovering, enabled;
-	private int btn$bgX0, btn$bgY0, btn$bgX1, btn$bgY1;
-	private int btn$x0, btn$y0, btn$x1, btn$y1, btn$x2, btn$y2, btn$x3, btn$y3;
+	// Drawing variables
+	public boolean visible, hovering, enabled;
+	private int btnBgX0, btnBgY0, btnBgX1, btnBgY1;
+	private int btnX0, btnY0, btnX1, btnY1, btnX2, btnY2, btnX3, btnY3;
 
-	//// Atlas
-	// Btn
-	private final int atlas$btn$bgU0 = 64, atlas$btn$bgV0 = 32, atlas$btn$bgU1 = 96, atlas$btn$bgV1 = 64;
-	private final int atlas$btn$u0 = 0, atlas$btn$v0 = 64, atlas$btn$u1 = 2, atlas$btn$v1 = 66, atlas$btn$u2 = 14, atlas$btn$v2 = 78, atlas$btn$u3 = 16, atlas$btn$v3 = 80;
+	// Button atlas
+	private final int btnBgAtlasU0 = 64, btnBgAtlasV0 = 32, btnBgAtlasU1 = 96, btnBgAtlasV1 = 64;
+	private final int btnAtlasU0 = 0, btnAtlasV0 = 64, btnAtlasU1 = 2, btnAtlasV1 = 66, btnAtlasU2 = 14, btnAtlasV2 = 78, btnAtlasU3 = 16, btnAtlasV3 = 80;
 
 	public MenuItem(GuideBookContents.Chapter chapter) {
 		this.chapter = chapter;
-		//// Drawing stuff
-		this.visiible = true;
+		this.visible = true;
 		this.hovering = false;
 		this.enabled = true;
 	}
@@ -63,7 +55,7 @@ public class MenuItem {
 		icon$offSetX = (sizeX - icon$sizeX) / 2;
 		icon$offSetY = (sizeY - icon$sizeY) / 2;
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(x + icon$offSetX, y + icon$offSetY, z$text);
+		GlStateManager.translate(x + icon$offSetX, y + icon$offSetY, zText);
 		GlStateManager.scale(icon$scaleX, icon$scaleY, 0);
 		RenderHelper.enableGUIStandardItemLighting();
 		mc.getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(chapter.getItem()))), 0, 0);
@@ -75,45 +67,46 @@ public class MenuItem {
 	public void drawMenuItemFrame(Minecraft mc, int mouseX, int mouseY, int x, int y, int sizeX, int sizeY) {
 		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
 		{
-			btn$bgX0 = x + 1;
-			btn$bgY0 = y + 1;
-			btn$bgX1 = x + sizeX - 1;
-			btn$bgY1 = y + sizeY - 1;
-			btn$x0 = x;
-			btn$y0 = y;
-			btn$x1 = x + 2;
-			btn$y1 = y + 2;
-			btn$x2 = x + sizeX - 2;
-			btn$y2 = y + sizeY - 2;
-			btn$x3 = x + sizeX;
-			btn$y3 = y + sizeY;
+			btnBgX0 = x + 1;
+			btnBgY0 = y + 1;
+			btnBgX1 = x + sizeX - 1;
+			btnBgY1 = y + sizeY - 1;
+			btnX0 = x;
+			btnY0 = y;
+			btnX1 = x + 2;
+			btnY1 = y + 2;
+			btnX2 = x + sizeX - 2;
+			btnY2 = y + sizeY - 2;
+			btnX3 = x + sizeX;
+			btnY3 = y + sizeY;
 		}
 		this.hovering = mouseX >= x && mouseX <= x + sizeX && mouseY >= y && mouseY <= y + sizeY;
 		int i = this.hovering ? 1 : 0;
 		int j = this.enabled ? 1 : 2;
-		if (visiible) {
+		if (visible) {
 			// Fill: Middle
-			GuiGuideBook.drawRepeatingSquare(btn$bgX0, btn$bgY0, btn$bgX1, btn$bgY1, z$text - 1, atlas$btn$bgU0, atlas$btn$bgV0 + (i * j * 32), atlas$btn$bgU1, atlas$btn$bgV1 + (i * j * 32), false);
+			GuiGuideBook.drawRepeatingSquare(btnBgX0, btnBgY0, btnBgX1, btnBgY1, zText - 1, btnBgAtlasU0, btnBgAtlasV0 + (i * j * 32), btnBgAtlasU1, btnBgAtlasV1 + (i * j * 32), false);
 			// Corners: TopLeft, TopRight, BottomLeft & BottomRight
-			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y0, btn$x1, btn$y1, z$text, atlas$btn$u0, atlas$btn$v0 + (i * j * 16), atlas$btn$u1, atlas$btn$v1 + (i * j * 16));
-			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y0, btn$x3, btn$y1, z$text, atlas$btn$u2, atlas$btn$v0 + (i * j * 16), atlas$btn$u3, atlas$btn$v1 + (i * j * 16));
-			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y2, btn$x1, btn$y3, z$text, atlas$btn$u0, atlas$btn$v2 + (i * j * 16), atlas$btn$u1, atlas$btn$v3 + (i * j * 16));
-			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y2, btn$x3, btn$y3, z$text, atlas$btn$u2, atlas$btn$v2 + (i * j * 16), atlas$btn$u3, atlas$btn$v3 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX0, btnY0, btnX1, btnY1, zText, btnAtlasU0, btnAtlasV0 + (i * j * 16), btnAtlasU1, btnAtlasV1 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX2, btnY0, btnX3, btnY1, zText, btnAtlasU2, btnAtlasV0 + (i * j * 16), btnAtlasU3, btnAtlasV1 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX0, btnY2, btnX1, btnY3, zText, btnAtlasU0, btnAtlasV2 + (i * j * 16), btnAtlasU1, btnAtlasV3 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX2, btnY2, btnX3, btnY3, zText, btnAtlasU2, btnAtlasV2 + (i * j * 16), btnAtlasU3, btnAtlasV3 + (i * j * 16));
 			// Edges: Top, Bottom, Left & Right
-			GuiGuideBook.drawStretchingSquare(btn$x1, btn$y0, btn$x2, btn$y1, z$text, atlas$btn$u1, atlas$btn$v0 + (i * j * 16), atlas$btn$u2, atlas$btn$v1 + (i * j * 16));
-			GuiGuideBook.drawStretchingSquare(btn$x1, btn$y2, btn$x2, btn$y3, z$text, atlas$btn$u1, atlas$btn$v2 + (i * j * 16), atlas$btn$u2, atlas$btn$v3 + (i * j * 16));
-			GuiGuideBook.drawStretchingSquare(btn$x0, btn$y1, btn$x1, btn$y2, z$text, atlas$btn$u0, atlas$btn$v1 + (i * j * 16), atlas$btn$u1, atlas$btn$v2 + (i * j * 16));
-			GuiGuideBook.drawStretchingSquare(btn$x2, btn$y1, btn$x3, btn$y2, z$text, atlas$btn$u2, atlas$btn$v1 + (i * j * 16), atlas$btn$u3, atlas$btn$v2 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX1, btnY0, btnX2, btnY1, zText, btnAtlasU1, btnAtlasV0 + (i * j * 16), btnAtlasU2, btnAtlasV1 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX1, btnY2, btnX2, btnY3, zText, btnAtlasU1, btnAtlasV2 + (i * j * 16), btnAtlasU2, btnAtlasV3 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX0, btnY1, btnX1, btnY2, zText, btnAtlasU0, btnAtlasV1 + (i * j * 16), btnAtlasU1, btnAtlasV2 + (i * j * 16));
+			GuiGuideBook.drawStretchingSquare(btnX2, btnY1, btnX3, btnY2, zText, btnAtlasU2, btnAtlasV1 + (i * j * 16), btnAtlasU3, btnAtlasV2 + (i * j * 16));
 		}
 
 	}
 
-	public void drawTitle(Minecraft mc, int mouseX, int mouseY){
+	public void drawTitle(Minecraft mc, int mouseX, int mouseY) {
 		drawTitle(mc, mouseX, mouseY, false);
 	}
-	public void drawTitle(Minecraft mc, int mouseX, int mouseY, boolean above){
+
+	public void drawTitle(Minecraft mc, int mouseX, int mouseY, boolean above) {
 		if (hovering) {
-			GuiGuideBook.drawBoxedCenteredString(mc, chapter.getTitle(), mouseX, above?btn$y0-19:btn$y3+ 1, 20);
+			GuiGuideBook.drawBoxedCenteredString(mc, chapter.getTitle(), mouseX, above ? btnY0 - 19 : btnY3 + 1, 20);
 		}
 	}
 

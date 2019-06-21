@@ -678,4 +678,50 @@ public class LPDataIOWrapperTest {
 			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});
 	}
+
+	@org.junit.jupiter.api.Test
+	public void testUTFArray() {
+		String value1 = "◘ËTest♀StringßüöäÜÖÄ";
+		String value2 = "◘ËTest♀TESTpartßüöäÜÖÄ";
+		String[] array = new String[2];
+		array[0] = value1;
+		array[1] = value2;
+
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeUTFArray(array));
+
+		LPDataIOWrapper.provideData(data, input -> {
+			assertArrayEquals(array, input.readUTFArray());
+
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
+		});
+	}
+
+	@org.junit.jupiter.api.Test
+	public void testNullUTFArray() {
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeUTFArray(null));
+
+		LPDataIOWrapper.provideData(data, input -> {
+			assertNull(input.readUTFArray());
+
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
+		});
+	}
+
+	@org.junit.jupiter.api.Test
+	public void testUTFArrayNull() {
+		String value1 = "◘ËTest♀StringßüöäÜÖÄ";
+		String value2 = null;
+		String[] array = new String[2];
+		array[0] = value1;
+		array[1] = value2;
+
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeUTFArray(array));
+
+		LPDataIOWrapper.provideData(data, input -> {
+			assertArrayEquals(array, input.readUTFArray());
+
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
+		});
+	}
+
 }

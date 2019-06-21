@@ -10,10 +10,12 @@ package logisticspipes.gui;
 
 import logisticspipes.LPItems;
 import logisticspipes.gui.modules.ModuleBaseGui;
+import logisticspipes.gui.popup.GuiSelectSatellitePopup;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.cpipe.CPipeCleanupImport;
 import logisticspipes.network.packets.cpipe.CPipeCleanupToggle;
+import logisticspipes.network.packets.pipe.CraftingPipeSetSatellitePacket;
 import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
 import logisticspipes.pipes.upgrades.CraftingCleanupUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
@@ -27,11 +29,13 @@ import logisticspipes.utils.string.StringUtils;
 import lombok.Getter;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -129,7 +133,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		inventorySlots = dummy;
 		_pipe = module;
 		_pipe.setFluidAmount(amount);
-		normalButtonArray = new GuiButton[8];
+		normalButtonArray = new GuiButton[7];
 		advancedSatButtonArray = new GuiButton[9][2];
 		for (int i = 0; i < 9; i++) {
 			advancedSatButtonArray[i] = new GuiButton[2];
@@ -146,25 +150,22 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			if (liquidCrafter != 0) {
 				extention = new FluidCraftingExtention(0);
 			}
-			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 155, (height - ySize) / 2 + 50, 10, 10, ">"));
-			addButton(normalButtonArray[1] = new SmallGuiButton(1, (width - xSize) / 2 + 120, (height - ySize) / 2 + 50, 10, 10, "<"));
-			addButton(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
-			addButton(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
-			addButton(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
-			addButton(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
+			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 125, (height - ySize) / 2 + 57, 37, 10, StringUtils.translate(PREFIX + "Select")));
+			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
+			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
+			addButton(normalButtonArray[3] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
+			addButton(normalButtonArray[4] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
 			if (liquidCrafter != 0) {
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[6] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 + 5, guiTop + 158, 10, 10, ">"))));
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[7] = new SmallGuiButton(23, guiLeft - (liquidCrafter * 40) / 2 - 15, guiTop + 158, 10, 10, "<"))));
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[5] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 - 18, guiTop + 158, 37, 10, StringUtils.translate(PREFIX + "Select")))));
 			}
 		} else {
 			for (int i = 0; i < 9; i++) {
-				addButton(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 40, 15, 10, "/\\"));
-				addButton(advancedSatButtonArray[i][1] = new SmallGuiButton(40 + i, (width - xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 70, 15, 10, "\\/"));
+				addButton(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 9 + 18 * i, (height - ySize) / 2 + 75, 17, 10, StringUtils.translate(PREFIX + "Sel")));
 			}
-			addButton(normalButtonArray[2] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
-			addButton(normalButtonArray[3] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
-			addButton(normalButtonArray[4] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 105, 10, 10, ">"));
-			addButton(normalButtonArray[5] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 105, 10, 10, "<"));
+			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
+			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
+			addButton(normalButtonArray[3] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 105, 10, 10, ">"));
+			addButton(normalButtonArray[4] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 105, 10, 10, "<"));
 		}
 		for (int i = 0; i < liquidCrafter; i++) {
 			if (isAdvancedSat) {
@@ -186,8 +187,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
 			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
 			if (isAdvancedSat) {
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 5, guiTop + 158, 10, 10, "<"))));
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][9] = new SmallGuiButton(100 + 10 * i + 9, liquidLeft + 25, guiTop + 158, 10, 10, ">"))));
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 2, guiTop + 160, 37, 10, StringUtils.translate(PREFIX + "Select")))));
 				extentionControllerLeft.addExtention(extention);
 			}
 			extention.registerSlot(fluidSlotIDs[i]);
@@ -219,17 +219,14 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 		 */
 		if (30 <= guibutton.id && guibutton.id < 40) {
-			_pipe.setNextSatellite(_player, guibutton.id - 30);
-		}
-		if (40 <= guibutton.id && guibutton.id < 50) {
-			_pipe.setPrevSatellite(_player, guibutton.id - 40);
+			openSubGuiForSatelliteSelection(10 + (guibutton.id - 30));
 		}
 		if (100 <= guibutton.id && guibutton.id < 200) {
 			int i = guibutton.id - 100;
 			int action = i % 10;
 			i -= action;
 			i /= 10;
-			if (action >= 0 && action < 8) {
+			if (action < 8) {
 				int amount = 0;
 				switch (action) {
 					case 0:
@@ -261,23 +258,13 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				}
 				_pipe.changeFluidAmount(amount, i, _player);
 			} else if (action == 8) {
-				_pipe.setPrevFluidSatellite(_player, i);
-			} else if (action == 9) {
-				_pipe.setNextFluidSatellite(_player, i);
+				openSubGuiForSatelliteSelection(110 + i);
 			}
 		}
 		switch (guibutton.id) {
 			case 0:
-				_pipe.setNextSatellite(_player);
+				openSubGuiForSatelliteSelection(0);
 				return;
-			case 1:
-				_pipe.setPrevSatellite(_player);
-				return;
-				/*
-				case 2:
-					_logic.paintPathToSatellite();
-					return;
-				 */
 			case 3:
 				_pipe.importFromCraftingTable(_player);
 				return;
@@ -292,10 +279,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				_pipe.priorityDown(_player);
 				return;
 			case 22:
-				_pipe.setNextFluidSatellite(_player, -1);
-				return;
-			case 23:
-				_pipe.setPrevFluidSatellite(_player, -1);
+				openSubGuiForSatelliteSelection(100);
 				return;
 			case 24:
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupToggle.class).setModulePos(_pipe));
@@ -307,6 +291,13 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				super.actionPerformed(guibutton);
 				return;
 		}
+	}
+
+	private void openSubGuiForSatelliteSelection(int id) {
+		this.setSubGui(new GuiSelectSatellitePopup(new BlockPos(this._pipe.getX(), this._pipe.getY(), this._pipe.getZ()), false, uuid ->
+				MainProxy.sendPacketToServer(
+						PacketHandler.getPacket(CraftingPipeSetSatellitePacket.class).setPipeID(uuid).setInteger(id).setModulePos(this.module)))
+		);
 	}
 
 	@Override
@@ -324,19 +315,27 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		if (!isAdvancedSat) {
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 40, 0x404040);
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Satellite"), 123, 7, 0x404040);
-			if (_pipe.satelliteId == 0) {
-				mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 135, 52, 0x404040);
+			if (_pipe.clientSideSatelliteNames.satelliteName.isEmpty()) {
+				mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 135, 43, 0x404040);
 			} else {
-				mc.fontRenderer.drawString("" + _pipe.satelliteId, 146 - mc.fontRenderer.getStringWidth("" + _pipe.satelliteId), 52, 0x404040);
+				String name = _pipe.clientSideSatelliteNames.satelliteName;
+				name = StringUtils.getCuttedString(name, 55, mc.fontRenderer);
+				mc.fontRenderer.drawString(name, 143 - (mc.fontRenderer.getStringWidth(name) / 2), 43, 0x404040);
 			}
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 75, 0x404040);
 			mc.fontRenderer.drawString("" + _pipe.priority, 143 - (mc.fontRenderer.getStringWidth("" + _pipe.priority) / 2), 87, 0x404040);
 		} else {
 			for (int i = 0; i < 9; i++) {
-				if (_pipe.advancedSatelliteIdArray[i] == 0) {
-					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 10 + (i * 18), 57, 0x404040);
+				if (_pipe.clientSideSatelliteNames.advancedSatelliteNameArray[i].isEmpty()) {
+					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 9 + (i * 18), 57, 0x404040);
 				} else {
-					mc.fontRenderer.drawString("" + _pipe.advancedSatelliteIdArray[i], 20 - mc.fontRenderer.getStringWidth("" + _pipe.advancedSatelliteIdArray[i]) + (i * 18), 57, 0x404040);
+					String name = _pipe.clientSideSatelliteNames.advancedSatelliteNameArray[i];
+					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(20 + (i * 18), 39, 0);
+					GlStateManager.rotate(90, 0, 0, 1);
+					mc.fontRenderer.drawString(name, 0, 0, 0x404040);
+					GL11.glPopMatrix();
 				}
 			}
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 90, 0x404040);
@@ -427,7 +426,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 						int liquidLeft = left + i * 40;
 						renderFluidText(liquidLeft, top, i);
 					}
-					if (_pipe.liquidSatelliteId == 0) {
+					if (_pipe.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) {
 						Gui.drawRect(left + 3, top + 3, left + 3 + (liquidCrafter * 40), top + 138, 0xAA8B8B8B);
 						mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
 						for (int i = 0; i < liquidCrafter; i++) {
@@ -436,7 +435,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 							}
 						}
 					} else {
-						mc.fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), left + (liquidCrafter * 40) / 2 + 3 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), top + 145, 0x404040);
+						mc.fontRenderer.drawString(_pipe.clientSideSatelliteNames.liquidSatelliteName, left + (liquidCrafter * 40) / 2 + 3 - (fontRenderer.getStringWidth(_pipe.clientSideSatelliteNames.liquidSatelliteName) / 2), top + 145, 0x404040);
 						for (int i = 0; i < liquidCrafter; i++) {
 							for (int j = 0; j < 8; j++) {
 								liquidGuiParts[i][j].enabled = true;
@@ -457,21 +456,23 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			mc.fontRenderer.drawString("100", left + 13, top + 93, 0x404040);
 			mc.fontRenderer.drawString("1000", left + 10, top + 113, 0x404040);
 			if (isAdvancedSat) {
-				if (_pipe.liquidSatelliteIdArray[i] == 0) {
+				if (_pipe.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()) {
 					Gui.drawRect(left + 3, top + 3, left + 42, top + 138, 0xAA8B8B8B);
 					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), left + 15, top + 146, 0x404040);
 					for (int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
 				} else {
-					mc.fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), top + 146, 0x404040);
+					String name = _pipe.clientSideSatelliteNames.liquidSatelliteNameArray[i];
+					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
+					mc.fontRenderer.drawString(name, left + 22 - (fontRenderer.getStringWidth(name) / 2), top + 146, 0x404040);
 					for (int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = true;
 					}
 				}
 				Gui.drawRect(left + 3, top + 138, left + 42, top + 139, 0xff8B8B8B);
 			}
-			if (_pipe.getFluidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _pipe.liquidSatelliteId == 0) || (isAdvancedSat && _pipe.liquidSatelliteIdArray[i] == 0))) {
+			if (_pipe.getFluidInventory().getStackInSlot(i).isEmpty() && !((!isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) || (isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()))) {
 				Gui.drawRect(left + 3, top + 50, left + 42, top + 138, 0xAA8B8B8B);
 				for (int j = 0; j < 8; j++) {
 					liquidGuiParts[i][j].enabled = false;
@@ -481,9 +482,11 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 
 		@Override
 		public boolean renderSelectSlot(int slotId) {
+			/*
 			if ((isAdvancedSat && _pipe.liquidSatelliteIdArray[id] == 0) || (!isAdvancedSat && _pipe.liquidSatelliteId == 0)) {
 				return false;
 			}
+			*/
 			return super.renderSelectSlot(slotId);
 		}
 	}

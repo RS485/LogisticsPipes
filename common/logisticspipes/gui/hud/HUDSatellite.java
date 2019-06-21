@@ -95,12 +95,14 @@ public class HUDSatellite extends BasicHUDGui {
 
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			String message;
+			/*
 			if (pipe1 != null) {
 				message = "ID: " + Integer.toString(pipe1.satelliteId);
 			} else {
 				message = "ID: " + Integer.toString(pipe2.satelliteId);
 			}
 			mc.fontRenderer.drawString(message, -28, -28, 0);
+			 */
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 			GL11.glScalef(0.8F, 0.8F, -1F);
@@ -123,6 +125,7 @@ public class HUDSatellite extends BasicHUDGui {
 			super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 
 			GL11.glScalef(3F, 3F, 0.0001F);
+			/*
 			String message;
 			if (pipe1 != null) {
 				message = Integer.toString(pipe1.satelliteId);
@@ -130,6 +133,7 @@ public class HUDSatellite extends BasicHUDGui {
 				message = Integer.toString(pipe2.satelliteId);
 			}
 			mc.fontRenderer.drawString(message, -(mc.fontRenderer.getStringWidth(message) / 2), -4, 0);
+			 */
 		}
 	}
 

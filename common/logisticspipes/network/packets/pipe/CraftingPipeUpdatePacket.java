@@ -23,19 +23,19 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
-	private int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
+	private String[] liquidSatelliteNameArray = new String[ItemUpgrade.MAX_LIQUID_CRAFTER];
 
 	@Getter
 	@Setter
-	private int liquidSatelliteId = 0;
+	private String liquidSatelliteName = "";
 
 	@Getter
 	@Setter
-	private int satelliteId = 0;
+	private String satelliteName = "";
 
 	@Getter
 	@Setter
-	private int[] advancedSatelliteIdArray = new int[9];
+	private String[] advancedSatelliteNameArray = new String[9];
 
 	@Getter
 	@Setter
@@ -58,10 +58,10 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeIntArray(amount);
-		output.writeIntArray(liquidSatelliteIdArray);
-		output.writeInt(liquidSatelliteId);
-		output.writeInt(satelliteId);
-		output.writeIntArray(advancedSatelliteIdArray);
+		output.writeUTFArray(liquidSatelliteNameArray);
+		output.writeUTF(liquidSatelliteName);
+		output.writeUTF(satelliteName);
+		output.writeUTFArray(advancedSatelliteNameArray);
 		output.writeInt(priority);
 	}
 
@@ -69,10 +69,10 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		amount = input.readIntArray();
-		liquidSatelliteIdArray = input.readIntArray();
-		liquidSatelliteId = input.readInt();
-		satelliteId = input.readInt();
-		advancedSatelliteIdArray = input.readIntArray();
+		liquidSatelliteNameArray = input.readUTFArray();
+		liquidSatelliteName = input.readUTF();
+		satelliteName = input.readUTF();
+		advancedSatelliteNameArray = input.readUTFArray();
 		priority = input.readInt();
 	}
 

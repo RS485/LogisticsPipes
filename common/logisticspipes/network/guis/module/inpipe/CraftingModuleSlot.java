@@ -68,7 +68,7 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 			return null;
 		}
 		MainProxy.sendPacketToPlayer(module.getCPipePacket(), player);
-		DummyContainer dummy = new DummyContainer(player.inventory, module.getDummyInventory());
+		DummyContainer dummy = new DummyContainer(player, module.getDummyInventory(), module);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots
 		for (int l = 0; l < 9; l++) {

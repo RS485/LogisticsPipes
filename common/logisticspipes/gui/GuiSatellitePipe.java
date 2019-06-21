@@ -10,25 +10,29 @@ package logisticspipes.gui;
 
 import java.io.IOException;
 
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.satpipe.SatelliteSetNamePacket;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	private PipeItemsSatelliteLogistics _satellite;
 	private PipeFluidSatellite _liquidSatellite;
 	private EntityPlayer _player;
+	private InputBar input;
 
-	public GuiSatellitePipe(PipeItemsSatelliteLogistics satellite, EntityPlayer player) {
+	private GuiSatellitePipe(EntityPlayer player) {
 		super(new Container() {
 
 			@Override
@@ -36,79 +40,79 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 				return true;
 			}
 		});
-		_satellite = satellite;
 		_player = player;
 		xSize = 116;
-		ySize = 70;
+		ySize = 77;
+	}
+
+	public GuiSatellitePipe(PipeItemsSatelliteLogistics satellite, EntityPlayer player) {
+		this(player);
+		_satellite = satellite;
 	}
 
 	public GuiSatellitePipe(PipeFluidSatellite satellite, EntityPlayer player) {
-		super(new Container() {
-
-			@Override
-			public boolean canInteractWith(EntityPlayer entityplayer) {
-				return true;
-			}
-		});
+		this(player);
 		_liquidSatellite = satellite;
-		_player = player;
-		xSize = 116;
-		ySize = 70;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-
-		buttonList.add(new GuiButton(0, (width / 2) - (30 / 2) + 35, (height / 2) - (20 / 2), 30, 20, "+"));
-		buttonList.add(new GuiButton(1, (width / 2) - (30 / 2) - 35, (height / 2) - (20 / 2), 30, 20, "-"));
+		buttonList.add(new SmallGuiButton(0, (width / 2) - (30 / 2) + 35, (height / 2) + 20, 30, 10, "Save"));
+		input = new InputBar(fontRenderer, this, guiLeft + 8, guiTop + 40, 100, 16);
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (_satellite != null) {
 			if (guibutton.id == 0) {
-				_satellite.setNextId(_player);
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.input1 + input.input2).setTilePos(_satellite.getContainer()));
+			} else {
+				super.actionPerformed(guibutton);
 			}
-
-			if (guibutton.id == 1) {
-				_satellite.setPrevId(_player);
-			}
-			super.actionPerformed(guibutton);
 		} else if (_liquidSatellite != null) {
 			if (guibutton.id == 0) {
-				_liquidSatellite.setNextId(_player);
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.input1 + input.input2).setTilePos(_liquidSatellite.getContainer()));
+			} else {
+				super.actionPerformed(guibutton);
 			}
-
-			if (guibutton.id == 1) {
-				_liquidSatellite.setPrevId(_player);
-			}
-			super.actionPerformed(guibutton);
 		}
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRenderer.drawString(StringUtils.translate("gui.satellite.SatelliteID"), 33, 10, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.translate("gui.satellite.SatelliteName"), 33, 10, 0x404040);
+		String name = "";
 		if (_satellite != null) {
-			mc.fontRenderer.drawString(_satellite.satelliteId + "", 59 - mc.fontRenderer.getStringWidth(_satellite.satelliteId + "") / 2, 31, 0x404040);
+			name = StringUtils.getCuttedString(_satellite.satellitePipeName, 100, mc.fontRenderer);
 		}
 		if (_liquidSatellite != null) {
-			mc.fontRenderer.drawString(_liquidSatellite.satelliteId + "", 59 - mc.fontRenderer.getStringWidth(_liquidSatellite.satelliteId + "") / 2, 31, 0x404040);
+			name = StringUtils.getCuttedString(_liquidSatellite.satellitePipeName, 100, mc.fontRenderer);
 		}
+		mc.fontRenderer.drawString(name, 59 - mc.fontRenderer.getStringWidth(name) / 2, 24, 0x404040);
 	}
-
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/satellite.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(GuiSatellitePipe.TEXTURE);
-		int j = guiLeft;
-		int k = guiTop;
-		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-
+		super.drawGuiContainerBackgroundLayer(f, x, y);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		input.renderSearchBar();
 	}
+
+	@Override
+	protected void mouseClicked(int x, int y, int k) throws IOException {
+		if(!input.handleClick(x, y, k)) {
+			super.mouseClicked(x, y, k);
+		}
+	}
+
+	@Override
+	public void keyTyped(char c, int i) throws IOException {
+		if(!input.handleKey(c, i)) {
+			super.keyTyped(c, i);
+		}
+	}
+
 }

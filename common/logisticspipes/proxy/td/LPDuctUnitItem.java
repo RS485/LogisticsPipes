@@ -27,6 +27,9 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LPDuctUnitItem extends DuctUnitItem {
 
@@ -41,11 +44,16 @@ public class LPDuctUnitItem extends DuctUnitItem {
         EnumFacing dir = EnumFacing.getFront(paramInt);
 
         AxisAlignedBB aabb = PIPE_CONN_BB.get(paramInt);
-        if(SimpleServiceLocator.mcmpProxy.checkIntersectionWith(pipe, aabb)) {
+        if (SimpleServiceLocator.mcmpProxy.checkIntersectionWith(pipe, aabb)) {
             return true;
         }
 
-        if(pipe.getTileCache()[dir.ordinal()].getTile() instanceof LogisticsTileGenericPipe) {
+        if (pipe.getTileCache() == null) {
+			DoubleCoordinates coords = new DoubleCoordinates(pipe.getTile().getPos());
+        	if (CoordinateUtils.add(coords, dir, 1).getTileEntity(pipe.getWorld()) instanceof LogisticsTileGenericPipe) {
+        		return true;
+			}
+		} else if (pipe.getTileCache()[dir.ordinal()].getTile() instanceof LogisticsTileGenericPipe) {
         	return true;
 		}
 

@@ -125,6 +125,9 @@ public interface LPDataInput {
 	boolean[] readBooleanArray();
 
 	@Nullable
+	String[] readUTFArray();
+
+	@Nullable
 	int[] readIntArray();
 
 	@Nonnull

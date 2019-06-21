@@ -23,13 +23,12 @@ import logisticspipes.modules.ModuleSatellite;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
-import logisticspipes.network.packets.satpipe.SatPipeNext;
-import logisticspipes.network.packets.satpipe.SatPipePrev;
-import logisticspipes.network.packets.satpipe.SatPipeSetID;
+import logisticspipes.network.packets.satpipe.SyncSatelliteNamePacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
@@ -45,12 +44,27 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.EnumFacing;
 
+import lombok.Getter;
+
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
+
+	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<>());;
+
+	// called only on server shutdown
+	public static void cleanup() {
+		PipeItemsSatelliteLogistics.AllSatellites.clear();
+	}
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
+	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
+
+	//public int satelliteId;
+	@Getter
+	public String satellitePipeName = "";
+
 
 	public PipeItemsSatelliteLogistics(Item item) {
 		super(item);
@@ -125,7 +139,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if (mode == 1) {
 			localModeWatchers.add(player);
-			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToPlayer(packet, player);
 			updateInv(true);
 		} else {
@@ -150,92 +164,40 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		return HUD;
 	}
 
-	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<>());;
-
-	// called only on server shutdown
-	public static void cleanup() {
-		PipeItemsSatelliteLogistics.AllSatellites.clear();
-	}
-
-	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
-
-	public int satelliteId;
-
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-		satelliteId = nbttagcompound.getInteger("satelliteid");
+		if (nbttagcompound.hasKey("satelliteid")) {
+			int satelliteId = nbttagcompound.getInteger("satelliteid");
+			satellitePipeName = Integer.toString(satelliteId);
+		} else {
+			satellitePipeName = nbttagcompound.getString("satellitePipeName");
+		}
 		ensureAllSatelliteStatus();
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("satelliteid", satelliteId);
+		nbttagcompound.setString("satellitePipeName", satellitePipeName);
 		super.writeToNBT(nbttagcompound);
-	}
-
-	protected int findId(int increment) {
-		if (MainProxy.isClient(getWorld())) {
-			return satelliteId;
-		}
-		int potentialId = satelliteId;
-		boolean conflict = true;
-		while (conflict) {
-			potentialId += increment;
-			if (potentialId < 0) {
-				return 0;
-			}
-			conflict = false;
-			for (final PipeItemsSatelliteLogistics sat : PipeItemsSatelliteLogistics.AllSatellites) {
-				if (sat.satelliteId == potentialId) {
-					conflict = true;
-					break;
-				}
-			}
-		}
-		return potentialId;
 	}
 
 	protected void ensureAllSatelliteStatus() {
 		if (MainProxy.isClient()) {
 			return;
 		}
-		if (satelliteId == 0 && PipeItemsSatelliteLogistics.AllSatellites.contains(this)) {
+		if (satellitePipeName.isEmpty()) {
 			PipeItemsSatelliteLogistics.AllSatellites.remove(this);
 		}
-		if (satelliteId != 0 && !PipeItemsSatelliteLogistics.AllSatellites.contains(this)) {
+		if (!satellitePipeName.isEmpty()) {
 			PipeItemsSatelliteLogistics.AllSatellites.add(this);
 		}
 	}
 
-	public void setNextId(EntityPlayer player) {
-		satelliteId = findId(1);
-		ensureAllSatelliteStatus();
-		if (MainProxy.isClient(player.world)) {
-			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToServer(packet);
-		} else {
-			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, player);
-		}
-		updateWatchers();
-	}
-
-	public void setPrevId(EntityPlayer player) {
-		satelliteId = findId(-1);
-		ensureAllSatelliteStatus();
-		if (MainProxy.isClient(player.world)) {
-			final ModernPacket packet = PacketHandler.getPacket(SatPipePrev.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToServer(packet);
-		} else {
-			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, player);
-		}
-		updateWatchers();
-	}
-
 	private void updateWatchers() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), ((PipeItemsSatelliteLogistics) container.pipe).localModeWatchers);
+		CoordinatesPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setTilePos(this.getContainer());
+		MainProxy.sendToPlayerList(packet, localModeWatchers);
+		MainProxy.sendPacketToAllWatchingChunk(this.getContainer(), packet);
 	}
 
 	@Override
@@ -243,15 +205,13 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
-		if (PipeItemsSatelliteLogistics.AllSatellites.contains(this)) {
-			PipeItemsSatelliteLogistics.AllSatellites.remove(this);
-		}
+		PipeItemsSatelliteLogistics.AllSatellites.remove(this);
 	}
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		// Send the satellite id when opening gui
-		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+		final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 		MainProxy.sendPacketToPlayer(packet, entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatellitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
@@ -284,8 +244,11 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	@Override
 	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {}
 
-	public void setSatelliteId(int integer) {
-		satelliteId = integer;
+	public void setSatelliteName(String name) {
+		satellitePipeName = name;
+		if (MainProxy.isServer(this.getWorld())) {
+			updateWatchers();
+		}
+		ensureAllSatelliteStatus();
 	}
-
 }

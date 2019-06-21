@@ -92,9 +92,10 @@ public class CraftingPipeSign implements IPipeSign {
 
 				var17.drawString("ID: " + String.valueOf(Item.getIdFromItem(item)), -var17.getStringWidth("ID: " + String.valueOf(Item.getIdFromItem(item))) / 2, 0 * 10 - 4 * 5, 0);
 				ModuleCrafter logisticsMod = cpipe.getLogisticsModule();
-				if (logisticsMod.satelliteId != 0) {
+				/*if (logisticsMod.satelliteId != 0) {
 					var17.drawString("Sat ID: " + String.valueOf(logisticsMod.satelliteId), -var17.getStringWidth("Sat ID: " + String.valueOf(logisticsMod.satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
 				}
+				*/
 			} else {
 				GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.translate(0.5F, +0.08F, 0.0F);

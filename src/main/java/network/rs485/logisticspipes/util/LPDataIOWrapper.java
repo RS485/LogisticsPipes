@@ -303,6 +303,18 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
+	public void writeUTFArray(@Nullable String[] arr) {
+		if (arr == null) {
+			writeInt(-1);
+		} else {
+			writeInt(arr.length);
+			for (String s : arr) {
+				writeUTF(s);
+			}
+		}
+	}
+
+	@Override
 	public void writeIntArray(@Nullable int[] arr) {
 		if (arr == null) {
 			writeInt(-1);
@@ -541,6 +553,19 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 		final boolean[] arr = new boolean[bitCount];
 		IntStream.range(0, bitCount).forEach(i -> arr[i] = bits.get(i));
+		return arr;
+	}
+
+	@Nullable
+	@Override
+	public String[] readUTFArray() {
+		final int length = localBuffer.readInt();
+		if (length == -1) {
+			return null;
+		}
+
+		final String[] arr = new String[length];
+		IntStream.range(0, length).forEach(i -> arr[i] = readUTF());
 		return arr;
 	}
 

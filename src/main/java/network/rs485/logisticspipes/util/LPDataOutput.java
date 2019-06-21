@@ -115,6 +115,8 @@ public interface LPDataOutput {
 
 	void writeBooleanArray(@Nullable boolean[] arr);
 
+	void writeUTFArray(@Nullable String[] arr);
+
 	void writeFacing(@Nullable EnumFacing direction);
 
 	void writeResourceLocation(@Nullable ResourceLocation resource);

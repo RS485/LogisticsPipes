@@ -233,7 +233,10 @@ public class ClientProxy implements IProxy {
 				}
 				list.add(fluid.getItemIdentifier().makeStack(1));
 			}
-			SelectItemOutOfList subGui = new SelectItemOutOfList(list, slot -> MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(slotId).setStack(list.get(slot).makeNormalStack()).setButton(0)));
+			SelectItemOutOfList subGui = new SelectItemOutOfList(list, slot -> {
+				if(slot == -1) return;
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(DummyContainerSlotClick.class).setSlotId(slotId).setStack(list.get(slot).makeNormalStack()).setButton(0));
+			});
 			LogisticsBaseGuiScreen gui = (LogisticsBaseGuiScreen) Minecraft.getMinecraft().currentScreen;
 			if (!gui.hasSubGui()) {
 				gui.setSubGui(subGui);

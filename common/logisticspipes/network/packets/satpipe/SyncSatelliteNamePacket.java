@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.abstractpackets.StringCoordinatesPacket;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -16,30 +17,24 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
-public class SatPipeSetID extends CoordinatesPacket {
+public class SyncSatelliteNamePacket extends StringCoordinatesPacket {
 
-	@Getter
-	@Setter
-	private int satID;
-
-	public SatPipeSetID(int id) {
+	public SyncSatelliteNamePacket(int id) {
 		super(id);
 	}
 
 	@Override
 	public ModernPacket template() {
-		return new SatPipeSetID(getId());
+		return new SyncSatelliteNamePacket(getId());
 	}
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeInt(satID);
 		super.writeData(output);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
-		satID = input.readInt();
 		super.readData(input);
 	}
 
@@ -51,11 +46,10 @@ public class SatPipeSetID extends CoordinatesPacket {
 		}
 
 		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics) pipe.pipe).setSatelliteId(getSatID());
+			((PipeItemsSatelliteLogistics) pipe.pipe).setSatelliteName(getString());
 		}
 		if (pipe.pipe instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe).setSatelliteId(getSatID());
+			((PipeFluidSatellite) pipe.pipe).setSatelliteName(getString());
 		}
 	}
-
 }

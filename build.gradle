@@ -46,7 +46,7 @@ if (ENV.BUILD_NUMBER) {
 }
 
 minecraft {
-    version = "1.12.2-14.23.5.2838"
+    version = "1.12.2-14.23.5.2768"
     runDir = "run/assets"
     replace '%VERSION%', project.version
     replace '%MCVERSION%', project.minecraft.version

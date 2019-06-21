@@ -482,11 +482,9 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 
 		@Override
 		public boolean renderSelectSlot(int slotId) {
-			/*
-			if ((isAdvancedSat && _pipe.liquidSatelliteIdArray[id] == 0) || (!isAdvancedSat && _pipe.liquidSatelliteId == 0)) {
+			if ((isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteNameArray[id].isEmpty()) || (!isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteName.isEmpty())) {
 				return false;
 			}
-			*/
 			return super.renderSelectSlot(slotId);
 		}
 	}

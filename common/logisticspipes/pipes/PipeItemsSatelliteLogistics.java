@@ -61,7 +61,6 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
 
-	//public int satelliteId;
 	@Getter
 	public String satellitePipeName = "";
 
@@ -116,15 +115,12 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for (EnumFacing ori : EnumFacing.VALUES) {
-			if(!this.container.isPipeConnectedCached(ori)) continue;
-			IInventoryUtil inv = this.getPointedInventory();
-			if (inv != null) {
-				for (int i = 0; i < inv.getSizeInventory(); i++) {
-					ItemStack stackInSlot = inv.getStackInSlot(i);
-					if (!stackInSlot.isEmpty()) {
-						addToList(ItemIdentifierStack.getFromStack(stackInSlot));
-					}
+		IInventoryUtil inv = this.getPointedInventory();
+		if (inv != null) {
+			for (int i = 0; i < inv.getSizeInventory(); i++) {
+				ItemStack stackInSlot = inv.getStackInSlot(i);
+				if (!stackInSlot.isEmpty()) {
+					addToList(ItemIdentifierStack.getFromStack(stackInSlot));
 				}
 			}
 		}

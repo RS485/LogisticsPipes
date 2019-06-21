@@ -1547,10 +1547,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	private TileEntity getPointedTileEntity() {
-		if (pointedDirection == null) {
+		if (getPointedOrientation() == null) {
 			return null;
 		}
-		return getContainer().getTile(pointedDirection);
+		return getContainer().getTile(getPointedOrientation());
 	}
 
 	@Override
@@ -1599,7 +1599,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (pointedDirection == null) {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
 			Optional<EnumFacing> first = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.tileEntity != null).map(adjacent -> adjacent.direction).findFirst();
+					.filter(adjacent -> adjacent.tileEntity != null)
+					.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isPipe(adjacent.tileEntity))
+					.map(adjacent -> adjacent.direction).findFirst();
 			if(first.isPresent()) {
 				return first.get();
 			}

@@ -7,6 +7,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.Minecraft;
 
@@ -93,16 +94,21 @@ public class HUDSatellite extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, -0.01F);
 			super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 
-			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			String message;
-			/*
 			if (pipe1 != null) {
-				message = "ID: " + Integer.toString(pipe1.satelliteId);
+				message = pipe1.satellitePipeName;
 			} else {
-				message = "ID: " + Integer.toString(pipe2.satelliteId);
+				message = pipe2.satellitePipeName;
 			}
-			mc.fontRenderer.drawString(message, -28, -28, 0);
-			 */
+			if (mc.fontRenderer.getStringWidth(message) > 40) {
+				GL11.glScalef(0.45F, 0.45F, 0.0001F);
+				mc.fontRenderer.drawString(message, -100, -85, 0);
+				GL11.glScalef(1 / 0.45F, 1 / 0.45F, 1);
+			} else {
+				GL11.glScalef(1.0F, 1.0F, 0.0001F);
+				mc.fontRenderer.drawString(message, -42, -40, 0);
+			}
+			GL11.glScalef(1.5F, 1.5F, 1);
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 			GL11.glScalef(0.8F, 0.8F, -1F);
@@ -114,7 +120,7 @@ public class HUDSatellite extends BasicHUDGui {
 			} else {
 				GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 64);
 			}
-			GuiGraphics.drawGuiBackGround(mc, -30, -30, 30, 30, 0, false);
+			GuiGraphics.drawGuiBackGround(mc, -50, -15, 50, 20, 0, false);
 			if (day) {
 				GL11.glColor4b((byte) 64, (byte) 64, (byte) 64, (byte) 127);
 			} else {
@@ -124,16 +130,14 @@ public class HUDSatellite extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, -0.01F);
 			super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 
-			GL11.glScalef(3F, 3F, 0.0001F);
-			/*
+			GL11.glScalef(1F, 1F, 0.0001F);
 			String message;
 			if (pipe1 != null) {
-				message = Integer.toString(pipe1.satelliteId);
+				message = pipe1.satellitePipeName;
 			} else {
-				message = Integer.toString(pipe2.satelliteId);
+				message = pipe2.satellitePipeName;
 			}
-			mc.fontRenderer.drawString(message, -(mc.fontRenderer.getStringWidth(message) / 2), -4, 0);
-			 */
+			mc.fontRenderer.drawString(message, -(mc.fontRenderer.getStringWidth(message) / 2), -2, 0);
 		}
 	}
 
@@ -163,7 +167,7 @@ public class HUDSatellite extends BasicHUDGui {
 		if ((pipe1 != null && pipe1.itemList.size() > 0) || (pipe2 != null && pipe2.itemList.size() > 0)) {
 			return -50 < x && x < 50 && -50 < y && y < 50;
 		} else {
-			return -30 < x && x < 30 && -30 < y && y < 30;
+			return -50 < x && x < 50 && -15 < y && y < 20;
 		}
 	}
 }

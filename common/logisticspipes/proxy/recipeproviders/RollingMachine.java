@@ -75,8 +75,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 			if (i >= inventory.getSizeInventory() - 2) {
 				break;
 			}
-			final ItemStack newStack = craftMatrix.getStackInSlot(i) == null ? null : craftMatrix.getStackInSlot(i).copy();
-			inventory.setInventorySlotContents(i, newStack);
+			inventory.setInventorySlotContents(i, craftMatrix.getStackInSlot(i).copy());
 		}
 
 		inventory.compactFirst(9);

@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -76,6 +78,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		return map;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
@@ -111,8 +114,9 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		return space;
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.setCount(0);
 		if (doAdd) {
@@ -150,6 +154,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		cached.addAll(map.entrySet().stream().collect(Collectors.toList()));
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if (cached == null) {
@@ -162,6 +167,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (cached == null) {

@@ -62,11 +62,13 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 		return true;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		return _contents[i] != null ? _contents[i] : ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int slot, int count) {
 		if (_contents[slot].isEmpty()) {
@@ -270,7 +272,7 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, @Nonnull ItemStack itemstack) {
 		return true;
 	}
 

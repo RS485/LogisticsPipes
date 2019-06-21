@@ -114,6 +114,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		return result;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
@@ -203,6 +204,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		cached.addAll(map.entrySet().stream().collect(Collectors.toList()));
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if (cached == null) {
@@ -210,11 +212,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		}
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		if (entry.getValue() == 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (cached == null) {
@@ -226,8 +229,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		return extracted;
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IAEItemStack tst = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(stack);

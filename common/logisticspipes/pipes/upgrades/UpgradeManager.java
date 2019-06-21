@@ -87,10 +87,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		sneakyInv.readFromNBT(nbttagcompound, "SneakyUpgradeInventory_");
 		secInv.readFromNBT(nbttagcompound, "SecurityInventory_");
 
-		if (sneakyInv.getStackInSlot(8) != null) {
+		if (!sneakyInv.getStackInSlot(8).isEmpty()) {
 			if (sneakyInv.getStackInSlot(8).getItem() == LPItems.itemCard && sneakyInv.getStackInSlot(8).getItemDamage() == LogisticsItemCard.SEC_CARD) {
 				secInv.setInventorySlotContents(0, sneakyInv.getStackInSlot(8));
-				sneakyInv.setInventorySlotContents(8, null);
+				sneakyInv.setInventorySlotContents(8, ItemStack.EMPTY);
 			}
 		}
 
@@ -132,7 +132,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			ItemStack item = inv.getStackInSlot(i);
 			if (!item.isEmpty()) {
 				needUpdate |= updateModule(i, upgrades, inv);
-			} else if (item.isEmpty() && upgrades[i] != null) {
+			} else if (upgrades[i] != null) {
 				needUpdate |= removeUpgrade(i, upgrades);
 			}
 		}
@@ -226,7 +226,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			ItemStack item = sneakyInv.getStackInSlot(i);
 			if (!item.isEmpty()) {
 				needUpdate |= updateModule(i, sneakyUpgrades, sneakyInv);
-			} else if (item.isEmpty() && sneakyUpgrades[i] != null) {
+			} else if ( sneakyUpgrades[i] != null) {
 				needUpdate |= removeUpgrade(i, sneakyUpgrades);
 			}
 		}
@@ -249,7 +249,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		uuid = null;
 		uuidS = null;
 		ItemStack stack = secInv.getStackInSlot(0);
-		if (stack == null) {
+		if (stack.isEmpty()) {
 			return;
 		}
 		if (stack.getItem() != LPItems.itemCard || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
@@ -352,7 +352,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
-			if (secInv.getStackInSlot(0) == null) {
+			if (secInv.getStackInSlot(0) .isEmpty()) {
 				ItemStack newItem = itemStackInMainHand.splitStack(1);
 				secInv.setInventorySlotContents(0, newItem);
 				InventoryChanged(secInv);

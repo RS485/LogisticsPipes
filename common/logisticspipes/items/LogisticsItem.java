@@ -21,6 +21,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 		return 1;
 	}
 
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
 		if (getHasSubtypes()) {
@@ -79,8 +81,9 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 		return true;
 	}
 
+	@Nonnull
 	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
 		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 }

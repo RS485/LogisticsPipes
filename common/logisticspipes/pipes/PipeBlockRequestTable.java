@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
@@ -182,7 +184,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
-		if (diskInv.getStackInSlot(0) == null) {
+		if (diskInv.getStackInSlot(0).isEmpty()) {
 			if (!entityplayer.getHeldItemMainhand().isEmpty() && entityplayer.getHeldItemMainhand().getItem().equals(LPItems.disk)) {
 				diskInv.setInventorySlotContents(0, entityplayer.getHeldItemMainhand());
 				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, ItemStack.EMPTY);
@@ -440,7 +442,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {
 
 			@Override
-			protected void onCrafting(ItemStack stack) {
+			protected void onCrafting(@Nonnull ItemStack stack) {
 				IInventory tmp = this.inventory;
 				vanillaResult.setRecipeUsed(cache);
 				this.inventory = vanillaResult;

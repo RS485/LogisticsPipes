@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.utils.item.ItemIdentifier;
 
 import net.minecraft.item.ItemStack;
@@ -46,12 +48,13 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
-		if (items != null && ItemIdentifier.get(items).equals(itemIdent)) {
+		if (items != null && !items.isEmpty() && ItemIdentifier.get(items).equals(itemIdent)) {
 			return items.getCount() - (_hideOnePerStack ? 1 : 0);
 		}
 		return 0;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack items = _tile.getStoredItemType();
@@ -91,6 +94,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 		return result;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		return getMultipleItems(itemIdent, 1);
@@ -125,8 +129,9 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 		return 0;
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.setCount(0);
 		if (stack.getTagCompound() != null) {
@@ -168,6 +173,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 		return 1;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if (i != 0) {
@@ -176,6 +182,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 		return _tile.getStoredItemType();
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (i != 0) {

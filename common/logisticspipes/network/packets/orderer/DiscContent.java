@@ -43,7 +43,7 @@ public class DiscContent extends ItemPacket {
 		}
 		if (tile.pipe instanceof PipeBlockRequestTable) {
 			if (MainProxy.isServer(tile.getWorld())) {
-				if (((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0) != null && ((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).getItem().equals(LPItems.disk)) {
+				if (!((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).isEmpty() && ((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).getItem().equals(LPItems.disk)) {
 					if (getStack() != null && getStack().getItem().equals(LPItems.disk)) {
 						((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).setTagCompound(getStack().getTagCompound());
 					}

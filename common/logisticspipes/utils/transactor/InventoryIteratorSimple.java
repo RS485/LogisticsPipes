@@ -50,6 +50,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 			this.slot = slot;
 		}
 
+		@Nonnull
 		@Override
 		public ItemStack getStackInSlot() {
 			return inv.getStackInSlot(slot);

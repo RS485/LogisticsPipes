@@ -40,7 +40,7 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	public Object getTargetUUID() {
-		if (inv.getStackInSlot(0) == null) {
+		if (inv.getStackInSlot(0).isEmpty()) {
 			return null;
 		}
 		if (!inv.getStackInSlot(0).hasTagCompound()) {
@@ -71,7 +71,7 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	private void dropFreqCard() {
-		if (inv.getStackInSlot(0) == null) {
+		if (inv.getStackInSlot(0).isEmpty()) {
 			return;
 		}
 		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));

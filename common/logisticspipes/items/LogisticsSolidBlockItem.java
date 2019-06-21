@@ -1,5 +1,7 @@
 package logisticspipes.items;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.blocks.LogisticsSolidBlock;
@@ -22,7 +24,7 @@ public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
 		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name");
 	}
 

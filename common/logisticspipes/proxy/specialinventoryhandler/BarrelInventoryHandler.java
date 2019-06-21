@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -77,6 +79,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		return 0;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		try {
@@ -98,7 +101,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 			e.printStackTrace();
 		}
 
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -130,6 +133,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		return map;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		try {
@@ -146,11 +150,11 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 					return ret;
 				}
 			}
-			return null;
+			return ItemStack.EMPTY;
 		} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -191,8 +195,9 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		return 0;
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		assert _tile != null;
 
 		ItemStack st = stack.copy();
@@ -237,10 +242,11 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		return 1;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if (i != 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
@@ -256,9 +262,10 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		try {
@@ -274,6 +281,6 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 }

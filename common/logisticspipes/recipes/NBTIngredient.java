@@ -1,5 +1,6 @@
 package logisticspipes.recipes;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.RecipeItemHelper;
@@ -21,6 +22,7 @@ public class NBTIngredient extends Ingredient {
 		this.matchingStacks = stacks;
 	}
 
+	@Nonnull
 	public ItemStack[] getMatchingStacks()
 	{
 		return this.matchingStacks;

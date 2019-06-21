@@ -1,5 +1,7 @@
 package logisticspipes.items;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,17 +33,17 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 	}
 
 	@Override
-	public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage, int slot) {
+	public ArmorProperties getProperties(EntityLivingBase player, @Nonnull ItemStack armor, DamageSource source, double damage, int slot) {
 		return new ArmorProperties(0, 0, 0);
 	}
 
 	@Override
-	public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot) {
+	public int getArmorDisplay(EntityPlayer player, @Nonnull ItemStack armor, int slot) {
 		return 0;
 	}
 
 	@Override
-	public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {
+	public void damageArmor(EntityLivingBase entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
 		// Does not get dammaged
 	}
 
@@ -90,7 +92,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
 		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 

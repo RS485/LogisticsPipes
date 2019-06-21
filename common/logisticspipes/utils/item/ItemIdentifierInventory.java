@@ -269,10 +269,11 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		_listener.remove(listener);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack removeStackFromSlot(int i) {
 		if (_contents[i] == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
 		ItemStack stackToTake = _contents[i].makeNormalStack();

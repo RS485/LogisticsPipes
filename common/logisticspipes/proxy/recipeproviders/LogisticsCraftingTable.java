@@ -96,11 +96,11 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 		}
 
 		for (int i = 0; i < 9; i++) {
-			if (inventory.getStackInSlot(i) != null) {
+			if (!inventory.getStackInSlot(i).isEmpty()) {
 				continue;
 			}
 			for (int j = i + 1; j < 9; j++) {
-				if (inventory.getStackInSlot(j) == null) {
+				if (inventory.getStackInSlot(j).isEmpty()) {
 					continue;
 				}
 				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));

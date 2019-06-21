@@ -2,6 +2,8 @@ package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.*;
 
+import javax.annotation.Nonnull;
+
 import com.jaquadro.minecraft.storagedrawers.api.storage.ISmartGroup;
 import logisticspipes.utils.item.ItemIdentifier;
 
@@ -109,6 +111,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		return count;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack stack = ItemStack.EMPTY;
@@ -211,6 +214,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		return result;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		return getMultipleItems(itemIdent, 1);
@@ -322,8 +326,9 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		return room;
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.setCount(0);
 
@@ -416,15 +421,17 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 		return _drawer.getDrawerCount();
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if (!_drawer.isDrawerEnabled(i)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
-		return _drawer.getDrawer(i) != null ? _drawer.getDrawer(i).getStoredItemCopy() : null;
+		return _drawer.getDrawer(i) != null ? _drawer.getDrawer(i).getStoredItemCopy() : ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (!_drawer.isDrawerEnabled(i)) {

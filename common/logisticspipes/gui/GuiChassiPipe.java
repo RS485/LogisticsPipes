@@ -154,7 +154,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			ItemStack module = _moduleInventory.getStackInSlot(i);
-			if (module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
+			if (module .isEmpty() || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton) buttonList.get(i)).visible = false;
 			} else {
 				((SmallGuiButton) buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
@@ -189,7 +189,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		if (_moduleInventory == null) {
 			return "";
 		}
-		if (_moduleInventory.getStackInSlot(slot) == null) {
+		if (_moduleInventory.getStackInSlot(slot).isEmpty()) {
 			return "";
 		}
 		if (!(_moduleInventory.getStackInSlot(slot).getItem() instanceof ItemModule)) {

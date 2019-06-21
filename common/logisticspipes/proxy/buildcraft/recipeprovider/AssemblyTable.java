@@ -2,6 +2,8 @@ package logisticspipes.proxy.buildcraft.recipeprovider;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -79,7 +81,8 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 			}
 			int i = 0;
 			for (Object input : nextRecipe.getInputsFor(inventory.getStackInSlot(inventory.getSizeInventory() - 2))) {
-				ItemStack processed = null;
+				@Nonnull
+				ItemStack processed = ItemStack.EMPTY;
 				if (input instanceof String) {
 					List<ItemStack> ores = OreDictionary.getOres((String) input);
 					if (ores != null && ores.size() > 0) {
@@ -92,11 +95,11 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 				} else if (input instanceof Block) {
 					processed = new ItemStack((Block) input, 1, 0);
 				} else if (input instanceof Integer) {
-					processed = null;
+					//nop
 				} else {
 					throw new IllegalArgumentException("Unknown Object passed to recipe!");
 				}
-				if (processed != null) {
+				if (!processed.isEmpty()) {
 					inventory.setInventorySlotContents(i, processed);
 					++i;
 				}

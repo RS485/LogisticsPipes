@@ -40,7 +40,7 @@ public class HUDSettingsPacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if (player.inventory.getStackInSlot(slot) == null) {
+		if (player.inventory.getStackInSlot(slot).isEmpty()) {
 			return;
 		}
 		IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));

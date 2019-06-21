@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -196,8 +198,9 @@ public class RecipeManager {
 				setRegistryName(registryName);
 			}
 
+			@Nonnull
 			@Override
-			public ItemStack getCraftingResult(InventoryCrafting var1) {
+			public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1) {
 				ItemStack result = super.getCraftingResult(var1);
 				for (int i = 0; i < var1.getInventoryStackLimit(); i++) {
 					ItemStack stack = var1.getStackInSlot(i);

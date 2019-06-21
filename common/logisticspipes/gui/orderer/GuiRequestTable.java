@@ -564,7 +564,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			return;
 		}
 		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, guiLeft, guiTop);
-		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
+		Macrobutton.enabled = !_table.diskInv.getStackInSlot(0).isEmpty() && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -110,7 +110,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			return;
 		}
 		super.throttledUpdateEntity();
-		if (dummyInventory.getStackInSlot(0) == null) {
+		if (dummyInventory.getStackInSlot(0).isEmpty()) {
 			return;
 		}
 

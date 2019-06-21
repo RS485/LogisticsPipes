@@ -343,7 +343,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		@Override
 		public void checkButton(GuiButton button, boolean isTabActive) {
 			if (isTabActive) {
-				button.enabled = pipe.container.logicController.diskInv.getStackInSlot(0) != null;
+				button.enabled = !pipe.container.logicController.diskInv.getStackInSlot(0).isEmpty();
 			}
 			super.checkButton(button, isTabActive);
 		}

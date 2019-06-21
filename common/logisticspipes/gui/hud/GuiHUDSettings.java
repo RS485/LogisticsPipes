@@ -38,7 +38,7 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 	@SneakyThrows(IOException.class)
 	public void initGui() {
 		super.initGui();
-		if (player.inventory.getStackInSlot(slot) != null) {
+		if (!player.inventory.getStackInSlot(slot).isEmpty()) {
 			IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
 			buttonList.add(new GuiCheckBox(0, guiLeft + 30, guiTop + 10, 12, 12, config.isHUDChassie()));
 			buttonList.add(new GuiCheckBox(1, guiLeft + 30, guiTop + 30, 12, 12, config.isHUDCrafting()));
@@ -61,7 +61,7 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		if (player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).getItem() != LPItems.hudGlasses) {
+		if (player.inventory.getStackInSlot(slot).isEmpty() || player.inventory.getStackInSlot(slot).getItem() != LPItems.hudGlasses) {
 			mc.player.closeScreen();
 		}
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);

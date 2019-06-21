@@ -129,7 +129,6 @@ public class LogisticsSolidBlock extends Block {
 	}
 
 	@Override
-	@Nonnull
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		TileEntity tile = world.getTileEntity(pos);

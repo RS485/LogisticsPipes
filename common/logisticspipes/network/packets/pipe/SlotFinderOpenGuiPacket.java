@@ -47,7 +47,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 		boolean foundSlot = false;
 		//try to find a empty slot
 		for (int i = 0; i < 9; i++) {
-			if (player.inventory.getStackInSlot(i) == null) {
+			if (player.inventory.getStackInSlot(i).isEmpty()) {
 				foundSlot = true;
 				player.inventory.currentItem = i;
 				break;

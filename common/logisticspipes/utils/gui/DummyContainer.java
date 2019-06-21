@@ -659,7 +659,7 @@ public class DummyContainer extends Container {
 			((DummySlot) slot).setRedirectCall(true);
 		}
 
-		if (currentlyEquippedStack == null) {
+		if (currentlyEquippedStack.isEmpty()) {
 			if (!slot.getStack().isEmpty() && mouseButton == 1) {
 				ItemStack tstack = slot.getStack();
 				if (shiftMode == ClickType.QUICK_MOVE) {

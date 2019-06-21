@@ -471,7 +471,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				}
 				Gui.drawRect(left + 3, top + 138, left + 42, top + 139, 0xff8B8B8B);
 			}
-			if (_pipe.getFluidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _pipe.liquidSatelliteId == 0) || (isAdvancedSat && _pipe.liquidSatelliteIdArray[i] == 0))) {
+			if (_pipe.getFluidInventory().getStackInSlot(i).isEmpty() && !((!isAdvancedSat && _pipe.liquidSatelliteId == 0) || (isAdvancedSat && _pipe.liquidSatelliteIdArray[i] == 0))) {
 				Gui.drawRect(left + 3, top + 50, left + 42, top + 138, 0xAA8B8B8B);
 				for (int j = 0; j < 8; j++) {
 					liquidGuiParts[i][j].enabled = false;

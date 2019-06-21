@@ -29,7 +29,7 @@ public class ShapelessResetRecipe extends IForgeRegistryEntry.Impl<IRecipe> impl
 		int nmatches = 0;
 		for (int i = 0; i < var1.getSizeInventory(); i++) {
 			ItemStack slot = var1.getStackInSlot(i);
-			if (slot == null) {
+			if (slot.isEmpty()) {
 				continue;
 			}
 			if (slot.getItem() != item || slot.getItemDamage() != meta) {
@@ -44,7 +44,7 @@ public class ShapelessResetRecipe extends IForgeRegistryEntry.Impl<IRecipe> impl
 	public ItemStack getCraftingResult(InventoryCrafting var1) {
 		int nmatches = 0;
 		for (int i = 0; i < var1.getSizeInventory(); i++) {
-			if (var1.getStackInSlot(i) == null) {
+			if (var1.getStackInSlot(i).isEmpty()) {
 				continue;
 			}
 			nmatches++;

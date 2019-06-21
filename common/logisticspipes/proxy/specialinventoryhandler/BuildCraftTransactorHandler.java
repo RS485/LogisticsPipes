@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -48,6 +50,7 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 		return Collections.emptyMap();
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		return ItemStack.EMPTY;
@@ -83,20 +86,23 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 		return 1;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int slot) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, 0, 64, true);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int slot, int amount) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, amount, amount, false);
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing orientation, boolean doAdd) {
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing orientation, boolean doAdd) {
 		ItemStack overflow = cap.insert(stack.copy(), false, !doAdd);
 		stack.setCount(stack.getCount() - overflow.getCount());
 		return stack;

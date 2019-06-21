@@ -2,6 +2,8 @@ package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.transactor.ITransactor;
@@ -29,6 +31,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 		return count;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {

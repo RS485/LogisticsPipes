@@ -3,6 +3,8 @@ package logisticspipes.interfaces;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 
 import logisticspipes.utils.item.ItemIdentifier;
@@ -13,8 +15,10 @@ public interface IInventoryUtil {
 
 	Map<ItemIdentifier, Integer> getItemsAndCount();
 
+	@Nonnull
 	ItemStack getSingleItem(ItemIdentifier item);
 
+	@Nonnull
 	ItemStack getMultipleItems(ItemIdentifier item, int count);
 
 	/**
@@ -33,7 +37,7 @@ public interface IInventoryUtil {
 	 * found.
 	 *
 	 * @param item
-	 * @param max
+	 * @param count
 	 * @return spaces found. If this is less than max, then there are only
 	 * spaces for that amount.
 	 */
@@ -46,7 +50,7 @@ public interface IInventoryUtil {
 	//IInventory adapter
 	int getSizeInventory();
 
-	ItemStack getStackInSlot(int slot);
+	@Nonnull ItemStack getStackInSlot(int slot);
 
-	ItemStack decrStackSize(int slot, int amount);
+	@Nonnull ItemStack decrStackSize(int slot, int amount);
 }

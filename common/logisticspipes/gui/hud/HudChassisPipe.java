@@ -259,7 +259,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 			ItemStack module = inv.getStackInSlot(position);
 
-			if (module != null) {
+			if (!module.isEmpty()) {
 				boolean renderInColor = buttonEnabled() || isSlotSelected(position);
 				ItemStackRenderer itemStackRenderer = new ItemStackRenderer(posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), -0.002F, shifted, renderInColor);
 				itemStackRenderer.setItemstack(module).setDisplayAmount(DisplayAmount.NEVER);
@@ -270,7 +270,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 		@Override
 		public void renderAlways(boolean shifted) {
-			if (inv.getStackInSlot(position) == null && shouldDisplayButton(position)) {
+			if (inv.getStackInSlot(position).isEmpty() && shouldDisplayButton(position)) {
 				GL11.glEnable(GL11.GL_BLEND);
 				if (shifted) {
 					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -285,8 +285,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 		@Override
 		public boolean shouldRenderButton() {
-			boolean result = inv.getStackInSlot(position) != null && shouldDisplayButton(position);
-			return result;
+			return  !inv.getStackInSlot(position).isEmpty() && shouldDisplayButton(position);
 		}
 
 		@Override

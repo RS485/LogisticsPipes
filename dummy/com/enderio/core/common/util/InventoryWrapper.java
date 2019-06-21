@@ -1,5 +1,6 @@
 package com.enderio.core.common.util;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,14 +39,16 @@ public class InventoryWrapper implements ISidedInventory {
 		return false;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		return null;
+		return ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int slot, int amount) {
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -68,7 +71,7 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
+	public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemStack) {
 		return false;
 	}
 
@@ -79,18 +82,19 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
-	public boolean canInsertItem(int slot, ItemStack itemStack, EnumFacing side) {
+	public boolean canInsertItem(int slot, @Nonnull ItemStack itemStack, EnumFacing side) {
 		return isItemValidForSlot(slot, itemStack);
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack itemStack, EnumFacing side) {
+	public boolean canExtractItem(int slot, @Nonnull ItemStack itemStack, EnumFacing side) {
 		return slot >= 0 && slot < getSizeInventory();
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override

@@ -334,7 +334,7 @@ public class MainProxy {
 	}
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
+		return entityplayer != null && !entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).isEmpty() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
 	}
 
 	@SubscribeEvent

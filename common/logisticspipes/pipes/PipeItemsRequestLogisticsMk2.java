@@ -46,9 +46,9 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if (disk == null) {
-			if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem().equals(LPItems.disk)) {
+			if (!entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).isEmpty() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem().equals(LPItems.disk)) {
 				disk = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-				entityplayer.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, null);
+				entityplayer.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
 				flag = false;
 			}
 		}

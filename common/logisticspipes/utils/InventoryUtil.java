@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -90,11 +92,13 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		return items;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		return getMultipleItems(item, 1);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
 		if (itemCount(item) < count) {
@@ -165,11 +169,13 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		return _inventory.getSlots();
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		return _inventory.getStackInSlot(i);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		return _inventory.extractItem(i, j, false);

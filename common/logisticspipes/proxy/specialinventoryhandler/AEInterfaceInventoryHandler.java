@@ -109,8 +109,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getSingleItem(ItemIdentifier item) {
+	public @Nonnull ItemStack getSingleItem(ItemIdentifier item) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null) {
@@ -194,8 +193,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getStackInSlot(int i) {
+	public @Nonnull ItemStack getStackInSlot(int i) {
 		if (cached == null) {
 			initCache();
 		}
@@ -207,8 +205,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack decrStackSize(int i, int j) {
+	public @Nonnull ItemStack decrStackSize(int i, int j) {
 		if (cached == null) {
 			initCache();
 		}

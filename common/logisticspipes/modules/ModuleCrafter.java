@@ -1178,11 +1178,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				ItemStack extracted = null;
 				for (AdjacentTileEntity adjacentCrafter : crafters) {
 					extracted = extractFiltered(adjacentCrafter, _cleanupInventory, cleanupModeIsExclude, getUpgradeManager().getCrafterCleanup() * 3);
-					if (extracted != null && extracted.getCount() > 0) {
+					if (extracted != null && !extracted.isEmpty()) {
 						break;
 					}
 				}
-				if (extracted != null && extracted.getCount() > 0) {
+				if (extracted != null && !extracted.isEmpty()) {
 					_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), EnumFacing.UP);
 					_service.getCacheHolder().trigger(CacheTypes.Inventory);
 				}
@@ -1219,11 +1219,11 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			for (AdjacentTileEntity adjacentCrafter : adjacentCrafters) {
 				adjacent = adjacentCrafter;
 				extracted = extract(adjacent, nextOrder.getResource(), maxtosend);
-				if (extracted != null && extracted.getCount() > 0) {
+				if (extracted != null && !extracted.isEmpty()) {
 					break;
 				}
 			}
-			if (extracted == null || extracted.getCount() == 0) {
+			if (extracted == null || extracted.isEmpty()) {
 				_service.getItemOrderManager().deferSend();
 				break;
 			}
@@ -1231,7 +1231,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			lastAccessedCrafter = new WeakReference<>(adjacent.tileEntity);
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
-			while (extracted.getCount() > 0) {
+			while (!extracted.isEmpty()) {
 				if (!doesExtractionMatch(nextOrder, extractedID)) {
 					LogisticsItemOrder startOrder = nextOrder;
 					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
@@ -1410,7 +1410,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, IResource wanteditem, int count, EnumFacing dir) {
 		ItemStack extracted = extractFromInventory(tile, wanteditem, count, dir);
-		if (extracted != null) {
+		if (extracted != null && !extracted.isEmpty()) {
 			return extracted;
 		}
 		ItemStack retstack = null;

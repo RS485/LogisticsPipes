@@ -197,7 +197,10 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			return false;
 		}
 		final IRouter source = _service.getRouter();
-		List<Triplet<Integer, Double, CCSinkResponder>> posibilities = new ArrayList<>();
+
+		// list of triplets: priority: Integer, distance: Double, sink: CCSinkResponder
+		List<Triplet<Integer, Double, CCSinkResponder>> possibilities = new ArrayList<>();
+
 		for (CCSinkResponder sink : list) {
 			if (!sink.isDone()) {
 				continue;
@@ -221,36 +224,38 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 					minDistance = Math.min(route.distanceToDestination, minDistance);
 				}
 			if (minDistance != Integer.MAX_VALUE) {
-				posibilities.add(new Triplet<>(sink.getPriority(), minDistance, sink));
+				possibilities.add(new Triplet<>(sink.getPriority(), minDistance, sink));
 			}
 		}
-		if (posibilities.isEmpty()) {
+		if (possibilities.isEmpty()) {
 			return false;
 		}
-		Collections.sort(posibilities, (o1, o2) -> {
-			int c = o2.getValue1() - o1.getValue1();
-			if (c != 0) {
-				return c;
+		possibilities.sort((left, right) -> {
+			int prioritySign = Integer.compare(right.getValue1(), left.getValue1());
+			if (prioritySign == 0) {
+				// if priority is equal, compare distance
+				return Double.compare(left.getValue2(), right.getValue2());
+			} else {
+				return prioritySign;
 			}
-			double e = o1.getValue2() - o2.getValue2();
-			return e < 0 ? -1 : 1;
 		});
-		boolean sended = false;
-		for (Triplet<Integer, Double, CCSinkResponder> triple : posibilities) {
+
+		boolean isSent = false;
+		for (Triplet<Integer, Double, CCSinkResponder> triple : possibilities) {
 			CCSinkResponder sink = triple.getValue3();
 			if (sink.getCanSink() < 0) {
 				continue;
 			}
 			stack = invUtil.getStackInSlot(slot);
-			if (stack.isEmpty() || stack.getCount() <= 0) {
+			if (stack.isEmpty()) {
 				continue;
 			}
 			int amount = Math.min(stack.getCount(), sink.getCanSink());
 			ItemStack extracted = invUtil.decrStackSize(slot, amount);
 			_service.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
-			sended = true;
+			isSent = true;
 		}
-		return sended;
+		return isSent;
 	}
 
 	@Override

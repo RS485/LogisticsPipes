@@ -70,44 +70,44 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 		}
 		if (result == null) {
 			player.sendMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
+			return;
 		}
 		int resultIndex = -1;
-		if (resultIndex == -1) {
-			ItemStack content = result.getStack();
-			if (content != null) {
-				for (int i = 0; i < util.getSizeInventory(); i++) {
-					if (content == util.getStackInSlot(i)) {
-						resultIndex = i;
-						break;
-					}
+		ItemStack content = result.getStack();
+		if (!content.isEmpty()) {
+			for (int i = 0; i < util.getSizeInventory(); i++) {
+				if (content == util.getStackInSlot(i)) {
+					resultIndex = i;
+					break;
 				}
-			} else {
-				ItemStack dummyStack = new ItemStack(Blocks.STONE, 0, 0);
-				NBTTagCompound nbt = new NBTTagCompound();
-				nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
-				dummyStack.setTagCompound(nbt);
-				result.putStack(dummyStack);
-				for (int i = 0; i < util.getSizeInventory(); i++) {
-					if (dummyStack == util.getStackInSlot(i)) {
-						resultIndex = i;
-						break;
-					}
-				}
-				if (resultIndex == -1) {
-					for (int i = 0; i < util.getSizeInventory(); i++) {
-						ItemStack stack = util.getStackInSlot(i);
-						if (stack.isEmpty()) {
-							continue;
-						}
-						if (ItemIdentifier.get(stack).equals(ItemIdentifier.get(dummyStack)) && stack.getCount() == dummyStack.getCount()) {
-							resultIndex = i;
-							break;
-						}
-					}
-				}
-				result.putStack(null);
 			}
+		} else {
+			ItemStack dummyStack = new ItemStack(Blocks.STONE, 0, 0);
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
+			dummyStack.setTagCompound(nbt); // dummyStack: yay, I am unique
+			result.putStack(dummyStack);
+			for (int i = 0; i < util.getSizeInventory(); i++) {
+				if (dummyStack == util.getStackInSlot(i)) {
+					resultIndex = i;
+					break;
+				}
+			}
+			if (resultIndex == -1) {
+				for (int i = 0; i < util.getSizeInventory(); i++) {
+					ItemStack stack = util.getStackInSlot(i);
+					if (stack.isEmpty()) {
+						continue;
+					}
+					if (ItemIdentifier.get(stack).equals(ItemIdentifier.get(dummyStack)) && stack.getCount() == dummyStack.getCount()) {
+						resultIndex = i;
+						break;
+					}
+				}
+			}
+			result.putStack(ItemStack.EMPTY);
 		}
+
 		if (resultIndex == -1) {
 			player.sendMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		} else {

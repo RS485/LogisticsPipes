@@ -40,6 +40,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.EnumFacing;
@@ -106,8 +107,9 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			IInventoryUtil inv = this.getPointedInventory();
 			if (inv != null) {
 				for (int i = 0; i < inv.getSizeInventory(); i++) {
-					if (!inv.getStackInSlot(i).isEmpty()) {
-						addToList(ItemIdentifierStack.getFromStack(inv.getStackInSlot(i)));
+					ItemStack stackInSlot = inv.getStackInSlot(i);
+					if (!stackInSlot.isEmpty()) {
+						addToList(ItemIdentifierStack.getFromStack(stackInSlot));
 					}
 				}
 			}

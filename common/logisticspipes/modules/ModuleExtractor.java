@@ -192,7 +192,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 				}
 
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
-				if (stackToSend.isEmpty() || stackToSend.getCount() == 0) {
+				if (stackToSend.isEmpty()) {
 					break;
 				}
 				count = stackToSend.getCount();

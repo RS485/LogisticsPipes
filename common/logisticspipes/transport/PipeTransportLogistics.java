@@ -520,7 +520,8 @@ public class PipeTransportLogistics {
 							if (util.getSizeInventory() > slot) {
 								ItemStack content = util.getStackInSlot(slot);
 								ItemStack toAdd = arrivingItem.getItemIdentifierStack().makeNormalStack();
-								toAdd.setCount(Math.min(toAdd.getCount(), Math.max(0, amount - (content != null ? content.getCount() : 0))));
+								final int amountLeft = Math.max(0, amount - content.getCount());
+								toAdd.setCount(Math.min(toAdd.getCount(), amountLeft));
 								if (toAdd.getCount() > 0) {
 									if (util.getSizeInventory() > slot) {
 										int added = ((ISpecialInsertion) util).addToSlot(toAdd, slot);

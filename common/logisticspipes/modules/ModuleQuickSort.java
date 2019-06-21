@@ -226,7 +226,8 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 
 			ItemStack returned = invUtil.decrStackSize(lastStackLookedAt, amountToExtract);
 			if (returned.getCount() != amountToExtract) {
-				throw new UnsupportedOperationException("Couldn't extract the already sended items from the inventory.");
+				// item duplication prevention
+				throw new UnsupportedOperationException("Couldn't extract the items already sent from the inventory");
 			}
 
 			lastSuceededStack = lastStackLookedAt;

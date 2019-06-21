@@ -173,7 +173,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 							return contentchanged;
 						}
 						ItemStack toSend = inv.getMultipleItems(ident, need.getItem().getStackSize());
-						if (toSend == null) {
+						if (toSend.isEmpty()) {
 							return contentchanged;
 						}
 						if (toSend.getCount() != need.getItem().getStackSize()) {

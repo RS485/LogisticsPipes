@@ -4,26 +4,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-<<<<<<< feature/custom-guide-book
-<<<<<<< feature/custom-guide-book
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.common.registry.GameRegistry;
-=======
->>>>>>> Remade some key parts
-=======
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.common.registry.GameRegistry;
->>>>>>> Formatting fixes
 
 import lombok.Getter;
 import lombok.Setter;
-import sun.rmi.runtime.Log;
 
-<<<<<<< feature/custom-guide-book
-<<<<<<< feature/custom-guide-book
-import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
@@ -51,19 +35,19 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		ItemStack book;
-		book = player.getHeldItem(hand);
+		ItemStack book = player.getHeldItem(hand);
 		if (book.getItem() != LPItems.itemGuideBook) return;
 		NBTTagCompound nbt;
-		if(book.hasTagCompound()){
+		if (book.hasTagCompound()) {
 			nbt = book.getTagCompound();
-		}else{
+		} else {
 			nbt = new NBTTagCompound();
 		}
 		nbt.setFloat("sliderProgress", sliderProgress);
 		nbt.setInteger("page", page);
 		nbt.setInteger("chapter", chapter);
 		nbt.setInteger("division", division);
+		book.setTagCompound(nbt);
 	}
 
 	@Override

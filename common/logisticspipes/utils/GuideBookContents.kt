@@ -43,19 +43,11 @@ class GuideBookContents private constructor(val lang: String, val divisions: Lis
 
     }
 
-    fun getDivision(index: Int): Division{
+    fun getDivision(index: Int): Division {
         return divisions[index]
     }
 
-    fun getChapter(dindex: Int, index: Int): Chapter?{
-        return getDivision(dindex).getChapter(index)
-    }
-
-    fun getPage(dindex: Int, cindex: Int, index: Int): Page?{
-        return getDivision(dindex).getChapter(cindex)?.getPage(index)
-    }
-
-    class Page(val dindex:Int, val cindex: Int, val index: Int, val text: String)
+    class Page(val dindex: Int, val cindex: Int, val index: Int, val text: String)
 
     class Chapter(private val lang: String, val parentTitle: String, json: JsonObject, val dindex: Int, val cindex: Int) {
         val title = json["title"].asString
@@ -80,10 +72,9 @@ class GuideBookContents private constructor(val lang: String, val divisions: Lis
     }
 
 
-    class Division constructor(lang: String, json: JsonObject, val dindex: Int) {
+    class Division(lang: String, json: JsonObject, val dindex: Int) {
         val title: String = json.get("title").asString
         val chapters = json.get("chapters").asJsonArray.withIndex().map { (sIndex, cha) -> Chapter(lang, title, cha.asJsonObject, dindex, sIndex) }
-        val nChapters = chapters.size
 
         fun getChapter(index: Int): Chapter? {
             return chapters[index]

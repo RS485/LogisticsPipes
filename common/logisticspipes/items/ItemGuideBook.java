@@ -18,13 +18,10 @@ public class ItemGuideBook extends LogisticsItem {
 
 	public ItemGuideBook() {
 		this.setMaxStackSize(1);
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setInteger("page", 1);
-		nbt.setFloat("sliderProgress", 0.0F);
 	}
 
-	public static void setCurrentPage(GuiGuideBook.PageInformation page, EnumHand hand) {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setHand(hand).setSliderProgress(page.getProgress()).setPage(page.getIndex()).setChapter(page.getChapter()).setDivision(page.getDivision()));
+	public static void setCurrentPage(GuiGuideBook.SavedTab page, EnumHand hand) {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class).setHand(hand).setSliderProgress(page.getProgress()).setPage(page.getPage()).setChapter(page.getChapter()).setDivision(page.getDivision()));
 	}
 
 	@Nonnull

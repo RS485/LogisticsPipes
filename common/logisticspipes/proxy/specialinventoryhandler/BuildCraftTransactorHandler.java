@@ -3,6 +3,7 @@ package logisticspipes.proxy.specialinventoryhandler;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -21,8 +22,7 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 		this.cap = cap;
 	}
 
-	public BuildCraftTransactorHandler() {
-	}
+	public BuildCraftTransactorHandler() {}
 
 	@Override
 	public boolean init() {
@@ -49,7 +49,7 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack getSingleItem(ItemIdentifier item) {
+	public @Nonnull ItemStack getSingleItem(ItemIdentifier item) {
 		return ItemStack.EMPTY;
 	}
 
@@ -69,11 +69,6 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean isSpecialInventory() {
-		return true;
-	}
-
-	@Override
 	public Set<ItemIdentifier> getItems() {
 		return Collections.emptySet();
 	}
@@ -84,13 +79,13 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int slot) {
+	public @Nonnull ItemStack getStackInSlot(int slot) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, 0, 64, true);
 	}
 
 	@Override
-	public ItemStack decrStackSize(int slot, int amount) {
+	public @Nonnull ItemStack decrStackSize(int slot, int amount) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, amount, amount, false);
 	}

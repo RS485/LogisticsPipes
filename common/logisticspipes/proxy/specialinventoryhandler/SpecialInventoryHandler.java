@@ -1,6 +1,9 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.Map;
+import java.util.stream.IntStream;
+
+import javax.annotation.Nonnull;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -21,31 +24,21 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
-		Map<ItemIdentifier, Integer> map = getItemsAndCount();
-		Integer count = map.get(itemIdent);
-		if (count == null) {
-			return 0;
-		}
-		return count;
+		final Map<ItemIdentifier, Integer> map = getItemsAndCount();
+		return map.getOrDefault(itemIdent, 0);
 	}
 
 	@Override
-	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	public @Nonnull ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {
 			return ItemStack.EMPTY;
 		}
-		ItemStack stack = ItemStack.EMPTY;
-		for (int i = 0; i < count; i++) {
-			if (stack.isEmpty()) {
-				stack = getSingleItem(itemIdent);
-			} else {
-				ItemStack newstack = getSingleItem(itemIdent);
-				if (newstack.isEmpty()) {
-					break;
-				}
-				stack.grow(newstack.getCount());
-			}
-		}
-		return stack;
+		return IntStream.range(0, count)
+				.mapToObj((i) -> getSingleItem(itemIdent))
+				.filter(ItemStack::isEmpty)
+				.reduce((left, right) -> {
+					left.grow(right.getCount());
+					return left;
+				}).orElse(ItemStack.EMPTY);
 	}
 }

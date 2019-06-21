@@ -3,15 +3,15 @@ package logisticspipes.proxy.specialinventoryhandler;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
-
-import logisticspipes.utils.item.ItemIdentifier;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
 
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
+
+import logisticspipes.utils.item.ItemIdentifier;
 
 public class DSUInventoryHandler extends SpecialInventoryHandler {
 
@@ -46,16 +46,16 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
-		if (items != null && ItemIdentifier.get(items).equals(itemIdent)) {
+		if (!items.isEmpty() && ItemIdentifier.get(items).equals(itemIdent)) {
 			return items.getCount() - (_hideOnePerStack ? 1 : 0);
 		}
 		return 0;
 	}
 
 	@Override
-	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	public @Nonnull ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack items = _tile.getStoredItemType();
-		if (items == null || !ItemIdentifier.get(items).equals(itemIdent)) {
+		if (items.isEmpty() || !ItemIdentifier.get(items).equals(itemIdent)) {
 			return ItemStack.EMPTY;
 		}
 		if (_hideOnePerStack) {
@@ -68,14 +68,13 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 		ItemStack newItems = items.splitStack(count);
 		_tile.setStoredItemCount(items.getCount() + (_hideOnePerStack ? 1 : 0));
 		return newItems;
-
 	}
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<>();
 		ItemStack items = _tile.getStoredItemType();
-		if (items != null && items.getCount() > 0) {
+		if (!items.isEmpty()) {
 			result.add(ItemIdentifier.get(items));
 		}
 		return result;
@@ -85,24 +84,21 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<>();
 		ItemStack items = _tile.getStoredItemType();
-		if (items != null && items.getCount() > 0) {
+		if (!items.isEmpty()) {
 			result.put(ItemIdentifier.get(items), items.getCount() - (_hideOnePerStack ? 1 : 0));
 		}
 		return result;
 	}
 
 	@Override
-	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
+	public @Nonnull ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		return getMultipleItems(itemIdent, 1);
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
-		if (items != null && ItemIdentifier.get(items).getUndamaged().equals(itemIdent)) {
-			return true;
-		}
-		return false;
+		return !items.isEmpty() && ItemIdentifier.get(items).getUndamaged().equals(itemIdent);
 	}
 
 	@Override
@@ -116,7 +112,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 			return 0;
 		}
 		ItemStack items = _tile.getStoredItemType();
-		if (items == null) {
+		if (items.isEmpty()) {
 			return _tile.getMaxStoredCount();
 		}
 		if (ItemIdentifier.get(items).equals(itemIdent)) {
@@ -133,7 +129,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 			return st;
 		}
 		ItemStack items = _tile.getStoredItemType();
-		if ((items == null || items.getCount() == 0)) {
+		if (items.isEmpty()) {
 			if (stack.getCount() <= _tile.getMaxStoredCount()) {
 				_tile.setStoredItemType(stack, stack.getCount());
 				st.setCount(stack.getCount());
@@ -159,28 +155,23 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean isSpecialInventory() {
-		return true;
-	}
-
-	@Override
 	public int getSizeInventory() {
 		return 1;
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int i) {
-		if (i != 0) {
+	public @Nonnull ItemStack getStackInSlot(int slot) {
+		if (slot != 0) {
 			return ItemStack.EMPTY;
 		}
 		return _tile.getStoredItemType();
 	}
 
 	@Override
-	public ItemStack decrStackSize(int i, int j) {
-		if (i != 0) {
+	public @Nonnull ItemStack decrStackSize(int slot, int amount) {
+		if (slot != 0) {
 			return ItemStack.EMPTY;
 		}
-		return getMultipleItems(ItemIdentifier.get(_tile.getStoredItemType()), j);
+		return getMultipleItems(ItemIdentifier.get(_tile.getStoredItemType()), amount);
 	}
 }

@@ -1,13 +1,14 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.util.*;
-
-import com.jaquadro.minecraft.storagedrawers.api.storage.ISmartGroup;
-import logisticspipes.utils.item.ItemIdentifier;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.common.Loader;
@@ -19,7 +20,10 @@ import net.minecraftforge.fml.common.versioning.VersionRange;
 
 import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawer;
 import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerGroup;
+import com.jaquadro.minecraft.storagedrawers.api.storage.ISmartGroup;
 import com.jaquadro.minecraft.storagedrawers.api.storage.attribute.IVoidable;
+
+import logisticspipes.utils.item.ItemIdentifier;
 
 public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
@@ -110,7 +114,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	public @Nonnull ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack stack = ItemStack.EMPTY;
 
 		if (_smartGroup != null) {
@@ -212,7 +216,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
+	public @Nonnull ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		return getMultipleItems(itemIdent, 1);
 	}
 
@@ -407,26 +411,21 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean isSpecialInventory() {
-		return true;
-	}
-
-	@Override
 	public int getSizeInventory() {
 		return _drawer.getDrawerCount();
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int i) {
+	public @Nonnull ItemStack getStackInSlot(int i) {
 		if (!_drawer.isDrawerEnabled(i)) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
-		return _drawer.getDrawer(i) != null ? _drawer.getDrawer(i).getStoredItemCopy() : null;
+		return _drawer.getDrawer(i) != null ? _drawer.getDrawer(i).getStoredItemCopy() : ItemStack.EMPTY;
 	}
 
 	@Override
-	public ItemStack decrStackSize(int i, int j) {
+	public @Nonnull ItemStack decrStackSize(int i, int j) {
 		if (!_drawer.isDrawerEnabled(i)) {
 			return ItemStack.EMPTY;
 		}
@@ -443,7 +442,6 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 		int avail = Math.min(j, drawer.getStoredItemCount());
 		drawer.setStoredItemCount(drawer.getStoredItemCount() - avail);
-
 		stack.setCount(avail);
 
 		return stack;

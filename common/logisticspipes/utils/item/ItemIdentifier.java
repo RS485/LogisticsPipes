@@ -122,7 +122,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	private static class MapDamagedItentifierHolder implements IDamagedIdentifierHolder {
 
-		private ConcurrentHashMap<Integer, ItemIdentifier> holder;
+		private final ConcurrentHashMap<Integer, ItemIdentifier> holder;
 
 		public MapDamagedItentifierHolder() {
 			holder = new ConcurrentHashMap<>(4096, 0.5f, 1);
@@ -252,8 +252,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	private String modName;
 	private String creativeTabName;
 
-	public static boolean allowNullsForTesting;
-
 	private static ItemIdentifier getOrCreateSimple(Item item, ItemIdentifier proposal) {
 		if (proposal != null) {
 			if (proposal.item == item && proposal.itemDamage == 0 && proposal.tag == null) {
@@ -364,9 +362,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	@SuppressWarnings("ConstantConditions")
 	@Nonnull
 	public static ItemIdentifier get(ItemStack itemStack) {
-		if (itemStack.isEmpty() && ItemIdentifier.allowNullsForTesting) {
-			return null;
-		}
 		ItemIdentifier proposal = null;
 		IAddInfoProvider prov = null;
 		if (((Object) itemStack) instanceof IAddInfoProvider && !itemStack.hasTagCompound()) {

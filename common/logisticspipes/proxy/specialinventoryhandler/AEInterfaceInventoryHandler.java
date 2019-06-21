@@ -4,12 +4,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.Map.Entry;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,17 +39,13 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	private final boolean hideOnePerStack;
 	private final TileEntity tile;
 	private final EnumFacing dir;
+	private final LPActionSource source;
 	private IStorageMonitorableAccessor acc = null;
-	private LPActionSource source;
 	public IGridHost host;
 	LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		if (dir.equals(null)) {
-			throw new IllegalArgumentException("The direction must not be unknown");
-		}
-
-		this.tile =  tile;
+		this.tile = tile;
 		this.hideOnePerStack = hideOnePerStack || hideOne;
 		this.acc = tile.getCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
 		host = (IGridHost) tile;
@@ -115,7 +109,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack getSingleItem(ItemIdentifier item) {
+	public @Nonnull
+	ItemStack getSingleItem(ItemIdentifier item) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null) {
@@ -159,18 +154,13 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 			return 0;
 		}
 		while (count > 0) {
-			IAEItemStack stack = AEApi.instance().storage().getStorageChannel( IItemStorageChannel.class).createStack(itemIdent.makeNormalStack(count));
+			IAEItemStack stack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(itemIdent.makeNormalStack(count));
 			if (tmp.getInventory(channel).canAccept(stack)) {
 				return count;
 			}
 			count--;
 		}
 		return 0;
-	}
-
-	@Override
-	public boolean isSpecialInventory() {
-		return true;
 	}
 
 	@Override
@@ -200,23 +190,25 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
 		cached = new LinkedList<>();
-		cached.addAll(map.entrySet().stream().collect(Collectors.toList()));
+		cached.addAll(map.entrySet());
 	}
 
 	@Override
-	public ItemStack getStackInSlot(int i) {
+	public @Nonnull
+	ItemStack getStackInSlot(int i) {
 		if (cached == null) {
 			initCache();
 		}
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		if (entry.getValue() == 0) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
 
 	@Override
-	public ItemStack decrStackSize(int i, int j) {
+	public @Nonnull
+	ItemStack decrStackSize(int i, int j) {
 		if (cached == null) {
 			initCache();
 		}
@@ -237,7 +229,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		}
 		IAEItemStack overflow = tmp.getInventory(channel).injectItems(tst, Actionable.MODULATE, source);
 		if (overflow != null) {
-			st.setCount((int)(st.getCount() - overflow.getStackSize()));
+			st.setCount((int) (st.getCount() - overflow.getStackSize()));
 		}
 		return st;
 	}
@@ -248,7 +240,7 @@ class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase> {
 	@CapabilityInject(IStorageMonitorableAccessor.class)
 	public static final Capability<IStorageMonitorableAccessor> STORAGE_MONITORABLE_ACCESSOR_CAPABILITY = null;
 
-	private IStorageMonitorableAccessor instance = STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getDefaultInstance();
+	private final IStorageMonitorableAccessor instance = STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getDefaultInstance();
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
@@ -257,7 +249,7 @@ class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase> {
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY ? STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.<T> cast(this.instance) : null;
+		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY ? STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.<T>cast(this.instance) : null;
 	}
 
 	@Override
@@ -273,7 +265,8 @@ class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase> {
 
 class LPActionSource implements IActionSource {
 
-	IGridHost host;
+	final IGridHost host;
+
 	public LPActionSource(AEInterfaceInventoryHandler invh) {
 		host = invh.host;
 	}

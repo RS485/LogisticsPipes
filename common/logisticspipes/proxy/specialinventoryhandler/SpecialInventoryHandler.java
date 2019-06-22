@@ -35,7 +35,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 		}
 		return IntStream.range(0, count)
 				.mapToObj((i) -> getSingleItem(itemIdent))
-				.filter(ItemStack::isEmpty)
+				.filter(itemStack -> !itemStack.isEmpty())
 				.reduce((left, right) -> {
 					left.grow(right.getCount());
 					return left;

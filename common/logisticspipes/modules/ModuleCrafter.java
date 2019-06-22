@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.concurrent.DelayQueue;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -1472,9 +1474,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public static class ClientSideSatelliteNames {
-		public String satelliteName;
-		public String[] advancedSatelliteNameArray;
-		public String liquidSatelliteName;
-		public String[] liquidSatelliteNameArray;
+		public @Nonnull String satelliteName = "";
+		public @Nonnull String[] advancedSatelliteNameArray = {};
+		public @Nonnull String liquidSatelliteName = "";
+		public @Nonnull String[] liquidSatelliteNameArray = {};
 	}
 }

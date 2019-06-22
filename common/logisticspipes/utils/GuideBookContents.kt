@@ -64,6 +64,7 @@ class GuideBookContents private constructor(val lang: String, val divisions: Lis
                     val text = res.inputStream.bufferedReader().readLines().joinToString("\n")
                     return Page(dindex, cindex, index, text)
                 }
+                LogisticsPipes.log.error("Loaded page successfully!")
             } catch (e: IOException) {
                 LogisticsPipes.log.error("Couldn't find page $par/$cha/page$index for language '$lang'!")
             }

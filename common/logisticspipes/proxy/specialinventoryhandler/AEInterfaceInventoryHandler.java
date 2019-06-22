@@ -124,6 +124,25 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
+	public @Nonnull ItemStack getMultipleItems(ItemIdentifier itemIdent, int count)
+	{
+		if (itemCount(itemIdent) < count) {
+			return ItemStack.EMPTY;
+		}
+		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+		IStorageMonitorable tmp = acc.getInventory(source);
+		if (tmp == null || tmp.getInventory(channel) == null) {
+			return ItemStack.EMPTY;
+		}
+		IAEItemStack stack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(itemIdent.makeNormalStack(count));
+		IAEItemStack extract = tmp.getInventory(channel).extractItems(stack, Actionable.MODULATE, source);
+		if (extract == null) {
+			return ItemStack.EMPTY;
+		}
+		return extract.createItemStack();
+	}
+
+	@Override
 	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
@@ -183,6 +202,10 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		if (cached == null) {
 			initCache();
 		}
+
+		if(cached.size() == 0)	//empty AE system - pipe will not insert thinking inv has no space
+			return 1;			//it seems it cannot cause IndexOutOfBounds as getStackInSlot is not called if getItemsAndCount returns empty map
+
 		return cached.size();
 	}
 

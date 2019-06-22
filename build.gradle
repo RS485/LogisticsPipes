@@ -274,16 +274,24 @@ task downloadLanguage(type: Download) {
     dest new File(temporaryDir, "language.zip")
 }
 
-task extractLanguage(dependsOn: downloadLanguage, type: Copy) {
-    from(zipTree(downloadLanguage.dest)) {
-        include "**/**.lang"
-        includeEmptyDirs = false
-    }
-    into temporaryDir
+task languageMain(dependsOn: downloadLanguage, type: Copy) {
+    from zipTree(downloadLanguage.dest)
+    into "$buildDir/resources/main/assets/logisticspipes/lang/"
+    include "*/*.lang"
+
+    includeEmptyDirs false
+    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1)) }
 }
 
-task language(dependsOn: extractLanguage, type: Copy) {
+task languageBook(dependsOn: downloadLanguage, type: Copy) {
+    from zipTree(downloadLanguage.dest)
+    into "$buildDir/resources/main/assets/logisticspipes/book/"
+    include "*/book/"
+
+    includeEmptyDirs false
+    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2)) }
+}
+
+task language(dependsOn: [languageMain, languageBook], type: Copy) {
     processResources.dependsOn language
-    from new File(extractLanguage.destinationDir, "LogisticsPipes-Language-master")
-    into new File(buildDir, "resources/main/assets/logisticspipes/lang/")
 }

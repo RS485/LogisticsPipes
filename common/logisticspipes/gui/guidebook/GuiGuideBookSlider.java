@@ -51,7 +51,7 @@ public class GuiGuideBookSlider extends GuiButton {
 		this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 		boolean btnAtlasOffsetY = this.hovered && !dragging || !this.enabled;
 		boolean btnAtlasOffsetX = this.dragging || !this.enabled;
-		GuiGuideBook.drawStretchingSquare(this.x, this.y, this.x + this.width, this.y + this.height, (int) zLevel, (double) (96 + (btnAtlasOffsetX ? 1 : 0 * 12)), (double) (0 + (btnAtlasOffsetY ? 1 : 0 * 15)), (double) (108 + (btnAtlasOffsetX ? 1 : 0 * 12)), (double) ((btnAtlasOffsetY ? 1 : 0 * 15) + 15));
+		GuiGuideBook.drawStretchingSquare(this.x, this.y, this.x + this.width, this.y + this.height, (int) zLevel, (double) (96 + ((btnAtlasOffsetX ? 1 : 0) * 12)), (double) ((0 + (btnAtlasOffsetY ? 1 : 0) * 15)), (double) (108 + ((btnAtlasOffsetX ? 1 : 0) * 12)), (double) (((btnAtlasOffsetY ? 1 : 0) * 15) + 15));
 		this.mouseDragged(mc, mouseX, mouseY);
 	}
 

@@ -100,7 +100,7 @@ public class GuiGuideBook extends GuiScreen {
 		this.page = new PageState();
 		this.menu = new MenuState();
 		this.currentPage = new SavedTab(gbc.getDivision(0).getChapter(0).getPage(0), page);
-		this.menuPage = new SavedTab(gbc.getDivision(0).getChapter(0).getPage(0), page);
+		this.menuPage = new SavedTab();
 		this.divisionsList = new ArrayList<>();
 		this.tabList = new ArrayList<>();
 		for (GuideBookContents.Division div : gbc.getDivisions()) {
@@ -217,7 +217,7 @@ public class GuiGuideBook extends GuiScreen {
 		this.home = this.addButton(new GuiGuideBookTexturedButton(1, guiX3 - guiTabWidth, guiY0 - guiTabHeight, guiTabWidth, guiFullTabHeight, 16, 64, zTitleButtons, 128, 0, 16, 16, false, GuiGuideBookTexturedButton.EnumButtonType.TAB));
 		this.prevPage = this.addButton(new GuiGuideBookTexturedButton(2, areaCenterX - areaOffsetCenterX, guiY3 - 12, guiArrowWidth, guiArrowHeight, 0, 0, zTitleButtons, 144, 0, 24, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
 		this.nextPage = this.addButton(new GuiGuideBookTexturedButton(3, areaCenterX + areaOffsetCenterX - guiArrowWidth, guiY3 - 12, guiArrowWidth, guiArrowHeight, 0, 0, zTitleButtons, 168, 0, 24, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
-		this.button = this.addButton(new GuiButton(4, guiX0 + 4, guiY0 + 4, 20, 20, "+"));
+		this.button = this.addButton(new GuiGuideBookTexturedButton(4, guiX3 - 18 - guiTabWidth + 4, guiY0 - 18, 16, 16, 0, 0, zTitleButtons, 192, 0, 16, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
 		this.updateButtonVisibility();
 	}
 
@@ -247,7 +247,9 @@ public class GuiGuideBook extends GuiScreen {
 				nextPage();
 				break;
 			case 4:
-				if (currentPage.drawable != menu) tryAddTab(currentPage);
+				if (currentPage.drawable != menu){
+					if(!tabExists(currentPage)) tryAddTab(currentPage);
+				}
 			default:
 				break;
 		}
@@ -255,7 +257,6 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	private void tryAddTab(SavedTab currentPage) {
-		for (GuiGuideBookTabButton tab : tabList) if (equals(tab.getTab() == currentPage)) return;
 		tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, currentPage));
 		updateButtonVisibility();
 	}
@@ -283,8 +284,11 @@ public class GuiGuideBook extends GuiScreen {
 			if (tab.mousePressed(mc, mouseX, mouseY)) {
 				if (mouseButton == 0) {
 					currentPage = new SavedTab(tab.getTab());
+					tab.playPressSound(this.mc.getSoundHandler());
 				} else if (mouseButton == 1) {
 					tryRemoveTab(tab);
+				} else if(mouseButton == 2){
+					tab.cycleColor();
 				}
 			}
 		}
@@ -330,7 +334,15 @@ public class GuiGuideBook extends GuiScreen {
 			if (equals(tab.getTab(), currentPage)) tab.isActive = true;
 			else tab.isActive = false;
 		}
+		this.button.visible = currentPage.drawable != menu;
+		this.button.enabled = !tabExists(currentPage);
+		this.button.x = guiX3 - 20 - guiTabWidth - offset;
 		updateTitle();
+	}
+
+	protected boolean tabExists(SavedTab checkTab){
+		for (GuiGuideBookTabButton tab : tabList) if (equals(tab.getTab(), checkTab)) return true;
+		return false;
 	}
 
 	protected void nextPage() {
@@ -694,7 +706,10 @@ public class GuiGuideBook extends GuiScreen {
 		}
 
 		public SavedTab(GuideBookContents.Page page, IDrawable drawable) {
-			new SavedTab(page, drawable, 0.0F);
+			this.page = page;
+			this.drawable = drawable;
+			this.progress = 0.0F;
+			this.color = 0xFFFFFF;
 		}
 
 		public SavedTab(GuideBookContents.Page page, IDrawable drawable, float progress) {
@@ -705,15 +720,15 @@ public class GuiGuideBook extends GuiScreen {
 		}
 
 		public SavedTab() {
-			page = new GuideBookContents.Page(0, 0, 0, "");
-			drawable = menu;
+			this.page = new GuideBookContents.Page(0, 0, 0, "");
+			this.drawable = menu;
 			this.color = 0xFF0000;
 		}
 
 		public SavedTab(SavedTab tab) {
-			page = tab.page;
-			drawable = tab.drawable;
-			progress = tab.progress;
+			this.page = tab.page;
+			this.drawable = tab.drawable;
+			this.progress = tab.progress;
 			this.color = 0xFF0000;
 		}
 	}

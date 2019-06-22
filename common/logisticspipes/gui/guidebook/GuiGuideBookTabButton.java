@@ -13,6 +13,7 @@ import logisticspipes.LPConstants;
 public class GuiGuideBookTabButton extends GuiButton {
 
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
+	private final int[] colors = {0xFF0000, 0x00FF00, 0x0000FF};
 
 	public boolean isActive;
 	@Setter
@@ -26,12 +27,19 @@ public class GuiGuideBookTabButton extends GuiButton {
 		this.tab = tab;
 		this.visible = true;
 		this.isActive = false;
-		this.color = tab.color;
+		this.color = 0;
 	}
 
 	@Override
 	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
 		return enabled && visible && hovered;
+	}
+
+	public void cycleColor(){
+		if(isActive) return;
+		this.color++;
+		if(this.color >= colors.length) this.color = 0;
+		playPressSound(Minecraft.getMinecraft().getSoundHandler());
 	}
 
 	@Override
@@ -47,8 +55,7 @@ public class GuiGuideBookTabButton extends GuiButton {
 			drawY += 3;
 		}
 		this.hovered = mouseX > this.x && mouseX <= this.x + this.width && mouseY >= this.y - this.height && mouseY < this.y;
-		color = this.isActive ? 0xFFFFFF : color;
-		GuiGuideBook.drawStretchingSquare(x, drawY - drawHeight, x + width, drawY, 15, 40, 64, 40 + width, 64 + drawHeight, true, color);
+		GuiGuideBook.drawStretchingSquare(x, drawY - drawHeight, x + width, drawY, 15, 40, 64, 40 + width, 64 + drawHeight, true, this.isActive?0xFFFFFF:colors[color]);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 	}

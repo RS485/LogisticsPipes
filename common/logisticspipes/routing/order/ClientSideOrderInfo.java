@@ -44,8 +44,13 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 		type = input.readEnum(IOrderInfoProvider.ResourceType.class);
 		progresses = input.readArrayList(LPDataInput::readFloat);
 		machineProgress = input.readByte();
-		targetPosition = new DoubleCoordinates(input);
-		targetType = input.readItemIdentifier();
+		if(input.readBoolean()) {
+			targetPosition = new DoubleCoordinates(input);
+			targetType = input.readItemIdentifier();
+		} else {
+			targetPosition = null;
+			targetType = null;
+		}
 	}
 
 	//Ignore this call

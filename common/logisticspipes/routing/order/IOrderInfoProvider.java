@@ -41,8 +41,13 @@ public interface IOrderInfoProvider extends LPFinalSerializable {
 		output.writeEnum(getType());
 		output.writeCollection(getProgresses(), LPDataOutput::writeFloat);
 		output.writeByte(getMachineProgress());
-		output.writeSerializable(getTargetPosition());
-		output.writeItemIdentifier(getTargetType());
+		if(getTargetPosition() != null) {
+			output.writeBoolean(true);
+			output.writeSerializable(getTargetPosition());
+			output.writeItemIdentifier(getTargetType());
+		} else {
+			output.writeBoolean(false);
+		}
 	}
 
 	enum ResourceType {

@@ -386,7 +386,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								GuiGraphics.displayItemToolTip(new Object[]{xPos - 10, yPos, order
 										.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false);
 							});
-						} else {
+						} else if(entry.getValue().getValue1().getDisplayItem() != null) {
 							List<String> list = new ArrayList<>();
 							list.add(ChatColor.BLUE + "Request ID: " + ChatColor.YELLOW + entry.getKey());
 							GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, entry.getValue().getValue1().getDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false);

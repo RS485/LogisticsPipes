@@ -578,9 +578,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	}
 
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
-		itemRender.renderItemAndEffectIntoGUI(item.makeNormalStack(), x, y);
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
-			itemRender.renderItemOverlayIntoGUI(fontRenderer, item.makeNormalStack(), x, y, "");
+			itemRender.renderItemAndEffectIntoGUI(item.getItem().makeNormalStack(1), x, y);
+			itemRender.renderItemOverlayIntoGUI(fontRenderer, item.getItem().makeNormalStack(1), x, y, "");
 			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);

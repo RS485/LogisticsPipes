@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -130,7 +131,9 @@ public class MCMPProxy implements IMCMPProxy {
 			float alpha) {
 		TileEntitySpecialRenderer<TileEntity> renderer = TileEntityRendererDispatcher.instance
 				.getRenderer(TileMultipartContainer.class);
-		renderer.render(tileentity.imcmpltgpCompanion.getMCMPTileEntity(), x, y, z, partialTicks, destroyStage, alpha);
+		if (destroyStage < 0 || (tileentity.imcmpltgpCompanion.getMCMPTileEntity() != null && Minecraft.getMinecraft().objectMouseOver != null)) {
+			renderer.render(tileentity.imcmpltgpCompanion.getMCMPTileEntity(), x, y, z, partialTicks, destroyStage, alpha);
+		}
 	}
 
 	@SubscribeEvent

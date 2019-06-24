@@ -15,8 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -24,7 +22,6 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
-import appeng.api.features.IGrinderRecipe;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;

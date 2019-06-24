@@ -23,11 +23,12 @@ import lombok.Getter;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
+import logisticspipes.gui.guidebook.book.DrawableMenu;
+import logisticspipes.gui.guidebook.book.DrawablePage;
 import logisticspipes.gui.guidebook.book.MenuItem;
 import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.items.ItemGuideBook;
 import logisticspipes.utils.GuideBookContents;
-import logisticspipes.utils.string.StringUtils;
 
 public class GuiGuideBook extends GuiScreen {
 
@@ -42,14 +43,20 @@ public class GuiGuideBook extends GuiScreen {
 	 */
 
 	private boolean loadedNBT = false;
+
+	@Getter
 	private final int zTooltip = 20;      // Tooltip z
+	@Getter
 	private final int zTitleButtons = 15; // Title and Buttons Z
+	@Getter
 	private final int zFrame = 10;        // Frame Z
+	@Getter
 	private final int zText = 5;          // Text/Information Z
+	@Getter
 	private final int zBackground = 0;    // Background Z
 	public static GuideBookContents gbc;
 
-	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
+	public static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	// Buttons
 	private GuiGuideBookSlider slider;
@@ -60,18 +67,20 @@ public class GuiGuideBook extends GuiScreen {
 	private int tabID = 50;
 
 	private int mouseX, mouseY;
-	private ArrayList<MenuItemsDivision> divisionsList;
-	private static SavedTab currentPage;
+	public ArrayList<MenuItemsDivision> divisionsList;
+	public static SavedTab currentPage;
 	private SavedTab menuPage;
-	public static PageState page;
-	public static MenuState menu;
+	public static DrawablePage page;
+	public static DrawableMenu menu;
 	private static String title;
 
 	// Book Experimental variables
 	private EnumHand hand;
 
 	// Gui Drawing variables
+	@Getter
 	private int guiX0, guiY0, guiX1, guiY1, guiX2, guiY2, guiX3, guiY3, guiWidth, guiHeight, guiInnerWidth, guiInnerHeight, guiBgX0, guiBgY0, guiBgX1, guiBgY1;
+	@Getter
 	private int guiSepX0, guiSepY0, guiSepY1, guiSepX1, guiSepY2, guiSepY3, guiSliderX, guiSliderY0, guiSliderY1;
 	private final int guiBorderThickness = 16, guiShadowThickness = 5, guiSeparatorThickness = 6;
 	private final int guiBorderWithShadowThickness = guiBorderThickness + guiShadowThickness;
@@ -79,9 +88,12 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiTabWidth = 24, guiTabHeight = 24, guiFullTabHeight = 32;
 	private final int guiArrowWidth = 22, guiArrowHeight = 16;
 	// Usable area
+	@Getter
 	private int areaX0, areaY0, areaX1, areaY1, areaAcrossX, areaCenterX, areaAcrossY, areaCurrentlyDrawnY, areaOffsetCenterX;
 	// Menu Tiles and Text sizes
+	@Getter
 	private int tileSpacing, tileMax;
+	@Getter
 	private final int tileSize = 40;
 
 	// Texture atlas constants
@@ -100,8 +112,8 @@ public class GuiGuideBook extends GuiScreen {
 		super();
 		this.hand = hand;
 		this.gbc = gbc;
-		this.page = new PageState();
-		this.menu = new MenuState();
+		this.page = new DrawablePage();
+		this.menu = new DrawableMenu();
 		this.currentPage = new SavedTab(gbc.getDivision(0).getChapter(0).getPage(0), page);
 		this.menuPage = new SavedTab();
 		this.divisionsList = new ArrayList<>();
@@ -119,7 +131,7 @@ public class GuiGuideBook extends GuiScreen {
 	 */
 	protected void drawCurrentEvent() {
 		int yOffset = slider.enabled ? -(int) (MathHelper.clamp(slider.getProgress() * (areaCurrentlyDrawnY - areaAcrossY), 0, areaCurrentlyDrawnY - areaAcrossY)) : 0;
-		areaCurrentlyDrawnY = currentPage.drawable.draw(mc, mouseX, mouseY, yOffset);
+		areaCurrentlyDrawnY = currentPage.drawable.draw(mc, this, mouseX, mouseY, yOffset);
 	}
 
 	/*
@@ -374,16 +386,17 @@ public class GuiGuideBook extends GuiScreen {
 	/**
 	 * Draws the page count in between the page arrows
 	 */
-	protected void drawPageCount() {
+	public static void drawPageCount(GuiGuideBook gui) {
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(0.0F, 0.0F, zTitleButtons);
-		this.drawCenteredString(this.fontRenderer, currentPage.getPage() + 1 + "/" + currentPage.getPageCount(), this.width / 2, guiY2 + 13, 0xFFFFFF);
+		GlStateManager.translate(0.0F, 0.0F, gui.zTitleButtons);
+		gui.drawCenteredString(gui.mc.fontRenderer, currentPage.getPage() + 1 + "/" + currentPage.getPageCount(), gui.width / 2, gui.getGuiY2() + 13, 0xFFFFFF);
 		GlStateManager.popMatrix();
 	}
 
 	/**
 	 * Draws the main GUI border and background
 	 */
+	@SuppressWarnings("Duplicates")
 	protected void drawGui() {
 		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
 		// Background
@@ -597,7 +610,7 @@ public class GuiGuideBook extends GuiScreen {
 		return a.getPage() == b.getPage() && a.getChapter() == b.getChapter() && a.getDivision() == b.getDivision() && a.drawable == b.drawable;
 	}
 
-	private class MenuItemsDivision {
+	public class MenuItemsDivision {
 
 		@Getter
 		private ArrayList<MenuItem> list;
@@ -608,61 +621,6 @@ public class GuiGuideBook extends GuiScreen {
 
 		public void add(MenuItem item) {
 			list.add(item);
-		}
-	}
-
-	public interface IDrawable {
-
-		int draw(Minecraft mc, int mouseX, int mouseY, int yOffset);
-	}
-
-	public class MenuState implements IDrawable {
-
-		public MenuState() {
-			super();
-		}
-
-		@Override
-		public int draw(Minecraft mc, int mouseX, int mouseY, int yOffset) {
-			int area$currentY = 0;
-			mouseX = mouseX < guiX0 || mouseX > guiX3 ? 0 : mouseX;
-			mouseY = mouseY < guiY0 || mouseY > guiY3 ? 0 : mouseY;
-			for (GuideBookContents.Division div : gbc.getDivisions()) {
-				drawMenuText(mc, areaX0, areaY0 + area$currentY + yOffset, areaAcrossX, 19, div.getTitle());
-				area$currentY += 20;
-				for (int chapterIndex = 0; chapterIndex < div.getChapters().size(); chapterIndex++) {
-					divisionsList.get(div.getDindex()).getList().get(chapterIndex).drawMenuItem(mc, mouseX, mouseY, areaX0 + (chapterIndex % tileMax * (tileSize + tileSpacing)), areaY0 + area$currentY + yOffset, tileSize, tileSize, false);
-					int tileBottom = (areaY0 + area$currentY + yOffset + tileSize);
-					int maxBottom = areaY1;
-					boolean above = tileBottom > maxBottom;
-					divisionsList.get(div.getDindex()).getList().get(chapterIndex).drawTitle(mc, mouseX, mouseY, above);
-					if ((chapterIndex + 1) % tileMax == 0) area$currentY += tileSpacing + tileSize;
-					if (chapterIndex == div.getChapters().size() - 1) area$currentY += tileSize;
-				}
-			}
-			return area$currentY;
-		}
-	}
-
-	public class PageState implements IDrawable {
-
-		@Override
-		public int draw(Minecraft mc, int mouseX, int mouseY, int yOffset) {
-			String unformattedText = currentPage.page.getText();
-			ArrayList<String> text = StringUtils.splitLines(unformattedText, fontRenderer, areaAcrossX);
-			int area$currentY = 0;
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(0, 0, zText);
-			for (String line : text) {
-				fontRenderer.drawString(line, areaX0, areaY0 + area$currentY + yOffset, 0xFFFFFF);
-				area$currentY += 10;
-			}
-			GlStateManager.popMatrix();
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(0.0F, 0.0F, zTitleButtons);
-			drawPageCount();
-			GlStateManager.popMatrix();
-			return area$currentY;
 		}
 	}
 }

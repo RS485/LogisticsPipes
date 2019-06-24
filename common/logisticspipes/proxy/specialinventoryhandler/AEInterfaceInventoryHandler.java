@@ -23,6 +23,7 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.IStorageMonitorable;
@@ -30,6 +31,7 @@ import appeng.api.storage.IStorageMonitorableAccessor;
 import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
+import appeng.api.util.AEPartLocation;
 
 import logisticspipes.utils.item.ItemIdentifier;
 
@@ -41,14 +43,16 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	private final EnumFacing dir;
 	private final LPActionSource source;
 	private IStorageMonitorableAccessor acc = null;
-	public IGridHost host;
-	LinkedList<Entry<ItemIdentifier, Integer>> cached;
+	IGridHost host;
+	public IGridNode node;
+	private LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		this.tile = tile;
 		this.hideOnePerStack = hideOnePerStack || hideOne;
 		this.acc = tile.getCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
-		host = (IGridHost) tile;
+		node = ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir));
+		host = node.getMachine();
 		source = new LPActionSource(this);
 		this.dir = dir;
 	}
@@ -62,7 +66,11 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean isType(TileEntity tile, EnumFacing dir) {
-		return tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
+		if (tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir)) {
+			// for some reason when AE loads (5 ticks) this is null
+			return ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir)) != null;
+		}
+		return false;
 	}
 
 	@Override
@@ -91,7 +99,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
-		if ((tmp == null) || (tmp.getInventory(channel) == null) || (tmp.getInventory(channel).getStorageList() == null)) {
+		if (tmp == null || tmp.getInventory(channel) == null || tmp.getInventory(channel).getStorageList() == null) {
 			return result;
 		}
 
@@ -109,7 +117,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getSingleItem(ItemIdentifier item) {
+	@Nonnull
+	public ItemStack getSingleItem(ItemIdentifier item) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null) {
@@ -124,8 +133,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getMultipleItems(ItemIdentifier itemIdent, int count)
-	{
+	@Nonnull
+	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {
 			return ItemStack.EMPTY;
 		}
@@ -203,20 +212,21 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 			initCache();
 		}
 
-		if(cached.size() == 0)	//empty AE system - pipe will not insert thinking inv has no space
-			return 1;			//it seems it cannot cause IndexOutOfBounds as getStackInSlot is not called if getItemsAndCount returns empty map
+		// allow LP putting items into AE, when it's empty
+		if (cached.size() == 0) return 1;
 
 		return cached.size();
 	}
 
-	public void initCache() {
+	private void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
 		cached = new LinkedList<>();
 		cached.addAll(map.entrySet());
 	}
 
 	@Override
-	public @Nonnull ItemStack getStackInSlot(int i) {
+	@Nonnull
+	public ItemStack getStackInSlot(int i) {
 		if (cached == null) {
 			initCache();
 		}
@@ -228,7 +238,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack decrStackSize(int i, int j) {
+	@Nonnull
+	public ItemStack decrStackSize(int i, int j) {
 		if (cached == null) {
 			initCache();
 		}

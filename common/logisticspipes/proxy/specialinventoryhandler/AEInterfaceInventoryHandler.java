@@ -51,7 +51,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		this.tile = tile;
 		this.hideOnePerStack = hideOnePerStack || hideOne;
 		this.acc = tile.getCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
-		node = ((IGridHost)tile).getGridNode(AEPartLocation.fromFacing(dir));
+		node = ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir));
 		host = node.getMachine();
 		source = new LPActionSource(this);
 		this.dir = dir;
@@ -67,10 +67,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean isType(TileEntity tile, EnumFacing dir) {
 		if (tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir)) {
-			IGridNode tempNode = ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir));    //for some reason when AE loads (5 ticks) this is null
-			if (tempNode == null)																	//should not be a problem because interfaces are still treated like IInvertoryHandler
-				return false;
-			return true;
+			return ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir)) != null;
 		}
 		return false;
 	}
@@ -212,10 +209,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		if (cached == null) {
 			initCache();
 		}
-
-		if(cached.size() == 0)
+		if(cached.size() == 0) {
 			return 1;
-
+		}
 		return cached.size();
 	}
 

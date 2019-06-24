@@ -1,6 +1,7 @@
 package logisticspipes.gui.guidebook;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
@@ -20,6 +21,8 @@ import net.minecraft.util.math.MathHelper;
 import logisticspipes.items.ItemGuideBook;
 import logisticspipes.utils.string.StringUtils;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.opengl.GL11;
@@ -27,6 +30,8 @@ import org.lwjgl.opengl.GL11;
 import logisticspipes.LPConstants;
 import logisticspipes.gui.guidebook.book.MenuItem;
 import logisticspipes.utils.GuideBookContents;
+import network.rs485.logisticspipes.util.LPDataInput;
+import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class GuiGuideBook extends GuiScreen {
 
@@ -46,7 +51,7 @@ public class GuiGuideBook extends GuiScreen {
 	private final int zFrame = 10;        // Frame Z
 	private final int zText = 5;          // Text/Information Z
 	private final int zBackground = 0;    // Background Z
-	private GuideBookContents gbc;
+	private static GuideBookContents gbc;
 
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
@@ -60,10 +65,11 @@ public class GuiGuideBook extends GuiScreen {
 
 	private int mouseX, mouseY;
 	private ArrayList<MenuItemsDivision> divisionsList;
-	private SavedTab currentPage, menuPage;
-	private PageState page;
-	private MenuState menu;
-	private String title;
+	private static SavedTab currentPage;
+	private SavedTab menuPage;
+	private static PageState page;
+	private static MenuState menu;
+	private static String title;
 
 	// Book Experimental variables
 	private EnumHand hand;
@@ -183,7 +189,7 @@ public class GuiGuideBook extends GuiScreen {
 					gbc.getDivision(nbtTagCompound.getInteger("division"))
 							.getChapter(nbtTagCompound.getInteger("chapter"))
 							.getPage(nbtTagCompound.getInteger("page")),
-					page, nbtTagCompound.getFloat("sliderProgress"));
+					page, 0, nbtTagCompound.getFloat("sliderProgress"));
 			currentPage.drawable = page;
 		} else {
 			SavedTab defaultPage = new SavedTab();
@@ -212,7 +218,7 @@ public class GuiGuideBook extends GuiScreen {
 
 		this.tabList.clear();
 		this.calculateConstraints();
-		this.updateTitle();
+		this.updateTitle(title);
 		this.slider = this.addButton(new GuiGuideBookSlider(0, guiSliderX, guiSliderY0, guiSliderY1, zTitleButtons, currentPage.getProgress(), guiSliderWidth, guiSliderHeight));
 		this.slider.enabled = false;
 		this.home = this.addButton(new GuiGuideBookTexturedButton(1, guiX3 - guiTabWidth, guiY0 - guiTabHeight, guiTabWidth, guiFullTabHeight, 16, 64, zTitleButtons, 128, 0, 16, 16, false, GuiGuideBookTexturedButton.EnumButtonType.TAB));
@@ -230,7 +236,9 @@ public class GuiGuideBook extends GuiScreen {
 	@Override
 	public void onGuiClosed() {
 		currentPage.setProgress(slider.getProgress());
-		ItemGuideBook.setCurrentPage(currentPage, hand);
+		ArrayList<SavedTab> tabs = new ArrayList<>();
+		for (GuiGuideBookTabButton tab : tabList) tabs.add(tab.getTab());
+		ItemGuideBook.setCurrentPage(currentPage, this, tabs, hand);
 		super.onGuiClosed();
 	}
 
@@ -248,8 +256,8 @@ public class GuiGuideBook extends GuiScreen {
 				nextPage();
 				break;
 			case 4:
-				if (currentPage.drawable != menu){
-					if(!tabExists(currentPage)) tryAddTab(currentPage);
+				if (currentPage.drawable != menu) {
+					if (!tabExists(currentPage)) tryAddTab(currentPage);
 				}
 			default:
 				break;
@@ -288,7 +296,7 @@ public class GuiGuideBook extends GuiScreen {
 					tab.playPressSound(this.mc.getSoundHandler());
 				} else if (mouseButton == 1) {
 					tryRemoveTab(tab);
-				} else if(mouseButton == 2){
+				} else if (mouseButton == 2) {
 					tab.cycleColor();
 				}
 			}
@@ -304,11 +312,11 @@ public class GuiGuideBook extends GuiScreen {
 	protected void selectChapter(MenuItem item) {
 		currentPage.setPage(item);
 		currentPage.drawable = page;
-		updateTitle();
+		updateTitle(title);
 		updateButtonVisibility();
 	}
 
-	protected void updateTitle() {
+	protected static void updateTitle(String currentTitle) {
 		String title = "";
 		title += gbc.getTitle();
 		if (currentPage.drawable == menu) {
@@ -319,7 +327,7 @@ public class GuiGuideBook extends GuiScreen {
 				title += " - " + gbc.getDivision(currentPage.getDivision()).getChapter(currentPage.getChapter()).getTitle();
 			}
 		}
-		this.title = title;
+		currentTitle = title;
 	}
 
 	protected void updateButtonVisibility() {
@@ -338,10 +346,10 @@ public class GuiGuideBook extends GuiScreen {
 		this.button.visible = currentPage.drawable != menu;
 		this.button.enabled = !tabExists(currentPage);
 		this.button.x = guiX3 - 20 - guiTabWidth - offset;
-		updateTitle();
+		updateTitle(title);
 	}
 
-	protected boolean tabExists(SavedTab checkTab){
+	protected boolean tabExists(SavedTab checkTab) {
 		for (GuiGuideBookTabButton tab : tabList) if (equals(tab.getTab(), checkTab)) return true;
 		return false;
 	}
@@ -592,7 +600,7 @@ public class GuiGuideBook extends GuiScreen {
 		return a.getPage() == b.getPage() && a.getChapter() == b.getChapter() && a.getDivision() == b.getDivision() && a.drawable == b.drawable;
 	}
 
-	public class MenuItemsDivision {
+	private class MenuItemsDivision {
 
 		@Getter
 		private ArrayList<MenuItem> list;
@@ -606,12 +614,12 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	public interface IDrawable {
+	private interface IDrawable {
 
 		int draw(Minecraft mc, int mouseX, int mouseY, int yOffset);
 	}
 
-	public class MenuState implements IDrawable {
+	private class MenuState implements IDrawable {
 
 		public MenuState() {
 			super();
@@ -639,7 +647,7 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	public class PageState implements IDrawable {
+	private class PageState implements IDrawable {
 
 		@Override
 		public int draw(Minecraft mc, int mouseX, int mouseY, int yOffset) {
@@ -661,14 +669,14 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	public class SavedTab {
+	public class SavedTab implements Serializable {
 
 		public GuideBookContents.Page page;
 		public IDrawable drawable;
-		public int color;
 		@Getter
 		@Setter
 		private float progress;
+		public int color;
 
 		/* Page getters */
 		public int getPage() {
@@ -695,7 +703,7 @@ public class GuiGuideBook extends GuiScreen {
 		public void setPage(int dindex, int cindex, int index, float progress) {
 			this.page = gbc.getDivision(dindex).getChapter(cindex).getPage(index);
 			this.progress = progress;
-			updateTitle();
+			updateTitle(GuiGuideBook.title);
 		}
 
 		public void nextPage() {
@@ -710,27 +718,40 @@ public class GuiGuideBook extends GuiScreen {
 			this.page = page;
 			this.drawable = drawable;
 			this.progress = 0.0F;
-			this.color = 0xFFFFFF;
 		}
 
-		public SavedTab(GuideBookContents.Page page, IDrawable drawable, float progress) {
+		public SavedTab(GuideBookContents.Page page, IDrawable drawable, int colorIndex, float progress) {
 			this.page = page;
 			this.drawable = drawable;
 			this.progress = progress;
-			this.color = 0xFF0000;
+			this.color = colorIndex;
 		}
 
 		public SavedTab() {
 			this.page = new GuideBookContents.Page(0, 0, 0, "");
 			this.drawable = menu;
-			this.color = 0xFF0000;
 		}
 
 		public SavedTab(SavedTab tab) {
 			this.page = tab.page;
 			this.drawable = tab.drawable;
 			this.progress = tab.progress;
-			this.color = 0xFF0000;
+		}
+
+		public SavedTab fromBytes(LPDataInput input) {
+			return new SavedTab(gbc.getDivision(input.readInt()).getChapter(input.readInt()).getPage(input.readInt()), GuiGuideBook.page, input.readInt(), input.readFloat());
+		}
+
+		public void toBytes(LPDataOutput output) {
+			output.writeInt(page.getDindex());
+			output.writeInt(page.getCindex());
+			output.writeInt(page.getIndex());
+			output.writeInt(color);
+			output.writeFloat(progress);
+		}
+
+		public NBTTagCompound toTag() {
+			return new NBTTagCompound();
 		}
 	}
 }

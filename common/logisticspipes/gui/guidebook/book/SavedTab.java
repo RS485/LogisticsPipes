@@ -1,13 +1,10 @@
 package logisticspipes.gui.guidebook.book;
 
-import java.io.Serializable;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.gui.guidebook.GuiGuideBook.IDrawable;
 import logisticspipes.utils.GuideBookContents;
 import logisticspipes.gui.guidebook.GuiGuideBook;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -58,14 +55,14 @@ public class SavedTab {
 		page = gbc.getDivision(page.getDindex()).getChapter(page.getCindex()).getPage(page.getIndex() - 1);
 	}
 
-	public SavedTab(GuideBookContents.Page page, GuiGuideBook.IDrawable drawable) {
+	public SavedTab(GuideBookContents.Page page, IDrawable drawable) {
 		this.gbc = GuiGuideBook.gbc;
 		this.page = page;
 		this.drawable = drawable;
 		this.progress = 0.0F;
 	}
 
-	public SavedTab(GuideBookContents.Page page, GuiGuideBook.IDrawable drawable, int colorIndex, float progress) {
+	public SavedTab(GuideBookContents.Page page, IDrawable drawable, int colorIndex, float progress) {
 		this.gbc = GuiGuideBook.gbc;
 		this.page = page;
 		this.drawable = drawable;

@@ -15,6 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -22,7 +24,9 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
+import appeng.api.features.IGrinderRecipe;
 import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.IStorageMonitorable;
@@ -30,6 +34,7 @@ import appeng.api.storage.IStorageMonitorableAccessor;
 import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
+import appeng.api.util.AEPartLocation;
 
 import logisticspipes.utils.item.ItemIdentifier;
 
@@ -42,13 +47,15 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	private final LPActionSource source;
 	private IStorageMonitorableAccessor acc = null;
 	public IGridHost host;
+	public IGridNode node;
 	LinkedList<Entry<ItemIdentifier, Integer>> cached;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		this.tile = tile;
 		this.hideOnePerStack = hideOnePerStack || hideOne;
 		this.acc = tile.getCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
-		host = (IGridHost) tile;
+		node = ((IGridHost)tile).getGridNode(AEPartLocation.fromFacing(dir));
+		host = node.getMachine();
 		source = new LPActionSource(this);
 		this.dir = dir;
 	}
@@ -62,7 +69,13 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean isType(TileEntity tile, EnumFacing dir) {
-		return tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
+		if (tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir)) {
+			IGridNode tempNode = ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir));    //for some reason when AE loads (5 ticks) this is null
+			if (tempNode == null)																	//should not be a problem because interfaces are still treated like IInvertoryHandler
+				return false;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -203,8 +216,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 			initCache();
 		}
 
-		if(cached.size() == 0)	//empty AE system - pipe will not insert thinking inv has no space
-			return 1;			//it seems it cannot cause IndexOutOfBounds as getStackInSlot is not called if getItemsAndCount returns empty map
+		if(cached.size() == 0)
+			return 1;
 
 		return cached.size();
 	}

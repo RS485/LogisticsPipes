@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 
 import logisticspipes.LPItems;
 import logisticspipes.gui.guidebook.GuiGuideBook;
+import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.SetCurrentPagePacket;
 import logisticspipes.proxy.MainProxy;
@@ -27,7 +28,7 @@ public class ItemGuideBook extends LogisticsItem {
 		this.maxStackSize = 1;
 	}
 
-	public static void setCurrentPage(ItemStack stack, GuiGuideBook.SavedTab page, GuiGuideBook gui, ArrayList<GuiGuideBook.SavedTab> tabs, EnumHand hand) {
+	public static void setCurrentPage(ItemStack stack, SavedTab page, ArrayList<SavedTab> tabs, EnumHand hand) {
 		if (!stack.isEmpty() && stack.getItem() == LPItems.itemGuideBook) {
 			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
 			tag.setFloat("sliderProgress", page.getProgress());
@@ -41,8 +42,7 @@ public class ItemGuideBook extends LogisticsItem {
 				.setPage(page.getPage())
 				.setChapter(page.getChapter())
 				.setDivision(page.getDivision())
-				.setSavedTabs(tabs)
-				.setGui(gui));
+				.setSavedTabs(tabs));
 		}
 	}
 

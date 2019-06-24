@@ -1,7 +1,6 @@
 package logisticspipes.gui.guidebook;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
@@ -13,22 +12,22 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
 import logisticspipes.gui.guidebook.book.MenuItem;
+import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.items.ItemGuideBook;
 import logisticspipes.utils.GuideBookContents;
 import logisticspipes.utils.string.StringUtils;
-import network.rs485.logisticspipes.util.LPDataInput;
-import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class GuiGuideBook extends GuiScreen {
 
@@ -48,7 +47,7 @@ public class GuiGuideBook extends GuiScreen {
 	private final int zFrame = 10;        // Frame Z
 	private final int zText = 5;          // Text/Information Z
 	private final int zBackground = 0;    // Background Z
-	private static GuideBookContents gbc;
+	public static GuideBookContents gbc;
 
 	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
@@ -64,8 +63,8 @@ public class GuiGuideBook extends GuiScreen {
 	private ArrayList<MenuItemsDivision> divisionsList;
 	private static SavedTab currentPage;
 	private SavedTab menuPage;
-	private static PageState page;
-	private static MenuState menu;
+	public static PageState page;
+	public static MenuState menu;
 	private static String title;
 
 	// Book Experimental variables
@@ -181,12 +180,14 @@ public class GuiGuideBook extends GuiScreen {
 	protected boolean getDataFromNBT() {
 		ItemStack bookItemStack = mc.player.getHeldItem(hand);
 		if (bookItemStack.hasTagCompound()) {
-			NBTTagCompound nbtTagCompound = bookItemStack.getTagCompound();
+			NBTTagCompound nbt = bookItemStack.getTagCompound();
 			currentPage = new SavedTab(
-					gbc.getDivision(nbtTagCompound.getInteger("division"))
-							.getChapter(nbtTagCompound.getInteger("chapter"))
-							.getPage(nbtTagCompound.getInteger("page")),
-					page, 0, nbtTagCompound.getFloat("sliderProgress"));
+					gbc.getDivision(nbt.getInteger("division"))
+							.getChapter(nbt.getInteger("chapter"))
+							.getPage(nbt.getInteger("page")),
+					page, 0, nbt.getFloat("sliderProgress"));
+			NBTTagList tagList = nbt.getTagList("bookmarks", 10);
+			for (NBTBase tag : tagList) tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, new SavedTab().fromTag((NBTTagCompound) tag)));
 			currentPage.drawable = page;
 		} else {
 			SavedTab defaultPage = new SavedTab();
@@ -212,8 +213,6 @@ public class GuiGuideBook extends GuiScreen {
 	@Override
 	public void initGui() {
 		if (!loadedNBT) loadedNBT = this.getDataFromNBT();
-
-		this.tabList.clear();
 		this.calculateConstraints();
 		this.updateTitle(title);
 		this.slider = this.addButton(new GuiGuideBookSlider(0, guiSliderX, guiSliderY0, guiSliderY1, zTitleButtons, currentPage.getProgress(), guiSliderWidth, guiSliderHeight));
@@ -235,7 +234,7 @@ public class GuiGuideBook extends GuiScreen {
 		currentPage.setProgress(slider.getProgress());
 		ArrayList<SavedTab> tabs = new ArrayList<>();
 		for (GuiGuideBookTabButton tab : tabList) tabs.add(tab.getTab());
-		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), currentPage, this, tabs, hand);
+		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), currentPage, tabs, hand);
 		super.onGuiClosed();
 	}
 
@@ -335,6 +334,7 @@ public class GuiGuideBook extends GuiScreen {
 		this.home.visible = currentPage.drawable != menu;
 		int offset = 0;
 		for (GuiGuideBookTabButton tab : tabList) {
+			tab.y = guiY0;
 			tab.x = guiX3 - 2 - 2 * guiTabWidth - offset;
 			offset += guiTabWidth;
 			if (equals(tab.getTab(), currentPage)) tab.isActive = true;
@@ -611,12 +611,12 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	private interface IDrawable {
+	public interface IDrawable {
 
 		int draw(Minecraft mc, int mouseX, int mouseY, int yOffset);
 	}
 
-	private class MenuState implements IDrawable {
+	public class MenuState implements IDrawable {
 
 		public MenuState() {
 			super();
@@ -644,7 +644,7 @@ public class GuiGuideBook extends GuiScreen {
 		}
 	}
 
-	private class PageState implements IDrawable {
+	public class PageState implements IDrawable {
 
 		@Override
 		public int draw(Minecraft mc, int mouseX, int mouseY, int yOffset) {
@@ -663,92 +663,6 @@ public class GuiGuideBook extends GuiScreen {
 			drawPageCount();
 			GlStateManager.popMatrix();
 			return area$currentY;
-		}
-	}
-
-	public class SavedTab implements Serializable {
-
-		public GuideBookContents.Page page;
-		public IDrawable drawable;
-		@Getter
-		@Setter
-		private float progress;
-		public int color;
-
-		/* Page getters */
-		public int getPage() {
-			return page.getIndex();
-		}
-
-		public int getChapter() {
-			return page.getCindex();
-		}
-
-		public int getDivision() {
-			return page.getDindex();
-		}
-
-		public int getPageCount() {
-			return gbc.getDivision(page.getDindex()).getChapter(page.getCindex()).getNPages();
-		}
-
-		/* Page Setters */
-		public void setPage(MenuItem item) {
-			setPage(item.getChapter().getDindex(), item.getChapter().getCindex(), 0, 0.0F);
-		}
-
-		public void setPage(int dindex, int cindex, int index, float progress) {
-			this.page = gbc.getDivision(dindex).getChapter(cindex).getPage(index);
-			this.progress = progress;
-			updateTitle(GuiGuideBook.title);
-		}
-
-		public void nextPage() {
-			page = gbc.getDivision(page.getDindex()).getChapter(page.getCindex()).getPage(page.getIndex() + 1);
-		}
-
-		public void prevPage() {
-			page = gbc.getDivision(page.getDindex()).getChapter(page.getCindex()).getPage(page.getIndex() - 1);
-		}
-
-		public SavedTab(GuideBookContents.Page page, IDrawable drawable) {
-			this.page = page;
-			this.drawable = drawable;
-			this.progress = 0.0F;
-		}
-
-		public SavedTab(GuideBookContents.Page page, IDrawable drawable, int colorIndex, float progress) {
-			this.page = page;
-			this.drawable = drawable;
-			this.progress = progress;
-			this.color = colorIndex;
-		}
-
-		public SavedTab() {
-			this.page = new GuideBookContents.Page(0, 0, 0, "");
-			this.drawable = menu;
-		}
-
-		public SavedTab(SavedTab tab) {
-			this.page = tab.page;
-			this.drawable = tab.drawable;
-			this.progress = tab.progress;
-		}
-
-		public SavedTab fromBytes(LPDataInput input) {
-			return new SavedTab(gbc.getDivision(input.readInt()).getChapter(input.readInt()).getPage(input.readInt()), GuiGuideBook.page, input.readInt(), input.readFloat());
-		}
-
-		public void toBytes(LPDataOutput output) {
-			output.writeInt(page.getDindex());
-			output.writeInt(page.getCindex());
-			output.writeInt(page.getIndex());
-			output.writeInt(color);
-			output.writeFloat(progress);
-		}
-
-		public NBTTagCompound toTag() {
-			return new NBTTagCompound();
 		}
 	}
 }

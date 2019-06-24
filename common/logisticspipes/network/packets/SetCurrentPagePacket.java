@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 
 import logisticspipes.LPItems;
 import logisticspipes.gui.guidebook.GuiGuideBook;
+import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -20,9 +22,6 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 @StaticResolve
 public class SetCurrentPagePacket extends ModernPacket {
-
-	@Setter
-	private GuiGuideBook gui;
 
 	@Getter
 	@Setter
@@ -38,7 +37,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private ArrayList<GuiGuideBook.SavedTab> savedTabs;
+	private ArrayList<SavedTab> savedTabs;
 
 	public SetCurrentPagePacket(int id) {
 		super(id);
@@ -58,8 +57,9 @@ public class SetCurrentPagePacket extends ModernPacket {
 		nbt.setInteger("page", page);
 		nbt.setInteger("chapter", chapter);
 		nbt.setInteger("division", division);
-		nbt.setInteger("bookmarks", savedTabs.size());
-		//for(GuiGuideBook.SavedTab tab: savedTabs) ;
+		NBTTagList tagList = new NBTTagList();
+		for (SavedTab tab : savedTabs) tagList.appendTag(tab.toTag());
+		nbt.setTag("bookmarks", tagList);
 		book.setTagCompound(nbt);
 	}
 
@@ -72,10 +72,9 @@ public class SetCurrentPagePacket extends ModernPacket {
 		chapter = input.readInt();
 		division = input.readInt();
 		savedTabs.clear();
-		for(int i = 0; i < input.readInt(); i++){
-			GuiGuideBook.SavedTab tab = gui.new SavedTab();
-			tab.fromBytes(input);
-			savedTabs.add(tab);
+		int size = input.readInt();
+		for (int i = 0; i < size; i++) {
+			savedTabs.add(new SavedTab().fromBytes(input));
 		}
 	}
 
@@ -88,7 +87,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		output.writeInt(chapter);
 		output.writeInt(division);
 		output.writeInt(savedTabs.size());
-		for(GuiGuideBook.SavedTab tab: savedTabs) tab.toBytes(output);
+		for (SavedTab tab : savedTabs) tab.toBytes(output);
 	}
 
 	@Override

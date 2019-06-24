@@ -1,0 +1,10 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"custom": { "flip-v": true },
+		"model": "logisticspipes:solidblock.internal"
+	},
+	"variants": {
+		"normal": {}
+	}
+}

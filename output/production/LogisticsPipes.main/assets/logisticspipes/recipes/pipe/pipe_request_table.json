@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "item": "logisticspipes:pipe_request_table"
+  },
+  "key": {
+    "c": {
+      "item": "logisticspipes:chip_advanced"
+    },
+    "r": {
+      "item": "logisticspipes:pipe_request_mk2"
+    },
+    "f": {
+      "item": "logisticspipes:frame"
+    },
+    "k": {
+      "type": "forge:ore_dict",
+      "ore": "chestWood"
+    },
+    "p": {
+      "item": "logisticspipes:pipe_crafting"
+    }
+  },
+  "pattern": [
+    " c ",
+    "rfp",
+    " k "
+  ]
+}

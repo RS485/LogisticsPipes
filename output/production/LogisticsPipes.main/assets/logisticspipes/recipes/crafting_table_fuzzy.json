@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "c",
+    "t"
+  ],
+  "key": {
+    "c": {
+      "type": "logisticspipes:part",
+      "part": "chip_basic"
+    },
+    "t": {
+      "item": "logisticspipes:frame"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:crafting_table_fuzzy"
+  }
+}

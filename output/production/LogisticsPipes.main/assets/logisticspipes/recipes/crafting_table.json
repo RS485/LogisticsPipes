@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " c ",
+    "wfw",
+    " p "
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:crafting_table"
+    },
+    "w": {
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
+    },
+    "f": {
+      "item": "logisticspipes:frame"
+    },
+    "p": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:crafting_table"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sds",
+    "grg",
+    "sls"
+  ],
+  "key": {
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "sand"
+    },
+    "d": {
+      "type": "forge:ore_dict",
+      "ore": "gemDiamond"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "l": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:chip_fpga_raw",
+    "count": 16
+  }
+}

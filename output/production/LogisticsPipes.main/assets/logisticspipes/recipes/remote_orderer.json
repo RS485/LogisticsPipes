@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "aga",
+    "rsl",
+    "rrl"
+  ],
+  "key": {
+    "a": {
+      "type": "logisticspipes:part",
+      "part": "chip_advanced"
+    },
+    "g": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "blockGlass"
+    },
+    "l": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:remote_orderer"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ibi",
+    "rsl",
+    "rrl"
+  ],
+  "key": {
+    "b": {
+      "type": "logisticspipes:part",
+      "part": "chip_basic"
+    },
+    "i": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "s": {
+      "type": "forge:ore_dict",
+      "ore": "blockGlass"
+    },
+    "l": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    },
+    "r": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  },
+  "result": {
+    "item": "logisticspipes:pipe_manager"
+  }
+}

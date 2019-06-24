@@ -1,5 +1,6 @@
 package logisticspipes.items;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,15 +27,22 @@ public class ItemGuideBook extends LogisticsItem {
 		this.maxStackSize = 1;
 	}
 
-	public static void setCurrentPage(ItemStack stack, GuiGuideBook.SavedTab page, EnumHand hand) {
+	public static void setCurrentPage(ItemStack stack, GuiGuideBook.SavedTab page, GuiGuideBook gui, ArrayList<GuiGuideBook.SavedTab> tabs, EnumHand hand) {
 		if (!stack.isEmpty() && stack.getItem() == LPItems.itemGuideBook) {
 			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
 			tag.setFloat("sliderProgress", page.getProgress());
 			tag.setInteger("page", page.getPage());
 			tag.setInteger("chapter", page.getChapter());
 			tag.setInteger("division", page.getDivision());
+			tag.setInteger("bookmarks", tabs.size());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
-					.setHand(hand).setSliderProgress(page.getProgress()).setPage(page.getPage()).setChapter(page.getChapter()).setDivision(page.getDivision()));
+				.setHand(hand)
+				.setSliderProgress(page.getProgress())
+				.setPage(page.getPage())
+				.setChapter(page.getChapter())
+				.setDivision(page.getDivision())
+				.setSavedTabs(tabs)
+				.setGui(gui));
 		}
 	}
 

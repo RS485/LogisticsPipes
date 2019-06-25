@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
+import static logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,6 @@ import logisticspipes.gui.guidebook.book.SavedTab;
 
 public class GuiGuideBookTabButton extends GuiButton {
 
-	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 	private final int[] colors = { 0xE9ECEC, 0xF07613, 0xBD44B3, 0x3AAFD9, 0xF8C627, 0x70B919, 0xED8DAC, 0x3E4447, 0x8E8E86, 0x158991, 0x792AAC, 0x35399D, 0x724728, 0x546D1B, 0xA12722, 0x141519 };
 
 	public boolean isActive;

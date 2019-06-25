@@ -7,13 +7,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
+import static logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
 
 public class GuiGuideBookSlider extends GuiButton {
-
-	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	@Getter
 	private float progress;

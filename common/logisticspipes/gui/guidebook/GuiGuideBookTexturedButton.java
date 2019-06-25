@@ -5,10 +5,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
-import com.sun.jna.platform.win32.WinUser;
+import static logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 import lombok.Setter;
-
-import logisticspipes.LPConstants;
 
 public class GuiGuideBookTexturedButton extends GuiButton {
 
@@ -17,8 +15,6 @@ public class GuiGuideBookTexturedButton extends GuiButton {
 	private boolean hasDisabledState;
 	@Setter
 	private EnumButtonType type;
-
-	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	public GuiGuideBookTexturedButton(int buttonId, int x, int y, int widthIn, int heightIn) {
 		this(buttonId, x, y, widthIn, heightIn, 0, 0, 20, 0, 0, 0, 0, false, EnumButtonType.TAB);

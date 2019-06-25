@@ -624,4 +624,8 @@ public class GuiGuideBook extends GuiScreen {
 			list.add(item);
 		}
 	}
+
+	public class MenuItemsChapter {
+
+	}
 }

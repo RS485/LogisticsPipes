@@ -91,7 +91,6 @@ public class GuiGuideBook extends GuiScreen {
 		this.prevPageBtn = this.addButton(new GuiButton(1, this.width / 2 - 120, this.height - 30, 20, 20, "<"));
 		this.slider = this.addButton(new GuiButton(2, rightX - borderSize - sliderHeight, 0, sliderWidth, sliderHeight, "|||"));
 		updateSliderPosition();
-		updateButtonStates();
 
 		// Getting information from item NBT
 		if (needsInit) {
@@ -110,6 +109,7 @@ public class GuiGuideBook extends GuiScreen {
 			}
 			needsInit = false;
 		}
+		updateButtonStates();
 	}
 
 	private void drawPageContents() {
@@ -183,10 +183,14 @@ public class GuiGuideBook extends GuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		switch (button.id) {
 			case 0:
-				setPage(page.getIndex() + 1);
+				if ((page.getIndex() + 1) < gbc.getPages()) {
+					setPage(page.getIndex() + 1);
+				}
 				break;
 			case 1:
-				setPage(page.getIndex() - 1);
+				if ((page.getIndex() - 1) >= 0) {
+					setPage(page.getIndex() - 1);
+				}
 				break;
 		}
 	}

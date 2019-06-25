@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import static logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
@@ -17,8 +18,6 @@ import logisticspipes.gui.guidebook.GuiGuideBook;
 import logisticspipes.utils.GuideBookContents;
 
 public class MenuItem {
-
-	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	// Getting constants
 	private final int zText = 5;

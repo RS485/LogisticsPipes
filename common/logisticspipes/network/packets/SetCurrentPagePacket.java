@@ -37,7 +37,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private ArrayList<SavedTab> savedTabs;
+	private ArrayList<SavedTab> savedTabs = new ArrayList<>();
 
 	public SetCurrentPagePacket(int id) {
 		super(id);
@@ -71,7 +71,6 @@ public class SetCurrentPagePacket extends ModernPacket {
 		page = input.readInt();
 		chapter = input.readInt();
 		division = input.readInt();
-		savedTabs.clear();
 		int size = input.readInt();
 		for (int i = 0; i < size; i++) {
 			savedTabs.add(new SavedTab().fromBytes(input));

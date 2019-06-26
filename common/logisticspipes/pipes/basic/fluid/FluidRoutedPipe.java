@@ -34,10 +34,10 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.TankUtil;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
@@ -55,18 +55,12 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	@Override
 	public boolean logisitcsIsPipeConnected(TileEntity tile, EnumFacing dir) {
-		if(SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
+		if (SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
 			return SimpleServiceLocator.enderIOProxy.isFluidConduit(tile, dir.getOpposite());
 		}
 
 		ITankUtil liq = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tile, dir.getOpposite());
-		if(liq != null) {
-			if(liq.containsTanks()) {
-				return true;
-			}
-		}
-
-		return tile instanceof LogisticsTileGenericPipe;
+		return (liq != null && liq.containsTanks()) || tile instanceof LogisticsTileGenericPipe;
 	}
 
 	@Override
@@ -83,14 +77,11 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	private boolean isFluidSidedTexture(EnumFacing connection) {
-		TileEntity tileEntity = new WorldCoordinatesWrapper(container).getAdjacentFromDirection(connection).tileEntity;
+		final NeighborTileEntity<TileEntity> neighbor = new WorldCoordinatesWrapper(container).getNeighbor(connection);
+		if (neighbor == null) return false;
+		TileEntity tileEntity = neighbor.getTileEntity();
 		ITankUtil liq = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tileEntity, connection.getOpposite());
-		if(liq != null) {
-			if(liq.containsTanks()) {
-				return true;
-			}
-		}
-		return false;
+		return (liq != null && liq.containsTanks());
 	}
 
 	@Override
@@ -104,9 +95,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 */
 
 	public final List<ITankUtil> getAdjacentTanks(boolean flag) {
-		return new WorldCoordinatesWrapper(container).getAdjacentTileEntities()
-				.filter(adjacent -> isConnectableTank(adjacent.tileEntity, adjacent.direction, flag))
-				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.tileEntity, adjacent.direction))
+		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
+				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
+				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()))
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
@@ -117,9 +108,12 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 */
 
 	public final List<Triplet<ITankUtil, TileEntity, EnumFacing>> getAdjacentTanksAdvanced(boolean flag) {
-		return new WorldCoordinatesWrapper(container).getAdjacentTileEntities()
-				.filter(adjacent -> isConnectableTank(adjacent.tileEntity, adjacent.direction, flag))
-				.map(adjacent -> new Triplet<>(SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.tileEntity, adjacent.direction), adjacent.tileEntity, adjacent.direction))
+		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
+				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
+				.map(adjacent -> new Triplet<>(
+						SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()),
+						adjacent.getTileEntity(),
+						adjacent.getDirection()))
 				.filter(triplet -> triplet.getValue1() != null)
 				.collect(Collectors.toList());
 	}
@@ -139,16 +133,16 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			return true;
 		}
 		boolean fluidTile = false;
-		if(tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir)) {
+		if (tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir)) {
 			IFluidHandler fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir);
-			if(fluidHandler != null) {
+			if (fluidHandler != null) {
 				fluidTile = true;
 			}
 		}
 		if (tile instanceof IFluidHandler) {
 			fluidTile = true;
 		}
-		if(!fluidTile) {
+		if (!fluidTile) {
 			return false;
 		}
 		if (!this.canPipeConnect(tile, dir)) {

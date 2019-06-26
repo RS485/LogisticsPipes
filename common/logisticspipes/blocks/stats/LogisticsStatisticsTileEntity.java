@@ -2,7 +2,8 @@ package logisticspipes.blocks.stats;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IGuiTileEntity;
@@ -12,9 +13,8 @@ import logisticspipes.network.guis.block.StatisticsGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-
-import net.minecraft.nbt.NBTTagCompound;
 
 public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity {
 
@@ -75,14 +75,12 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 
 	public CoreRoutedPipe getConnectedPipe() {
 		if (cachedConnectedPipe == null) {
-			Optional<CoreRoutedPipe> first = new WorldCoordinatesWrapper(this).getAdjacentTileEntities()
-					.filter(adjacent -> adjacent.tileEntity instanceof LogisticsTileGenericPipe)
-					.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof CoreRoutedPipe)
-					.map(adjacent -> (CoreRoutedPipe) (((LogisticsTileGenericPipe) adjacent.tileEntity).pipe)).findFirst();
-
-			if (first.isPresent()) {
-				cachedConnectedPipe = first.get();
-			}
+			new WorldCoordinatesWrapper(this).allNeighborTileEntities()
+					.filter(NeighborTileEntity::isLogisticsPipe)
+					.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof CoreRoutedPipe)
+					.map(adjacent -> (CoreRoutedPipe) (((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe))
+					.findFirst()
+					.ifPresent(coreRoutedPipe -> cachedConnectedPipe = coreRoutedPipe);
 		}
 		return cachedConnectedPipe;
 	}

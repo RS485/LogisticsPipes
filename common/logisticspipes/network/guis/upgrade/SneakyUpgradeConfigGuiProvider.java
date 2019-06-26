@@ -11,11 +11,10 @@ import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.UpgradeSlot;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class SneakyUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvider {
@@ -27,11 +26,18 @@ public class SneakyUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvide
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsTileGenericPipe bPipe = getPipe(player.getEntityWorld());
-		if(bPipe != null && bPipe.pipe instanceof CoreRoutedPipe) {
-			List<DoubleCoordinates> list = new WorldCoordinatesWrapper(bPipe).getConnectedAdjacentTileEntities().filter(in -> SimpleServiceLocator.pipeInformationManager.isNotAPipe(in.tileEntity)).map(in -> new DoubleCoordinates(in.tileEntity)).collect(Collectors.toList());
-			if(list.isEmpty()) {
-				new WorldCoordinatesWrapper(bPipe).getConnectedAdjacentTileEntities().map(in -> new DoubleCoordinates(in.tileEntity)).forEach(list::add);
+		if (bPipe != null && bPipe.pipe instanceof CoreRoutedPipe) {
+			List<DoubleCoordinates> list = new WorldCoordinatesWrapper(bPipe).connectedTileEntities()
+					.filter(in -> SimpleServiceLocator.pipeInformationManager.isNotAPipe(in.getTileEntity()))
+					.map(in -> new DoubleCoordinates(in.getTileEntity()))
+					.collect(Collectors.toList());
+
+			if (list.isEmpty()) {
+				list = new WorldCoordinatesWrapper(bPipe).connectedTileEntities()
+						.map(in -> new DoubleCoordinates(in.getTileEntity()))
+						.collect(Collectors.toList());
 			}
+
 			return new SneakyConfigurationPopup(list, getSlot(player, UpgradeSlot.class));
 		}
 		return null;

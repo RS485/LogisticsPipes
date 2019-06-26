@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,10 +40,8 @@ import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
@@ -54,6 +51,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
@@ -201,19 +199,14 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getX(), getY(), getZ());
 
-		worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> !(adjacent.tileEntity instanceof LogisticsTileGenericPipe))
-				.map(adjacent -> {
-					EnumFacing direction = adjacent.direction.getOpposite();
-					if (_service.getUpgradeManager(slot, positionInt).hasSneakyUpgrade()) {
-						direction = _service.getUpgradeManager(slot, positionInt).getSneakyOrientation();
-					}
-					return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent.tileEntity, direction);
-				})
+		worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
+				.filter(adjacent -> !adjacent.isLogisticsPipe())
+				.map(neighbor -> neighbor.sneakyInsertion().from(getUpgradeManager()))
+				.map(NeighborTileEntity::getInventoryUtil)
 				.filter(Objects::nonNull)
 				.filter(invUtil -> invUtil.getSizeInventory() > 0)
 				.forEach(invUtil -> {
-					if (_service.getUpgradeManager(slot, positionInt).hasPatternUpgrade()) {
+					if (getUpgradeManager().hasPatternUpgrade()) {
 						createPatternRequest(invUtil);
 					} else {
 						createSupplyRequest(invUtil);
@@ -542,7 +535,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ActiveSupplierSlot.class).setPatternUpgarde(hasPatternUpgrade()).setSlotArray(slotArray).setMode((_service.getUpgradeManager(slot, positionInt).hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setLimit(isLimited);
+		return NewGuiHandler.getGui(ActiveSupplierSlot.class).setPatternUpgarde(hasPatternUpgrade()).setSlotArray(slotArray).setMode((getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setLimit(isLimited);
 	}
 
 	@Override
@@ -571,8 +564,8 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	public boolean hasPatternUpgrade() {
-		if (_service != null && _service.getUpgradeManager(slot, positionInt) != null) {
-			return _service.getUpgradeManager(slot, positionInt).hasPatternUpgrade();
+		if (_service != null && getUpgradeManager() != null) {
+			return getUpgradeManager().hasPatternUpgrade();
 		}
 		return false;
 	}

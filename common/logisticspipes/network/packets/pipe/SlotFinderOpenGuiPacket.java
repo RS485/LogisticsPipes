@@ -4,11 +4,12 @@ import java.util.Iterator;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,13 +22,12 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
+import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
@@ -70,34 +70,36 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 		}
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(player.world, getPosX(), getPosY(), getPosZ());
-		Iterator<AdjacentTileEntity> adjacentIt = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM).iterator();
+		Iterator<NeighborTileEntity<TileEntity>> adjacentIter = worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).iterator();
 
 		boolean found = false;
-		while (adjacentIt.hasNext()) {
-			AdjacentTileEntity adjacent = adjacentIt.next();
+		while (adjacentIter.hasNext()) {
+			NeighborTileEntity<TileEntity> adjacent = adjacentIter.next();
 
-			if (adjacent.tileEntity instanceof IInventory) {
-				if (!(SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent) instanceof ISpecialInsertion)) {
+			if (adjacent.isItemHandler()) {
+				if (!(adjacent.getInventoryUtil() instanceof ISpecialInsertion)) {
 					continue;
 				}
 			}
+
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-				if (provider.canOpenGui(adjacent.tileEntity)) {
+				if (provider.canOpenGui(adjacent.getTileEntity())) {
 					found = true;
 					break;
 				}
 			}
 
 			if (!found) {
-				found = (adjacent.tileEntity instanceof IInventory);
+				found = adjacent.isItemHandler();
 			}
 
 			if (found) {
-				Block block = adjacent.tileEntity.getBlockType();
-				DoubleCoordinates pos = new DoubleCoordinates(adjacent.tileEntity.getPos());
-				int xCoord = adjacent.tileEntity.getPos().getX();
-				int yCoord = adjacent.tileEntity.getPos().getY();
-				int zCoord = adjacent.tileEntity.getPos().getZ();
+				Block block = adjacent.getTileEntity().getBlockType();
+				final BlockPos blockPos = adjacent.getTileEntity().getPos();
+				DoubleCoordinates pos = new DoubleCoordinates(blockPos);
+				int xCoord = blockPos.getX();
+				int yCoord = blockPos.getY();
+				int zCoord = blockPos.getZ();
 
 				if (SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.world, xCoord, yCoord, zCoord, player);

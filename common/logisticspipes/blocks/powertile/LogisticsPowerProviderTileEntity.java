@@ -5,8 +5,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagFloat;
+import net.minecraft.util.EnumFacing;
 
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -38,17 +44,10 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper.AdjacentTileEntity;
-
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
 
 @CCType(name = "LogisticsPowerProvider")
 public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity
@@ -89,50 +88,34 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 		}
 		double globalRequest = orders.values().stream().reduce(Double::sum).orElse(0.0);
 		if (globalRequest > 0) {
-			double fullfillRatio = Math.min(1, Math.min(internalStorage, getMaxProvidePerTick()) / globalRequest);
+			final double fullfillRatio = Math.min(1, Math.min(internalStorage, getMaxProvidePerTick()) / globalRequest);
 			if (fullfillRatio > 0) {
-				for (Entry<Integer, Double> order : orders.entrySet()) {
-					double toSend = order.getValue() * fullfillRatio;
-					if (toSend > internalStorage) {
-						toSend = internalStorage;
-					}
-					IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(order.getKey());
-					if (destinationRouter != null && destinationRouter.getPipe() != null) {
-						WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(this);
-						outerTiles:
-						for (AdjacentTileEntity adjacent : worldCoordinates.getAdjacentTileEntities().collect(Collectors.toList())) {
-							if (adjacent.tileEntity instanceof LogisticsTileGenericPipe) {
-								if (((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof CoreRoutedPipe) {
-									if (((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).stillNeedReplace()) {
-										continue;
+				final Function<NeighborTileEntity<LogisticsTileGenericPipe>, CoreRoutedPipe> getPipe =
+						(NeighborTileEntity<LogisticsTileGenericPipe> neighbor) -> (CoreRoutedPipe) neighbor.getTileEntity().pipe;
+				orders.entrySet().stream()
+						.map(routerIdToOrderCount -> new Pair<>(SimpleServiceLocator.routerManager.getRouter(routerIdToOrderCount.getKey()),
+								Math.min(internalStorage, routerIdToOrderCount.getValue() * fullfillRatio)))
+						.filter(destinationToPower -> destinationToPower.getValue1() != null && destinationToPower.getValue1().getPipe() != null)
+						.forEach(destinationToPower -> new WorldCoordinatesWrapper(this)
+								.allNeighborTileEntities()
+								.flatMap(neighbor -> neighbor.getJavaInstanceOf(LogisticsTileGenericPipe.class).map(Stream::of).orElseGet(Stream::empty))
+								.filter(neighbor -> neighbor.getTileEntity().pipe instanceof CoreRoutedPipe &&
+										!getPipe.apply(neighbor).stillNeedReplace() && getPipe.apply(neighbor).getRouter() != null)
+								.flatMap(neighbor -> getPipe.apply(neighbor).getRouter().getDistanceTo(destinationToPower.getValue1()).stream()
+												.map(exitRoute -> new Pair<>(neighbor, exitRoute)))
+								.filter(neighborToExit -> neighborToExit.getValue2().containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom) &&
+										neighborToExit.getValue2().filters.stream().noneMatch(IFilter::blockPower))
+								.findFirst()
+								.ifPresent(neighborToSource -> {
+									CoreRoutedPipe sourcePipe = getPipe.apply(neighborToSource.getValue1());
+									if (sourcePipe.isInitialized()) {
+										sourcePipe.container.addLaser(neighborToSource.getValue1().getOurDirection(), 1, getLaserColor(), true, true);
 									}
-									IRouter sourceRouter = ((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getRouter();
-									if (sourceRouter != null) {
-										outerRouters:
-										for (ExitRoute exit : sourceRouter.getDistanceTo(destinationRouter)) {
-											if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-												for (IFilter filter : exit.filters) {
-													if (filter.blockPower()) {
-														continue outerRouters;
-													}
-												}
-												CoreRoutedPipe pipe = sourceRouter.getPipe();
-												if (pipe != null && pipe.isInitialized()) {
-													pipe.container.addLaser(adjacent.direction.getOpposite(), 1, getLaserColor(), true, true);
-												}
-												sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation,
-														exit.exitOrientation != adjacent.direction);
-												internalStorage -= toSend;
-												handlePower(destinationRouter.getPipe(), toSend);
-												break outerTiles;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+									sendPowerLaserPackets(sourcePipe.getRouter(), destinationToPower.getValue1(), neighborToSource.getValue2().exitOrientation,
+											neighborToSource.getValue2().exitOrientation != neighborToSource.getValue1().getDirection());
+									internalStorage -= destinationToPower.getValue2();
+									handlePower(destinationToPower.getValue1().getPipe(), destinationToPower.getValue2());
+								}));
 			}
 		}
 		orders.clear();

@@ -16,12 +16,9 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -53,7 +50,6 @@ import lombok.Setter;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IItemAdvancedExistance;
-import logisticspipes.items.ItemGuideBook;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerConfigToClientPacket;
@@ -78,6 +74,7 @@ import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.PlayerConfiguration;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
@@ -135,18 +132,16 @@ public class LogisticsEventListener {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().world, event.getPos());
 			TileEntity tileEntity = worldCoordinates.getTileEntity();
 			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
-				//@formatter:off
-				List<WeakReference<ModuleQuickSort>> list = worldCoordinates.getAdjacentTileEntities()
-						.filter(adjacent -> adjacent.tileEntity instanceof LogisticsTileGenericPipe)
-						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe instanceof PipeLogisticsChassi)
-						.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe).getPointedOrientation()
-								== adjacent.direction.getOpposite())
-						.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.tileEntity).pipe)
+				List<WeakReference<ModuleQuickSort>> list = worldCoordinates.allNeighborTileEntities()
+						.filter(NeighborTileEntity::isLogisticsPipe)
+						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof PipeLogisticsChassi)
+						.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe).getPointedOrientation()
+								== adjacent.getOurDirection())
+						.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe)
 						.flatMap(pipeLogisticsChassi -> Arrays.stream(pipeLogisticsChassi.getModules().getModules()))
 						.filter(logisticsModule -> logisticsModule instanceof ModuleQuickSort)
 						.map(logisticsModule -> new WeakReference<>((ModuleQuickSort) logisticsModule))
 						.collect(Collectors.toList());
-				//@formatter:on
 
 				if (!list.isEmpty()) {
 					LogisticsEventListener.chestQuickSortConnection.put(event.getEntityPlayer(), list);

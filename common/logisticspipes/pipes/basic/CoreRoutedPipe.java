@@ -25,7 +25,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-import logisticspipes.LPItems;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
@@ -40,11 +39,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.items.CapabilityItemHandler;
-
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
+import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentMethod;
@@ -126,6 +124,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -313,10 +312,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	protected List<TileEntity> getConnectedRawInventories() {
 		if (_cachedAdjacentInventories == null) {
-			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
-			_cachedAdjacentInventories = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) && !(adjacent.tileEntity instanceof LogisticsTileGenericPipe))
-					.map(adjacent -> adjacent.tileEntity)
+			_cachedAdjacentInventories = new WorldCoordinatesWrapper(container)
+					.connectedTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> adjacent.isItemHandler() && !adjacent.isLogisticsPipe())
+					.map(NeighborTileEntity::getTileEntity)
 					.collect(Collectors.toList());
 		}
 		return _cachedAdjacentInventories;
@@ -1475,6 +1474,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	/* IInventoryProvider */
 
+	@Nullable
 	@Override
 	public IInventoryUtil getPointedInventory() {
 		if(getPointedOrientation() != null) {
@@ -1540,7 +1540,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (tile == null) {
 			return null;
 		}
-		if (!tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getPointedOrientation())) {
+		if (!tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, getPointedOrientation())) {
 			return null;
 		}
 		return tile;
@@ -1597,13 +1597,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	public EnumFacing getPointedOrientation() {
 		if (pointedDirection == null) {
-			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(container);
-			Optional<EnumFacing> first = worldCoordinates.getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.tileEntity != null)
-					.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isPipe(adjacent.tileEntity))
-					.map(adjacent -> adjacent.direction).findFirst();
-			if(first.isPresent()) {
-				return first.get();
+			final Optional<EnumFacing> firstDirection = new WorldCoordinatesWrapper(container)
+					.connectedTileEntities(ConnectionPipeType.ITEM)
+					.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isPipe(adjacent.getTileEntity()))
+					.map(NeighborTileEntity::getDirection)
+					.findFirst();
+			if (firstDirection.isPresent()) {
+				return firstDirection.get();
 			}
 		}
 		return pointedDirection;

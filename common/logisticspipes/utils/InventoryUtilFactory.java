@@ -9,19 +9,17 @@
 package logisticspipes.utils;
 
 import java.util.LinkedList;
+import javax.annotation.Nullable;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
-
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.items.CapabilityItemHandler;
-
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 
 public class InventoryUtilFactory {
 
@@ -48,18 +46,21 @@ public class InventoryUtilFactory {
 		return null;
 	}
 
-	public IInventoryUtil getInventoryUtil(WorldCoordinatesWrapper.AdjacentTileEntity adj) {
-		return getHidingInventoryUtil(adj.tileEntity, adj.direction.getOpposite(), false, false, 0, 0);
+	@Nullable
+	public IInventoryUtil getInventoryUtil(NeighborTileEntity<TileEntity> adj) {
+		return getHidingInventoryUtil(adj.getTileEntity(), adj.getOurDirection(), false, false, 0, 0);
 	}
 
+	@Nullable
 	public IInventoryUtil getInventoryUtil(TileEntity inv, EnumFacing dir) {
 		return getHidingInventoryUtil(inv, dir, false, false, 0, 0);
 	}
 
+	@Nullable
 	public IInventoryUtil getHidingInventoryUtil(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		IInventoryUtil util = getUtilForInv(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
-		if (util == null && tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir)) {
-			util = new InventoryUtil(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
+		if (util == null && tile != null && tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir)) {
+			util = new InventoryUtil(tile.getCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
 		}
 		return util;
 	}

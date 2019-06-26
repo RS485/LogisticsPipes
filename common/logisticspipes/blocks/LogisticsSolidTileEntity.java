@@ -1,36 +1,12 @@
 package logisticspipes.blocks;
 
-import logisticspipes.LPBlocks;
-import logisticspipes.LPConstants;
-import logisticspipes.asm.ModDependentField;
-import logisticspipes.asm.ModDependentInterface;
-import logisticspipes.asm.ModDependentMethod;
-import logisticspipes.interfaces.IRotationProvider;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.block.RequestRotationPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.computers.interfaces.CCCommand;
-import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
-import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
-import logisticspipes.proxy.opencomputers.IOCTile;
-import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -39,6 +15,26 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.SidedEnvironment;
+
+import logisticspipes.LPBlocks;
+import logisticspipes.LPConstants;
+import logisticspipes.asm.ModDependentField;
+import logisticspipes.asm.ModDependentInterface;
+import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.interfaces.IRotationProvider;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.RequestRotationPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.computers.interfaces.CCCommand;
+import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
+import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
+import logisticspipes.proxy.opencomputers.IOCTile;
+import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 @ModDependentInterface(modId = {LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID }, interfacePath = { "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment" })
 @CCType(name = "LogisticsSolidBlock")
@@ -176,8 +172,11 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public boolean canConnect(EnumFacing dir) {
-		TileEntity tileEntity = new WorldCoordinatesWrapper(this).getAdjacentFromDirection(dir).tileEntity;
-		return !(tileEntity instanceof LogisticsTileGenericPipe) && !(tileEntity instanceof LogisticsSolidTileEntity);
+		final NeighborTileEntity<TileEntity> neighbor = new WorldCoordinatesWrapper(this).getNeighbor(dir);
+		if (neighbor == null) {
+			throw new NullPointerException("No neighbor in direction " + dir.toString());
+		}
+		return !neighbor.isLogisticsPipe() && !(neighbor.getTileEntity() instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override

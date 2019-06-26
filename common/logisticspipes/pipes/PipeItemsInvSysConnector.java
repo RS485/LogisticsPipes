@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -21,9 +23,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.items.CapabilityItemHandler;
-
-import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDInvSysConnector;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -34,8 +33,6 @@ import logisticspipes.interfaces.routing.IChannelManager;
 import logisticspipes.interfaces.routing.IChannelRoutingConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.network.GuiHandler;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.guis.pipe.InvSysConGuiProvider;
@@ -48,23 +45,18 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.channels.ChannelInformation;
-import logisticspipes.routing.channels.ChannelManager;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.transactor.ITransactor;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannelRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver,
@@ -137,21 +129,16 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	private void checkConnectedInvs() {
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
-			//@formatter:off
-			new WorldCoordinatesWrapper(container).getConnectedAdjacentTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> adjacent.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
-					.filter(adjacent -> isConnectedInv(adjacent.tileEntity))
-					.map(adjacent -> {
-						IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(adjacent);
-						return checkOneConnectedInv(util, adjacent.direction);
-					})
-					.filter(ret -> ret) // filter only true
-					.findFirst().ifPresent(bool -> updateContentListener());
-			//@formatter:on
+			final boolean shouldUpdate = new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
+					.anyMatch(neighbor -> neighbor.isItemHandler() &&
+							container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()) &&
+							checkOneConnectedInv(neighbor.getUtilForItemHandler(), neighbor.getDirection()));
+
+			if (shouldUpdate) updateContentListener();
 		}
 	}
 
-	private boolean checkOneConnectedInv(IInventoryUtil inv, EnumFacing dir) {
+	private boolean checkOneConnectedInv(@Nonnull IInventoryUtil inv, EnumFacing dir) {
 		boolean contentchanged = false;
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 			List<ItemIdentifier> items = new ArrayList<>(itemsOnRoute.keySet());
@@ -300,22 +287,18 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		return hasConnectionUUID() && getWorld() != null && SimpleServiceLocator.connectionManager.hasChannelConnection(getRouter());
 	}
 
-	private boolean inventoryConnected() {
-		for (int i = 0; i < EnumFacing.VALUES.length; i++) {
-			EnumFacing dir = EnumFacing.VALUES[i];
-			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), dir);
-			TileEntity tile = p.getTileEntity(getWorld());
-			if (tile != null && tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir.getOpposite()) && this.container.canPipeConnect(tile, dir)) {
-				return true;
-			}
-		}
-		return false;
+	private boolean isInventoryConnected(@Nullable TileEntity tileEntityFilter) {
+		return new WorldCoordinatesWrapper(this.container)
+				.allNeighborTileEntities()
+				.anyMatch(neighbor -> (tileEntityFilter == null || neighbor.getTileEntity() == tileEntityFilter) &&
+						neighbor.isItemHandler() &&
+						this.container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()));
 	}
 
 	@Override
 	public TextureType getCenterTexture() {
 		if (!stillNeedReplace && hasRemoteConnection()) {
-			if (inventoryConnected()) {
+			if (isInventoryConnected(null)) {
 				return Textures.LOGISTICSPIPE_INVSYSCON_CON_TEXTURE;
 			} else {
 				return Textures.LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE;
@@ -350,25 +333,11 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		}
 	}
 
-	public boolean isConnectedInv(TileEntity tile) {
-		for (int i = 0; i < EnumFacing.VALUES.length; i++) {
-			EnumFacing dir = EnumFacing.VALUES[i];
-			DoubleCoordinates p = CoordinateUtils.add(new DoubleCoordinates(this), dir);
-			TileEntity lTile = p.getTileEntity(getWorld());
-			if (lTile != null && lTile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir.getOpposite())) {
-				if (lTile == tile) {
-					return this.container.canPipeConnect(lTile, dir);
-				}
-			}
-		}
-		return false;
-	}
-
 	public void handleItemEnterInv(ItemRoutingInformation info, TileEntity tile) {
 		if (info.getItem().getStackSize() == 0) {
 			return; // system.throw("why you try to insert empty stack?");
 		}
-		if (isConnectedInv(tile)) {
+		if (isInventoryConnected(tile)) {
 			if (hasRemoteConnection()) {
 				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
 				Optional<CoreRoutedPipe> bestConnection = connectedPipes.stream()

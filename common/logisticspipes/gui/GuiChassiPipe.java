@@ -114,6 +114,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		top = height / 2 - ySize / 2;
 
 		buttonList.clear();
+		moduleConfigButtons.clear();
 		upgradeConfig = new GuiButton[_chassiPipe.getChassiSize() * 2];
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			moduleConfigButtons.add(addButton(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!")));

@@ -3,6 +3,7 @@ package logisticspipes.network.packets.gui;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,14 +36,23 @@ public class RequestSatellitePipeListPacket extends BooleanCoordinatesPacket {
 		}
 		CoreRoutedPipe rPipe = (CoreRoutedPipe) pipe.pipe;
 		List<Pair<String, UUID>> list;
+		if (rPipe.getRouter() == null || rPipe.getRouter().getRouteTable() == null) {
+			return;
+		}
 		if (this.isFlag()) {
 			list = PipeFluidSatellite.AllSatellites.stream()
+					.filter(Objects::nonNull)
+					.filter(it -> it.getRouter() != null)
+					.filter(it -> rPipe.getRouter().getRouteTable().size() > it.getRouterId())
 					.filter(it -> !rPipe.getRouter().getRouteTable().get(it.getRouterId()).isEmpty())
 					.sorted(Comparator.comparingDouble(it -> rPipe.getRouter().getRouteTable().get(it.getRouterId()).stream().map(it1 -> it1.distanceToDestination).min(Double::compare).get()))
 					.map(it -> new Pair<>(it.getSatellitePipeName(), it.getRouter().getId()))
 					.collect(Collectors.toList());
 		} else {
 			list = PipeItemsSatelliteLogistics.AllSatellites.stream()
+					.filter(Objects::nonNull)
+					.filter(it -> it.getRouter() != null)
+					.filter(it -> rPipe.getRouter().getRouteTable().size() > it.getRouterId())
 					.filter(it -> !rPipe.getRouter().getRouteTable().get(it.getRouterId()).isEmpty())
 					.sorted(Comparator.comparingDouble(it -> rPipe.getRouter().getRouteTable().get(it.getRouterId()).stream().map(it1 -> it1.distanceToDestination).min(Double::compare).get()))
 					.map(it -> new Pair<>(it.getSatellitePipeName(), it.getRouter().getId()))

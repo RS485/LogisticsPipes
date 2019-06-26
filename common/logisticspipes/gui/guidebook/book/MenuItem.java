@@ -13,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import static logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 import lombok.Getter;
 
-import logisticspipes.LPConstants;
 import logisticspipes.gui.guidebook.GuiGuideBook;
 import logisticspipes.utils.GuideBookContents;
 

@@ -5,8 +5,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.utils.GuideBookContents;
 import logisticspipes.gui.guidebook.GuiGuideBook;
+import logisticspipes.utils.GuideBookContents;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 

@@ -226,7 +226,7 @@ public class GuiGuideBook extends GuiScreen {
 	public void initGui() {
 		if (!loadedNBT) loadedNBT = this.getDataFromNBT();
 		this.calculateConstraints();
-		this.updateTitle(title);
+		this.title = this.updateTitle();
 		this.slider = this.addButton(new GuiGuideBookSlider(0, guiSliderX, guiSliderY0, guiSliderY1, zTitleButtons, currentPage.getProgress(), guiSliderWidth, guiSliderHeight));
 		this.slider.enabled = false;
 		this.home = this.addButton(new GuiGuideBookTexturedButton(1, guiX3 - guiTabWidth, guiY0 - guiTabHeight, guiTabWidth, guiFullTabHeight, 16, 64, zTitleButtons, 128, 0, 16, 16, false, GuiGuideBookTexturedButton.EnumButtonType.TAB));
@@ -320,11 +320,11 @@ public class GuiGuideBook extends GuiScreen {
 	protected void selectChapter(MenuItem item) {
 		currentPage.setPage(item);
 		currentPage.drawable = page;
-		updateTitle(title);
+		title = updateTitle();
 		updateButtonVisibility();
 	}
 
-	protected static void updateTitle(String currentTitle) {
+	protected static String updateTitle() {
 		String title = "";
 		title += gbc.getTitle();
 		if (currentPage.drawable == menu) {
@@ -335,7 +335,7 @@ public class GuiGuideBook extends GuiScreen {
 				title += " - " + gbc.getDivision(currentPage.getDivision()).getChapter(currentPage.getChapter()).getTitle();
 			}
 		}
-		currentTitle = title;
+		return title;
 	}
 
 	protected void updateButtonVisibility() {
@@ -352,10 +352,10 @@ public class GuiGuideBook extends GuiScreen {
 			if (equals(tab.getTab(), currentPage)) tab.isActive = true;
 			else tab.isActive = false;
 		}
-		this.button.visible = currentPage.drawable != menu;
+		this.button.visible = currentPage.drawable != menu && tabList.size() < maxTabs;
 		this.button.enabled = !tabExists(currentPage);
 		this.button.x = guiX3 - 20 - guiTabWidth - offset;
-		updateTitle(title);
+		this.title = updateTitle();
 	}
 
 	protected boolean tabExists(SavedTab checkTab) {
@@ -378,7 +378,7 @@ public class GuiGuideBook extends GuiScreen {
 	 */
 	protected void drawTitle() {
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(0.0F, 0.0F, zTitleButtons);
+		GlStateManager.translate(0.0F, 0.0F, 200);
 		this.drawCenteredString(this.fontRenderer, title, this.width / 2, guiY0 + 4, 0xFFFFFF);
 		GlStateManager.popMatrix();
 	}
@@ -455,7 +455,7 @@ public class GuiGuideBook extends GuiScreen {
 		int slideU1 = 12;
 		int slideV0 = 96;
 		int slideU2 = 20;
-		int slideU3 = 30;
+		int slideU3 = 32;
 		int slideV1 = 110;
 		// Draw Left & Right slides.
 		this.drawStretchingSquare(slideX0, slideY0, slideX1, slideY1, zFrame, slideU0, slideV0, slideU1, slideV1, true);
@@ -604,6 +604,11 @@ public class GuiGuideBook extends GuiScreen {
 
 	public static void drawCenteredStringStatic(FontRenderer fontRendererIn, String text, int x, int y, int color) {
 		fontRendererIn.drawStringWithShadow(text, (float) (x - fontRendererIn.getStringWidth(text) / 2), (float) y, color);
+	}
+
+	@Override
+	public void drawHorizontalLine(int startX, int endX, int y, int color) {
+		super.drawHorizontalLine(startX, endX, y, color);
 	}
 
 	boolean equals(SavedTab a, SavedTab b) {

@@ -9,11 +9,13 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.UnmodifiableListIterator;
+import static logisticspipes.gui.guidebook.book.DrawablePage.HEADER_SCALING;
 import org.lwjgl.input.Keyboard;
 
 public final class StringUtils {
@@ -177,34 +179,59 @@ public final class StringUtils {
 		return sb.toString();
 	}
 
-	public static ArrayList<String> splitLines(String text, FontRenderer fontRenderer, int maxLength){
+	public static ArrayList<String> splitLines(String text, FontRenderer fontRenderer, int maxLength) {
+		text = applyFormatting(text, fontRenderer);
 		if (text.charAt(text.length() - 1) != '\n') text += '\n';
+		ArrayList<String> paragraphs = new ArrayList(Arrays.asList(text.split("\n")));
 		ArrayList<String> lines = new ArrayList<>();
 		StringBuilder currentLine = new StringBuilder();
-		int lastSplitPoint = 0;
-		int curLength = 0;
-		for (char c : text.toCharArray()) {
-			if (c == '\n') {
-				lines.add(currentLine.toString());
-				currentLine.delete(0, currentLine.length());
-				lastSplitPoint = 0;
-				curLength = fontRenderer.getStringWidth(currentLine.toString());
-			} else if (Character.isWhitespace(c)) {
-				currentLine.append(c);
-				curLength += fontRenderer.getCharWidth(c);
-				lastSplitPoint = currentLine.length();
-			} else {
-				if ((currentLine.length() > 1 && curLength + fontRenderer.getCharWidth(c) > maxLength)) {
-					if (lastSplitPoint == 0) lastSplitPoint = currentLine.length();
-					lines.add(currentLine.substring(0, lastSplitPoint));
-					currentLine.delete(0, lastSplitPoint);
+		for (String paragraph : paragraphs) {
+			boolean header = paragraph.indexOf("##") > -1;
+			if (header) paragraph = paragraph.replace("##", "");
+			if (paragraph.charAt(paragraph.length() - 1) != '\n') paragraph += '\n';
+			int lastSplitPoint = 0;
+			int curLength = 0;
+			for (char c : paragraph.toCharArray()) {
+				if (c == '\n') {
+					lines.add(currentLine.toString());
+					if (header) {
+						lines.add("##" + lines.get(lines.size() - 1));
+						lines.remove(lines.size() - 2);
+					}
+					currentLine.delete(0, currentLine.length());
 					lastSplitPoint = 0;
 					curLength = fontRenderer.getStringWidth(currentLine.toString());
+				} else if (Character.isWhitespace(c)) {
+					currentLine.append(c);
+					curLength += (int) (fontRenderer.getCharWidth(c) * (header ? HEADER_SCALING : 1.0F));
+					lastSplitPoint = currentLine.length();
+				} else {
+					if ((currentLine.length() > 1 && curLength + (int) (fontRenderer.getCharWidth(c) * (header ? HEADER_SCALING : 1.0F)) > maxLength)) {
+						if (lastSplitPoint == 0) lastSplitPoint = currentLine.length();
+						lines.add(((header ? "##" : "") + currentLine.substring(0, lastSplitPoint)));
+						currentLine.delete(0, lastSplitPoint);
+						lastSplitPoint = 0;
+						curLength = fontRenderer.getStringWidth(currentLine.toString());
+					}
+					currentLine.append(c);
+					curLength += (int) (fontRenderer.getCharWidth(c) * (header ? HEADER_SCALING : 1.0F));
 				}
-				currentLine.append(c);
-				curLength += fontRenderer.getCharWidth(c);
 			}
 		}
 		return lines;
+	}
+
+	public static String applyFormatting(String text, FontRenderer fontRenderer) {
+		// Multiple passes:
+		text = text.replace(" *", " " + TextFormatting.BOLD);
+		text = text.replace(" __", " " + TextFormatting.UNDERLINE);
+		text = text.replace(" _", " " + TextFormatting.ITALIC);
+		text = text.replace(" ~~", " " + TextFormatting.STRIKETHROUGH);
+		// Single pass to close
+		text = text.replace("*", TextFormatting.RESET.toString());
+		text = text.replace("__", TextFormatting.RESET.toString());
+		text = text.replace("_", TextFormatting.RESET.toString());
+		text = text.replace("~~", TextFormatting.RESET.toString());
+		return text;
 	}
 }

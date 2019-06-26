@@ -874,9 +874,12 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			if(((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
 		}
 		if (capability == LogisticsPipes.ITEM_HANDLER_CAPABILITY) {
+			if(facing == null) {
+				return false;
+			}
 			TileEntity tile = getTile(facing);
 			if(tile != null) {
-				if (facing == null || pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(tile)) {
+				if (pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(tile)) {
 					return true;
 				}
 			}
@@ -900,7 +903,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		}
 		if (capability == LogisticsPipes.ITEM_HANDLER_CAPABILITY) {
 			if(facing == null) {
-				return (T) itemInsertionHandlerNull;
+				return null;
 			}
 			TileEntity tile = getTile(facing);
 			if(tile != null) {

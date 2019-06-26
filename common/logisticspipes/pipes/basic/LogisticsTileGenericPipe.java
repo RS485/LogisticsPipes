@@ -79,7 +79,7 @@ import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.proxy.PipeInventoryConnectionChecker;
+import network.rs485.logisticspipes.connection.PipeInventoryConnectionChecker;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;

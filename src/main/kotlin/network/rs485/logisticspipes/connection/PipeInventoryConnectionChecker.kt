@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.proxy
+package network.rs485.logisticspipes.connection
 
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityHopper
@@ -68,7 +68,7 @@ class PipeInventoryConnectionChecker {
     fun shouldLPProvideInventoryTo(tile: TileEntity): Boolean {
         return cachedClasses.computeIfAbsent(tile.javaClass) {
             var clazz = it as Class<*>
-            while(clazz.superclass != Object::class.java) {
+            while (clazz.superclass != Object::class.java) {
                 if (allowedConnectionClasses.contains(clazz)) {
                     return@computeIfAbsent true
                 }

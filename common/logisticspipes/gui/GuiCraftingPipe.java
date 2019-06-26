@@ -219,7 +219,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 		 */
 		if (30 <= guibutton.id && guibutton.id < 40) {
-			openSubGuiForSatelliteSelection(10 + (guibutton.id - 30));
+			openSubGuiForSatelliteSelection(10 + (guibutton.id - 30), false);
 		}
 		if (100 <= guibutton.id && guibutton.id < 200) {
 			int i = guibutton.id - 100;
@@ -258,12 +258,12 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				}
 				_pipe.changeFluidAmount(amount, i, _player);
 			} else if (action == 8) {
-				openSubGuiForSatelliteSelection(110 + i);
+				openSubGuiForSatelliteSelection(110 + i, true);
 			}
 		}
 		switch (guibutton.id) {
 			case 0:
-				openSubGuiForSatelliteSelection(0);
+				openSubGuiForSatelliteSelection(0, false);
 				return;
 			case 3:
 				_pipe.importFromCraftingTable(_player);
@@ -279,7 +279,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				_pipe.priorityDown(_player);
 				return;
 			case 22:
-				openSubGuiForSatelliteSelection(100);
+				openSubGuiForSatelliteSelection(100, true);
 				return;
 			case 24:
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupToggle.class).setModulePos(_pipe));
@@ -293,8 +293,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 	}
 
-	private void openSubGuiForSatelliteSelection(int id) {
-		this.setSubGui(new GuiSelectSatellitePopup(new BlockPos(this._pipe.getX(), this._pipe.getY(), this._pipe.getZ()), false, uuid ->
+	private void openSubGuiForSatelliteSelection(int id, boolean fluidSatellite) {
+		this.setSubGui(new GuiSelectSatellitePopup(new BlockPos(this._pipe.getX(), this._pipe.getY(), this._pipe.getZ()), fluidSatellite, uuid ->
 				MainProxy.sendPacketToServer(
 						PacketHandler.getPacket(CraftingPipeSetSatellitePacket.class).setPipeID(uuid).setInteger(id).setModulePos(this.module)))
 		);

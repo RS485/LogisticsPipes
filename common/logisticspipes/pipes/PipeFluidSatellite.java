@@ -251,6 +251,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if (MainProxy.isServer(this.getWorld())) {
 			updateWatchers();
 		}
+		ensureAllSatelliteStatus();
 	}
 
 	@Override

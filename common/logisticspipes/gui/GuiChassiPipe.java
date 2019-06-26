@@ -8,6 +8,9 @@
 
 package logisticspipes.gui;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -39,6 +42,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	private final EntityPlayer _player;
 	private final IInventory _moduleInventory;
 	//private final GuiScreen _previousGui;
+	private final List<SmallGuiButton> moduleConfigButtons = new LinkedList<>();
 
 	private final Slot[] upgradeslot = new Slot[16];
 	private GuiButton[] upgradeConfig = new GuiButton[16];
@@ -112,15 +116,15 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		buttonList.clear();
 		upgradeConfig = new GuiButton[_chassiPipe.getChassiSize() * 2];
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
-			buttonList.add(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!"));
+			moduleConfigButtons.add(addButton(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!")));
 			if (_moduleInventory == null) {
 				continue;
 			}
 			ItemStack module = _moduleInventory.getStackInSlot(i);
 			if (module.isEmpty() || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton) buttonList.get(i)).visible = false;
+				moduleConfigButtons.get(i).visible = false;
 			} else {
-				((SmallGuiButton) buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
+				moduleConfigButtons.get(i).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
 
 			if (hasUpgradeModuleUpgarde) {
@@ -154,10 +158,10 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			ItemStack module = _moduleInventory.getStackInSlot(i);
-			if (module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton) buttonList.get(i)).visible = false;
+			if (module.isEmpty() || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
+				moduleConfigButtons.get(i).visible = false;
 			} else {
-				((SmallGuiButton) buttonList.get(i)).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
+				moduleConfigButtons.get(i).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
 			}
 		}
 		if (hasUpgradeModuleUpgarde) {
@@ -189,7 +193,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		if (_moduleInventory == null) {
 			return "";
 		}
-		if (_moduleInventory.getStackInSlot(slot) == null) {
+		if (_moduleInventory.getStackInSlot(slot).isEmpty()) {
 			return "";
 		}
 		if (!(_moduleInventory.getStackInSlot(slot).getItem() instanceof ItemModule)) {

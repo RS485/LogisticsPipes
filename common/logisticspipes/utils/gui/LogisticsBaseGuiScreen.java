@@ -340,7 +340,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@SuppressWarnings("unchecked")
-	public GuiButton addButton(GuiButton button) {
+	public <T extends GuiButton> T addButton(T button) {
 		buttonList.add(button);
 		return button;
 	}

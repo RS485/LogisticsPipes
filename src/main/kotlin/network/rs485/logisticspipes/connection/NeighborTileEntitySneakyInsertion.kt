@@ -54,8 +54,8 @@ class NeighborTileEntitySneakyInsertion<T : TileEntity>(tileEntity: T, direction
         return this
     }
 
-    fun from(upgradeManager: ISlotUpgradeManager): NeighborTileEntitySneakyInsertion<T> {
-        if (upgradeManager.hasSneakyUpgrade()) sneakyDirection = upgradeManager.sneakyOrientation
+    fun from(upgradeManager: ISlotUpgradeManager?): NeighborTileEntitySneakyInsertion<T> {
+        if (upgradeManager?.hasSneakyUpgrade() == true) sneakyDirection = upgradeManager.sneakyOrientation
         return this
     }
 }

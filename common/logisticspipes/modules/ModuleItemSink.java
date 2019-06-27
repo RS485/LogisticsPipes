@@ -18,6 +18,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -105,7 +106,8 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			}
 			return null;
 		}
-		if (getUpgradeManager().isFuzzyUpgrade()) {
+		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
+		if (upgradeManager != null && upgradeManager.isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
 				if (stack == null) {
 					continue;

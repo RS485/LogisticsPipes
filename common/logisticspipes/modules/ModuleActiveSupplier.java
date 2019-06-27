@@ -23,6 +23,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -535,7 +536,12 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ActiveSupplierSlot.class).setPatternUpgarde(hasPatternUpgrade()).setSlotArray(slotArray).setMode((getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setLimit(isLimited);
+		final boolean hasPatternUpgrade = hasPatternUpgrade();
+		return NewGuiHandler.getGui(ActiveSupplierSlot.class)
+				.setPatternUpgarde(hasPatternUpgrade)
+				.setSlotArray(slotArray)
+				.setMode((hasPatternUpgrade ? getPatternMode() : getSupplyMode()).ordinal())
+				.setLimit(isLimited);
 	}
 
 	@Override
@@ -564,8 +570,9 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	public boolean hasPatternUpgrade() {
-		if (_service != null && getUpgradeManager() != null) {
-			return getUpgradeManager().hasPatternUpgrade();
+		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
+		if (upgradeManager != null) {
+			return upgradeManager.hasPatternUpgrade();
 		}
 		return false;
 	}

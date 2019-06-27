@@ -3,6 +3,7 @@ package logisticspipes.modules.abstractmodules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import lombok.Getter;
 
@@ -174,6 +175,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		return (new StringBuilder()).append(getClass().getSimpleName()).append("@").append("(").append(getX()).append(", ").append(getY()).append(", ").append(getZ()).append(")").toString();
 	}
 
+	@Nullable
 	protected ISlotUpgradeManager getUpgradeManager() {
 		if (_service == null) {
 			return null;

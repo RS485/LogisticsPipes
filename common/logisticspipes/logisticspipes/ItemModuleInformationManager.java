@@ -1,27 +1,18 @@
 package logisticspipes.logisticspipes;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-
-import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
-public class ItemModuleInformationManager {
+import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.proxy.MainProxy;
 
-	private static final List<String> Filter = new ArrayList<>();
-	static {
-		ItemModuleInformationManager.Filter.add("moduleInformation");
-		ItemModuleInformationManager.Filter.add("informationList");
-		ItemModuleInformationManager.Filter.add("Random-Stack-Prevent");
-	}
+public class ItemModuleInformationManager {
 
 	public static void saveInfotmation(ItemStack itemStack, LogisticsModule module) {
 		if (module == null) {
@@ -74,24 +65,6 @@ public class ItemModuleInformationManager {
 				NBTTagCompound moduleInformation = nbt.getCompoundTag("moduleInformation");
 				module.readFromNBT(moduleInformation);
 			}
-		}
-	}
-
-	public static void removeInformation(ItemStack itemStack) {
-		if (itemStack == null) {
-			return;
-		}
-		if (itemStack.hasTagCompound()) {
-			NBTTagCompound nbt = itemStack.getTagCompound();
-			@SuppressWarnings("unchecked")
-			Collection<String> collection = nbt.tagMap.keySet();
-			nbt = new NBTTagCompound();
-			for (String key : collection) {
-				if (!ItemModuleInformationManager.Filter.contains(key)) {
-					nbt.setTag(key, nbt.getTag(key));
-				}
-			}
-			itemStack.setTagCompound(nbt);
 		}
 	}
 }

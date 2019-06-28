@@ -365,7 +365,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					if (!MainProxy.isClient()) {
 						ItemModuleInformationManager.readInformation(stack, next);
 					}
-					ItemModuleInformationManager.removeInformation(stack);
 				}
 				inventory.setInventorySlotContents(i, stack);
 			}

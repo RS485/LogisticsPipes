@@ -8,6 +8,9 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.Environment;
@@ -171,18 +174,21 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public boolean canConnect(EnumFacing dir) {
-		final NeighborTileEntity<TileEntity> neighbor = new WorldCoordinatesWrapper(this).getNeighbor(dir);
-		if (neighbor == null) {
-			throw new NullPointerException("No neighbor in direction " + dir.toString());
+	public Node sidedNode(EnumFacing side) {
+		final NeighborTileEntity<TileEntity> neighbor = new WorldCoordinatesWrapper(this).getNeighbor(side);
+		if (neighbor == null || neighbor.isLogisticsPipe() || neighbor.getTileEntity() instanceof LogisticsSolidTileEntity) {
+			return null;
+		} else {
+			return node();
 		}
-		return !neighbor.isLogisticsPipe() && !(neighbor.getTileEntity() instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Node sidedNode(EnumFacing dir) {
-		return canConnect(dir) ? node() : null;
+	public boolean canConnect(EnumFacing side) {
+		final NeighborTileEntity<TileEntity> neighbor = new WorldCoordinatesWrapper(this).getNeighbor(side);
+		return neighbor != null && !neighbor.isLogisticsPipe() && !(neighbor.getTileEntity() instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override

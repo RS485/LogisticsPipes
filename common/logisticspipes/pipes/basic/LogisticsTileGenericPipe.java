@@ -697,20 +697,20 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public boolean canConnect(EnumFacing dir) {
-		return !(this.getTile(dir) instanceof LogisticsTileGenericPipe) && !(this.getTile(dir) instanceof LogisticsSolidTileEntity);
-	}
-
-	@Override
-	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Node sidedNode(EnumFacing dir) {
-		if (this.getTile(dir) instanceof LogisticsTileGenericPipe || this.getTile(dir) instanceof LogisticsSolidTileEntity) {
+	public Node sidedNode(EnumFacing side) {
+		if (this.getTile(side) instanceof LogisticsTileGenericPipe || this.getTile(side) instanceof LogisticsSolidTileEntity) {
 			return null;
 		} else {
 			return node();
 		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	@ModDependentMethod(modId = LPConstants.openComputersModID)
+	public boolean canConnect(EnumFacing side) {
+		return !(this.getTile(side) instanceof LogisticsTileGenericPipe) && !(this.getTile(side) instanceof LogisticsSolidTileEntity);
 	}
 
 	@Override

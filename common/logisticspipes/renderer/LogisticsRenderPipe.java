@@ -325,20 +325,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		}
 	}
 
-	static File imagesFolder;
-
-	static {
-		imagesFolder = new File("C:/WORK/Minecraft/DEBUG");
-		if (imagesFolder.exists()) {
-			for (File file : imagesFolder.listFiles())
-				file.delete();
-		}
-		imagesFolder.mkdirs();
-		if (!imagesFolder.exists()) {
-			System.out.println("There were problems creating the folders");
-		}
-	}
-
 	private void renderSign(CoreRoutedPipe pipe, IPipeSign type, float partialTickTime) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 

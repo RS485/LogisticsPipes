@@ -1,5 +1,6 @@
 package logisticspipes.pipes.signs;
 
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -34,4 +35,9 @@ public interface IPipeSign {
 	@SideOnly(Side.CLIENT)
 	void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer);
 
+	@SideOnly(Side.CLIENT)
+	Framebuffer getMCFrameBufferForSign();
+
+	@SideOnly(Side.CLIENT)
+	boolean doesFrameBufferNeedUpdating(CoreRoutedPipe pipe, LogisticsRenderPipe renderer);
 }

@@ -114,6 +114,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 									sendPowerLaserPackets(sourcePipe.getRouter(), destinationToPower.getValue1(), neighborToSource.getValue2().exitOrientation,
 											neighborToSource.getValue2().exitOrientation != neighborToSource.getValue1().getDirection());
 									internalStorage -= destinationToPower.getValue2();
+									if (internalStorage <= 0) internalStorage = 0; // because calculations with floats
 									handlePower(destinationToPower.getValue1().getPipe(), destinationToPower.getValue2());
 								}));
 			}
@@ -335,8 +336,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public int getDisplayPowerLevel() {
-		long rounded = Math.round(internalStorage);
-		return rounded > (long) Integer.MAX_VALUE ? (int) rounded : Integer.MAX_VALUE;
+		return internalStorage > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) internalStorage;
 	}
 
 	@Override

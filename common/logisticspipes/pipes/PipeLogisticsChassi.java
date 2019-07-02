@@ -23,7 +23,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -663,8 +662,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public Integer getChassieSize() {
 		return getChassiSize();
 	}
-
-	public abstract ResourceLocation getChassiGUITexture();
 
 	/** ICraftItems */
 	public final LinkedList<LogisticsOrder> _extras = new LinkedList<>();

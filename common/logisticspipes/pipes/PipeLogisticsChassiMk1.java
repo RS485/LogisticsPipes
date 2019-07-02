@@ -2,6 +2,7 @@ package logisticspipes.pipes;
 
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.config.Configs;
 
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -19,7 +20,7 @@ public class PipeLogisticsChassiMk1 extends PipeLogisticsChassi {
 
 	@Override
 	public int getChassiSize() {
-		return 1;
+		return Configs.CHASSI_SLOTS_ARRAY[0];
 	}
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/chassipipe_size1.png");

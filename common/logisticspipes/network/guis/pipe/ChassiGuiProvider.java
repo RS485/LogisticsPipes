@@ -48,7 +48,7 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 		}
 
 		for(int i=0; i<_chassiPipe.getChassiSize(); i++){
-			dummy.addModuleSlot(0, _moduleInventory, 19, 9 + 20*i, _chassiPipe);
+			dummy.addModuleSlot(i, _moduleInventory, 19, 9 + 20*i, _chassiPipe);
 		}
 
 		if (_chassiPipe.getUpgradeManager().hasUpgradeModuleUpgrade()) {

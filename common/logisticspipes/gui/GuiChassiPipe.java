@@ -66,24 +66,9 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		} else {
 			dummy.addNormalSlotsForPlayerInventory(18, 174);
 		}
-		if (_chassiPipe.getChassiSize() > 0) {
-			dummy.addModuleSlot(0, _moduleInventory, 19, 9, _chassiPipe);
-		}
-		if (_chassiPipe.getChassiSize() > 1) {
-			dummy.addModuleSlot(1, _moduleInventory, 19, 29, _chassiPipe);
-		}
-		if (_chassiPipe.getChassiSize() > 2) {
-			dummy.addModuleSlot(2, _moduleInventory, 19, 49, _chassiPipe);
-		}
-		if (_chassiPipe.getChassiSize() > 3) {
-			dummy.addModuleSlot(3, _moduleInventory, 19, 69, _chassiPipe);
-		}
-		if (_chassiPipe.getChassiSize() > 4) {
-			dummy.addModuleSlot(4, _moduleInventory, 19, 89, _chassiPipe);
-			dummy.addModuleSlot(5, _moduleInventory, 19, 109, _chassiPipe);
-			dummy.addModuleSlot(6, _moduleInventory, 19, 129, _chassiPipe);
-			dummy.addModuleSlot(7, _moduleInventory, 19, 149, _chassiPipe);
-		}
+
+		for(int  i=0; i<_chassiPipe.getChassiSize() ; i++)
+			dummy.addModuleSlot(i, _moduleInventory, 19, 9+20*i, _chassiPipe);
 
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
@@ -170,24 +155,9 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				upgradeConfig[i].visible = _chassiPipe.getModuleUpgradeManager(i / 2).hasGuiUpgrade(i % 2);
 			}
 		}
-		if (_chassiPipe.getChassiSize() > 0) {
-			mc.fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);
-		}
-		if (_chassiPipe.getChassiSize() > 1) {
-			mc.fontRenderer.drawString(getModuleName(1), 40, 34, 0x404040);
-		}
-		if (_chassiPipe.getChassiSize() > 2) {
-			mc.fontRenderer.drawString(getModuleName(2), 40, 54, 0x404040);
-		}
-		if (_chassiPipe.getChassiSize() > 3) {
-			mc.fontRenderer.drawString(getModuleName(3), 40, 74, 0x404040);
-		}
-		if (_chassiPipe.getChassiSize() > 4) {
-			mc.fontRenderer.drawString(getModuleName(4), 40, 94, 0x404040);
-			mc.fontRenderer.drawString(getModuleName(5), 40, 114, 0x404040);
-			mc.fontRenderer.drawString(getModuleName(6), 40, 134, 0x404040);
-			mc.fontRenderer.drawString(getModuleName(7), 40, 154, 0x404040);
-		}
+
+		for(int  i=0; i<_chassiPipe.getChassiSize() ; i++)
+			mc.fontRenderer.drawString(getModuleName(i), 40, 14+20*i, 0x404040);
 	}
 
 	private String getModuleName(int slot) {

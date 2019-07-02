@@ -40,6 +40,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
@@ -1477,85 +1478,81 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Nullable
 	@Override
 	public IInventoryUtil getPointedInventory() {
-		if(getPointedOrientation() != null) {
-			return getSneakyInventory(getPointedOrientation().getOpposite());
-		}
-		return getSneakyInventory(null);
+		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
+		if (pointedItemHandler == null) return null;
+		return pointedItemHandler.getUtilForItemHandler();
 	}
 
+	@Nullable
 	@Override
-	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction) {
-		TileEntity inv = getRealInventory();
-		if (inv == null) {
+	public IInventoryUtil getPointedInventory(ExtractionMode mode) {
+		final NeighborTileEntity<TileEntity> neighborItemHandler = getPointedItemHandler();
+		if (neighborItemHandler == null) {
 			return null;
 		}
+		return getInventoryForExtractionMode(mode, neighborItemHandler);
+	}
+
+	public static IInventoryUtil getInventoryForExtractionMode(ExtractionMode mode, NeighborTileEntity<TileEntity> neighborItemHandler) {
 		switch (mode) {
 			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, getPointedOrientation().getOpposite(), false, false, 1, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
+						false, false, 1, 0);
 			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, getPointedOrientation().getOpposite(), false, false, 0, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
+						false, false, 0, 1);
 			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, getPointedOrientation().getOpposite(), false, false, 1, 1);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
+						false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, getPointedOrientation().getOpposite(), true, false, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
+						true, false, 0, 0);
 			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, getPointedOrientation().getOpposite(), false, true, 0, 0);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
+						false, true, 0, 0);
 			default:
 				break;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(inv, getPointedOrientation().getOpposite(), false, false, 0, 0);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+				neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
+				false, false, 0, 0);
 	}
 
+	@Nullable
 	@Override
-	public IInventoryUtil getSneakyInventory(boolean forExtraction, ModulePositionType slot, int positionInt) {
-		ISlotUpgradeManager manager = getUpgradeManager(slot, positionInt);
-		EnumFacing insertion = getPointedOrientation().getOpposite();
-		if (manager.hasSneakyUpgrade()) {
-			insertion = manager.getSneakyOrientation();
-		}
-		return getSneakyInventory(insertion);
-	}
-
-	@Override
-	public IInventoryUtil getSneakyInventory(EnumFacing _sneakyOrientation) {
-		TileEntity inv = getRealInventory();
-		if (inv == null) {
+	public IInventoryUtil getSneakyInventory(ModulePositionType slot, int positionInt) {
+		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
+		if (pointedItemHandler == null) {
 			return null;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, _sneakyOrientation);
+		return pointedItemHandler.sneakyInsertion().from(getUpgradeManager(slot, positionInt)).getUtilForItemHandler();
 	}
 
+	@Nullable
 	@Override
-	public IInventoryUtil getUnsidedInventory() {
-		TileEntity inv = getRealInventory();
-		if (inv == null) {
+	public IInventoryUtil getSneakyInventory(@NotNull EnumFacing direction) {
+		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
+		if (pointedItemHandler == null) {
 			return null;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, null);
+		return pointedItemHandler.sneakyInsertion().from(direction).getUtilForItemHandler();
 	}
 
+	@Nullable
 	@Override
-	public TileEntity getRealInventory() {
-		TileEntity tile = getPointedTileEntity();
-		if (tile == null) {
-			return null;
-		}
-		if (!tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, getPointedOrientation())) {
-			return null;
-		}
-		return tile;
-	}
-
-	private TileEntity getPointedTileEntity() {
-		if (getPointedOrientation() == null) {
-			return null;
-		}
-		return getContainer().getTile(getPointedOrientation());
-	}
-
-	@Override
-	public EnumFacing inventoryOrientation() {
-		return getPointedOrientation();
+	public NeighborTileEntity<TileEntity> getPointedItemHandler() {
+		final EnumFacing pointedOrientation = getPointedOrientation();
+		if (pointedOrientation == null) return null;
+		final TileEntity tile = getContainer().getTile(pointedOrientation);
+		if (tile == null) return null;
+		final NeighborTileEntity<TileEntity> neighbor = new NeighborTileEntity<>(tile, pointedOrientation);
+		if (!neighbor.isItemHandler()) return null;
+		return neighbor;
 	}
 
 	/* ISendRoutedItem */
@@ -1595,6 +1592,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return itemToSend;
 	}
 
+	@Nullable
+	@Override
 	public EnumFacing getPointedOrientation() {
 		if (pointedDirection == null) {
 			final Optional<EnumFacing> firstDirection = new WorldCoordinatesWrapper(container)
@@ -1602,9 +1601,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 					.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isPipe(adjacent.getTileEntity()))
 					.map(NeighborTileEntity::getDirection)
 					.findFirst();
-			if (firstDirection.isPresent()) {
-				return firstDirection.get();
-			}
+			firstDirection.ifPresent(enumFacing -> pointedDirection = enumFacing);
 		}
 		return pointedDirection;
 	}

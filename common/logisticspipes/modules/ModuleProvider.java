@@ -222,7 +222,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		if (tree.getRequestType() instanceof ItemResource) {
 			possible.add(((ItemResource) tree.getRequestType()).getItem());
 		} else if (tree.getRequestType() instanceof DictResource) {
-			IInventoryUtil inv = _service.getPointedInventory(_extractionMode, true);
+			IInventoryUtil inv = _service.getPointedInventory(_extractionMode);
 			if (inv != null) {
 				Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 				possible.addAll(currentInv.keySet().stream()
@@ -253,7 +253,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		IInventoryUtil inv = _service.getPointedInventory(_extractionMode, true);
+		IInventoryUtil inv = _service.getPointedInventory(_extractionMode);
 		if (inv == null) {
 			return;
 		}
@@ -290,7 +290,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
-		IInventoryUtil inv = _service.getPointedInventory(_extractionMode, true);
+		IInventoryUtil inv = _service.getPointedInventory(_extractionMode);
 		if (inv == null) {
 			_service.getItemOrderManager().sendFailed();
 			return 0;
@@ -340,7 +340,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	private int getTotalItemCount(ItemIdentifier item) {
 
-		IInventoryUtil inv = _service.getPointedInventory(_extractionMode, true);
+		IInventoryUtil inv = _service.getPointedInventory(_extractionMode);
 		if (inv == null) {
 			return 0;
 		}

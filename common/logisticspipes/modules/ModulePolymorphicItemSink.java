@@ -2,14 +2,14 @@ package logisticspipes.modules;
 
 import java.util.List;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.nbt.NBTTagCompound;
 
 public class ModulePolymorphicItemSink extends LogisticsModule {
 
@@ -29,7 +29,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		IInventoryUtil targetInventory = _service.getSneakyInventory(false, slot, positionInt);
+		IInventoryUtil targetInventory = _service.getSneakyInventory(slot, positionInt);
 		if (targetInventory == null) {
 			return null;
 		}

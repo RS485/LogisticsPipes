@@ -128,16 +128,16 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	@Nullable
 	@Override
 	public IInventoryUtil getPointedInventory() {
-		IInventoryUtil inv = super.getPointedInventory();
-		if (inv == null) {
-			inv = new WorldCoordinatesWrapper(container)
+		IInventoryUtil invUtil = super.getPointedInventory();
+		if (invUtil == null) {
+			invUtil = new WorldCoordinatesWrapper(container)
 					.connectedTileEntities(ConnectionPipeType.ITEM)
 					.filter(NeighborTileEntity::isItemHandler)
 					.findFirst()
 					.map(NeighborTileEntity::getUtilForItemHandler)
 					.orElse(null);
 		}
-		return inv;
+		return invUtil;
 	}
 
 	@Override

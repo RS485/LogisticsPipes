@@ -211,22 +211,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 
 	private IInventoryUtil getAdaptedInventoryUtil(NeighborTileEntity<TileEntity> adjacent) {
-		ExtractionMode mode = getExtractionMode();
-		switch (mode) {
-			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.getTileEntity(), adjacent.getOurDirection(), false, false, 1, 0);
-			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.getTileEntity(), adjacent.getOurDirection(), false, false, 0, 1);
-			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.getTileEntity(), adjacent.getOurDirection(), false, false, 1, 1);
-			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.getTileEntity(), adjacent.getOurDirection(), true, false, 0, 0);
-			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.getTileEntity(), adjacent.getOurDirection(), false, true, 0, 0);
-			default:
-				break;
-		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(adjacent.getTileEntity(), adjacent.getOurDirection(), false, false, 0, 0);
+		return CoreRoutedPipe.getInventoryForExtractionMode(getExtractionMode(), adjacent);
 	}
 
 	@Override

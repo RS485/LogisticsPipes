@@ -164,11 +164,12 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 		EnumFacing extractOrientation = _sneakyDirection;
 		if (extractOrientation == null) {
-			EnumFacing invOrientation = _service.inventoryOrientation();
+			EnumFacing invOrientation = _service.getPointedOrientation();
 			if (invOrientation != null) {
 				extractOrientation = invOrientation.getOpposite();
 			}
 		}
+		if (extractOrientation == null) return;
 		IInventoryUtil inventory = _service.getSneakyInventory(extractOrientation);
 		if (inventory == null) {
 			return;

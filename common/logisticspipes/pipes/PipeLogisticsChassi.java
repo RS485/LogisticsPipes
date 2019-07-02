@@ -8,8 +8,8 @@
 
 package logisticspipes.pipes;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +91,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -126,12 +127,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
 		}
-		List<TileEntity> adjacent = new ArrayList<>(1);
-		TileEntity adjinv = getRealInventory();
-		if (adjinv != null) {
-			adjacent.add(adjinv);
+		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
+		if (pointedItemHandler == null) {
+			_cachedAdjacentInventories = Collections.emptyList();
+		} else {
+			_cachedAdjacentInventories = Collections.singletonList(pointedItemHandler.getTileEntity());
 		}
-		_cachedAdjacentInventories = adjacent;
 		return _cachedAdjacentInventories;
 	}
 
@@ -603,13 +604,13 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<>();
 		//if we don't have a pointed inventory we can't be interested in anything
-		if (getRealInventory() == null) {
+		if (getPointedItemHandler() == null) {
 			return l1;
 		}
 		for (int moduleIndex = 0; moduleIndex < getChassiSize(); moduleIndex++) {
 			LogisticsModule module = _module.getSubModule(moduleIndex);
 			if (module != null && module.interestedInAttachedInventory()) {
-				IInventoryUtil inv = getSneakyInventory(false, module.getSlot(), module.getPositionInt());
+				IInventoryUtil inv = getSneakyInventory(module.getSlot(), module.getPositionInt());
 				if (inv == null) {
 					continue;
 				}
@@ -646,7 +647,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public boolean hasGenericInterests() {
-		if (getRealInventory() == null) {
+		if (getPointedItemHandler() == null) {
 			return false;
 		}
 		for (int i = 0; i < getChassiSize(); i++) {

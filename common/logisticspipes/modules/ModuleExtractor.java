@@ -34,6 +34,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 
 public class ModuleExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
@@ -141,16 +142,21 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		currentTick = 0;
 
 		//Extract Item
-		TileEntity realInventory = _service.getRealInventory();
-		if (realInventory == null) {
+		final NeighborTileEntity<TileEntity> pointedItemHandler = _service.getPointedItemHandler();
+		if (pointedItemHandler == null) {
 			return;
 		}
 		EnumFacing extractOrientation = _sneakyDirection;
 		if (extractOrientation == null) {
-			extractOrientation = _service.inventoryOrientation().getOpposite();
+			final EnumFacing pointedOrientation = _service.getPointedOrientation();
+			if (pointedOrientation != null) {
+				extractOrientation = pointedOrientation.getOpposite();
+			}
 		}
 
+		if (extractOrientation == null) return;
 		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation);
+		if (targetUtil == null) return;
 
 		int itemsleft = itemsToExtract();
 		for (int i = 0; i < targetUtil.getSizeInventory(); i++) {

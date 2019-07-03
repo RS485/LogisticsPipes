@@ -11,6 +11,7 @@ package logisticspipes.gui;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.RuntimeTextureCreator;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -29,6 +30,8 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -80,13 +83,14 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		}
 
 		inventorySlots = dummy;
-
 		xSize = 194;
 		ySize = 186;
 
 		if (_chassiPipe.getChassiSize() > 4) {
 			ySize = 256;
 		}
+
+
 
 	}
 
@@ -168,7 +172,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			return "";
 		}
 		if (!(_moduleInventory.getStackInSlot(slot).getItem() instanceof ItemModule)) {
-			return "";
+			return "ITextureObject";
 		}
 		String name = ((ItemModule) _moduleInventory.getStackInSlot(slot).getItem()).getItemStackDisplayName(_moduleInventory.getStackInSlot(slot));
 		if (!hasUpgradeModuleUpgarde) {
@@ -177,10 +181,21 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		return StringUtils.getWithMaxWidth(name, 100, fontRenderer);
 	}
 
+	public ITextureObject getChassiGUITexture(int size){
+		RuntimeTextureCreator RTC = new RuntimeTextureCreator();
+
+		//TODO:
+
+		RTC.finalize();
+		return RTC;
+	}
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
+		System.out.println("drawGuiContainerBackgroundLayer started");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(_chassiPipe.getChassiGUITexture());
+		//mc.renderEngine.bindTexture(_chassiPipe.getChassiGUITexture());
+		GlStateManager.bindTexture(getChassiGUITexture(_chassiPipe.getChassiSize()).getGlTextureId());
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
@@ -188,5 +203,6 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				GuiGraphics.drawSlotBackground(mc, guiLeft + 164, guiTop + 8 + i * 20);
 			}
 		}
+		System.out.println("drawGuiContainerBackgroundLayer finished");
 	}
 }

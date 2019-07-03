@@ -1,4 +1,6 @@
 package logisticspipes;
 
-public class guiPart {
+public interface guiPart {
+	public int getWidth();
+	public int getHeight();
 }

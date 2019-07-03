@@ -23,11 +23,4 @@ public class PipeLogisticsChassiMk5 extends PipeLogisticsChassi {
 		return Configs.CHASSI_SLOTS_ARRAY[4];
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/chassipipe_size8.png");
-
-	@Override
-	public ResourceLocation getChassiGUITexture() {
-		return PipeLogisticsChassiMk5.TEXTURE;
-	}
-
 }

@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.awt.Graphics2D;
 import java.awt.AlphaComposite;
 
-
-
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.lwjgl.opengl.GL11.*;
 
 import net.minecraft.client.resources.IResourceManager;
@@ -25,17 +24,19 @@ public class RuntimeTextureCreator extends AbstractTexture
 	private int guiWidth;
 	private int guiHeight;
 	boolean finalized = false;
+	private static boolean inited = false;
 
 	public int widthColourTransition  = 3;
 	public int heightColourTransition = 3;
 	public int widthPadding  = 20;
 	public int heightPadding = 4;
 
+
 	public void loadTexture(IResourceManager resourceManager) throws IOException{};
 
-	public RuntimeTextureCreator(int textureWidth, int textureHeight)
+	public RuntimeTextureCreator()
 	{
-
+		inited = true;
 	}
 
 
@@ -52,38 +53,43 @@ public class RuntimeTextureCreator extends AbstractTexture
 
 
 	public void finalize(){
-		int partsWidth = 0;
-		int partfor(int y=0;y<heightColourTransition)sHeight = 0;
+		int partsWidth = 128;//0;
+		int partHeight = 128;//0;
 		for(ArrayList<guiPart> row: partLists){
-			int maxX, maxY =0;
+			int maxX = 0;
+			int maxY = 0;
 			for(guiPart part: row){
-				if(part.width > maxX)
-					maxX = part.width;
+				if(part.getWidth() > maxX)
+					maxX = part.getWidth();
 
-				if(part.height > maxY)
-					maxY = part.height;
+				if(part.getHeight() > maxY)
+					maxY = part.getHeight();
 			}
-			textureWidth += maxX;
-			textureHeight += maxY;
+			partsWidth += maxX;
+			partHeight += maxY;
 		}
 
-		//Allocate
-		this.guiWidth = textureWidth + 2*(widthColourTransition + widthPadding);
-		this.guiHeight = textureHeight + 2*(heightColourTransition + heightPadding);
-		this.dynamicTextureData = new int[textureWidth * textureHeight];
-		TextureUtil.allocateTexture(this.getGlTextureId(), textureWidth, textureHeight);
+		//Allocatefinalize
+		this.guiWidth = partsWidth + 2*(widthColourTransition + widthPadding);
+		this.guiHeight = partHeight + 2*(heightColourTransition + heightPadding);
+		this.dynamicTextureData = new int[guiWidth * guiHeight];
+		TextureUtil.allocateTexture(this.getGlTextureId(), partsWidth, guiHeight);
 
 
 		//create
 		BufferedImage bi = new BufferedImage(guiWidth, guiHeight, TYPE_INT_ARGB);
 
 
-
+		System.out.println("this.getGlTextureId()" + this.getGlTextureId());
+		for(int i=0; i<guiWidth && i<guiHeight; i++) {
+			/*System.out.println("AAHHHHHH" + i +", "+  i);*/
+			bi.setRGB(i, i, 1123);
+		}
 
 
 		//upload
-		bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), this.dynamicTextureData, 0, bufferedImage.getWidth());
-		TextureUtil.uploadTexture(this.getGlTextureId(), this.dynamicTextureData, this.width, this.height);
+		bi.getRGB(0, 0, bi.getWidth(), bi.getHeight(), this.dynamicTextureData, 0, bi.getWidth());
+		TextureUtil.uploadTexture(this.getGlTextureId(), this.dynamicTextureData, this.guiWidth, this.guiHeight);
 
 		//ib.wrap(dynamicTextureData,0, size);
 		//GlStateManager.glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height,  GL_RGBA,  GL_UNSIGNED_BYTE, ib);

@@ -534,7 +534,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToSGuiEditChannelPopuperver(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		hud.stopWatching();
 	}
 
@@ -674,8 +674,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public Integer getChassieSize() {
 		return getChassiSize();
 	}
-
-	public abstract ResourceLocation getChassiGUITexture();
 
 	/** ICraftItems */
 	public final LinkedList<LogisticsOrder> _extras = new LinkedList<>();

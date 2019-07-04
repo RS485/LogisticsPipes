@@ -71,7 +71,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 		dummy.addNormalSlotsForPlayerInventory(18, 9 + 20* _chassiPipe.getChassiSize());
 
-		for(int  i=0; i<_chassiPipe.getChassiSize() ; i++)
+		for(int  i=0; i<_chassiPipe.getChassiSize(); i++)
 			dummy.addModuleSlot(i, _moduleInventory, 18, 9+20*i, _chassiPipe);
 
 		if (hasUpgradeModuleUpgarde) {
@@ -126,7 +126,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 
-		if (guibutton.id >= 0 && guibutton.id <= 7) {
+		if (guibutton.id >= 0 && guibutton.id <= _chassiPipe.getChassiSize()) {
 			LogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
 			if (module != null) {
 				final ModernPacket packet = PacketHandler.getPacket(ChassisGUI.class).setButtonID(guibutton.id).setPosX(_chassiPipe.getX()).setPosY(_chassiPipe.getY()).setPosZ(_chassiPipe.getZ());

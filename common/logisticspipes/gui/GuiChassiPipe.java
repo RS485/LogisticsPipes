@@ -11,6 +11,7 @@ package logisticspipes.gui;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.RuntimeTextureCreator;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemModule;
@@ -23,6 +24,7 @@ import logisticspipes.network.packets.gui.OpenUpgradePacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.side.ClientProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -31,6 +33,8 @@ import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -64,14 +68,11 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		this.hasUpgradeModuleUpgarde = hasUpgradeModuleUpgarde;
 
 		DummyContainer dummy = new DummyContainer(_player.inventory, _moduleInventory);
-		if (_chassiPipe.getChassiSize() < 5) {
-			dummy.addNormalSlotsForPlayerInventory(18, 97);
-		} else {
-			dummy.addNormalSlotsForPlayerInventory(18, 174);
-		}
+
+		dummy.addNormalSlotsForPlayerInventory(18, 9 + 20* _chassiPipe.getChassiSize());
 
 		for(int  i=0; i<_chassiPipe.getChassiSize() ; i++)
-			dummy.addModuleSlot(i, _moduleInventory, 19, 9+20*i, _chassiPipe);
+			dummy.addModuleSlot(i, _moduleInventory, 18, 9+20*i, _chassiPipe);
 
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
@@ -83,13 +84,9 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		}
 
 		inventorySlots = dummy;
-		xSize = 194;
-		ySize = 186;
 
-		if (_chassiPipe.getChassiSize() > 4) {
-			ySize = 256;
-		}
-
+		xSize = ClientProxy.RTC.getWidth(_chassiPipe.getChassiSize()) + 50;
+		ySize = ClientProxy.RTC.getHeight(_chassiPipe.getChassiSize()) +50;
 
 
 	}
@@ -182,27 +179,25 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	}
 
 	public ITextureObject getChassiGUITexture(int size){
-		RuntimeTextureCreator RTC = new RuntimeTextureCreator();
-
-		//TODO:
-
-		RTC.finalize();
-		return RTC;
+		DynamicTexture DT = ClientProxy.RTC.getDynamicTexture(size);
+		return DT;
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		System.out.println("drawGuiContainerBackgroundLayer started");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		//mc.renderEngine.bindTexture(_chassiPipe.getChassiGUITexture());
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft+xSize-40, guiTop+ySize-40, 0, false);
+
 		GlStateManager.bindTexture(getChassiGUITexture(_chassiPipe.getChassiSize()).getGlTextureId());
-		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+		//drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+		//drawScaledCustomSizeModalRect(guiLeft, guiTop, 1,1, xSize, ySize, 256, 256, xSize, ySize);
+		drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 1,1, xSize, ySize, RuntimeTextureCreator.getNextPowerOf2(xSize), RuntimeTextureCreator.getNextPowerOf2(ySize));
+
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 				GuiGraphics.drawSlotBackground(mc, guiLeft + 144, guiTop + 8 + i * 20);
 				GuiGraphics.drawSlotBackground(mc, guiLeft + 164, guiTop + 8 + i * 20);
 			}
 		}
-		System.out.println("drawGuiContainerBackgroundLayer finished");
 	}
 }

@@ -40,7 +40,7 @@ public class Configs {
 	public static boolean ENABLE_PARTICLE_FX = true;
 
 
-	public static int [] CHASSI_SLOTS_ARRAY = {1,2,3,4,6};
+	public static int [] CHASSI_SLOTS_ARRAY = {1,2,3,4,8};
 
 
 	// GuiOrderer Popup setting

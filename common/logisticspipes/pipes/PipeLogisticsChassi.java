@@ -534,7 +534,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToSGuiEditChannelPopuperver(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		hud.stopWatching();
 	}
 
@@ -681,6 +681,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void registerExtras(IPromise promise) {
 		if (!(promise instanceof LogisticsPromise)) {
+
 			throw new UnsupportedOperationException("Extra has to be an item for a chassis pipe");
 		}
 		ItemIdentifierStack stack = new ItemIdentifierStack(((LogisticsPromise) promise).item, ((LogisticsPromise) promise).numberOfItems);

@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
@@ -32,22 +33,13 @@ public class guiPart implements guiPartInterface{
 	}
 
 	protected static BufferedImage resourceToBufferedImage(ResourceLocation rl){
-		SimpleReloadableResourceManager SRRM = null; //= new SimpleReloadableResourceManager(metadataSerializer_);
 		Minecraft mc  = FMLClientHandler.instance().getClient();
-		try {
-			Field f = mc.getClass().getDeclaredField("mcResourceManager");
-			f.setAccessible(true);
-			SRRM = (SimpleReloadableResourceManager) f.get(mc);
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		IResourceManager IRM = mc.getResourceManager();
 
 		BufferedImage bufferedimage = null;
 		System.out.println("resourceToBufferedImage: " + rl);
 		try{
-			bufferedimage = TextureUtil.readBufferedImage(SRRM.getResource(rl).getInputStream());
+			bufferedimage = TextureUtil.readBufferedImage(IRM.getResource(rl).getInputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

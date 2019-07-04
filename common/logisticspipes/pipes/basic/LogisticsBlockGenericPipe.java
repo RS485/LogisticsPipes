@@ -936,7 +936,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(worldIn, pos);
 
-		if (LogisticsBlockGenericPipe.isValid(pipe) && !(pipe instanceof PipeBlockRequestTable)) {
+		if (LogisticsBlockGenericPipe.isValid(pipe)) {
 			LogisticsNewRenderPipe.checkAndCalculateRenderCache(pipe.container);
 			state = ((IExtendedBlockState)state).withProperty(propertyRenderList, pipe.container.renderState.cachedRenderer);
 			state = ((IExtendedBlockState)state).withProperty(propertyCache, pipe.container.renderState.objectCache);

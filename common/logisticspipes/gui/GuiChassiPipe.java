@@ -167,7 +167,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			return "";
 		}
 		if (!(_moduleInventory.getStackInSlot(slot).getItem() instanceof ItemModule)) {
-			return "ITextureObject";
+			return "";
 		}
 		String name = ((ItemModule) _moduleInventory.getStackInSlot(slot).getItem()).getItemStackDisplayName(_moduleInventory.getStackInSlot(slot));
 		if (!hasUpgradeModuleUpgarde) {

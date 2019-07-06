@@ -11,9 +11,6 @@ package logisticspipes.gui;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.RuntimeTextureCreator;
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
@@ -32,8 +29,6 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.entity.player.EntityPlayer;
@@ -85,9 +80,12 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 		inventorySlots = dummy;
 
-		xSize = ClientProxy.RTC.getWidth(_chassiPipe.getChassiSize()) + 50;
-		ySize = ClientProxy.RTC.getHeight(_chassiPipe.getChassiSize()) +50;
 
+		int playerInventoryWidth = 162;
+		int playerInventoryHeight = 76;
+
+		xSize = playerInventoryWidth + 26;
+		ySize = playerInventoryHeight + 14 + 20*_chassiPipe.getChassiSize();
 
 	}
 
@@ -178,20 +176,16 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		return StringUtils.getWithMaxWidth(name, 100, fontRenderer);
 	}
 
-	public ITextureObject getChassiGUITexture(int size){
-		DynamicTexture DT = ClientProxy.RTC.getDynamicTexture(size);
-		return DT;
-	}
-
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft+xSize-40, guiTop+ySize-40, 0, false);
+		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		GlStateManager.bindTexture(getChassiGUITexture(_chassiPipe.getChassiSize()).getGlTextureId());
-		//drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-		//drawScaledCustomSizeModalRect(guiLeft, guiTop, 1,1, xSize, ySize, 256, 256, xSize, ySize);
-		drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 1,1, xSize, ySize, RuntimeTextureCreator.getNextPowerOf2(xSize), RuntimeTextureCreator.getNextPowerOf2(ySize));
+		GL11.glTranslated(guiLeft, guiTop, 0);
+		for(int  i=0; i<_chassiPipe.getChassiSize(); i++)
+			GuiGraphics.drawSlotBackground(mc, 17, 8+20*i);
+
+		GuiGraphics.drawPlayerInventoryBackground(mc, 18, 9 + 20* _chassiPipe.getChassiSize());
+		GL11.glTranslated(-guiLeft, -guiTop, 0);
 
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {

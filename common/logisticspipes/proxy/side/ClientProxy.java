@@ -3,10 +3,8 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.LPBlocks;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.RuntimeTextureCreator;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiGuideBook;
 import logisticspipes.gui.modules.ModuleBaseGui;
@@ -14,7 +12,6 @@ import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.pipefxhandlers.Particles;
@@ -76,7 +73,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ClientProxy implements IProxy {
 
 	int renderIndex = 0;
-	public static RuntimeTextureCreator RTC;
 
 	@Override
 	public String getSide() {
@@ -293,7 +289,6 @@ public class ClientProxy implements IProxy {
 		LogisticsNewRenderPipe.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 		LogisticsNewPipeModel.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
 		SimpleServiceLocator.thermalDynamicsProxy.registerTextures(Minecraft.getMinecraft().getTextureMapBlocks());
-		RTC = new RuntimeTextureCreator();
 		renderIndex++;
 	}
 

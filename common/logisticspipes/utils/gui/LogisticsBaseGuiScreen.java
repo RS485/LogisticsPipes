@@ -202,6 +202,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			super.drawScreen(mouseX, mouseY, partialTicks);
 			RenderHelper.disableStandardItemLighting();
 			for (IRenderSlot slot : slots) {
+
 				int localMouseX = mouseX - guiLeft;
 				int localMouseY = mouseY - guiTop;
 				int mouseXMax = localMouseX - slot.getSize();

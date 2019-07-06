@@ -124,7 +124,7 @@ public class HudChassisPipe extends BasicHUDGui {
 					for (IHUDButton button : ((IHUDModuleHandler) selectedmodule).getHUDRenderer().getButtons()) {
 						button.renderAlways(shifted);
 						if (button.shouldRenderButton()) {
-							//button.renderButton(button.isFocused(), button.isblockFocused(), shifted);
+							button.renderButton(button.isFocused(), button.isblockFocused(), shifted);
 						}
 						if (!button.buttonEnabled() || !button.shouldRenderButton()) {
 							continue;

@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.gui;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -11,13 +10,13 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.BooleanCoordinatesPacket;
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.tuples.Pair;
 
@@ -43,8 +42,10 @@ public class RequestSatellitePipeListPacket extends BooleanCoordinatesPacket {
 			list = PipeFluidSatellite.AllSatellites.stream()
 					.filter(Objects::nonNull)
 					.filter(it -> it.getRouter() != null)
-					.filter(it -> rPipe.getRouter().getRouteTable().size() > it.getRouterId())
-					.filter(it -> !rPipe.getRouter().getRouteTable().get(it.getRouterId()).isEmpty())
+					.filter(it -> {
+						List<List<ExitRoute>> routingTable = rPipe.getRouter().getRouteTable();
+						return routingTable.size() > it.getRouterId() && routingTable.get(it.getRouterId()) != null && !routingTable.get(it.getRouterId()).isEmpty();
+					})
 					.sorted(Comparator.comparingDouble(it -> rPipe.getRouter().getRouteTable().get(it.getRouterId()).stream().map(it1 -> it1.distanceToDestination).min(Double::compare).get()))
 					.map(it -> new Pair<>(it.getSatellitePipeName(), it.getRouter().getId()))
 					.collect(Collectors.toList());
@@ -52,8 +53,10 @@ public class RequestSatellitePipeListPacket extends BooleanCoordinatesPacket {
 			list = PipeItemsSatelliteLogistics.AllSatellites.stream()
 					.filter(Objects::nonNull)
 					.filter(it -> it.getRouter() != null)
-					.filter(it -> rPipe.getRouter().getRouteTable().size() > it.getRouterId())
-					.filter(it -> !rPipe.getRouter().getRouteTable().get(it.getRouterId()).isEmpty())
+					.filter(it -> {
+						List<List<ExitRoute>> routingTable = rPipe.getRouter().getRouteTable();
+						return routingTable.size() > it.getRouterId() && routingTable.get(it.getRouterId()) != null && !routingTable.get(it.getRouterId()).isEmpty();
+					})
 					.sorted(Comparator.comparingDouble(it -> rPipe.getRouter().getRouteTable().get(it.getRouterId()).stream().map(it1 -> it1.distanceToDestination).min(Double::compare).get()))
 					.map(it -> new Pair<>(it.getSatellitePipeName(), it.getRouter().getId()))
 					.collect(Collectors.toList());

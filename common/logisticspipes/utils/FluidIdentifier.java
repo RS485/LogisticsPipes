@@ -208,7 +208,7 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 			if(itemStack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
 				IFluidHandlerItem capability = itemStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
 				if(capability != null) {
-					f = Arrays.stream(capability.getTankProperties()).map(IFluidTankProperties::getContents).findFirst().orElse(null);
+					f = Arrays.stream(capability.getTankProperties()).map(IFluidTankProperties::getContents).filter(Objects::nonNull).findFirst().orElse(null);
 				}
 			}
 		}

@@ -22,6 +22,7 @@ plugins {
     id "com.matthewprenger.cursegradle" version "1.3.0"
 }
 
+apply plugin: 'maven'
 apply plugin: 'kotlin'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'signing'
@@ -32,17 +33,24 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 version = "0.10.2"
-group= "network.rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "network.rs485.logisticspipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "logisticspipes"
 
-def buildby = 'local'
+def buildby = "local"
 
 def ENV = System.getenv()
 if (ENV.BUILD_NUMBER) {
-    version += "." + ENV.BUILD_NUMBER
-    buildby = 'RS485-Jenkins'
+    version += ".${ENV.BUILD_NUMBER}"
+    buildby = "RS485-Jenkins"
+} else if (ENV.VERSION) {
+    version += ".${ENV.VERSION}"
 } else {
     version += ".99999"
+}
+
+if (ENV.JITPACK) {
+    buildby = "JitPack.io"
+    group = ENV.GROUP
 }
 
 minecraft {

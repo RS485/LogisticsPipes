@@ -5,12 +5,15 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+
 @JEIPlugin
 public class JEIPluginLoader implements IModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		IRecipeTransferRegistry recipeTranferRegistry = registry.getRecipeTransferRegistry();
-		recipeTranferRegistry.addUniversalRecipeTransferHandler(new RecipeTransferHandler(registry.getJeiHelpers().recipeTransferHandlerHelper()));
+		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
+		recipeTransferRegistry.addUniversalRecipeTransferHandler(new RecipeTransferHandler(registry.getJeiHelpers().recipeTransferHandlerHelper()));
+		registry.addGhostIngredientHandler(LogisticsBaseGuiScreen.class, new GhostIngredientHandler());
 	}
 }

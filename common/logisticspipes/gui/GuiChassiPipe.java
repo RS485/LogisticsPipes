@@ -21,7 +21,6 @@ import logisticspipes.network.packets.gui.OpenUpgradePacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.side.ClientProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
@@ -29,14 +28,10 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
@@ -180,12 +175,10 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		GL11.glTranslated(guiLeft, guiTop, 0);
 		for(int  i=0; i<_chassiPipe.getChassiSize(); i++)
-			GuiGraphics.drawSlotBackground(mc, 17, 8+20*i);
+			GuiGraphics.drawSlotBackground(mc, guiLeft+17, guiTop+8+20*i);
 
-		GuiGraphics.drawPlayerInventoryBackground(mc, 18, 9 + 20* _chassiPipe.getChassiSize());
-		GL11.glTranslated(-guiLeft, -guiTop, 0);
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft+18, guiTop+9+20* _chassiPipe.getChassiSize());
 
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {

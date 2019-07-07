@@ -24,7 +24,6 @@ public class HUDCrafting extends BasicHUDGui {
 
 	@Override
 	public void renderHeadUpDisplay(double d, boolean day, boolean shifted, Minecraft mc, IHUDConfig config) {
-
 		if (day) {
 			GL11.glColor4b((byte) 64, (byte) 64, (byte) 64, (byte) 64);
 		} else {

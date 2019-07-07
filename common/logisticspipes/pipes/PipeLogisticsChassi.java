@@ -25,7 +25,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -33,7 +32,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HudChassisPipe;
@@ -96,9 +94,6 @@ import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-
-
-
 @CCType(name = "LogisticsChassiePipe")
 public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
@@ -107,7 +102,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	private final ModuleUpgradeManager[] _upgradeManagers;
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
-
 
 	// HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
@@ -681,7 +675,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public void registerExtras(IPromise promise) {
 		if (!(promise instanceof LogisticsPromise)) {
-
 			throw new UnsupportedOperationException("Extra has to be an item for a chassis pipe");
 		}
 		ItemIdentifierStack stack = new ItemIdentifierStack(((LogisticsPromise) promise).item, ((LogisticsPromise) promise).numberOfItems);

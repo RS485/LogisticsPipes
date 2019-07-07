@@ -3,27 +3,28 @@ package logisticspipes.network.packets;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import logisticspipes.network.abstractpackets.ItemPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packetcontent.IntegerContent;
+import logisticspipes.network.packetcontent.ItemStackContent;
+import logisticspipes.network.packetcontent.PacketContentBuilder;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummySlot;
 import logisticspipes.utils.gui.FluidSlot;
-import network.rs485.logisticspipes.util.LPDataInput;
-import network.rs485.logisticspipes.util.LPDataOutput;
 
 @StaticResolve
-public class SetGhostItemPacket extends ItemPacket {
+public class SetGhostItemPacket extends ModernPacket {
 
-	@Getter
-	@Setter
-	public int integer;
+	private final IntegerContent integer;
+	private final ItemStackContent stack;
 
 	public SetGhostItemPacket(int id) {
 		super(id);
+		PacketContentBuilder builder = new PacketContentBuilder();
+		integer = builder.addInteger();
+		stack = builder.addItemStack();
+		builder.build(this);
 	}
 
 	@Override
@@ -31,30 +32,28 @@ public class SetGhostItemPacket extends ItemPacket {
 		Container container = player.openContainer;
 
 		if (container != null) {
-			if (getInteger() >= 0 && getInteger() < container.inventorySlots.size()) {
-				Slot slot = container.getSlot(getInteger());
+			if (integer.getValue() >= 0 && integer.getValue() < container.inventorySlots.size()) {
+				Slot slot = container.getSlot(integer.getValue());
 
 				if (slot instanceof DummySlot || slot instanceof FluidSlot) {
-					slot.putStack(getStack());
+					slot.putStack(stack.getValue());
 				}
 			}
 		}
 	}
 
 	@Override
-	public void writeData(LPDataOutput output) {
-		super.writeData(output);
-		output.writeInt(integer);
-	}
-
-	@Override
-	public void readData(LPDataInput input) {
-		super.readData(input);
-		integer = input.readInt();
-	}
-
-	@Override
 	public ModernPacket template() {
 		return new SetGhostItemPacket(getId());
+	}
+
+	public SetGhostItemPacket setInteger(int value) {
+		integer.setValue(value);
+		return this;
+	}
+
+	public SetGhostItemPacket setStack(ItemStack value) {
+		stack.setValue(value);
+		return this;
 	}
 }

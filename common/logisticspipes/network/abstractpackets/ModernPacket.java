@@ -1,11 +1,17 @@
 package logisticspipes.network.abstractpackets;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import logisticspipes.network.packetcontent.IPacketContent;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -33,8 +39,9 @@ public abstract class ModernPacket {
 	@Setter
 	private int dimension = 0; // If the dimension is not set the packet will be handled in the main overworld
 
+	public List<IPacketContent<?>> content = Collections.emptyList();
+
 	public ModernPacket(int id) {
-		//this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
 		this.id = id;
 	}
 
@@ -44,12 +51,14 @@ public abstract class ModernPacket {
 
 	public void readData(LPDataInput input) {
 		dimension = input.readInt();
+		content.forEach(it->it.readData(input));
 	}
 
 	public abstract void processPacket(EntityPlayer player);
 
 	public void writeData(LPDataOutput output) {
 		output.writeInt(dimension);
+		content.forEach(it->it.writeData(output));
 	}
 
 	public abstract ModernPacket template();

@@ -94,7 +94,7 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public ItemIdentifier getTargetType() {
-		if(getRouter() == null) {
+		if(getRouter() == null || getRouter().getPipe() == null) {
 			return null;
 		}
 		return ItemIdentifier.get(getRouter().getPipe().item, 0, null);

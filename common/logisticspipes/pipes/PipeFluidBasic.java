@@ -62,7 +62,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 			return 0;
 		}
 		int onTheWay = this.countOnRoute(ident);
-		int freeSpace = -onTheWay;
+		long freeSpace = -onTheWay;
 		for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : getAdjacentTanksAdvanced(true)) {
 			FluidTank tank = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue3().ordinal()];
 			freeSpace += pair.getValue1().getFreeSpaceInsideTank(ident);
@@ -71,7 +71,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 				return stack.getAmount();
 			}
 		}
-		return freeSpace;
+		return freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace;
 	}
 
 	@Override

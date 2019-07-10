@@ -257,7 +257,7 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 
 	public int getFreeSpaceInsideTank(IFluidTank tank) {
 		FluidStack liquid = tank.getFluid();
-		if (liquid == null || liquid.getFluid() != null) {
+		if (liquid == null || liquid.getFluid() == null) {
 			return tank.getCapacity();
 		}
 		if (FluidIdentifier.get(liquid).equals(this)) {

@@ -84,12 +84,9 @@ public class TankUtil implements ITankUtil {
 			return 0;
 		}
 		FluidStack liquid = tanks.getContents();
-		if (liquid == null || liquid.getFluid() != null) {
+		if (liquid == null || liquid.getFluid() == null) {
 			return tanks.getCapacity();
 		}
-		if (FluidIdentifier.get(liquid).equals(this)) {
-			return tanks.getCapacity() - liquid.amount;
-		}
-		return 0;
+		return tanks.getCapacity() - liquid.amount;
 	}
 }

@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-import javax.xml.soap.Text;
-
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;

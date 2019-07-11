@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+import javax.xml.soap.Text;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -188,10 +190,11 @@ public final class StringUtils {
 		for (String paragraph : paragraphs) {
 			boolean header = paragraph.indexOf("##") > -1;
 			if (header) paragraph = paragraph.replace("##", "");
-			if (paragraph.charAt(paragraph.length() - 1) != '\n') paragraph += '\n';
+			if (paragraph != null && paragraph.length() != 0 && paragraph.charAt(paragraph.length() - 1) != '\n') paragraph += (TextFormatting.WHITE + "\n");
 			int lastSplitPoint = 0;
 			int curLength = 0;
-			for (char c : paragraph.toCharArray()) {
+			char[] par = paragraph.toCharArray();
+			for (char c : par) {
 				if (c == '\n') {
 					lines.add(currentLine.toString());
 					if (header) {

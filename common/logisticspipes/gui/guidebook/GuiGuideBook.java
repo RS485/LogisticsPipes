@@ -25,6 +25,7 @@ import org.lwjgl.opengl.GL11;
 import logisticspipes.LPConstants;
 import logisticspipes.gui.guidebook.book.DrawableMenu;
 import logisticspipes.gui.guidebook.book.DrawablePage;
+import logisticspipes.gui.guidebook.book.IDrawable;
 import logisticspipes.gui.guidebook.book.MenuItem;
 import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.items.ItemGuideBook;
@@ -193,19 +194,35 @@ public class GuiGuideBook extends GuiScreen {
 		ItemStack bookItemStack = mc.player.getHeldItem(hand);
 		if (bookItemStack.hasTagCompound()) {
 			NBTTagCompound nbt = bookItemStack.getTagCompound();
+			int divisionIndex = nbt.getInteger("division");
+			int chapterIndex = nbt.getInteger("chapter");
+			int pageIndex = nbt.getInteger("page");
+			IDrawable temporaryDrawable = this.page;
+			if (!(0 <= divisionIndex && divisionIndex < gbc.getDivisions().size())) { // If division doesn't exist sets back to menu.
+				divisionIndex = 0;
+				chapterIndex = 0;
+				pageIndex = 0;
+				temporaryDrawable = this.menu;
+			} else if (!(0 <= chapterIndex && chapterIndex < gbc.getDivision(divisionIndex).getChapters().size())) {
+				chapterIndex = 0;
+				pageIndex = 0;
+			} else if (!(0 <= pageIndex && pageIndex < gbc.getDivision(divisionIndex).getChapter(chapterIndex).getNPages())) {
+				pageIndex = 0;
+			}
 			currentPage = new SavedTab(
-					gbc.getDivision(nbt.getInteger("division"))
-							.getChapter(nbt.getInteger("chapter"))
-							.getPage(nbt.getInteger("page")),
-					page, 0, nbt.getFloat("sliderProgress"));
+					gbc.getDivision(divisionIndex)
+							.getChapter(chapterIndex)
+							.getPage(pageIndex),
+					this.page, 0, nbt.getFloat("sliderProgress"));
 			NBTTagList tagList = nbt.getTagList("bookmarks", 10);
 			for (NBTBase tag : tagList) tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, new SavedTab().fromTag((NBTTagCompound) tag)));
-			currentPage.drawable = page;
+			currentPage.drawable = temporaryDrawable;
+			return true;
 		} else {
 			SavedTab defaultPage = new SavedTab();
 			currentPage = new SavedTab(defaultPage);
+			return true;
 		}
-		return true;
 	}
 
 	@Override

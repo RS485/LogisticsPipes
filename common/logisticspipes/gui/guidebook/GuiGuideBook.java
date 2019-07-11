@@ -19,16 +19,15 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
-import logisticspipes.gui.guidebook.book.DrawableMenu;
-import logisticspipes.gui.guidebook.book.DrawablePage;
-import logisticspipes.gui.guidebook.book.SavedTab;
-import logisticspipes.items.ItemGuideBook;
-
 import lombok.Getter;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
+import logisticspipes.gui.guidebook.book.DrawableMenu;
+import logisticspipes.gui.guidebook.book.DrawablePage;
 import logisticspipes.gui.guidebook.book.MenuItem;
+import logisticspipes.gui.guidebook.book.SavedTab;
+import logisticspipes.items.ItemGuideBook;
 import logisticspipes.utils.GuideBookContents;
 
 public class GuiGuideBook extends GuiScreen {

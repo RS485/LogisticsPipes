@@ -3,13 +3,11 @@ package logisticspipes.gui.guidebook;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 
 import static logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.LPConstants;
 import logisticspipes.gui.guidebook.book.SavedTab;
 
 public class GuiGuideBookTabButton extends GuiButton {

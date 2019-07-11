@@ -3,9 +3,7 @@ package logisticspipes.gui.guidebook.book;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import logisticspipes.gui.guidebook.GuiGuideBook;

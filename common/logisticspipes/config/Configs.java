@@ -6,11 +6,11 @@ import logisticspipes.LPConstants;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-
 import net.minecraftforge.fml.common.Loader;
 
 //@formatter:off
 //CHECKSTYLE:OFF
+
 
 public class Configs {
 
@@ -216,18 +216,18 @@ public class Configs {
 							+ Configs.CHASSI_SLOTS_ARRAY.length + " values.");
 		}
 
-		for(int i=0; i<Configs.CHASSI_SLOTS_ARRAY.length; i++){
-			if(Configs.CHASSI_SLOTS_ARRAY[i]<0)
+		for (int i = 0; i < Configs.CHASSI_SLOTS_ARRAY.length; i++) {
+			if (Configs.CHASSI_SLOTS_ARRAY[i] < 0)
 				throw new RuntimeException(
-					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
-							+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i);
+						"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
+								+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i);
 		}
 
-		for(int i=0; i<Configs.CHASSI_SLOTS_ARRAY.length-1; i++){
-			if(Configs.CHASSI_SLOTS_ARRAY[i]>Configs.CHASSI_SLOTS_ARRAY[i+1])
+		for (int i = 0; i < Configs.CHASSI_SLOTS_ARRAY.length - 1; i++) {
+			if (Configs.CHASSI_SLOTS_ARRAY[i] > Configs.CHASSI_SLOTS_ARRAY[i + 1])
 				throw new RuntimeException(
-					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
-							+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i + " which is larger than " + Configs.CHASSI_SLOTS_ARRAY[i+1] + " at index " + (i+1) );
+						"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
+								+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i + " which is larger than " + Configs.CHASSI_SLOTS_ARRAY[i + 1] + " at index " + (i + 1));
 		}
 
 		Configs.CONFIGURATION.save();

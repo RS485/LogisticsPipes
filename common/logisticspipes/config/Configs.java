@@ -6,11 +6,11 @@ import logisticspipes.LPConstants;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+
 import net.minecraftforge.fml.common.Loader;
 
 //@formatter:off
 //CHECKSTYLE:OFF
-
 
 public class Configs {
 

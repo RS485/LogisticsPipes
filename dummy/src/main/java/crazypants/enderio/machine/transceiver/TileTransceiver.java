@@ -1,9 +1,8 @@
 package crazypants.enderio.machine.transceiver;
 
-import net.minecraft.tileentity.TileEntity;
-
-import java.util.List;
 import java.util.Set;
+
+import net.minecraft.tileentity.TileEntity;
 
 public class TileTransceiver extends TileEntity {
     public Set<Channel> getSendChannels(ChannelType type) {

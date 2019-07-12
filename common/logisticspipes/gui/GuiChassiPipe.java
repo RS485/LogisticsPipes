@@ -58,9 +58,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		this.hasUpgradeModuleUpgarde = hasUpgradeModuleUpgarde;
 
 		DummyContainer dummy = new DummyContainer(_player.inventory, _moduleInventory);
-
 		dummy.addNormalSlotsForPlayerInventory(18, 9 + 20* _chassiPipe.getChassiSize());
-
 		for(int  i=0; i<_chassiPipe.getChassiSize(); i++)
 			dummy.addModuleSlot(i, _moduleInventory, 18, 9+20*i, _chassiPipe);
 
@@ -149,7 +147,6 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				upgradeConfig[i].visible = _chassiPipe.getModuleUpgradeManager(i / 2).hasGuiUpgrade(i % 2);
 			}
 		}
-
 		for(int  i=0; i<_chassiPipe.getChassiSize() ; i++)
 			mc.fontRenderer.drawString(getModuleName(i), 40, 14+20*i, 0x404040);
 	}
@@ -174,7 +171,6 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-
 		for(int  i=0; i<_chassiPipe.getChassiSize(); i++)
 			GuiGraphics.drawSlotBackground(mc, guiLeft+17, guiTop+8+20*i);
 

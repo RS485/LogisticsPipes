@@ -14,10 +14,6 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	@Setter
 	private ItemIdentifierStack stack;
 
-	@Getter
-	@Setter
-	private int dimension;
-
 	public RequestPacket(int id) {
 		super(id);
 	}
@@ -31,13 +27,11 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeItemIdentifierStack(stack);
-		output.writeInt(dimension);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		stack = input.readItemIdentifierStack();
-		dimension = input.readInt();
 	}
 }

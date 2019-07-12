@@ -4,19 +4,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import lombok.Getter;
 import lombok.Setter;
-import sun.rmi.runtime.Log;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.items.ItemGuideBook;
-import logisticspipes.items.LogisticsItem;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;

@@ -14,6 +14,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.interfaces.ISpecialItemRenderer;
@@ -28,19 +33,12 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.input.Keyboard;
 
 public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
 
@@ -209,7 +207,8 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+			final ItemIdentifierStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setStack(stack).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).setDimension(dimension));
 			refreshItems();
 		} else if (guibutton.id == 1) {
 			itemDisplay.nextPage();
@@ -234,7 +233,8 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 			Configs.DISPLAY_POPUP = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && itemDisplay.getSelectedItem() != null) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+			final ItemIdentifierStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setStack(stack).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).setDimension(dimension));
 		} else if (guibutton.id == 20) {
 			itemDisplay.cycle();
 		}

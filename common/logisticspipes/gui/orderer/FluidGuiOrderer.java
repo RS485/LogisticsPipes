@@ -2,6 +2,9 @@ package logisticspipes.gui.orderer;
 
 import java.io.IOException;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.RequestFluidOrdererRefreshPacket;
 import logisticspipes.network.packets.orderer.SubmitFluidRequestPacket;
@@ -9,9 +12,6 @@ import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class FluidGuiOrderer extends GuiOrderer {
 
@@ -36,7 +36,7 @@ public class FluidGuiOrderer extends GuiOrderer {
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).setDimension(dimension));
 			refreshItems();
 		} else {
 			super.actionPerformed(guibutton);

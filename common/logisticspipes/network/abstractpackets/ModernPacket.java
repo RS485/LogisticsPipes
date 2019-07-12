@@ -1,8 +1,6 @@
 package logisticspipes.network.abstractpackets;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,7 +34,6 @@ public abstract class ModernPacket {
 	@Setter
 	private int debugId = 0;
 	@Getter
-	@Setter
 	private int dimension = 0; // If the dimension is not set the packet will be handled in the main overworld
 
 	public List<IPacketContent<?>> content = Collections.emptyList();
@@ -45,8 +42,14 @@ public abstract class ModernPacket {
 		this.id = id;
 	}
 
-	public void setDimension(World world) {
-		dimension = world.provider.getDimension();
+	public ModernPacket setDimension(int dimension) {
+		this.dimension = dimension;
+		return this;
+	}
+
+	public ModernPacket setDimension(World world) {
+		this.dimension = world.provider.getDimension();
+		return this;
 	}
 
 	public void readData(LPDataInput input) {

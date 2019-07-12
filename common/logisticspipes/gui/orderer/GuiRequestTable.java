@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -21,10 +20,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import logisticspipes.LPItems;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.gui.popup.GuiRequestPopup;
@@ -52,9 +51,9 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -420,7 +419,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setTilePos(_table.container));
+			final ItemIdentifierStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setStack(stack).setTilePos(_table.container).setDimension(dimension));
 			refreshItems();
 		} else if (guibutton.id == 1) {
 			itemDisplay.nextPage();
@@ -445,7 +445,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			Configs.DISPLAY_POPUP = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && itemDisplay.getSelectedItem() != null) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setDimension(dimension).setStack(itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount())).setTilePos(_table.container));
+			final ItemIdentifierStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setStack(stack).setTilePos(_table.container).setDimension(dimension));
 		} else if (guibutton.id == 9) {
 			String displayString = "";
 			switch (displayOptions) {

@@ -46,8 +46,8 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 		} else {
 			dummy.addNormalSlotsForPlayerInventory(18, 174);
 		}
-		for(int i=0; i<_chassiPipe.getChassiSize(); i++){
-			dummy.addModuleSlot(i, _moduleInventory, 19, 9 + 20*i, _chassiPipe);
+		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
+			dummy.addModuleSlot(i, _moduleInventory, 19, 9 + 20 * i, _chassiPipe);
 		}
 
 		if (_chassiPipe.getUpgradeManager().hasUpgradeModuleUpgrade()) {

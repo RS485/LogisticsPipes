@@ -207,20 +207,27 @@ public class Configs {
 		Configs.CHASSI_SLOTS_ARRAY = Configs.CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL, "chassiSlots",
 						Configs.CHASSI_SLOTS_ARRAY,
-						"The number of slots in a chassi pipe starting from MK1 to MK5, because there are 5 tiers there need to be 5 values(positive integers, zero is allowed)")
+						"The number of slots in a chassi pipe starting from MK1 to MK5, because there are 5 tiers there need to be 5 values(positive integers, zero is allowed) in ascending order.")
 						.getIntList();
 
 		if (Configs.CHASSI_SLOTS_ARRAY.length != 5) {
 			throw new RuntimeException(
-					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in chassiSlots. You have given us: "
+					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
 							+ Configs.CHASSI_SLOTS_ARRAY.length + " values.");
 		}
 
 		for(int i=0; i<Configs.CHASSI_SLOTS_ARRAY.length; i++){
 			if(Configs.CHASSI_SLOTS_ARRAY[i]<0)
 				throw new RuntimeException(
-					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in chassiSlots. You have given us: "
+					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
 							+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i);
+		}
+
+		for(int i=0; i<Configs.CHASSI_SLOTS_ARRAY.length-1; i++){
+			if(Configs.CHASSI_SLOTS_ARRAY[i]>Configs.CHASSI_SLOTS_ARRAY[i+1])
+				throw new RuntimeException(
+					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
+							+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i + " which is larger than " + Configs.CHASSI_SLOTS_ARRAY[i+1] + " at index " + (i+1) );
 		}
 
 		Configs.CONFIGURATION.save();

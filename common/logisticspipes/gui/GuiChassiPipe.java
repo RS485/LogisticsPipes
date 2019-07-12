@@ -11,6 +11,7 @@ package logisticspipes.gui;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
@@ -41,8 +42,8 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	//private final GuiScreen _previousGui;
 	private final List<SmallGuiButton> moduleConfigButtons = new LinkedList<>();
 
-	private final Slot[] upgradeslot = new Slot[16];
-	private GuiButton[] upgradeConfig = new GuiButton[16];
+	private final Slot[] upgradeslot = new Slot[2*Configs.CHASSI_SLOTS_ARRAY[4]];
+	private GuiButton[] upgradeConfig;
 
 	private int left;
 	private int top;
@@ -59,8 +60,8 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 		DummyContainer dummy = new DummyContainer(_player.inventory, _moduleInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 9 + 20* _chassiPipe.getChassiSize());
-		for(int  i=0; i<_chassiPipe.getChassiSize(); i++)
-			dummy.addModuleSlot(i, _moduleInventory, 18, 9+20*i, _chassiPipe);
+		for (int i = 0; i < _chassiPipe.getChassiSize(); i++)
+			dummy.addModuleSlot(i, _moduleInventory, 18, 9 + 20 * i, _chassiPipe);
 
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
@@ -147,8 +148,8 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				upgradeConfig[i].visible = _chassiPipe.getModuleUpgradeManager(i / 2).hasGuiUpgrade(i % 2);
 			}
 		}
-		for(int  i=0; i<_chassiPipe.getChassiSize() ; i++)
-			mc.fontRenderer.drawString(getModuleName(i), 40, 14+20*i, 0x404040);
+		for (int i = 0; i < _chassiPipe.getChassiSize(); i++)
+			mc.fontRenderer.drawString(getModuleName(i), 40, 14 + 20 * i, 0x404040);
 	}
 
 	private String getModuleName(int slot) {
@@ -171,10 +172,10 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		for(int  i=0; i<_chassiPipe.getChassiSize(); i++)
-			GuiGraphics.drawSlotBackground(mc, guiLeft+17, guiTop+8+20*i);
+		for (int i = 0; i < _chassiPipe.getChassiSize(); i++)
+			GuiGraphics.drawSlotBackground(mc, guiLeft + 17, guiTop + 8 + 20 * i);
 
-		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft+18, guiTop+9+20* _chassiPipe.getChassiSize());
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 18, guiTop + 9 + 20 * _chassiPipe.getChassiSize());
 
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {

@@ -3,6 +3,8 @@ package logisticspipes.proxy.cofh;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import cofh.api.item.IToolHammer;
+
 import logisticspipes.api.ILPPipeConfigTool;
 import logisticspipes.api.ILPPipeTile;
 import logisticspipes.proxy.interfaces.ILPPipeConfigToolWrapper;

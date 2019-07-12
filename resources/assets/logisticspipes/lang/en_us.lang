@@ -78,23 +78,23 @@ item.logisticspipes.pipe_builder_supplier.tip2= - Automatically fills a builder 
 
 item.logisticspipes.pipe_chassis_mk1.name=Logistics Chassis Mk1
 item.logisticspipes.pipe_chassis_mk1.tip1=Type: Mixed
-item.logisticspipes.pipe_chassis_mk1.tip2= - Can hold 1 module.
+item.logisticspipes.pipe_chassis_mk1.tip2= - Can hold 1 module by default.
 
 item.logisticspipes.pipe_chassis_mk2.name=Logistics Chassis Mk2
 item.logisticspipes.pipe_chassis_mk2.tip1=Type: Mixed
-item.logisticspipes.pipe_chassis_mk2.tip2= - Can hold 2 modules.
+item.logisticspipes.pipe_chassis_mk2.tip2= - Can hold 2 modules by default.
 
 item.logisticspipes.pipe_chassis_mk3.name=Logistics Chassis Mk3
 item.logisticspipes.pipe_chassis_mk3.tip1=Type: Mixed
-item.logisticspipes.pipe_chassis_mk3.tip2= - Can hold 3 modules.
+item.logisticspipes.pipe_chassis_mk3.tip2= - Can hold 3 modules by default.
 
 item.logisticspipes.pipe_chassis_mk4.name=Logistics Chassis Mk4
 item.logisticspipes.pipe_chassis_mk4.tip1=Type: Mixed
-item.logisticspipes.pipe_chassis_mk4.tip2= - Can hold 4 modules.
+item.logisticspipes.pipe_chassis_mk4.tip2= - Can hold 4 modules by default.
 
 item.logisticspipes.pipe_chassis_mk5.name=Logistics Chassis Mk5
 item.logisticspipes.pipe_chassis_mk5.tip1=Type: Mixed
-item.logisticspipes.pipe_chassis_mk5.tip2= - Can hold 8 modules.
+item.logisticspipes.pipe_chassis_mk5.tip2= - Can hold 8 modules by default.
 
 item.logisticspipes.pipe_remote_orderer.name=Remote Orderer Logistics Pipe
 item.logisticspipes.pipe_remote_orderer.tip1=Type: Active requester

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 
 import net.minecraft.client.Minecraft;
@@ -356,6 +357,25 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	public void handleMouseInputSub() throws IOException {
 		super.handleMouseInput();
+		int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
+		int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+		int dWheel = Mouse.getEventDWheel();
+		if (dWheel != 0 && !mouseHandled) {
+			Optional<DummySlot> slotOpt = this.inventorySlots.inventorySlots.stream().filter(it -> it instanceof DummySlot).map(it -> (DummySlot)it).filter(it -> isMouseOverSlot(it, x, y)).findFirst();
+			if (slotOpt.isPresent()) {
+				DummySlot slot = slotOpt.get();
+				slot.setRedirectCall(true);
+				if (slot.getSlotStackLimit() > 0) {
+					ItemStack stack = slot.getStack();
+					if (!stack.isEmpty()) {
+						int buttonActionID = dWheel > 0 ? 1000 : 1001;
+						this.mc.playerController.windowClick(this.inventorySlots.windowId, slot.slotNumber, buttonActionID, ClickType.SWAP, this.mc.player);
+					}
+				}
+				slot.setRedirectCall(false);
+				mouseHandled = true;
+			}
+		}
 	}
 
 	@Override

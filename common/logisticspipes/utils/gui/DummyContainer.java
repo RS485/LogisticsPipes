@@ -659,7 +659,23 @@ public class DummyContainer extends Container {
 			((DummySlot) slot).setRedirectCall(true);
 		}
 
-		if (currentlyEquippedStack == null) {
+		if (mouseButton >= 1000) {
+			if(mouseButton <= 1001) {
+				if (!slot.getStack().isEmpty()) {
+					ItemStack stack = slot.getStack();
+					if(mouseButton == 1000) {
+						stack.grow(1);
+					} else if(stack.getCount() > 1) {
+						stack.shrink(1);
+					}
+					stack.setCount(Math.min(slot.getSlotStackLimit(), Math.max(1, stack.getCount())));
+					slot.putStack(stack);
+				}
+			}
+			return;
+		}
+
+		if (currentlyEquippedStack.isEmpty()) {
 			if (!slot.getStack().isEmpty() && mouseButton == 1) {
 				ItemStack tstack = slot.getStack();
 				if (shiftMode == ClickType.QUICK_MOVE) {

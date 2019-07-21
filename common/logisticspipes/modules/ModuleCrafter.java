@@ -727,7 +727,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
 		}
 
-		String liquidSatelliteUUIDString = nbttagcompound.getString("liquidSatelliteUUID");
+		String liquidSatelliteUUIDString = nbttagcompound.getString("liquidSatelliteId");
 		liquidSatelliteUUID = liquidSatelliteUUIDString.isEmpty() ? null : UUID.fromString(liquidSatelliteUUIDString);
 		cleanupModeIsExclude = nbttagcompound.getBoolean("cleanupModeIsExclude");
 

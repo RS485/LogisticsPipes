@@ -50,6 +50,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -196,10 +197,12 @@ public class ClientProxy implements IProxy {
 	@Override
 	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler) {
 		if (handler instanceof NetHandlerPlayServer) {
-			return ((NetHandlerPlayServer) handler).player;
-		} else {
-			return Minecraft.getMinecraft().player;
+			EntityPlayerMP player = ((NetHandlerPlayServer) handler).player;
+			if (player != null) {
+				return player;
+			}
 		}
+		return Minecraft.getMinecraft().player;
 	}
 
 	@Override

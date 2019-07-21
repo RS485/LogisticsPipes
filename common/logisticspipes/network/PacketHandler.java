@@ -200,7 +200,11 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 
 		LPDataIOWrapper.provideData(payload.slice(), packet::readData);
 
-		out.add(new InboundModernPacketWrapper(packet, MainProxy.proxy.getEntityPlayerFromNetHandler(msg.handler())));
+		EntityPlayer player = MainProxy.proxy.getEntityPlayerFromNetHandler(msg.handler());
+
+		if (player != null) {
+			out.add(new InboundModernPacketWrapper(packet, player));
+		}
 	}
 
 	@Override

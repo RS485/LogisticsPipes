@@ -93,7 +93,9 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		} else if (id == 2) {
 			ItemIdentifierStack stack = itemDisplay.getSelectedItem();
 			int index = candidate.indexOf(stack);
-			handler.handleItemChoice(index);
+			if (index >= 0) {
+				handler.handleItemChoice(index);
+			}
 			exitGui();
 		}
 	}

@@ -411,7 +411,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		node.interfaces.add("logisticspipes/asm/te/ILPTEInformation");
 		node.visitField(Opcodes.ACC_PRIVATE, "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;", null, null);
 		for (MethodNode m : node.methods) {
-			if (m.name.equals("validate") || m.name.equals("func_145829_t") || (m.name.equals("t") && m.desc.equals("()V"))) {
+			if (m.name.equals("validate") || m.name.equals("func_145829_t") || (m.name.equals("A") && m.desc.equals("()V"))) {
 				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 
 					@Override
@@ -426,7 +426,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if (m.name.equals("invalidate") || m.name.equals("func_145843_s") || (m.name.equals("s") && m.desc.equals("()V"))) {
+			if (m.name.equals("invalidate") || m.name.equals("func_145843_s") || (m.name.equals("z") && m.desc.equals("()V"))) {
 				MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 
 					@Override

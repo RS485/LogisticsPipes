@@ -22,7 +22,7 @@ public class RequestSignPacket extends CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		((CoreRoutedPipe) pipe.pipe).sendSignData(player);
+		((CoreRoutedPipe) pipe.pipe).sendSignData(player, false);
 	}
 
 	@Override

@@ -233,19 +233,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		//Network needs to be after this
 
 		if (refreshRenderState) {
-			// Pipe connections;
-			for (EnumFacing o : EnumFacing.VALUES) {
-				renderState.pipeConnectionMatrix.setConnected(o, pipeConnectionsBuffer[o.ordinal()]);
-				renderState.pipeConnectionMatrix.setBCConnected(o, pipeBCConnectionsBuffer[o.ordinal()]);
-				renderState.pipeConnectionMatrix.setTDConnected(o, pipeTDConnectionsBuffer[o.ordinal()]);
-			}
-			// Pipe Textures
-			for (int i = 0; i < 7; i++) {
-				EnumFacing o = EnumFacing.getFront(i);
-				renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
-			}
-			//New Pipe Texture States
-			renderState.textureMatrix.refreshStates(pipe);
+			refreshRenderState();
 
 			if (renderState.isDirty()) {
 				renderState.clean();
@@ -257,15 +245,32 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 		if (sendClientUpdate) {
 			sendClientUpdate = false;
-
+			statePacketId++;
 			MainProxy.sendPacketToAllWatchingChunk(this, getLPDescriptionPacket());
 		}
+
 		getRenderController().onUpdate();
 		if (!addedToNetwork) {
 			addedToNetwork = true;
 			SimpleServiceLocator.openComputersProxy.addToNetwork(this);
 		}
 		debug.end();
+	}
+
+	private void refreshRenderState() {
+		// Pipe connections;
+		for (EnumFacing o : EnumFacing.VALUES) {
+			renderState.pipeConnectionMatrix.setConnected(o, pipeConnectionsBuffer[o.ordinal()]);
+			renderState.pipeConnectionMatrix.setBCConnected(o, pipeBCConnectionsBuffer[o.ordinal()]);
+			renderState.pipeConnectionMatrix.setTDConnected(o, pipeTDConnectionsBuffer[o.ordinal()]);
+		}
+		// Pipe Textures
+		for (int i = 0; i < 7; i++) {
+			EnumFacing o = EnumFacing.getFront(i);
+			renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
+		}
+		//New Pipe Texture States
+		renderState.textureMatrix.refreshStates(pipe);
 	}
 
 	@Override
@@ -729,13 +734,14 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 		this.pipe = pipe;
 
+		/*
 		for (EnumFacing o : EnumFacing.VALUES) {
 			TileEntity tile = getTile(o);
 
 			if (tile instanceof LogisticsTileGenericPipe) {
 				((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
 			}
-		}
+		}*/
 
 		bindPipe();
 
@@ -769,7 +775,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		packet.setCoreState(coreState);
 		packet.setRenderState(renderState);
 		packet.setPipe(pipe);
-		packet.setStatePacketId(++statePacketId);
+		packet.setStatePacketId(statePacketId);
 
 		return packet;
 	}

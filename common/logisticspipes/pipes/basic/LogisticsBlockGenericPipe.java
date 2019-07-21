@@ -250,7 +250,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
 				}
 				tilePipe.initialize(pipe);
-				tilePipe.sendUpdateToClient();
+//				tilePipe.sendUpdateToClient();
 			}
 			world.markAndNotifyBlock(blockPos, world.getChunkFromBlockCoords(blockPos), oldBlockState, world.getBlockState(blockPos), 3);
 		}

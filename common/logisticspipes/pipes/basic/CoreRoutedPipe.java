@@ -355,8 +355,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		spawnParticleTick();
 		if (stillNeedReplace) {
 			stillNeedReplace = false;
-			IBlockState state = getWorld().getBlockState(getPos());
-			getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
+			//IBlockState state = getWorld().getBlockState(getPos());
+			//getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
 			/* TravelingItems are just held by a pipe, they don't need to know their world
 			 * for(Triplet<IRoutedItem, EnumFacing, ItemSendMode> item : _sendQueue) {
 				//assign world to any entityitem we created in readfromnbt
@@ -1623,12 +1623,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				signItem[dir.ordinal()].init(this, dir);
 			}
 			if (container != null) {
-				sendSignData(player);
+				sendSignData(player, true);
+				refreshRender(false);
 			}
 		}
 	}
 
-	public void sendSignData(EntityPlayer player) {
+	public void sendSignData(EntityPlayer player, boolean sendToAll) {
 		List<Integer> types = new ArrayList<>();
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] == null) {
@@ -1644,7 +1645,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			}
 		}
 		ModernPacket packet = PacketHandler.getPacket(PipeSignTypes.class).setTypes(types).setTilePos(container);
-		MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
+		if (sendToAll) {
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
+		}
 		MainProxy.sendPacketToPlayer(packet, player);
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] != null) {
@@ -1655,14 +1658,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				}
 			}
 		}
-		refreshRender(false);
 	}
 
 	public void removePipeSign(EnumFacing dir, EntityPlayer player) {
 		if (dir.ordinal() < 6) {
 			signItem[dir.ordinal()] = null;
 		}
-		sendSignData(player);
+		sendSignData(player, true);
+		refreshRender(false);
 	}
 
 	public boolean hasPipeSign(EnumFacing dir) {

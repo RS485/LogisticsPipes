@@ -1,8 +1,8 @@
 language: java
 install: ./gradlew clean setupCiWorkspace
-script: ./gradlew build
+script: ./gradlew build install
 jdk:
-  - oraclejdk8
+  - openjdk8
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

@@ -72,12 +72,14 @@ sourceSets {
 jar {
     from sourceSets.api.output
     manifest {
-        attributes('FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-                   'FMLCorePluginContainsFMLMod': 'true',
-                   'Implementation-Vendor': 'RS485',
-                   'Implementation-Title': 'LogisticsPipes',
-                   'Implementation-Version': version,
-                   'Built-By': builtby )
+        attributes(
+                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLAT': 'lp_at.cfg',
+                'Implementation-Vendor': 'RS485',
+                'Implementation-Title': 'LogisticsPipes',
+                'Implementation-Version': version,
+                'Built-By': builtby)
     }
 }
 
@@ -190,12 +192,13 @@ task deobfJar(type: Jar) {
     classifier = 'deobf'
     manifest {
         attributes(
-            'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-            'FMLCorePluginContainsFMLMod': 'true',
-            'Implementation-Vendor': 'RS485',
-            'Implementation-Title': 'LogisticsPipes',
-            'Implementation-Version': version,
-            'Built-By': builtby)
+                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLAT': 'lp_at.cfg',
+                'Implementation-Vendor': 'RS485',
+                'Implementation-Title': 'LogisticsPipes',
+                'Implementation-Version': version,
+                'Built-By': builtby)
     }
 }
 

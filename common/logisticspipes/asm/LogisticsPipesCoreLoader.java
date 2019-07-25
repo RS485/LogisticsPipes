@@ -25,11 +25,6 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	}
 
 	@Override
-	public String getAccessTransformerClass() {
-		return "logisticspipes.asm.LogisticsAccessTransformer";
-	}
-
-	@Override
 	public String getModContainerClass() {
 		return null;
 	}
@@ -42,5 +37,10 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	@Override
 	public void injectData(Map<String, Object> data) {
 
+	}
+
+	@Override
+	public String getAccessTransformerClass() {
+		return null;
 	}
 }

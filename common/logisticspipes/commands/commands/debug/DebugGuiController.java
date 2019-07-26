@@ -21,9 +21,9 @@ import logisticspipes.network.packets.debuggui.DebugPanelOpen;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.debuggui.api.IDataConnection;
-import network.rs485.debuggui.api.IDebugGuiEntry;
-import network.rs485.debuggui.api.IObjectIdentification;
+import network.rs485.debug.api.IDebugGuiEntry;
+import network.rs485.debug.api.IDataConnection;
+import network.rs485.debug.api.IObjectIdentification;
 
 public class DebugGuiController {
 

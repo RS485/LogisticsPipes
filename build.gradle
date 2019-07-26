@@ -72,12 +72,14 @@ sourceSets {
 jar {
     from sourceSets.api.output
     manifest {
-        attributes('FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-                   'FMLCorePluginContainsFMLMod': 'true',
-                   'Implementation-Vendor': 'RS485',
-                   'Implementation-Title': 'LogisticsPipes',
-                   'Implementation-Version': version,
-                   'Built-By': builtby )
+        attributes(
+                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLAT': 'lp_at.cfg',
+                'Implementation-Vendor': 'RS485',
+                'Implementation-Title': 'LogisticsPipes',
+                'Implementation-Version': version,
+                'Built-By': builtby)
     }
 }
 
@@ -156,8 +158,9 @@ dependencies {
     deobfCompile 'com.mod-buildcraft:buildcraft:7.99.+'
     implementation 'net.shadowfacts:Forgelin:1.8.+'
     implementation 'MCMultiPart2:MCMultiPart:2.5.+:deobf'
-    deobfProvided 'mezz.jei:jei_1.12.2:4.12+:api'
-    runtime 'mezz.jei:jei_1.12.2:4.12+'
+    deobfProvided 'mezz.jei:jei_1.12.2:4.15.0.268:api'
+    // already in environment because of NEI
+//    runtime 'mezz.jei:jei_1.12.2:4.15.0.268'
     compile 'codechicken:CodeChickenLib:1.12.2-3.2.+:deobf'
     compile 'codechicken:NotEnoughItems:1.12.2-2.4.+:deobf'
     compile 'codechicken:EnderStorage:1.12.2-2.4.+:deobf'
@@ -189,12 +192,13 @@ task deobfJar(type: Jar) {
     classifier = 'deobf'
     manifest {
         attributes(
-            'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-            'FMLCorePluginContainsFMLMod': 'true',
-            'Implementation-Vendor': 'RS485',
-            'Implementation-Title': 'LogisticsPipes',
-            'Implementation-Version': version,
-            'Built-By': builtby)
+                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLAT': 'lp_at.cfg',
+                'Implementation-Vendor': 'RS485',
+                'Implementation-Title': 'LogisticsPipes',
+                'Implementation-Version': version,
+                'Built-By': builtby)
     }
 }
 
@@ -315,4 +319,8 @@ task languageBook(dependsOn: downloadLanguage, type: Copy) {
 
 task language(dependsOn: [languageMain, languageBook], type: Copy) {
     processResources.dependsOn language
+}
+
+install.repositories.mavenInstaller.pom.whenConfigured { pom ->
+    pom.dependencies.clear()
 }

@@ -437,9 +437,7 @@ public class LogisticsPipes {
 
 	// TODO move somewhere
 	public static <T extends Item> T setName(T item, String name) {
-		item.setRegistryName(LPConstants.LP_MOD_ID, name);
-		item.setUnlocalizedName(String.format("%s.%s", LPConstants.LP_MOD_ID, name));
-		return item;
+		return setName(item, name, LPConstants.LP_MOD_ID);
 	}
 
 	public static <T extends Item> T setName(T item, String name, String modID) {

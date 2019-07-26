@@ -24,6 +24,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import org.lwjgl.input.Keyboard;
 
+import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
@@ -111,10 +112,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
-		Module module = new Module(moduleConstructor);
-		ItemModule mod = LogisticsPipes.setName(new ItemModule(module), String.format("module_%s", name));
-		LPItems.modules.put(module.getILogisticsModuleClass(), mod); // TODO account for registry overrides → move to init or something
-		registry.register(mod);
+		registerModule(registry, name, moduleConstructor, LPConstants.LP_MOD_ID);
 	}
 
 	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor, String modID) {

@@ -110,9 +110,16 @@ public class ItemModule extends LogisticsItem {
 		registerModule(registry, "item_sink_creativetab", ModuleCreativeTabBasedItemSink::new);
 	}
 
-	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor, String... modID) {
+	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
 		Module module = new Module(moduleConstructor);
-		ItemModule mod = LogisticsPipes.setName(new ItemModule(module), String.format("module_%s", name), modID[0]);
+		ItemModule mod = LogisticsPipes.setName(new ItemModule(module), String.format("module_%s", name));
+		LPItems.modules.put(module.getILogisticsModuleClass(), mod); // TODO account for registry overrides → move to init or something
+		registry.register(mod);
+	}
+
+	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor, String modID) {
+		Module module = new Module(moduleConstructor);
+		ItemModule mod = LogisticsPipes.setName(new ItemModule(module), String.format("module_%s", name), modID);
 		LPItems.modules.put(module.getILogisticsModuleClass(), mod); // TODO account for registry overrides → move to init or something
 		registry.register(mod);
 	}

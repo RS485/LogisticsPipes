@@ -209,12 +209,12 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	}
 
 	public static boolean placePipe(CoreUnroutedPipe pipe, World world, BlockPos blockPos, Block block, ITubeOrientation orientation) {
-		if (world.isRemote) {
-			return true;
-		}
-
 		IBlockState oldBlockState = world.getBlockState(blockPos);
 		boolean placed = world.setBlockState(blockPos, block.getDefaultState(), 0);
+
+		if (world.isRemote) {
+			return placed;
+		}
 
 		if (placed) {
 			TileEntity tile = world.getTileEntity(blockPos);
@@ -940,7 +940,8 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 			LogisticsNewRenderPipe.checkAndCalculateRenderCache(pipe.container);
 			state = ((IExtendedBlockState)state).withProperty(propertyRenderList, pipe.container.renderState.cachedRenderer);
 			state = ((IExtendedBlockState)state).withProperty(propertyCache, pipe.container.renderState.objectCache);
-			//return new RenderListDelegateBlockState(pipe.container.renderState.cachedRenderer, pipe.container.renderState.objectCache, state);
+		} else {
+			state = ((IExtendedBlockState)state).withProperty(propertyRenderList, LogisticsNewRenderPipe.getBasicPipeFrameRenderList());
 		}
 		return state;
 	}

@@ -38,6 +38,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipefxhandlers.EntityModelFX;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -306,6 +307,8 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	static IModel3D innerTransportBox;
 	public static IModel3D highlight;
+
+	private static final List<RenderEntry> pipeFrameRenderList = new ArrayList<>();
 
 	public static TextureTransformation basicPipeTexture;
 	public static TextureTransformation inactiveTexture;
@@ -745,13 +748,16 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 						}
 					}
 					for (IModel3D model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
-						DoubleCoordinates coords = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
-						Block block = coords.getBlock(pipeTile.getWorld());
-						AxisAlignedBB bb = block.getCollisionBoundingBox(coords.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), coords.getBlockPos());
-						if(bb == null) bb = Block.FULL_BLOCK_AABB;
-						double[] bounds = { bb.minY, bb.minZ, bb.minX, bb.maxY, bb.maxZ, bb.maxX };
-						if(SimpleServiceLocator.enderIOProxy.isItemConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite()) || SimpleServiceLocator.enderIOProxy.isFluidConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite())) {
-							bounds = new double[]{0.0249D, 0.0249D, 0.0249D, 0.9751D, 0.9751D, 0.9751D};
+						double[] bounds = { Block.FULL_BLOCK_AABB.minY, Block.FULL_BLOCK_AABB.minZ, Block.FULL_BLOCK_AABB.minX, Block.FULL_BLOCK_AABB.maxY, Block.FULL_BLOCK_AABB.maxZ, Block.FULL_BLOCK_AABB.maxX };
+						if(pipeTile.getWorld() != null) { //This can be null in some cases now !!!
+							DoubleCoordinates coords = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
+							Block block = coords.getBlock(pipeTile.getWorld());
+							AxisAlignedBB bb = block.getCollisionBoundingBox(coords.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), coords.getBlockPos());
+							if (bb == null) bb = Block.FULL_BLOCK_AABB;
+							bounds =  new double[]{ bb.minY, bb.minZ, bb.minX, bb.maxY, bb.maxZ, bb.maxX };
+							if(SimpleServiceLocator.enderIOProxy.isItemConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite()) || SimpleServiceLocator.enderIOProxy.isFluidConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite())) {
+								bounds = new double[]{0.0249D, 0.0249D, 0.0249D, 0.9751D, 0.9751D, 0.9751D};
+							}
 						}
 						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
 						ScaleObject key = new ScaleObject(model, bound);
@@ -881,17 +887,21 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 
 		boolean[] solidSides = new boolean[6];
-		for (EnumFacing dir : EnumFacing.VALUES) {
-			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
-			Block blockSide = pos.getBlock(pipeTile.getWorld());
-			if (blockSide == null || !blockSide.isSideSolid(pos.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), pos.getBlockPos(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
-				mountCanidates.removeIf(mount -> mount.dir == dir);
-			} else {
-				solidSides[dir.ordinal()] = true;
+		if (pipeTile.getWorld() != null) { // This can be null in some cases now !!!
+			for (EnumFacing dir : EnumFacing.VALUES) {
+				DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
+				Block blockSide = pos.getBlock(pipeTile.getWorld());
+				if (blockSide == null || !blockSide.isSideSolid(pos.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), pos.getBlockPos(), dir.getOpposite()) || renderState.pipeConnectionMatrix.isConnected(dir)) {
+					mountCanidates.removeIf(mount -> mount.dir == dir);
+				} else {
+					solidSides[dir.ordinal()] = true;
+				}
 			}
-		}
 
-		mountCanidates.removeIf(mount -> SimpleServiceLocator.mcmpProxy.hasParts(pipeTile));
+			mountCanidates.removeIf(mount -> SimpleServiceLocator.mcmpProxy.hasParts(pipeTile));
+		} else {
+			mountCanidates.clear();
+		}
 
 		if (!mountCanidates.isEmpty()) {
 			if (solidSides[EnumFacing.DOWN.ordinal()]) {
@@ -1155,5 +1165,14 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
 		highlight.render(new I3DOperation[] { LPColourMultiplier.instance(0xFFFFFFFF) });
+	}
+
+	public static List<RenderEntry> getBasicPipeFrameRenderList() {
+		if(pipeFrameRenderList.isEmpty()) {
+			LogisticsTileGenericPipe pipe = new LogisticsTileGenericPipe();
+			pipe.pipe = new PipeItemsBasicLogistics(null);
+			fillObjectsToRenderList(pipeFrameRenderList, pipe, pipe.renderState);
+		}
+		return pipeFrameRenderList;
 	}
 }

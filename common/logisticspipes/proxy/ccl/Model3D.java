@@ -5,14 +5,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IBounds;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
+import logisticspipes.renderer.state.PipeRenderState;
 import logisticspipes.utils.math.Vector3f;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -35,9 +39,15 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.buffer.BakingVertexBuffer;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vertex5;
+import codechicken.lib.vec.uv.IconTransformation;
 import codechicken.lib.vec.uv.UVTransformation;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
@@ -61,6 +71,7 @@ public class Model3D implements IModel3D {
 	}
 
 	private final CCModel model;
+	public Cache<Integer, List<BakedQuad>> renderCache = CacheBuilder.newBuilder().build();
 
 	public Model3D(CCModel model) {
 		if (model == null) {
@@ -83,9 +94,31 @@ public class Model3D implements IModel3D {
 	@SneakyThrows({IllegalAccessException.class})
 	public List<BakedQuad> renderToQuads(VertexFormat format, I3DOperation... i3dOperations) {
 		List<IVertexOperation> list = new ArrayList<>();
+		Set<String> hash = new HashSet<>();
+		hash.add(String.valueOf(format.hashCode()));
+		boolean cachable = true;
 
 		for (I3DOperation op : i3dOperations) {
-			list.add((IVertexOperation) op.getOriginal());
+			IVertexOperation iVertexOperation = (IVertexOperation) op.getOriginal();
+			list.add(iVertexOperation);
+			if (iVertexOperation instanceof IconTransformation) {
+				hash.add(((IconTransformation)iVertexOperation).icon.toString());
+			} else if (iVertexOperation instanceof Rotation) {
+				hash.add(iVertexOperation.toString());
+			} else if (iVertexOperation instanceof Scale) {
+				hash.add(iVertexOperation.toString());
+			} else if (iVertexOperation instanceof Translation) {
+				hash.add(iVertexOperation.toString());
+			} else {
+				cachable = false;
+			}
+		}
+
+		if (cachable) {
+			List<BakedQuad> content = renderCache.getIfPresent(hash.hashCode());
+			if (content != null) {
+				return content;
+			}
 		}
 
 		BakingVertexBuffer buffer = BakingVertexBuffer.create();
@@ -100,7 +133,11 @@ public class Model3D implements IModel3D {
 			spiteMap.set(buffer, emptyHashMap);
 		}
 
-		return buffer.bake();
+		List<BakedQuad> quads = buffer.bake();
+		if (cachable) {
+			renderCache.put(hash.hashCode(), quads);
+		}
+		return quads;
 	}
 
 	@Override

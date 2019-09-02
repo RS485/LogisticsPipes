@@ -1,11 +1,11 @@
 package logisticspipes.proxy.interfaces;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.opencomputers.IOCTile;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 
 public interface IOpenComputersProxy {
 

@@ -5,6 +5,7 @@ import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public interface IReqCraftingTemplate extends ICraftingTemplate {
+
 	void addRequirement(IResource requirement, IAdditionalTargetInformation info);
 
 	void addByproduct(ItemIdentifierStack byproductItem);

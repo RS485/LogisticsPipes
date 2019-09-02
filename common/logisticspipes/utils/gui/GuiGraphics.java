@@ -8,8 +8,8 @@
 
 package logisticspipes.utils.gui;
 
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.Color;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -24,13 +24,16 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import java.util.List;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Color;
 
 /**
  * Utils class for GUI-related drawing methods.
@@ -346,7 +349,6 @@ public final class GuiGraphics {
 		}
 		mc.renderEngine.bindTexture(GuiGraphics.BACKGROUND_TEXTURE);
 
-
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -420,7 +422,6 @@ public final class GuiGraphics {
 		buf.pos(right - 15, bottom - 15, zLevel).tex(0.66, 0.66).endVertex();
 		buf.pos(right - 15, guiTop + 15, zLevel).tex(0.66, 0.33).endVertex();
 		buf.pos(guiLeft + 15, guiTop + 15, zLevel).tex(0.33, 0.33).endVertex();
-
 
 		tess.draw();
 	}

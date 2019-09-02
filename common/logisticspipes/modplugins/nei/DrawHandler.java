@@ -1,8 +1,5 @@
 package logisticspipes.modplugins.nei;
 
-import logisticspipes.utils.QuickSortChestMarkerStorage;
-import logisticspipes.utils.gui.GuiGraphics;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
@@ -11,6 +8,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import codechicken.nei.guihook.IContainerDrawHandler;
+
+import logisticspipes.utils.QuickSortChestMarkerStorage;
+import logisticspipes.utils.gui.GuiGraphics;
 
 @SideOnly(Side.CLIENT)
 public class DrawHandler implements IContainerDrawHandler {
@@ -21,7 +21,7 @@ public class DrawHandler implements IContainerDrawHandler {
 	@Override
 	public void postRenderObjects(GuiContainer gui, int mousex, int mousey) {}
 
-//TODO: Find way to replicate this with the new api
+	//TODO: Find way to replicate this with the new api
 /*
 	@Override
 	@SuppressWarnings("unchecked")

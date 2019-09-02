@@ -1,10 +1,13 @@
 package logisticspipes.proxy.endercore;
 
-import com.enderio.core.api.common.util.IProgressTile;
-import logisticspipes.proxy.interfaces.IGenericProgressProvider;
 import net.minecraft.tileentity.TileEntity;
 
+import com.enderio.core.api.common.util.IProgressTile;
+
+import logisticspipes.proxy.interfaces.IGenericProgressProvider;
+
 public class EnderCoreProgressProvider implements IGenericProgressProvider {
+
 	@Override
 	public boolean isType(TileEntity tile) {
 		return tile instanceof IProgressTile;
@@ -12,6 +15,6 @@ public class EnderCoreProgressProvider implements IGenericProgressProvider {
 
 	@Override
 	public byte getProgress(TileEntity tile) {
-		return (byte) Math.max(0, Math.min(((IProgressTile)tile).getProgress() * 100, 100));
+		return (byte) Math.max(0, Math.min(((IProgressTile) tile).getProgress() * 100, 100));
 	}
 }

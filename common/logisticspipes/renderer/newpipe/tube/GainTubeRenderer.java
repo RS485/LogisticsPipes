@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -26,9 +29,6 @@ import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 
 public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
@@ -88,11 +88,11 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 		if (pipe instanceof HSTubeGain) {
 			HSTubeGain tube = (HSTubeGain) pipe;
 			if (tube.getOrientation() != null) {
-				objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(tube.getOrientation().getRenderOrientation()).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
+				objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(tube.getOrientation().getRenderOrientation()).stream().map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
 			}
 		}
-		if(pipe == null) {
-			objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(TubeGainRenderOrientation.NORTH).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
+		if (pipe == null) {
+			objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(TubeGainRenderOrientation.NORTH).stream().map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
 		}
 	}
 

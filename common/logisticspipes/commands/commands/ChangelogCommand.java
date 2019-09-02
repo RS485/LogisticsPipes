@@ -1,12 +1,12 @@
 package logisticspipes.commands.commands;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.util.text.TextComponentString;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.ticks.VersionChecker;
-
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.text.TextComponentString;
 
 public class ChangelogCommand implements ICommandHandler {
 

@@ -120,7 +120,7 @@ public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> imple
 		this.forEach(DoubleCoordinates::mirrorZ);
 	}
 
-	@SneakyThrows({NoSuchMethodException.class, IllegalAccessException.class, InvocationTargetException.class, InstantiationException.class})
+	@SneakyThrows({ NoSuchMethodException.class, IllegalAccessException.class, InvocationTargetException.class, InstantiationException.class })
 	public void addFrom(AxisAlignedBB completeBox) {
 		add(clazz.getConstructor(Double.TYPE, Double.TYPE, Double.TYPE).newInstance(completeBox.minX, completeBox.minY, completeBox.minZ));
 		add(clazz.getConstructor(Double.TYPE, Double.TYPE, Double.TYPE).newInstance(completeBox.maxX, completeBox.maxY, completeBox.maxZ));
@@ -133,8 +133,8 @@ public class LPPositionSet<T extends DoubleCoordinates> extends HashSet<T> imple
 	public T findClosest(DoubleCoordinates posToLookFor) {
 		double distance = Double.MAX_VALUE;
 		T closest = null;
-		for(T posToLookAt:this) {
-			if(closest == null || posToLookFor.distanceTo(posToLookAt) < distance) {
+		for (T posToLookAt : this) {
+			if (closest == null || posToLookFor.distanceTo(posToLookAt) < distance) {
 				closest = posToLookAt;
 				distance = posToLookFor.distanceTo(posToLookAt);
 			}

@@ -7,12 +7,12 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.SlotPacket;
 import logisticspipes.pipes.upgrades.IConfigPipeUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
-import logisticspipes.utils.gui.UpgradeSlot;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.UpgradeSlot;
 
 @StaticResolve
 public class OpenUpgradePacket extends SlotPacket {
+
 	public OpenUpgradePacket(int id) {
 		super(id);
 	}
@@ -21,9 +21,9 @@ public class OpenUpgradePacket extends SlotPacket {
 	public void processPacket(EntityPlayer player) {
 		UpgradeSlot slot = getSlot(player, UpgradeSlot.class);
 		IPipeUpgrade upgrade = slot.getUpgrade();
-		if(upgrade instanceof IConfigPipeUpgrade) {
+		if (upgrade instanceof IConfigPipeUpgrade) {
 			UpgradeCoordinatesGuiProvider gui = ((IConfigPipeUpgrade) upgrade).getGUI();
-			if(gui != null) {
+			if (gui != null) {
 				gui.setSlot(slot).setLPPos(slot.getManager().getPipePosition()).open(player);
 			}
 		}

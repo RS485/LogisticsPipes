@@ -1,5 +1,11 @@
 package logisticspipes.transport;
 
+import java.util.List;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.Explosion;
+
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -7,13 +13,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
-
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.world.Explosion;
-import net.minecraft.util.EnumFacing;
-
-import java.util.List;
 
 public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 
@@ -29,8 +28,8 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 			return true;
 		}
 		if (tile instanceof LogisticsTileGenericSubMultiBlock && ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe() != null && !((LogisticsTileGenericSubMultiBlock) tile).getMainPipe().isEmpty()) {
-			for(LogisticsTileGenericPipe pipe: ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe()) {
-				if(pipe.pipe == null || !pipe.pipe.isHSTube()) {
+			for (LogisticsTileGenericPipe pipe : ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe()) {
+				if (pipe.pipe == null || !pipe.pipe.isHSTube()) {
 					return false;
 				}
 			}
@@ -104,7 +103,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 		} else if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> masterTile = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			if (!masterTile.isEmpty()) {
-				if(masterTile.size() > 1) {
+				if (masterTile.size() > 1) {
 					throw new UnsupportedOperationException();
 				}
 				passToNextPipe(arrivingItem, masterTile.get(0));
@@ -123,7 +122,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 		} else if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> masterTile = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			if (!masterTile.isEmpty()) {
-				if(masterTile.size() > 1) {
+				if (masterTile.size() > 1) {
 					throw new UnsupportedOperationException();
 				}
 				passToNextPipe(arrivingItem, masterTile.get(0));
@@ -147,8 +146,8 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 		}
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> list = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
-			if(!list.isEmpty()) {
-				if(list.size() > 1) {
+			if (!list.isEmpty()) {
+				if (list.size() > 1) {
 					throw new UnsupportedOperationException();
 				}
 				tile = list.get(0);

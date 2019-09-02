@@ -15,10 +15,9 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
+import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class ParticleFX extends CoordinatesPacket {

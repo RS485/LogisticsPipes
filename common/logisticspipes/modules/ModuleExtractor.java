@@ -56,7 +56,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	protected int neededEnergy() {
-		return (int) (5 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()))	;
+		return (int) (5 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()));
 	}
 
 	protected int itemsToExtract() {
@@ -103,7 +103,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		if (nbttagcompound.hasKey("sneakydirection")) {
 			int sneak = nbttagcompound.getInteger("sneakydirection");
-			if(sneak == 6) {
+			if (sneak == 6) {
 				_sneakyDirection = null;
 			} else {
 				_sneakyDirection = EnumFacing.values()[sneak];
@@ -131,7 +131,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("sneakydirection", _sneakyDirection == null ? 6: _sneakyDirection.ordinal());
+		nbttagcompound.setInteger("sneakydirection", _sneakyDirection == null ? 6 : _sneakyDirection.ordinal());
 	}
 
 	@Override

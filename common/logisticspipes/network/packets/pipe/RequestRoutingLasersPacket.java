@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import logisticspipes.LPConstants;
 import logisticspipes.config.Configs;
 import logisticspipes.network.PacketHandler;
@@ -22,18 +28,9 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.PathFinder;
-
+import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.IntegerCoordinates;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import net.minecraft.util.EnumFacing;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class RequestRoutingLasersPacket extends CoordinatesPacket {

@@ -8,8 +8,8 @@
 
 package logisticspipes.utils.item;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPane;
@@ -56,7 +56,8 @@ public class ItemStackRenderer {
 	private FontRenderer fontRenderer;
 	private RenderEntityItem itemEntityRenderer;
 
-	@Nonnull private ItemStack itemstack = ItemStack.EMPTY;
+	@Nonnull
+	private ItemStack itemstack = ItemStack.EMPTY;
 	private ItemIdentifierStack itemIdentStack;
 	private int posX;
 	private int posY;

@@ -1,10 +1,10 @@
 package logisticspipes.logisticspipes;
 
+import net.minecraft.util.EnumFacing;
+
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.SinkReply;
-
-import net.minecraft.util.EnumFacing;
 
 public class ChassiTransportLayer extends TransportLayer {
 

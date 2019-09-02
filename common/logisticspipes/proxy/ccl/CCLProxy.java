@@ -10,17 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import logisticspipes.proxy.DontLoadProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.interfaces.ICCLProxy;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.interfaces.IRenderState;
-import logisticspipes.proxy.object3d.interfaces.ITranslation;
-import logisticspipes.proxy.object3d.interfaces.IVec3;
-import logisticspipes.proxy.object3d.operation.LPScale;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.math.BlockPos;
@@ -45,6 +34,17 @@ import codechicken.lib.vec.uv.UVScale;
 import codechicken.lib.vec.uv.UVTransformation;
 import codechicken.lib.vec.uv.UVTransformationList;
 import codechicken.lib.vec.uv.UVTranslation;
+
+import logisticspipes.proxy.DontLoadProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.interfaces.ICCLProxy;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.IRenderState;
+import logisticspipes.proxy.object3d.interfaces.ITranslation;
+import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
+import logisticspipes.proxy.object3d.operation.LPScale;
 
 public class CCLProxy implements ICCLProxy {
 

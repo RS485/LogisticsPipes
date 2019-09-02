@@ -1,14 +1,13 @@
 package logisticspipes.network.guis.module.inpipe;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.gui.modules.GuiSimpleFilter;
 import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.DummyContainer;
 
 @StaticResolve
 public class SimpleFilterInventorySlot extends ModuleCoordinatesGuiProvider {

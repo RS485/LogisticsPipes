@@ -153,7 +153,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 				}
 				int itemAmount = amounts.get(ident);
 				List<ItemRoutingInformation> needs = itemsOnRoute.get(ident);
-				for (Iterator<ItemRoutingInformation> iterator = needs.iterator(); iterator.hasNext();) {
+				for (Iterator<ItemRoutingInformation> iterator = needs.iterator(); iterator.hasNext(); ) {
 					ItemRoutingInformation need = iterator.next();
 					if (need.getItem().getStackSize() <= itemAmount) {
 						if (!useEnergy(6)) {
@@ -266,7 +266,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		nbttagcompound.setInteger("resistance", resistance);
-		if(connectedChannel != null) {
+		if (connectedChannel != null) {
 			nbttagcompound.setString("connectedChannel", connectedChannel.toString());
 		}
 	}
@@ -275,7 +275,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		resistance = nbttagcompound.getInteger("resistance");
-		if(nbttagcompound.hasKey("connectedChannel")) {
+		if (nbttagcompound.hasKey("connectedChannel")) {
 			connectedChannel = UUID.fromString(nbttagcompound.getString("connectedChannel"));
 		} else {
 			connectedChannel = null;
@@ -348,7 +348,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 						.filter(triplet -> triplet.getValue2() != null && triplet.getValue3() != null)
 						.filter(triplet -> triplet.getValue2().exitOrientation != triplet.getValue3().exitOrientation)
 						.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Pair::getValue1);
-				if(!bestConnection.isPresent()) {
+				if (!bestConnection.isPresent()) {
 					bestConnection = connectedPipes.stream()
 							.map(con -> new Pair<>(
 									con,
@@ -357,7 +357,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 							.filter(triplet -> triplet.getValue2() != null)
 							.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Pair::getValue1);
 				}
-				if(bestConnection.isPresent() && bestConnection.get() instanceof IChannelRoutingConnection) {
+				if (bestConnection.isPresent() && bestConnection.get() instanceof IChannelRoutingConnection) {
 					IChannelRoutingConnection pipe = (IChannelRoutingConnection) bestConnection.get();
 					pipe.addItem(info);
 					spawnParticle(Particles.OrangeParticle, 4);

@@ -1,12 +1,12 @@
 package logisticspipes.commands.commands;
 
-import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.commands.LogisticsPipesCommand;
-import logisticspipes.commands.abstracts.ICommandHandler;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
+
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.commands.LogisticsPipesCommand;
+import logisticspipes.commands.abstracts.ICommandHandler;
 
 public class BypassCommand implements ICommandHandler {
 

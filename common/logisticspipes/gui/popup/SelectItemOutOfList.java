@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.InputBar;
@@ -14,10 +18,6 @@ import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 
 public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 
@@ -117,8 +117,8 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
-		if(itemDisplay.handleClick(mouseX, mouseY, button)) return;
-		if(search.handleClick(mouseX, mouseY, button)) return;
+		if (itemDisplay.handleClick(mouseX, mouseY, button)) return;
+		if (search.handleClick(mouseX, mouseY, button)) return;
 		super.mouseClicked(mouseX, mouseY, button);
 	}
 

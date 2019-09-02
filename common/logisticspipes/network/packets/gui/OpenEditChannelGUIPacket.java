@@ -49,7 +49,7 @@ public class OpenEditChannelGUIPacket extends CoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		TileEntity tile = player.getEntityWorld().getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		UUID securityID = null;
-		if(tile instanceof LogisticsSecurityTileEntity) {
+		if (tile instanceof LogisticsSecurityTileEntity) {
 			LogisticsSecurityTileEntity security = (LogisticsSecurityTileEntity) tile;
 			securityID = security.getSecId();
 		}

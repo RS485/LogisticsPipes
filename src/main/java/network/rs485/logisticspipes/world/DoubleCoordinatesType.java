@@ -1,12 +1,14 @@
 package network.rs485.logisticspipes.world;
 
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import lombok.Getter;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+
+import lombok.Getter;
+
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
 public class DoubleCoordinatesType<T> extends DoubleCoordinates {
 

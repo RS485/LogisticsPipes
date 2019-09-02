@@ -6,7 +6,6 @@ import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

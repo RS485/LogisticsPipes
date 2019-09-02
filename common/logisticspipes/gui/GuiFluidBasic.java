@@ -1,13 +1,13 @@
 package logisticspipes.gui;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 
 public class GuiFluidBasic extends LogisticsBaseGuiScreen {
 

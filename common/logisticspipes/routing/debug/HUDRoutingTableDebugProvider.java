@@ -1,11 +1,10 @@
 package logisticspipes.routing.debug;
 
+import net.minecraft.world.World;
+
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import net.minecraft.world.World;
 
 public class HUDRoutingTableDebugProvider implements IHeadUpDisplayRendererProvider {
 

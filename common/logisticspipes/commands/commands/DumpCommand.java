@@ -1,10 +1,10 @@
 package logisticspipes.commands.commands;
 
-import logisticspipes.commands.LogisticsPipesCommand;
-import logisticspipes.commands.abstracts.ICommandHandler;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
+
+import logisticspipes.commands.LogisticsPipesCommand;
+import logisticspipes.commands.abstracts.ICommandHandler;
 
 public class DumpCommand implements ICommandHandler {
 

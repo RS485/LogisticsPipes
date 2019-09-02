@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.MethodNode;
 import logisticspipes.asm.util.ASMHelper;
 
 public class ClassBlockMultipartContainerHandler {
+
 	public static byte[] handleClass(byte[] bytes) {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
@@ -31,11 +32,12 @@ public class ClassBlockMultipartContainerHandler {
 				.filter(m -> m.name.equals("getTile") && m.desc.equals("(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)Ljava/util/Optional;"))
 				.forEach(m -> {
 					MethodNode mv = new MethodNode(Opcodes.ASM4, m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 						boolean inserted = false;
 
 						@Override
 						public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-							if(!inserted && opcode == Opcodes.INVOKEINTERFACE && owner.equals("net/minecraft/world/IBlockAccess") && (name.equals("getTileEntity") || name.equals("func_175625_s")) && desc.equals("(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/tileentity/TileEntity;") && itf) {
+							if (!inserted && opcode == Opcodes.INVOKEINTERFACE && owner.equals("net/minecraft/world/IBlockAccess") && (name.equals("getTileEntity") || name.equals("func_175625_s")) && desc.equals("(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/tileentity/TileEntity;") && itf) {
 								super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/mcmp/MCMPHooks", "getTileEntityForBlockClass", "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/tileentity/TileEntity;", false);
 								inserted = true;
 							} else {

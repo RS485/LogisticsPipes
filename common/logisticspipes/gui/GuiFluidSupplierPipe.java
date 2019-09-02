@@ -6,13 +6,7 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.pipe.FluidSupplierMode;
-import logisticspipes.pipes.PipeItemsFluidSupplier;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.string.StringUtils;
+import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
@@ -20,7 +14,13 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import java.io.IOException;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.FluidSupplierMode;
+import logisticspipes.pipes.PipeItemsFluidSupplier;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.string.StringUtils;
 
 public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 

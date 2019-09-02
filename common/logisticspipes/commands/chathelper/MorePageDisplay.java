@@ -3,14 +3,14 @@ package logisticspipes.commands.chathelper;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextComponentString;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.OpenChatGui;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.string.ChatColor;
-
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
 
 public class MorePageDisplay {
 

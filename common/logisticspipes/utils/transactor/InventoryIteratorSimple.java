@@ -1,13 +1,11 @@
 package logisticspipes.utils.transactor;
 
 import java.util.Iterator;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.items.IItemHandler;
-
 
 class InventoryIteratorSimple implements Iterable<IInvSlot> {
 

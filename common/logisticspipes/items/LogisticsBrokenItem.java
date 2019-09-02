@@ -1,11 +1,7 @@
 package logisticspipes.items;
 
 import java.util.List;
-
 import javax.annotation.Nullable;
-
-import logisticspipes.interfaces.IItemAdvancedExistance;
-import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -13,6 +9,9 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsBrokenItem extends LogisticsItem implements IItemAdvancedExistance {
 

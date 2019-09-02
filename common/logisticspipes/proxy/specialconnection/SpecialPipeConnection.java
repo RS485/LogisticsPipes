@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import logisticspipes.interfaces.routing.ISpecialPipedConnection;
-import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-
 import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import logisticspipes.interfaces.routing.ISpecialPipedConnection;
+import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
 public class SpecialPipeConnection {
 

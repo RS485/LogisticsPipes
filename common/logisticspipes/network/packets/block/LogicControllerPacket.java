@@ -1,14 +1,13 @@
 package logisticspipes.network.packets.block;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.logic.interfaces.ILogicControllerTile;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.logic.LogicControllerGuiProvider;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

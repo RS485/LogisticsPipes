@@ -25,7 +25,8 @@ public enum Color {
 	RED(0xFFFF0000),
 	GREEN(0xFF00FF00),
 	BLUE(0xFF0000FF),
-	LIGHT_YELLOW(0xFFFFFFA0), ;
+	LIGHT_YELLOW(0xFFFFFFA0),
+	;
 
 	private int colorValue;
 

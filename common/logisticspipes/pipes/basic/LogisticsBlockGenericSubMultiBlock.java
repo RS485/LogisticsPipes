@@ -101,14 +101,14 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
-		if(redirectedToMainPipe) return;
+		if (redirectedToMainPipe) return;
 		TileEntity tile = worldIn.getTileEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			mainPipeList.stream()
 					.filter(Objects::nonNull)
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
-					.forEach(mainPipe ->  {
+					.forEach(mainPipe -> {
 						redirectedToMainPipe = true;
 						pipe.breakBlock(worldIn, mainPipe.getBlockPos(), worldIn.getBlockState(mainPipe.getBlockPos()));
 						redirectedToMainPipe = false;
@@ -123,7 +123,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 			return;
 		}
 		BlockPos mainPipePos = LogisticsBlockGenericPipe.pipeSubMultiRemoved.get(new DoubleCoordinates(pos));
-		if(mainPipePos != null) {
+		if (mainPipePos != null) {
 			pipe.dropBlockAsItemWithChance(world, mainPipePos, null, chance, fortune);
 		}
 	}

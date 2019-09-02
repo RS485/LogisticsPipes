@@ -8,6 +8,12 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+
+import lombok.Getter;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -35,12 +41,6 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-
-import lombok.Getter;
-
 public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
 	// from baseLogicLiquidSatellite
@@ -51,7 +51,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		PipeFluidSatellite.AllSatellites.clear();
 	}
 
-
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
@@ -61,7 +60,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	//public int satelliteId;
 	@Getter
 	public String satellitePipeName;
-
 
 	public PipeFluidSatellite(Item item) {
 		super(item);

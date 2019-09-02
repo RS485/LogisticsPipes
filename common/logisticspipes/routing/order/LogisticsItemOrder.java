@@ -26,7 +26,7 @@ public class LogisticsItemOrder extends LogisticsOrder {
 
 	@Override
 	public IRouter getRouter() {
-		if(destination == null) {
+		if (destination == null) {
 			return null;
 		}
 		return destination.getRouter();
@@ -34,7 +34,7 @@ public class LogisticsItemOrder extends LogisticsOrder {
 
 	@Override
 	public void sendFailed() {
-		if(destination == null) {
+		if (destination == null) {
 			return;
 		}
 		destination.itemCouldNotBeSend(getResource().stack, getInformation());

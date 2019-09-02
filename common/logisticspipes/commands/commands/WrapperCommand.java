@@ -1,11 +1,11 @@
 package logisticspipes.commands.commands;
 
+import net.minecraft.command.ICommandSender;
+
 import logisticspipes.commands.abstracts.SubCommandHandler;
 import logisticspipes.commands.commands.wrapper.EnableCommand;
 import logisticspipes.commands.commands.wrapper.ListCommand;
 import logisticspipes.commands.commands.wrapper.ShowCommand;
-
-import net.minecraft.command.ICommandSender;
 
 public class WrapperCommand extends SubCommandHandler {
 

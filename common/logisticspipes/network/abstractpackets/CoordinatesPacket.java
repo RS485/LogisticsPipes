@@ -79,7 +79,6 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		return this;
 	}
 
-
 	public TileEntity getTile(World world, Function<TileEntity, Boolean> validateResult) {
 		TileEntity tile = getTile(world, TileEntity.class);
 		if (!validateResult.apply(tile)) {

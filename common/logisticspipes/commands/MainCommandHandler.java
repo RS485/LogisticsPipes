@@ -1,5 +1,7 @@
 package logisticspipes.commands;
 
+import net.minecraft.command.ICommandSender;
+
 import logisticspipes.commands.abstracts.SubCommandHandler;
 import logisticspipes.commands.commands.BypassCommand;
 import logisticspipes.commands.commands.ChangelogCommand;
@@ -13,8 +15,6 @@ import logisticspipes.commands.commands.RoutingThreadCommand;
 import logisticspipes.commands.commands.TransferNamesCommand;
 import logisticspipes.commands.commands.VersionCommand;
 import logisticspipes.commands.commands.WrapperCommand;
-
-import net.minecraft.command.ICommandSender;
 
 public class MainCommandHandler extends SubCommandHandler {
 

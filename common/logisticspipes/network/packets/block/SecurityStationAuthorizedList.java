@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringListPacket;
 import logisticspipes.proxy.SimpleServiceLocator;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

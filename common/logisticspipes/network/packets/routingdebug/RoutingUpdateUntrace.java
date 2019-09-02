@@ -1,11 +1,10 @@
 package logisticspipes.network.packets.routingdebug;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.abstractpackets.IntegerPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.routing.debug.DebugController;
-
-import net.minecraft.entity.player.EntityPlayer;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

@@ -81,7 +81,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 	}
 
-	private static final ResourceLocation achievementTextures = new ResourceLocation("logisticspipes","textures/gui/gui_border.png");
+	private static final ResourceLocation achievementTextures = new ResourceLocation("logisticspipes", "textures/gui/gui_border.png");
 	private final PipeBlockRequestTable _table;
 	private final int orderId;
 
@@ -389,7 +389,6 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 
-
 		int moveBackgroundX = (mapX - minX) % 16;
 		int moveBackgroundY = (mapY - minY) % 16;
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
@@ -483,8 +482,8 @@ public class RequestMonitorPopup extends SubGuiScreen {
 					List<String> tooltipList = new ArrayList<>();
 					tooltipList.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 					tooltipList.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-					tooltip = new Object[]{(int) (par1 * zoom.zoom - 10), (int) (par2 * zoom.zoom), order
-							.getAsDisplayItem().makeNormalStack(), true, tooltipList};
+					tooltip = new Object[] { (int) (par1 * zoom.zoom - 10), (int) (par2 * zoom.zoom), order
+							.getAsDisplayItem().makeNormalStack(), true, tooltipList };
 				}
 			}
 			startLeft += 30;

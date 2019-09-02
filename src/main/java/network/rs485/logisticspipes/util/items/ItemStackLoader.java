@@ -44,6 +44,7 @@ import net.minecraft.util.datafix.FixTypes;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class ItemStackLoader {
+
 	public static ItemStack loadAndFixItemStackFromNBT(NBTTagCompound nbt) {
 		NBTTagCompound fixed = FMLCommonHandler.instance().getDataFixer().process(FixTypes.ITEM_INSTANCE, nbt);
 		return new ItemStack(fixed);

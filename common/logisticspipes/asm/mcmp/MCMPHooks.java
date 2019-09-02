@@ -5,7 +5,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 public class MCMPHooks {
+
 	public interface IMCMPGetTEHook {
+
 		TileEntity apply(IBlockAccess world, BlockPos pos);
 	}
 

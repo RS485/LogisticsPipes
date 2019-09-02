@@ -11,16 +11,16 @@ public interface IRequestAPI {
 
 	/**
 	 * do NOT modify the tagcompounds of the returned itemstacks
-	 * 
+	 *
 	 * @return list of items and amounts provided by providers in the network
 	 */
 	List<ItemStack> getProvidedItems();
 
 	/**
 	 * do NOT modify the tagcompounds of the returned itemstacks
-	 * 
+	 *
 	 * @return list of items craftable by crafters in the network, stacksize is
-	 *         always 0
+	 * always 0
 	 */
 	List<ItemStack> getCraftedItems();
 
@@ -32,19 +32,17 @@ public interface IRequestAPI {
 
 	/**
 	 * do NOT modify the tagcompounds of the returned itemstacks
-	 * 
-	 * @param wanted
-	 *            result
+	 *
+	 * @param wanted result
 	 * @return used items and amounts from providers and missing items and
-	 *         amounts
+	 * amounts
 	 */
 	SimulationResult simulateRequest(ItemStack wanted);
 
 	/**
 	 * do NOT modify the tagcompounds of the returned itemstacks
-	 * 
-	 * @param wanted
-	 *            result
+	 *
+	 * @param wanted result
 	 * @return list of missing items, empty list if request was successful
 	 */
 	List<ItemStack> performRequest(ItemStack wanted);

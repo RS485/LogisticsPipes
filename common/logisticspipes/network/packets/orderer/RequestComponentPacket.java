@@ -8,7 +8,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestHandler;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

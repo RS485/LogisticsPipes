@@ -12,11 +12,10 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class MultiBlockCoordinatesPacket extends CoordinatesPacket {

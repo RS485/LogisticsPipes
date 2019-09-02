@@ -38,6 +38,7 @@ import mcmultipart.MCMultiPart;
 import mcmultipart.block.BlockMultipartContainer;
 
 public class MCMPBlockAccess implements IMCMPBlockAccess {
+
 	private final BlockMultipartContainer multipart = (BlockMultipartContainer) MCMultiPart.multipart;
 
 	@Override

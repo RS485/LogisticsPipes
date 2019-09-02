@@ -1,8 +1,8 @@
 package logisticspipes.utils.tuples;
 
-import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
-
 import lombok.Data;
+
+import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 
 @Data
 public class Pair<T1, T2> implements ILPCCTypeHolder {

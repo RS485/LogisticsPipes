@@ -1,7 +1,6 @@
 package logisticspipes.utils.transactor;
 
 import net.minecraft.item.ItemStack;
-
 import net.minecraft.util.EnumFacing;
 
 public abstract class Transactor implements ITransactor {

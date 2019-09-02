@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import logisticspipes.LPItems;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -14,6 +13,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 
+import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.items.ItemModule;
@@ -24,8 +24,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.TextListDisplay;
 import logisticspipes.utils.string.StringUtils;
@@ -137,7 +137,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new SmallGuiButton(0, guiLeft +  8, guiTop + 90, 15, 10, "/\\"));
+		buttonList.add(new SmallGuiButton(0, guiLeft + 8, guiTop + 90, 15, 10, "/\\"));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 24, guiTop + 90, 15, 10, "\\/"));
 		buttonList.add(new SmallGuiButton(2, guiLeft + 40, guiTop + 90, 40, 10, "Unlock"));
 		buttonList.add(new SmallGuiButton(3, guiLeft + 100, guiTop + 90, 15, 10, "/\\"));
@@ -185,10 +185,10 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				break;
 			case 5:
 				int selIndex = programList.getSelected();
-				if(categoryTextList.getSize() == 0 && programTextList.getSize() != 0) {
+				if (categoryTextList.getSize() == 0 && programTextList.getSize() != 0) {
 					selIndex = programListLarge.getSelected();
 				}
-				if(selIndex != -1) {
+				if (selIndex != -1) {
 					NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
 					ResourceLocation sel = getProgramListForSelectionIndex(list).get(selIndex);
 
@@ -208,11 +208,11 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawSlotDiskBackground(mc, guiLeft + 9, guiTop + 9);
 		GuiGraphics.drawSlotProgrammerBackground(mc, guiLeft + 153, guiTop + 9);
 
-		if(compiler.getCurrentTask() != null) {
+		if (compiler.getCurrentTask() != null) {
 			fontRenderer.drawString(StringUtils.translate("gui.compiler.processing"), guiLeft + 10, guiTop + 39, 0x000000);
 			String name;
 			Item item = Item.REGISTRY.getObject(compiler.getCurrentTask());
-			if(item != null) {
+			if (item != null) {
 				name = item.getUnlocalizedName() + ".name";
 			} else {
 				name = "gui.compiler." + compiler.getCurrentTask().toString().replace(':', '.');
@@ -222,7 +222,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			fontRenderer.drawString(text, guiLeft + 10, guiTop + 70, 0x000000);
 			drawRect(guiLeft + 9, guiTop + 50, guiLeft + 171, guiTop + 66, Color.BLACK);
 			drawRect(guiLeft + 10, guiTop + 51, guiLeft + 170, guiTop + 65, Color.WHITE);
-			drawRect(guiLeft + 11, guiTop + 52, guiLeft + 11 + (int)(158 * compiler.getTaskProgress()), guiTop + 64, Color.GREEN);
+			drawRect(guiLeft + 11, guiTop + 52, guiLeft + 11 + (int) (158 * compiler.getTaskProgress()), guiTop + 64, Color.GREEN);
 
 			if (!compiler.isWasAbleToConsumePower()) {
 				fontRenderer.drawString(StringUtils.translate("gui.compiler.nopower.1"), guiLeft + 68, guiTop + 10, 0x000000);
@@ -232,7 +232,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			buttonList.forEach(b -> b.visible = false);
 		} else {
 			buttonList.forEach(b -> b.visible = true);
-			if(categoryTextList.getSize() == 0 && programTextList.getSize() != 0) {
+			if (categoryTextList.getSize() == 0 && programTextList.getSize() != 0) {
 				buttonList.stream().limit(3).forEach(b -> b.visible = false);
 				programListLarge.renderGuiBackground(var2, var3);
 			} else {

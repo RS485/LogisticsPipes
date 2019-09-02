@@ -1,5 +1,14 @@
 package logisticspipes.proxy.td;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+
 import cofh.core.util.helpers.BlockHelper;
 import cofh.thermaldynamics.duct.item.DuctUnitItem;
 import cofh.thermaldynamics.duct.item.GridItem;
@@ -25,18 +34,8 @@ import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
-
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class TDDuctInformationProvider implements IPipeInformationProvider, IRouteProvider {
 
@@ -277,8 +276,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getObject() != null) {
 					((ILPTEInformation) duct).getObject().getCacheHolder().setCache(CacheTypes.Routing, key, route);
 				}
-				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct.getDuct(DuctToken.ITEMS), route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 /* Speed */ );
-				((ILPTravelingItemInfo)travelItem).setLPRoutingInfoAddition(serverItem.getInfo());
+				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct.getDuct(DuctToken.ITEMS), route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 /* Speed */);
+				((ILPTravelingItemInfo) travelItem).setLPRoutingInfoAddition(serverItem.getInfo());
 				duct.getDuct(DuctToken.ITEMS).insertNewItem(travelItem);
 				return true;
 			}

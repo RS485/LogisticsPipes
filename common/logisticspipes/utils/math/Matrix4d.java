@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Matrix4d {
+
 	public double m00 = 0;
 	public double m01 = 0;
 	public double m02 = 0;

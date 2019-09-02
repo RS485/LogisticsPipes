@@ -2,13 +2,6 @@ package logisticspipes.renderer;
 
 import java.lang.reflect.Field;
 
-import logisticspipes.LPConstants;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.pipe.SlotFinderNumberPacket;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.gui.SimpleGraphics;
-
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
@@ -18,6 +11,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.LPConstants;
+import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.SlotFinderNumberPacket;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.SimpleGraphics;
 
 public class LogisticsGuiOverrenderer {
 

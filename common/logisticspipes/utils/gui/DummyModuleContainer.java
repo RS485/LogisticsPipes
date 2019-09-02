@@ -1,15 +1,15 @@
 package logisticspipes.utils.gui;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.utils.DummyWorldProvider;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 
 public class DummyModuleContainer extends DummyContainer {
 

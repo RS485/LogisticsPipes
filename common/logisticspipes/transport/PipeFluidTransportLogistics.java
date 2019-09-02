@@ -1,5 +1,14 @@
 package logisticspipes.transport;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;
@@ -8,16 +17,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SafeTimeTracker;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 
@@ -45,7 +44,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 	 * For internal use only
 	 */
 	public IFluidTankProperties[] getTankProperties(EnumFacing from) {
-		if(from == null) return internalTank.getTankProperties();
+		if (from == null) return internalTank.getTankProperties();
 		return sideTanks[from.ordinal()].getTankProperties();
 	}
 
@@ -115,7 +114,6 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 			}
 		}
 	}
-
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -211,11 +209,9 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 
 	/**
 	 * Computes the PacketFluidUpdate packet for transmission to a client
-	 * 
-	 * @param initPacket
-	 *            everything is sent, no delta stuff ( first packet )
-	 * @param persistChange
-	 *            The render cache change is persisted
+	 *
+	 * @param initPacket    everything is sent, no delta stuff ( first packet )
+	 * @param persistChange The render cache change is persisted
 	 * @return PacketFluidUpdate liquid update packet
 	 */
 	private ModernPacket computeFluidUpdate(boolean initPacket, boolean persistChange) {

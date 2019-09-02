@@ -1,8 +1,8 @@
 package logisticspipes.security;
 
-import logisticspipes.interfaces.routing.ISaveState;
-
 import net.minecraft.nbt.NBTTagCompound;
+
+import logisticspipes.interfaces.routing.ISaveState;
 
 public class SecuritySettings implements ISaveState {
 

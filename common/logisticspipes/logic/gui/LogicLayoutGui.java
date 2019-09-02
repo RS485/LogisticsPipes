@@ -152,8 +152,8 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 	private void drawMap(int par1, int par2) {
 		tooltip = null;
-		int mapX = (int)Math.floor(guiMapX);
-		int mapY = (int)Math.floor(guiMapY - zoom.moveY);
+		int mapX = (int) Math.floor(guiMapX);
+		int mapY = (int) Math.floor(guiMapY - zoom.moveY);
 		int leftSide = ((width - xSize) / 2);
 		int topSide = ((height - ySize) / 2);
 
@@ -276,8 +276,8 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 					List<String> tooltipList = new ArrayList<>();
 					tooltipList.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 					tooltipList.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-					tooltip = new Object[]{(int) (par1 * zoom.zoom - 10), (int) (par2 * zoom.zoom), order
-							.getAsDisplayItem().makeNormalStack(), true, tooltipList};
+					tooltip = new Object[] { (int) (par1 * zoom.zoom - 10), (int) (par2 * zoom.zoom), order
+							.getAsDisplayItem().makeNormalStack(), true, tooltipList };
 				}
 			}
 			startLeft += 30;

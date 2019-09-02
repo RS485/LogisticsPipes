@@ -1,5 +1,13 @@
 package logisticspipes.renderer.newpipe.tube;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import net.minecraft.util.ResourceLocation;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -8,18 +16,16 @@ import logisticspipes.pipes.tubes.HSTubeLine.TubeLineRenderOrientation;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.operation.*;
+import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
+import logisticspipes.proxy.object3d.operation.LPRotation;
+import logisticspipes.proxy.object3d.operation.LPScale;
+import logisticspipes.proxy.object3d.operation.LPTranslation;
+import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
+import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
@@ -69,11 +75,11 @@ public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightP
 			HSTubeLine tube = (HSTubeLine) pipe;
 			if (tube.getOrientation() != null) {
 				TubeLineRenderOrientation speedupDirection = tube.getOrientation().getRenderOrientation();
-				objectsToRender.addAll(LineTubeRenderer.tubeLineBase.get(speedupDirection).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, LineTubeRenderer.TEXTURE)).collect(Collectors.toList()));
+				objectsToRender.addAll(LineTubeRenderer.tubeLineBase.get(speedupDirection).stream().map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, LineTubeRenderer.TEXTURE)).collect(Collectors.toList()));
 			}
 		}
 		if (pipe == null) {
-			objectsToRender.addAll(LineTubeRenderer.tubeLineBase.get(TubeLineRenderOrientation.NORTH_SOUTH).stream().map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, LineTubeRenderer.TEXTURE)).collect(Collectors.toList()));
+			objectsToRender.addAll(LineTubeRenderer.tubeLineBase.get(TubeLineRenderOrientation.NORTH_SOUTH).stream().map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, LineTubeRenderer.TEXTURE)).collect(Collectors.toList()));
 		}
 	}
 

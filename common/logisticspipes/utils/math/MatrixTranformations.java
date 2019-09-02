@@ -25,8 +25,7 @@ public final class MatrixTranformations {
 	 * is DOWN then -> NORTH -> WEST Note - To obtain Position, do a mirrorY()
 	 * before rotating
 	 *
-	 * @param targetArray
-	 *            the array that should be rotated
+	 * @param targetArray the array that should be rotated
 	 */
 	public static void rotate(float[][] targetArray) {
 		for (int i = 0; i < 2; i++) {
@@ -38,8 +37,7 @@ public final class MatrixTranformations {
 	}
 
 	/**
-	 * @param targetArray
-	 *            the array that should be transformed
+	 * @param targetArray the array that should be transformed
 	 * @param direction
 	 */
 	public static void transform(float[][] targetArray, EnumFacing direction) {
@@ -55,8 +53,7 @@ public final class MatrixTranformations {
 	/**
 	 * Clones both dimensions of a float[][]
 	 *
-	 * @param source
-	 *            the float[][] to deepClone
+	 * @param source the float[][] to deepClone
 	 */
 	public static float[][] deepClone(float[][] source) {
 		float[][] target = source.clone();

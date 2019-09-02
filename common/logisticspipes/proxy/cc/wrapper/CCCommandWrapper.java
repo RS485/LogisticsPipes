@@ -3,8 +3,11 @@ package logisticspipes.proxy.cc.wrapper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
-
 import javax.annotation.Nonnull;
+
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.ILuaObject;
+import org.luaj.vm2.LuaTable;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
@@ -15,10 +18,6 @@ import logisticspipes.proxy.computers.wrapper.CCWrapperInformation;
 import logisticspipes.proxy.computers.wrapper.ICommandWrapper;
 import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
-
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.ILuaObject;
-import org.luaj.vm2.LuaTable;
 
 public class CCCommandWrapper implements ILuaObject {
 

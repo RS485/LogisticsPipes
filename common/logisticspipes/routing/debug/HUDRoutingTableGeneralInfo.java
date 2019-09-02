@@ -1,5 +1,9 @@
 package logisticspipes.routing.debug;
 
+import net.minecraft.client.Minecraft;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.gui.hud.BasicHUDGui;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -11,10 +15,6 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.debug.ClientViewController.DebugInformation;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
-
-import net.minecraft.client.Minecraft;
-
-import org.lwjgl.opengl.GL11;
 
 public class HUDRoutingTableGeneralInfo extends BasicHUDGui implements IHeadUpDisplayRenderer {
 

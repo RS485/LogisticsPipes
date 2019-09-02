@@ -36,7 +36,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 
 		public EnumFacing getDir(BlockRotation rot) {
 			EnumFacing result = dir;
-			if(result != EnumFacing.DOWN) {
+			if (result != EnumFacing.DOWN) {
 				switch (rot.getInteger()) {
 					case 0:
 						result = result.rotateY();
@@ -83,7 +83,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 	}
 
 	public static void loadModels() {
-		if(!SimpleServiceLocator.cclProxy.isActivated()) return;
+		if (!SimpleServiceLocator.cclProxy.isActivated()) return;
 		try {
 			Map<String, IModel3D> blockPartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/BlockModel_result.obj"), 7, new LPScale(1 / 100f));
 

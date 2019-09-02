@@ -4,11 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
-
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
+
+import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 
 public class PipeInformationManager {
 
@@ -20,7 +19,7 @@ public class PipeInformationManager {
 		}
 		if (tile instanceof IPipeInformationProvider) {
 			return (IPipeInformationProvider) tile;
-		} else if(tile instanceof ISubMultiBlockPipeInformationProvider) {
+		} else if (tile instanceof ISubMultiBlockPipeInformationProvider) {
 			return ((ISubMultiBlockPipeInformationProvider) tile).getMainTile();
 		} else {
 			for (Class<?> type : infoProvider.keySet()) {
@@ -66,7 +65,7 @@ public class PipeInformationManager {
 		}
 		if (tile instanceof IPipeInformationProvider) {
 			return true;
-		} else if(tile instanceof ISubMultiBlockPipeInformationProvider) {
+		} else if (tile instanceof ISubMultiBlockPipeInformationProvider) {
 			return pipeType == ConnectionPipeType.MULTI;
 		} else {
 			for (Class<?> type : infoProvider.keySet()) {

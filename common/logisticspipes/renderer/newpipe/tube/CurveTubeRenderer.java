@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import net.minecraft.util.ResourceLocation;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -25,8 +27,6 @@ import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.util.ResourceLocation;
 
 public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
@@ -90,14 +90,14 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 			if (tube.getOrientation() != null) {
 				objectsToRender.addAll(CurveTubeRenderer.tubeTurnBase.get(tube.getOrientation().getRenderOrientation())
 						.stream()
-						.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, CurveTubeRenderer.TEXTURE))
+						.map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, CurveTubeRenderer.TEXTURE))
 						.collect(Collectors.toList()));
 			}
 		}
-		if(pipe == null) {
+		if (pipe == null) {
 			objectsToRender.addAll(CurveTubeRenderer.tubeTurnBase.get(TurnDirection.NORTH_EAST)
 					.stream()
-					.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, CurveTubeRenderer.TEXTURE))
+					.map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, CurveTubeRenderer.TEXTURE))
 					.collect(Collectors.toList()));
 		}
 	}

@@ -31,7 +31,7 @@ public class BCPipeCapabilityProvider implements IBCPipeCapabilityProvider, IInj
 	@Nullable
 	@Override
 	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-		if(capability == PipeApi.CAP_INJECTABLE) {
+		if (capability == PipeApi.CAP_INJECTABLE) {
 			return (T) this;
 		}
 		return null;
@@ -45,7 +45,7 @@ public class BCPipeCapabilityProvider implements IBCPipeCapabilityProvider, IInj
 	@Nonnull
 	@Override
 	public ItemStack injectItem(@Nonnull ItemStack stack, boolean doAdd, EnumFacing from, EnumDyeColor color, double speed) {
-		if(doAdd) {
+		if (doAdd) {
 			return ItemInsertionHandler.handleItemInsetion(logisticsPipe, from, stack);
 		}
 		return ItemStack.EMPTY;

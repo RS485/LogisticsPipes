@@ -2,6 +2,14 @@ package logisticspipes.proxy.td;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import cofh.thermaldynamics.duct.tiles.TileDuctItem;
 import cofh.thermaldynamics.render.RenderDuct;
 
@@ -13,14 +21,6 @@ import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 import logisticspipes.proxy.td.subproxies.TDPart;
 import logisticspipes.renderer.newpipe.RenderEntry;
-
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ThermalDynamicsProxy implements ITDProxy {
 

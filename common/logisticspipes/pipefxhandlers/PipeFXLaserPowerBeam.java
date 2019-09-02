@@ -2,8 +2,6 @@ package logisticspipes.pipefxhandlers;
 
 import java.util.Random;
 
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -11,17 +9,18 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.lwjgl.opengl.GL11;
+
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @Accessors(chain = true)
 public class PipeFXLaserPowerBeam extends Particle {

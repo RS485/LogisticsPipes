@@ -1,10 +1,10 @@
 package logisticspipes.modplugins.nei;
 
-import logisticspipes.config.Configs;
-
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 import codechicken.nei.handler.NEIClientEventHandler;
+
+import logisticspipes.config.Configs;
 
 public class LoadingHelper {
 

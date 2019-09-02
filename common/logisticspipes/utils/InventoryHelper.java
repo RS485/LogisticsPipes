@@ -1,15 +1,16 @@
 package logisticspipes.utils;
 
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.transactor.ITransactor;
-import logisticspipes.utils.transactor.TransactorSimple;
-
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.transactor.ITransactor;
+import logisticspipes.utils.transactor.TransactorSimple;
+
 public class InventoryHelper {
+
 	//BC getTransactorFor using our getInventory
 	public static ITransactor getTransactorFor(Object object, EnumFacing dir) {
 		if (object instanceof ICapabilityProvider) {
@@ -19,8 +20,8 @@ public class InventoryHelper {
 			}
 		}
 
-		if (object instanceof ICapabilityProvider && ((ICapabilityProvider)object).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir)) {
-			return new TransactorSimple(((ICapabilityProvider)object).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir));
+		if (object instanceof ICapabilityProvider && ((ICapabilityProvider) object).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir)) {
+			return new TransactorSimple(((ICapabilityProvider) object).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir));
 		}
 
 		return null;

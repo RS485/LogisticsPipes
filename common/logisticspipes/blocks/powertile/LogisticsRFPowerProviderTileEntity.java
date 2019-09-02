@@ -3,19 +3,17 @@ package logisticspipes.blocks.powertile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
-
 import net.minecraft.nbt.NBTTagCompound;
-
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyStorage;
 
 public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTileEntity {
 
@@ -140,7 +138,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-		if(capability == CapabilityEnergy.ENERGY) {
+		if (capability == CapabilityEnergy.ENERGY) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
@@ -149,7 +147,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	@Nullable
 	@Override
 	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-		if(capability == CapabilityEnergy.ENERGY) {
+		if (capability == CapabilityEnergy.ENERGY) {
 			return (T) energyInterface;
 		}
 		return super.getCapability(capability, facing);

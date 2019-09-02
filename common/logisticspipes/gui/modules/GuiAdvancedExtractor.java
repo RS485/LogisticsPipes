@@ -1,12 +1,16 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
 package logisticspipes.gui.modules;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.inventory.IInventory;
+
+import org.lwjgl.opengl.GL11;
 
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.PacketHandler;
@@ -16,11 +20,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.inventory.IInventory;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiAdvancedExtractor extends ModuleBaseGui {
 

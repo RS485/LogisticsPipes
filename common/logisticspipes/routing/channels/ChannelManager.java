@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +26,7 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.PlayerIdentifier;
 
 public class ChannelManager implements IChannelManager {
+
 	private static final String DATA_NAME = LPConstants.LP_MOD_ID + "_ChannelManager_SavedData";
 
 	@Data
@@ -45,7 +45,7 @@ public class ChannelManager implements IChannelManager {
 		@Override
 		public void readFromNBT(NBTTagCompound nbt) {
 			channels = new ArrayList<>();
-			for(int i=0; i< nbt.getInteger("dataSize"); i++) {
+			for (int i = 0; i < nbt.getInteger("dataSize"); i++) {
 				channels.add(i, new ChannelInformation(nbt.getCompoundTag("data" + i)));
 			}
 		}
@@ -54,7 +54,7 @@ public class ChannelManager implements IChannelManager {
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setInteger("dataSize", channels.size());
-			for(int i=0; i<channels.size(); i++) {
+			for (int i = 0; i < channels.size(); i++) {
 				ChannelInformation channel = channels.get(i);
 				NBTTagCompound nbt = new NBTTagCompound();
 				channel.writeToNBT(nbt);
@@ -68,7 +68,7 @@ public class ChannelManager implements IChannelManager {
 
 	public ChannelManager(World world) {
 		savedData = (SavedData) world.getMapStorage().getOrLoadData(SavedData.class, DATA_NAME);
-		if(savedData == null) {
+		if (savedData == null) {
 			savedData = new SavedData();
 			world.getMapStorage().setData(DATA_NAME, savedData);
 		}
@@ -80,14 +80,14 @@ public class ChannelManager implements IChannelManager {
 	}
 
 	private boolean isChannelAllowedFor(ChannelInformation channel, EntityPlayer player) {
-		switch(channel.getRights()) {
+		switch (channel.getRights()) {
 			case PUBLIC:
 				return true;
 			case SECURED:
 				UUID secUUID = channel.getResponsibleSecurityID();
 				LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(secUUID);
 				SecuritySettings settings = station.getSecuritySettingsForPlayer(player, false);
-				if(settings != null) {
+				if (settings != null) {
 					return settings.accessRoutingChannels;
 				}
 			case PRIVATE:

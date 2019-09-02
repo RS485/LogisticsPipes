@@ -2,7 +2,6 @@ package logisticspipes.items;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +14,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -63,7 +61,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 			return EnumActionResult.FAIL;
 		}
 
-		if(!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {
+		if (!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {
 			return EnumActionResult.FAIL;
 		}
 

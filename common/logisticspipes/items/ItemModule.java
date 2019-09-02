@@ -1,9 +1,9 @@
 package logisticspipes.items;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;

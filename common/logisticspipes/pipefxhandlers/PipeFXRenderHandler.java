@@ -1,9 +1,9 @@
 package logisticspipes.pipefxhandlers;
 
-import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+
+import logisticspipes.proxy.MainProxy;
 
 public class PipeFXRenderHandler {
 

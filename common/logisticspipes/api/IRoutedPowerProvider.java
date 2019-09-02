@@ -7,7 +7,7 @@ import java.util.List;
  * draw from another sources Implement ILogisticsPowerProvider if you wish to
  * provide power to the LP network. Losses of energy based on distance may be
  * involved.
- * 
+ *
  * @author Andrew
  */
 public interface IRoutedPowerProvider {

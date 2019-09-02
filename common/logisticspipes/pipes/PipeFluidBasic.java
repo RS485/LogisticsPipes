@@ -1,5 +1,13 @@
 package logisticspipes.pipes;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.fluids.FluidTank;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IFluidSink;
@@ -13,15 +21,6 @@ import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
-
-import net.minecraftforge.fluids.FluidTank;
 
 public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 

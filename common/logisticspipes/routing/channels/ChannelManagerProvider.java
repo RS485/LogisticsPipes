@@ -22,9 +22,9 @@ public class ChannelManagerProvider implements IChannelManagerProvider {
 
 	@Override
 	public IChannelManager getChannelManager(World world) {
-		if(worldWeakReference == null || worldWeakReference.get() == null || channelManager == null) {
+		if (worldWeakReference == null || worldWeakReference.get() == null || channelManager == null) {
 			worldWeakReference = new WeakReference<>(world);
-			if(channelManager != null) {
+			if (channelManager != null) {
 				channelManager.markDirty();
 			}
 			channelManager = new ChannelManager(world);
@@ -34,8 +34,8 @@ public class ChannelManagerProvider implements IChannelManagerProvider {
 
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload worldEvent) {
-		if(worldWeakReference != null) {
-			if(worldWeakReference.get() == null || worldWeakReference.get() == worldEvent.getWorld()) {
+		if (worldWeakReference != null) {
+			if (worldWeakReference.get() == null || worldWeakReference.get() == worldEvent.getWorld()) {
 				channelManager = null;
 				worldWeakReference = null;
 			}

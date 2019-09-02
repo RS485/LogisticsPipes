@@ -2,8 +2,10 @@ package logisticspipes.routing.pathfinder.changedetection;
 
 import java.util.ArrayList;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
@@ -15,12 +17,8 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
 import logisticspipes.ticks.QueuedTasks;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class TEControl {
 
@@ -124,7 +122,7 @@ public class TEControl {
 			return;
 		}
 		final TileEntity tile = pos.getTileEntity(world);
-		if(SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
+		if (SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
 			QueuedTasks.queueTask(() -> {
 				for (EnumFacing dir : EnumFacing.VALUES) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
@@ -132,8 +130,8 @@ public class TEControl {
 						continue;
 					}
 					TileEntity nextTile = newPos.getTileEntity(world);
-					if(nextTile instanceof LogisticsTileGenericPipe) {
-						((LogisticsTileGenericPipe)nextTile).scheduleNeighborChange();
+					if (nextTile instanceof LogisticsTileGenericPipe) {
+						((LogisticsTileGenericPipe) nextTile).scheduleNeighborChange();
 					}
 				}
 				return null;

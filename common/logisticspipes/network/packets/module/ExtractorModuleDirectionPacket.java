@@ -8,7 +8,6 @@ import logisticspipes.network.abstractpackets.DirectionModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.proxy.MainProxy;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

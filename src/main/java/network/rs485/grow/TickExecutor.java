@@ -61,9 +61,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({ "unused", "WeakerAccess" })
 @ParametersAreNonnullByDefault
 public class TickExecutor extends AbstractExecutorService implements ScheduledExecutorService {
+
 	public static final long MILLISECONDS_PER_TICK = 50L;
 
 	private final Thread tickingThread;
@@ -324,6 +325,7 @@ public class TickExecutor extends AbstractExecutorService implements ScheduledEx
 	}
 
 	private class TickScheduledTask<V> extends FutureTask<V> implements ScheduledFuture<V> {
+
 		private long createdAt;
 
 		/**

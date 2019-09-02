@@ -9,6 +9,7 @@ import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 
 public class UpgradeSlot extends RestrictedSlot {
+
 	@Getter
 	protected final ISlotUpgradeManager manager;
 	protected final int upgradeSlotId;

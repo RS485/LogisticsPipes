@@ -1,16 +1,11 @@
 package logisticspipes.blocks;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
-import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
-import logisticspipes.interfaces.IGuiTileEntity;
-import logisticspipes.interfaces.IRotationProvider;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import lombok.Getter;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -29,12 +24,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import lombok.Getter;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
+import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
+import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
+import logisticspipes.interfaces.IGuiTileEntity;
+import logisticspipes.interfaces.IRotationProvider;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
 
 public class LogisticsSolidBlock extends Block {
 
@@ -166,10 +167,10 @@ public class LogisticsSolidBlock extends Block {
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer.Builder(this)
-			.add(rotationProperty)
-			.add(active)
-			.add(connectionPropertys.values().toArray(new IProperty[0]))
-			.build();
+				.add(rotationProperty)
+				.add(active)
+				.add(connectionPropertys.values().toArray(new IProperty[0]))
+				.build();
 	}
 
 	@Override
@@ -186,8 +187,8 @@ public class LogisticsSolidBlock extends Block {
 			LogisticsSolidTileEntity ste = (LogisticsSolidTileEntity) tile;
 			int rotation = ste.getRotation();
 			state = state
-				.withProperty(rotationProperty, rotation)
-				.withProperty(active, ste.isActive());
+					.withProperty(rotationProperty, rotation)
+					.withProperty(active, ste.isActive());
 		}
 
 		if (tile != null) {

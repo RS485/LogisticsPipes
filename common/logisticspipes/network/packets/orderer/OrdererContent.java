@@ -1,14 +1,13 @@
 package logisticspipes.network.packets.orderer;
 
-import logisticspipes.gui.orderer.GuiOrderer;
-import logisticspipes.gui.orderer.GuiRequestTable;
-import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-
 import net.minecraft.entity.player.EntityPlayer;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
+import logisticspipes.gui.orderer.GuiOrderer;
+import logisticspipes.gui.orderer.GuiRequestTable;
+import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

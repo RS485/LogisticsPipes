@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

@@ -49,12 +49,12 @@ public class RecipeTransferHandler implements IRecipeTransferHandler {
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(@Nonnull Container container, @Nonnull IRecipeLayout recipeLayout, @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
-		if(container instanceof DummyContainer) {
+		if (container instanceof DummyContainer) {
 			DummyContainer dContainer = (DummyContainer) container;
 
 			LogisticsBaseGuiScreen gui = dContainer.guiHolderForJEI;
 
-			if(gui instanceof GuiLogisticsCraftingTable || gui instanceof GuiRequestTable) {
+			if (gui instanceof GuiLogisticsCraftingTable || gui instanceof GuiRequestTable) {
 
 				TileEntity tile;
 				if (gui instanceof GuiLogisticsCraftingTable) {
@@ -63,11 +63,11 @@ public class RecipeTransferHandler implements IRecipeTransferHandler {
 					tile = ((GuiRequestTable) gui)._table.container;
 				}
 
-				if(tile == null) {
+				if (tile == null) {
 					return recipeTransferHandlerHelper.createInternalError();
 				}
 
-				if(!recipeLayout.getRecipeCategory().getUid().equals(VanillaRecipeCategoryUid.CRAFTING)) {
+				if (!recipeLayout.getRecipeCategory().getUid().equals(VanillaRecipeCategoryUid.CRAFTING)) {
 					return recipeTransferHandlerHelper.createInternalError();
 				}
 
@@ -79,16 +79,16 @@ public class RecipeTransferHandler implements IRecipeTransferHandler {
 				IGuiItemStackGroup guiItemStackGroup = recipeLayout.getItemStacks();
 				Map<Integer, ? extends IGuiIngredient<ItemStack>> guiIngredients = guiItemStackGroup.getGuiIngredients();
 
-				if(doTransfer) {
+				if (doTransfer) {
 					for (Map.Entry<Integer, ? extends IGuiIngredient<ItemStack>> ps : guiIngredients.entrySet()) {
-						if(!ps.getValue().isInput()) continue;
+						if (!ps.getValue().isInput()) continue;
 
 						int slot = ps.getKey() - 1;
 
 						if (slot < 9) {
 							stack[slot] = ps.getValue().getDisplayedIngredient();
 							List<ItemStack> list = new ArrayList<>(ps.getValue().getAllIngredients());
-							if(!list.isEmpty()) {
+							if (!list.isEmpty()) {
 								Iterator<ItemStack> iter = list.iterator();
 								while (iter.hasNext()) {
 									ItemStack wildCardCheckStack = iter.next();
@@ -103,7 +103,7 @@ public class RecipeTransferHandler implements IRecipeTransferHandler {
 								stacks[slot] = list.toArray(new ItemStack[0]);
 								if (stacks[slot].length > 1) {
 									hasCanidates = true;
-								} else if(stacks[slot].length == 1) {
+								} else if (stacks[slot].length == 1) {
 									stack[slot] = stacks[slot][0];
 								}
 							}

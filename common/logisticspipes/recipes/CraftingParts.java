@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class CraftingParts {
+
 	/**
 	 * Iron Chip
 	 * FPGA

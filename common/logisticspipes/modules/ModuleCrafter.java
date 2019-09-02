@@ -148,7 +148,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	private UpgradeSatelliteFromIDs updateSatelliteFromIDs = null;
 
 	public ModuleCrafter() {
-		for(int i=0;i < fuzzyCraftingFlagArray.length;i++) {
+		for (int i = 0; i < fuzzyCraftingFlagArray.length; i++) {
 			fuzzyCraftingFlagArray[i] = new DictResource(null, null);
 		}
 	}
@@ -158,7 +158,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		_invRequester = parent;
 		_world = parent;
 		registerPosition(ModulePositionType.IN_PIPE, 0);
-		for(int i=0;i < fuzzyCraftingFlagArray.length;i++) {
+		for (int i = 0; i < fuzzyCraftingFlagArray.length; i++) {
 			fuzzyCraftingFlagArray[i] = new DictResource(null, null);
 		}
 	}
@@ -230,7 +230,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public void onAllowedRemoval() {}
 
 	private UUID getUUIDForSatelliteName(String name) {
-		for(PipeItemsSatelliteLogistics pipe: PipeItemsSatelliteLogistics.AllSatellites) {
+		for (PipeItemsSatelliteLogistics pipe : PipeItemsSatelliteLogistics.AllSatellites) {
 			if (pipe.getSatellitePipeName().equals(name)) {
 				return pipe.getRouter().getId();
 			}
@@ -239,7 +239,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	private UUID getUUIDForFluidSatelliteName(String name) {
-		for(PipeFluidSatellite pipe: PipeFluidSatellite.AllSatellites) {
+		for (PipeFluidSatellite pipe : PipeFluidSatellite.AllSatellites) {
 			if (pipe.getSatellitePipeName().equals(name)) {
 				return pipe.getRouter().getId();
 			}
@@ -256,7 +256,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				for (int i = 0; i < updateSatelliteFromIDs.advancedSatelliteIdArray.length; i++) {
 					if (updateSatelliteFromIDs.advancedSatelliteIdArray[i] != -1) {
 						UUID uuid = getUUIDForSatelliteName(Integer.toString(updateSatelliteFromIDs.advancedSatelliteIdArray[i]));
-						if(uuid != null) {
+						if (uuid != null) {
 							updateSatelliteFromIDs.advancedSatelliteIdArray[i] = -1;
 							advancedSatelliteUUIDArray[i] = uuid;
 						} else {
@@ -268,12 +268,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					updateSatelliteFromIDs.advancedSatelliteIdArray = null;
 				}
 			}
-			if(updateSatelliteFromIDs.liquidSatelliteIdArray != null) {
+			if (updateSatelliteFromIDs.liquidSatelliteIdArray != null) {
 				boolean canBeRemoved = true;
 				for (int i = 0; i < updateSatelliteFromIDs.liquidSatelliteIdArray.length; i++) {
 					if (updateSatelliteFromIDs.liquidSatelliteIdArray[i] != -1) {
 						UUID uuid = getUUIDForFluidSatelliteName(Integer.toString(updateSatelliteFromIDs.liquidSatelliteIdArray[i]));
-						if(uuid != null) {
+						if (uuid != null) {
 							updateSatelliteFromIDs.liquidSatelliteIdArray[i] = -1;
 							liquidSatelliteUUIDArray[i] = uuid;
 						} else {
@@ -285,16 +285,16 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					updateSatelliteFromIDs.liquidSatelliteIdArray = null;
 				}
 			}
-			if(updateSatelliteFromIDs.liquidSatelliteId != -1) {
+			if (updateSatelliteFromIDs.liquidSatelliteId != -1) {
 				UUID uuid = getUUIDForFluidSatelliteName(Integer.toString(updateSatelliteFromIDs.liquidSatelliteId));
-				if(uuid != null) {
+				if (uuid != null) {
 					updateSatelliteFromIDs.liquidSatelliteId = -1;
 					liquidSatelliteUUID = uuid;
 				}
 			}
-			if(updateSatelliteFromIDs.satelliteId != -1) {
+			if (updateSatelliteFromIDs.satelliteId != -1) {
 				UUID uuid = getUUIDForFluidSatelliteName(Integer.toString(updateSatelliteFromIDs.satelliteId));
-				if(uuid != null) {
+				if (uuid != null) {
 					updateSatelliteFromIDs.satelliteId = -1;
 					satelliteUUID = uuid;
 				}
@@ -400,7 +400,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 		int remaining = 0;
 		for (LogisticsItemOrder extra : _service.getItemOrderManager()) {
-			if(extra.getType() == ResourceType.EXTRA) {
+			if (extra.getType() == ResourceType.EXTRA) {
 				if (extra.getResource().getItem().equals(requestedItem.getAsItem())) {
 					remaining += extra.getResource().stack.getStackSize();
 				}
@@ -410,7 +410,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		if (remaining < 1) {
 			return;
 		}
-		if(this.getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+		if (this.getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
 			DictResource dict = new DictResource(getCraftedItem(), null).loadFromBitSet(outputFuzzyFlags.getBitSet());
 			LogisticsExtraDictPromise promise = new LogisticsExtraDictPromise(dict, Math.min(remaining, tree.getMissingAmount()), this, true);
 			tree.addPromise(promise);
@@ -467,7 +467,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	@Override
 	public void registerExtras(IPromise promise) {
-		if(promise instanceof LogisticsDictPromise) {
+		if (promise instanceof LogisticsDictPromise) {
 			_service.getItemOrderManager().addExtra(((LogisticsDictPromise) promise).getResource());
 			return;
 		} else {
@@ -484,8 +484,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			return null;
 		}
 		IReqCraftingTemplate template = null;
-		if(this.getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
-			if(toCraft instanceof DictResource) {
+		if (this.getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+			if (toCraft instanceof DictResource) {
 				for (ItemIdentifierStack craftable : stack) {
 					DictResource dict = new DictResource(craftable, null);
 					dict.loadFromBitSet(outputFuzzyFlags.getBitSet());
@@ -675,7 +675,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			advancedSatelliteUUIDArray[i] = advancedSatelliteUUIDArrayString.isEmpty() ? null : UUID.fromString(advancedSatelliteUUIDArrayString);
 		}
 
-		if(nbttagcompound.hasKey("fuzzyCraftingFlag0")) {
+		if (nbttagcompound.hasKey("fuzzyCraftingFlag0")) {
 			for (int i = 0; i < 9; i++) {
 				int flags = nbttagcompound.getByte("fuzzyCraftingFlag" + i);
 				DictResource dict = fuzzyCraftingFlagArray[i];
@@ -729,7 +729,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		liquidSatelliteUUID = liquidSatelliteUUIDString.isEmpty() ? null : UUID.fromString(liquidSatelliteUUIDString);
 		cleanupModeIsExclude = nbttagcompound.getBoolean("cleanupModeIsExclude");
 
-		if(nbttagcompound.hasKey("satelliteid")) {
+		if (nbttagcompound.hasKey("satelliteid")) {
 			updateSatelliteFromIDs = new UpgradeSatelliteFromIDs();
 			updateSatelliteFromIDs.satelliteId = nbttagcompound.getInteger("satelliteid");
 			for (int i = 0; i < 9; i++) {
@@ -801,7 +801,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		}
 		int simpleId = SimpleServiceLocator.routerManager.getIDforUUID(id);
 		IRouter router = SimpleServiceLocator.routerManager.getRouter(simpleId);
-		if(router != null) {
+		if (router != null) {
 			CoreRoutedPipe pipe = router.getPipe();
 			if (pipe instanceof PipeItemsSatelliteLogistics) {
 				return ((PipeItemsSatelliteLogistics) pipe).getSatellitePipeName();
@@ -1201,9 +1201,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	private ItemStack extractFromInventory(@Nonnull IInventoryUtil invUtil, IResource wanteditem, int count) {
 		ItemIdentifier itemToExtract = null;
-		if(wanteditem instanceof ItemResource) {
+		if (wanteditem instanceof ItemResource) {
 			itemToExtract = ((ItemResource) wanteditem).getItem();
-		} else if(wanteditem instanceof DictResource) {
+		} else if (wanteditem instanceof DictResource) {
 			int max = Integer.MIN_VALUE;
 			ItemIdentifier toExtract = null;
 			for (Map.Entry<ItemIdentifier, Integer> content : invUtil.getItemsAndCount().entrySet()) {
@@ -1214,7 +1214,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 					}
 				}
 			}
-			if(toExtract == null) {
+			if (toExtract == null) {
 				return null;
 			}
 			itemToExtract = toExtract;
@@ -1293,7 +1293,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				break;
 			}
 			if (retstack == null) {
-				if(!wanteditem.matches(ItemIdentifier.get(stack), wanteditem instanceof ItemResource ? IResource.MatchSettings.WITHOUT_NBT : IResource.MatchSettings.NORMAL)) {
+				if (!wanteditem.matches(ItemIdentifier.get(stack), wanteditem instanceof ItemResource ? IResource.MatchSettings.WITHOUT_NBT : IResource.MatchSettings.NORMAL)) {
 					break;
 				}
 			} else {
@@ -1314,7 +1314,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 				retstack.grow(stack.getCount());
 			}
 			count -= stack.getCount();
-			if(getUpgradeManager().isFuzzyUpgrade()) {
+			if (getUpgradeManager().isFuzzyUpgrade()) {
 				break;
 			}
 		}
@@ -1322,7 +1322,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	protected int neededEnergy() {
-		return (int) (10 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()))	;
+		return (int) (10 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()));
 	}
 
 	protected int itemsToExtract() {
@@ -1440,6 +1440,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	private static class UpgradeSatelliteFromIDs {
+
 		public int satelliteId;
 		public int[] advancedSatelliteIdArray = new int[9];
 		public int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
@@ -1447,9 +1448,14 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public static class ClientSideSatelliteNames {
-		public @Nonnull String satelliteName = "";
-		public @Nonnull String[] advancedSatelliteNameArray = {};
-		public @Nonnull String liquidSatelliteName = "";
-		public @Nonnull String[] liquidSatelliteNameArray = {};
+
+		public @Nonnull
+		String satelliteName = "";
+		public @Nonnull
+		String[] advancedSatelliteNameArray = {};
+		public @Nonnull
+		String liquidSatelliteName = "";
+		public @Nonnull
+		String[] liquidSatelliteNameArray = {};
 	}
 }

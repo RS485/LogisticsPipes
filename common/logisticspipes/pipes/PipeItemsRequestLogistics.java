@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -13,6 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentString;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRequestAPI;
@@ -38,11 +42,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextComponentString;
 
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {

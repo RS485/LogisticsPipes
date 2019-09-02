@@ -1,6 +1,9 @@
 package logisticspipes.blocks;
 
-import logisticspipes.items.LogisticsSolidBlockItem;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -9,9 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Nonnull;
+import logisticspipes.items.LogisticsSolidBlockItem;
 
 /**
  * A dummy block used for backwards compat to before the {@link LogisticsSolidBlock} split.

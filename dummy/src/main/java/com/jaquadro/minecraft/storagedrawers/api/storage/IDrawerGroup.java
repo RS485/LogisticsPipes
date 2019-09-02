@@ -1,23 +1,23 @@
 package com.jaquadro.minecraft.storagedrawers.api.storage;
 
-public interface IDrawerGroup
-{
-    /**
-     * Gets the number of drawers contained within this group.
-     */
-    int getDrawerCount ();
+public interface IDrawerGroup {
 
-    /**
-     * Gets the drawer at the given slot within this group.
-     */
-    IDrawer getDrawer (int slot);
+	/**
+	 * Gets the number of drawers contained within this group.
+	 */
+	int getDrawerCount();
 
-    /**
-     * Gets whether the drawer in the given slot is usable.
-     */
-    boolean isDrawerEnabled (int slot);
+	/**
+	 * Gets the drawer at the given slot within this group.
+	 */
+	IDrawer getDrawer(int slot);
 
-    //IDrawerInventory getDrawerInventory ();
+	/**
+	 * Gets whether the drawer in the given slot is usable.
+	 */
+	boolean isDrawerEnabled(int slot);
 
-    boolean markDirtyIfNeeded ();
+	//IDrawerInventory getDrawerInventory ();
+
+	boolean markDirtyIfNeeded();
 }

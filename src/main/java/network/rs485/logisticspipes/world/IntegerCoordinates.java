@@ -20,8 +20,9 @@
 
 package network.rs485.logisticspipes.world;
 
-import lombok.Data;
 import net.minecraft.util.math.BlockPos;
+
+import lombok.Data;
 
 @Data
 public class IntegerCoordinates implements ICoordinates {

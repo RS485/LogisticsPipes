@@ -2,6 +2,11 @@ package logisticspipes.gui;
 
 import java.util.Arrays;
 
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CraftingCycleRecipe;
@@ -13,11 +18,6 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 
@@ -36,14 +36,14 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
-				if(crafter.isFuzzy()) {
+				if (crafter.isFuzzy()) {
 					dummy.addFuzzyDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18, crafter.fuzzyFlags[y * 3 + x]);
 				} else {
 					dummy.addDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18);
 				}
 			}
 		}
-		if(crafter.isFuzzy()) {
+		if (crafter.isFuzzy()) {
 			dummy.addFuzzyUnmodifiableSlot(0, crafter.resultInv, 125, 28, crafter.outputFuzzyFlags);
 		} else {
 			dummy.addUnmodifiableSlot(0, crafter.resultInv, 125, 28);

@@ -2,15 +2,16 @@ package logisticspipes.items;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+
+import lombok.Getter;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.utils.string.StringUtils;
-import lombok.Getter;
-
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 
 public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem {
 

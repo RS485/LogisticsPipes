@@ -20,7 +20,7 @@ public class InvSysConSetChannelOnPipePacket extends StringCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.PIPE);
-		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
+		if (pipe.pipe instanceof PipeItemsInvSysConnector) {
 			PipeItemsInvSysConnector conPipe = (PipeItemsInvSysConnector) pipe.pipe;
 			conPipe.setChannelFromClient(UUID.fromString(getString()));
 		}

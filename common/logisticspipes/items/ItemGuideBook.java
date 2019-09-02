@@ -10,7 +10,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
-
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.SetCurrentPagePacket;
 import logisticspipes.proxy.MainProxy;

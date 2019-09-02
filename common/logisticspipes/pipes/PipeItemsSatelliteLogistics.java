@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -8,7 +7,19 @@
 
 package logisticspipes.pipes;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDSatellite;
@@ -37,13 +48,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
-import lombok.Getter;
-
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
 	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<>());
@@ -61,7 +65,6 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	@Getter
 	public String satellitePipeName = "";
-
 
 	public PipeItemsSatelliteLogistics(Item item) {
 		super(item);

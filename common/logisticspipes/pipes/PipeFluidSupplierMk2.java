@@ -4,6 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraftforge.fluids.FluidTank;
+
+import lombok.Getter;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
@@ -18,16 +27,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-
 import logisticspipes.utils.item.ItemIdentifierStack;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.fluids.FluidTank;
-
-import lombok.Getter;
 
 public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport {
 

@@ -1,8 +1,8 @@
 package logisticspipes.gui;
 
-import logisticspipes.LPConstants;
-import logisticspipes.items.ItemGuideBook;
-import logisticspipes.utils.GuideBookContents;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -16,9 +16,9 @@ import net.minecraft.util.math.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import logisticspipes.LPConstants;
+import logisticspipes.items.ItemGuideBook;
+import logisticspipes.utils.GuideBookContents;
 
 public class GuiGuideBook extends GuiScreen {
 

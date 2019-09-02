@@ -1,12 +1,12 @@
 package logisticspipes.routing.order;
 
+import lombok.Getter;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import lombok.Getter;
 
 public class LogisticsFluidOrder extends LogisticsOrder {
 

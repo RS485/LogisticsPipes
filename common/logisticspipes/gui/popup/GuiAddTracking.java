@@ -6,6 +6,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.blocks.stats.TrackingTask;
 import logisticspipes.config.Configs;
@@ -16,17 +20,13 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
-import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.InputBar;
+import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 
 public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 

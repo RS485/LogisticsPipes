@@ -35,6 +35,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public interface IMCMPBlockAccess {
+
 	void addBlockState(BlockStateContainer.Builder builder);
 
 	IBlockState getExtendedState(IBlockState state, IBlockAccess worldIn, BlockPos pos);

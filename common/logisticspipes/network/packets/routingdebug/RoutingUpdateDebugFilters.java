@@ -13,11 +13,10 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.debug.ClientViewController;
+import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class RoutingUpdateDebugFilters extends ModernPacket {

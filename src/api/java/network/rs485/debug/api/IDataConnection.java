@@ -38,6 +38,8 @@
 package network.rs485.debug.api;
 
 public interface IDataConnection {
+
 	void passData(byte[] packet);
+
 	void closeCon();
 }

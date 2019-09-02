@@ -6,8 +6,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.annotation.Nonnull;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCraftResult;
+import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextComponentTranslation;
+
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
@@ -41,23 +55,6 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCraftResult;
-import net.minecraft.inventory.SlotCrafting;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.TextComponentTranslation;
-
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 
@@ -377,39 +374,39 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		int[] toUse = new int[9];
 		int[] used = new int[inv.getSizeInventory()];
 		outer:
-			for (int i = 0; i < 9; i++) {
-				ItemStack item = matrix.getStackInSlot(i);
+		for (int i = 0; i < 9; i++) {
+			ItemStack item = matrix.getStackInSlot(i);
+			if (item.isEmpty()) {
+				toUse[i] = -1;
+				continue;
+			}
+			ItemIdentifier ident = ItemIdentifier.get(item);
+			for (int j = 0; j < inv.getSizeInventory(); j++) {
+				item = inv.getStackInSlot(j);
 				if (item.isEmpty()) {
-					toUse[i] = -1;
 					continue;
 				}
-				ItemIdentifier ident = ItemIdentifier.get(item);
-				for (int j = 0; j < inv.getSizeInventory(); j++) {
-					item = inv.getStackInSlot(j);
-					if (item.isEmpty()) {
-						continue;
+				ItemIdentifier withIdent = ItemIdentifier.get(item);
+				if (ident.equalsForCrafting(withIdent)) {
+					if (item.getCount() > used[j]) {
+						used[j]++;
+						toUse[i] = j;
+						continue outer;
 					}
-					ItemIdentifier withIdent = ItemIdentifier.get(item);
-					if (ident.equalsForCrafting(withIdent)) {
+				}
+				if (oreDict) {
+					if (ident.getDictIdentifiers() != null && withIdent.getDictIdentifiers() != null && ident.getDictIdentifiers().canMatch(withIdent.getDictIdentifiers(), true, false)) {
 						if (item.getCount() > used[j]) {
 							used[j]++;
 							toUse[i] = j;
 							continue outer;
 						}
 					}
-					if (oreDict) {
-						if (ident.getDictIdentifiers() != null && withIdent.getDictIdentifiers() != null && ident.getDictIdentifiers().canMatch(withIdent.getDictIdentifiers(), true, false)) {
-							if (item.getCount() > used[j]) {
-								used[j]++;
-								toUse[i] = j;
-								continue outer;
-							}
-						}
-					}
 				}
-				//Not enough material
-				return ItemStack.EMPTY;
 			}
+			//Not enough material
+			return ItemStack.EMPTY;
+		}
 		AutoCraftingInventory crafter = new AutoCraftingInventory(null);//TODO
 		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
@@ -476,7 +473,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	public ItemStack getResultForClick() {
-		if(MainProxy.isServer(getWorld())) {
+		if (MainProxy.isServer(getWorld())) {
 			ItemStack result = getOutput(true);
 			if (result.isEmpty()) {
 				result = getOutput(false);

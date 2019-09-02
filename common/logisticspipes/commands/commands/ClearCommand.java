@@ -1,10 +1,10 @@
 package logisticspipes.commands.commands;
 
-import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.utils.string.ChatColor;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
+
+import logisticspipes.commands.abstracts.ICommandHandler;
+import logisticspipes.utils.string.ChatColor;
 
 public class ClearCommand implements ICommandHandler {
 

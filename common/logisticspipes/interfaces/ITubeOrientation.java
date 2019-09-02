@@ -2,7 +2,6 @@ package logisticspipes.interfaces;
 
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.utils.IPositionRotateble;
-
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface ITubeOrientation {

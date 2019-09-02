@@ -2,14 +2,14 @@ package logisticspipes.proxy.cc.wrapper;
 
 import javax.annotation.Nonnull;
 
-import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
-
 import net.minecraft.util.EnumFacing;
 
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
+
+import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 
 public class LPPeripheralTileSolidWrapper implements IPeripheral {
 

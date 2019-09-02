@@ -12,7 +12,7 @@ public class LPRotation implements I3DOperation {
 	}
 
 	public LPRotation(double d, int i, int j, int k) {
-		ori = SimpleServiceLocator.cclProxy.getRotation(d,  i, j, k);
+		ori = SimpleServiceLocator.cclProxy.getRotation(d, i, j, k);
 	}
 
 	public static I3DOperation sideOrientation(int i, int j) {

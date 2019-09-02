@@ -6,17 +6,17 @@
 
 package logisticspipes.logisticspipes;
 
+import net.minecraft.util.EnumFacing;
+
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 
-import net.minecraft.util.EnumFacing;
-
 /**
  * @author Krapht This class is responsible for resolving where incoming items
- *         should go.
+ * should go.
  */
 public class RouteLayer {
 

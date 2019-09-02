@@ -2,8 +2,15 @@ package logisticspipes.commands;
 
 import java.util.Arrays;
 import java.util.Locale;
-
 import javax.annotation.Nonnull;
+
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
+import net.minecraft.server.MinecraftServer;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.ICommandHandler;
@@ -11,15 +18,6 @@ import logisticspipes.commands.exception.CommandNotFoundException;
 import logisticspipes.commands.exception.LPCommandException;
 import logisticspipes.commands.exception.PermissionDeniedException;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
-
-import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-
 
 public class LogisticsPipesCommand extends CommandBase {
 
@@ -40,12 +38,13 @@ public class LogisticsPipesCommand extends CommandBase {
 	public String getUsage(@Nonnull ICommandSender var1) {
 		return "/" + getName() + " help";
 	}
-/*
-	@Override
-	public List<String> getCommandAliases() {
-		return Arrays.asList(new String[] { "lp", "logipipes" });
-	}
-*/
+
+	/*
+		@Override
+		public List<String> getCommandAliases() {
+			return Arrays.asList(new String[] { "lp", "logipipes" });
+		}
+	*/
 	@Override
 	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, String[] arguments) throws CommandException {
 		if (arguments.length <= 0) {

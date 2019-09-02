@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -47,7 +46,7 @@ public class LogisticsManager implements ILogisticsManager {
 
 	/**
 	 * Method used to check if a given stack has a destination.
-	 * 
+	 *
 	 * @return Triplet of destinationSimpleID, sinkreply, relays; null if
 	 *         nothing found
 	 * @param stack
@@ -95,7 +94,7 @@ public class LogisticsManager implements ILogisticsManager {
 	/**
 	 * Method used to check if a given stack has a passive sink destination at a
 	 * priority.
-	 * 
+	 *
 	 * @return Triplet of destinationSimpleID, sinkreply, relays; null if
 	 *         nothing found
 	 * @param stack
@@ -129,55 +128,55 @@ public class LogisticsManager implements ILogisticsManager {
 		}
 
 		outer:
-			for (ExitRoute candidateRouter : validDestinations) {
-				if (excludeSource) {
-					if (candidateRouter.destination.getId().equals(sourceRouter.getId())) {
-						continue;
-					}
-				}
-				if (jamList.contains(candidateRouter.destination.getSimpleID())) {
-					continue;
-				}
-
-				if (!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-					continue;
-				}
-
-				for (IFilter filter : candidateRouter.filters) {
-					if (filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) {
-						continue outer;
-					}
-				}
-
-				SinkReply reply = LogisticsManager.canSink(candidateRouter.destination, sourceRouter, excludeSource, stack, result.getValue2(), false, allowDefault);
-
-			if (reply == null) {
-					continue;
-				}
-				if (result.getValue1() == null) {
-					result.setValue1(candidateRouter.destination.getSimpleID());
-					result.setValue2(reply);
-					List<IFilter> list = new LinkedList<>();
-					result.setValue3(list);
-					continue;
-				}
-
-				if (reply.fixedPriority.ordinal() > result.getValue2().fixedPriority.ordinal()) {
-					result.setValue1(candidateRouter.destination.getSimpleID());
-					result.setValue2(reply);
-					List<IFilter> list = new LinkedList<>();
-					result.setValue3(list);
-					continue;
-				}
-
-				if (reply.fixedPriority == result.getValue2().fixedPriority && reply.customPriority > result.getValue2().customPriority) {
-					result.setValue1(candidateRouter.destination.getSimpleID());
-					result.setValue2(reply);
-					List<IFilter> list = new LinkedList<>();
-					result.setValue3(list);
+		for (ExitRoute candidateRouter : validDestinations) {
+			if (excludeSource) {
+				if (candidateRouter.destination.getId().equals(sourceRouter.getId())) {
 					continue;
 				}
 			}
+			if (jamList.contains(candidateRouter.destination.getSimpleID())) {
+				continue;
+			}
+
+			if (!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+				continue;
+			}
+
+			for (IFilter filter : candidateRouter.filters) {
+				if (filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) {
+					continue outer;
+				}
+			}
+
+			SinkReply reply = LogisticsManager.canSink(candidateRouter.destination, sourceRouter, excludeSource, stack, result.getValue2(), false, allowDefault);
+
+			if (reply == null) {
+				continue;
+			}
+			if (result.getValue1() == null) {
+				result.setValue1(candidateRouter.destination.getSimpleID());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<>();
+				result.setValue3(list);
+				continue;
+			}
+
+			if (reply.fixedPriority.ordinal() > result.getValue2().fixedPriority.ordinal()) {
+				result.setValue1(candidateRouter.destination.getSimpleID());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<>();
+				result.setValue3(list);
+				continue;
+			}
+
+			if (reply.fixedPriority == result.getValue2().fixedPriority && reply.customPriority > result.getValue2().customPriority) {
+				result.setValue1(candidateRouter.destination.getSimpleID());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<>();
+				result.setValue3(list);
+				continue;
+			}
+		}
 		if (result.getValue1() != null) {
 			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(), false).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
@@ -219,7 +218,7 @@ public class LogisticsManager implements ILogisticsManager {
 	/**
 	 * Will assign a destination for a IRoutedItem based on a best sink reply
 	 * recieved from other pipes.
-	 * 
+	 *
 	 * @param item
 	 *            The item that needs to be routed.
 	 * @param sourceRouterID
@@ -285,7 +284,7 @@ public class LogisticsManager implements ILogisticsManager {
 	/**
 	 * If there is a better router name available, it will return it. Else, it
 	 * will return the UUID as a string.
-	 * 
+	 *
 	 * @param r
 	 *            The IRouter that you want the name for.
 	 * @return String with value of a better name if available, else just the
@@ -335,25 +334,25 @@ public class LogisticsManager implements ILogisticsManager {
 		}
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
 		outer:
-			for (ExitRoute r : validDestinations) {
-				if (r == null) {
-					continue;
-				}
-				if (!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
-					continue;
-				}
-				if (!(r.destination.getPipe() instanceof IProvideItems)) {
-					continue;
-				}
-				for (IFilter filter : r.filters) {
-					if (filter.blockProvider()) {
-						continue outer;
-					}
-				}
-				IProvideItems provider = (IProvideItems) r.destination.getPipe();
-				provider.getAllItems(items.get(r.destination.getSimpleID()), r.filters);
-				used.set(r.destination.getSimpleID(), true);
+		for (ExitRoute r : validDestinations) {
+			if (r == null) {
+				continue;
 			}
+			if (!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+				continue;
+			}
+			if (!(r.destination.getPipe() instanceof IProvideItems)) {
+				continue;
+			}
+			for (IFilter filter : r.filters) {
+				if (filter.blockProvider()) {
+					continue outer;
+				}
+			}
+			IProvideItems provider = (IProvideItems) r.destination.getPipe();
+			provider.getAllItems(items.get(r.destination.getSimpleID()), r.filters);
+			used.set(r.destination.getSimpleID(), true);
+		}
 		//TODO: Fix this doubly nested list
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<>();
 		for (Map<ItemIdentifier, Integer> allItems : items) {
@@ -379,41 +378,41 @@ public class LogisticsManager implements ILogisticsManager {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<>();
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
 		outer:
-			for (ExitRoute r : validDestinations) {
-				if (r == null) {
-					continue;
+		for (ExitRoute r : validDestinations) {
+			if (r == null) {
+				continue;
+			}
+			if (!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+				continue;
+			}
+			if (used.get(r.destination.getSimpleID())) {
+				continue;
+			}
+			if (!(r.destination.getPipe() instanceof ICraftItems)) {
+				continue;
+			}
+			for (IFilter filter : r.filters) {
+				if (filter.blockCrafting()) {
+					continue outer;
 				}
-				if (!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
-					continue;
-				}
-				if (used.get(r.destination.getSimpleID())) {
-					continue;
-				}
-				if (!(r.destination.getPipe() instanceof ICraftItems)) {
-					continue;
-				}
-				for (IFilter filter : r.filters) {
-					if (filter.blockCrafting()) {
-						continue outer;
-					}
-				}
-				ICraftItems crafter = (ICraftItems) r.destination.getPipe();
-				List<ItemIdentifierStack> craftedItems = crafter.getCraftedItems();
-				if (craftedItems != null) {
+			}
+			ICraftItems crafter = (ICraftItems) r.destination.getPipe();
+			List<ItemIdentifierStack> craftedItems = crafter.getCraftedItems();
+			if (craftedItems != null) {
 				outer2:
-						for (ItemIdentifierStack craftedItem : craftedItems) {
-							if (craftedItem != null && !craftableItems.contains(craftedItem.getItem())) {
-								for (IFilter filter : r.filters) {
-									if (filter.isBlocked() == filter.isFilteredItem(craftedItem.getItem())) {
-										continue outer2;
-									}
-								}
-								craftableItems.add(craftedItem.getItem());
+				for (ItemIdentifierStack craftedItem : craftedItems) {
+					if (craftedItem != null && !craftableItems.contains(craftedItem.getItem())) {
+						for (IFilter filter : r.filters) {
+							if (filter.isBlocked() == filter.isFilteredItem(craftedItem.getItem())) {
+								continue outer2;
 							}
 						}
+						craftableItems.add(craftedItem.getItem());
+					}
 				}
-				used.set(r.destination.getSimpleID(), true);
 			}
+			used.set(r.destination.getSimpleID(), true);
+		}
 		return craftableItems;
 	}
 
@@ -426,25 +425,25 @@ public class LogisticsManager implements ILogisticsManager {
 		}
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
 		outer:
-			for (ExitRoute r : validDestinations) {
-				if (r == null) {
-					continue;
-				}
-				if (!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
-					continue;
-				}
-				if (!(r.destination.getPipe() instanceof IProvideItems)) {
-					continue;
-				}
-				for (IFilter filter : r.filters) {
-					if (filter.blockProvider()) {
-						continue outer;
-					}
-				}
-				IProvideItems provider = (IProvideItems) r.destination.getPipe();
-				provider.getAllItems(items.get(r.destination.getSimpleID()), r.filters);
-				used.set(r.destination.getSimpleID(), true);
+		for (ExitRoute r : validDestinations) {
+			if (r == null) {
+				continue;
 			}
+			if (!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+				continue;
+			}
+			if (!(r.destination.getPipe() instanceof IProvideItems)) {
+				continue;
+			}
+			for (IFilter filter : r.filters) {
+				if (filter.blockProvider()) {
+					continue outer;
+				}
+			}
+			IProvideItems provider = (IProvideItems) r.destination.getPipe();
+			provider.getAllItems(items.get(r.destination.getSimpleID()), r.filters);
+			used.set(r.destination.getSimpleID(), true);
+		}
 		// TODO: Fix this doubly nested list
 		int amount = 0;
 		for (Map<ItemIdentifier, Integer> allItems : items) {

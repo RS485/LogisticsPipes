@@ -1,12 +1,11 @@
 package logisticspipes.network.packets.hud;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
-import net.minecraft.entity.player.EntityPlayer;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

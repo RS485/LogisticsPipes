@@ -49,7 +49,7 @@ public class ProvideSatellitePipeListPacket extends ModernPacket {
 		if (Minecraft.getMinecraft().currentScreen instanceof LogisticsBaseGuiScreen) {
 			SubGuiScreen subGUI = ((LogisticsBaseGuiScreen) Minecraft.getMinecraft().currentScreen).getSubGui();
 			if (subGUI instanceof GuiSelectSatellitePopup) {
-				((GuiSelectSatellitePopup)subGUI).handleSatelliteList(list);
+				((GuiSelectSatellitePopup) subGUI).handleSatelliteList(list);
 			}
 		}
 	}

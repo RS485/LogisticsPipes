@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

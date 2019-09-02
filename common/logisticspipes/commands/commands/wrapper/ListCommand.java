@@ -1,13 +1,13 @@
 package logisticspipes.commands.commands.wrapper;
 
+import net.minecraft.command.ICommandSender;
+
 import logisticspipes.asm.wrapper.AbstractWrapper;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.asm.wrapper.WrapperState;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.utils.string.ChatColor;
-
-import net.minecraft.command.ICommandSender;
 
 public class ListCommand implements ICommandHandler {
 

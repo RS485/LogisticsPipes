@@ -1,10 +1,11 @@
 package logisticspipes;
 
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericSubMultiBlock;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class LPBlocks {
 

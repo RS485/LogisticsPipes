@@ -37,6 +37,6 @@
 
 package network.rs485.logisticspipes.config
 
-class PlayerConfiguration: ClientConfiguration() {
+class PlayerConfiguration : ClientConfiguration() {
     var hasCraftedLPItem = false
 }

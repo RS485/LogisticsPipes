@@ -6,10 +6,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Maps;
-import logisticspipes.LPItems;
-import logisticspipes.entity.FakePlayerLP;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -21,6 +17,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.world.WorldEvent;
@@ -32,10 +29,13 @@ import net.minecraftforge.fml.common.network.FMLOutboundHandler.OutboundTarget;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 
+import logisticspipes.LPItems;
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
+import logisticspipes.entity.FakePlayerLP;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.PacketInboundHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -85,7 +85,7 @@ public class MainProxy {
 	}
 
 	public static boolean isClient(IBlockAccess blockAccess) {
-		if(blockAccess instanceof World) {
+		if (blockAccess instanceof World) {
 			World world = (World) blockAccess;
 			try {
 				return world.isRemote;
@@ -107,7 +107,7 @@ public class MainProxy {
 	}
 
 	public static boolean isServer(IBlockAccess blockAccess) {
-		if(blockAccess instanceof World) {
+		if (blockAccess instanceof World) {
 			World world = (World) blockAccess;
 			try {
 				return !world.isRemote;

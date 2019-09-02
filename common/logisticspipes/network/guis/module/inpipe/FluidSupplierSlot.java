@@ -6,9 +6,8 @@ import logisticspipes.gui.modules.GuiFluidSupplier;
 import logisticspipes.modules.ModuleFluidSupplier;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.DummyContainer;
 
 @StaticResolve
 public class FluidSupplierSlot extends ModuleCoordinatesGuiProvider {

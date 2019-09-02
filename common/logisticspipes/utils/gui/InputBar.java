@@ -5,11 +5,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.util.Locale;
 
-import logisticspipes.utils.Color;
-
 import net.minecraft.client.gui.FontRenderer;
 
 import org.lwjgl.input.Keyboard;
+
+import logisticspipes.utils.Color;
 
 public class InputBar {
 

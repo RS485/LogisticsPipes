@@ -49,7 +49,8 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getSingleItem(ItemIdentifier item) {
+	public @Nonnull
+	ItemStack getSingleItem(ItemIdentifier item) {
 		return ItemStack.EMPTY;
 	}
 
@@ -79,13 +80,15 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getStackInSlot(int slot) {
+	public @Nonnull
+	ItemStack getStackInSlot(int slot) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, 0, 64, true);
 	}
 
 	@Override
-	public @Nonnull ItemStack decrStackSize(int slot, int amount) {
+	public @Nonnull
+	ItemStack decrStackSize(int slot, int amount) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, amount, amount, false);
 	}

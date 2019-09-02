@@ -86,9 +86,9 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-@ModDependentInterface(modId = { LPConstants.cofhCoreModID, LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID},
+@ModDependentInterface(modId = { LPConstants.cofhCoreModID, LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID },
 		interfacePath = { "cofh.api.transport.IItemDuct", "li.cil.oc.api.network.ManagedPeripheral",
-		"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", })
+				"li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment", })
 public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		implements ITickable, IOCTile, ILPPipeTile, IPipeInformationProvider, /*IItemDuct,*/ ManagedPeripheral, Environment, SidedEnvironment,
 		ILogicControllerTile {
@@ -223,7 +223,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			blockNeighborChange = false;
 			refreshRenderState = true;
 
-			if(MainProxy.isServer(world)) {
+			if (MainProxy.isServer(world)) {
 				MainProxy.sendPacketToAllWatchingChunk(this, PacketHandler.getPacket(PipeSolidSideCheck.class).setTilePos(this));
 			}
 		}
@@ -300,7 +300,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		SPacketUpdateTileEntity superPacket = super.getUpdatePacket();
-		if(superPacket != null) {
+		if (superPacket != null) {
 			nbt.setTag("LogisticsPipes:SuperUpdatePacket", ReflectionHelper.getPrivateField(SPacketUpdateTileEntity.class, superPacket, "nbt", "field_148860_e"));
 		}
 		try {
@@ -314,7 +314,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		PacketHandler.queueAndRemovePacketFromNBT(packet.getNbtCompound());
-		if(packet.getNbtCompound().hasKey("LogisticsPipes:SuperUpdatePacket")) {
+		if (packet.getNbtCompound().hasKey("LogisticsPipes:SuperUpdatePacket")) {
 			super.onDataPacket(net, new SPacketUpdateTileEntity(getPos(), 0, packet.getNbtCompound().getCompoundTag("LogisticsPipes:SuperUpdatePacket")));
 		}
 	}
@@ -404,7 +404,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		}
 		super.readFromNBT(nbt);
 
-		if(!nbt.hasKey("pipeId") && MainProxy.isClient(world)) return;
+		if (!nbt.hasKey("pipeId") && MainProxy.isClient(world)) return;
 
 		coreState.pipeId = nbt.getInteger("pipeId");
 		pipe = LogisticsBlockGenericPipe.createPipe(Item.getItemById(coreState.pipeId));
@@ -443,7 +443,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		}
 
 		AxisAlignedBB aabb = PIPE_CONN_BB.get(side.getIndex());
-		if(SimpleServiceLocator.mcmpProxy.checkIntersectionWith(this, aabb)) {
+		if (SimpleServiceLocator.mcmpProxy.checkIntersectionWith(this, aabb)) {
 			return false;
 		}
 
@@ -463,10 +463,9 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			}
 
 			AxisAlignedBB aabbB = PIPE_CONN_BB.get(side.getOpposite().getIndex());
-			if(SimpleServiceLocator.mcmpProxy.checkIntersectionWith((LogisticsTileGenericPipe) with, aabbB)) {
+			if (SimpleServiceLocator.mcmpProxy.checkIntersectionWith((LogisticsTileGenericPipe) with, aabbB)) {
 				return false;
 			}
-
 
 		}
 		return pipe.canPipeConnect(with, side);
@@ -613,9 +612,9 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		if (pipe == null) {
 			return false;
 		}
-		if(direction != null) {
+		if (direction != null) {
 			AxisAlignedBB aabb = PIPE_CONN_BB.get(direction.getIndex());
-			if(SimpleServiceLocator.mcmpProxy.checkIntersectionWith(this, aabb)) {
+			if (SimpleServiceLocator.mcmpProxy.checkIntersectionWith(this, aabb)) {
 				return false;
 			}
 		}
@@ -655,7 +654,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	}
 
 	public boolean isPipeConnectedCached(EnumFacing side) {
-		if(MainProxy.isClient(this.world)) {
+		if (MainProxy.isClient(this.world)) {
 			return renderState.pipeConnectionMatrix.isConnected(side);
 		} else {
 			return pipeConnectionsBuffer[side.ordinal()];
@@ -876,14 +875,14 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
 		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && facing != null) {
-			if(((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
+			if (((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing) != null) return true;
 		}
 		if (capability == LogisticsPipes.ITEM_HANDLER_CAPABILITY) {
-			if(facing == null) {
+			if (facing == null) {
 				return false;
 			}
 			TileEntity tile = getTile(facing);
-			if(tile != null) {
+			if (tile != null) {
 				if (pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(tile)) {
 					return true;
 				}
@@ -904,20 +903,20 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	@SuppressWarnings("unchecked")
 	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
 		if (capability == LogisticsPipes.FLUID_HANDLER_CAPABILITY && LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeFluidTransportLogistics && facing != null) {
-			return (T)((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing);
+			return (T) ((PipeFluidTransportLogistics) pipe.transport).getIFluidHandler(facing);
 		}
 		if (capability == LogisticsPipes.ITEM_HANDLER_CAPABILITY) {
-			if(facing == null) {
+			if (facing == null) {
 				return null;
 			}
 			TileEntity tile = getTile(facing);
-			if(tile != null) {
+			if (tile != null) {
 				if (pipeInventoryConnectionChecker.shouldLPProvideInventoryTo(tile)) {
 					return (T) itemInsertionHandlers.get(facing);
 				}
 			}
 		}
-		if(bcCapProvider.hasCapability(capability, facing)) {
+		if (bcCapProvider.hasCapability(capability, facing)) {
 			return bcCapProvider.getCapability(capability, facing);
 		}
 		if (imcmpltgpCompanion.hasCapability(capability, facing)) {
@@ -947,7 +946,6 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	public Block getBlock() {
 		return getBlockType();
 	}
-
 
 	public boolean isUsableByPlayer(EntityPlayer player) {
 		return world.getTileEntity(pos) == this;

@@ -9,6 +9,12 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.fluids.FluidStack;
+
 import logisticspipes.interfaces.ISpecialTankAccessHandler;
 import logisticspipes.interfaces.ISpecialTankUtil;
 import logisticspipes.interfaces.ITankUtil;
@@ -34,12 +40,6 @@ import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Triplet;
-
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.FluidStack;
 
 public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids {
 
@@ -95,11 +95,11 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							if (order.getFluid().equals(fluidStack.getFluid())) {
 								int amount = Math.min(fluidStack.getAmount(), amountToSend.get());
 								FluidIdentifierStack drained = util.drain(amount, false);
-								if (drained != null && drained.getAmount() > 0  && order.getFluid().equals(drained.getFluid())) {
+								if (drained != null && drained.getAmount() > 0 && order.getFluid().equals(drained.getFluid())) {
 									drained = util.drain(amount, true);
 									while (drained.getAmount() < amountToSend.get()) {
 										FluidIdentifierStack addition = util.drain(amountToSend.get() - drained.getAmount(), false);
-										if (addition != null && addition.getAmount() > 0  && order.getFluid().equals(addition.getFluid())) {
+										if (addition != null && addition.getAmount() > 0 && order.getFluid().equals(addition.getFluid())) {
 											addition = util.drain(amountToSend.get() - drained.getAmount(), true);
 											drained.raiseAmount(addition.getAmount());
 										} else {
@@ -177,7 +177,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 		}
 		return result;
 	}
-	
+
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_LIQUID_PROVIDER;
@@ -261,8 +261,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				TileEntity tile = ((ISpecialTankUtil) util).getTileEntity();
 				Map<FluidIdentifier, Long> map = handler.getAvailableLiquid(tile);
 				l1.addAll(map.keySet().stream()
-					.map(FluidIdentifier::getItemIdentifier)
-					.collect(Collectors.toList()));
+						.map(FluidIdentifier::getItemIdentifier)
+						.collect(Collectors.toList()));
 			}
 			if (fallback) {
 				if (util.containsTanks()) {

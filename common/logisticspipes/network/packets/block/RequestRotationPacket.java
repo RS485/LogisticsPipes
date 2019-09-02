@@ -1,13 +1,12 @@
 package logisticspipes.network.packets.block;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.entity.player.EntityPlayer;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

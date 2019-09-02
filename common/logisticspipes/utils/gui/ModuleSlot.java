@@ -2,15 +2,15 @@ package logisticspipes.utils.gui;
 
 import javax.annotation.Nonnull;
 
-import logisticspipes.items.ItemModule;
-import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.pipes.PipeLogisticsChassi;
-
-import lombok.Getter;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+
+import lombok.Getter;
+
+import logisticspipes.items.ItemModule;
+import logisticspipes.logisticspipes.ItemModuleInformationManager;
+import logisticspipes.pipes.PipeLogisticsChassi;
 
 public class ModuleSlot extends RestrictedSlot {
 

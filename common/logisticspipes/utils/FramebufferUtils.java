@@ -12,10 +12,14 @@ import net.minecraft.client.renderer.OpenGlHelper;
 
 public final class FramebufferUtils {
 
-	/** renderbuffer target */
+	/**
+	 * renderbuffer target
+	 */
 	public static final int GL_RENDERBUFFER = 0x8D41;
 
-	/** framebuffer targets */
+	/**
+	 * framebuffer targets
+	 */
 	public static final int GL_FRAMEBUFFER = 0x8D40, GL_READ_FRAMEBUFFER = 0x8CA8, GL_DRAW_FRAMEBUFFER = 0x8CA9;
 
 	private FramebufferUtils() {}

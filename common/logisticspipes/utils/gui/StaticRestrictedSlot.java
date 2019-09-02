@@ -1,10 +1,10 @@
 package logisticspipes.utils.gui;
 
-import logisticspipes.interfaces.ISlotCheck;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+
+import logisticspipes.interfaces.ISlotCheck;
 
 public class StaticRestrictedSlot extends RestrictedSlot {
 

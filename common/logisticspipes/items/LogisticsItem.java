@@ -8,9 +8,9 @@
 
 package logisticspipes.items;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.ILogisticsItem;
-import logisticspipes.utils.string.StringUtils;
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -20,10 +20,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
+import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ILogisticsItem;
+import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsItem extends Item implements ILogisticsItem {
 
@@ -69,7 +68,7 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 	 */
 	@Override
 	@SideOnly(Side.CLIENT)
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (addShiftInfo()) {

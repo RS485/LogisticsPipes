@@ -1,16 +1,16 @@
 package logisticspipes.pipes;
 
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.fluids.FluidStack;
+
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifierStack;
-
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.FluidStack;
 
 public class PipeFluidExtractor extends PipeFluidInsertion {
 

@@ -44,12 +44,12 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 
 		buttonList.add(new SmallGuiButton(4, guiLeft + 58, guiTop + 120, 50, 10, StringUtils.translate(GUI_LANG_KEY + "save")));
 
-		if(this.textInput == null) {
+		if (this.textInput == null) {
 			this.textInput = new InputBar(Minecraft.getMinecraft().fontRenderer, this.getBaseScreen(), guiLeft + 30, guiTop + 32, right - guiLeft - 20, 15);
 		}
 		this.textInput.reposition(guiLeft + 10, guiTop + 34, right - guiLeft - 20, 15);
 
-		((GuiCheckBox)buttonList.get(1)).enabled = responsibleSecurityID != null;
+		((GuiCheckBox) buttonList.get(1)).enabled = responsibleSecurityID != null;
 	}
 
 	@Override
@@ -76,45 +76,45 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 
 	@Override
 	protected void keyTyped(char par1, int par2) {
-		if(!this.textInput.handleKey(par1, par2)) {
+		if (!this.textInput.handleKey(par1, par2)) {
 			super.keyTyped(par1, par2);
 		}
 	}
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		if(!this.textInput.handleClick(mouseX, mouseY, mouseButton)) {
+		if (!this.textInput.handleClick(mouseX, mouseY, mouseButton)) {
 			super.mouseClicked(mouseX, mouseY, mouseButton);
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
-		switch(button.id) {
+		switch (button.id) {
 			case 0:
-				((GuiCheckBox)buttonList.get(0)).setState(true);
-				((GuiCheckBox)buttonList.get(1)).setState(false);
-				((GuiCheckBox)buttonList.get(2)).setState(false);
+				((GuiCheckBox) buttonList.get(0)).setState(true);
+				((GuiCheckBox) buttonList.get(1)).setState(false);
+				((GuiCheckBox) buttonList.get(2)).setState(false);
 				break;
 			case 1:
-				((GuiCheckBox)buttonList.get(0)).setState(false);
-				((GuiCheckBox)buttonList.get(1)).setState(true);
-				((GuiCheckBox)buttonList.get(2)).setState(false);
+				((GuiCheckBox) buttonList.get(0)).setState(false);
+				((GuiCheckBox) buttonList.get(1)).setState(true);
+				((GuiCheckBox) buttonList.get(2)).setState(false);
 				break;
 			case 2:
-				((GuiCheckBox)buttonList.get(0)).setState(false);
-				((GuiCheckBox)buttonList.get(1)).setState(false);
-				((GuiCheckBox)buttonList.get(2)).setState(true);
+				((GuiCheckBox) buttonList.get(0)).setState(false);
+				((GuiCheckBox) buttonList.get(1)).setState(false);
+				((GuiCheckBox) buttonList.get(2)).setState(true);
 				break;
 			case 4:
 				ChannelInformation.AccessRights rights = null;
 				UUID security = null;
-				if(((GuiCheckBox)buttonList.get(0)).getState()) {
+				if (((GuiCheckBox) buttonList.get(0)).getState()) {
 					rights = ChannelInformation.AccessRights.PUBLIC;
-				} else if(((GuiCheckBox)buttonList.get(1)).getState()) {
+				} else if (((GuiCheckBox) buttonList.get(1)).getState()) {
 					rights = ChannelInformation.AccessRights.SECURED;
 					security = responsibleSecurityID;
-				} else if(((GuiCheckBox)buttonList.get(2)).getState()) {
+				} else if (((GuiCheckBox) buttonList.get(2)).getState()) {
 					rights = ChannelInformation.AccessRights.PRIVATE;
 				}
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(AddNewChannelPacket.class).setName(this.textInput.input1 + this.textInput.input2).setRights(rights).setSecurityStationID(security));

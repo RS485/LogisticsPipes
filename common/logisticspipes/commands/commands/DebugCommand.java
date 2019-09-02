@@ -2,6 +2,8 @@ package logisticspipes.commands.commands;
 
 import java.util.Arrays;
 
+import net.minecraft.command.ICommandSender;
+
 import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.SubCommandHandler;
 import logisticspipes.commands.commands.debug.HandCommand;
@@ -9,8 +11,6 @@ import logisticspipes.commands.commands.debug.MeCommand;
 import logisticspipes.commands.commands.debug.PipeCommand;
 import logisticspipes.commands.commands.debug.RoutingTableCommand;
 import logisticspipes.commands.commands.debug.TargetCommand;
-
-import net.minecraft.command.ICommandSender;
 
 public class DebugCommand extends SubCommandHandler {
 

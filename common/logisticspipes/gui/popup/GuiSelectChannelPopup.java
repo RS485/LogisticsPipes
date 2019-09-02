@@ -39,7 +39,7 @@ public class GuiSelectChannelPopup extends GuiManageChannelPopup {
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) { // Select
 			int selected = textList.getSelected();
-			if(selected >= 0) {
+			if (selected >= 0) {
 				handleResult.accept(channelList.get(selected));
 				exitGui();
 			}

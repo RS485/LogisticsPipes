@@ -1,15 +1,14 @@
 package logisticspipes.network.guis.block;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.GuiSecurityStation;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.DummyContainer;
 
 @StaticResolve
 public class SecurityStationGui extends CoordinatesGuiProvider {

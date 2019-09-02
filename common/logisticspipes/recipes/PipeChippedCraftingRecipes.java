@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import logisticspipes.LPItems;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,11 +13,13 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
+import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
 
 public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
-	enum RecipeType{
+
+	enum RecipeType {
 		LEVEL_1,
 		LEVEL_2,
 		LEVEL_3,
@@ -27,7 +28,7 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 	}
 
 	private void registerPipeRecipeCategory(ResourceLocation recipeCategory, Item targetPipe) {
-		if(!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
+		if (!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
 			LogisticsProgramCompilerTileEntity.programByCategory.put(recipeCategory, new HashSet<>());
 		}
 		LogisticsProgramCompilerTileEntity.programByCategory.get(recipeCategory).add(targetPipe.getRegistryName());
@@ -76,7 +77,7 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 				);
 				break;
 		}
-		if(layout != null) {
+		if (layout != null) {
 			final RecipeManager.RecipeLayout fLayout = layout;
 			List<RecipeManager.RecipeIndex> recipeIndexes = Arrays.asList(
 					new RecipeManager.RecipeIndex('a', parts.getChipAdvanced()),

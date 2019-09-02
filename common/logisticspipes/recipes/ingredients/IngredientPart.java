@@ -1,14 +1,17 @@
 package logisticspipes.recipes.ingredients;
 
-import com.google.gson.JsonObject;
-import logisticspipes.recipes.CraftingPartRecipes;
-import logisticspipes.recipes.CraftingParts;
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+
 import net.minecraftforge.common.crafting.IIngredientFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 
-import javax.annotation.Nonnull;
+import com.google.gson.JsonObject;
+
+import logisticspipes.recipes.CraftingPartRecipes;
+import logisticspipes.recipes.CraftingParts;
 
 @SuppressWarnings("unused")
 public class IngredientPart implements IIngredientFactory {

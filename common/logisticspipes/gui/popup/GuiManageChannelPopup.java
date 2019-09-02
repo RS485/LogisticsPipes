@@ -103,7 +103,7 @@ public class GuiManageChannelPopup extends SubGuiScreen implements IGUIChannelIn
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenAddChannelGUIPacket.class).setBlockPos(position));
 		} else if (guibutton.id == 3) { // Edit
 			int selected = textList.getSelected();
-			if(selected >= 0) {
+			if (selected >= 0) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenEditChannelGUIPacket.class).setIdentifier(channelList.get(selected).getChannelIdentifier().toString()).setBlockPos(position));
 			}
 		} else if (guibutton.id == 4) {
@@ -112,7 +112,7 @@ public class GuiManageChannelPopup extends SubGuiScreen implements IGUIChannelIn
 			textList.scrollUp();
 		} else if (guibutton.id == 10) {
 			int selected = textList.getSelected();
-			if(selected >= 0) {
+			if (selected >= 0) {
 				this.setSubGui(new ActionChoisePopup(StringUtils.translate(GUI_LANG_KEY + "deletedialog.title"), StringUtils.translate(GUI_LANG_KEY + "deletedialog.yes"), () ->
 						MainProxy.sendPacketToServer(PacketHandler.getPacket(DeleteChannelPacket.class).setChannelIdentifier(channelList.get(selected).getChannelIdentifier())),
 						StringUtils.translate(GUI_LANG_KEY + "deletedialog.no"), () -> {}));

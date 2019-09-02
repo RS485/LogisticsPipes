@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.items.IItemHandler;
@@ -64,8 +63,7 @@ public class TransactorSimple extends Transactor {
 	/**
 	 * @param slot
 	 * @param stack
-	 * @param injected
-	 *            Amount not to move?
+	 * @param injected Amount not to move?
 	 * @param doAdd
 	 * @return Return the number of items moved.
 	 */

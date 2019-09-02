@@ -1,10 +1,11 @@
 package logisticspipes.recipes;
 
-import logisticspipes.LPItems;
-import net.minecraft.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.item.ItemStack;
+
+import logisticspipes.LPItems;
 
 public abstract class CraftingPartRecipes implements IRecipeProvider {
 

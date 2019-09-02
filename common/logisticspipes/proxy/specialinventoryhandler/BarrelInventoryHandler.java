@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.inventory.IInventory;
@@ -80,7 +79,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	public @Nonnull
+	ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
@@ -133,7 +133,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getSingleItem(ItemIdentifier itemIdent) {
+	public @Nonnull
+	ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
@@ -235,7 +236,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getStackInSlot(int i) {
+	public @Nonnull
+	ItemStack getStackInSlot(int i) {
 		if (i != 0) {
 			return ItemStack.EMPTY;
 		}
@@ -257,7 +259,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack decrStackSize(int i, int j) {
+	public @Nonnull
+	ItemStack decrStackSize(int i, int j) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			int value = (Integer) BarrelInventoryHandler.getItemCount.invoke(_tile, new Object[] {});

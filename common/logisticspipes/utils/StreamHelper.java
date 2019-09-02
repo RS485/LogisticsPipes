@@ -9,11 +9,15 @@ import java.util.stream.Collector;
  * All rights reserved.
  */
 public class StreamHelper {
+
 	public static <T> Collector<T, List<T>, T> singletonCollector() {
 		return Collector.of(
 				ArrayList::new,
 				List::add,
-				(left, right) -> { left.addAll(right); return left; },
+				(left, right) -> {
+					left.addAll(right);
+					return left;
+				},
 				list -> {
 					if (list.size() != 1) {
 						throw new IllegalStateException();

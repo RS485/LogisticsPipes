@@ -11,12 +11,11 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class CraftingModuleInHand extends ModuleInHandGuiProvider {

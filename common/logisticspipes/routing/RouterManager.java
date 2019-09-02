@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -20,6 +19,8 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IChannelConnectionManager;
@@ -28,8 +29,6 @@ import logisticspipes.network.packets.block.SecurityStationAuthorizedList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.channels.ChannelConnection;
-
-import net.minecraft.entity.player.EntityPlayer;
 
 public class RouterManager implements IRouterManager, IChannelConnectionManager, ISecurityStationManager {
 
@@ -139,7 +138,7 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 	/**
 	 * This assumes you know what you are doing. expect exceptions to be thrown
 	 * if you pass the wrong side.
-	 * 
+	 *
 	 * @param id
 	 * @param side
 	 *            false for server, true for client.
@@ -178,7 +177,7 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 		int routerSimpleID = router.getSimpleID();
 		channelConnectedPipes.forEach(con -> con.routers.remove(routerSimpleID));
 		Optional<ChannelConnection> channel = channelConnectedPipes.stream().filter(con -> con.identifier.equals(ident)).findFirst();
-		if(channel.isPresent()) {
+		if (channel.isPresent()) {
 			channel.get().routers.add(routerSimpleID);
 		} else {
 			ChannelConnection newChannel = new ChannelConnection();
@@ -214,7 +213,7 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 				.filter(con -> con.routers.contains(router.getSimpleID()))
 				.findFirst();
 		channel.ifPresent(chan -> chan.routers.remove(router.getSimpleID()));
-		if(channel.filter(chan -> chan.routers.isEmpty()).isPresent()) {
+		if (channel.filter(chan -> chan.routers.isEmpty()).isPresent()) {
 			channelConnectedPipes.remove(channel.get());
 		}
 	}

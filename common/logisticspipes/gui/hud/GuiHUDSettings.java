@@ -2,6 +2,11 @@ package logisticspipes.gui.hud;
 
 import java.io.IOException;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+
+import lombok.SneakyThrows;
+
 import logisticspipes.LPItems;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDConfig;
@@ -12,11 +17,6 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
-
-import lombok.SneakyThrows;
 
 public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 

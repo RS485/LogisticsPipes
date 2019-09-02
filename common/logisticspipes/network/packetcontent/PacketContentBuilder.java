@@ -43,6 +43,7 @@ public class PacketContentBuilder {
 	public IntegerContent addInteger() {
 		return addContent(new IntegerContent());
 	}
+
 	public ItemStackContent addItemStack() {
 		return addContent(new ItemStackContent());
 	}

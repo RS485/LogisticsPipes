@@ -2,12 +2,11 @@ package logisticspipes.config;
 
 import java.io.File;
 
-import logisticspipes.LPConstants;
-
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-
 import net.minecraftforge.fml.common.Loader;
+
+import logisticspipes.LPConstants;
 
 //@formatter:off
 //CHECKSTYLE:OFF

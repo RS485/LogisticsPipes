@@ -1,9 +1,9 @@
 package logisticspipes.utils;
 
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+
 import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 public class OrientationsUtil {

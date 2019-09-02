@@ -1,6 +1,11 @@
 package logisticspipes.blocks.powertile;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+
 import ic2.api.energy.tile.IEnergyEmitter;
+import ic2.api.energy.tile.IEnergySink;
+
 import logisticspipes.LPConstants;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
@@ -8,12 +13,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraft.util.EnumFacing;
-
-import ic2.api.energy.tile.IEnergySink;
 
 @ModDependentInterface(modId = { LPConstants.ic2ModID }, interfacePath = { "ic2.api.energy.tile.IEnergySink" })
 public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IEnergySink {

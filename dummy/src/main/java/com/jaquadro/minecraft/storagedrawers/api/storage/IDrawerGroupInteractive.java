@@ -3,13 +3,13 @@ package com.jaquadro.minecraft.storagedrawers.api.storage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-public interface IDrawerGroupInteractive extends IDrawerGroup
-{
-    ItemStack takeItemsFromSlot (int slot, int count);
+public interface IDrawerGroupInteractive extends IDrawerGroup {
 
-    int putItemsIntoSlot (int slot, ItemStack stack, int count);
+	ItemStack takeItemsFromSlot(int slot, int count);
 
-    int interactPutCurrentItemIntoSlot (int slot, EntityPlayer player);
+	int putItemsIntoSlot(int slot, ItemStack stack, int count);
 
-    int interactPutCurrentInventoryIntoSlot (int slot, EntityPlayer player);
+	int interactPutCurrentItemIntoSlot(int slot, EntityPlayer player);
+
+	int interactPutCurrentInventoryIntoSlot(int slot, EntityPlayer player);
 }

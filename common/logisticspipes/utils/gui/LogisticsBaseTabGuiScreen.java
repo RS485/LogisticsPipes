@@ -68,7 +68,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		if (par3 == 0 && par1 > guiLeft && par1 < guiLeft + 220 && par2 > guiTop && par2 < guiTop + 20) {
 			par1 -= guiLeft + 3;
 			int select = Math.max(0, Math.min(par1 / 25, tabList.size() - 1));
-			if(current_Tab != select) {
+			if (current_Tab != select) {
 				tabList.get(current_Tab).leavingTab();
 				tabList.get(select).enteringTab();
 			}
@@ -112,7 +112,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawSlot(Slot slot) {
-		if(hiddenSlots.contains(slot)) return;
+		if (hiddenSlots.contains(slot)) return;
 		for (int i = 0; i < tabList.size(); i++) {
 			if (tabList.get(i).isSlotForTab(slot)) {
 				if (current_Tab != i || !tabList.get(i).showSlot(slot)) {
@@ -128,7 +128,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		if (!super.isMouseOverSlot(slot, par2, par3)) {
 			return false;
 		}
-		if(hiddenSlots.contains(slot)) return false;
+		if (hiddenSlots.contains(slot)) return false;
 		for (int i = 0; i < tabList.size(); i++) {
 			if (tabList.get(i).isSlotForTab(slot)) {
 				if (current_Tab != i || !tabList.get(i).showSlot(slot)) {

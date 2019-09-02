@@ -1,12 +1,11 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
 
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

@@ -20,6 +20,7 @@ import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
 
 public class GuiSelectSatellitePopup extends SubGuiScreen {
+
 	String GUI_LANG_KEY = "gui.popup.selectsatellite.";
 
 	private final Consumer<UUID> handleResult;
@@ -60,7 +61,7 @@ public class GuiSelectSatellitePopup extends SubGuiScreen {
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, xCenter + 16, bottom - 27, 50, 10, StringUtils.translate(GUI_LANG_KEY + "select")));
 		buttonList.add(new SmallGuiButton(1, xCenter + 16, bottom - 15, 50, 10, StringUtils.translate(GUI_LANG_KEY + "exit")));
-		buttonList.add(new SmallGuiButton(2, xCenter - 66, bottom - 27, 50, 10,  StringUtils.translate(GUI_LANG_KEY + "unset")));
+		buttonList.add(new SmallGuiButton(2, xCenter - 66, bottom - 27, 50, 10, StringUtils.translate(GUI_LANG_KEY + "unset")));
 		buttonList.add(new SmallGuiButton(4, xCenter - 12, bottom - 27, 25, 10, "/\\"));
 		buttonList.add(new SmallGuiButton(5, xCenter - 12, bottom - 15, 25, 10, "\\/"));
 	}
@@ -96,7 +97,7 @@ public class GuiSelectSatellitePopup extends SubGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) { // Select
 			int selected = textList.getSelected();
-			if(selected >= 0) {
+			if (selected >= 0) {
 				handleResult.accept(pipeList.get(selected).getValue2());
 				exitGui();
 			}

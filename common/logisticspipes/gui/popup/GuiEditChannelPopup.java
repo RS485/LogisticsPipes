@@ -14,6 +14,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
 
 public class GuiEditChannelPopup extends GuiAddChannelPopup {
+
 	private static String GUI_LANG_KEY = "gui.popup.editchannel.";
 	private final UUID channelIdentifier;
 	private ChannelInformation toInit;
@@ -29,12 +30,12 @@ public class GuiEditChannelPopup extends GuiAddChannelPopup {
 		super.initGui();
 		buttonList.remove(buttonList.size() - 1);
 		buttonList.add(new SmallGuiButton(5, guiLeft + 58, guiTop + 140, 50, 10, StringUtils.translate(GUI_LANG_KEY + "save")));
-		if(toInit != null) {
+		if (toInit != null) {
 			this.textInput.input1 = toInit.getName();
 			this.textInput.input2 = "";
-			((GuiCheckBox)buttonList.get(0)).setState(toInit.getRights() == ChannelInformation.AccessRights.PUBLIC);
-			((GuiCheckBox)buttonList.get(1)).setState(toInit.getRights() == ChannelInformation.AccessRights.SECURED);
-			((GuiCheckBox)buttonList.get(2)).setState(toInit.getRights() == ChannelInformation.AccessRights.PRIVATE);
+			((GuiCheckBox) buttonList.get(0)).setState(toInit.getRights() == ChannelInformation.AccessRights.PUBLIC);
+			((GuiCheckBox) buttonList.get(1)).setState(toInit.getRights() == ChannelInformation.AccessRights.SECURED);
+			((GuiCheckBox) buttonList.get(2)).setState(toInit.getRights() == ChannelInformation.AccessRights.PRIVATE);
 		}
 	}
 
@@ -53,16 +54,16 @@ public class GuiEditChannelPopup extends GuiAddChannelPopup {
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
 		super.actionPerformed(button);
-		switch(button.id) {
+		switch (button.id) {
 			case 5:
 				ChannelInformation.AccessRights rights = null;
 				UUID security = null;
-				if(((GuiCheckBox)buttonList.get(0)).getState()) {
+				if (((GuiCheckBox) buttonList.get(0)).getState()) {
 					rights = ChannelInformation.AccessRights.PUBLIC;
-				} else if(((GuiCheckBox)buttonList.get(1)).getState()) {
+				} else if (((GuiCheckBox) buttonList.get(1)).getState()) {
 					rights = ChannelInformation.AccessRights.SECURED;
 					security = responsibleSecurityID;
-				} else if(((GuiCheckBox)buttonList.get(2)).getState()) {
+				} else if (((GuiCheckBox) buttonList.get(2)).getState()) {
 					rights = ChannelInformation.AccessRights.PRIVATE;
 				}
 				MainProxy.sendPacketToServer(

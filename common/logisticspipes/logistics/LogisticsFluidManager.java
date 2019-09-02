@@ -7,6 +7,11 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+import net.minecraftforge.fluids.FluidStack;
+
 import logisticspipes.LPItems;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.interfaces.routing.IProvideFluids;
@@ -19,11 +24,6 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraftforge.fluids.FluidStack;
 
 public class LogisticsFluidManager implements ILogisticsFluidManager {
 

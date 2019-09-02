@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -15,10 +15,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
+import network.rs485.logisticspipes.world.CoordinateUtils;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 

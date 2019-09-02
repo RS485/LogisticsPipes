@@ -134,7 +134,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	@Override
 	public void setSneakyDirection(EnumFacing sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
-		if(MainProxy.isServer(this._world.getWorld())) {
+		if (MainProxy.isServer(this._world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
 		}
 	}
@@ -152,7 +152,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	protected int neededEnergy() {
-		return (int) (1 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()))	;
+		return (int) (1 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()));
 	}
 
 	protected int itemsToExtract() {
@@ -262,28 +262,28 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
 		outer:
-			for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
-				if (items.containsKey(currItem.getKey())) {
-					continue; // Already provided by the previous module
-				}
+		for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
+			if (items.containsKey(currItem.getKey())) {
+				continue; // Already provided by the previous module
+			}
 
 			if (!filterAllowsItem(currItem.getKey())) {
-					continue;
-				}
+				continue;
+			}
 
 			for (IFilter filter : filters) {
-					if (filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) {
-						continue outer;
-					}
+				if (filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) {
+					continue outer;
 				}
-
-				int remaining = currItem.getValue() - _service.getItemOrderManager().totalItemsCountInOrders(currItem.getKey());
-				if (remaining < 1) {
-					continue;
-				}
-
-				items.put(currItem.getKey(), remaining);
 			}
+
+			int remaining = currItem.getValue() - _service.getItemOrderManager().totalItemsCountInOrders(currItem.getKey());
+			if (remaining < 1) {
+				continue;
+			}
+
+			items.put(currItem.getKey(), remaining);
+		}
 	}
 
 	// returns -1 on permanently failed, don't try another stack this tick

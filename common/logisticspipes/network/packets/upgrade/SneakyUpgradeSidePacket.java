@@ -11,11 +11,10 @@ import lombok.Setter;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.SlotPacket;
 import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.UpgradeSlot;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class SneakyUpgradeSidePacket extends SlotPacket {

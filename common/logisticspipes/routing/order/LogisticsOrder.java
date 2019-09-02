@@ -48,7 +48,7 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public int getRouterId() {
-		if(getRouter() == null) {
+		if (getRouter() == null) {
 			return -1;
 		}
 		return getRouter().getSimpleID();
@@ -94,7 +94,7 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public ItemIdentifier getTargetType() {
-		if(getRouter() == null || getRouter().getPipe() == null) {
+		if (getRouter() == null || getRouter().getPipe() == null) {
 			return null;
 		}
 		return ItemIdentifier.get(getRouter().getPipe().item, 0, null);
@@ -102,7 +102,7 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 
 	@Override
 	public DoubleCoordinates getTargetPosition() {
-		if(getRouter() == null) {
+		if (getRouter() == null) {
 			return null;
 		}
 		return getRouter().getLPPosition();

@@ -14,9 +14,11 @@ public interface IInventoryUtil {
 
 	Map<ItemIdentifier, Integer> getItemsAndCount();
 
-	@Nonnull ItemStack getSingleItem(ItemIdentifier item);
+	@Nonnull
+	ItemStack getSingleItem(ItemIdentifier item);
 
-	@Nonnull ItemStack getMultipleItems(ItemIdentifier item, int count);
+	@Nonnull
+	ItemStack getMultipleItems(ItemIdentifier item, int count);
 
 	/**
 	 * Checks to see if the item is inside the inventory. Used by the PolymorphicItemSink
@@ -43,7 +45,9 @@ public interface IInventoryUtil {
 	//IInventory adapter
 	int getSizeInventory();
 
-	@Nonnull ItemStack getStackInSlot(int slot);
+	@Nonnull
+	ItemStack getStackInSlot(int slot);
 
-	@Nonnull ItemStack decrStackSize(int slot, int amount);
+	@Nonnull
+	ItemStack decrStackSize(int slot, int amount);
 }

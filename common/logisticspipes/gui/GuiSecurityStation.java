@@ -4,6 +4,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.popup.GuiEditCCAccessTable;
@@ -28,14 +36,6 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-
-import org.lwjgl.input.Keyboard;
 
 public class GuiSecurityStation extends LogisticsBaseGuiScreen implements PlayerListReciver {
 

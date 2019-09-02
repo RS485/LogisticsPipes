@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -8,10 +7,10 @@
 
 package logisticspipes.utils.gui;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -26,7 +25,6 @@ import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.IFuzzySlot;
@@ -88,7 +86,7 @@ public class DummyContainer extends Container {
 
 	/***
 	 * Adds all slots for the player inventory and hotbar
-	 * 
+	 *
 	 * @param xOffset
 	 * @param yOffset
 	 */
@@ -115,7 +113,7 @@ public class DummyContainer extends Container {
 
 	/**
 	 * Add a dummy slot that will not consume players items
-	 * 
+	 *
 	 * @param slotId
 	 *            The slot number in the dummy IInventory this slot should map
 	 * @param xCoord
@@ -233,27 +231,27 @@ public class DummyContainer extends Container {
 		ItemStack out = from.getStack();
 		if (!to.getHasStack() && !ignoreEmpty && to.isItemValid(out)) {
 			boolean remove = true;
-			if(out.getCount() > to.getSlotStackLimit()) {
+			if (out.getCount() > to.getSlotStackLimit()) {
 				out = from.decrStackSize(to.getSlotStackLimit());
 				remove = false;
 			}
 			to.putStack(from.onTake(player, out));
-			if(remove) {
+			if (remove) {
 				from.putStack(ItemStack.EMPTY);
 			}
 			return true;
 		}
-		if(from instanceof ModuleSlot || to instanceof ModuleSlot) {
+		if (from instanceof ModuleSlot || to instanceof ModuleSlot) {
 			return false;
 		}
 		out = from.onTake(player, out);
 		if (to.getHasStack() && to.getStack().isItemEqual(out) && ItemStack.areItemStackTagsEqual(to.getStack(), from.getStack())) {
 			int free = Math.min(to.getSlotStackLimit(), to.getStack().getMaxStackSize()) - to.getStack().getCount();
-			if(free > 0) {
+			if (free > 0) {
 				ItemStack toInsert = from.decrStackSize(free);
 				toInsert = from.onTake(player, toInsert);
 				ItemStack toStack = to.getStack();
-				if(!toInsert.isEmpty() && !toStack.isEmpty()) {
+				if (!toInsert.isEmpty() && !toStack.isEmpty()) {
 					toStack.grow(toInsert.getCount());
 					to.putStack(toStack);
 					return !from.getHasStack();
@@ -446,7 +444,7 @@ public class DummyContainer extends Container {
 				if (itemstack6.isEmpty()) {
 					if (slot4.canTakeStack(player)) {
 						inventoryplayer.setInventorySlotContents(dragType, itemstack10);
-						ReflectionHelper.invokePrivateMethod(Slot.class, slot4, "onSwapCraft", "func_190900_b", new Class[]{int.class}, new Object[] {itemstack10.getCount()});
+						ReflectionHelper.invokePrivateMethod(Slot.class, slot4, "onSwapCraft", "func_190900_b", new Class[] { int.class }, new Object[] { itemstack10.getCount() });
 						slot4.putStack(ItemStack.EMPTY);
 						slot4.onTake(player, itemstack10);
 					}
@@ -533,7 +531,7 @@ public class DummyContainer extends Container {
 	}
 
 	private void handleSwitch(Slot slot2, ItemStack out, ItemStack in, EntityPlayer player) {
-		if(slot2 instanceof ModuleSlot) {
+		if (slot2 instanceof ModuleSlot) {
 			ChassiModule logisticsModule = (ChassiModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
 			int moduleIndex = ((ModuleSlot) slot2).get_moduleIndex();
 			if (out.getItem() instanceof ItemModule) {
@@ -546,7 +544,7 @@ public class DummyContainer extends Container {
 	}
 
 	private boolean areEqualForMerge(ItemStack itemstack3, ItemStack itemstack4, Slot slot) {
-		if(slot instanceof ModuleSlot) {
+		if (slot instanceof ModuleSlot) {
 			return false;
 		}
 		return ItemStack.areItemStackTagsEqual(itemstack3, itemstack4);
@@ -663,12 +661,12 @@ public class DummyContainer extends Container {
 		}
 
 		if (mouseButton >= 1000) {
-			if(mouseButton <= 1001) {
+			if (mouseButton <= 1001) {
 				if (!slot.getStack().isEmpty()) {
 					ItemStack stack = slot.getStack();
-					if(mouseButton == 1000) {
+					if (mouseButton == 1000) {
 						stack.grow(1);
-					} else if(stack.getCount() > 1) {
+					} else if (stack.getCount() > 1) {
 						stack.shrink(1);
 					}
 					stack.setCount(Math.min(slot.getSlotStackLimit(), Math.max(1, stack.getCount())));
@@ -824,17 +822,17 @@ public class DummyContainer extends Container {
 	@SuppressWarnings("unchecked")
 	public void detectAndSendChanges() {
 		for (int i = 0; i < inventorySlots.size(); ++i) {
-			if(inventorySlots.get(i) instanceof IFuzzySlot) {
+			if (inventorySlots.get(i) instanceof IFuzzySlot) {
 				IFuzzySlot fuzzySlot = (IFuzzySlot) inventorySlots.get(i);
 				BitSet set = inventoryFuzzySlotsContent.get(i);
-				if(set == null) {
+				if (set == null) {
 					set = fuzzySlot.getFuzzyFlags().getBitSet();
-					MainProxy.sendToPlayerList(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(set), listeners.stream().filter(o -> o instanceof EntityPlayer).map(o -> (EntityPlayer)o));
+					MainProxy.sendToPlayerList(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(set), listeners.stream().filter(o -> o instanceof EntityPlayer).map(o -> (EntityPlayer) o));
 					inventoryFuzzySlotsContent.set(i, set);
 				} else {
 					BitSet setB = fuzzySlot.getFuzzyFlags().getBitSet();
-					if(!set.equals(setB)) {
-						MainProxy.sendToPlayerList(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(setB), listeners.stream().filter(o -> o instanceof EntityPlayer).map(o -> (EntityPlayer)o));
+					if (!set.equals(setB)) {
+						MainProxy.sendToPlayerList(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(setB), listeners.stream().filter(o -> o instanceof EntityPlayer).map(o -> (EntityPlayer) o));
 						inventoryFuzzySlotsContent.set(i, setB);
 					}
 				}

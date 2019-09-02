@@ -6,7 +6,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-
 public class ItemParts extends LogisticsItem {
 
 	public ItemParts() {

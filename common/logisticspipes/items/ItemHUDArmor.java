@@ -19,7 +19,6 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.ISpecialArmor;
 
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.interfaces.ILogisticsItem;

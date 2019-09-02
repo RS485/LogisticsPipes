@@ -593,7 +593,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float partialTickTime, double distance) {
 		boolean inHand = false;
-		if(pipeTile == null) {
+		if (pipeTile == null) {
 		}
 		if (pipeTile.pipe instanceof PipeBlockRequestTable) {
 			return;
@@ -619,7 +619,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			renderState.forceRenderOldPipe = false;
 			boolean recalculateList = checkAndCalculateRenderCache(pipeTile);
 			renderList(x, y, z, renderState.renderLists, renderState.cachedRenderer, recalculateList);
-			if(recalculateList) {
+			if (recalculateList) {
 				pipeTile.getWorld().markBlockRangeForRenderUpdate(pipeTile.getPos(), pipeTile.getPos());
 			}
 		}
@@ -653,19 +653,19 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		if (renderLists.isEmpty() || !renderLists.values().stream().allMatch(GLRenderList::isFilled) || recalculateList) {
 			Map<ResourceLocation, List<RenderEntry>> sorted = new HashMap<>();
 			for (RenderEntry model : cachedRenderer) {
-				if(!sorted.containsKey(model.getTexture())) {
+				if (!sorted.containsKey(model.getTexture())) {
 					sorted.put(model.getTexture(), new LinkedList<>());
 				}
 				sorted.get(model.getTexture()).add(model);
 			}
 
-			for(Entry<ResourceLocation, List<RenderEntry>> entries: sorted.entrySet()) {
-				if(entries.getKey().equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) continue;
-				if(!renderLists.containsKey(entries.getKey())) {
+			for (Entry<ResourceLocation, List<RenderEntry>> entries : sorted.entrySet()) {
+				if (entries.getKey().equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) continue;
+				if (!renderLists.containsKey(entries.getKey())) {
 					renderLists.put(entries.getKey(), SimpleServiceLocator.renderListHandler.getNewRenderList());
 				}
 				GLRenderList renderList = renderLists.get(entries.getKey());
-				if(renderList.isFilled() && !recalculateList) {
+				if (renderList.isFilled() && !recalculateList) {
 					continue;
 				}
 				renderList.startListCompile();
@@ -673,7 +673,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				SimpleServiceLocator.cclProxy.getRenderState().reset();
 				SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.OLDMODEL_POSITION_TEX_NORMAL);
 
-				for(RenderEntry entry: entries.getValue()) {
+				for (RenderEntry entry : entries.getValue()) {
 					entry.getModel().render(entry.getOperations());
 				}
 
@@ -681,7 +681,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				renderList.stopCompile();
 			}
 		}
-		if(!renderLists.isEmpty()) {
+		if (!renderLists.isEmpty()) {
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);
 			GL11.glEnable(GL11.GL_BLEND);
@@ -748,14 +748,14 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 					}
 					for (IModel3D model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
 						double[] bounds = { Block.FULL_BLOCK_AABB.minY, Block.FULL_BLOCK_AABB.minZ, Block.FULL_BLOCK_AABB.minX, Block.FULL_BLOCK_AABB.maxY, Block.FULL_BLOCK_AABB.maxZ, Block.FULL_BLOCK_AABB.maxX };
-						if(pipeTile.getWorld() != null) { //This can be null in some cases now !!!
+						if (pipeTile.getWorld() != null) { //This can be null in some cases now !!!
 							DoubleCoordinates coords = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
 							Block block = coords.getBlock(pipeTile.getWorld());
 							AxisAlignedBB bb = block.getCollisionBoundingBox(coords.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), coords.getBlockPos());
 							if (bb == null) bb = Block.FULL_BLOCK_AABB;
-							bounds =  new double[]{ bb.minY, bb.minZ, bb.minX, bb.maxY, bb.maxZ, bb.maxX };
-							if(SimpleServiceLocator.enderIOProxy.isItemConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite()) || SimpleServiceLocator.enderIOProxy.isFluidConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite())) {
-								bounds = new double[]{0.0249D, 0.0249D, 0.0249D, 0.9751D, 0.9751D, 0.9751D};
+							bounds = new double[] { bb.minY, bb.minZ, bb.minX, bb.maxY, bb.maxZ, bb.maxX };
+							if (SimpleServiceLocator.enderIOProxy.isItemConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite()) || SimpleServiceLocator.enderIOProxy.isFluidConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite())) {
+								bounds = new double[] { 0.0249D, 0.0249D, 0.0249D, 0.9751D, 0.9751D, 0.9751D };
 							}
 						}
 						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
@@ -935,7 +935,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 					TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(renderState.textureMatrix.getTextureIndex());
 					if (icon != null) {
-						objectsToRender.add(new RenderEntry(model, new LPUVTransformationList(new LPUVScale(12f/16, 12f/16), icon)));
+						objectsToRender.add(new RenderEntry(model, new LPUVTransformationList(new LPUVScale(12f / 16, 12f / 16), icon)));
 					}
 				}
 			}
@@ -944,12 +944,12 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			for (EnumFacing dir : EnumFacing.VALUES) {
 				if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
 					objectsToRender.addAll(LogisticsNewRenderPipe.texturePlate_Inner.get(dir).stream()
-							.map(model -> new RenderEntry(model, new I3DOperation[]{LogisticsNewRenderPipe.glassCenterTexture}))
+							.map(model -> new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.glassCenterTexture }))
 							.collect(Collectors.toList()));
 				} else {
 					if (!renderState.textureMatrix.isRoutedInDir(dir)) {
 						objectsToRender.addAll(LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue1().stream()
-								.map(model -> new RenderEntry(model, new I3DOperation[]{LogisticsNewRenderPipe.basicPipeTexture}))
+								.map(model -> new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }))
 								.collect(Collectors.toList()));
 					}
 				}
@@ -1111,7 +1111,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			int count = connectionAtCorner.getOrDefault(corner, 0);
 			if (count == 0) {
 				objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
-						.map(model -> new RenderEntry(model, new I3DOperation[]{cornerTexture}))
+						.map(model -> new RenderEntry(model, new I3DOperation[] { cornerTexture }))
 						.collect(Collectors.toList()));
 			} else if (count == 1) {
 				for (PipeTurnCorner turn : PipeTurnCorner.values()) {
@@ -1135,7 +1135,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				}
 			} else if (count == 3) {
 				objectsToRender.addAll(LogisticsNewRenderPipe.corners_I3.get(corner).stream()
-						.map(model -> new RenderEntry(model, new I3DOperation[]{cornerTexture}))
+						.map(model -> new RenderEntry(model, new I3DOperation[] { cornerTexture }))
 						.collect(Collectors.toList()));
 			}
 		}
@@ -1155,7 +1155,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			if (texture == null) {
 				throw new NullPointerException();
 			}
-			if(texture.equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) {
+			if (texture.equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) {
 				quads.addAll(model.getModel().renderToQuads(format, model.getOperations()));
 			}
 		}
@@ -1168,7 +1168,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	}
 
 	public static List<RenderEntry> getBasicPipeFrameRenderList() {
-		if(pipeFrameRenderList.isEmpty()) {
+		if (pipeFrameRenderList.isEmpty()) {
 			LogisticsTileGenericPipe pipe = new LogisticsTileGenericPipe();
 			pipe.pipe = new PipeItemsBasicLogistics(null);
 			fillObjectsToRenderList(pipeFrameRenderList, pipe, pipe.renderState);

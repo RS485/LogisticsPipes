@@ -3,7 +3,6 @@ package logisticspipes.pipes.upgrades;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import logisticspipes.LPItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
@@ -14,6 +13,7 @@ import net.minecraft.world.World;
 
 import lombok.Getter;
 
+import logisticspipes.LPItems;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.ISlotUpgradeManager;
@@ -106,8 +106,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 
 	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
 		ItemStack stack = inv.getStackInSlot(slot);
-		if(stack.getItem() instanceof ItemUpgrade) {
-			upgrades[slot] = ((ItemUpgrade)stack.getItem()).getUpgradeForItem(stack, upgrades[slot]);
+		if (stack.getItem() instanceof ItemUpgrade) {
+			upgrades[slot] = ((ItemUpgrade) stack.getItem()).getUpgradeForItem(stack, upgrades[slot]);
 		} else {
 			upgrades[slot] = null;
 		}
@@ -164,14 +164,14 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		guiUpgrades = new boolean[18];
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
-			if(upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == null && !isCombinedSneakyUpgrade) {
+			if (upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == null && !isCombinedSneakyUpgrade) {
 				ItemStack stack = getInv().getStackInSlot(i);
 				sneakyOrientation = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			} else if (upgrade instanceof SpeedUpgrade) {
 				speedUpgradeCount += inv.getStackInSlot(i).getCount();
 			} else if (upgrade instanceof ConnectionUpgradeConfig) {
 				ItemStack stack = getInv().getStackInSlot(i);
-				((ConnectionUpgradeConfig)upgrade).getSides(stack).forEach(disconnectedSides::add);
+				((ConnectionUpgradeConfig) upgrade).getSides(stack).forEach(disconnectedSides::add);
 			} else if (upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;
 			} else if (upgrade instanceof FuzzyUpgrade) {
@@ -211,7 +211,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			} else if (upgrade instanceof ItemStackExtractionUpgrade) {
 				itemStackExtractionUpgrade += inv.getStackInSlot(i).getCount();
 			}
-			if(upgrade instanceof IConfigPipeUpgrade) {
+			if (upgrade instanceof IConfigPipeUpgrade) {
 				guiUpgrades[i] = true;
 			}
 		}
@@ -232,11 +232,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		}
 		for (int i = 0; i < sneakyUpgrades.length; i++) {
 			IPipeUpgrade upgrade = sneakyUpgrades[i];
-			if(upgrade instanceof SneakyUpgradeConfig) {
+			if (upgrade instanceof SneakyUpgradeConfig) {
 				ItemStack stack = getSneakyInv().getStackInSlot(i);
 				combinedSneakyOrientation[i] = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			}
-			if(upgrade instanceof IConfigPipeUpgrade) {
+			if (upgrade instanceof IConfigPipeUpgrade) {
 				guiUpgrades[i + 9] = true;
 			}
 		}
@@ -334,7 +334,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
-			IPipeUpgrade upgrade = ((ItemUpgrade)itemStackInMainHand.getItem()).getUpgradeForItem(itemStackInMainHand, null);
+			IPipeUpgrade upgrade = ((ItemUpgrade) itemStackInMainHand.getItem()).getUpgradeForItem(itemStackInMainHand, null);
 			if (upgrade.isAllowedForPipe(pipe)) {
 				if (isCombinedSneakyUpgrade) {
 					if (upgrade instanceof SneakyUpgradeConfig) {
@@ -369,7 +369,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 				inv.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(inv);
 				return true;
-		} else if (ItemIdentifier.get(item).equals(ItemIdentifier.get(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)))) {
+			} else if (ItemIdentifier.get(item).equals(ItemIdentifier.get(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND)))) {
 				if (item.getCount() < inv.getInventoryStackLimit()) {
 					item.grow(1);
 					entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1);
@@ -492,7 +492,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	public IPipeUpgrade getUpgrade(int i) {
-		if(i < upgrades.length) {
+		if (i < upgrades.length) {
 			return upgrades[i];
 		} else {
 			return sneakyUpgrades[i - upgrades.length];

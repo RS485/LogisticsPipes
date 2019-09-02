@@ -1,12 +1,15 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
 package logisticspipes.request;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -18,10 +21,6 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class DictCraftingTemplate implements IReqCraftingTemplate {
 

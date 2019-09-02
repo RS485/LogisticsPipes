@@ -14,7 +14,7 @@ import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.proxy.td.subproxies.ITDPart;
 
-@ModDependentInterface(modId = { LPConstants.thermalDynamicsModID }, interfacePath = {"cofh.thermaldynamics.duct.tiles.IDuctHolder"})
+@ModDependentInterface(modId = { LPConstants.thermalDynamicsModID }, interfacePath = { "cofh.thermaldynamics.duct.tiles.IDuctHolder" })
 public abstract class LPDuctHolderTileEntity extends LPMicroblockTileEntity implements IDuctHolder {
 
 	public ITDPart tdPart;
@@ -23,7 +23,7 @@ public abstract class LPDuctHolderTileEntity extends LPMicroblockTileEntity impl
 	@Override
 	@ModDependentMethod(modId = LPConstants.thermalDynamicsModID)
 	public <T extends DuctUnit<T, G, C>, G extends MultiBlockGrid<T>, C> T getDuct(DuctToken<T, G, C> ductToken) {
-		return ((IDuctHolder)tdPart.getInternalDuct()).getDuct(ductToken);
+		return ((IDuctHolder) tdPart.getInternalDuct()).getDuct(ductToken);
 	}
 
 	@Override

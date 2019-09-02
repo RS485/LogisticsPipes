@@ -2,12 +2,7 @@ package logisticspipes.items;
 
 import java.util.List;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
-import logisticspipes.interfaces.IItemAdvancedExistance;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -17,6 +12,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
+
+import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExistance {
 

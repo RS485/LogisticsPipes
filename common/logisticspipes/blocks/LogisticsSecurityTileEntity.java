@@ -8,6 +8,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.TextComponentTranslation;
+
 import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
 import logisticspipes.api.IRoutedPowerProvider;
@@ -32,18 +43,6 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextComponentTranslation;
-
-import net.minecraft.util.EnumFacing;
-
 public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "ID Slots", 64);
@@ -56,6 +55,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	public static PlayerCollectionList byPassed = new PlayerCollectionList();
 	public static final SecuritySettings allowAll = new SecuritySettings("");
+
 	static {
 		LogisticsSecurityTileEntity.allowAll.openGui = true;
 		LogisticsSecurityTileEntity.allowAll.openRequest = true;

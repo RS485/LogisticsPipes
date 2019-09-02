@@ -1,5 +1,23 @@
 package logisticspipes.network;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
+
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.PopupGuiProvider;
@@ -9,23 +27,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolverUtil;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import network.rs485.logisticspipes.util.LPDataIOWrapper;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class NewGuiHandler {
 

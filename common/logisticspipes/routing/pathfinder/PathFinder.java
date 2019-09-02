@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -57,7 +56,7 @@ public class PathFinder {
 	 * Recurse through all exists of a pipe to find instances of
 	 * PipeItemsRouting. maxVisited and maxLength are safeguards for recursion
 	 * runaways.
-	 * 
+	 *
 	 * @param startPipe
 	 *            - The TileEntity to start the search from
 	 * @param maxVisited
@@ -267,7 +266,7 @@ public class PathFinder {
 				if (SimpleServiceLocator.connectionManager.hasChannelConnection(startPipe.getRoutingPipe().getRouter())) {
 					List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(startPipe.getRoutingPipe().getRouter());
 					connections.addAll(connectedPipes.stream().map(pipe -> new Quartet<>((TileEntity) pipe.container, direction, ((IChannelRoutingConnection) startPipe.getRoutingPipe()).getConnectionResistance(), true)).collect(Collectors.toList()));
-					if(!connectedPipes.isEmpty()) {
+					if (!connectedPipes.isEmpty()) {
 						continue;
 					}
 				}
@@ -283,7 +282,7 @@ public class PathFinder {
 
 				listTileEntity(tile);
 
-				if(currentPipe.isMultiBlock()) {
+				if (currentPipe.isMultiBlock()) {
 					currentPipe.getPartsOfPipe().forEach(this::listTileEntity);
 				}
 
@@ -331,7 +330,7 @@ public class PathFinder {
 						result = new HashMap<>();
 						DoubleCoordinates pos = new DoubleCoordinates(currentPipe);
 						for (RouteInfo info : list) {
-							if(info.getPipe() == startPipe) continue;
+							if (info.getPipe() == startPipe) continue;
 							if (setVisited.contains(new DoubleCoordinates(info.getPipe()))) {
 								//Don't go where we have been before
 								continue;

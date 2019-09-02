@@ -1,10 +1,10 @@
 package logisticspipes.commands.commands.debug;
 
-import logisticspipes.commands.abstracts.ICommandHandler;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
+
+import logisticspipes.commands.abstracts.ICommandHandler;
 
 public class MeCommand implements ICommandHandler {
 

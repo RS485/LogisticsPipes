@@ -2,17 +2,15 @@ package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.Map;
 import java.util.stream.IntStream;
-
 import javax.annotation.Nonnull;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.transactor.ITransactor;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-
-import net.minecraft.util.EnumFacing;
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 
@@ -29,7 +27,8 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 	}
 
 	@Override
-	public @Nonnull ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	public @Nonnull
+	ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {
 			return ItemStack.EMPTY;
 		}

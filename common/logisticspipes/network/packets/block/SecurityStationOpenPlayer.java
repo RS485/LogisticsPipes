@@ -11,7 +11,6 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

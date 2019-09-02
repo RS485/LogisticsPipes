@@ -12,6 +12,7 @@ import net.minecraftforge.items.IItemHandler;
 import logisticspipes.interfaces.ILPItemAcceptor;
 
 public class ItemInsertionHandler implements IItemHandler {
+
 	public static final List<ILPItemAcceptor> ACCEPTORS = new ArrayList<>();
 
 	private final LogisticsTileGenericPipe pipe;
@@ -36,7 +37,7 @@ public class ItemInsertionHandler implements IItemHandler {
 	@Nonnull
 	@Override
 	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-		if(!simulate) {
+		if (!simulate) {
 			handleItemInsetion(pipe, dir, stack);
 		}
 		return ItemStack.EMPTY;
@@ -54,8 +55,8 @@ public class ItemInsertionHandler implements IItemHandler {
 	}
 
 	public static ItemStack handleItemInsetion(LogisticsTileGenericPipe pipe, EnumFacing from, ItemStack stack) {
-		for(ILPItemAcceptor acceptor : ACCEPTORS) {
-			if(acceptor.accept(pipe, from, stack)) {
+		for (ILPItemAcceptor acceptor : ACCEPTORS) {
+			if (acceptor.accept(pipe, from, stack)) {
 				return ItemStack.EMPTY;
 			}
 		}

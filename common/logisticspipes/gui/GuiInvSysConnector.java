@@ -67,7 +67,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 55, 30, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Save")));
 		buttonList.add(new SmallGuiButton(6, guiLeft + 130, guiTop + 20, 40, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Change")));
 
-		if(this.resistanceCountBar == null) {
+		if (this.resistanceCountBar == null) {
 			this.resistanceCountBar = new InputBar(this.fontRenderer, this, guiLeft + 90, guiTop + 55, 30, 12, false, true, InputBar.Align.CENTER);
 			this.resistanceCountBar.input1 = Integer.toString(pipe.resistance);
 			this.resistanceCountBar.minNumber = 0;
@@ -84,7 +84,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 78, guiLeft + 170, guiTop + 132, Color.GREY);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "ConnectionInformation") + ":", guiLeft + 10, guiTop + 21, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.getCuttedString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Channel") + ": " + (connectedChannel != null ?  connectedChannel.getName() : "UNDEFINED"), 150, this.fontRenderer), guiLeft + 15, guiTop + 38, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.getCuttedString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Channel") + ": " + (connectedChannel != null ? connectedChannel.getName() : "UNDEFINED"), 150, this.fontRenderer), guiLeft + 15, guiTop + 38, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 68, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 69, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 55, 0x404040);
@@ -200,14 +200,14 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 
 	@Override
 	protected void mouseClicked(int x, int y, int k) throws IOException {
-		if(!resistanceCountBar.handleClick(x, y, k)) {
+		if (!resistanceCountBar.handleClick(x, y, k)) {
 			super.mouseClicked(x, y, k);
 		}
 	}
 
 	@Override
 	public void keyTyped(char c, int i) throws IOException {
-		if(!resistanceCountBar.handleKey(c, i)) {
+		if (!resistanceCountBar.handleKey(c, i)) {
 			super.keyTyped(c, i);
 		}
 	}
@@ -224,10 +224,10 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 
 	@Override
 	public void handleChannelInformation(ChannelInformation channel, boolean flag) {
-		if(this.getSubGui() instanceof IGUIChannelInformationReceiver) {
+		if (this.getSubGui() instanceof IGUIChannelInformationReceiver) {
 			((IGUIChannelInformationReceiver) this.getSubGui()).handleChannelInformation(channel, flag);
 		}
-		if(flag) {
+		if (flag) {
 			this.connectedChannel = channel;
 		} else if (this.connectedChannel != null && this.connectedChannel.getChannelIdentifier().equals(channel.getChannelIdentifier())) {
 			this.connectedChannel = channel;

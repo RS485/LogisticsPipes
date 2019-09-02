@@ -1,8 +1,8 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.utils.item.ItemIdentifierInventory;
-
 import net.minecraft.tileentity.TileEntity;
+
+import logisticspipes.utils.item.ItemIdentifierInventory;
 
 public interface ICraftingRecipeProvider {
 

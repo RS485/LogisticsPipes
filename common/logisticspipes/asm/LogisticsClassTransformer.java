@@ -373,6 +373,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS) {
+
 			protected String getCommonSuperClass(final String type1, final String type2) {
 				Class<?> c, d;
 				ClassLoader classLoader = Launch.classLoader; // Change Classloader to the MC one
@@ -525,7 +526,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			mv.visitVarInsn(Opcodes.ASTORE, 2);
 			Label l3 = new Label();
 			mv.visitLabel(l3);
-			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{"java/util/Iterator"}, 0, null);
+			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "java/util/Iterator" }, 0, null);
 			mv.visitVarInsn(Opcodes.ALOAD, 2);
 			mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
 			Label l4 = new Label();
@@ -543,7 +544,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			mv.visitJumpInsn(Opcodes.GOTO, l3);
 			mv.visitLabel(l6);
 			mv.visitLineNumber(16, l6);
-			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{"logisticspipes/asm/addinfo/IAddInfo"}, 0, null);
+			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { "logisticspipes/asm/addinfo/IAddInfo" }, 0, null);
 			mv.visitVarInsn(Opcodes.ALOAD, 3);
 			mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "getClass", "()Ljava/lang/Class;", false);
 			mv.visitVarInsn(Opcodes.ALOAD, 1);
@@ -596,7 +597,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			mv.visitVarInsn(Opcodes.ISTORE, 2);
 			Label l3 = new Label();
 			mv.visitLabel(l3);
-			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{Opcodes.INTEGER}, 0, null);
+			mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] { Opcodes.INTEGER }, 0, null);
 			mv.visitVarInsn(Opcodes.ILOAD, 2);
 			mv.visitVarInsn(Opcodes.ALOAD, 0);
 			mv.visitFieldInsn(Opcodes.GETFIELD, className, "logisticsPipesAdditionalInformation", "Ljava/util/ArrayList;");

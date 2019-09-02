@@ -121,13 +121,13 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 					zTwo += 2;
 				}
 				AxisAlignedBB box = SCurveTubeRenderer.getObjectBoundsAt(new AxisAlignedBB(Math.min(xOne, xTwo), Math.min(yOne, yTwo), Math.min(zOne, zTwo), Math.max(xOne, xTwo), Math.max(yOne, yTwo),
-								Math.max(zOne, zTwo)).offset(-x, -y, -z), orientation);
+						Math.max(zOne, zTwo)).offset(-x, -y, -z), orientation);
 				if (box != null) {
 					LPPositionSet<DoubleCoordinates> lpBox = new LPPositionSet<>(DoubleCoordinates.class);
 					lpBox.addFrom(box);
 					DoubleCoordinates center = lpBox.getCenter();
 					box = new AxisAlignedBB(center.getXCoord() - 0.3D, center.getYCoord() - 0.3D, center.getZCoord() - 0.3D, center.getXCoord() + 0.3D,
-									center.getYCoord() + 0.3D, center.getZCoord() + 0.3D);
+							center.getYCoord() + 0.3D, center.getZCoord() + 0.3D);
 					AxisAlignedBB cBox = getCompleteBox();
 					double minX = Math.max(box.minX, cBox.minX);
 					double minY = Math.max(box.minY, cBox.minY);

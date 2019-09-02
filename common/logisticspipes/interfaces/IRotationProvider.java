@@ -8,7 +8,7 @@ public interface IRotationProvider {
 	int getRotation();
 
 	default EnumFacing getFacing() {
-		switch(getRotation()) {
+		switch (getRotation()) {
 			case 0:
 				return EnumFacing.WEST;
 			case 1:
@@ -25,7 +25,7 @@ public interface IRotationProvider {
 	void setRotation(int rotation);
 
 	default void setFacing(EnumFacing facing) {
-		switch(facing) {
+		switch (facing) {
 			case NORTH:
 				setRotation(3);
 				break;

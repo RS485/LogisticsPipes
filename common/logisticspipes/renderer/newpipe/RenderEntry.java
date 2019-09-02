@@ -1,11 +1,11 @@
 package logisticspipes.renderer.newpipe;
 
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-
 import net.minecraft.util.ResourceLocation;
 
 import lombok.Data;
+
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
 
 @Data
 public class RenderEntry {

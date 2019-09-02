@@ -1,6 +1,7 @@
 package logisticspipes.interfaces;
 
 import net.minecraft.item.Item;
+
 import org.apache.commons.lang3.NotImplementedException;
 
 public interface ILogisticsItem {

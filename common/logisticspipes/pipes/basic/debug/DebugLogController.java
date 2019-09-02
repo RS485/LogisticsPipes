@@ -3,6 +3,8 @@ package logisticspipes.pipes.basic.debug;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.debug.SendNewLogLine;
 import logisticspipes.network.packets.debug.SendNewLogWindow;
@@ -10,8 +12,6 @@ import logisticspipes.network.packets.debug.UpdateStatusEntries;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.PlayerCollectionList;
-
-import net.minecraft.entity.player.EntityPlayer;
 
 public class DebugLogController {
 

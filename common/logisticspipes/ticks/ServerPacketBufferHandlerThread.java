@@ -254,7 +254,7 @@ public class ServerPacketBufferHandlerThread {
 					EntityPlayer player = null;
 					synchronized (queue) {
 						if (queue.size() > 0) {
-							for (Iterator<Entry<EntityPlayer, LinkedList<byte[]>>> it = queue.entrySet().iterator(); it.hasNext();) {
+							for (Iterator<Entry<EntityPlayer, LinkedList<byte[]>>> it = queue.entrySet().iterator(); it.hasNext(); ) {
 								Entry<EntityPlayer, LinkedList<byte[]>> lPlayer = it.next();
 								if (lPlayer.getValue().size() > 0) {
 									flag = true;
@@ -304,7 +304,7 @@ public class ServerPacketBufferHandlerThread {
 						}
 					}
 				}
-				for (Iterator<byte[]> it = ByteBuffer.values().iterator(); it.hasNext();) {
+				for (Iterator<byte[]> it = ByteBuffer.values().iterator(); it.hasNext(); ) {
 					byte[] ByteBufferForPlayer = it.next();
 					if (ByteBufferForPlayer.length == 0) {
 						it.remove();

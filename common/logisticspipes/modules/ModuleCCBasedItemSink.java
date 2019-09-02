@@ -3,6 +3,8 @@ package logisticspipes.modules;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -11,8 +13,6 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
 

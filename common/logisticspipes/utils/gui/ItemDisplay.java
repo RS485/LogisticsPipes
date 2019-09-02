@@ -8,15 +8,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.config.Configs;
-import logisticspipes.interfaces.ISpecialItemRenderer;
-import logisticspipes.utils.Color;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.item.ItemStackRenderer;
-import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-import logisticspipes.utils.tuples.Pair;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -32,6 +23,15 @@ import lombok.Getter;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.config.Configs;
+import logisticspipes.interfaces.ISpecialItemRenderer;
+import logisticspipes.utils.Color;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStackRenderer;
+import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+import logisticspipes.utils.tuples.Pair;
 
 public class ItemDisplay {
 
@@ -306,7 +306,7 @@ public class ItemDisplay {
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
 					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARKER_GREY);
 
-					if(itemIdentifierStack.getStackSize() > 0) {
+					if (itemIdentifierStack.getStackSize() > 0) {
 						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.unsafeMakeNormalStack() };
 					} else {
 						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.getItem().unsafeMakeNormalStack(1) };
@@ -370,7 +370,7 @@ public class ItemDisplay {
 					prevPage();
 				}
 			}
-		} else if(!requestCountBar.isFocused()) {
+		} else if (!requestCountBar.isFocused()) {
 			int requestCount = 1;
 			try {
 				requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
@@ -531,7 +531,7 @@ public class ItemDisplay {
 	}
 
 	public boolean handleClick(int x, int y, int k) {
-		if(requestCountBar.handleClick(x, y, k)) {
+		if (requestCountBar.handleClick(x, y, k)) {
 			return true;
 		}
 		x -= left;
@@ -550,7 +550,7 @@ public class ItemDisplay {
 	}
 
 	public boolean keyTyped(char c, int i) {
-		if(!requestCountBar.handleKey(c, i)) {
+		if (!requestCountBar.handleKey(c, i)) {
 			if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
 				setMaxAmount();
 				return true;

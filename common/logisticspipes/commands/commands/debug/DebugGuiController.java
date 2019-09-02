@@ -21,8 +21,8 @@ import logisticspipes.network.packets.debuggui.DebugPanelOpen;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.debug.api.IDebugGuiEntry;
 import network.rs485.debug.api.IDataConnection;
+import network.rs485.debug.api.IDebugGuiEntry;
 import network.rs485.debug.api.IObjectIdentification;
 
 public class DebugGuiController {
@@ -44,7 +44,7 @@ public class DebugGuiController {
 	}
 
 	public void execClient() {
-		if(clientController != null) {
+		if (clientController != null) {
 			clientController.exec();
 		}
 	}
@@ -64,7 +64,7 @@ public class DebugGuiController {
 			return;
 		}
 		IDebugGuiEntry entry = serverDebugger.get(player);
-		if(entry == null) {
+		if (entry == null) {
 			try {
 				entry = IDebugGuiEntry.create();
 				serverDebugger.put(player, entry);
@@ -73,7 +73,7 @@ public class DebugGuiController {
 				return;
 			}
 		}
-		if(entry == null) {
+		if (entry == null) {
 			System.out.println("DebugGui could not be loaded");
 			return;
 		}
@@ -81,13 +81,13 @@ public class DebugGuiController {
 		synchronized (serverList) {
 			int identification = serverList.size();
 			IDataConnection conIn = new DataConnectionServer(identification, player);
-			while(serverList.size() <= identification) serverList.add(null);
+			while (serverList.size() <= identification) serverList.add(null);
 			serverList.set(identification, entry.startServerDebugging(object, conIn, new ObjectIdentification()));
 		}
 	}
 
 	public void createNewDebugGui(String name, int identification) {
-		if(clientController == null) {
+		if (clientController == null) {
 			try {
 				clientController = IDebugGuiEntry.create();
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
@@ -96,16 +96,16 @@ public class DebugGuiController {
 			}
 		}
 		synchronized (clientList) {
-			while(clientList.size() <= identification) clientList.add(null);
+			while (clientList.size() <= identification) clientList.add(null);
 			clientList.set(identification, clientController.startClientDebugging(name, new DataConnectionClient(identification)));
 		}
 	}
 
 	public void handleDataPacket(byte[] payload, int identifier, EntityPlayer player) {
-		if(MainProxy.isServer(player.getEntityWorld())) {
+		if (MainProxy.isServer(player.getEntityWorld())) {
 			synchronized (serverList) {
 				IDataConnection connection = serverList.get(identifier);
-				if(connection != null) {
+				if (connection != null) {
 					connection.passData(payload);
 				}
 			}
@@ -114,11 +114,11 @@ public class DebugGuiController {
 				Future<IDataConnection> connectionFuture;
 				try {
 					connectionFuture = clientList.get(identifier);
-				} catch(IndexOutOfBoundsException e) {
+				} catch (IndexOutOfBoundsException e) {
 					System.out.println(clientList);
 					throw e;
 				}
-				if(connectionFuture == null || !connectionFuture.isDone()) {
+				if (connectionFuture == null || !connectionFuture.isDone()) {
 					throw new DelayPacketException();
 				}
 				IDataConnection connection = null;
@@ -127,7 +127,7 @@ public class DebugGuiController {
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
-				if(connection != null) {
+				if (connection != null) {
 					connection.passData(payload);
 				} else {
 					throw new DelayPacketException();
@@ -170,6 +170,7 @@ public class DebugGuiController {
 	}
 
 	private static class ObjectIdentification implements IObjectIdentification {
+
 		@Override
 		public boolean toStringObject(Object o) {
 			return o.getClass() == EnumFacing.class || o.getClass() == ItemIdentifier.class || o.getClass() == ItemIdentifierStack.class;
@@ -177,10 +178,10 @@ public class DebugGuiController {
 
 		@Override
 		public String handleObject(Object o) {
-			if(o instanceof World) {
-				return ((World)o).getWorldInfo().getWorldName();
+			if (o instanceof World) {
+				return ((World) o).getWorldInfo().getWorldName();
 			}
-			if(o != null && o.getClass().isArray() && Array.getLength(o) > 100) {
+			if (o != null && o.getClass().isArray() && Array.getLength(o) > 100) {
 				return "(Too big)";
 			}
 			return null;

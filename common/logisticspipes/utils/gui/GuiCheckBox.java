@@ -36,10 +36,10 @@ public class GuiCheckBox extends GuiButton {
 			BufferBuilder vertexbuffer = tessellator.getBuffer();
 			vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
-			vertexbuffer.pos(x, y + height, zLevel)				.tex(0, 1).endVertex();
-			vertexbuffer.pos(x + width, y + height, zLevel)	.tex(1, 1).endVertex();
-			vertexbuffer.pos(x + width, 	y, zLevel)				.tex(1, 0).endVertex();
-			vertexbuffer.pos(x, y, zLevel)							.tex(0, 0).endVertex();
+			vertexbuffer.pos(x, y + height, zLevel).tex(0, 1).endVertex();
+			vertexbuffer.pos(x + width, y + height, zLevel).tex(1, 1).endVertex();
+			vertexbuffer.pos(x + width, y, zLevel).tex(1, 0).endVertex();
+			vertexbuffer.pos(x, y, zLevel).tex(0, 0).endVertex();
 
 			tessellator.draw();
 

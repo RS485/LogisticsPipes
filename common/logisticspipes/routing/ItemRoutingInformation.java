@@ -123,7 +123,7 @@ public class ItemRoutingInformation {
 	}
 
 	public static ItemRoutingInformation restoreFromNBT(NBTTagCompound nbtTagCompound) {
-		if(nbtTagCompound.hasKey("StoreUUID")) {
+		if (nbtTagCompound.hasKey("StoreUUID")) {
 			UUID uuid = UUID.fromString(nbtTagCompound.getString("StoreUUID"));
 			if (storeMap.containsKey(uuid)) {
 				ItemRoutingInformation result = storeMap.get(uuid);

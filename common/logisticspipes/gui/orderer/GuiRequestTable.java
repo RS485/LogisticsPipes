@@ -81,6 +81,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	private IChainAddList<GuiButton> moveWhileSmall = new ChainAddArrayList<>();
 	private IChainAddList<GuiButton> hideWhileSmall = new ChainAddArrayList<>();
 	private GuiButton hideShowButton;
+
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
 		super(410, 240, 0, 0);
 		_table = table;
@@ -172,12 +173,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			showRequest = false;
 			xSize = startXSize - 210;
 			guiLeft = startLeft + 105;
-			for (GuiButton button:moveWhileSmall) {
+			for (GuiButton button : moveWhileSmall) {
 				button.x += 105;
 			}
 			hideShowButton.x += 90;
 			hideShowButton.displayString = "Show";
-			for (GuiButton button:hideWhileSmall) {
+			for (GuiButton button : hideWhileSmall) {
 				button.visible = false;
 			}
 			Macrobutton.visible = false;
@@ -265,7 +266,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						ItemStack stack;
 						IResource resource = entry.getValue().getValue1();
 						String s;
-						if(resource != null) {
+						if (resource != null) {
 							stack = resource.getDisplayItem().makeNormalStack();
 							itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 							itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, stack, left + 5, top + 5, "");
@@ -382,8 +383,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								list.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 								list.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order
 										.getRouterId());
-								GuiGraphics.displayItemToolTip(new Object[]{xPos - 10, yPos, order
-										.getAsDisplayItem().makeNormalStack(), true, list}, zLevel, guiLeft, guiTop, false);
+								GuiGraphics.displayItemToolTip(new Object[] { xPos - 10, yPos, order
+										.getAsDisplayItem().makeNormalStack(), true, list }, zLevel, guiLeft, guiTop, false);
 							});
 						} else if (entry.getValue() != null && entry.getValue().getValue1() != null && entry.getValue().getValue1().getDisplayItem() != null) {
 							List<String> list = new ArrayList<>();
@@ -478,20 +479,20 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			if (showRequest) {
 				xSize = startXSize;
 				guiLeft = startLeft;
-				for (GuiButton button:moveWhileSmall) {
+				for (GuiButton button : moveWhileSmall) {
 					button.x -= 105;
 				}
 				hideShowButton.x -= 90;
 			} else {
 				xSize = startXSize - 210;
 				guiLeft = startLeft + 105;
-				for (GuiButton button:moveWhileSmall) {
+				for (GuiButton button : moveWhileSmall) {
 					button.x += 105;
 				}
 				hideShowButton.x += 90;
 			}
 			hideShowButton.displayString = showRequest ? "Hide" : "Show";
-			for (GuiButton button:hideWhileSmall) {
+			for (GuiButton button : hideWhileSmall) {
 				button.visible = showRequest;
 			}
 			Macrobutton.visible = showRequest;
@@ -506,31 +507,31 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			itemDisplay.cycle();
 		} else if (guibutton.id == 21 || guibutton.id == 22) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(guibutton.id == 22).setTilePos(_table.container));
-		} else if(guibutton.id == 30) {
+		} else if (guibutton.id == 30) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ClearCraftingGridPacket.class).setTilePos(_table.container));
 			_table.cacheRecipe();
-		} else if(guibutton.id == 31) {
+		} else if (guibutton.id == 31) {
 			ArrayList<ItemIdentifierStack> list = new ArrayList<>(9);
 			list.addAll(_table.matrix.getItemsAndCount().entrySet().stream()
 					.map(e -> e.getKey().makeStack(e.getValue())).collect(Collectors.toList()));
-			for(Pair<ItemStack, Integer> entry:_table.inv) {
-				if(entry.getValue1() == null) continue;
+			for (Pair<ItemStack, Integer> entry : _table.inv) {
+				if (entry.getValue1() == null) continue;
 				int size = entry.getValue1().getCount();
 				ItemIdentifier ident = ItemIdentifier.get(entry.getValue1());
-				for(ItemIdentifierStack stack:list) {
-					if(!stack.getItem().equals(ident)) continue;
+				for (ItemIdentifierStack stack : list) {
+					if (!stack.getItem().equals(ident)) continue;
 					int toUse = Math.min(size, stack.getStackSize());
 					stack.lowerStackSize(toUse);
 					size -= toUse;
 				}
 			}
 			Iterator<ItemIdentifierStack> iter = list.iterator();
-			while(iter.hasNext()) {
-				if(iter.next().getStackSize() <= 0) {
+			while (iter.hasNext()) {
+				if (iter.next().getStackSize() <= 0) {
 					iter.remove();
 				}
 			}
-			if(!list.isEmpty()) {
+			if (!list.isEmpty()) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
 				refreshItems();
 			}

@@ -6,7 +6,6 @@ import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.abstractpackets.Integer2ModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

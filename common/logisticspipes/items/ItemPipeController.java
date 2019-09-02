@@ -2,10 +2,6 @@ package logisticspipes.items;
 
 import javax.annotation.Nonnull;
 
-import logisticspipes.network.NewGuiHandler;
-import logisticspipes.network.guis.LogisticsPlayerSettingsGuiProvider;
-import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -15,6 +11,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import logisticspipes.network.NewGuiHandler;
+import logisticspipes.network.guis.LogisticsPlayerSettingsGuiProvider;
+import logisticspipes.proxy.MainProxy;
 
 public class ItemPipeController extends LogisticsItem {
 

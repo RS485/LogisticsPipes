@@ -1,15 +1,15 @@
 package logisticspipes.proxy.opencomputers;
 
-import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.interfaces.IOpenComputersProxy;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.Visibility;
+
+import logisticspipes.blocks.LogisticsSolidTileEntity;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.interfaces.IOpenComputersProxy;
 
 public class OpenComputersProxy implements IOpenComputersProxy {
 

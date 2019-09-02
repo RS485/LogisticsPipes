@@ -8,6 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -25,21 +34,9 @@ import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.SlidingWindowBitSet;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
+import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
-
-import lombok.Getter;
-import lombok.Setter;
 
 public abstract class LPTravelingItem {
 
@@ -226,12 +223,12 @@ public abstract class LPTravelingItem {
 		public void readFromNBT(NBTTagCompound data) {
 			setPosition(data.getFloat("position"));
 			setSpeed(data.getFloat("speed"));
-			if(data.hasKey("input")) {
+			if (data.hasKey("input")) {
 				input = EnumFacingUtil.getOrientation(data.getInteger("input"));
 			} else {
 				input = null;
 			}
-			if(data.hasKey("output")) {
+			if (data.hasKey("output")) {
 				output = EnumFacingUtil.getOrientation(data.getInteger("output"));
 			} else {
 				output = null;

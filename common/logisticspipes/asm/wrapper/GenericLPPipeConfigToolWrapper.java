@@ -32,7 +32,7 @@ public class GenericLPPipeConfigToolWrapper extends AbstractWrapper implements I
 		if (isEnabled()) {
 			try {
 				ILPPipeConfigTool tool = wrapper.getWrappedTool(stack);
-				if(tool != null) {
+				if (tool != null) {
 					return new GenericLPPipeConfigTool(tool, this);
 				}
 			} catch (Exception | NoClassDefFoundError e) {

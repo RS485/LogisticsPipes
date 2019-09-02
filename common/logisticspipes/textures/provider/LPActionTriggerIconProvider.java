@@ -1,7 +1,5 @@
 package logisticspipes.textures.provider;
 
-import logisticspipes.renderer.IIconProvider;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
@@ -9,6 +7,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import logisticspipes.renderer.IIconProvider;
 
 public class LPActionTriggerIconProvider implements IIconProvider {
 
@@ -24,7 +24,7 @@ public class LPActionTriggerIconProvider implements IIconProvider {
 	private TextureAtlasSprite[] icons;
 
 	public LPActionTriggerIconProvider() {
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
 			icons = new TextureAtlasSprite[7];
 		}
 	}

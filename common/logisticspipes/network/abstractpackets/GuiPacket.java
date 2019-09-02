@@ -18,18 +18,18 @@ public abstract class GuiPacket extends ModernPacket {
 	@SideOnly(Side.CLIENT)
 	protected <T> T getGui(Class<T> guiClass) {
 		GuiScreen currentScreen = Minecraft.getMinecraft().currentScreen;
-		if(currentScreen == null) {
+		if (currentScreen == null) {
 			return null;
 		}
-		if(guiClass.isAssignableFrom(currentScreen.getClass())) {
+		if (guiClass.isAssignableFrom(currentScreen.getClass())) {
 			return (T) currentScreen;
 		}
 		SubGuiScreen subScreen = null;
-		if(currentScreen instanceof LogisticsBaseGuiScreen) {
+		if (currentScreen instanceof LogisticsBaseGuiScreen) {
 			subScreen = ((LogisticsBaseGuiScreen) currentScreen).getSubGui();
 		}
-		while(subScreen != null) {
-			if(guiClass.isAssignableFrom(subScreen.getClass())) {
+		while (subScreen != null) {
+			if (guiClass.isAssignableFrom(subScreen.getClass())) {
 				return (T) subScreen;
 			}
 			subScreen = subScreen.getSubGui();

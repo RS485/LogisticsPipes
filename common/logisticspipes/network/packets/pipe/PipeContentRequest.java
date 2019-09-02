@@ -2,15 +2,14 @@ package logisticspipes.network.packets.pipe;
 
 import java.lang.ref.WeakReference;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.IntegerPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
-
-import net.minecraft.entity.player.EntityPlayer;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

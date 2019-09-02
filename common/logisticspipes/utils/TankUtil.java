@@ -40,9 +40,9 @@ public class TankUtil implements ITankUtil {
 	@Override
 	public void forEachFluid(Consumer<FluidIdentifierStack> fluidStackConsumer) {
 		IFluidTankProperties[] tanks = fluidhandler.getTankProperties();
-		if(tanks != null) {
-			for(IFluidTankProperties tank : tanks) {
-				if(tank.getContents() != null) {
+		if (tanks != null) {
+			for (IFluidTankProperties tank : tanks) {
+				if (tank.getContents() != null) {
 					fluidStackConsumer.accept(FluidIdentifierStack.getFromStack(tank.getContents()));
 				}
 			}
@@ -52,9 +52,9 @@ public class TankUtil implements ITankUtil {
 	@Override
 	public boolean canDrain(FluidIdentifier fluid) {
 		IFluidTankProperties[] tanks = fluidhandler.getTankProperties();
-		if(tanks != null) {
-			for(IFluidTankProperties tank : tanks) {
-				if(tank.canDrainFluidType(fluid.makeFluidStack(1))) {
+		if (tanks != null) {
+			for (IFluidTankProperties tank : tanks) {
+				if (tank.canDrainFluidType(fluid.makeFluidStack(1))) {
 					return true;
 				}
 			}
@@ -68,7 +68,7 @@ public class TankUtil implements ITankUtil {
 		if (tanks != null && tanks.length > 0) {
 			for (IFluidTankProperties tank : tanks) {
 				FluidStack content = tank.getContents();
-				if(content == null || FluidIdentifier.get(content) == type) {
+				if (content == null || FluidIdentifier.get(content) == type) {
 					free += getFreeSpaceInsideTank(tank);
 				}
 			}

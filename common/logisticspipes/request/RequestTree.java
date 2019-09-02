@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IProvide;
 import logisticspipes.interfaces.routing.IRequestFluid;
@@ -21,9 +24,6 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 
 public class RequestTree extends RequestTreeNode {
 

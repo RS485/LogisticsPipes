@@ -1,9 +1,9 @@
 package logisticspipes.proxy.interfaces;
 
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-
-import net.minecraft.tileentity.TileEntity;
 
 public interface IFuzzyRecipeProvider extends ICraftingRecipeProvider {
 

@@ -41,7 +41,7 @@ public class BuildCraftProxy implements IBCProxy {
 		LogisticsTileGenericPipe.pipeInventoryConnectionChecker.addSupportedClassType(TileBC_Neptune.class);
 
 		ItemInsertionHandler.ACCEPTORS.add((pipe, from, stack) -> {
-			if(stack.hasTagCompound() && stack.getTagCompound().hasKey("logisticspipes:routingdata_buildcraft")) {
+			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("logisticspipes:routingdata_buildcraft")) {
 				NBTTagCompound routingData = stack.getTagCompound().getCompoundTag("logisticspipes:routingdata_buildcraft");
 				ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(routingData);
 				LPTravelingItem item = new LPTravelingItem.LPTravelingItemServer(info);
@@ -88,6 +88,7 @@ public class BuildCraftProxy implements IBCProxy {
 	@Override
 	public Object createMjReceiver(@Nonnull LogisticsPowerJunctionTileEntity te) {
 		return new IMjReceiver() {
+
 			@Override
 			public long getPowerRequested() {
 				return te.freeSpace() / LogisticsPowerJunctionTileEntity.MJMultiplier * MjAPI.MJ;

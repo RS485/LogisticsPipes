@@ -2,7 +2,6 @@ package logisticspipes;
 
 public class LPConstants {
 
-
 	private LPConstants() {}
 
 	public static final String LP_MOD_ID = "logisticspipes";

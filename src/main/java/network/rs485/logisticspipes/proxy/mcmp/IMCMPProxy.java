@@ -35,6 +35,7 @@ import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPBlockAccess;
 import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPLTGPCompanion;
 
 public interface IMCMPProxy {
+
 	IMCMPLTGPCompanion createMCMPCompanionFor(LogisticsTileGenericPipe pipe);
 
 	IMCMPBlockAccess createMCMPBlockAccess();

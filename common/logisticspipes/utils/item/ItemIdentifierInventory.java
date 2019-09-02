@@ -8,7 +8,6 @@
 
 package logisticspipes.utils.item;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +31,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-
 
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;

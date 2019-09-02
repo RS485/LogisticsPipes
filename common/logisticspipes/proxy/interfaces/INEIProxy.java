@@ -19,7 +19,9 @@ public interface INEIProxy {
 
 	List<String> getInfoForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver);
 
-	@SideOnly(Side.CLIENT) boolean renderItemToolTip(int posX, int posY, List<String> msg, TextFormatting rarityColor, ItemStack stack);
+	@SideOnly(Side.CLIENT)
+	boolean renderItemToolTip(int posX, int posY, List<String> msg, TextFormatting rarityColor, ItemStack stack);
 
-	@SideOnly(Side.CLIENT) List<String> getItemToolTip(ItemStack var22, EntityPlayer thePlayer, ITooltipFlag advancedItemTooltips, GuiContainer screen);
+	@SideOnly(Side.CLIENT)
+	List<String> getItemToolTip(ItemStack var22, EntityPlayer thePlayer, ITooltipFlag advancedItemTooltips, GuiContainer screen);
 }

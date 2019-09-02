@@ -45,12 +45,12 @@ public class EditChannelPacket extends AddNewChannelPacket {
 		Optional<ChannelInformation> channelOpt = manager.getChannels().stream()
 				.filter(chan -> chan.getChannelIdentifier().equals(channelIdentifier))
 				.findFirst();
-		if(channelOpt.isPresent()) {
+		if (channelOpt.isPresent()) {
 			ChannelInformation channel = channelOpt.get();
-			if(!channel.getName().equals(getName())) {
+			if (!channel.getName().equals(getName())) {
 				manager.updateChannelName(channelIdentifier, getName());
 			}
-			if(!channel.getRights().equals(getRights()) || (channel.getResponsibleSecurityID() != null && getSecurityStationID() != null && !channel.getResponsibleSecurityID().equals(getSecurityStationID())) || channel.getResponsibleSecurityID() != getSecurityStationID()) {
+			if (!channel.getRights().equals(getRights()) || (channel.getResponsibleSecurityID() != null && getSecurityStationID() != null && !channel.getResponsibleSecurityID().equals(getSecurityStationID())) || channel.getResponsibleSecurityID() != getSecurityStationID()) {
 				manager.updateChannelRights(channelIdentifier, getRights(), getSecurityStationID());
 			}
 		}

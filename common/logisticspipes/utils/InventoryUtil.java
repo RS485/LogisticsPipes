@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -91,12 +90,14 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
-	public @Nonnull ItemStack getSingleItem(ItemIdentifier item) {
+	public @Nonnull
+	ItemStack getSingleItem(ItemIdentifier item) {
 		return getMultipleItems(item, 1);
 	}
 
 	@Override
-	public @Nonnull ItemStack getMultipleItems(ItemIdentifier item, int count) {
+	public @Nonnull
+	ItemStack getMultipleItems(ItemIdentifier item, int count) {
 		if (itemCount(item) < count) {
 			return ItemStack.EMPTY;
 		}
@@ -170,12 +171,14 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
-	public @Nonnull ItemStack getStackInSlot(int i) {
+	public @Nonnull
+	ItemStack getStackInSlot(int i) {
 		return _inventory.getStackInSlot(i);
 	}
 
 	@Override
-	public @Nonnull ItemStack decrStackSize(int i, int j) {
+	public @Nonnull
+	ItemStack decrStackSize(int i, int j) {
 		return _inventory.extractItem(i, j, false);
 	}
 

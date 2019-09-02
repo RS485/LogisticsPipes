@@ -15,16 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.IgnoreDisabledProxy;
-import logisticspipes.proxy.DontLoadProxy;
-import logisticspipes.proxy.VersionNotSupportedException;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IGenericProgressProvider;
-import logisticspipes.proxy.interfaces.ILPPipeConfigToolWrapper;
-import logisticspipes.utils.ModStatusHelper;
-
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LogWrapper;
 
@@ -37,6 +27,16 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.IgnoreDisabledProxy;
+import logisticspipes.proxy.DontLoadProxy;
+import logisticspipes.proxy.VersionNotSupportedException;
+import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.proxy.interfaces.IGenericProgressProvider;
+import logisticspipes.proxy.interfaces.ILPPipeConfigToolWrapper;
+import logisticspipes.utils.ModStatusHelper;
+
 public class LogisticsWrapperHandler {
 
 	private static final boolean DUMP = false;
@@ -47,7 +47,6 @@ public class LogisticsWrapperHandler {
 	private static Method m_defineClass = null;
 
 	private LogisticsWrapperHandler() {}
-
 
 	public static ILPPipeConfigToolWrapper getWrappedPipeConfigToolWrapper(String clazz, String name, Class<? extends ILPPipeConfigToolWrapper> providerClass) {
 		ILPPipeConfigToolWrapper wrapper = null;
@@ -83,7 +82,6 @@ public class LogisticsWrapperHandler {
 		LogisticsWrapperHandler.wrapperController.add(instance);
 		return instance;
 	}
-
 
 	public static IGenericProgressProvider getWrappedProgressProvider(String modId, String name, Class<? extends IGenericProgressProvider> providerClass) {
 		IGenericProgressProvider provider = null;
@@ -245,22 +243,22 @@ public class LogisticsWrapperHandler {
 
 				try {
 					clazz = LogisticsWrapperHandler.loadClass(bytes, lookfor);
-				} catch(LinkageError e) {
+				} catch (LinkageError e) {
 					try {
-						if(e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
+						if (e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
 							Class<?> prev = Class.forName(className);
 							System.err.println(e.getMessage());
 							System.err.printf("Already loaded: %s%n", prev);
 							String resourcePath = className.replace('.', '/').concat(".class");
 							URL classResource = Launch.classLoader.findResource(resourcePath);
-							if(classResource != null) {
+							if (classResource != null) {
 								String path = classResource.getPath();
 								System.err.println("Class source: " + path);
 							} else {
 								System.err.println("Class source: Null");
 							}
 						}
-					} catch(Exception e2) {
+					} catch (Exception e2) {
 						e2.printStackTrace();
 					}
 					throw e;
@@ -390,22 +388,22 @@ public class LogisticsWrapperHandler {
 
 				try {
 					clazz = LogisticsWrapperHandler.loadClass(bytes, lookfor);
-				} catch(LinkageError e) {
+				} catch (LinkageError e) {
 					try {
-						if(e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
+						if (e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
 							Class<?> prev = Class.forName(className);
 							System.err.println(e.getMessage());
 							System.err.printf("Already loaded: %s%n", prev);
 							String resourcePath = className.replace('.', '/').concat(".class");
 							URL classResource = Launch.classLoader.findResource(resourcePath);
-							if(classResource != null) {
+							if (classResource != null) {
 								String path = classResource.getPath();
 								System.err.println("Class source: " + path);
 							} else {
 								System.err.println("Class source: Null");
 							}
 						}
-					} catch(Exception e2) {
+					} catch (Exception e2) {
 						e2.printStackTrace();
 					}
 					throw e;

@@ -12,9 +12,8 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
-import logisticspipes.utils.gui.DummyContainer;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.DummyContainer;
 
 @StaticResolve
 public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
@@ -87,7 +86,7 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return false;
 		}
-		return ((ItemUpgrade)stack.getItem()).getUpgradeForItem(stack, null).isAllowedForModule(module);
+		return ((ItemUpgrade) stack.getItem()).getUpgradeForItem(stack, null).isAllowedForModule(module);
 	}
 
 	@Override

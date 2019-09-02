@@ -1,14 +1,14 @@
 package logisticspipes.commands.commands;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.ticks.VersionChecker;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
 
 import net.minecraftforge.fml.common.Loader;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.commands.abstracts.ICommandHandler;
+import logisticspipes.ticks.VersionChecker;
 
 public class VersionCommand implements ICommandHandler {
 

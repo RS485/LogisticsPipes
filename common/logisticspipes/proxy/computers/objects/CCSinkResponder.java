@@ -1,13 +1,13 @@
 package logisticspipes.proxy.computers.objects;
 
+import lombok.Getter;
+
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import lombok.Getter;
 
 @CCType(name = "CCItemSinkRequest")
 public class CCSinkResponder implements ILPCCTypeHolder {

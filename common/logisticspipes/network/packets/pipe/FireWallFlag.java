@@ -6,7 +6,6 @@ import logisticspipes.network.abstractpackets.BitSetCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

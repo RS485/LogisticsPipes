@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
@@ -68,7 +67,8 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<Logistics
 			}
 			return slotStream.collect(Collectors.toList());
 		} else if (ingredient instanceof FluidStack) {
-			return  gui.inventorySlots.inventorySlots.stream().filter(it -> it instanceof FluidSlot).map(it -> (FluidSlot) it).map(it -> new Target<I>() {
+			return gui.inventorySlots.inventorySlots.stream().filter(it -> it instanceof FluidSlot).map(it -> (FluidSlot) it).map(it -> new Target<I>() {
+
 				@Nonnull
 				@Override
 				public Rectangle getArea() {

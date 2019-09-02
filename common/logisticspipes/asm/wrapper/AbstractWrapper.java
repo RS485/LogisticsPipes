@@ -2,15 +2,15 @@ package logisticspipes.asm.wrapper;
 
 import java.util.List;
 
-import logisticspipes.LPConstants;
-import logisticspipes.LogisticsPipes;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.ChatColor;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+
+import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.string.ChatColor;
 
 public abstract class AbstractWrapper {
 

@@ -1,11 +1,11 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.utils.StaticResolve;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.network.abstractpackets.ListSyncPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;

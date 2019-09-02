@@ -1,7 +1,5 @@
 package logisticspipes.proxy.ic;
 
-import logisticspipes.proxy.interfaces.IIronChestProxy;
-
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.tileentity.TileEntity;
 
@@ -11,6 +9,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import cpw.mods.ironchest.client.gui.chest.GUIChest;
 import cpw.mods.ironchest.common.tileentity.chest.TileEntityIronChest;
 
+import logisticspipes.proxy.interfaces.IIronChestProxy;
+
 public class IronChestProxy implements IIronChestProxy {
 
 	@Override
@@ -19,7 +19,8 @@ public class IronChestProxy implements IIronChestProxy {
 	}
 
 	@Override
-	public @SideOnly(Side.CLIENT) boolean isChestGui(GuiScreen gui) {
+	public @SideOnly(Side.CLIENT)
+	boolean isChestGui(GuiScreen gui) {
 		return gui instanceof GUIChest;
 	}
 }

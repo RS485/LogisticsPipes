@@ -18,11 +18,10 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.debug.DebugController;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.string.ChatColor;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class RoutingUpdateTargetResponse extends ModernPacket {

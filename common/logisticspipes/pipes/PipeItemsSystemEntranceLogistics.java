@@ -2,6 +2,11 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
@@ -11,11 +16,6 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.EntrencsTransport;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 

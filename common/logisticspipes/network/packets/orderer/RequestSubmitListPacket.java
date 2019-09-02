@@ -1,14 +1,13 @@
 package logisticspipes.network.packets.orderer;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.abstractpackets.InventoryModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.RequestHandler;
-
-import net.minecraft.entity.player.EntityPlayer;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

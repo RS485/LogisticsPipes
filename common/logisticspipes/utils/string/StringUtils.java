@@ -40,21 +40,21 @@ public final class StringUtils {
 					colors.addAll(Arrays.asList(values));
 					int i = 0;
 					outer:
-						while (iter.hasNext() && !colors.isEmpty()) {
-							Character c3 = iter.next();
-							handled.append(c3);
-							Iterator<ChatColor> colorIter = colors.iterator();
-							while (colorIter.hasNext()) {
-								ChatColor color = colorIter.next();
-								if (color.name().length() <= i) {
-									break outer;
-								}
-								if (c3.charValue() != color.name().charAt(i)) {
-									colorIter.remove();
-								}
+					while (iter.hasNext() && !colors.isEmpty()) {
+						Character c3 = iter.next();
+						handled.append(c3);
+						Iterator<ChatColor> colorIter = colors.iterator();
+						while (colorIter.hasNext()) {
+							ChatColor color = colorIter.next();
+							if (color.name().length() <= i) {
+								break outer;
 							}
-							i++;
+							if (c3.charValue() != color.name().charAt(i)) {
+								colorIter.remove();
+							}
 						}
+						i++;
+					}
 					if (!colors.isEmpty()) {
 						ChatColor color = colors.get(0);
 						builder.append(color.toString());

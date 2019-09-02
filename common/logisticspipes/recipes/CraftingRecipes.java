@@ -2,10 +2,10 @@ package logisticspipes.recipes;
 
 import java.util.Map;
 
-import logisticspipes.LPItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import logisticspipes.LPItems;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 

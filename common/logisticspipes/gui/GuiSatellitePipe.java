@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -9,8 +8,11 @@
 package logisticspipes.gui;
 
 import java.io.IOException;
-
 import javax.annotation.Nonnull;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.satpipe.SatelliteSetNamePacket;
@@ -22,11 +24,6 @@ import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-
 
 public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 

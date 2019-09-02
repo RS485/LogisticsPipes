@@ -3,16 +3,16 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-
-import net.minecraft.client.Minecraft;
-
-import org.lwjgl.opengl.GL11;
 
 public class HUDCrafting extends BasicHUDGui {
 

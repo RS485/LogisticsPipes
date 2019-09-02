@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -10,27 +9,14 @@ package logisticspipes.items;
 
 import javax.annotation.Nonnull;
 
-import logisticspipes.LPBlocks;
-import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
-
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.tileentity.TileEntity;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.ITubeOrientation;
-import logisticspipes.pipes.basic.CoreMultiBlockPipe;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
-import logisticspipes.renderer.IIconProvider;
-import logisticspipes.utils.LPPositionSet;
-
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -42,9 +28,19 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import lombok.Getter;
-import network.rs485.logisticspipes.world.DoubleCoordinatesType;
-
 import org.apache.logging.log4j.Level;
+
+import logisticspipes.LPBlocks;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ITubeOrientation;
+import logisticspipes.pipes.basic.CoreMultiBlockPipe;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
+import logisticspipes.renderer.IIconProvider;
+import logisticspipes.utils.LPPositionSet;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 /**
  * A logistics pipe Item
@@ -68,14 +64,13 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		IBlockState iblockstate = worldIn.getBlockState(pos);
 		Block worldBlock = iblockstate.getBlock();
 
-		if (!worldBlock.isReplaceable(worldIn, pos))
-		{
+		if (!worldBlock.isReplaceable(worldIn, pos)) {
 			pos = pos.offset(facing);
 		}
 
 		ItemStack itemstack = player.getHeldItem(hand);
 
-		if(itemstack.isEmpty()) {
+		if (itemstack.isEmpty()) {
 			return EnumActionResult.FAIL;
 		}
 
@@ -127,15 +122,15 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			placeAt.add(orientation.getOffset());
 
 			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> iPos : globalPos) {
-				if(!player.canPlayerEdit(iPos.getBlockPos(), facing, itemstack) || !worldIn.mayPlace(block, iPos.getBlockPos(), false, facing, null)) {
+				if (!player.canPlayerEdit(iPos.getBlockPos(), facing, itemstack) || !worldIn.mayPlace(block, iPos.getBlockPos(), false, facing, null)) {
 					TileEntity tile = worldIn.getTileEntity(iPos.getBlockPos());
 					boolean canPlace = false;
-					if(tile instanceof LogisticsTileGenericSubMultiBlock) {
-						if(CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), iPos.getType())) {
+					if (tile instanceof LogisticsTileGenericSubMultiBlock) {
+						if (CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), iPos.getType())) {
 							canPlace = true;
 						}
 					}
-					if(!canPlace) {
+					if (!canPlace) {
 						isFreeSpace = false;
 						break;
 					}

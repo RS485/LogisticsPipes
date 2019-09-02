@@ -1,13 +1,13 @@
 package logisticspipes.proxy.computers.objects;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.proxy.computers.interfaces.ICCTypeWrapped;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeDefinition;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.nbt.NBTTagCompound;
 
 public class CCFluidIdentifier implements ILPCCTypeDefinition {
 

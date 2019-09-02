@@ -16,9 +16,10 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsItemOrder, DictResource.Identifier> {
 
 	private static class IC implements LogisticsOrderLinkedList.IIdentityProvider<LogisticsItemOrder, DictResource.Identifier> {
+
 		@Override
 		public DictResource.Identifier getIdentity(LogisticsItemOrder o) {
-			if(o == null || o.getResource() == null) {
+			if (o == null || o.getResource() == null) {
 				return null;
 			}
 			return o.getResource().getIdentifier();
@@ -31,6 +32,7 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 	}
 
 	private static class LogisticsItemOrderExtra extends LogisticsItemOrder {
+
 		public LogisticsItemOrderExtra(DictResource item, IRequestItems destination, ResourceType type, IAdditionalTargetInformation info) {
 			super(item, destination, type, info);
 		}
@@ -76,9 +78,9 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 		DictResource.Identifier ident = resource.getIdentifier();
 		Iterator<LogisticsItemOrder> iter = _orders.iterator();
 		List<LogisticsItemOrder> toRemove = new LinkedList<LogisticsItemOrder>();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			LogisticsItemOrder order = iter.next();
-			if(order.getType() != ResourceType.EXTRA) continue;
+			if (order.getType() != ResourceType.EXTRA) continue;
 			if (order.getResource().getIdentifier().equals(ident)) {
 				if (itemsToRemove >= order.getAmount()) {
 					itemsToRemove -= order.getAmount();

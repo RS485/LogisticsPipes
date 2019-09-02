@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -19,7 +18,6 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.IPowerProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
@@ -28,6 +26,7 @@ import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IOpenComputersProxy;
+import logisticspipes.proxy.interfaces.IPowerProxy;
 import logisticspipes.proxy.interfaces.ITDProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;

@@ -1,5 +1,19 @@
 package logisticspipes.blocks.powertile;
 
+import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+
 import buildcraft.api.mj.IMjConnector;
 import buildcraft.api.mj.IMjReceiver;
 import ic2.api.energy.tile.IEnergyEmitter;
@@ -31,20 +45,8 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.PlayerCollectionList;
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
-@ModDependentInterface(modId = {LPConstants.ic2ModID}, interfacePath = {"ic2.api.energy.tile.IEnergySink"})
+@ModDependentInterface(modId = { LPConstants.ic2ModID }, interfacePath = { "ic2.api.energy.tile.IEnergySink" })
 @CCType(name = "LogisticsPowerJunction")
 public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink {
 
@@ -77,7 +79,6 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	private PlayerCollectionList watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
-
 
 	private IEnergyStorage energyInterface = new IEnergyStorage() {
 

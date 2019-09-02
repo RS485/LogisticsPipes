@@ -1,18 +1,15 @@
 package logisticspipes.recipes;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -24,6 +21,9 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.GameData;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -42,6 +42,7 @@ public class RecipeManager {
 	@AllArgsConstructor
 	@Getter
 	public static class RecipeIndex {
+
 		private char index;
 		private Object value;
 	}
@@ -49,6 +50,7 @@ public class RecipeManager {
 	@AllArgsConstructor
 	@Getter
 	public static class RecipeLayout {
+
 		private String line1;
 		private String line2;
 		private String line3;
@@ -57,25 +59,29 @@ public class RecipeManager {
 	@AllArgsConstructor
 	@Getter
 	public static class RecipeLayoutSmall {
+
 		private String line1;
 		private String line2;
 	}
+
 	@AllArgsConstructor
 	@Getter
 	public static class RecipeLayoutSmaller {
+
 		private String line1;
 	}
 
 	public static class LocalCraftingManager {
+
 		public LocalCraftingManager() {
 		}
 
 		@SuppressWarnings("unchecked")
 		public void addRecipe(ItemStack stack, Object... objects) {
 			List<Object> result = new ArrayList<>();
-			final boolean[] addRecipe = {true};
+			final boolean[] addRecipe = { true };
 			Arrays.stream(objects).forEach(o -> {
-				if(!addRecipe[0]) return;
+				if (!addRecipe[0]) return;
 				if (o instanceof RecipeLayout) {
 					result.add(((RecipeLayout) o).getLine1());
 					result.add(((RecipeLayout) o).getLine2());
@@ -88,18 +94,18 @@ public class RecipeManager {
 				} else if (o instanceof RecipeIndex) {
 					result.add(((RecipeIndex) o).getIndex());
 					result.add(((RecipeIndex) o).getValue());
-					if(((RecipeIndex) o).getValue() == null) {
+					if (((RecipeIndex) o).getValue() == null) {
 						addRecipe[0] = false;
 					}
 				} else {
 					result.add(o);
 				}
 			});
-			if(!addRecipe[0]) return;
+			if (!addRecipe[0]) return;
 
-//			RecipeIndex[] indices = new RecipeIndex[objects.length-1];
-//			System.arraycopy(objects, 1, indices, 0, indices.length);
-//			dumpRecipe(stack, objects[0], indices);
+			//			RecipeIndex[] indices = new RecipeIndex[objects.length-1];
+			//			System.arraycopy(objects, 1, indices, 0, indices.length);
+			//			dumpRecipe(stack, objects[0], indices);
 
 			GameData.register_impl(new ShapedOreRecipe(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, result.toArray()).setRegistryName(getFreeRecipeResourceLocation(stack)));
 		}
@@ -124,8 +130,8 @@ public class RecipeManager {
 			for (RecipeIndex index : indices) {
 				JsonObject key = new JsonObject();
 				if (index.getValue() instanceof String) {
-				 	key.addProperty("type", "forge:ore_dict");
-				 	key.addProperty("ore", (String) index.getValue());
+					key.addProperty("type", "forge:ore_dict");
+					key.addProperty("ore", (String) index.getValue());
 				} else if (index.getValue() instanceof ItemStack) {
 					ItemStack stack = (ItemStack) index.getValue();
 					key.addProperty("item", stack.getItem().getRegistryName().toString());
@@ -134,16 +140,16 @@ public class RecipeManager {
 					key.addProperty("item", ((Item) index.getValue()).getRegistryName().toString());
 				} else if (index.getValue() instanceof Block) {
 					key.addProperty("item", Item.getItemFromBlock((Block) index.getValue()).getRegistryName().toString());
-//				} else if (index.getValue() instanceof NBTIngredient) {
-//					key.addProperty("type", "minecraft:item_nbt");
-//					NBTIngredient value = (NBTIngredient) index.getValue();
-//					ItemStack stack = value.getMatchingStacks()[0];
-//					if (value.getMatchingStacks().length > 1) throw new NotImplementedException("valid stacks size > 1");
-//					key.addProperty("item", stack.getItem().getRegistryName().toString());
-//					if (stack.getHasSubtypes()) key.addProperty("data", stack.getItemDamage());
-//					JsonObject nbt = new JsonObject();
-//					// TODO
-//					key.add("nbt", nbt);
+					//				} else if (index.getValue() instanceof NBTIngredient) {
+					//					key.addProperty("type", "minecraft:item_nbt");
+					//					NBTIngredient value = (NBTIngredient) index.getValue();
+					//					ItemStack stack = value.getMatchingStacks()[0];
+					//					if (value.getMatchingStacks().length > 1) throw new NotImplementedException("valid stacks size > 1");
+					//					key.addProperty("item", stack.getItem().getRegistryName().toString());
+					//					if (stack.getHasSubtypes()) key.addProperty("data", stack.getItemDamage());
+					//					JsonObject nbt = new JsonObject();
+					//					// TODO
+					//					key.add("nbt", nbt);
 				} else {
 					System.out.printf("unhandled ingredient type, skipping export (%s)\n", index.getValue());
 					return;
@@ -194,6 +200,7 @@ public class RecipeManager {
 		}
 
 		public static class ShapelessOrdererRecipe extends ShapelessOreRecipe {
+
 			public ShapelessOrdererRecipe(ResourceLocation registryName, ItemStack result, Object... recipe) {
 				super(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), result, recipe);
 				setRegistryName(registryName);

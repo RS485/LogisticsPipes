@@ -1,12 +1,12 @@
 package logisticspipes.commands.commands;
 
-import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.commands.exception.MissingArgumentException;
-import logisticspipes.utils.item.ItemIdentifier;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.item.Item;
 import net.minecraft.util.text.TextComponentString;
+
+import logisticspipes.commands.abstracts.ICommandHandler;
+import logisticspipes.commands.exception.MissingArgumentException;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public class NameLookupCommand implements ICommandHandler {
 

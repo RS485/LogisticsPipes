@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -29,10 +33,6 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
 
 @CCType(name = "Terminus Module")
 public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {

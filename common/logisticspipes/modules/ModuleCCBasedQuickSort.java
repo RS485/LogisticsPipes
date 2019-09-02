@@ -82,20 +82,20 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		Collections.sort(validDestinations);
 
 		outer:
-			for (ExitRoute candidateRouter : validDestinations) {
-				if (candidateRouter.destination.getId().equals(sourceRouter.getId())) {
-					continue;
-				}
+		for (ExitRoute candidateRouter : validDestinations) {
+			if (candidateRouter.destination.getId().equals(sourceRouter.getId())) {
+				continue;
+			}
 
-				for (IFilter filter : candidateRouter.filters) {
-					if (filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack.getItem()))) {
-						continue outer;
-					}
-				}
-				if (candidateRouter.destination != null && candidateRouter.destination.getLogisticsModule() != null) {
-					respones.addAll(candidateRouter.destination.getLogisticsModule().queueCCSinkEvent(stack));
+			for (IFilter filter : candidateRouter.filters) {
+				if (filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack.getItem()))) {
+					continue outer;
 				}
 			}
+			if (candidateRouter.destination != null && candidateRouter.destination.getLogisticsModule() != null) {
+				respones.addAll(candidateRouter.destination.getLogisticsModule().queueCCSinkEvent(stack));
+			}
+		}
 		sinkResponses.put(slot, new Pair<>(0, respones));
 	}
 
@@ -215,14 +215,14 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			List<ExitRoute> ways = source.getDistanceTo(r);
 			double minDistance = Double.MAX_VALUE;
 			outer:
-				for (ExitRoute route : ways) {
-					for (IFilter filter : route.filters) {
-						if (filter.blockRouting() || filter.isFilteredItem(ident) == filter.isBlocked()) {
-							continue outer;
-						}
+			for (ExitRoute route : ways) {
+				for (IFilter filter : route.filters) {
+					if (filter.blockRouting() || filter.isFilteredItem(ident) == filter.isBlocked()) {
+						continue outer;
 					}
-					minDistance = Math.min(route.distanceToDestination, minDistance);
 				}
+				minDistance = Math.min(route.distanceToDestination, minDistance);
+			}
 			if (minDistance != Integer.MAX_VALUE) {
 				possibilities.add(new Triplet<>(sink.getPriority(), minDistance, sink));
 			}
@@ -321,7 +321,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	public void setTimeout(int time) {
 		timeout = time;
-		if(MainProxy.isServer(this._world.getWorld())) {
+		if (MainProxy.isServer(this._world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), localModeWatchers);
 		}
 	}

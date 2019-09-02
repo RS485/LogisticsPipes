@@ -37,6 +37,7 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 		super.initGui();
 		buttonList.clear();
 		configDisplay = new SideConfigDisplay(pipe) {
+
 			@Override
 			public void handleSelection(SelectedFace selection) {
 				DisconnectionConfigurationPopup.this.handleSelection(selection);
@@ -87,7 +88,7 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		switch(button.id) {
+		switch (button.id) {
 			case 0:
 				this.exitGui();
 			default:

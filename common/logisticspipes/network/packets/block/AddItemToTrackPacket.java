@@ -9,11 +9,10 @@ import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.blocks.stats.TrackingTask;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class AddItemToTrackPacket extends CoordinatesPacket {

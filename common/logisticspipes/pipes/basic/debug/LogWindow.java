@@ -1,5 +1,12 @@
 package logisticspipes.pipes.basic.debug;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -12,14 +19,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("serial")
 public class LogWindow extends JPanel {

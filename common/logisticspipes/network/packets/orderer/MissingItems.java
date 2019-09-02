@@ -19,11 +19,10 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.IResource.ColorCode;
 import logisticspipes.request.resources.ResourceNetwork;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.string.ChatColor;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class MissingItems extends ModernPacket {

@@ -3,18 +3,18 @@ package logisticspipes.gui.hud.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+
+import net.minecraftforge.fml.client.FMLClientHandler;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-
-import net.minecraft.client.Minecraft;
-
-import net.minecraftforge.fml.client.FMLClientHandler;
-
-import org.lwjgl.opengl.GL11;
 
 public class HUDProviderModule implements IHUDModuleRenderer {
 

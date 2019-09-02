@@ -1,13 +1,13 @@
 package logisticspipes.commands.commands.debug;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextComponentString;
+
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.debuggui.DebugAskForTarget;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
 
 public class TargetCommand implements ICommandHandler {
 

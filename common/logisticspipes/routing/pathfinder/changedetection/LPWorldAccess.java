@@ -3,8 +3,6 @@ package logisticspipes.routing.pathfinder.changedetection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 
+import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
 
 public class LPWorldAccess implements IWorldEventListener {
 

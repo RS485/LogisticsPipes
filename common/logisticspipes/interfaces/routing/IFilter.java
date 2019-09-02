@@ -2,7 +2,6 @@ package logisticspipes.interfaces.routing;
 
 import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.item.ItemIdentifier;
-
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface IFilter {

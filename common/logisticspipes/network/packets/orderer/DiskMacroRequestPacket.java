@@ -1,5 +1,9 @@
 package logisticspipes.network.packets.orderer;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+
 import logisticspipes.LPItems;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -7,11 +11,6 @@ import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.RequestHandler;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

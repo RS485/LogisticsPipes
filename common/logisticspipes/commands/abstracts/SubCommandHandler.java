@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.minecraft.command.ICommandSender;
+
 import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.commands.exception.CommandNotFoundException;
 import logisticspipes.commands.exception.DublicatedCommandException;
 import logisticspipes.commands.exception.MissingArgumentException;
 import logisticspipes.commands.exception.PermissionDeniedException;
 import logisticspipes.utils.string.ChatColor;
-
-import net.minecraft.command.ICommandSender;
 
 public abstract class SubCommandHandler implements ICommandHandler {
 

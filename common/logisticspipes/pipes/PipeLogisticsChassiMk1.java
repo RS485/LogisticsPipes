@@ -1,10 +1,10 @@
 package logisticspipes.pipes;
 
-import logisticspipes.textures.Textures;
-import logisticspipes.textures.Textures.TextureType;
-
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 
 public class PipeLogisticsChassiMk1 extends PipeLogisticsChassi {
 

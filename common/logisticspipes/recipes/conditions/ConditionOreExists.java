@@ -1,11 +1,12 @@
 package logisticspipes.recipes.conditions;
 
-import com.google.gson.JsonObject;
+import java.util.function.BooleanSupplier;
+
 import net.minecraftforge.common.crafting.IConditionFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.function.BooleanSupplier;
+import com.google.gson.JsonObject;
 
 @SuppressWarnings("unused")
 public class ConditionOreExists implements IConditionFactory {

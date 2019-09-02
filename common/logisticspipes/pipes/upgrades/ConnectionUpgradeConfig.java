@@ -27,11 +27,14 @@ public class ConnectionUpgradeConfig implements IConfigPipeUpgrade {
 		SOUTH(EnumFacing.SOUTH, "LPDIS-SOUTH"),
 		EAST(EnumFacing.EAST, "LPDIS-EAST"),
 		WEST(EnumFacing.WEST, "LPDIS-WEST");
-		@Getter private EnumFacing dir;
-		@Getter private String lpName;
+		@Getter
+		private EnumFacing dir;
+		@Getter
+		private String lpName;
+
 		public static String getNameForDirection(EnumFacing fd) {
 			Optional<Sides> opt = Arrays.stream(values()).filter(side -> side.getDir() == fd).findFirst();
-			if(opt.isPresent()) {
+			if (opt.isPresent()) {
 				return opt.get().getLpName();
 			}
 			return "LPDIS-UNKNWON";
@@ -69,7 +72,7 @@ public class ConnectionUpgradeConfig implements IConfigPipeUpgrade {
 	}
 
 	public Stream<EnumFacing> getSides(ItemStack stack) {
-		if(!stack.hasTagCompound()) {
+		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
 		NBTTagCompound nbt = stack.getTagCompound();

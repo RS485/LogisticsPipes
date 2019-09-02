@@ -5,6 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -28,10 +32,6 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
 
 @CCType(name = "EnchantmentSink Module MK2")
 public class ModuleEnchantmentSinkMK2 extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {

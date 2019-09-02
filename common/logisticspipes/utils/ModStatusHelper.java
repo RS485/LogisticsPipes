@@ -26,9 +26,9 @@ public class ModStatusHelper {
 	}
 
 	public static boolean areModsLoaded(String modIds) {
-		if(modIds.contains("+")) {
-			for(String modId:modIds.split("\\+")) {
-				if(!isModLoaded(modId)) {
+		if (modIds.contains("+")) {
+			for (String modId : modIds.split("\\+")) {
+				if (!isModLoaded(modId)) {
 					return false;
 				}
 			}

@@ -3,6 +3,12 @@ package logisticspipes.pipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+
+import net.minecraftforge.fluids.FluidStack;
+
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
@@ -13,12 +19,6 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.FluidStack;
 
 public class PipeFluidInsertion extends FluidRoutedPipe {
 

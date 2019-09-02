@@ -1,13 +1,13 @@
 package logisticspipes.modplugins.nei;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
-
 import net.minecraftforge.fml.common.Mod;
 
 import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.api.NEIPlugin;
 import codechicken.nei.handler.NEIClientEventHandler;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 
 @NEIPlugin
 public class NEILogisticsPipesConfig implements IConfigureNEI {

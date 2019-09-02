@@ -7,9 +7,8 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.gui.UpgradeSlot;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.UpgradeSlot;
 
 @StaticResolve
 public class DisconnectionUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvider {
@@ -21,8 +20,8 @@ public class DisconnectionUpgradeConfigGuiProvider extends UpgradeCoordinatesGui
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsTileGenericPipe bPipe = getPipe(player.getEntityWorld());
-		if(bPipe != null && bPipe.pipe instanceof CoreRoutedPipe) {
-			return new DisconnectionConfigurationPopup((CoreRoutedPipe)bPipe.pipe, getSlot(player, UpgradeSlot.class));
+		if (bPipe != null && bPipe.pipe instanceof CoreRoutedPipe) {
+			return new DisconnectionConfigurationPopup((CoreRoutedPipe) bPipe.pipe, getSlot(player, UpgradeSlot.class));
 		}
 		return null;
 	}

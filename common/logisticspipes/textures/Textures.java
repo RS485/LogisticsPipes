@@ -72,16 +72,16 @@ public class Textures {
 	public static Object LOGISTICS_REQUEST_TABLE_NEW_EMPTY = null;
 
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR = 0;
-/*	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_DISABLED;
-	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_CRAFTING_ICON;
-	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON;
-	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON;
-	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_DISCONECT_ICONINDEX;
-	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
-	public static TextureAtlasSprite[] LOGISTICS_UPGRADES_ICONINDEX;
-	public static TextureAtlasSprite LOGISTICSITEMS_ITEMHUD_ICON;
-	public static TextureAtlasSprite LOGISTICSITEMTEXTURE_FOR_DISK;*/
+	/*	public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_DISABLED;
+		public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_CRAFTING_ICON;
+		public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+		public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON;
+		public static TextureAtlasSprite LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON;
+		public static TextureAtlasSprite[] LOGISTICS_UPGRADES_DISCONECT_ICONINDEX;
+		public static TextureAtlasSprite[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
+		public static TextureAtlasSprite[] LOGISTICS_UPGRADES_ICONINDEX;
+		public static TextureAtlasSprite LOGISTICSITEMS_ITEMHUD_ICON;
+		public static TextureAtlasSprite LOGISTICSITEMTEXTURE_FOR_DISK;*/
 	public static Object LOGISTICS_SIDE_SELECTION;
 
 	// Standalone pipes
@@ -170,6 +170,7 @@ public class Textures {
 
 	private int index = 0;
 	private int newTextureIndex = 0;
+
 	public Textures() {
 		Textures.LPactionIconProvider = new LPActionTriggerIconProvider();
 		Textures.LPpipeIconProvider = new LPPipeIconProvider();
@@ -243,13 +244,13 @@ public class Textures {
 		if (MainProxy.isClient() && par1IIconRegister != null) {
 			Textures.LOGISTICS_REQUEST_TABLE = new Object[5];
 			for (int i = 0; i < 5; i++) {
-				Textures.LOGISTICS_REQUEST_TABLE[i] = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/" + i));
+				Textures.LOGISTICS_REQUEST_TABLE[i] = ((TextureMap) par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/" + i));
 			}
-			Textures.LOGISTICS_REQUEST_TABLE_NEW = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/requesttexture"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/routed"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/unrouted"));
-			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/empty"));
-			Textures.LOGISTICS_SIDE_SELECTION = ((TextureMap)par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/sideSelection"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW = ((TextureMap) par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/requesttexture"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_ROUTED = ((TextureMap) par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/routed"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = ((TextureMap) par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/requesttable/unrouted"));
+			Textures.LOGISTICS_REQUEST_TABLE_NEW_EMPTY = ((TextureMap) par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/empty"));
+			Textures.LOGISTICS_SIDE_SELECTION = ((TextureMap) par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/sideSelection"));
 		}
 
 		if (LPConstants.DEBUG) {
@@ -266,13 +267,10 @@ public class Textures {
 	}
 
 	/**
-	 * @param par1IIconRegister
-	 *            - IconRegister
-	 * @param fileName
-	 *            - name of texture
-	 * @param flag
-	 *            - 2 - register single texture without overlay, 1/0 register
-	 *            with overlay
+	 * @param par1IIconRegister - IconRegister
+	 * @param fileName          - name of texture
+	 * @param flag              - 2 - register single texture without overlay, 1/0 register
+	 *                          with overlay
 	 */
 
 	private TextureType registerTexture(Object par1IIconRegister, String fileName, int flag) {

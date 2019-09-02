@@ -11,6 +11,7 @@ import logisticspipes.utils.FluidIdentifier;
 public class LogisticsFluidOrderManager extends LogisticsOrderManager<LogisticsFluidOrder, FluidIdentifier> {
 
 	private static class IC implements LogisticsOrderLinkedList.IIdentityProvider<LogisticsFluidOrder, FluidIdentifier> {
+
 		@Override
 		public FluidIdentifier getIdentity(LogisticsFluidOrder o) {
 			return o.getFluid();

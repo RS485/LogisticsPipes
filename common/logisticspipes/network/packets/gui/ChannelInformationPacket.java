@@ -46,9 +46,9 @@ public class ChannelInformationPacket extends GuiPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		IGUIChannelInformationReceiver screen = this.getGui(IGUIChannelInformationReceiver.class);
-		if(screen != null) {
+		if (screen != null) {
 			screen.handleChannelInformation(information, targeted);
-		} else if(targeted) {
+		} else if (targeted) {
 			throw new TargetNotFoundException("GuiDoesNotWantPacket", this);
 		}
 	}

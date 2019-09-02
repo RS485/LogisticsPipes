@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
-
-import net.minecraft.tileentity.TileEntity;
 
 public class SpecialTileConnection {
 

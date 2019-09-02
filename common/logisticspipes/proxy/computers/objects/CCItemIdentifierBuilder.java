@@ -33,7 +33,7 @@ public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 
 	@CCCommand(description = "Returns the itemID (String or Int) for this ItemIdentifierBuilder")
 	public Object getItemID() {
-		if(itemIDName != null) {
+		if (itemIDName != null) {
 			return itemIDName;
 		}
 		return itemID;
@@ -52,7 +52,7 @@ public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 	@CCCommand(description = "Returns the ItemIdentifier for this ItemIdentifierBuilder")
 	public ItemIdentifier build() {
 		Item item;
-		if(itemIDName != null) {
+		if (itemIDName != null) {
 			item = Item.REGISTRY.getObject(new ResourceLocation(itemIDName));
 		} else {
 			item = Item.getItemById(itemID);

@@ -7,7 +7,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringListPacket;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

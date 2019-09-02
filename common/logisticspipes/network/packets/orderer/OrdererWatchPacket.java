@@ -12,10 +12,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
+import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class OrdererWatchPacket extends IntegerCoordinatesPacket {

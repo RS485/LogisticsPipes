@@ -6,12 +6,11 @@ import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class AutoCraftingGui extends CoordinatesGuiProvider {

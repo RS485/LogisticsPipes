@@ -23,9 +23,9 @@ public class SatelliteSetNamePacket extends StringCoordinatesPacket {
 			return;
 		}
 		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics)pipe.pipe).setSatelliteName(getString());
+			((PipeItemsSatelliteLogistics) pipe.pipe).setSatelliteName(getString());
 		} else if (pipe.pipe instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite)pipe.pipe).setSatelliteName(getString());
+			((PipeFluidSatellite) pipe.pipe).setSatelliteName(getString());
 		}
 	}
 

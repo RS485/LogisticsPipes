@@ -1,5 +1,9 @@
 package logisticspipes.gui.hud;
 
+import net.minecraft.client.Minecraft;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
@@ -7,10 +11,6 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-
-import net.minecraft.client.Minecraft;
-
-import org.lwjgl.opengl.GL11;
 
 public class HUDSatellite extends BasicHUDGui {
 

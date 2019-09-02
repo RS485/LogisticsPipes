@@ -6,14 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import logisticspipes.LPConstants;
-import logisticspipes.asm.ClientSideOnlyMethodContent;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.gui.OpenChatGui;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
@@ -21,9 +13,16 @@ import net.minecraft.util.text.TextComponentString;
 
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.ServerChatEvent;
-
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import logisticspipes.LPConstants;
+import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.OpenChatGui;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.string.ChatColor;
+import logisticspipes.utils.string.StringUtils;
 
 public class LPChatListener {
 
@@ -40,7 +39,8 @@ public class LPChatListener {
 				player.sendMessage(new TextComponentString(ChatColor.RED + "You need to answer the question, before you can use any other command"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 			} else {
-				if (!event.getMessage().equalsIgnoreCase("true") && !event.getMessage().equalsIgnoreCase("false") && !event.getMessage().equalsIgnoreCase("on") && !event.getMessage().equalsIgnoreCase("off") && !event.getMessage().equalsIgnoreCase("0") && !event.getMessage().equalsIgnoreCase("1") && !event.getMessage().equalsIgnoreCase("no")
+				if (!event.getMessage().equalsIgnoreCase("true") && !event.getMessage().equalsIgnoreCase("false") && !event.getMessage().equalsIgnoreCase("on") && !event.getMessage().equalsIgnoreCase("off") && !event.getMessage().equalsIgnoreCase("0") && !event.getMessage().equalsIgnoreCase("1") && !event.getMessage()
+						.equalsIgnoreCase("no")
 						&& !event.getMessage().equalsIgnoreCase("yes")) {
 					player.sendMessage(new TextComponentString(ChatColor.RED + "Not a valid answer."));
 					player.sendMessage(new TextComponentString(ChatColor.AQUA + "Please enter " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no " + ChatColor.RESET + "| " + ChatColor.GREEN + "true" + ChatColor.RESET + "/" + ChatColor.RED + "flase "

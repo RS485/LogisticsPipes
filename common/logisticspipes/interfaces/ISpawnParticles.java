@@ -1,9 +1,9 @@
 package logisticspipes.interfaces;
 
-import logisticspipes.pipefxhandlers.Particles;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import logisticspipes.pipefxhandlers.Particles;
 
 public interface ISpawnParticles {
 

@@ -23,12 +23,11 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.CoordinateUtils;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class FindMostLikelyRecipeComponents extends CoordinatesPacket {

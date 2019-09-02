@@ -3,7 +3,6 @@ package logisticspipes.pipes.basic.ltgpmodcompat;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.state.IBlockState;
@@ -29,8 +28,9 @@ import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.utils.ReflectionHelper;
 import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPLTGPCompanion;
 
-@ModDependentInterface(modId = { LPConstants.mcmpModID }, interfacePath = {"mcmultipart.api.container.IMultipartContainer"})
+@ModDependentInterface(modId = { LPConstants.mcmpModID }, interfacePath = { "mcmultipart.api.container.IMultipartContainer" })
 public abstract class LPMicroblockTileEntity extends TileEntity implements IMultipartContainer {
+
 	public IMCMPLTGPCompanion imcmpltgpCompanion;
 
 	public abstract boolean isMultipartAllowedInPipe();
@@ -53,7 +53,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
 		super.handleUpdateTag(tag);
-		if(tag.hasKey("LogisticsPipes:MCMultiPartData")) {
+		if (tag.hasKey("LogisticsPipes:MCMultiPartData")) {
 			if (this.getMultipartContainer() != null) this.getMultipartContainer().handleUpdateTag(tag.getCompoundTag("LogisticsPipes:MCMultiPartData"));
 		}
 	}
@@ -62,13 +62,12 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		if (this.getMultipartContainer() != null)
-		{
+		if (this.getMultipartContainer() != null) {
 			SPacketUpdateTileEntity packet = this.getMultipartContainer().getUpdatePacket();
 			nbt = ReflectionHelper.getPrivateField(SPacketUpdateTileEntity.class, packet, "nbt", "field_148860_e");
 		}
 		SPacketUpdateTileEntity superPacket = super.getUpdatePacket();
-		if(superPacket != null) {
+		if (superPacket != null) {
 			nbt.setTag("LogisticsPipes:SuperUpdatePacket", superPacket.getNbtCompound());
 		}
 		return new SPacketUpdateTileEntity(this.getPartPos(), 0, nbt);
@@ -78,7 +77,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
 		if (this.getMultipartContainer() != null) this.getMultipartContainer().onDataPacket(net, pkt);
-		if(pkt.getNbtCompound().hasKey("LogisticsPipes:SuperUpdatePacket")) {
+		if (pkt.getNbtCompound().hasKey("LogisticsPipes:SuperUpdatePacket")) {
 			super.onDataPacket(net, new SPacketUpdateTileEntity(getPos(), 1, pkt.getNbtCompound().getCompoundTag("LogisticsPipes:SuperUpdatePacket")));
 		}
 	}
@@ -98,7 +97,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		if(tag.hasKey("MCMultiPartData")) {
+		if (tag.hasKey("MCMultiPartData")) {
 			if (this.getMultipartContainer() != null) this.getMultipartContainer().readFromNBT(tag.getCompoundTag("MCMultiPartData"));
 		}
 	}
@@ -142,7 +141,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	protected void setWorldCreate(World worldIn) {
 		super.setWorldCreate(worldIn);
-		if (this.getMultipartContainer() != null) ReflectionHelper.invokePrivateMethod(TileMultipartContainer.class, this.getMultipartContainer(), "setWorldCreate", "func_190201_b", new Class[]{World.class}, new Object[]{worldIn});
+		if (this.getMultipartContainer() != null) ReflectionHelper.invokePrivateMethod(TileMultipartContainer.class, this.getMultipartContainer(), "setWorldCreate", "func_190201_b", new Class[] { World.class }, new Object[] { worldIn });
 	}
 
 	@Override
@@ -195,7 +194,6 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 		if (this.getMultipartContainer() == null) return Optional.empty();
 		return getMultipartContainer().get(iPartSlot);
 	}
-
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)

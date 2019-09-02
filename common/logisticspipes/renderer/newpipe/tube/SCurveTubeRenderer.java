@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -26,9 +29,6 @@ import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 
 public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
@@ -67,7 +67,7 @@ public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlace
 			pipePartModels.entrySet().stream()
 					.filter(entry -> entry.getKey().startsWith("Lane ") || entry.getKey().contains(" Lane ") || entry.getKey().endsWith(" Lane"))
 					.forEach(entry -> {
-						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.EAST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(Math.PI / 2,0, 0, 1)).apply(new LPTranslation(1.0, 0.0, 0.0)).apply(new LPRotation(-Math.PI / 2, 0, 1, 0))));
+						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.EAST).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(Math.PI / 2, 0, 0, 1)).apply(new LPTranslation(1.0, 0.0, 0.0)).apply(new LPRotation(-Math.PI / 2, 0, 1, 0))));
 						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.NORTH).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(Math.PI / 2, 0, 0, 1)).apply(new LPTranslation(1.0, 0.0, 1.0))));
 						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.EAST_INV).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(-Math.PI / 2, 0, 0, 1)).apply(new LPTranslation(-2.0, 1.0, 4.0)).apply(new LPRotation(Math.PI / 2, 0, 1, 0))));
 						SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.NORTH_INV).add(LogisticsNewRenderPipe.compute(entry.getValue().twoFacedCopy().apply(new LPRotation(-Math.PI / 2, 0, 0, 1)).apply(new LPTranslation(-2.0, 1.0, 3.0)).apply(new LPRotation(Math.PI, 0, 1, 0))));
@@ -93,15 +93,15 @@ public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlace
 				objectsToRender
 						.addAll(SCurveTubeRenderer.tubeSCurveBase.get(tube.getOrientation().getRenderOrientation())
 								.stream()
-								.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, SCurveTubeRenderer.TEXTURE))
+								.map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, SCurveTubeRenderer.TEXTURE))
 								.collect(Collectors.toList()));
 			}
 		}
-		if(pipe == null) {
+		if (pipe == null) {
 			objectsToRender
 					.addAll(SCurveTubeRenderer.tubeSCurveBase.get(TurnSDirection.NORTH)
 							.stream()
-							.map(model -> new RenderEntry(model, new I3DOperation[]{new LPUVTransformationList(new LPUVTranslation(0, 0))}, SCurveTubeRenderer.TEXTURE))
+							.map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, SCurveTubeRenderer.TEXTURE))
 							.collect(Collectors.toList()));
 		}
 	}

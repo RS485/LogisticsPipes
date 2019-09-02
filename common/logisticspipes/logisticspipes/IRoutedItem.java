@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -11,15 +10,14 @@ package logisticspipes.logisticspipes;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.item.ItemIdentifierStack;
-
-import net.minecraft.nbt.NBTTagCompound;
-
-import net.minecraft.util.EnumFacing;
 
 /**
  * This interface describes the actions that must be available on an item that

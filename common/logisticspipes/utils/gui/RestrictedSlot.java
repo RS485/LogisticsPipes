@@ -1,11 +1,11 @@
 package logisticspipes.utils.gui;
 
-import logisticspipes.interfaces.ISlotCheck;
-
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import logisticspipes.interfaces.ISlotCheck;
 
 public class RestrictedSlot extends Slot {
 
@@ -16,7 +16,7 @@ public class RestrictedSlot extends Slot {
 		super(iinventory, i, j, k);
 		this.item = null;
 		slotCheck = itemStack -> {
-			if(!itemStack.isEmpty()) {
+			if (!itemStack.isEmpty()) {
 				return itemClass.isAssignableFrom(itemStack.getItem().getClass());
 			}
 			return false;

@@ -3,17 +3,15 @@ package logisticspipes.routing.pathfinder;
 import java.util.List;
 import java.util.stream.Stream;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
-
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
 
 public interface IPipeInformationProvider {
 

@@ -22,16 +22,11 @@ public class VecmathUtil {
 	/**
 	 * Creates a perspective projection matrix.
 	 *
-	 * @param fovDegrees
-	 *          The field of view angle in degrees.
-	 * @param near
-	 *          near plane.
-	 * @param far
-	 *          far plane.
-	 * @param viewportWidth
-	 *          viewport width.
-	 * @param viewportHeight
-	 *          viewport height.
+	 * @param fovDegrees     The field of view angle in degrees.
+	 * @param near           near plane.
+	 * @param far            far plane.
+	 * @param viewportWidth  viewport width.
+	 * @param viewportHeight viewport height.
 	 * @return the matrix.
 	 */
 	public static Matrix4d createProjectionMatrixAsPerspective(double fovDegrees, double near, double far, int viewportWidth, int viewportHeight) {
@@ -50,12 +45,9 @@ public class VecmathUtil {
 	/**
 	 * Creates a look at matrix.
 	 *
-	 * @param eyePos
-	 *          the position of the eye.
-	 * @param lookAtPos
-	 *          the point to look at.
-	 * @param upVec
-	 *          the up vector.
+	 * @param eyePos    the position of the eye.
+	 * @param lookAtPos the point to look at.
+	 * @param upVec     the up vector.
 	 * @return the look at matrix.
 	 */
 	public static Matrix4d createMatrixAsLookAt(Vector3d eyePos, Vector3d lookAtPos, Vector3d upVec) {
@@ -90,14 +82,10 @@ public class VecmathUtil {
 	 * This function computes the ray that goes from the eye, through the
 	 * specified pixel.
 	 *
-	 * @param x
-	 *          the x pixel location (x = 0 is the left most pixel)
-	 * @param y
-	 *          the y pixel location (y = 0 is the bottom most pixel)
-	 * @param eyeOut
-	 *          the eyes position.
-	 * @param normalOut
-	 *          the normal description the directional component of the ray.
+	 * @param x         the x pixel location (x = 0 is the left most pixel)
+	 * @param y         the y pixel location (y = 0 is the bottom most pixel)
+	 * @param eyeOut    the eyes position.
+	 * @param normalOut the normal description the directional component of the ray.
 	 */
 	public static void computeRayForPixel(Rectangle vp, Matrix4d ipm, Matrix4d ivm, int x, int y, Vector3d eyeOut, Vector3d normalOut) {
 

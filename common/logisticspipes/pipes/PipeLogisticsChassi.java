@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -236,7 +235,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound);
 			int tmp = nbttagcompound.getInteger("Orientation");
-			if(tmp == -1) {
+			if (tmp == -1) {
 				pointedDirection = null;
 			} else {
 				pointedDirection = EnumFacingUtil.getOrientation(tmp % 6);
@@ -282,7 +281,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			}
 			_moduleInventory.dropContents(getWorld(), getX(), getY(), getZ());
 
-			for(int i=0; i < getChassiSize(); i++) {
+			for (int i = 0; i < getChassiSize(); i++) {
 				getModuleUpgradeManager(i).dropUpgrades();
 			}
 		}

@@ -1,5 +1,12 @@
 package logisticspipes;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.item.Item;
+
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemGuideBook;
@@ -16,13 +23,6 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
-
-import net.minecraft.item.Item;
-
-import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class LPItems {
 

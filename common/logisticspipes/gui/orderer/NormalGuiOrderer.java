@@ -2,14 +2,14 @@ package logisticspipes.gui.orderer;
 
 import java.io.IOException;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class NormalGuiOrderer extends GuiOrderer {
 

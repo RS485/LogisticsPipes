@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
  * Some mod compatibility is already implemented inside LP.
  */
 public interface ILPPipeConfigTool {
+
 	boolean canWrench(EntityPlayer player, ItemStack wrench, ILPPipeTile pipe);
+
 	void wrenchUsed(EntityPlayer player, ItemStack wrench, ILPPipeTile pipe);
 }

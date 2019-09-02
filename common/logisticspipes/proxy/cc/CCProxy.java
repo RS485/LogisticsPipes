@@ -86,7 +86,7 @@ public class CCProxy implements ICCProxy {
 
 	@Override
 	public void handleMesssage(int computerId, Object message, LogisticsTileGenericPipe tile, int sourceId) {
-		tile.connections.keySet().stream().filter(computer -> computer.getID() == computerId).forEach(computer -> computer.queueEvent(CCConstants.LP_CC_MESSAGE_EVENT, new Object[]{sourceId, message}));
+		tile.connections.keySet().stream().filter(computer -> computer.getID() == computerId).forEach(computer -> computer.queueEvent(CCConstants.LP_CC_MESSAGE_EVENT, new Object[] { sourceId, message }));
 	}
 
 	@Override

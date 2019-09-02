@@ -1,9 +1,5 @@
 package logisticspipes.pipefxhandlers;
 
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -14,6 +10,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
 
 public class EntityModelFX extends Particle {
 

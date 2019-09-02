@@ -51,11 +51,11 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public boolean canHammer(ItemStack stack, EntityPlayer entityplayer, BlockPos pos) {
-		return isToolHammer(stack.getItem()) && ((IToolHammer)stack.getItem()).isUsable(stack, entityplayer, pos);
+		return isToolHammer(stack.getItem()) && ((IToolHammer) stack.getItem()).isUsable(stack, entityplayer, pos);
 	}
 
 	@Override
 	public void toolUsed(ItemStack stack, EntityPlayer entityplayer, BlockPos pos) {
-		if(isToolHammer(stack.getItem())) ((IToolHammer)stack.getItem()).toolUsed(stack, entityplayer, pos);
+		if (isToolHammer(stack.getItem())) ((IToolHammer) stack.getItem()).toolUsed(stack, entityplayer, pos);
 	}
 }

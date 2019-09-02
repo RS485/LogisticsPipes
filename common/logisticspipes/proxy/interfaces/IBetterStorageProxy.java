@@ -1,8 +1,8 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.proxy.bs.ICrateStorageProxy;
-
 import net.minecraft.tileentity.TileEntity;
+
+import logisticspipes.proxy.bs.ICrateStorageProxy;
 
 public interface IBetterStorageProxy {
 

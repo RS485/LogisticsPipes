@@ -1,15 +1,15 @@
 package logisticspipes.proxy.interfaces;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.INetHandler;
+import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
+
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetHandler;
-import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
 
 public interface IProxy {
 

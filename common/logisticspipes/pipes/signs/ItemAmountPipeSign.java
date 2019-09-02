@@ -82,17 +82,17 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 		if (!pipe.isNthTick(20)) {
 			return;
 		}
-		if(hasUpdated) {
+		if (hasUpdated) {
 			hasUpdated = false;
 			return;
 		}
 		int newAmount = 0;
 		if (itemTypeInv.getIDStackInSlot(0) != null) {
 			Map<ItemIdentifier, Integer> availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
-			if(availableItems != null) {
+			if (availableItems != null) {
 				BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
 				spread(availableItems, set);
-				if(availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
+				if (availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
 					newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
 				}
 			}
@@ -105,15 +105,15 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 
 	private void spread(Map<ItemIdentifier, Integer> availableItems, BitSet set) { // Improve performance by updating a wall of Amount pipe signs all at once
 		IRouter router = pipe.getRouter();
-		if(set.get(router.getSimpleID())) return;
+		if (set.get(router.getSimpleID())) return;
 		set.set(router.getSimpleID());
-		for(ExitRoute exit: router.getIRoutersByCost()) {
-			if(exit.distanceToDestination > 2) break; // Only when the signs are in one wall. To not spread to far.
-			if(!exit.filters.isEmpty()) continue;
+		for (ExitRoute exit : router.getIRoutersByCost()) {
+			if (exit.distanceToDestination > 2) break; // Only when the signs are in one wall. To not spread to far.
+			if (!exit.filters.isEmpty()) continue;
 			if (set.get(exit.destination.getSimpleID())) continue;
-			if(exit.connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && exit.connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
+			if (exit.connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && exit.connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
 				CoreRoutedPipe cachedPipe = exit.destination.getCachedPipe();
-				if(cachedPipe != null) {
+				if (cachedPipe != null) {
 					List<Pair<EnumFacing, IPipeSign>> pipeSigns = cachedPipe.getPipeSigns();
 					pipeSigns.stream()
 							.filter(signPair -> signPair != null && signPair.getValue2() instanceof ItemAmountPipeSign)
@@ -127,7 +127,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 		hasUpdated = true;
 		int newAmount = 0;
 		if (itemTypeInv.getIDStackInSlot(0) != null) {
-			if(availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
+			if (availableItems.containsKey(itemTypeInv.getIDStackInSlot(0).getItem())) {
 				newAmount = availableItems.get(itemTypeInv.getIDStackInSlot(0).getItem());
 			}
 		}
@@ -202,7 +202,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	}
 
 	private void sendUpdatePacket() {
-		if(MainProxy.isServer(pipe.getWorld())) {
+		if (MainProxy.isServer(pipe.getWorld())) {
 			MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), pipe.getWorld().provider.getDimension(), getPacket());
 		}
 	}

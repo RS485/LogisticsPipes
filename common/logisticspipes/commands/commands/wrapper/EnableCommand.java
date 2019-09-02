@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.minecraft.command.ICommandSender;
+import net.minecraft.util.text.TextComponentString;
+
 import logisticspipes.asm.wrapper.AbstractWrapper;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.asm.wrapper.WrapperState;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.abstracts.ICommandHandler;
-
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.text.TextComponentString;
 
 public class EnableCommand implements ICommandHandler {
 

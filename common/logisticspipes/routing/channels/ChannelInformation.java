@@ -13,6 +13,7 @@ import logisticspipes.utils.PlayerIdentifier;
 @Data
 @AllArgsConstructor
 public class ChannelInformation {
+
 	public enum AccessRights {
 		PRIVATE,
 		SECURED,
@@ -33,7 +34,7 @@ public class ChannelInformation {
 		channelIdentifier = UUID.fromString(nbt.getString("channelIdentifier"));
 		owner = PlayerIdentifier.readFromNBT(nbt, "owner");
 		rights = AccessRights.values()[nbt.getInteger("rights")];
-		if(nbt.hasKey("responsibleSecurityID")) {
+		if (nbt.hasKey("responsibleSecurityID")) {
 			responsibleSecurityID = UUID.fromString(nbt.getString("responsibleSecurityID"));
 		} else {
 			responsibleSecurityID = null;
@@ -45,7 +46,7 @@ public class ChannelInformation {
 		compound.setString("channelIdentifier", channelIdentifier.toString());
 		owner.writeToNBT(compound, "owner");
 		compound.setInteger("rights", rights.ordinal());
-		if(responsibleSecurityID != null) {
+		if (responsibleSecurityID != null) {
 			compound.setString("responsibleSecurityID", responsibleSecurityID.toString());
 		}
 

@@ -1,9 +1,9 @@
 package logisticspipes.asm.wrapper;
 
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-
-import net.minecraft.tileentity.TileEntity;
 
 class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICraftingRecipeProvider {
 

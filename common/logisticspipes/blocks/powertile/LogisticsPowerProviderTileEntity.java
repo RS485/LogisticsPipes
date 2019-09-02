@@ -102,7 +102,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 								.filter(neighbor -> neighbor.getTileEntity().pipe instanceof CoreRoutedPipe &&
 										!getPipe.apply(neighbor).stillNeedReplace() && getPipe.apply(neighbor).getRouter() != null)
 								.flatMap(neighbor -> getPipe.apply(neighbor).getRouter().getDistanceTo(destinationToPower.getValue1()).stream()
-												.map(exitRoute -> new Pair<>(neighbor, exitRoute)))
+										.map(exitRoute -> new Pair<>(neighbor, exitRoute)))
 								.filter(neighborToExit -> neighborToExit.getValue2().containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom) &&
 										neighborToExit.getValue2().filters.stream().noneMatch(IFilter::blockPower))
 								.findFirst()

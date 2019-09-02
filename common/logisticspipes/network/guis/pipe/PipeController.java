@@ -2,9 +2,9 @@ package logisticspipes.network.guis.pipe;
 
 import java.util.UUID;
 
-import logisticspipes.LPItems;
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.LPItems;
 import logisticspipes.gui.GuiPipeController;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.items.ItemUpgrade;
@@ -16,9 +16,8 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.gui.DummyContainer;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.DummyContainer;
 
 @StaticResolve
 public class PipeController extends CoordinatesGuiProvider {
@@ -64,7 +63,7 @@ public class PipeController extends CoordinatesGuiProvider {
 					return false;
 				}
 				if (itemStack.getItem() instanceof ItemUpgrade) {
-					if (!((ItemUpgrade)itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
+					if (!((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
 						return false;
 					}
 				} else {
@@ -79,7 +78,7 @@ public class PipeController extends CoordinatesGuiProvider {
 					return false;
 				}
 				if (itemStack.getItem() instanceof ItemUpgrade) {
-					IPipeUpgrade upgrade = ((ItemUpgrade)itemStack.getItem()).getUpgradeForItem(itemStack, null);
+					IPipeUpgrade upgrade = ((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null);
 					if (!(upgrade instanceof SneakyUpgradeConfig)) {
 						return false;
 					}

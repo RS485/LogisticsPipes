@@ -6,6 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
@@ -15,14 +20,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import logisticspipes.utils.tuples.Pair;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import net.minecraft.util.EnumFacing;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ClientRouter implements IRouter {
 

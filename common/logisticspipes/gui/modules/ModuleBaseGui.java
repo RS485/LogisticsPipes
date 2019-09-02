@@ -2,16 +2,16 @@ package logisticspipes.gui.modules;
 
 import java.io.IOException;
 
+import net.minecraft.inventory.Container;
+
+import lombok.Getter;
+
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiOpenChassie;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-
-import net.minecraft.inventory.Container;
-
-import lombok.Getter;
 
 public abstract class ModuleBaseGui extends LogisticsBaseGuiScreen {
 

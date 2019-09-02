@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -27,6 +26,17 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
+
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import net.minecraftforge.common.DimensionManager;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -56,22 +66,9 @@ import logisticspipes.utils.OneList;
 import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.item.ItemIdentifier;
-
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
-
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import net.minecraftforge.common.DimensionManager;
-import net.minecraft.util.EnumFacing;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
@@ -1205,22 +1202,22 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			return null;
 		}
 		outer:
-			for (ExitRoute exit : getRouteTable().get(id)) {
-				if (exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-					for (IFilter filter : exit.filters) {
-						if (!active) {
-							if (filter.blockRouting() || filter.isBlocked() == filter.isFilteredItem(type)) {
-								continue outer;
-							}
-						} else {
-							if ((filter.blockProvider() && filter.blockCrafting()) || filter.isBlocked() == filter.isFilteredItem(type)) {
-								continue outer;
-							}
+		for (ExitRoute exit : getRouteTable().get(id)) {
+			if (exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+				for (IFilter filter : exit.filters) {
+					if (!active) {
+						if (filter.blockRouting() || filter.isBlocked() == filter.isFilteredItem(type)) {
+							continue outer;
+						}
+					} else {
+						if ((filter.blockProvider() && filter.blockCrafting()) || filter.isBlocked() == filter.isFilteredItem(type)) {
+							continue outer;
 						}
 					}
-					return exit;
 				}
+				return exit;
 			}
+		}
 		return null;
 	}
 
@@ -1238,22 +1235,22 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			return false;
 		}
 		outer:
-			for (ExitRoute exit : source) {
-				if (exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-					for (IFilter filter : exit.filters) {
-						if (!active) {
-							if (filter.blockRouting() || filter.isBlocked() == filter.isFilteredItem(type)) {
-								continue outer;
-							}
-						} else {
-							if ((filter.blockProvider() && filter.blockCrafting()) || filter.isBlocked() == filter.isFilteredItem(type)) {
-								continue outer;
-							}
+		for (ExitRoute exit : source) {
+			if (exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+				for (IFilter filter : exit.filters) {
+					if (!active) {
+						if (filter.blockRouting() || filter.isBlocked() == filter.isFilteredItem(type)) {
+							continue outer;
+						}
+					} else {
+						if ((filter.blockProvider() && filter.blockCrafting()) || filter.isBlocked() == filter.isFilteredItem(type)) {
+							continue outer;
 						}
 					}
-					return true;
 				}
+				return true;
 			}
+		}
 		return false;
 	}
 

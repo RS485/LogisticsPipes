@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import net.minecraft.nbt.NBTBase;
+
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
@@ -30,13 +32,12 @@ import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 import logisticspipes.utils.tuples.Triplet;
 
-import net.minecraft.nbt.NBTBase;
-
 public class CCObjectWrapper {
 
 	private static Map<Class<?>, CCWrapperInformation> ccMapings = new HashMap<>();
 	private static Map<Object, Object> wrappedObjects = new WeakHashMap<>();
 	private static Map<Class<? extends ILPCCTypeHolder>, ILPCCTypeDefinition> specialMappings = new HashMap<>();
+
 	static {
 		CCObjectWrapper.specialMappings.put(ItemIdentifier.class, new CCItemIdentifier());
 		CCObjectWrapper.specialMappings.put(ItemIdentifierStack.class, new CCItemIdentifierStack());

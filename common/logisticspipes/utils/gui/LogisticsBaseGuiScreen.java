@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -8,7 +7,6 @@
 
 package logisticspipes.utils.gui;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -221,7 +220,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			RenderHelper.enableStandardItemLighting();
 		}
 		Runnable run = renderAtTheEnd.poll();
-		while(run != null) {
+		while (run != null) {
 			run.run();
 			run = renderAtTheEnd.poll();
 		}
@@ -240,7 +239,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	@Override
 	protected void drawSlot(Slot slot) {
 		if (extentionControllerLeft.renderSlot(slot) && extentionControllerRight.renderSlot(slot)) {
-			if(subGui == null) {
+			if (subGui == null) {
 				onRenderSlot(slot);
 			}
 			super.drawSlot(slot);
@@ -248,7 +247,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	private void onRenderSlot(Slot slot) {
-		if(slot instanceof IFuzzySlot) {
+		if (slot instanceof IFuzzySlot) {
 			final DictResource resource = ((IFuzzySlot) slot).getFuzzyFlags();
 			int x1 = slot.xPos;
 			int y1 = slot.yPos;
@@ -271,10 +270,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 			GL11.glEnable(GL11.GL_LIGHTING);
 			final boolean mouseOver = this.isMouseOverSlot(slot, currentDrawScreenMouseX, currentDrawScreenMouseY);
-			if(mouseOver) {
-				if(fuzzySlot == slot) {
+			if (mouseOver) {
+				if (fuzzySlot == slot) {
 					fuzzySlotGuiHoverTime++;
-					if(fuzzySlotGuiHoverTime >= 10) {
+					if (fuzzySlotGuiHoverTime >= 10) {
 						fuzzySlotActiveGui = true;
 					}
 				} else {
@@ -283,10 +282,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					fuzzySlotActiveGui = false;
 				}
 			}
-			if(fuzzySlotActiveGui && fuzzySlot == slot) {
-				if(!mouseOver) {
+			if (fuzzySlotActiveGui && fuzzySlot == slot) {
+				if (!mouseOver) {
 					//Check within FuzzyGui
-					if(!isPointInRegion(slot.xPos, slot.yPos + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
+					if (!isPointInRegion(slot.xPos, slot.yPos + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
 						fuzzySlotActiveGui = false;
 						fuzzySlot = null;
 					}
@@ -362,7 +361,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 		int dWheel = Mouse.getEventDWheel();
 		if (dWheel != 0 && !mouseHandled) {
-			Optional<DummySlot> slotOpt = this.inventorySlots.inventorySlots.stream().filter(it -> it instanceof DummySlot).map(it -> (DummySlot)it).filter(it -> isMouseOverSlot(it, x, y)).findFirst();
+			Optional<DummySlot> slotOpt = this.inventorySlots.inventorySlots.stream().filter(it -> it instanceof DummySlot).map(it -> (DummySlot) it).filter(it -> isMouseOverSlot(it, x, y)).findFirst();
 			if (slotOpt.isPresent()) {
 				DummySlot slot = slotOpt.get();
 				slot.setRedirectCall(true);
@@ -489,8 +488,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			selectedButton = null;
 		} else if (isMouseInFuzzyPanel(par1 - guiLeft, par2 - guiTop)) {
 		} else {
-				super.mouseReleased(par1, par2, par3);
-			}
+			super.mouseReleased(par1, par2, par3);
+		}
 	}
 
 	private boolean mouseCanPressButton(int par1, int par2) {

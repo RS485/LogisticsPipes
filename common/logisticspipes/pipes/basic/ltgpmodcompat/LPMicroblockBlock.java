@@ -46,7 +46,7 @@ import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.proxy.SimpleServiceLocator;
 import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPBlockAccess;
 
-@ModDependentInterface(modId = { LPConstants.mcmpModID }, interfacePath = {"mcmultipart.api.container.IMultipartContainerBlock"})
+@ModDependentInterface(modId = { LPConstants.mcmpModID }, interfacePath = { "mcmultipart.api.container.IMultipartContainerBlock" })
 public abstract class LPMicroblockBlock extends BlockContainer implements IMultipartContainerBlock {
 
 	public static IMCMPBlockAccess mcmpBlockAccess = SimpleServiceLocator.mcmpProxy.createMCMPBlockAccess();
@@ -365,7 +365,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 					tile.get().removePart(slot);
 			}
 		}
-		if(hit != null && hit.subHit == -1) {
+		if (hit != null && hit.subHit == -1) {
 			return super.removedByPlayer(state, world, pos, player, willHarvest);
 		}
 		return false;
@@ -385,7 +385,6 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 		}
 		return 0;
 	}
-
 
 	@Override
 	@SideOnly(Side.CLIENT)

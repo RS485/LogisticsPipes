@@ -78,9 +78,9 @@ public class PipeRenderState implements IClientState {
 		}
 		DoubleCoordinates pos = new DoubleCoordinates(blockPos);
 		TileEntity tile = pos.getTileEntity(worldIn);
-		if(tile instanceof LogisticsTileGenericPipe) {
+		if (tile instanceof LogisticsTileGenericPipe) {
 			boolean hasParts = SimpleServiceLocator.mcmpProxy.hasParts((LogisticsTileGenericPipe) tile);
-			if(savedStateHasMCMultiParts != hasParts) {
+			if (savedStateHasMCMultiParts != hasParts) {
 				savedStateHasMCMultiParts = hasParts;
 				clearRenderCaches();
 			}

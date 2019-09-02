@@ -1,12 +1,12 @@
 package logisticspipes.proxy;
 
+import net.minecraftforge.fml.common.Loader;
+
+import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.StorageDrawersInventoryHandler;
-import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
-
-import net.minecraftforge.fml.common.Loader;
 
 public class SpecialInventoryHandlerManager {
 

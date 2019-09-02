@@ -5,7 +5,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 
-
 public class GuiStringHandlerButton extends GuiButton {
 
 	private final StringHandler handler;

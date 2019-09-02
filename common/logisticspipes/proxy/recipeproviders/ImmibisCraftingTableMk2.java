@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.CraftingUtil;

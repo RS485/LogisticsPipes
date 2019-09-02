@@ -1,5 +1,26 @@
 package logisticspipes.gui;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
 import logisticspipes.blocks.stats.TrackingTask;
 import logisticspipes.gui.popup.GuiAddTracking;
@@ -16,26 +37,6 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.math.Vec2;
 import logisticspipes.utils.string.StringUtils;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.pow;
-import static java.lang.Math.round;
 
 public class GuiStatistics extends LogisticsBaseGuiScreen {
 
@@ -213,7 +214,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 			BUTTONS.add(addButton(new GuiButton(3, guiLeft + 83, guiTop + 70, 60, 20, "Remove")));
 
 			if (itemDisplay == null) {
-				itemDisplay = new ItemDisplay(null, fontRenderer, GuiStatistics.this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
+				itemDisplay = new ItemDisplay(null, fontRenderer, GuiStatistics.this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
 			}
 			itemDisplay.reposition(guiLeft + 10, guiTop + 40, xSize - 20, 20, 0, 0);
 		}
@@ -482,7 +483,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		public void updateItemList() {
 			List<ItemIdentifierStack> allItems = tile.tasks.stream().map(task -> task.item.makeStack(1))
-				.collect(Collectors.toList());
+					.collect(Collectors.toList());
 			itemDisplay.setItemList(allItems);
 		}
 
@@ -511,7 +512,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 			BUTTONS.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
 			if (itemDisplay == null) {
-				itemDisplay = new ItemDisplay(null, fontRenderer, GuiStatistics.this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[]{1, 10, 64, 64}, true);
+				itemDisplay = new ItemDisplay(null, fontRenderer, GuiStatistics.this, null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
 				itemDisplay.setItemList(new ArrayList<>());
 			}
 			itemDisplay.reposition(guiLeft + 10, guiTop + 80, xSize - 20, 125, 0, 0);

@@ -3,10 +3,9 @@ package logisticspipes.pipes.upgrades;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
-import net.minecraft.util.EnumFacing;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

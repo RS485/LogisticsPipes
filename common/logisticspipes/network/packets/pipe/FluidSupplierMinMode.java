@@ -7,7 +7,6 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeFluidSupplierMk2.MinMode;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

@@ -3,9 +3,9 @@ package logisticspipes.interfaces;
 import java.util.List;
 import java.util.UUID;
 
-import logisticspipes.blocks.LogisticsSecurityTileEntity;
-
 import net.minecraft.entity.player.EntityPlayer;
+
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 
 public interface ISecurityStationManager {
 

@@ -1,11 +1,5 @@
 package logisticspipes.gui.hud;
 
-import logisticspipes.interfaces.IHUDConfig;
-import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.IPowerLevelDisplay;
-import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -13,6 +7,12 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.interfaces.IHUDConfig;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IPowerLevelDisplay;
+import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.string.StringUtils;
 
 public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer {
 

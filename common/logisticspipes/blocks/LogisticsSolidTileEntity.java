@@ -41,7 +41,7 @@ import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-@ModDependentInterface(modId = {LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID }, interfacePath = { "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment" })
+@ModDependentInterface(modId = { LPConstants.openComputersModID, LPConstants.openComputersModID, LPConstants.openComputersModID }, interfacePath = { "li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.Environment", "li.cil.oc.api.network.SidedEnvironment" })
 @CCType(name = "LogisticsSolidBlock")
 public class LogisticsSolidTileEntity extends TileEntity implements ITickable, ILPCCTypeHolder, IRotationProvider, ManagedPeripheral, Environment, SidedEnvironment, IOCTile {
 

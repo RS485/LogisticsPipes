@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.module;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.NewGuiHandler;
@@ -9,11 +11,8 @@ import logisticspipes.network.guis.module.inhand.ExtractorModuleInHand;
 import logisticspipes.network.guis.module.inpipe.ExtractorModuleSlot;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.gui.DummyModuleContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-
 import logisticspipes.utils.StaticResolve;
+import logisticspipes.utils.gui.DummyModuleContainer;
 
 @StaticResolve
 public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {

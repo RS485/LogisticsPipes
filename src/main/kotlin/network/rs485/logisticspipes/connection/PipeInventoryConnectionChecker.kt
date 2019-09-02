@@ -57,7 +57,8 @@ class PipeInventoryConnectionChecker {
                 if (clazz != null) {
                     addSupportedClassType(clazz)
                 }
-            } catch (_: ClassNotFoundException) {}
+            } catch (_: ClassNotFoundException) {
+            }
         }
     }
 

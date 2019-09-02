@@ -85,7 +85,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
 			int sneak = nbttagcompound.getInteger("sneakydirection");
-			if(sneak == 6) {
+			if (sneak == 6) {
 				_sneakyDirection = null;
 			} else {
 				_sneakyDirection = EnumFacing.values()[sneak];
@@ -144,7 +144,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	}
 
 	protected int neededEnergy() {
-		return (int) (5 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()))	;
+		return (int) (5 * Math.pow(1.1, getUpgradeManager().getItemExtractionUpgrade()) * Math.pow(1.2, getUpgradeManager().getItemStackExtractionUpgrade()));
 	}
 
 	protected int itemsToExtract() {
@@ -218,7 +218,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 					break;
 				}
 
-				if(count <= 0) {
+				if (count <= 0) {
 					jamList.add(reply.getValue1());
 				}
 

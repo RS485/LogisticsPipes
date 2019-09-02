@@ -54,14 +54,14 @@ public abstract class ModernPacket {
 
 	public void readData(LPDataInput input) {
 		dimension = input.readInt();
-		content.forEach(it->it.readData(input));
+		content.forEach(it -> it.readData(input));
 	}
 
 	public abstract void processPacket(EntityPlayer player);
 
 	public void writeData(LPDataOutput output) {
 		output.writeInt(dimension);
-		content.forEach(it->it.writeData(output));
+		content.forEach(it -> it.writeData(output));
 	}
 
 	public abstract ModernPacket template();

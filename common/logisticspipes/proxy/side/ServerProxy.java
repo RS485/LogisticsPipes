@@ -3,18 +3,6 @@ package logisticspipes.proxy.side;
 import java.io.File;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.UpdateName;
-import logisticspipes.pipes.basic.CoreUnroutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.interfaces.IProxy;
-import logisticspipes.utils.item.ItemIdentifier;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -29,8 +17,19 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.config.Configuration;
-
 import net.minecraftforge.fml.server.FMLServerHandler;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemLogisticsPipe;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.UpdateName;
+import logisticspipes.pipes.basic.CoreUnroutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public class ServerProxy implements IProxy {
 

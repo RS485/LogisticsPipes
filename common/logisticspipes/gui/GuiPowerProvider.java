@@ -1,14 +1,14 @@
 package logisticspipes.gui;
 
-import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
-import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.string.StringUtils;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
+
+import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
+import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import logisticspipes.utils.string.StringUtils;
 
 public class GuiPowerProvider extends LogisticsBaseGuiScreen {
 

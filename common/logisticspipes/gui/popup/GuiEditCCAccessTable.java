@@ -3,6 +3,12 @@ package logisticspipes.gui.popup;
 import java.io.IOException;
 import java.util.Collections;
 
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.SecurityAddCCIdPacket;
@@ -13,12 +19,6 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.string.StringUtils;
-
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-
-import org.lwjgl.input.Keyboard;
 
 public class GuiEditCCAccessTable extends SubGuiScreen {
 
@@ -187,7 +187,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 				_tile.excludedCC.remove(id);
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRemoveCCIdPacket.class).setInteger(id).setBlockPos(_tile.getPos()));
 			}
-				break;
+			break;
 			case 3: {
 				Integer id = Integer.valueOf(searchinput1 + searchinput2);
 				if (!_tile.excludedCC.contains(id)) {
@@ -196,7 +196,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 				}
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAddCCIdPacket.class).setInteger(id).setBlockPos(_tile.getPos()));
 			}
-				break;
+			break;
 			case 4:
 				page--;
 				if (page < 0) {

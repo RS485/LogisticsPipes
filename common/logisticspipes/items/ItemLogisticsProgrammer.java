@@ -11,7 +11,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-
 import logisticspipes.utils.string.StringUtils;
 
 public class ItemLogisticsProgrammer extends LogisticsItem {
@@ -34,19 +33,19 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		if(!stack.isEmpty()) {
-			if(stack.hasTagCompound()) {
+		if (!stack.isEmpty()) {
+			if (stack.hasTagCompound()) {
 				NBTTagCompound nbt = stack.getTagCompound();
 				String target = nbt.getString(RECIPE_TARGET);
 				if (!target.isEmpty()) {
 					Item targetItem = REGISTRY.getObject(new ResourceLocation(target));
-					if(targetItem instanceof ItemModule) {
+					if (targetItem instanceof ItemModule) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForModule"));
 						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
-					} else if(targetItem instanceof ItemUpgrade) {
+					} else if (targetItem instanceof ItemUpgrade) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForUpgrade"));
 						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
-					} else if(targetItem instanceof ItemLogisticsPipe) {
+					} else if (targetItem instanceof ItemLogisticsPipe) {
 						tooltip.add(StringUtils.translate("tooltip.programmerForPipe"));
 						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
 					} else {

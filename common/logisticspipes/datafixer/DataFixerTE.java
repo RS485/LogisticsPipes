@@ -1,13 +1,13 @@
 package logisticspipes.datafixer;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Map;
+import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IFixableData;
 
-import java.util.Map;
-import javax.annotation.Nonnull;
+import com.google.common.collect.ImmutableMap;
 
 public class DataFixerTE implements IFixableData {
 

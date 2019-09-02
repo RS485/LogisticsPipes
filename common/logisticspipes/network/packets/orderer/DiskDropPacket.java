@@ -1,5 +1,8 @@
 package logisticspipes.network.packets.orderer;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+
 import logisticspipes.LPItems;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
@@ -7,10 +10,6 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

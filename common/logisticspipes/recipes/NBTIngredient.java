@@ -18,7 +18,7 @@ public class NBTIngredient extends Ingredient {
 	private final ItemStack[] matchingStacks;
 	private IntList matchingStacksPacked;
 
-	protected NBTIngredient(ItemStack... stacks)  {
+	protected NBTIngredient(ItemStack... stacks) {
 		this.matchingStacks = stacks;
 	}
 

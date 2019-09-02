@@ -15,7 +15,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 
@@ -53,6 +52,7 @@ public class RequestTreeNode {
 	private Set<LogisticsOrderManager<?, ?>> usedExtrasFromManager = new HashSet<LogisticsOrderManager<?, ?>>();
 	private ICraftingTemplate lastCrafterTried = null;
 	private int promiseAmount = 0;
+
 	protected RequestTreeNode(IResource requestType, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		this(null, requestType, parentNode, requestFlags, info);
 	}
@@ -145,14 +145,14 @@ public class RequestTreeNode {
 	protected static List<IResource> shrinkToList(Map<IResource, Integer> items) {
 		List<IResource> resources = new ArrayList<>();
 		outer:
-			for (Entry<IResource, Integer> entry : items.entrySet()) {
-				for (IResource resource : resources) {
-					if (resource.mergeForDisplay(entry.getKey(), entry.getValue())) {
-						continue outer;
-					}
+		for (Entry<IResource, Integer> entry : items.entrySet()) {
+			for (IResource resource : resources) {
+				if (resource.mergeForDisplay(entry.getKey(), entry.getValue())) {
+					continue outer;
 				}
-				resources.add(entry.getKey().copyForDisplayWith(entry.getValue()));
 			}
+			resources.add(entry.getKey().copyForDisplayWith(entry.getValue()));
+		}
 		return resources;
 	}
 
@@ -261,7 +261,7 @@ public class RequestTreeNode {
 			if (extras == null) {
 				continue;
 			}
-			for (Iterator<IExtraPromise> it = extras.iterator(); it.hasNext();) {
+			for (Iterator<IExtraPromise> it = extras.iterator(); it.hasNext(); ) {
 				IExtraPromise extra = it.next();
 				if (extra.getAmount() >= usedcount) {
 					extra.lowerAmount(usedcount);
@@ -370,18 +370,18 @@ public class RequestTreeNode {
 			boolean valid = false;
 			List<ExitRoute> sources = extraPromise.getProvider().getRouter().getRouteTable().get(getRequestType().getRouter().getSimpleID());
 			outer:
-				for (ExitRoute source : sources) {
-					if (source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-						for (ExitRoute node : getRequestType().getRouter().getIRoutersByCost()) {
-							if (node.destination == extraPromise.getProvider().getRouter()) {
-								if (node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
-									valid = true;
-									break outer;
-								}
+			for (ExitRoute source : sources) {
+				if (source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+					for (ExitRoute node : getRequestType().getRouter().getIRoutersByCost()) {
+						if (node.destination == extraPromise.getProvider().getRouter()) {
+							if (node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+								valid = true;
+								break outer;
 							}
 						}
 					}
 				}
+			}
 			if (valid) {
 				extraPromise.setAmount(Math.min(extraPromise.getAmount(), getMissingAmount()));
 				addPromise(extraPromise);

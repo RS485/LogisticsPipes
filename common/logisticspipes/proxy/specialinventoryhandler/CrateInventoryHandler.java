@@ -71,7 +71,8 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getSingleItem(ItemIdentifier itemIdent) {
+	public @Nonnull
+	ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
 		if (count <= (_hideOnePerStack ? 1 : 0)) {
 			return ItemStack.EMPTY;
@@ -139,7 +140,8 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack getStackInSlot(int i) {
+	public @Nonnull
+	ItemStack getStackInSlot(int i) {
 		if (cached == null) {
 			initCache();
 		}
@@ -151,7 +153,8 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull ItemStack decrStackSize(int i, int j) {
+	public @Nonnull
+	ItemStack decrStackSize(int i, int j) {
 		if (cached == null) {
 			initCache();
 		}

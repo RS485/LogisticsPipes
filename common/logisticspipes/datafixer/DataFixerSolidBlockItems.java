@@ -2,11 +2,11 @@ package logisticspipes.datafixer;
 
 import javax.annotation.Nonnull;
 
-import logisticspipes.blocks.BlockDummy;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IFixableData;
 
+import logisticspipes.blocks.BlockDummy;
 
 public class DataFixerSolidBlockItems implements IFixableData {
 
@@ -22,8 +22,8 @@ public class DataFixerSolidBlockItems implements IFixableData {
 	@Override
 	public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
 		if (
-			!compound.getString("id").equals("logisticspipes:solid_block") &&
-				!compound.getString("id").equals("logisticspipes:tile.logisticssolidblock")
+				!compound.getString("id").equals("logisticspipes:solid_block") &&
+						!compound.getString("id").equals("logisticspipes:tile.logisticssolidblock")
 		) return compound;
 
 		int meta = compound.getShort("Damage");

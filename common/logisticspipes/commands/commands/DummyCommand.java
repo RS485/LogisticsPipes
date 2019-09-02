@@ -1,8 +1,8 @@
 package logisticspipes.commands.commands;
 
-import logisticspipes.commands.abstracts.ICommandHandler;
-
 import net.minecraft.command.ICommandSender;
+
+import logisticspipes.commands.abstracts.ICommandHandler;
 
 public class DummyCommand implements ICommandHandler {
 

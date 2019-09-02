@@ -11,9 +11,9 @@ import logisticspipes.routing.ItemRoutingInformation;
 public class ThermalDynamicsHooks {
 
 	public static void travelingItemToNBT(TravelingItem travelingItem, NBTTagCompound paramNBTTagCompound) {
-		if (((ILPTravelingItemInfo)travelingItem).getLPRoutingInfoAddition() != null) {
+		if (((ILPTravelingItemInfo) travelingItem).getLPRoutingInfoAddition() != null) {
 			NBTTagCompound save = new NBTTagCompound();
-			((ItemRoutingInformation) ((ILPTravelingItemInfo)travelingItem).getLPRoutingInfoAddition()).writeToNBT(save);
+			((ItemRoutingInformation) ((ILPTravelingItemInfo) travelingItem).getLPRoutingInfoAddition()).writeToNBT(save);
 			paramNBTTagCompound.setTag("LPRoutingInformation", save);
 		}
 	}
@@ -22,8 +22,8 @@ public class ThermalDynamicsHooks {
 		if (!paramNBTTagCompound.hasKey("LPRoutingInformation")) {
 			return;
 		}
-		((ILPTravelingItemInfo)travelingItem).setLPRoutingInfoAddition(new ItemRoutingInformation());
-		((ItemRoutingInformation) ((ILPTravelingItemInfo)travelingItem).getLPRoutingInfoAddition()).readFromNBT(paramNBTTagCompound.getCompoundTag("LPRoutingInformation"));
+		((ILPTravelingItemInfo) travelingItem).setLPRoutingInfoAddition(new ItemRoutingInformation());
+		((ItemRoutingInformation) ((ILPTravelingItemInfo) travelingItem).getLPRoutingInfoAddition()).readFromNBT(paramNBTTagCompound.getCompoundTag("LPRoutingInformation"));
 	}
 
 	public static void renderItemTransportBox(TravelingItem item) {
@@ -39,7 +39,7 @@ public class ThermalDynamicsHooks {
 		if (item.stack == null || item.stack.isEmpty()) {
 			return null;
 		}
-		if (((ILPTravelingItemInfo)item).getLPRoutingInfoAddition() != null) {
+		if (((ILPTravelingItemInfo) item).getLPRoutingInfoAddition() != null) {
 			stack = stack.copy();
 			if (!stack.hasTagCompound()) {
 				stack.setTagCompound(new NBTTagCompound());

@@ -39,6 +39,7 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 		super.initGui();
 		buttonList.clear();
 		configDisplay = new SideConfigDisplay(config) {
+
 			@Override
 			public void handleSelection(SelectedFace selection) {
 				SneakyConfigurationPopup.this.handleSelection(selection);
@@ -87,7 +88,7 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		switch(button.id) {
+		switch (button.id) {
 			case 0:
 				this.exitGui();
 			default:

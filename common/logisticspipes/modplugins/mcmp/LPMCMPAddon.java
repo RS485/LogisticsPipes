@@ -48,7 +48,7 @@ public class LPMCMPAddon implements IMCMPAddon {
 				@Nullable
 				@Override
 				public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-					if(capability == MCMPCapabilities.MULTIPART_TILE) {
+					if (capability == MCMPCapabilities.MULTIPART_TILE) {
 						//noinspection unchecked
 						return (T) IMultipartTile.wrap(tile);
 					}

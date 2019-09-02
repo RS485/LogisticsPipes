@@ -12,11 +12,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
+import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-
-import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
 public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {

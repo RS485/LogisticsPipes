@@ -1,6 +1,5 @@
 /**
  * Copyright (c) Krapht, 2012
- *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -11,19 +10,18 @@ package logisticspipes.gui.modules;
 import java.io.IOException;
 import java.util.Locale;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ExtractorModuleDirectionPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraft.util.EnumFacing;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiExtractor extends ModuleBaseGui {
 

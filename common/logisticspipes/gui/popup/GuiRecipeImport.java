@@ -191,7 +191,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
 			MainProxy.sendPacketToServer(packet.setContent(stack).setBlockPos(tile.getPos()));
 			exitGui();
-		} else if(id == 1) {
+		} else if (id == 1) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FindMostLikelyRecipeComponents.class).setContent(list).setTilePos(tile));
 		} else if (id >= 10 && id < 30) {
 			int slot = id % 10;
@@ -212,11 +212,11 @@ public class GuiRecipeImport extends SubGuiScreen {
 	}
 
 	public void handleProposePacket(List<Integer> response) {
-		if(list.size() != response.size()) return;
-		for(int slot=0;slot<list.size();slot++) {
+		if (list.size() != response.size()) return;
+		for (int slot = 0; slot < list.size(); slot++) {
 			Canidates canidate = list.get(slot);
 			int newPos = response.get(slot);
-			if(newPos != -1) {
+			if (newPos != -1) {
 				canidate.pos = newPos;
 			}
 		}

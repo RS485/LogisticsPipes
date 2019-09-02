@@ -3,11 +3,11 @@ package logisticspipes.interfaces.routing;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.minecraft.util.EnumFacing;
+
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionInformation;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-
-import net.minecraft.util.EnumFacing;
 
 public interface ISpecialPipedConnection {
 

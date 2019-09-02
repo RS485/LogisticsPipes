@@ -1,8 +1,10 @@
 package logisticspipes.recipes;
 
-import logisticspipes.LPItems;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import logisticspipes.LPItems;
 
 public class LPChipRecipes implements IRecipeProvider {
 

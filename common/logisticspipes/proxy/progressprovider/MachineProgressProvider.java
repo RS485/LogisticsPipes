@@ -3,10 +3,10 @@ package logisticspipes.proxy.progressprovider;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.tileentity.TileEntity;
+
 import logisticspipes.api.IProgressProvider;
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
-
-import net.minecraft.tileentity.TileEntity;
 
 public class MachineProgressProvider {
 

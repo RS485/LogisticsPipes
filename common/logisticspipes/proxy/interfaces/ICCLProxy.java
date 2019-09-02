@@ -5,19 +5,19 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
-import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
-import logisticspipes.proxy.object3d.interfaces.IModel3D;
-import logisticspipes.proxy.object3d.interfaces.IRenderState;
-import logisticspipes.proxy.object3d.interfaces.ITranslation;
-import logisticspipes.proxy.object3d.interfaces.IVec3;
-import logisticspipes.proxy.object3d.operation.LPScale;
-
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import logisticspipes.proxy.object3d.interfaces.I3DOperation;
+import logisticspipes.proxy.object3d.interfaces.IModel3D;
+import logisticspipes.proxy.object3d.interfaces.IRenderState;
+import logisticspipes.proxy.object3d.interfaces.ITranslation;
+import logisticspipes.proxy.object3d.interfaces.IVec3;
+import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
+import logisticspipes.proxy.object3d.operation.LPScale;
 
 public interface ICCLProxy {
 

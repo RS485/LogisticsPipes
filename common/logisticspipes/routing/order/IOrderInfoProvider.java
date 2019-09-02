@@ -41,7 +41,7 @@ public interface IOrderInfoProvider extends LPFinalSerializable {
 		output.writeEnum(getType());
 		output.writeCollection(getProgresses(), LPDataOutput::writeFloat);
 		output.writeByte(getMachineProgress());
-		if(getTargetPosition() != null) {
+		if (getTargetPosition() != null) {
 			output.writeBoolean(true);
 			output.writeSerializable(getTargetPosition());
 			output.writeItemIdentifier(getTargetType());

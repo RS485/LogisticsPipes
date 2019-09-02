@@ -4,18 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import logisticspipes.config.Configs;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.block.PowerPacketLaser;
-import logisticspipes.pipefxhandlers.PipeFXLaserPowerBall;
-import logisticspipes.pipefxhandlers.PipeFXLaserPowerBeam;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
-
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -24,6 +14,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+
+import logisticspipes.config.Configs;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.PowerPacketLaser;
+import logisticspipes.pipefxhandlers.PipeFXLaserPowerBall;
+import logisticspipes.pipefxhandlers.PipeFXLaserPowerBeam;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsTileRenderController {
 

@@ -8,7 +8,6 @@
 
 package logisticspipes.utils.item;
 
-import javax.annotation.Nonnull;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -62,11 +62,11 @@ import logisticspipes.utils.ReflectionHelper;
 
 /**
  * @author Krapht I have no bloody clue what different mods use to differate
- *         between items except for itemID, there is metadata, damage, and
- *         whatnot. so..... to avoid having to change all my bloody code every
- *         time I need to support a new item targeted that would make it a
- *         "different" item, I made this cache here A ItemIdentifier is
- *         immutable, singleton and most importantly UNIQUE!
+ * between items except for itemID, there is metadata, damage, and
+ * whatnot. so..... to avoid having to change all my bloody code every
+ * time I need to support a new item targeted that would make it a
+ * "different" item, I made this cache here A ItemIdentifier is
+ * immutable, singleton and most importantly UNIQUE!
  */
 public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTypeHolder {
 
@@ -356,6 +356,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	@AllArgsConstructor
 	public static class ItemStackAddInfo implements IAddInfo {
+
 		private final ItemIdentifier ident;
 	}
 

@@ -37,6 +37,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, IGuiOpenControler {
 
 	public static class ProgrammCategories {
+
 		public static final ResourceLocation BASIC = new ResourceLocation("logisticspipes", "compilercategory.basic");
 		public static final ResourceLocation TIER_2 = new ResourceLocation("logisticspipes", "compilercategory.tier_2");
 		public static final ResourceLocation FLUID = new ResourceLocation("logisticspipes", "compilercategory.fluid");
@@ -45,6 +46,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		public static final ResourceLocation CHASSIS_2 = new ResourceLocation("logisticspipes", "compilercategory.chassis_2");
 		public static final ResourceLocation CHASSIS_3 = new ResourceLocation("logisticspipes", "compilercategory.chassis_3");
 		public static final ResourceLocation MODDED = new ResourceLocation("logisticspipes", "compilercategory.modded");
+
 		static {
 			//Force the order of keys
 			programByCategory.put(BASIC, new HashSet<>());
@@ -91,7 +93,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	}
 
 	public void triggerNewTask(ResourceLocation category, String taskType) {
-		if(currentTask != null) return;
+		if (currentTask != null) return;
 		this.taskType = taskType;
 		currentTask = category;
 		taskProgress = 0;
@@ -123,11 +125,11 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	@Override
 	public void update() {
 		super.update();
-		if(MainProxy.isServer(world)) {
+		if (MainProxy.isServer(world)) {
 			if (currentTask != null) {
 				wasAbleToConsumePower = false;
 				for (EnumFacing dir : EnumFacing.VALUES) {
-					if(dir == EnumFacing.UP) continue;
+					if (dir == EnumFacing.UP) continue;
 					DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
 					TileEntity tile = pos.getTileEntity(getWorld());
 					if (!(tile instanceof LogisticsTileGenericPipe)) {
@@ -159,9 +161,9 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 						NBTTagList list = getNBTTagListForKey("compilerPrograms");
 						list.appendTag(new NBTTagString(currentTask.toString()));
 					} else if (taskType.equals("flash")) {
-						if(!getInventory().getStackInSlot(1).isEmpty()) {
+						if (!getInventory().getStackInSlot(1).isEmpty()) {
 							ItemStack programmer = getInventory().getStackInSlot(1);
-							if(!programmer.hasTagCompound()) {
+							if (!programmer.hasTagCompound()) {
 								programmer.setTagCompound(new NBTTagCompound());
 							}
 							programmer.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, currentTask.toString());

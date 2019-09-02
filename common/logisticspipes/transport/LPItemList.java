@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -102,6 +104,7 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 		purgeBadItems();
 	}
 
+	@Nonnull
 	@Override
 	public Iterator<LPTravelingItem> iterator() {
 		return items.values().iterator();

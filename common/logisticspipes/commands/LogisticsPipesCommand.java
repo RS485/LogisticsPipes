@@ -1,8 +1,9 @@
 package logisticspipes.commands;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
+
+import javax.annotation.Nonnull;
 
 import logisticspipes.LPConstants;
 import logisticspipes.commands.abstracts.ICommandHandler;
@@ -19,6 +20,7 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+
 public class LogisticsPipesCommand extends CommandBase {
 
 	private final ICommandHandler mainCommand;
@@ -27,13 +29,15 @@ public class LogisticsPipesCommand extends CommandBase {
 		mainCommand = new MainCommandHandler();
 	}
 
+	@Nonnull
 	@Override
 	public String getName() {
 		return "logisticspipes";
 	}
 
+	@Nonnull
 	@Override
-	public String getUsage(ICommandSender var1) {
+	public String getUsage(@Nonnull ICommandSender var1) {
 		return "/" + getName() + " help";
 	}
 /*
@@ -43,7 +47,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 */
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] arguments) throws CommandException {
+	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, String[] arguments) throws CommandException {
 		if (arguments.length <= 0) {
 			throw new WrongUsageException("Type '/logisticspipes help' for help.");
 		}

@@ -56,7 +56,7 @@ public class RecipeTransferHandler implements IRecipeTransferHandler {
 
 			if(gui instanceof GuiLogisticsCraftingTable || gui instanceof GuiRequestTable) {
 
-				TileEntity tile = null;
+				TileEntity tile;
 				if (gui instanceof GuiLogisticsCraftingTable) {
 					tile = ((GuiLogisticsCraftingTable) gui)._crafter;
 				} else {

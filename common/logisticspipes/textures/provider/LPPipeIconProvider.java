@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import logisticspipes.renderer.IIconProvider;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import lombok.Getter;
 
 public class LPPipeIconProvider implements IIconProvider {
 

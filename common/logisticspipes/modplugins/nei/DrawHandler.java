@@ -1,7 +1,5 @@
 package logisticspipes.modplugins.nei;
 
-import java.util.List;
-
 import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.gui.GuiGraphics;
 
@@ -45,7 +43,7 @@ public class DrawHandler implements IContainerDrawHandler {
 		//TODO: Same as above
 		if (slotActive.slotNumber == 0) {
 			if (QuickSortChestMarkerStorage.getInstance().isActivated()) {
-				((List<Slot>) gui.inventorySlots.inventorySlots).stream()
+				gui.inventorySlots.inventorySlots.stream()
 						.filter(slot -> QuickSortChestMarkerStorage.getInstance().getMarker().contains(slot.slotNumber))
 						.forEach(slot -> {
 							Minecraft.getMinecraft().renderEngine.bindTexture(GuiGraphics.WIDGETS_TEXTURE);

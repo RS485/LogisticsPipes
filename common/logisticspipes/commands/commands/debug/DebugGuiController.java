@@ -169,7 +169,7 @@ public class DebugGuiController {
 		}
 	}
 
-	private class ObjectIdentification implements IObjectIdentification {
+	private static class ObjectIdentification implements IObjectIdentification {
 		@Override
 		public boolean toStringObject(Object o) {
 			return o.getClass() == EnumFacing.class || o.getClass() == ItemIdentifier.class || o.getClass() == ItemIdentifierStack.class;

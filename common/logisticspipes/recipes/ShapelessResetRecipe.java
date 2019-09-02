@@ -1,16 +1,15 @@
 package logisticspipes.recipes;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.registries.IForgeRegistryEntry;
+
 
 public class ShapelessResetRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
 
@@ -25,7 +24,7 @@ public class ShapelessResetRecipe extends IForgeRegistryEntry.Impl<IRecipe> impl
 	}
 
 	@Override
-	public boolean matches(InventoryCrafting var1, World var2) {
+	public boolean matches(InventoryCrafting var1, @Nonnull World var2) {
 		int nmatches = 0;
 		for (int i = 0; i < var1.getSizeInventory(); i++) {
 			ItemStack slot = var1.getStackInSlot(i);
@@ -40,6 +39,7 @@ public class ShapelessResetRecipe extends IForgeRegistryEntry.Impl<IRecipe> impl
 		return (nmatches > 0);
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getCraftingResult(InventoryCrafting var1) {
 		int nmatches = 0;
@@ -57,6 +57,7 @@ public class ShapelessResetRecipe extends IForgeRegistryEntry.Impl<IRecipe> impl
 		return true;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getRecipeOutput() {
 		return output;

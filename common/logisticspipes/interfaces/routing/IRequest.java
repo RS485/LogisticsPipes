@@ -4,7 +4,7 @@ import logisticspipes.routing.IRouter;
 
 public interface IRequest {
 
-	public IRouter getRouter();
+	IRouter getRouter();
 
-	public int getID();
+	int getID();
 }

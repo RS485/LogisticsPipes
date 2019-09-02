@@ -12,11 +12,11 @@ public class VecmathUtil {
 	}
 
 	public static double clamp(double val, double min, double max) {
-		return val < min ? min : (val > max ? max : val);
+		return val < min ? min : (Math.min(val, max));
 	}
 
 	public static int clamp(int val, int min, int max) {
-		return val < min ? min : (val > max ? max : val);
+		return val < min ? min : (Math.min(val, max));
 	}
 
 	/**

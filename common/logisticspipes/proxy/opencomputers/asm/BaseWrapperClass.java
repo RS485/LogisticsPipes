@@ -169,7 +169,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 				head.append("\n").append(buffer);
 			}
 		}
-		return new Object[] { new StringBuilder().append(head).append(head2).append(help).toString() };
+		return new Object[] { String.format("%s%s%s", head, head2, help) };
 	}
 
 	@Callback(direct = true)

@@ -7,7 +7,7 @@ import logisticspipes.routing.IRouter;
 
 public interface IFilteringPipe {
 
-	public List<ExitRoute> getRouters(IRouter router);
+	List<ExitRoute> getRouters(IRouter router);
 
-	public IFilter getFilter();
+	IFilter getFilter();
 }

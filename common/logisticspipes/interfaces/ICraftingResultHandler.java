@@ -4,5 +4,5 @@ import net.minecraft.item.ItemStack;
 
 public interface ICraftingResultHandler {
 
-	public void handleCrafting(ItemStack stack);
+	void handleCrafting(ItemStack stack);
 }

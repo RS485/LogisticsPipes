@@ -68,13 +68,13 @@ public abstract class SideConfigDisplay {
 
 	private boolean draggingRotate = false;
 	private boolean draggingMove = false;
-	private float pitch = 0;
-	private float yaw = 0;
+	private float pitch;
+	private float yaw;
 	private double distance;
 	private long initTime;
 
 	private Minecraft mc = Minecraft.getMinecraft();
-	private World world = mc.player.world;
+	private World world;
 
 	private final Vector3d origin = new Vector3d();
 	private final Vector3d eye = new Vector3d();
@@ -90,8 +90,6 @@ public abstract class SideConfigDisplay {
 	private SelectedFace selection;
 
 	public boolean renderNeighbours = true;
-	private boolean inNeigButBounds = false;
-	private LogisticsBlockGenericPipe.InternalRayTraceResult cachedLPBlockTrace;
 
 	public SideConfigDisplay(CoreRoutedPipe configurables) {
 		this(Collections.singletonList(configurables.getLPPosition()));
@@ -203,6 +201,7 @@ public abstract class SideConfigDisplay {
 		}
 
 		if (!Mouse.getEventButtonState() && camera.isValid() && elapsed > 500) {
+			boolean inNeigButBounds = false;
 			if (Mouse.getEventButton() == 1) {
 				if (selection != null) {
 					handleSelection(selection);
@@ -223,6 +222,7 @@ public abstract class SideConfigDisplay {
 			IBlockState bs = bc.getBlockState(world);
 			Block block = bs.getBlock();
 			if (block != null) {
+				LogisticsBlockGenericPipe.InternalRayTraceResult cachedLPBlockTrace;
 				if(block instanceof LogisticsBlockGenericPipe) {
 					cachedLPBlockTrace = LPBlocks.pipe.doRayTrace(world, bc.getBlockPos(), start.toVec3d(), end.toVec3d());
 				} else {
@@ -431,7 +431,7 @@ public abstract class SideConfigDisplay {
 			state = state.getBlock().getExtendedState(state, world, pos);
 			blockrendererdispatcher.getBlockModelRenderer().renderModel(blockAccess, ibakedmodel, state, pos, worldRendererIn, false);
 
-		} catch (Throwable throwable) {
+		} catch (Throwable ignored) {
 		}
 	}
 	private void setGlStateForPass(BlockRenderLayer layer, boolean isNeighbour) {
@@ -593,8 +593,6 @@ public abstract class SideConfigDisplay {
 			if (vertices == null || vertices.isEmpty()) {
 				return;
 			}
-
-			List<Vertex> newV = vertices;
 
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder tes = tessellator.getBuffer();

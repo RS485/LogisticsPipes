@@ -4,8 +4,6 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPConstants;
 import logisticspipes.proxy.MainProxy;
@@ -67,7 +65,7 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_OPAQUE_TEXTURE = Textures.empty;
 	public static SmallTextureType LOGISTICSPIPE_BASIC_TRANSPORT_TEXTURE = Textures.smallEmpty;
 
-	public static Object LOGISTICS_REQUEST_TABLE[] = new Object[0];
+	public static Object[] LOGISTICS_REQUEST_TABLE = new Object[0];
 	public static Object LOGISTICS_REQUEST_TABLE_NEW = null;
 	public static Object LOGISTICS_REQUEST_TABLE_NEW_ROUTED = null;
 	public static Object LOGISTICS_REQUEST_TABLE_NEW_UNROUTED = null;

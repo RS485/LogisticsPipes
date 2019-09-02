@@ -1,5 +1,7 @@
 package logisticspipes.items;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,6 +19,7 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.ISpecialArmor;
 
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.interfaces.ILogisticsItem;
@@ -31,17 +34,17 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 	}
 
 	@Override
-	public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage, int slot) {
+	public ArmorProperties getProperties(EntityLivingBase player, @Nonnull ItemStack armor, DamageSource source, double damage, int slot) {
 		return new ArmorProperties(0, 0, 0);
 	}
 
 	@Override
-	public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot) {
+	public int getArmorDisplay(EntityPlayer player, @Nonnull ItemStack armor, int slot) {
 		return 0;
 	}
 
 	@Override
-	public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {
+	public void damageArmor(EntityLivingBase entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
 		// Does not get dammaged
 	}
 
@@ -50,8 +53,9 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 		return true;
 	}
 
+	@Nonnull
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn) {
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand handIn) {
 		ItemStack stack = player.getHeldItem(handIn);
 		if (MainProxy.isClient(world)) {
 			return new ActionResult<>(EnumActionResult.PASS, stack);
@@ -60,6 +64,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}
 
+	@Nonnull
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		useItem(player, world);
@@ -73,6 +78,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 		player.openGui(LogisticsPipes.instance, GuiIDs.GUI_HUD_Settings, world, player.inventory.currentItem, -1, 0);
 	}
 
+	@Nonnull
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
 		// is visible in the LP creative tab and the ItemArmor creative tab
@@ -89,8 +95,9 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 		return "logisticspipes:textures/armor/LogisticsHUD_1.png";
 	}
 
+	@Nonnull
 	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
+	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
 		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 

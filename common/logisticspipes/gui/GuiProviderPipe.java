@@ -66,7 +66,7 @@ public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			logic.setFilterExcluded(!logic.isExcludeFilter());
-			((GuiButton) buttonList.get(0)).displayString = logic.isExcludeFilter() ? StringUtils.translate(GuiProviderPipe.PREFIX + "Exclude") : StringUtils.translate(GuiProviderPipe.PREFIX + "Include");
+			buttonList.get(0).displayString = logic.isExcludeFilter() ? StringUtils.translate(GuiProviderPipe.PREFIX + "Exclude") : StringUtils.translate(GuiProviderPipe.PREFIX + "Include");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		} else if (guibutton.id == 1) {
 			logic.nextExtractionMode();
@@ -76,7 +76,7 @@ public class GuiProviderPipe extends LogisticsBaseGuiScreen {
 	}
 
 	public void refreshInclude() {
-		((GuiButton) buttonList.get(0)).displayString = logic.isExcludeFilter() ? StringUtils.translate(GuiProviderPipe.PREFIX + "Exclude") : StringUtils.translate(GuiProviderPipe.PREFIX + "Include");
+		buttonList.get(0).displayString = logic.isExcludeFilter() ? StringUtils.translate(GuiProviderPipe.PREFIX + "Exclude") : StringUtils.translate(GuiProviderPipe.PREFIX + "Include");
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -48,6 +50,7 @@ public class ChannelManager implements IChannelManager {
 			}
 		}
 
+		@Nonnull
 		@Override
 		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 			compound.setInteger("dataSize", channels.size());

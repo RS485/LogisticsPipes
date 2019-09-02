@@ -9,5 +9,5 @@ package logisticspipes.api;
  */
 public interface ILogisticsPowerProvider extends IRoutedPowerProvider {
 
-	public int getPowerLevel();
+	int getPowerLevel();
 }

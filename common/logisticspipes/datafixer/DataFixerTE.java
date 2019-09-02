@@ -1,11 +1,13 @@
 package logisticspipes.datafixer;
 
 import com.google.common.collect.ImmutableMap;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IFixableData;
 
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class DataFixerTE implements IFixableData {
 
@@ -30,6 +32,7 @@ public class DataFixerTE implements IFixableData {
 		return VERSION;
 	}
 
+	@Nonnull
 	@Override
 	public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
 		String teName = compound.getString("id");

@@ -39,10 +39,10 @@ public class ASMHelper {
 		try {
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
-				String oldLine = line.substring(0);
+				String oldLine = line;
 				line += " ";
 				while (!oldLine.equals(line)) {
-					oldLine = line.substring(0);
+					oldLine = line;
 					line = line.trim();
 					line = line.replace("\t", " ");
 					line = line.replace("  ", " ");

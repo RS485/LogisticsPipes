@@ -7,21 +7,13 @@ import java.util.function.Consumer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.math.BlockPos;
 
-import logisticspipes.interfaces.IGUIChannelInformationReceiver;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.gui.OpenAddChannelGUIPacket;
-import logisticspipes.network.packets.gui.OpenEditChannelGUIPacket;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.channels.ChannelInformation;
-import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.gui.TextListDisplay;
 import logisticspipes.utils.string.StringUtils;
 
 public class GuiSelectChannelPopup extends GuiManageChannelPopup {
 
-	private static String GUI_LANG_KEY = "gui.popup.selectchannel.";
+	private static final String GUI_LANG_KEY = "gui.popup.selectchannel.";
 
 	private final Consumer<ChannelInformation> handleResult;
 

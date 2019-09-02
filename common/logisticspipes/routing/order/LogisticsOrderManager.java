@@ -13,8 +13,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+
 
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.ILPPositionProvider;
@@ -31,7 +34,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 	protected final LogisticsOrderLinkedList<T, I> _orders;
 	protected IChangeListener listener = null;
 	protected PlayerCollectionList watchingPlayers = new PlayerCollectionList();
-	private ILPPositionProvider pos = null;
+	private ILPPositionProvider pos;
 
 	public LogisticsOrderManager(LogisticsOrderLinkedList<T, I> orders, ILPPositionProvider pos) {
 		_orders = orders;
@@ -63,7 +66,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 	public void dump() {
 		StringBuilder sb = new StringBuilder(" ############################################# ").append(System.getProperty("line.separator"));
 		for (T s : _orders) {
-			sb.append(s.getAsDisplayItem() + " / " + s.getAmount() + " / " + s.getType().name()).append(System.getProperty("line.separator"));
+			sb.append(s.getAsDisplayItem()).append(" / ").append(s.getAmount()).append(" / ").append(s.getType().name()).append(System.getProperty("line.separator"));
 		}
 		System.out.print(sb.append(" ############################################# ").toString());
 		System.out.println();
@@ -203,6 +206,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 	/**
 	 * DON'T MODIFY TROUGH THIS ONLY READ THE VALUES
 	 */
+	@Nonnull
 	@Override
 	public Iterator<T> iterator() {
 		return this._orders.iterator();

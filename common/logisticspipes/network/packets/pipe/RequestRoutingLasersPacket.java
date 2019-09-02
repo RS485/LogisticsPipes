@@ -38,14 +38,14 @@ import logisticspipes.utils.StaticResolve;
 @StaticResolve
 public class RequestRoutingLasersPacket extends CoordinatesPacket {
 
-	private abstract class Log {
+	private abstract static class Log {
 
 		abstract void log(String log);
 	}
 
 	@Data
 	@AllArgsConstructor
-	private class DataEntry {
+	private static class DataEntry {
 
 		final LogisticsTileGenericPipe pipe;
 		final EnumFacing dir;
@@ -195,15 +195,14 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	}
 
 	private ArrayList<LaserData> compressLasers(ArrayList<LaserData> lasers) {
-		ArrayList<LaserData> options = new ArrayList<>();
-		options.addAll(lasers);
+		ArrayList<LaserData> options = new ArrayList<>(lasers);
 		Iterator<LaserData> iLasers = lasers.iterator();
 		while (iLasers.hasNext()) {
 			boolean compressed = false;
 			LaserData data = iLasers.next();
 			IntegerCoordinates next = new IntegerCoordinates(data.getPosX(), data.getPosY(), data.getPosZ());
 			CoordinateUtils.add(next, data.getDir(), data.getLength());
-			boolean found = false;
+			boolean found;
 			do {
 				found = false;
 				Iterator<LaserData> iOptions = options.iterator();

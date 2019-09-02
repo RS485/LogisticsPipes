@@ -9,23 +9,23 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public interface ISecurityStationManager {
 
-	public void add(LogisticsSecurityTileEntity tile);
+	void add(LogisticsSecurityTileEntity tile);
 
-	public LogisticsSecurityTileEntity getStation(UUID id);
+	LogisticsSecurityTileEntity getStation(UUID id);
 
-	public void remove(LogisticsSecurityTileEntity tile);
+	void remove(LogisticsSecurityTileEntity tile);
 
-	public void deauthorizeUUID(UUID id);
+	void deauthorizeUUID(UUID id);
 
-	public void authorizeUUID(UUID id);
+	void authorizeUUID(UUID id);
 
-	public boolean isAuthorized(UUID id);
+	boolean isAuthorized(UUID id);
 
-	public boolean isAuthorized(String id);
+	boolean isAuthorized(String id);
 
-	public void sendClientAuthorizationList();
+	void sendClientAuthorizationList();
 
-	public void sendClientAuthorizationList(EntityPlayer player);
+	void sendClientAuthorizationList(EntityPlayer player);
 
-	public void setClientAuthorizationList(List<String> list);
+	void setClientAuthorizationList(List<String> list);
 }

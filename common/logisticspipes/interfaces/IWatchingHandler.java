@@ -4,7 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public interface IWatchingHandler {
 
-	public void playerStartWatching(EntityPlayer player, int mode);
+	void playerStartWatching(EntityPlayer player, int mode);
 
-	public void playerStopWatching(EntityPlayer player, int mode);
+	void playerStopWatching(EntityPlayer player, int mode);
 }

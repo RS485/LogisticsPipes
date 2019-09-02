@@ -2,19 +2,12 @@ package logisticspipes.proxy.td;
 
 import java.util.List;
 
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.pipeline.IVertexOperation;
-import codechicken.lib.texture.TextureUtils;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.uv.IconTransformation;
-
 import cofh.thermaldynamics.duct.tiles.TileDuctItem;
 import cofh.thermaldynamics.render.RenderDuct;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ITDProxy;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
 import logisticspipes.proxy.td.subproxies.ITDPart;

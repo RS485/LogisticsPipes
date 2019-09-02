@@ -8,13 +8,14 @@
 
 package logisticspipes.items;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.LPBlocks;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -26,7 +27,6 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.utils.LPPositionSet;
-import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,9 +51,6 @@ import org.apache.logging.log4j.Level;
  */
 public class ItemLogisticsPipe extends LogisticsItem {
 
-	@SideOnly(Side.CLIENT)
-	private IIconProvider iconProvider;
-	private int pipeIconIndex;
 	private int newPipeIconIndex;
 	private int newPipeRenderList = -1;
 	@Getter
@@ -63,6 +60,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		super();
 	}
 
+	@Nonnull
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		Block block = LPBlocks.pipe;
@@ -82,7 +80,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 		}
 
 		if (!dummyPipe.isMultiBlock()) {
-			if (player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(block, pos, false, facing, (Entity)null)) {
+			if (player.canPlayerEdit(pos, facing, itemstack) && worldIn.mayPlace(block, pos, false, facing, null)) {
 				CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(this);
 
 				if (pipe == null) {
@@ -129,7 +127,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 			placeAt.add(orientation.getOffset());
 
 			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> iPos : globalPos) {
-				if(!player.canPlayerEdit(iPos.getBlockPos(), facing, itemstack) || !worldIn.mayPlace(block, iPos.getBlockPos(), false, facing, (Entity)null)) {
+				if(!player.canPlayerEdit(iPos.getBlockPos(), facing, itemstack) || !worldIn.mayPlace(block, iPos.getBlockPos(), false, facing, null)) {
 					TileEntity tile = worldIn.getTileEntity(iPos.getBlockPos());
 					boolean canPlace = false;
 					if(tile instanceof LogisticsTileGenericSubMultiBlock) {
@@ -178,11 +176,9 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	@SideOnly(Side.CLIENT)
 	public void setPipesIcons(IIconProvider iconProvider) {
-		this.iconProvider = iconProvider;
 	}
 
 	public void setPipeIconIndex(int index, int newIndex) {
-		pipeIconIndex = index;
 		newPipeIconIndex = newIndex;
 	}
 

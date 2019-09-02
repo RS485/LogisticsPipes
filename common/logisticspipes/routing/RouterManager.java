@@ -271,9 +271,7 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 
 	@Override
 	public void deauthorizeUUID(UUID id) {
-		if (_authorized.contains(id.toString())) {
-			_authorized.remove(id.toString());
-		}
+		_authorized.remove(id.toString());
 		sendClientAuthorizationList();
 	}
 

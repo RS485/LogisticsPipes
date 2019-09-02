@@ -30,11 +30,11 @@ public class ActiveSupplierInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleActiveSupplier)) {
+		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
+		if (!(dummy.getModule() instanceof ModuleActiveSupplier)) {
 			return null;
 		}
-		((DummyModuleContainer) dummy).setInventory(((ModuleActiveSupplier) ((DummyModuleContainer) dummy).getModule()).getDummyInventory());
+		dummy.setInventory(((ModuleActiveSupplier) dummy.getModule()).getDummyInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
@@ -105,6 +104,6 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
-		CurveTubeRenderer.tubeCurve.get(orientation.getRenderOrientation()).copy().render(new I3DOperation[] { LPColourMultiplier.instance(0xFFFFFFFF)  });
+		CurveTubeRenderer.tubeCurve.get(orientation.getRenderOrientation()).copy().render(LPColourMultiplier.instance(0xFFFFFFFF));
 	}
 }

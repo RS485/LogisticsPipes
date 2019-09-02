@@ -8,11 +8,11 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public interface IStringBasedModule {
 
-	public List<String> getStringList();
+	List<String> getStringList();
 
-	public String getStringForItem(ItemIdentifier ident);
+	String getStringForItem(ItemIdentifier ident);
 
-	public void listChanged();
+	void listChanged();
 
-	public void readFromNBT(NBTTagCompound nbt);
+	void readFromNBT(NBTTagCompound nbt);
 }

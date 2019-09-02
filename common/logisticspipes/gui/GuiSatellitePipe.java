@@ -10,6 +10,8 @@ package logisticspipes.gui;
 
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.satpipe.SatelliteSetNamePacket;
 import logisticspipes.pipes.PipeFluidSatellite;
@@ -25,22 +27,21 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
+
 public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	private PipeItemsSatelliteLogistics _satellite;
 	private PipeFluidSatellite _liquidSatellite;
-	private EntityPlayer _player;
 	private InputBar input;
 
 	private GuiSatellitePipe(EntityPlayer player) {
 		super(new Container() {
 
 			@Override
-			public boolean canInteractWith(EntityPlayer entityplayer) {
+			public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
 				return true;
 			}
 		});
-		_player = player;
 		xSize = 116;
 		ySize = 77;
 	}
@@ -55,7 +56,6 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 		_liquidSatellite = satellite;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -103,14 +103,14 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void mouseClicked(int x, int y, int k) throws IOException {
-		if(!input.handleClick(x, y, k)) {
+		if (!input.handleClick(x, y, k)) {
 			super.mouseClicked(x, y, k);
 		}
 	}
 
 	@Override
 	public void keyTyped(char c, int i) throws IOException {
-		if(!input.handleKey(c, i)) {
+		if (!input.handleKey(c, i)) {
 			super.keyTyped(c, i);
 		}
 	}

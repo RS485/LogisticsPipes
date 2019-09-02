@@ -68,7 +68,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		String name = "";
+		String name;
 		if (hasPatternUpgrade) {
 			name = StringUtils.translate(GuiSupplierPipe.PREFIX + "TargetInvPattern");
 		} else {
@@ -132,20 +132,20 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 					currentMode = 0;
 				}
 				module.setPatternMode(PatternMode.values()[currentMode]);
-				((GuiButton) buttonList.get(0)).displayString = module.getPatternMode().toString();
+				buttonList.get(0).displayString = module.getPatternMode().toString();
 			} else {
 				int currentMode = module.getSupplyMode().ordinal() + 1;
 				if (currentMode >= SupplyMode.values().length) {
 					currentMode = 0;
 				}
 				module.setSupplyMode(SupplyMode.values()[currentMode]);
-				((GuiButton) buttonList.get(0)).displayString = module.getSupplyMode().toString();
+				buttonList.get(0).displayString = module.getSupplyMode().toString();
 			}
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeModePacket.class).setModulePos(module));
 		} else if (hasPatternUpgrade) {
 			if (guibutton.id == 1) {
 				module.setLimited(!module.isLimited());
-				((GuiButton) buttonList.get(1)).displayString = module.isLimited() ? "Limited" : "Unlimited";
+				buttonList.get(1).displayString = module.isLimited() ? "Limited" : "Unlimited";
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(module.isLimited()).setModulePos(module));
 			} else if (guibutton.id >= 2 && guibutton.id <= 10) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderOpenGuiPacket.class).setSlot(guibutton.id - 2).setModulePos(module));
@@ -155,9 +155,9 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	}
 
 	public void refreshMode() {
-		((GuiButton) buttonList.get(0)).displayString = (hasPatternUpgrade ? module.getPatternMode() : module.getSupplyMode()).toString();
+		buttonList.get(0).displayString = (hasPatternUpgrade ? module.getPatternMode() : module.getSupplyMode()).toString();
 		if (hasPatternUpgrade) {
-			((GuiButton) buttonList.get(1)).displayString = module.isLimited() ? "Limited" : "Unlimited";
+			buttonList.get(1).displayString = module.isLimited() ? "Limited" : "Unlimited";
 		}
 	}
 }

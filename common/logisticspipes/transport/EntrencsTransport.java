@@ -7,8 +7,6 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 
-import net.minecraft.util.EnumFacing;
-
 public class EntrencsTransport extends PipeTransportLogistics {
 
 	public EntrencsTransport() {

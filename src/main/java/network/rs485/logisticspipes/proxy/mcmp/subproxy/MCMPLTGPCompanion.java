@@ -34,11 +34,9 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 public class MCMPLTGPCompanion implements IMCMPLTGPCompanion {
 
-	private final LogisticsTileGenericPipe pipe;
 	private final LPTileMultipartContainer lpTileMultipartContainer;
 
 	public MCMPLTGPCompanion(LogisticsTileGenericPipe pipe) {
-		this.pipe = pipe;
 		lpTileMultipartContainer = new LPTileMultipartContainer(pipe);
 	}
 

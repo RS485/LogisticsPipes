@@ -51,7 +51,7 @@ public class CCObjectWrapper {
 		if (clazz.getAnnotation(CCType.class) != null) {
 			return clazz.getAnnotation(CCType.class).name();
 		}
-		String result = null;
+		String result;
 		if (!clazz.getSuperclass().equals(Object.class)) {
 			if (!(result = CCObjectWrapper.checkForTypeAnotation(clazz.getSuperclass())).equals("")) {
 				return result;

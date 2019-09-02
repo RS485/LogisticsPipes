@@ -35,11 +35,11 @@ public interface IInventoryProvider extends ISendRoutedItem {
 	EnumFacing getPointedOrientation();
 
 	// to interact and send items you need to know about orders, upgrades, and have the ability to send
-	public LogisticsItemOrderManager getItemOrderManager();
+	LogisticsItemOrderManager getItemOrderManager();
 
-	public void queueRoutedItem(IRoutedItem routedItem, EnumFacing from);
+	void queueRoutedItem(IRoutedItem routedItem, EnumFacing from);
 
-	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt);
+	ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt);
 
-	public int countOnRoute(ItemIdentifier item);
+	int countOnRoute(ItemIdentifier item);
 }

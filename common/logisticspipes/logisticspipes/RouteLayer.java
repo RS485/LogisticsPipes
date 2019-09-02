@@ -11,7 +11,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 
 import net.minecraft.util.EnumFacing;
 
@@ -37,13 +36,13 @@ public class RouteLayer {
 		//If a item has no destination, find one
 		if (item.getDestination() < 0) {
 			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
-			_pipe.debug.log("No Destination, assigned new destination: (" + ((LPTravelingItemServer) item).getInfo());
+			_pipe.debug.log("No Destination, assigned new destination: (" + item.getInfo());
 		}
 
 		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back
 		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem()) || item.getArrived())) {
 			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
-			_pipe.debug.log("Unreachable Destination, sssigned new destination: (" + ((LPTravelingItemServer) item).getInfo());
+			_pipe.debug.log("Unreachable Destination, sssigned new destination: (" + item.getInfo());
 		}
 
 		item.checkIDFromUUID();
@@ -68,8 +67,7 @@ public class RouteLayer {
 
 			item.setDoNotBuffer(true);
 			item.setArrived(true);
-			EnumFacing o = _transport.itemArrived(item, blocked);
-			return o != null ? o : null;
+			return _transport.itemArrived(item, blocked);
 		}
 
 		//Do we now know the destination?

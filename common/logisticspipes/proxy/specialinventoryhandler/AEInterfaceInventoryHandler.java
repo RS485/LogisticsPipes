@@ -274,13 +274,13 @@ class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase> {
 	private final IStorageMonitorableAccessor instance = STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getDefaultInstance();
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY;
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY ? STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.<T>cast(this.instance) : null;
+	public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+		return capability == STORAGE_MONITORABLE_ACCESSOR_CAPABILITY ? STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.cast(this.instance) : null;
 	}
 
 	@Override

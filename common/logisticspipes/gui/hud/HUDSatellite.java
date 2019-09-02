@@ -7,7 +7,6 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.Minecraft;
 
@@ -112,7 +111,7 @@ public class HUDSatellite extends BasicHUDGui {
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui((pipe1 != null ? pipe1.itemList : pipe2.itemList), null, page, -35, -20, 4, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
+			message = String.format("(%d/%d)", page + 1, getMaxPage());
 			mc.fontRenderer.drawString(message, 9, -41, 0);
 		} else {
 			if (day) {

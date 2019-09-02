@@ -10,7 +10,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
@@ -70,9 +69,6 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 
 	@Override
 	public boolean canExistInWorld(ItemStack stack) {
-		if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
-			return false;
-		}
-		return true;
+		return stack.getItemDamage() != LogisticsItemCard.SEC_CARD;
 	}
 }

@@ -127,7 +127,6 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	@SideOnly(Side.CLIENT)
 	private AxisAlignedBB renderBox;
 	private EnumMap<EnumFacing, ItemInsertionHandler> itemInsertionHandlers;
-	private ItemInsertionHandler itemInsertionHandlerNull;
 
 	public LogisticsTileGenericPipe() {
 		if (SimpleServiceLocator.ccProxy.isCC()) {
@@ -139,7 +138,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		imcmpltgpCompanion = SimpleServiceLocator.mcmpProxy.createMCMPCompanionFor(this);
 		itemInsertionHandlers = new EnumMap<>(EnumFacing.class);
 		Arrays.stream(EnumFacing.values()).forEach(face -> itemInsertionHandlers.put(face, new ItemInsertionHandler(this, face)));
-		itemInsertionHandlerNull = new ItemInsertionHandler(this, null);
+		ItemInsertionHandler itemInsertionHandlerNull = new ItemInsertionHandler(this, null);
 		renderState = new PipeRenderState();
 	}
 
@@ -689,7 +688,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Object[] invoke(String s, Context context, Arguments arguments) throws Exception {
+	public Object[] invoke(String s, Context context, Arguments arguments) {
 		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(pipe, BaseWrapperClass.WRAPPER);
 		object.isDirectCall = true;
 		return CCObjectWrapper.createArray(object);
@@ -782,7 +781,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 	public void afterStateUpdated() {
 		if (pipe == null && coreState.pipeId != 0) {
-			initialize(LogisticsBlockGenericPipe.createPipe((Item) Item.REGISTRY.getObjectById(coreState.pipeId)));
+			initialize(LogisticsBlockGenericPipe.createPipe(Item.REGISTRY.getObjectById(coreState.pipeId)));
 		}
 
 		if (pipe == null) {
@@ -983,6 +982,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		tdPart.setWorld_LP(world);
 	}
 
+	@Nonnull
 	@SideOnly(Side.CLIENT)
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
@@ -1048,7 +1048,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		return this.subMultiBlock.stream().map(pos -> pos.getTileEntity(world));
 	}
 
-	public class CoreState implements IClientState {
+	public static class CoreState implements IClientState {
 
 		public int pipeId = -1;
 

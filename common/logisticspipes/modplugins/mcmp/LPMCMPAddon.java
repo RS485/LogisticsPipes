@@ -26,7 +26,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 @MCMPAddon
 public class LPMCMPAddon implements IMCMPAddon {
 
-	public static final LPPipeMultipart lpPipeMultipart = new LPPipeMultipart();;
+	public static final LPPipeMultipart lpPipeMultipart = new LPPipeMultipart();
 
 	@Override
 	public void registerParts(IMultipartRegistry registry) {

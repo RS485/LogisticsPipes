@@ -12,5 +12,5 @@ import net.minecraft.world.World;
 
 public interface IPaintPath {
 
-	public void addLaser(World world, LaserData laser);
+	void addLaser(World world, LaserData laser);
 }

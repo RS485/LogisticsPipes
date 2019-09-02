@@ -3,7 +3,6 @@ package logisticspipes.proxy.td;
 import java.util.ArrayList;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -11,7 +10,6 @@ import cofh.thermaldynamics.duct.ConnectionType;
 import cofh.thermaldynamics.duct.Duct;
 import cofh.thermaldynamics.duct.item.DuctUnitItem;
 import cofh.thermaldynamics.duct.item.TravelingItem;
-import cofh.thermaldynamics.duct.tiles.IDuctHolder;
 import cofh.thermaldynamics.duct.tiles.TileGrid;
 import static logisticspipes.pipes.basic.LogisticsBlockGenericPipe.PIPE_CONN_BB;
 
@@ -29,7 +27,6 @@ import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LPDuctUnitItem extends DuctUnitItem {
 

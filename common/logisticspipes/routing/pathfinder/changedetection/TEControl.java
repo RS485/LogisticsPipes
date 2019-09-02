@@ -2,7 +2,6 @@ package logisticspipes.routing.pathfinder.changedetection;
 
 import java.util.ArrayList;
 
-import net.minecraft.util.EnumFacing;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 

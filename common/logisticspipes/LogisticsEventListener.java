@@ -17,8 +17,6 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -90,9 +88,9 @@ public class LogisticsEventListener {
 				event.setCanceled(true);
 			}
 			if (stack.hasTagCompound()) {
-				for (Map.Entry<String, NBTBase> tagEntry : stack.getTagCompound().tagMap.entrySet()) {
-					if (tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
-						ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT((NBTTagCompound) tagEntry.getValue());
+				for (String key : stack.getTagCompound().getKeySet()) {
+					if (key.startsWith("logisticspipes:routingdata")) {
+						ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(stack.getTagCompound().getCompoundTag(key));
 						info.setItemTimedout();
 						((EntityItem) event.getEntity()).setItem(info.getItem().getItem().makeNormalStack(stack.getCount()));
 						break;
@@ -306,9 +304,9 @@ public class LogisticsEventListener {
 	@SideOnly(Side.CLIENT)
 	public void onItemStackToolTip(ItemTooltipEvent event) {
 		if (event.getItemStack().hasTagCompound()) {
-			for (Map.Entry<String, NBTBase> tagEntry : event.getItemStack().getTagCompound().tagMap.entrySet()) {
-				if (tagEntry.getKey().startsWith("logisticspipes:routingdata")) {
-					ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT((NBTTagCompound) tagEntry.getValue());
+			for (String key : event.getItemStack().getTagCompound().getKeySet()) {
+				if (key.startsWith("logisticspipes:routingdata")) {
+					ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(event.getItemStack().getTagCompound().getCompoundTag(key));
 					List<String> list = event.getToolTip();
 					list.set(0, ChatColor.RED + "!!! " + ChatColor.WHITE + list.get(0) + ChatColor.RED + " !!!" + ChatColor.WHITE);
 					list.add(1, StringUtils.translate("itemstackinfo.lprouteditem"));

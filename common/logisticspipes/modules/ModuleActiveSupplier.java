@@ -174,7 +174,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		Partial,
 		Full,
 		Bulk50,
-		Bulk100;
+		Bulk100
 	}
 
 	private SupplyMode _requestMode = SupplyMode.Bulk50;

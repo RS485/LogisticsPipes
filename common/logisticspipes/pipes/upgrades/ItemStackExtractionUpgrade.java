@@ -1,7 +1,6 @@
 package logisticspipes.pipes.upgrades;
 
 import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;

@@ -1,5 +1,7 @@
 package logisticspipes.proxy.cc.wrapper;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 
@@ -22,7 +24,7 @@ public class LPPeripheralTilePipeWrapper implements IPeripheral {
 	}
 
 	@Override
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) {
 		pipe.currentPC = computer;
 		wrapped.isDirectCall = true;
 		Object[] result = wrapped.callMethod(context, method, arguments);
@@ -32,13 +34,13 @@ public class LPPeripheralTilePipeWrapper implements IPeripheral {
 	}
 
 	@Override
-	public void attach(IComputerAccess computer) {
+	public void attach(@Nonnull IComputerAccess computer) {
 		pipe.connections.put(computer, dir);
 		pipe.scheduleNeighborChange();
 	}
 
 	@Override
-	public void detach(IComputerAccess computer) {
+	public void detach(@Nonnull IComputerAccess computer) {
 		pipe.connections.remove(computer);
 	}
 
@@ -50,11 +52,13 @@ public class LPPeripheralTilePipeWrapper implements IPeripheral {
 		return false;
 	}
 
+	@Nonnull
 	@Override
 	public String getType() {
 		return wrapped.getType();
 	}
 
+	@Nonnull
 	@Override
 	public String[] getMethodNames() {
 		return wrapped.getMethodNames();

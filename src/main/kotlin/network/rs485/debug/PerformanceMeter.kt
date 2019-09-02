@@ -52,10 +52,6 @@ class PerformanceMeter(val label: String, private val meanCalcCallCount: Int, pr
     val calculatedMean: Duration
         get() = sum.dividedBy(meanCalcCallCount.toLong())
 
-    init {
-        this.currentGroupIndex = 0
-    }
-
     private fun increaseGroupIndex() {
         currentGroupIndex++
         if (currentGroupIndex >= meanCalcCallCount) {

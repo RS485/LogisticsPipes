@@ -1,5 +1,7 @@
 package logisticspipes.proxy.recipeproviders;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -7,6 +9,7 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
+
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -42,7 +45,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 				InventoryCrafting tempCraftingInv = new InventoryCrafting(new Container() {
 
 					@Override
-					public boolean canInteractWith(EntityPlayer entityplayer) {
+					public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
 						return false;
 					}
 

@@ -1,11 +1,13 @@
 package logisticspipes.modplugins.jei;
 
 import java.awt.Rectangle;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.minecraft.inventory.Slot;
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fluids.FluidStack;
@@ -22,19 +24,21 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 
 public class GhostIngredientHandler implements IGhostIngredientHandler<LogisticsBaseGuiScreen> {
 
+	@Nonnull
 	@Override
-	public <I> List<Target<I>> getTargets(LogisticsBaseGuiScreen gui, I ingredient, boolean doStart) {
+	public <I> List<Target<I>> getTargets(@Nonnull LogisticsBaseGuiScreen gui, @Nonnull I ingredient, boolean doStart) {
 		if (ingredient instanceof ItemStack) {
 			Stream<Target<I>> slotStream = gui.inventorySlots.inventorySlots.stream().filter(it -> it instanceof DummySlot).map(it -> (DummySlot) it)
 					.map(it -> new Target<I>() {
 
+						@Nonnull
 						@Override
 						public Rectangle getArea() {
 							return new Rectangle(gui.getGuiLeft() + it.xPos, gui.getGuiTop() + it.yPos, 17, 17);
 						}
 
 						@Override
-						public void accept(I ingredient) {
+						public void accept(@Nonnull I ingredient) {
 							it.putStack((ItemStack) ingredient);
 							MainProxy.sendPacketToServer(
 									PacketHandler.getPacket(SetGhostItemPacket.class).setInteger(it.slotNumber).setStack((ItemStack) ingredient));
@@ -44,13 +48,14 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<Logistics
 				Stream<Target<I>> fluidStream = gui.inventorySlots.inventorySlots.stream().filter(it -> it instanceof FluidSlot).map(it -> (FluidSlot) it)
 						.map(it -> new Target<I>() {
 
+							@Nonnull
 							@Override
 							public Rectangle getArea() {
 								return new Rectangle(gui.getGuiLeft() + it.xPos, gui.getGuiTop() + it.yPos, 17, 17);
 							}
 
 							@Override
-							public void accept(I ingredient) {
+							public void accept(@Nonnull I ingredient) {
 								FluidIdentifier ident = FluidIdentifier.get((ItemStack) ingredient);
 								if (ident != null) {
 									ItemStack stack = ident.getItemIdentifier().unsafeMakeNormalStack(1);
@@ -64,13 +69,14 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<Logistics
 			return slotStream.collect(Collectors.toList());
 		} else if (ingredient instanceof FluidStack) {
 			return  gui.inventorySlots.inventorySlots.stream().filter(it -> it instanceof FluidSlot).map(it -> (FluidSlot) it).map(it -> new Target<I>() {
+				@Nonnull
 				@Override
 				public Rectangle getArea() {
 					return new Rectangle(gui.getGuiLeft() + it.xPos, gui.getGuiTop() + it.yPos, 17, 17);
 				}
 
 				@Override
-				public void accept(I ingredient) {
+				public void accept(@Nonnull I ingredient) {
 					FluidIdentifier ident = FluidIdentifier.get((FluidStack) ingredient);
 					if (ident != null) {
 						ItemStack stack = ident.getItemIdentifier().unsafeMakeNormalStack(1);
@@ -80,7 +86,7 @@ public class GhostIngredientHandler implements IGhostIngredientHandler<Logistics
 				}
 			}).collect(Collectors.toList());
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override

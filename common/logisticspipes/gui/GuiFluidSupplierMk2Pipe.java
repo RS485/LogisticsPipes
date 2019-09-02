@@ -91,7 +91,7 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton) buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Yes") : StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "No");
+			buttonList.get(0).displayString = logic.isRequestingPartials() ? StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "Yes") : StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + "No");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		} else if (guibutton.id == 1) {
 			int index = logic.getMinMode().ordinal() + 1;
@@ -99,7 +99,7 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 				index = 0;
 			}
 			logic.setMinMode(MinMode.values()[index]);
-			((GuiButton) buttonList.get(1)).displayString = StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + logic.getMinMode().name());
+			buttonList.get(1).displayString = StringUtils.translate(GuiFluidSupplierMk2Pipe.PREFIX + logic.getMinMode().name());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMinMode.class).setInteger(logic.getMinMode().ordinal()).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		} else if ((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
 			int change = 1;

@@ -7,7 +7,7 @@ import net.minecraft.client.particle.Particle;
 
 public class PipeFXRenderHandler {
 
-	private static ParticleProvider particlemap[] = new ParticleProvider[Particles.values().length];
+	private static ParticleProvider[] particlemap = new ParticleProvider[Particles.values().length];
 
 	public static void spawnGenericParticle(Particles particle, double x, double y, double z, int amount) {
 		if (MainProxy.getClientMainWorld() == null) {
@@ -19,7 +19,7 @@ public class PipeFXRenderHandler {
 			double var15 = mc.getRenderViewEntity().posX - x;
 			double var17 = mc.getRenderViewEntity().posY - y;
 			double var19 = mc.getRenderViewEntity().posZ - z;
-			Particle effect = null;
+			Particle effect;
 
 			double var22 = 16.0D;
 
@@ -41,7 +41,7 @@ public class PipeFXRenderHandler {
 				}
 			}
 
-		} catch (NullPointerException e) {}
+		} catch (NullPointerException ignored) {}
 	}
 
 	public static void registerParticleHandler(Particles particle, ParticleProvider provider) {

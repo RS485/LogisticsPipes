@@ -29,7 +29,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 
 import lombok.SneakyThrows;
 import mcmultipart.api.multipart.IMultipartTile;
@@ -126,7 +125,7 @@ public class LPTileMultipartContainer extends TileMultipartContainer.Ticking {
 		IBlockState prevSt = this.getWorld().getBlockState(this.getPos());
 
 		IBlockState st = this.getWorld().getBlockState(this.getPos());
-		this.getWorld().markAndNotifyBlock(this.getPos(), (Chunk)null, prevSt, st, 1);
+		this.getWorld().markAndNotifyBlock(this.getPos(), null, prevSt, st, 1);
 		this.getWorld().checkLight(this.getPos());
 		LPTickHandler.getWorldInfo(getWorld()).setSkipBlockUpdateForWorld(true);
 	}

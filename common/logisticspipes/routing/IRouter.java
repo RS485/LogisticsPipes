@@ -81,7 +81,7 @@ public interface IRouter extends LPFinalSerializable {
 	boolean checkAdjacentUpdate();
 
 	/* Automated Disconnection */
-	boolean isSideDisconneceted(EnumFacing dir);
+	boolean isSideDisconnected(EnumFacing dir);
 
 	List<ExitRoute> getDistanceTo(IRouter r);
 

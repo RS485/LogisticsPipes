@@ -101,7 +101,7 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 	@Override
 	public boolean canCraft(IResource type) {
 		if (type instanceof DictResource) {
-			return ((DictResource) type).matches(_result.getItem(), IResource.MatchSettings.NORMAL) && _result.matches(((DictResource) type).getItem(), IResource.MatchSettings.NORMAL) && _result.getBitSet().equals(((DictResource) type).getBitSet());
+			return type.matches(_result.getItem(), IResource.MatchSettings.NORMAL) && _result.matches(((DictResource) type).getItem(), IResource.MatchSettings.NORMAL) && _result.getBitSet().equals(((DictResource) type).getBitSet());
 		}
 		return false;
 	}
@@ -118,10 +118,9 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public List<IExtraPromise> getByproducts(int workSets) {
-		List<IExtraPromise> list = _byproduct.stream()
+		return _byproduct.stream()
 				.map(stack -> new LogisticsExtraPromise(stack.getItem(), stack.getStackSize() * workSets, getCrafter(), false))
 				.collect(Collectors.toList());
-		return list;
 	}
 
 	@Override

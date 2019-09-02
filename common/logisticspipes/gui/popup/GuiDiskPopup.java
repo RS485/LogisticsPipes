@@ -32,7 +32,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private final IDiskProvider diskProvider;
 	private final TextListDisplay textList;
 
-	private final int searchWidth = 120;
+	private static final int SEARCH_WIDTH = 120;
 
 	public GuiDiskPopup(IDiskProvider diskProvider) {
 		super(150, 200, 0, 0);
@@ -248,7 +248,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 				}
 				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (mc.fontRenderer.getStringWidth(name1 + c + name2) <= searchWidth) {
+				if (mc.fontRenderer.getStringWidth(name1 + c + name2) <= SEARCH_WIDTH) {
 					name1 += c;
 				}
 				return;

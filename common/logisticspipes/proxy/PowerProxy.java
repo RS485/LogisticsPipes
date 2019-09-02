@@ -14,7 +14,7 @@ import logisticspipes.proxy.interfaces.IPowerProxy;
 
 public class PowerProxy implements IPowerProxy {
 
-	private class MEnergyStorage extends EnergyStorage {
+	private static class MEnergyStorage extends EnergyStorage {
 
 		public MEnergyStorage(int capacity) {
 			super(capacity);

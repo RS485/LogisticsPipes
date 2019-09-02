@@ -4,5 +4,5 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IItemSearch {
 
-	public boolean itemSearched(ItemIdentifier item);
+	boolean itemSearched(ItemIdentifier item);
 }

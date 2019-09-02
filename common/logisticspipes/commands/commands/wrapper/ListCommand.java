@@ -46,7 +46,7 @@ public class ListCommand implements ICommandHandler {
 				builder.append("disabled (exception)");
 			} else {
 				builder.append(ChatColor.BLUE);
-				builder.append("disabled (" + controller.getReason() + ")");
+				builder.append("disabled (").append(controller.getReason()).append(")");
 			}
 			display.append(builder.toString());
 		}

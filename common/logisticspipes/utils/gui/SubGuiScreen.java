@@ -10,8 +10,6 @@ import net.minecraft.client.renderer.RenderHelper;
 
 import lombok.Getter;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GLSync;
 
 public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler, IGuiAccess {
 

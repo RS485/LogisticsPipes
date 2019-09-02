@@ -15,21 +15,21 @@ public interface IRouterManager {
 
 	int getIDforUUID(UUID id);
 
-	public IRouter getOrCreateRouter(UUID routerUUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
+	IRouter getOrCreateRouter(UUID routerUUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
 
-	public IRouter getRouter(int id);
+	IRouter getRouter(int id);
 
-	public boolean isRouter(int id);
+	boolean isRouter(int id);
 
-	public void removeRouter(int id);
+	void removeRouter(int id);
 
-	public List<IRouter> getRouters();
+	List<IRouter> getRouters();
 
-	public void serverStopClean();
+	void serverStopClean();
 
-	public void clearClientRouters();
+	void clearClientRouters();
 
-	public void dimensionUnloaded(int dim);
+	void dimensionUnloaded(int dim);
 
 	boolean isRouterUnsafe(int id, boolean isClientSide);
 

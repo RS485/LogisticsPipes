@@ -168,6 +168,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		for (String s : search.split(" ")) {
 			if (!value.contains(s)) {
 				flag = false;
+				break;
 			}
 		}
 		return flag;

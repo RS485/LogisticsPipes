@@ -1,7 +1,5 @@
 package logisticspipes.gui.modules;
 
-import java.io.IOException;
-
 import logisticspipes.modules.ModuleCCBasedQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.modules.CCBasedQuickSortMode;
@@ -81,7 +79,7 @@ public class GuiCCBasedQuickSort extends ModuleBaseGui {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		mc.fontRenderer.drawString("Timeout Timer", xSize / 2 - mc.fontRenderer.getStringWidth("Timeout Timer") / 2, 10, 0x404040);
-		String timeoutString = Integer.toString(_sortModule.getTimeout()) + " ticks";
+		String timeoutString = String.format("%d ticks", _sortModule.getTimeout());
 		mc.fontRenderer.drawString(timeoutString, xSize / 2 - mc.fontRenderer.getStringWidth(timeoutString) / 2, 30, 0x404040);
 	}
 

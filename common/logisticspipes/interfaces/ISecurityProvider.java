@@ -2,7 +2,7 @@ package logisticspipes.interfaces;
 
 public interface ISecurityProvider {
 
-	public boolean getAllowCC(int id);
+	boolean getAllowCC(int id);
 
-	public boolean canAutomatedDestroy();
+	boolean canAutomatedDestroy();
 }

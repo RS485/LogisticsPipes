@@ -6,7 +6,6 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
 
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
 import net.minecraft.util.EnumHand;
@@ -14,45 +13,45 @@ import net.minecraft.world.World;
 
 public interface IProxy {
 
-	public String getSide();
+	String getSide();
 
-	public World getWorld();
+	World getWorld();
 
-	public void registerTileEntities();
+	void registerTileEntities();
 
-	public EntityPlayer getClientPlayer();
+	EntityPlayer getClientPlayer();
 
-	public void addLogisticsPipesOverride(Object par1IIconRegister, int index, String override1, String override2, boolean flag);
+	void addLogisticsPipesOverride(Object par1IIconRegister, int index, String override1, String override2, boolean flag);
 
-	public void registerParticles();
+	void registerParticles();
 
-	public String getName(ItemIdentifier item);
+	String getName(ItemIdentifier item);
 
-	public void updateNames(ItemIdentifier item, String name);
+	void updateNames(ItemIdentifier item, String name);
 
-	public void tick();
+	void tick();
 
-	public void sendNameUpdateRequest(EntityPlayer player);
+	void sendNameUpdateRequest(EntityPlayer player);
 
-	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player);
+	LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player);
 
-	public void sendBroadCast(String message);
+	void sendBroadCast(String message);
 
-	public void tickServer();
+	void tickServer();
 
-	public void tickClient();
+	void tickClient();
 
-	public EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler);
+	EntityPlayer getEntityPlayerFromNetHandler(INetHandler handler);
 
-	public void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe);
+	void setIconProviderFromPipe(ItemLogisticsPipe item, CoreUnroutedPipe dummyPipe);
 
-	public LogisticsModule getModuleFromGui();
+	LogisticsModule getModuleFromGui();
 
-	public boolean checkSinglePlayerOwner(String commandSenderName);
+	boolean checkSinglePlayerOwner(String commandSenderName);
 
-	public void openFluidSelectGui(int slotId);
+	void openFluidSelectGui(int slotId);
 
-	public void openGuideBookGui(EnumHand hand);
+	void openGuideBookGui(EnumHand hand);
 
 	default void registerModels() {}
 

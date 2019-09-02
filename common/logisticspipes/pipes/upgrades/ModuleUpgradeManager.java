@@ -7,7 +7,6 @@ import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.PipeLogisticsChassi;

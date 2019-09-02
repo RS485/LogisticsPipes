@@ -285,8 +285,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 		@Override
 		public boolean shouldRenderButton() {
-			boolean result = inv.getStackInSlot(position) != null && shouldDisplayButton(position);
-			return result;
+			return inv.getStackInSlot(position) != null && shouldDisplayButton(position);
 		}
 
 		@Override

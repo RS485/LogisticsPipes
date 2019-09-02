@@ -1,7 +1,10 @@
 package logisticspipes.utils.gui;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+
 
 public class GuiStringHandlerButton extends GuiButton {
 
@@ -18,14 +21,14 @@ public class GuiStringHandlerButton extends GuiButton {
 	}
 
 	@Override
-	public void drawButton(Minecraft par1Minecraft, int par2, int par3, float partial) {
+	public void drawButton(@Nonnull Minecraft par1Minecraft, int par2, int par3, float partial) {
 		displayString = handler.getContent();
 		super.drawButton(par1Minecraft, par2, par3, partial);
 	}
 
 	public interface StringHandler {
 
-		public String getContent();
+		String getContent();
 	}
 
 }

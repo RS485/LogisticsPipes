@@ -103,7 +103,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 		if (type instanceof ItemResource) {
 			return ((ItemResource) type).getItem().equals(_result.getItem());
 		} else if (type instanceof DictResource) {
-			return ((DictResource) type).matches(_result.getItem(), IResource.MatchSettings.NORMAL);
+			return type.matches(_result.getItem(), IResource.MatchSettings.NORMAL);
 		}
 		return false;
 	}
@@ -120,10 +120,9 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public List<IExtraPromise> getByproducts(int workSets) {
-		List<IExtraPromise> list = _byproduct.stream()
+		return _byproduct.stream()
 				.map(stack -> new LogisticsExtraPromise(stack.getItem(), stack.getStackSize() * workSets, getCrafter(), false))
 				.collect(Collectors.toList());
-		return list;
 	}
 
 	@Override

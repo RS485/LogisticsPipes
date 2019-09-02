@@ -32,7 +32,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.model.BakedItemModel;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
@@ -101,13 +100,14 @@ public class LogisticsNewPipeModel implements IModel {
 			return false;
 		}
 
+		@Nonnull
 		@Override
-		public IModel loadModel(ResourceLocation modelLocation) {
+		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
 			return new LogisticsNewPipeModel((ModelResourceLocation) modelLocation);
 		}
 
 		@Override
-		public void onResourceManagerReload(IResourceManager resourceManager) {
+		public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
 
 		}
 	}

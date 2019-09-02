@@ -2,9 +2,6 @@ package logisticspipes.interfaces;
 
 import java.util.function.Consumer;
 
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 

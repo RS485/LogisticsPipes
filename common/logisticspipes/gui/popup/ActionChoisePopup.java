@@ -56,7 +56,7 @@ public class ActionChoisePopup extends SubGuiScreen {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton button) throws IOException {
+	protected void actionPerformed(GuiButton button) {
 		switch(button.id) {
 			case 0:
 				leftAction.run();

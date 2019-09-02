@@ -37,7 +37,7 @@ public class RoutingTableUpdateThread extends Thread {
 
 	@Override
 	public void run() {
-		Runnable item = null;
+		Runnable item;
 		// take blocks until things are available, no need to check
 		try {
 			while ((item = RoutingTableUpdateThread.updateCalls.take()) != null) {
@@ -52,7 +52,7 @@ public class RoutingTableUpdateThread extends Thread {
 					}
 				}
 			}
-		} catch (InterruptedException e) {
+		} catch (InterruptedException ignored) {
 
 		}
 	}

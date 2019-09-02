@@ -18,7 +18,7 @@ public class TestUtil {
 	}
 
 	@org.junit.jupiter.api.Test
-	public void testGetBytesFromInteger() throws Exception {
+	public void testGetBytesFromInteger() {
 		assertArrayEquals(new byte[] { 0, 0, 0, 0 }, getBytesFromInteger(0));
 		assertArrayEquals(new byte[] { 1, 2, 3, 4 }, getBytesFromInteger(16909060));
 		assertArrayEquals(new byte[] { -128, 0, 0, 0 }, getBytesFromInteger(Integer.MIN_VALUE));

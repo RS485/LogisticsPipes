@@ -13,7 +13,7 @@ public enum LogicParameterType {
 	@Getter
 	private final Class<?> javaClass;
 
-	private LogicParameterType(Class<?> clazz) {
+	LogicParameterType(Class<?> clazz) {
 		javaClass = clazz;
 	}
 }

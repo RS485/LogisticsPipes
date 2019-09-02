@@ -80,7 +80,7 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton) buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Yes") : StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "No");
+			buttonList.get(0).displayString = logic.isRequestingPartials() ? StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Yes") : StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "No");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		super.actionPerformed(guibutton);

@@ -143,7 +143,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
 		super.checkButtons();
-		for (GuiButton button : (List<GuiButton>) buttonList) {
+		for (GuiButton button : buttonList) {
 			for (int i = 0; i < tabList.size(); i++) {
 				if (tabList.get(i).isButtonFromGui(button)) {
 					tabList.get(i).checkButton(button, current_Tab == i);

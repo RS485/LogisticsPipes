@@ -4,5 +4,5 @@ import logisticspipes.logic.LogicController;
 
 public interface ILogicControllerTile {
 
-	public LogicController getLogicController();
+	LogicController getLogicController();
 }

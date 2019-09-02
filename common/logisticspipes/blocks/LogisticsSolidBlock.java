@@ -11,6 +11,7 @@ import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import lombok.Getter;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -129,7 +130,6 @@ public class LogisticsSolidBlock extends Block {
 	}
 
 	@Override
-	@Nonnull
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		TileEntity tile = world.getTileEntity(pos);
@@ -152,7 +152,7 @@ public class LogisticsSolidBlock extends Block {
 
 	@Nullable
 	@Override
-	public TileEntity createTileEntity(World world, IBlockState state) {
+	public TileEntity createTileEntity(@Nonnull World world, @Nonnull IBlockState state) {
 		if (!type.hasTE()) return null;
 		return type.createTE();
 	}
@@ -162,6 +162,7 @@ public class LogisticsSolidBlock extends Block {
 		return type.hasTE();
 	}
 
+	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer.Builder(this)
@@ -176,8 +177,9 @@ public class LogisticsSolidBlock extends Block {
 		return 0;
 	}
 
+	@Nonnull
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+	public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess worldIn, BlockPos pos) {
 		state = super.getActualState(state, worldIn, pos);
 		TileEntity tile = worldIn.getTileEntity(pos);
 		if (tile instanceof LogisticsSolidTileEntity) {

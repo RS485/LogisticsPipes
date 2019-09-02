@@ -1,6 +1,7 @@
 package logisticspipes.items;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
@@ -9,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+
 
 import logisticspipes.utils.string.StringUtils;
 
@@ -22,8 +24,9 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 		setContainerItem(this);
 	}
 
+	@Nonnull
 	@Override
-	public ItemStack getContainerItem(ItemStack itemStack) {
+	public ItemStack getContainerItem(@Nonnull ItemStack itemStack) {
 		ItemStack items = super.getContainerItem(itemStack);
 		items.setTagCompound(itemStack.getTagCompound());
 		return items;

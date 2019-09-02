@@ -77,17 +77,17 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
-		((GuiButton) buttonList.get(0)).visible = false;
+		buttonList.get(0).visible = false;
 		buttonList.add(new GuiButton(1, guiLeft + 10, guiTop + 139, 30, 20, "-"));
 		buttonList.add(new GuiButton(2, guiLeft + 45, guiTop + 139, 30, 20, "+"));
 		buttonList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
-		((GuiButton) buttonList.get(3)).visible = false;
+		buttonList.get(3).visible = false;
 		buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 217, 30, 10, StringUtils.translate(GuiSecurityStation.PREFIX + "Open")));
 		buttonList.add(new GuiCheckBox(5, guiLeft + 160, guiTop + 42, 16, 16, _tile.allowCC));
 		buttonList.add(new SmallGuiButton(6, guiLeft + 162, guiTop + 60, 60, 10, StringUtils.translate(GuiSecurityStation.PREFIX + "EditTable")));
 		if (!SimpleServiceLocator.ccProxy.isCC() && !LPConstants.DEBUG) {
-			((GuiButton) buttonList.get(5)).visible = false;
-			((GuiButton) buttonList.get(6)).visible = false;
+			buttonList.get(5).visible = false;
+			buttonList.get(6).visible = false;
 		}
 		buttonList.add(new GuiButton(7, guiLeft + 55, guiTop + 95, 70, 20, StringUtils.translate(GuiSecurityStation.PREFIX + "Authorize")));
 		buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, StringUtils.translate(GuiSecurityStation.PREFIX + "Deauthorize")));

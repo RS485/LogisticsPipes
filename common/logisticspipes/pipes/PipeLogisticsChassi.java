@@ -276,7 +276,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				ItemIdentifierStack ms = _moduleInventory.getIDStackInSlot(i);
 				if (ms != null) {
 					ItemStack s = ms.makeNormalStack();
-					ItemModuleInformationManager.saveInfotmation(s, getLogisticsModule().getSubModule(i));
+					ItemModuleInformationManager.saveInformation(s, getLogisticsModule().getSubModule(i));
 					_moduleInventory.setInventorySlotContents(i, s);
 				}
 			}
@@ -689,7 +689,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 
-			if (x != null && x instanceof ICraftItems) {
+			if (x instanceof ICraftItems) {
 				if (((ICraftItems) x).canCraft(toCraft)) {
 					return ((ICraftItems) x).addCrafting(toCraft);
 				}
@@ -706,7 +706,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 
-			if (x != null && x instanceof ICraftItems) {
+			if (x instanceof ICraftItems) {
 				if (craftables == null) {
 					craftables = new LinkedList<>();
 				}
@@ -721,7 +721,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 
-			if (x != null && x instanceof ICraftItems) {
+			if (x instanceof ICraftItems) {
 				if (((ICraftItems) x).canCraft(toCraft)) {
 					return true;
 				}

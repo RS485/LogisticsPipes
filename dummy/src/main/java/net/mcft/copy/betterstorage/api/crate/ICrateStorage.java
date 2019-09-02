@@ -29,54 +29,54 @@ public interface ICrateStorage {
 	/** Returns the crate's identifier. If it's the same as another
 	 *  crate's identifier, they're part of the same crate pile and
 	 *  therefore share the same inventory. */
-	public Object getCrateIdentifier();
+	Object getCrateIdentifier();
 	
 	
 	/** Returns the number of stacks this crate pile can hold. */
-	public int getCapacity();
+	int getCapacity();
 	
 	/** Returns the number of slots that are occupied. */
-	public int getOccupiedSlots();
+	int getOccupiedSlots();
 	
 	/** Returns the number of different unique items. This is also the
 	 *  number of items that will be returned by the getContents methods. */
-	public int getUniqueItems();
+	int getUniqueItems();
 	
 	
 	/** Returns all items in the crate pile. The stacks may have
 	 *  stack sizes above their usual limit. */
-	public Iterable<ItemStack> getContents();
+	Iterable<ItemStack> getContents();
 	
 	/** Returns a randomized stream of stacks from the crate pile.
 	 *  It's not recommended to use this to iterate over the whole
 	 *  inventory, especially for crates storing lots of items. */
-	public Iterable<ItemStack> getRandomStacks();
+	Iterable<ItemStack> getRandomStacks();
 	
 	
 	/** Returns the number of items of this specific type. */
-	public int getItemCount(ItemStack identifier);
+	int getItemCount(ItemStack identifier);
 	
 	/** Returns the space left for items of this specific type. */
-	public int getSpaceForItem(ItemStack identifier);
+	int getSpaceForItem(ItemStack identifier);
 	
 	
 	/** Tries to insert an item stack into the crate. Returns null
 	 *  if all items were inserted successfully, or an item stack
 	 *  of whatever items could not be inserted.
 	 *  The stack may have a stack size above its usual limit. */
-	public ItemStack insertItems(ItemStack stack);
+	ItemStack insertItems(ItemStack stack);
 	
 	/** Tries to extract the specified type and amount of items.
 	 *  Returns null if no items could be extracted, or an item
 	 *  stack if some, or all of them could be extracted successfully. */
-	public ItemStack extractItems(ItemStack identifier, int amount);
+	ItemStack extractItems(ItemStack identifier, int amount);
 	
 	
 	/** Registers a crate watcher. Its onCrateItemsModified method
 	 *  will be called when any items are changed. */
-	public void registerCrateWatcher(ICrateWatcher watcher);
+	void registerCrateWatcher(ICrateWatcher watcher);
 	
 	/** Unregisters a crate watcher. */
-	public void unregisterCrateWatcher(ICrateWatcher watcher);
+	void unregisterCrateWatcher(ICrateWatcher watcher);
 	
 }

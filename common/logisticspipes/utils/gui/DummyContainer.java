@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -81,7 +82,7 @@ public class DummyContainer extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer) {
+	public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
 		return true;
 	}
 
@@ -194,6 +195,7 @@ public class DummyContainer extends Container {
 		return slot;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer pl, int i) {
 		if (transferTop.isEmpty() || transferBottom.isEmpty()) {
@@ -535,7 +537,7 @@ public class DummyContainer extends Container {
 			ChassiModule logisticsModule = (ChassiModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
 			int moduleIndex = ((ModuleSlot) slot2).get_moduleIndex();
 			if (out.getItem() instanceof ItemModule) {
-				ItemModuleInformationManager.saveInfotmation(out, logisticsModule.getSubModule(moduleIndex));
+				ItemModuleInformationManager.saveInformation(out, logisticsModule.getSubModule(moduleIndex));
 				if (logisticsModule.hasModule(moduleIndex)) {
 					logisticsModule.removeModule(moduleIndex);
 				}
@@ -553,13 +555,14 @@ public class DummyContainer extends Container {
 	/**
 	 * Clone/clear itemstacks for items
 	 */
+	@Nonnull
 	@Override
 	public ItemStack slotClick(int slotId, int mouseButton, ClickType shiftMode, EntityPlayer entityplayer) {
 		lastClicked = System.currentTimeMillis();
 		if (slotId < 0) {
 			return superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
 		}
-		Slot slot = (Slot) inventorySlots.get(slotId);
+		Slot slot = inventorySlots.get(slotId);
 		//debug dump
 		if (LPConstants.DEBUG && slot != null) {
 			ItemStack stack = slot.getStack();
@@ -567,7 +570,7 @@ public class DummyContainer extends Container {
 				ItemIdentifier.get(stack).debugDumpData(entityplayer.world.isRemote);
 			}
 		}
-		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
+		if ((!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
 			ItemStack stack1 = superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
 			ItemStack stack2 = slot.getStack();
 			if (!stack2.isEmpty() && stack2.getItem() instanceof ItemModule) {
@@ -794,7 +797,7 @@ public class DummyContainer extends Container {
 
 	// Hacky overrides to handle client/server player inv sync with 0-slot containers
 	@Override
-	public Slot getSlotFromInventory(IInventory par1IInventory, int par2) {
+	public Slot getSlotFromInventory(@Nonnull IInventory par1IInventory, int par2) {
 		Slot s = super.getSlotFromInventory(par1IInventory, par2);
 		if (s != null) {
 			return s;
@@ -808,7 +811,7 @@ public class DummyContainer extends Container {
 	}
 
 	@Override
-	public void putStackInSlot(int par1, ItemStack par2ItemStack) {
+	public void putStackInSlot(int par1, @Nonnull ItemStack par2ItemStack) {
 		if (inventorySlots.isEmpty()) {
 			_playerInventory.setInventorySlotContents(par1, par2ItemStack);
 			_playerInventory.markDirty();
@@ -836,8 +839,8 @@ public class DummyContainer extends Container {
 					}
 				}
 			}
-			ItemStack itemstack = ((Slot) inventorySlots.get(i)).getStack();
-			ItemStack itemstack1 = (ItemStack) inventoryItemStacks.get(i);
+			ItemStack itemstack = inventorySlots.get(i).getStack();
+			ItemStack itemstack1 = inventoryItemStacks.get(i);
 
 			if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
 				itemstack1 = itemstack.isEmpty() ? ItemStack.EMPTY : itemstack.copy();
@@ -859,6 +862,7 @@ public class DummyContainer extends Container {
 		overrideMCAntiSend = false;
 	}
 
+	@Nonnull
 	@Override
 	protected Slot addSlotToContainer(Slot p_75146_1_) {
 		this.inventoryFuzzySlotsContent.add(null);

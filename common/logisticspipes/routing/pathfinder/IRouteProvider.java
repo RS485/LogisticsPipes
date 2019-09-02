@@ -11,7 +11,7 @@ public interface IRouteProvider {
 
 	@Data
 	@AllArgsConstructor
-	public static class RouteInfo {
+	class RouteInfo {
 
 		private IPipeInformationProvider pipe;
 		private int length;

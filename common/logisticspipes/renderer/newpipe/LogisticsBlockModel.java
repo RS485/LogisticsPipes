@@ -90,6 +90,7 @@ public class LogisticsBlockModel implements IModel {
 		}
 	}
 
+	@Nonnull
 	@Override
 	public Collection<ResourceLocation> getTextures() {
 		return Arrays.asList(inactive, active);

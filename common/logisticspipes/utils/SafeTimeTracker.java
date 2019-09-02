@@ -8,7 +8,7 @@ public class SafeTimeTracker {
 	private long duration = -1;
 	private long randomRange = 0;
 	private long lastRandomDelay = 0;
-	private long internalDelay = 1;
+	private long internalDelay;
 
 	public SafeTimeTracker(long delay) {
 		internalDelay = delay;

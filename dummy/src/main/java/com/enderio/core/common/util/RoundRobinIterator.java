@@ -1,10 +1,12 @@
 package com.enderio.core.common.util;
 
 import java.util.Iterator;
+import javax.annotation.Nonnull;
 
 public class RoundRobinIterator<T> implements Iterable<T>, Iterator<T> {
 
 	@Override
+	@Nonnull
 	public Iterator<T> iterator() {
 		return this;
 	}

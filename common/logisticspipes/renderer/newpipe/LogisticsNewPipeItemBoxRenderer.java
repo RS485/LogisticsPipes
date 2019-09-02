@@ -1,6 +1,5 @@
 package logisticspipes.renderer.newpipe;
 
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 

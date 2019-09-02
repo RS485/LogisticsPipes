@@ -8,7 +8,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import logisticspipes.interfaces.ISpecialTankAccessHandler;
 import logisticspipes.interfaces.ISpecialTankHandler;
-import logisticspipes.interfaces.ISpecialTankUtil;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.proxy.SimpleServiceLocator;
 

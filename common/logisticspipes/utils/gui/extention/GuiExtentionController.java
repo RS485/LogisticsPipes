@@ -17,7 +17,7 @@ public class GuiExtentionController {
 
 	public enum GuiSide {
 		LEFT,
-		RIGHT;
+		RIGHT
 	}
 
 	private final List<GuiExtention> extentions = new ArrayList<>();

@@ -2,10 +2,7 @@ package logisticspipes.utils;
 
 import java.util.function.Consumer;
 
-import net.minecraft.util.EnumFacing;
-
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 

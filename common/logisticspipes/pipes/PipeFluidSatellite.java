@@ -212,9 +212,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if (MainProxy.isClient(getWorld())) {
 			return;
 		}
-		if (PipeFluidSatellite.AllSatellites.contains(this)) {
-			PipeFluidSatellite.AllSatellites.remove(this);
-		}
+		PipeFluidSatellite.AllSatellites.remove(this);
 	}
 
 	@Override

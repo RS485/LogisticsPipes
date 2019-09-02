@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
+
 import logisticspipes.LPBlocks;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
@@ -540,6 +541,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		guiWatcher.remove(player);
 	}
 
+	@Nonnull
 	@Override
 	public String getName() {
 		return "LogisticsCraftingTable";
@@ -550,6 +552,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		return true;
 	}
 
+	@Nonnull
 	@Override
 	public ITextComponent getDisplayName() {
 		return null;

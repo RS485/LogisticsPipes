@@ -27,7 +27,7 @@ public class PipeFXLaserPowerBall extends Particle {
 	private static final int ROTATIONSPEED = 5;
 	private static final Random RAND = new Random();
 
-	private float random = 0;
+	private float random;
 	private TileEntity tile;
 
 	public PipeFXLaserPowerBall(World par1World, DoubleCoordinates pos, int color, TileEntity tile) {

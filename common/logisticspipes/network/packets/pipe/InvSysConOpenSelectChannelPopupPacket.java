@@ -10,7 +10,6 @@ import logisticspipes.network.guis.pipe.InvSysConSelectChannelPopupGUIProvider;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve

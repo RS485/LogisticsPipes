@@ -30,11 +30,11 @@ public class ItemSinkInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleItemSink)) {
+		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
+		if (!(dummy.getModule() instanceof ModuleItemSink)) {
 			return null;
 		}
-		((DummyModuleContainer) dummy).setInventory(((ModuleItemSink) ((DummyModuleContainer) dummy).getModule()).getFilterInventory());
+		dummy.setInventory(((ModuleItemSink) dummy.getModule()).getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots

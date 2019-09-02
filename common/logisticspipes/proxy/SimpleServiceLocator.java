@@ -46,7 +46,7 @@ import network.rs485.logisticspipes.proxy.mcmp.IMCMPProxy;
 
 public final class SimpleServiceLocator {
 
-	private SimpleServiceLocator() {};
+	private SimpleServiceLocator() {}
 
 	public static IBCProxy buildCraftProxy = null;
 

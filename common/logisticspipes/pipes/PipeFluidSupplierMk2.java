@@ -26,7 +26,6 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import lombok.Getter;
 

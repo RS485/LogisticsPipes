@@ -28,14 +28,14 @@ public class TargetNotFoundException extends DelayPacketException {
 				}
 			}
 			list.remove(0);
-			setStackTrace(list.toArray(new StackTraceElement[list.size()]));
+			setStackTrace(list.toArray(new StackTraceElement[0]));
 			list = new ArrayList<>(Arrays.asList(astacktraceelement));
 			if (list.size() > 2) {
 				list.remove(0);
 				list.remove(0);
 			}
 			RuntimeException runtime = new RuntimeException("Packet was send from: ");
-			runtime.setStackTrace(list.toArray(new StackTraceElement[list.size()]));
+			runtime.setStackTrace(list.toArray(new StackTraceElement[0]));
 			initCause(runtime);
 		}
 	}

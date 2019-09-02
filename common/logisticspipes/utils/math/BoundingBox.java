@@ -8,8 +8,6 @@ import net.minecraft.util.EnumFacing;
 
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-import network.rs485.logisticspipes.world.DoubleCoordinates;
-
 public class BoundingBox {
 
 	public static final BoundingBox UNIT_CUBE = new BoundingBox(0, 0, 0, 1, 1, 1);

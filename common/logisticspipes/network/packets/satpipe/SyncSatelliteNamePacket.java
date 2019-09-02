@@ -2,10 +2,6 @@ package logisticspipes.network.packets.satpipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringCoordinatesPacket;
 import logisticspipes.pipes.PipeFluidSatellite;

@@ -52,7 +52,7 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 			}
 			return null;
 		}
-		LogisticsModule module = null;
+		LogisticsModule module;
 		if (slot == ModulePositionType.IN_PIPE) {
 			module = ((CoreRoutedPipe) pipe.pipe).getLogisticsModule();
 		} else if (slot == ModulePositionType.IN_HAND) {

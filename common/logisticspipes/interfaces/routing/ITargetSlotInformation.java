@@ -2,9 +2,9 @@ package logisticspipes.interfaces.routing;
 
 public interface ITargetSlotInformation {
 
-	public int getTargetSlot();
+	int getTargetSlot();
 
-	public int getAmount();
+	int getAmount();
 
-	public boolean isLimited();
+	boolean isLimited();
 }

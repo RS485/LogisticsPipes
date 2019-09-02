@@ -1,10 +1,7 @@
 package logisticspipes.utils;
 
-import java.util.function.Consumer;
-
 import net.minecraft.tileentity.TileEntity;
 
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import logisticspipes.interfaces.ISpecialTankAccessHandler;

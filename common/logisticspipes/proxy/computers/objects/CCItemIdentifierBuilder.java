@@ -51,9 +51,9 @@ public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 
 	@CCCommand(description = "Returns the ItemIdentifier for this ItemIdentifierBuilder")
 	public ItemIdentifier build() {
-		Item item = null;
+		Item item;
 		if(itemIDName != null) {
-			item = (Item) Item.REGISTRY.getObject(new ResourceLocation(itemIDName));
+			item = Item.REGISTRY.getObject(new ResourceLocation(itemIDName));
 		} else {
 			item = Item.getItemById(itemID);
 		}

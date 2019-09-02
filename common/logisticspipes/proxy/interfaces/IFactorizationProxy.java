@@ -4,5 +4,5 @@ import net.minecraft.tileentity.TileEntity;
 
 public interface IFactorizationProxy {
 
-	public boolean isBarral(TileEntity tile);
+	boolean isBarral(TileEntity tile);
 }

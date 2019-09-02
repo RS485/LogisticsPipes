@@ -42,7 +42,7 @@ public class GenericLPPipeConfigToolWrapper extends AbstractWrapper implements I
 		return null;
 	}
 
-	class GenericLPPipeConfigTool extends AbstractSubWrapper implements ILPPipeConfigTool {
+	static class GenericLPPipeConfigTool extends AbstractSubWrapper implements ILPPipeConfigTool {
 
 		ILPPipeConfigTool tool;
 

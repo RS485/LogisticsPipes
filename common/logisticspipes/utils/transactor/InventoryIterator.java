@@ -1,8 +1,5 @@
 package logisticspipes.utils.transactor;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
-
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.items.IItemHandler;

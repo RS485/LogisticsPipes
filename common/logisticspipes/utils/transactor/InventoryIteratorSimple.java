@@ -4,12 +4,10 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
-import logisticspipes.utils.InventoryHelper;
-
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.items.IItemHandler;
+
 
 class InventoryIteratorSimple implements Iterable<IInvSlot> {
 
@@ -19,6 +17,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 		this.inv = inv;
 	}
 
+	@Nonnull
 	@Override
 	public Iterator<IInvSlot> iterator() {
 		return new Iterator<IInvSlot>() {
@@ -35,10 +34,6 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 				return new InvSlot(slot++);
 			}
 
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException("Remove not supported.");
-			}
 		};
 	}
 
@@ -50,6 +45,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 			this.slot = slot;
 		}
 
+		@Nonnull
 		@Override
 		public ItemStack getStackInSlot() {
 			return inv.getStackInSlot(slot);

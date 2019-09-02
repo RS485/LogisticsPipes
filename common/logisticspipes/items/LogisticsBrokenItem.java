@@ -8,7 +8,6 @@ import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.utils.string.StringUtils;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 

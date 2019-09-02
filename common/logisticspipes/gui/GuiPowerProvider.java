@@ -1,7 +1,6 @@
 package logisticspipes.gui;
 
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
-import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.string.StringUtils;

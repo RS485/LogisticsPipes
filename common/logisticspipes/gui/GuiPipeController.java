@@ -263,7 +263,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 			int sessionxCenter = 85;
 			int lifetimexCenter = 140;
-			String s = null;
+			String s;
 
 			fontRenderer.drawString(StringUtils.translate(PREFIX + "Session"), sessionxCenter - fontRenderer
 					.getStringWidth(StringUtils.translate(PREFIX + "Session")) / 2, 40, 0x303030);
@@ -418,7 +418,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			for (int i = start; i < start + 3 && i < pipe.getClientSideOrderManager().size(); i++) {
 				IOrderInfoProvider order = pipe.getClientSideOrderManager().get(i);
 				ItemIdentifier target = order.getTargetType();
-				String s = "";
+				String s;
 				if(target != null) {
 					s = target.getFriendlyName();
 					fontRenderer.drawString(s, 35, stringPos, 0x303030);

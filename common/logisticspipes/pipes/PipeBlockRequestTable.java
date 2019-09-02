@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
@@ -55,6 +57,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 
@@ -440,7 +443,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {
 
 			@Override
-			protected void onCrafting(ItemStack stack) {
+			protected void onCrafting(@Nonnull ItemStack stack) {
 				IInventory tmp = this.inventory;
 				vanillaResult.setRecipeUsed(cache);
 				this.inventory = vanillaResult;

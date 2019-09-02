@@ -74,7 +74,7 @@ public class PipeTransportLogistics {
 
 	@Data
 	@AllArgsConstructor
-	class RoutingResult {
+	static class RoutingResult {
 		private EnumFacing face;
 		private boolean hasRoute;
 	}
@@ -415,7 +415,7 @@ public class PipeTransportLogistics {
 	}
 
 	public void readjustSpeed(LPTravelingItemServer item) {
-		float defaultBoost = 1F;
+		float defaultBoost;
 
 		switch (item.getTransportMode()) {
 			case Default:
@@ -527,7 +527,6 @@ public class PipeTransportLogistics {
 										int added = ((ISpecialInsertion) util).addToSlot(toAdd, slot);
 										arrivingItem.getItemIdentifierStack().lowerStackSize(added);
 										if (added > 0) {
-											tookSome = true;
 										}
 									}
 								}
@@ -551,7 +550,6 @@ public class PipeTransportLogistics {
 						arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
 
 						if (added.getCount() > 0 && arrivingItem instanceof IRoutedItem) {
-							tookSome = true;
 							arrivingItem.setBufferCounter(0);
 						}
 
@@ -582,7 +580,6 @@ public class PipeTransportLogistics {
 
 							arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
 							if (added.getCount() > 0) {
-								tookSome = true;
 								arrivingItem.setBufferCounter(0);
 							}
 							ItemRoutingInformation info;

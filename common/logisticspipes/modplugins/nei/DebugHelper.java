@@ -1,10 +1,11 @@
 package logisticspipes.modplugins.nei;
 
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.List;
-import java.util.Map;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
@@ -116,34 +117,28 @@ public class DebugHelper implements IContainerTooltipHandler {
 			type.add(content);
 			node.add(type);
 		} else if (nbt instanceof NBTTagList) {
-			List internal = ((NBTTagList) nbt).tagList;
-
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagList");
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 
 			int i = 0;
 
-			for (Object object : internal) {
-				if (object instanceof NBTBase) {
-					DefaultMutableTreeNode nbtNode = new DefaultMutableTreeNode("[" + i + "]");
-					addNBTToTree((NBTBase) object, nbtNode);
-					content.add(nbtNode);
-					i++;
-				}
+			for (NBTBase object : (NBTTagList) nbt) {
+				DefaultMutableTreeNode nbtNode = new DefaultMutableTreeNode("[" + i + "]");
+				addNBTToTree(object, nbtNode);
+				content.add(nbtNode);
+				i++;
 			}
 			type.add(content);
 			node.add(type);
 		} else if (nbt instanceof NBTTagCompound) {
-			Map internal = ((NBTTagCompound) nbt).tagMap;
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagCompound");
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 
-			for (Object objectKey : internal.keySet()) {
-				if (internal.get(objectKey) instanceof NBTBase) {
-					DefaultMutableTreeNode nbtNode = new DefaultMutableTreeNode(objectKey);
-					addNBTToTree((NBTBase) internal.get(objectKey), nbtNode);
-					content.add(nbtNode);
-				}
+			for (String key : ((NBTTagCompound) nbt).getKeySet()) {
+				NBTBase value = ((NBTTagCompound) nbt).getTag(key);
+				DefaultMutableTreeNode nbtNode = new DefaultMutableTreeNode(key);
+				addNBTToTree(value, nbtNode);
+				content.add(nbtNode);
 			}
 			type.add(content);
 			node.add(type);

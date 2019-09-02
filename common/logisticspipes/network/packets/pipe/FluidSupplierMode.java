@@ -30,10 +30,10 @@ public class FluidSupplierMode extends IntegerCoordinatesPacket {
 			return;
 		}
 		if (MainProxy.isClient(player.world)) {
-			if (pipe.pipe instanceof PipeItemsFluidSupplier && pipe.pipe instanceof PipeItemsFluidSupplier) {
+			if (pipe.pipe instanceof PipeItemsFluidSupplier) {
 				((PipeItemsFluidSupplier) pipe.pipe).setRequestingPartials((getInteger() % 10) == 1);
 			}
-			if (pipe.pipe instanceof PipeFluidSupplierMk2 && pipe.pipe instanceof PipeFluidSupplierMk2) {
+			if (pipe.pipe instanceof PipeFluidSupplierMk2) {
 				((PipeFluidSupplierMk2) pipe.pipe).setRequestingPartials((getInteger() % 10) == 1);
 			}
 		} else {

@@ -1,6 +1,5 @@
 package logisticspipes.utils.gui;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import net.minecraft.client.gui.Gui;

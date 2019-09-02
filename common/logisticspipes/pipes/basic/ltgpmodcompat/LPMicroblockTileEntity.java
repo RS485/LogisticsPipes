@@ -1,16 +1,16 @@
 package logisticspipes.pipes.basic.ltgpmodcompat;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -40,6 +40,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 		return (TileMultipartContainer) imcmpltgpCompanion.getMCMPTileEntity();
 	}
 
+	@Nonnull
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public NBTTagCompound getUpdateTag() {
@@ -50,7 +51,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public void handleUpdateTag(NBTTagCompound tag) {
+	public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
 		super.handleUpdateTag(tag);
 		if(tag.hasKey("LogisticsPipes:MCMultiPartData")) {
 			if (this.getMultipartContainer() != null) this.getMultipartContainer().handleUpdateTag(tag.getCompoundTag("LogisticsPipes:MCMultiPartData"));
@@ -82,6 +83,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 		}
 	}
 
+	@Nonnull
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
@@ -131,7 +133,7 @@ public abstract class LPMicroblockTileEntity extends TileEntity implements IMult
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public void setWorld(World world) {
+	public void setWorld(@Nonnull World world) {
 		super.setWorld(world);
 		if (this.getMultipartContainer() != null) this.getMultipartContainer().setWorld(world);
 	}

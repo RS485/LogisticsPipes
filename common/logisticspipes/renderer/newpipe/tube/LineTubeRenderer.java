@@ -4,7 +4,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeLine;
-import logisticspipes.pipes.tubes.HSTubeLine.TubeLineOrientation;
 import logisticspipes.pipes.tubes.HSTubeLine.TubeLineRenderOrientation;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.I3DOperation;

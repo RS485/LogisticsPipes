@@ -1,8 +1,5 @@
 package logisticspipes.utils;
 
-import java.util.Iterator;
-import java.util.List;
-
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;

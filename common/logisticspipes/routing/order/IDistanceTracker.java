@@ -2,17 +2,17 @@ package logisticspipes.routing.order;
 
 public interface IDistanceTracker {
 
-	public void setCurrentDistanceToTarget(int value);
+	void setCurrentDistanceToTarget(int value);
 
-	public int getCurrentDistanceToTarget();
+	int getCurrentDistanceToTarget();
 
-	public int getInitialDistanceToTarget();
+	int getInitialDistanceToTarget();
 
-	public void setDestinationReached();
+	void setDestinationReached();
 
-	public boolean hasReachedDestination();
+	boolean hasReachedDestination();
 
-	public void setDelay(long delay);
+	void setDelay(long delay);
 
-	public boolean isTimeout();
+	boolean isTimeout();
 }

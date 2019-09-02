@@ -15,7 +15,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -45,7 +44,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		LEVEL_1(0.5F, 330, 465, 1, 50, -200, 100),
 		LEVEL_2(0.25F, 660, 950, 2, 100, -400, -100);
 
-		private ZOOM_LEVEL(float zoom, int bottom, int right, int line, int moveY, int maxX, int maxY) {
+		ZOOM_LEVEL(float zoom, int bottom, int right, int line, int moveY, int maxX, int maxY) {
 			this.zoom = zoom;
 			bottomRenderBorder = bottom;
 			rightRenderBorder = right;
@@ -246,7 +245,6 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		BufferedImage bufferedimage = new BufferedImage(imgPosX, imgPosY, 1);
 
 		imgPosX = 0;
-		imgPosY = 0;
 
 		//Clear everything
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -276,7 +274,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	private void saveImage(BufferedImage bufferedimage) {
 		File screenShotsFolder = new File(Minecraft.getMinecraft().mcDataDir, "screenshots");
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
-		String s = dateFormat.format(new Date()).toString();
+		String s = dateFormat.format(new Date());
 		int i = 1;
 		while (true) {
 			File canidate = new File(screenShotsFolder, s + (i == 1 ? "" : "_" + i) + ".png");

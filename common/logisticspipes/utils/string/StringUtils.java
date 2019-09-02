@@ -129,7 +129,7 @@ public final class StringUtils {
 		}
 		value *= 100;
 		int percent = (int) value;
-		return Integer.toString(percent) + "%";
+		return percent + "%";
 	}
 
 	public static String getWithMaxWidth(String name, int width, FontRenderer fontRenderer) {

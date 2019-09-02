@@ -1,6 +1,7 @@
 package logisticspipes.commands.chathelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.OpenChatGui;
@@ -34,9 +35,7 @@ public class MorePageDisplay {
 	public MorePageDisplay(String[] header, ICommandSender name) {
 		if (header.length <= (row - 2)) {
 			this.header = new ArrayList<>();
-			for (String element : header) {
-				this.header.add(element);
-			}
+			this.header.addAll(Arrays.asList(header));
 		}
 		LPChatListener.register(this, name.getName());
 		name.sendMessage(new TextComponentString("%LPSTORESENDMESSAGE%"));
@@ -71,7 +70,7 @@ public class MorePageDisplay {
 	}
 
 	private String replaceMeta(String input, int page, int count) {
-		String output = "";
+		StringBuilder output = new StringBuilder();
 		int pagecount = getPageCount(count);
 		if (count == -1) {
 			pagecount = 0;
@@ -83,19 +82,19 @@ public class MorePageDisplay {
 			char c = input.charAt(i);
 			switch (c) {
 				case '%':
-					output += String.valueOf(page);
+					output.append(page);
 					break;
 				case '$':
-					output += String.valueOf(pagecount);
+					output.append(pagecount);
 					break;
 				default:
-					output += c;
+					output.append(c);
 					break;
 			}
 		}
 		boolean LeftDone = false;
 		boolean RightDone = false;
-		String output2 = "";
+		StringBuilder output2 = new StringBuilder();
 		// Add = for <>
 		for (int i = 0; i < output.length(); i++) {
 			char c = output.charAt(i);
@@ -105,22 +104,22 @@ public class MorePageDisplay {
 						break;
 					}
 					LeftDone = true;
-					output2 += ChatColor.AQUA;
+					output2.append(ChatColor.AQUA);
 					for (int j = 0; j < ((colum - output.length()) / 2); j++) {
-						output2 += "=";
+						output2.append("=");
 					}
-					output2 += ChatColor.WHITE;
+					output2.append(ChatColor.WHITE);
 					break;
 				case '>':
 					if (RightDone) {
 						break;
 					}
 					RightDone = true;
-					output2 += ChatColor.AQUA;
+					output2.append(ChatColor.AQUA);
 					for (int j = 0; j < ((colum - output.length()) / 2); j++) {
-						output2 += "=";
+						output2.append("=");
 					}
-					output2 += ChatColor.WHITE;
+					output2.append(ChatColor.WHITE);
 					break;
 				case '(':
 					if (LeftDone) {
@@ -128,7 +127,7 @@ public class MorePageDisplay {
 					}
 					LeftDone = true;
 					for (int j = 0; j < ((colum - output.length()) / 2); j++) {
-						output2 += " ";
+						output2.append(" ");
 					}
 					break;
 				case ')':
@@ -137,15 +136,15 @@ public class MorePageDisplay {
 					}
 					RightDone = true;
 					for (int j = 0; j < ((colum - output.length()) / 2); j++) {
-						output2 += " ";
+						output2.append(" ");
 					}
 					break;
 				default:
-					output2 += c;
+					output2.append(c);
 					break;
 			}
 		}
-		return output2;
+		return output2.toString();
 	}
 
 	public boolean handleChat(String input, ICommandSender sender) {
@@ -224,14 +223,14 @@ public class MorePageDisplay {
 			if (numstring.equalsIgnoreCase(input)) {
 				return true;
 			}
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 		return false;
 	}
 
 	public static int toNumber(String input) {
 		try {
 			return Integer.parseInt(input);
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 		return -1;
 	}
 
@@ -260,7 +259,6 @@ public class MorePageDisplay {
 		for (int i = 0; i < content.size(); i++, lineOnCurentPage++) {
 			int I;
 			for (I = i; I < (content.size() - 1) && content.get(I + 1).connected; I++) {
-				;
 			}
 			int needed = I - i;
 			if (lineOnCurentPage + needed > count - 1) {
@@ -279,8 +277,7 @@ public class MorePageDisplay {
 		int count = row - header.size() - 1 - linesub;
 		page = (page > 0 && !all ? page : 1);
 		currentpage = page;
-		int pagecount = getPageCount(count);
-		currentpagecount = pagecount;
+		currentpagecount = getPageCount(count);
 		if (all) {
 			count = -2;
 		}
@@ -299,7 +296,6 @@ public class MorePageDisplay {
 			} else {
 				int I;
 				for (I = i; I < (content.size() - 1) && content.get(I + 1).connected; I++) {
-					;
 				}
 				int needed = I - i;
 				if (lineOnCurentPage + needed > count - 1) {
@@ -326,7 +322,7 @@ public class MorePageDisplay {
 		}
 	}
 
-	private class StringConnected {
+	private static class StringConnected {
 
 		StringConnected(String s, boolean b) {
 			content = s;

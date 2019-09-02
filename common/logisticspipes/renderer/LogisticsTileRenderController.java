@@ -27,14 +27,15 @@ import lombok.Getter;
 
 public class LogisticsTileRenderController {
 
+	private static final int LASER_TIMEOUT_TICKS = 4;
+
 	private final LogisticsTileGenericPipe pipe;
-	private final int LASER_TIMEOUT_TICKS = 4;
 	private final Map<LaserKey, LaserBeamData> powerLasersBeam = new HashMap<>();
 	private final Map<Integer, LaserBallData> powerLasersBall = new HashMap<>();
 
 	@Data
 	@AllArgsConstructor
-	private class LaserKey {
+	private static class LaserKey {
 
 		final EnumFacing dir;
 		final int color;
@@ -42,7 +43,7 @@ public class LogisticsTileRenderController {
 
 	@Data
 	@AllArgsConstructor
-	private class LaserBeamData {
+	private static class LaserBeamData {
 
 		final float length;
 		int timeout;
@@ -99,7 +100,7 @@ public class LogisticsTileRenderController {
 
 	@Data
 	@AllArgsConstructor
-	private class LaserBallData {
+	private static class LaserBallData {
 
 		final float length;
 		int timeout;

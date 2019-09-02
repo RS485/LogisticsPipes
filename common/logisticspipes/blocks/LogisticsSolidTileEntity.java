@@ -1,5 +1,7 @@
 package logisticspipes.blocks;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -64,6 +66,7 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 		SimpleServiceLocator.openComputersProxy.handleReadFromNBT(this, nbt);
 	}
 
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt = super.writeToNBT(nbt);
@@ -108,7 +111,7 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	}
 
 	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, @Nonnull IBlockState newSate) {
 		// backwards compat; TODO remove in 1.13
 		if (oldState.getBlock() == LPBlocks.dummy && newSate.getBlock() instanceof LogisticsSolidBlock) return false;
 
@@ -160,7 +163,7 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public Object[] invoke(String s, Context context, Arguments arguments) throws Exception {
+	public Object[] invoke(String s, Context context, Arguments arguments) {
 		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(this, BaseWrapperClass.WRAPPER);
 		object.isDirectCall = true;
 		return CCObjectWrapper.createArray(object);

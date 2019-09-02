@@ -49,6 +49,7 @@ public class FluidContainerRenderer implements IModel {
 			return modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().equals("models/item/fluid_container");
 		}
 
+		@Nonnull
 		@Override
 		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
 			return new FluidContainerRenderer();
@@ -63,13 +64,15 @@ public class FluidContainerRenderer implements IModel {
 	private static final ResourceLocation STENCIL = new ResourceLocation("logisticspipes:items/liquids/stencil");
 	private static final ResourceLocation EMPTY = new ResourceLocation("logisticspipes:items/liquids/empty");
 
+	@Nonnull
 	@Override
 	public Collection<ResourceLocation> getTextures() {
 		return ImmutableList.of(EMPTY, STENCIL);
 	}
 
+	@Nonnull
 	@Override
-	public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
 		ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap = PerspectiveMapWrapper.getTransforms(state);
 
 		ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
@@ -88,7 +91,6 @@ public class FluidContainerRenderer implements IModel {
 
 		private Map<FluidIdentifier, IBakedModel> cache = new HashMap<>();
 
-		private IModelState state;
 		private VertexFormat format;
 		private ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap;
 		private Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
@@ -97,7 +99,6 @@ public class FluidContainerRenderer implements IModel {
 				ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap,
 				Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
 			super(ImmutableList.of());
-			this.state = state;
 			this.format = format;
 			this.transformMap = transformMap;
 			this.bakedTextureGetter = bakedTextureGetter;

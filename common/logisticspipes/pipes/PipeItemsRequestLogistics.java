@@ -245,8 +245,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	@CCCommand(description = "Asks for all craftable ItemIdentifier inside the Logistics Network")
 	@CCQueued
 	public List<ItemIdentifier> getCraftableItems() {
-		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
-		return items;
+		return SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
 	}
 
 	@CCCommand(description = "Asks for the amount of an ItemIdentifier Id inside the Logistics Network")

@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public interface IBetterStorageProxy {
 
-	public boolean isBetterStorageCrate(TileEntity tile);
+	boolean isBetterStorageCrate(TileEntity tile);
 
-	public ICrateStorageProxy getCrateStorageProxy(TileEntity tile);
+	ICrateStorageProxy getCrateStorageProxy(TileEntity tile);
 }

@@ -3,7 +3,6 @@ package logisticspipes.utils.transactor;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import net.minecraft.util.EnumFacing;

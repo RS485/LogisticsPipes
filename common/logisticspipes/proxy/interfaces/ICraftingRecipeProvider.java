@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public interface ICraftingRecipeProvider {
 
-	public boolean canOpenGui(TileEntity tile);
+	boolean canOpenGui(TileEntity tile);
 
-	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory);
+	boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory);
 }

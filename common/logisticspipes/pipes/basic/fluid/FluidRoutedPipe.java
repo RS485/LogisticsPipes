@@ -254,7 +254,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			if (getRouter().getSimpleID() != arrivingItem.getDestination()) {
 				return false;
 			}
-			int filled = 0;
+			int filled;
 			FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemIdentifierStack());
 			if (isConnectableTank(tile, arrivingItem.output, false)) {
 				List<ITankUtil> adjTanks = getAdjacentTanks(false);

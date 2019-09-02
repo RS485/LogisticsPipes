@@ -8,6 +8,8 @@
 
 package logisticspipes.utils.gui;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.utils.Color;
 
 import net.minecraft.client.Minecraft;
@@ -36,7 +38,7 @@ public class SmallGuiButton extends GuiButton {
 	}
 
 	@Override
-	public void drawButton(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
+	public void drawButton(@Nonnull Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		if (!visible) {
 			return;
 		}

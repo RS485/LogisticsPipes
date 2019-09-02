@@ -16,7 +16,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -94,14 +93,14 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return simpleID; // guaranteed to be unique, and uniform distribution over a range.
 	}
 
-	protected class LSA {
+	protected static class LSA {
 
 		public HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric;
 		public List<Pair<ILogisticsPowerProvider, List<IFilter>>> power;
 		public ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>> subSystemPower;
 	}
 
-	private abstract class RouterRunnable implements Comparable<RouterRunnable>, Runnable {
+	private abstract static class RouterRunnable implements Comparable<RouterRunnable>, Runnable {
 
 		public abstract int getPrority();
 
@@ -118,8 +117,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	private class UpdateRouterRunnable extends RouterRunnable {
 
-		int newVersion = 0;
-		boolean run = false;
+		int newVersion;
+		boolean run;
 		IRouter target;
 
 		UpdateRouterRunnable(IRouter target) {
@@ -534,6 +533,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		for (CoreRoutedPipe pipe : _adjacent.keySet()) {
 			if (!adjacent.containsKey(pipe)) {
 				adjacentChanged = true;
+				break;
 			}
 		}
 		if (_powerAdjacent != null) {
@@ -543,6 +543,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : _powerAdjacent) {
 					if (!power.contains(provider)) {
 						adjacentChanged = true;
+						break;
 					}
 				}
 			}
@@ -554,6 +555,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : power) {
 					if (!_powerAdjacent.contains(provider)) {
 						adjacentChanged = true;
+						break;
 					}
 				}
 			}
@@ -565,6 +567,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				for (Pair<ISubSystemPowerProvider, List<IFilter>> provider : _subSystemPowerAdjacent) {
 					if (!subSystemPower.contains(provider)) {
 						adjacentChanged = true;
+						break;
 					}
 				}
 			}
@@ -576,6 +579,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				for (Pair<ISubSystemPowerProvider, List<IFilter>> provider : subSystemPower) {
 					if (!_subSystemPowerAdjacent.contains(provider)) {
 						adjacentChanged = true;
+						break;
 					}
 				}
 			}
@@ -642,7 +646,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			return;
 		}
 		UUID id = pipe.getSecurityID();
-		List<CoreRoutedPipe> toRemove = new ArrayList<>();
 		if (id != null) {
 			for (Entry<CoreRoutedPipe, ExitRoute> entry : adjacent.entrySet()) {
 				if (!entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) && !entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom)) {
@@ -663,9 +666,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					}
 				}
 			}
-			toRemove.addAll(adjacent.entrySet().stream()
+			List<CoreRoutedPipe> toRemove = adjacent.entrySet().stream()
 					.filter(entry -> sideDisconnected[entry.getValue().exitOrientation.ordinal()])
-					.map(Entry<CoreRoutedPipe, ExitRoute>::getKey).collect(Collectors.toList()));
+					.map(Entry::getKey)
+					.collect(Collectors.toList());
 			toRemove.forEach(adjacent::remove);
 		}
 	}
@@ -679,17 +683,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 		ArrayList<Pair<ILogisticsPowerProvider, List<IFilter>>> power = null;
 		if (_powerAdjacent != null) {
-			power = new ArrayList<>();
-			for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : _powerAdjacent) {
-				power.add(provider);
-			}
+			power = new ArrayList<>(_powerAdjacent);
 		}
 		ArrayList<Pair<ISubSystemPowerProvider, List<IFilter>>> subSystemPower = null;
 		if (_subSystemPowerAdjacent != null) {
-			subSystemPower = new ArrayList<>();
-			for (Pair<ISubSystemPowerProvider, List<IFilter>> provider : _subSystemPowerAdjacent) {
-				subSystemPower.add(provider);
-			}
+			subSystemPower = new ArrayList<>(_subSystemPowerAdjacent);
 		}
 		if (Configs.MULTI_THREAD_NUMBER > 0) {
 			RoutingTableUpdateThread.add(new LSARouterRunnable(neighboursWithMetric, power, subSystemPower));
@@ -861,7 +859,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				continue;
 			}
 			if (lowestCostNode.containsFlag(PipeRoutingConnectionType.canPowerFrom)) {
-				if (lsa.power != null && (lsa.power.isEmpty() == false)) {
+				if (lsa.power != null && !lsa.power.isEmpty()) {
 					for (Pair<ILogisticsPowerProvider, List<IFilter>> p : lsa.power) {
 						Pair<ILogisticsPowerProvider, List<IFilter>> entry = p.copy();
 						List<IFilter> list = new ArrayList<>();
@@ -875,7 +873,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				}
 			}
 			if (lowestCostNode.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-				if (lsa.subSystemPower != null && (lsa.subSystemPower.isEmpty() == false)) {
+				if (lsa.subSystemPower != null && !lsa.subSystemPower.isEmpty()) {
 					for (Pair<ISubSystemPowerProvider, List<IFilter>> p : lsa.subSystemPower) {
 						Pair<ISubSystemPowerProvider, List<IFilter>> entry = p.copy();
 						List<IFilter> list = new ArrayList<>();
@@ -958,8 +956,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 			List<ExitRoute> current = routeTable.get(node.destination.getSimpleID());
 			if (current != null && !current.isEmpty()) {
-				List<ExitRoute> list = new ArrayList<>();
-				list.addAll(current);
+				List<ExitRoute> list = new ArrayList<>(current);
 				list.add(node);
 				routeTable.set(node.destination.getSimpleID(), Collections.unmodifiableList(list));
 			} else {
@@ -1040,7 +1037,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	 * Floodfill recheckAdjacent, leave _prevAdjacentRouter around for LSA
 	 * updating
 	 */
-	class floodCheckAdjacent implements IRAction {
+	static class floodCheckAdjacent implements IRAction {
 
 		@Override
 		public boolean isInteresting(IRouter that) {
@@ -1072,7 +1069,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	 * Floodfill LSA increment and clean up the _prevAdjacentRouter list left by
 	 * floodCheckAdjacent
 	 */
-	class flagForLSAUpdate implements IRAction {
+	static class flagForLSAUpdate implements IRAction {
 
 		@Override
 		public boolean isInteresting(IRouter that) {
@@ -1085,7 +1082,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 	}
 
-	class floodClearCache implements IRAction {
+	static class floodClearCache implements IRAction {
 
 		@Override
 		public boolean isInteresting(IRouter that) {
@@ -1280,7 +1277,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public boolean isSideDisconneceted(EnumFacing dir) {
+	public boolean isSideDisconnected(EnumFacing dir) {
 		return null != dir && sideDisconnected[dir.ordinal()];
 	}
 
@@ -1463,23 +1460,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public String toString() {
-		StringBuilder string = new StringBuilder("ServerRouter: {ID: ");
-		string.append(simpleID);
-		string.append(", UUID: ");
-		string.append(getId());
-		string.append(", AT: (");
-		string.append(_dimension);
-		string.append(", ");
-		string.append(_xCoord);
-		string.append(", ");
-		string.append(_yCoord);
-		string.append(", ");
-		string.append(_zCoord);
-		string.append("), Version: ");
-		string.append(_LSAVersion);
-		string.append("), Destroied: ");
-		string.append(isDestroied());
-		return string.append("}").toString();
+		return String.format("ServerRouter: {ID: %d, UUID: %s, AT: (%d, %d, %d, %d), Version: %d), Destroyed: %s}", simpleID, getId(), _dimension, _xCoord, _yCoord, _zCoord, _LSAVersion, isDestroied());
 	}
 
 	@Override
@@ -1490,10 +1471,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public List<ExitRoute> getRoutersOnSide(EnumFacing direction) {
-		List<ExitRoute> routers = _adjacentRouter.values().stream()
+		return _adjacentRouter.values().stream()
 				.filter(exit -> exit.exitOrientation == direction)
 				.collect(Collectors.toList());
-		return routers;
 	}
 
 	@Override

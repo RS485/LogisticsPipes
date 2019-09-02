@@ -71,7 +71,7 @@ public class PlayerCollectionList {
 		return players.contains(new EqualWeakReference<>(player));
 	}
 
-	private class Itr implements Iterator<EntityPlayer> {
+	private static class Itr implements Iterator<EntityPlayer> {
 
 		private final Iterator<EqualWeakReference<EntityPlayer>> iterator;
 

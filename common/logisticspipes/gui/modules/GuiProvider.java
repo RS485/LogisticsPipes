@@ -18,15 +18,13 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiProvider extends ModuleBaseGui {
 
-	private final IInventory _playerInventory;
 	private final ModuleProvider _provider;
 
 	public GuiProvider(IInventory playerInventory, ModuleProvider provider) {
 		super(null, provider);
-		_playerInventory = playerInventory;
 		_provider = provider;
 
-		DummyContainer dummy = new DummyContainer(_playerInventory, _provider.getFilterInventory());
+		DummyContainer dummy = new DummyContainer(playerInventory, _provider.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 
 		int xOffset = 72;

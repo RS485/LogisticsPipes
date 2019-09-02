@@ -3,7 +3,8 @@ package logisticspipes.proxy.cc.wrapper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
-import java.util.concurrent.Callable;
+
+import javax.annotation.Nonnull;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
@@ -34,6 +35,7 @@ public class CCCommandWrapper implements ILuaObject {
 		object = object2;
 	}
 
+	@Nonnull
 	@Override
 	public String[] getMethodNames() {
 		LinkedList<String> list = new LinkedList<>();
@@ -43,11 +45,11 @@ public class CCCommandWrapper implements ILuaObject {
 		for (int i = 0; i < info.commandMap.size(); i++) {
 			list.add(info.commandMap.get(i));
 		}
-		return list.toArray(new String[list.size()]);
+		return list.toArray(new String[0]);
 	}
 
 	@Override
-	public Object[] callMethod(ILuaContext context, int methodId, Object[] arguments) {
+	public Object[] callMethod(@Nonnull ILuaContext context, int methodId, @Nonnull Object[] arguments) {
 		if (methodId == 0) {
 			return help(arguments);
 		}
@@ -278,7 +280,7 @@ public class CCCommandWrapper implements ILuaObject {
 				head.append("\n").append(buffer);
 			}
 		}
-		return new Object[] { new StringBuilder().append(head).append(head2).append(help).toString() };
+		return new Object[] { String.format("%s%s%s", head, head2, help) };
 	}
 
 	private Object[] helpCommand(Object[] arguments) {

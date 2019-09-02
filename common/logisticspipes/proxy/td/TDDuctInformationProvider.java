@@ -32,7 +32,6 @@ import net.minecraft.world.World;
 
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
-import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

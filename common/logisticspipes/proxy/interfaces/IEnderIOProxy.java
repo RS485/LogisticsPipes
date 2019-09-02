@@ -7,13 +7,13 @@ import net.minecraft.util.EnumFacing;
 
 public interface IEnderIOProxy {
 
-	public boolean isTransceiver(TileEntity tile);
+	boolean isTransceiver(TileEntity tile);
 
-	public List<TileEntity> getConnectedTransceivers(TileEntity tile);
+	List<TileEntity> getConnectedTransceivers(TileEntity tile);
 
-	public boolean isSendAndReceive(TileEntity tile);
+	boolean isSendAndReceive(TileEntity tile);
 
-	public boolean isEnderIO();
+	boolean isEnderIO();
 
 	boolean isItemConduit(TileEntity tile, EnumFacing dir);
 

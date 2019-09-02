@@ -185,7 +185,6 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 						if (amounts.containsKey(ident)) {
 							itemAmount = amounts.get(ident);
 						} else {
-							itemAmount = 0;
 							break;
 						}
 					}

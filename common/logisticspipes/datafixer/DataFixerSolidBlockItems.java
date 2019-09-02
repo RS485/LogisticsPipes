@@ -1,9 +1,12 @@
 package logisticspipes.datafixer;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.blocks.BlockDummy;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IFixableData;
+
 
 public class DataFixerSolidBlockItems implements IFixableData {
 
@@ -15,6 +18,7 @@ public class DataFixerSolidBlockItems implements IFixableData {
 		return VERSION;
 	}
 
+	@Nonnull
 	@Override
 	public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
 		if (

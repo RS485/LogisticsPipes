@@ -8,13 +8,13 @@ import net.minecraft.tileentity.TileEntity;
 
 public interface ISpecialTileConnection {
 
-	public boolean init();
+	boolean init();
 
-	public boolean isType(TileEntity tile);
+	boolean isType(TileEntity tile);
 
-	public Collection<TileEntity> getConnections(TileEntity tile);
+	Collection<TileEntity> getConnections(TileEntity tile);
 
-	public boolean needsInformationTransition();
+	boolean needsInformationTransition();
 
-	public void transmit(TileEntity tile, IRoutedItem arrivingItem);
+	void transmit(TileEntity tile, IRoutedItem arrivingItem);
 }

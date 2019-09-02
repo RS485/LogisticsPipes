@@ -66,7 +66,6 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
 
-	private final LogicController controller;
 	private final ItemRenderer renderitem = new ItemRenderer(mc);
 
 	private int isMouseButtonDown;
@@ -80,7 +79,6 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 	public LogicLayoutGui(LogicController controller, EntityPlayer player) {
 		super(256, 202 + 90, 0, 0);
-		this.controller = controller;
 		guiMapY = -200;
 		Mouse.getDWheel(); // Reset DWheel on GUI open
 		DummyContainer dummy = new DummyContainer(player.inventory, null);
@@ -171,8 +169,6 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		ySize *= 1 / zoom.zoom;
 		leftSide *= 1 / zoom.zoom;
 		topSide *= 1 / zoom.zoom;
-		par1 *= 1 / zoom.zoom;
-		par2 *= 1 / zoom.zoom;
 
 		int innerLeftSide = leftSide + 16;
 		int innerTopSide = topSide + 17;

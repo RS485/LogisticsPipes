@@ -88,7 +88,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 				for (String msg : text) {
 					player.sendMessage(new TextComponentString(msg));
 				}
-				((GuiButton) buttonList.get(1)).enabled = false;
+				buttonList.get(1).enabled = false;
 				break;
 		}
 	}

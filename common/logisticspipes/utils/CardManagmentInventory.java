@@ -7,6 +7,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsItemCard;
@@ -26,21 +27,19 @@ public class CardManagmentInventory implements IInventory {
 		return inv.isEmpty();
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		if (i > -1 && i < 4) {
 			return inv.getStackInSlot(i);
 		}
 		ItemStack card = inv.getStackInSlot(3);
-		if (card != null) {
+		if (!card.isEmpty()) {
 			NBTTagCompound nbt = card.getTagCompound();
 			if (nbt == null) {
 				nbt = new NBTTagCompound();
 			}
 			NBTTagCompound colors = nbt.getCompoundTag("colors");
-			if (colors == null) {
-				colors = new NBTTagCompound();
-			}
 			int slot = i - 4;
 
 			int colorCode;
@@ -60,34 +59,36 @@ public class CardManagmentInventory implements IInventory {
 			return color.getItemStack();
 		}
 
-		return null;
+		return ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (i > -1 && i < 4) {
 			return inv.decrStackSize(i, j);
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	@Override
 	public ItemStack removeStackFromSlot(int i) {
 		if (i > -1 && i < 4) {
 			return inv.removeStackFromSlot(i);
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
 	public void setInventorySlotContents(int i, @Nonnull ItemStack itemstack) {
 		if (i > -1 && i < 4) {
-			if (i == 0 && !itemstack.isEmpty() && inv.getStackInSlot(1) != null && inv.getStackInSlot(2) == null && inv.getStackInSlot(1).getItemDamage() == itemstack.getItemDamage()) {
+			if (i == 0 && !itemstack.isEmpty() && !inv.getStackInSlot(1).isEmpty() && inv.getStackInSlot(2).isEmpty() && inv.getStackInSlot(1).getItemDamage() == itemstack.getItemDamage()) {
 				itemstack.setTagCompound(inv.getStackInSlot(1).getTagCompound());
 				inv.setInventorySlotContents(2, itemstack);
 				return;
 			}
-			if (i == 1 && !itemstack.isEmpty() && inv.getStackInSlot(0) != null && inv.getStackInSlot(2) == null && inv.getStackInSlot(0).getItemDamage() == itemstack.getItemDamage()) {
+			if (i == 1 && !itemstack.isEmpty() && !inv.getStackInSlot(0).isEmpty() && inv.getStackInSlot(2).isEmpty() && inv.getStackInSlot(0).getItemDamage() == itemstack.getItemDamage()) {
 				itemstack.setTagCompound(inv.getStackInSlot(0).getTagCompound());
 				inv.setInventorySlotContents(2, itemstack);
 				return;
@@ -96,15 +97,12 @@ public class CardManagmentInventory implements IInventory {
 			return;
 		}
 		ItemStack card = inv.getStackInSlot(3);
-		if (card != null) {
+		if (!card.isEmpty()) {
 			NBTTagCompound nbt = card.getTagCompound();
 			if (nbt == null) {
 				nbt = new NBTTagCompound();
 			}
 			NBTTagCompound colors = nbt.getCompoundTag("colors");
-			if (colors == null) {
-				colors = new NBTTagCompound();
-			}
 			int slot = i - 4;
 			colors.setInteger("color:" + slot, MinecraftColor.getColor(itemstack).ordinal());
 			nbt.setTag("colors", colors);
@@ -113,14 +111,16 @@ public class CardManagmentInventory implements IInventory {
 		}
 	}
 
+	@Nonnull
 	@Override
 	public String getName() {
 		return "Card Managment Inventory";
 	}
 
+	@Nonnull
 	@Override
 	public ITextComponent getDisplayName() {
-		return null;
+		return new TextComponentString("");
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class CardManagmentInventory implements IInventory {
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer entityplayer) {
+	public boolean isUsableByPlayer(@Nonnull EntityPlayer entityplayer) {
 		return true;
 	}
 
@@ -142,14 +142,14 @@ public class CardManagmentInventory implements IInventory {
 	public void markDirty() {}
 
 	@Override
-	public void openInventory(EntityPlayer player) {}
+	public void openInventory(@Nonnull EntityPlayer player) {}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {}
+	public void closeInventory(@Nonnull EntityPlayer player) {}
 
 	@Override
-	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		if (itemstack == null) {
+	public boolean isItemValidForSlot(int i, @Nonnull ItemStack itemstack) {
+		if (itemstack.isEmpty()) {
 			return false;
 		}
 		if (i == 0 || i == 1) {

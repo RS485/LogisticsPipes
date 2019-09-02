@@ -72,12 +72,12 @@ public class LogisticsWrapperHandler {
 			LogisticsPipes.log.info("Loaded " + name + " PipeConfigToolWrapper");
 		} else {
 			if (e != null) {
-				((AbstractWrapper) instance).setState(WrapperState.Exception);
-				((AbstractWrapper) instance).setReason(e);
+				instance.setState(WrapperState.Exception);
+				instance.setReason(e);
 				LogisticsPipes.log.info("Couldn't load " + name + " PipeConfigToolWrapper");
 			} else {
 				LogisticsPipes.log.info("Didn't load " + name + " PipeConfigToolWrapper");
-				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
+				instance.setState(WrapperState.ModMissing);
 			}
 		}
 		LogisticsWrapperHandler.wrapperController.add(instance);
@@ -107,12 +107,12 @@ public class LogisticsWrapperHandler {
 			LogisticsPipes.log.info("Loaded " + modId + ", " + name + " ProgressProvider");
 		} else {
 			if (e != null) {
-				((AbstractWrapper) instance).setState(WrapperState.Exception);
-				((AbstractWrapper) instance).setReason(e);
+				instance.setState(WrapperState.Exception);
+				instance.setReason(e);
 				LogisticsPipes.log.info("Couldn't load " + modId + ", " + name + " ProgressProvider");
 			} else {
 				LogisticsPipes.log.info("Didn't load " + modId + ", " + name + " ProgressProvider");
-				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
+				instance.setState(WrapperState.ModMissing);
 			}
 		}
 		instance.setModId(modId);
@@ -142,12 +142,12 @@ public class LogisticsWrapperHandler {
 			LogisticsPipes.log.info("Loaded " + name + " RecipeProvider");
 		} else {
 			if (e != null) {
-				((AbstractWrapper) instance).setState(WrapperState.Exception);
-				((AbstractWrapper) instance).setReason(e);
+				instance.setState(WrapperState.Exception);
+				instance.setReason(e);
 				LogisticsPipes.log.info("Couldn't load " + name + " RecipeProvider");
 			} else {
 				LogisticsPipes.log.info("Didn't load " + name + " RecipeProvider");
-				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
+				instance.setState(WrapperState.ModMissing);
 			}
 		}
 		instance.setModId(modId);
@@ -156,7 +156,7 @@ public class LogisticsWrapperHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy, Class<?>... wrapperInterfaces) throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InstantiationException,
+	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy, Class<?>... wrapperInterfaces) throws SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException,
 			InvocationTargetException, NoSuchMethodException {
 		String proxyName = interfaze.getSimpleName().substring(1);
 		if (!proxyName.endsWith("Proxy")) {
@@ -170,7 +170,7 @@ public class LogisticsWrapperHandler {
 			modId = modId.substring(1);
 		}
 		List<Class<?>> wrapperInterfacesList = Arrays.asList(wrapperInterfaces);
-		Class<?> clazz = null;
+		Class<?> clazz;
 		synchronized (lookupMap) {
 			clazz = LogisticsWrapperHandler.lookupMap.get(className);
 			if (clazz == null) {
@@ -250,11 +250,11 @@ public class LogisticsWrapperHandler {
 						if(e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
 							Class<?> prev = Class.forName(className);
 							System.err.println(e.getMessage());
-							System.err.println("Already loaded: " + String.valueOf(prev));
+							System.err.printf("Already loaded: %s%n", prev);
 							String resourcePath = className.replace('.', '/').concat(".class");
 							URL classResource = Launch.classLoader.findResource(resourcePath);
 							if(classResource != null) {
-								String path = classResource.getPath().toString();
+								String path = classResource.getPath();
 								System.err.println("Class source: " + path);
 							} else {
 								System.err.println("Class source: Null");
@@ -308,14 +308,14 @@ public class LogisticsWrapperHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T getWrappedSubProxy(AbstractWrapper wrapper, Class<T> interfaze, T proxy, T dummyProxy) throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+	public static <T> T getWrappedSubProxy(AbstractWrapper wrapper, Class<T> interfaze, T proxy, T dummyProxy) throws SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 		if (proxy == null) {
 			return null;
 		}
 		String proxyName = interfaze.getSimpleName().substring(1);
 		String className = "logisticspipes/asm/wrapper/generated/" + proxyName + "ProxyWrapper";
 
-		Class<?> clazz = null;
+		Class<?> clazz;
 		synchronized (lookupMap) {
 			clazz = LogisticsWrapperHandler.lookupMap.get(className);
 			if (clazz == null) {
@@ -395,11 +395,11 @@ public class LogisticsWrapperHandler {
 						if(e.getMessage().contains("attempted") && e.getMessage().contains("duplicate class definition")) {
 							Class<?> prev = Class.forName(className);
 							System.err.println(e.getMessage());
-							System.err.println("Already loaded: " + String.valueOf(prev));
+							System.err.printf("Already loaded: %s%n", prev);
 							String resourcePath = className.replace('.', '/').concat(".class");
 							URL classResource = Launch.classLoader.findResource(resourcePath);
 							if(classResource != null) {
-								String path = classResource.getPath().toString();
+								String path = classResource.getPath();
 								System.err.println("Class source: " + path);
 							} else {
 								System.err.println("Class source: Null");
@@ -473,7 +473,7 @@ public class LogisticsWrapperHandler {
 		desc.append(")");
 		String resultClassL = null;
 		String resultClass = null;
-		int returnType = 0;
+		int returnType;
 		if (retclazz == null || retclazz == void.class) {
 			desc.append("V");
 			returnType = Opcodes.RETURN;

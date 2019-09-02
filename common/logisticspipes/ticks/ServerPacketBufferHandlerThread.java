@@ -47,7 +47,7 @@ public class ServerPacketBufferHandlerThread {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(contentBytes));
-			int buffer = 0;
+			int buffer;
 			while ((buffer = gzip.read()) != -1) {
 				out.write(buffer);
 			}
@@ -87,7 +87,7 @@ public class ServerPacketBufferHandlerThread {
 		}.start();
 	}
 
-	private class ServerCompressorThread extends Thread {
+	private static class ServerCompressorThread extends Thread {
 
 		//Map of Players to lists of S->C packets to be serialized and compressed
 		private final HashMap<EntityPlayer, LinkedList<ModernPacket>> serverList = new HashMap<>();
@@ -155,7 +155,7 @@ public class ServerPacketBufferHandlerThread {
 					}
 				}
 				synchronized (playersToClear) {
-					EntityPlayer player = null;
+					EntityPlayer player;
 					do {
 						player = playersToClear.poll();
 						if (player != null) {
@@ -199,7 +199,7 @@ public class ServerPacketBufferHandlerThread {
 		}
 	}
 
-	private class ServerDecompressorThread extends Thread {
+	private static class ServerDecompressorThread extends Thread {
 
 		//Map of Player to received compressed C->S data
 		private final HashMap<EntityPlayer, LinkedList<byte[]>> queue = new HashMap<>();
@@ -247,7 +247,7 @@ public class ServerPacketBufferHandlerThread {
 		@Override
 		public void run() {
 			while (true) {
-				boolean flag = false;
+				boolean flag;
 				do {
 					flag = false;
 					byte[] buffer = null;
@@ -319,7 +319,7 @@ public class ServerPacketBufferHandlerThread {
 					}
 				}
 				synchronized (playersToClear) {
-					EntityPlayer player = null;
+					EntityPlayer player;
 					do {
 						player = playersToClear.poll();
 						if (player != null) {

@@ -5,5 +5,5 @@ public enum ConnectionMode {
 	INPUT(),
 	OUTPUT(),
 	DISABLED(),
-	NOT_SET();
+	NOT_SET()
 }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class LogisticsOrderLinkedList<E extends LogisticsOrder, I> implements Iterable<E> {
 
@@ -72,6 +73,7 @@ public class LogisticsOrderLinkedList<E extends LogisticsOrder, I> implements It
 		return list.size();
 	}
 
+	@Nonnull
 	@Override
 	public Iterator<E> iterator() {
 		return unmodifiable.iterator();

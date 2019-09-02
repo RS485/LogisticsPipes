@@ -11,7 +11,6 @@ package logisticspipes.gui;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
@@ -39,7 +38,6 @@ import org.lwjgl.opengl.GL11;
 public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 	private final PipeLogisticsChassi _chassiPipe;
-	private final EntityPlayer _player;
 	private final IInventory _moduleInventory;
 	//private final GuiScreen _previousGui;
 	private final List<SmallGuiButton> moduleConfigButtons = new LinkedList<>();
@@ -47,20 +45,16 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	private final Slot[] upgradeslot = new Slot[16];
 	private GuiButton[] upgradeConfig = new GuiButton[16];
 
-	private int left;
-	private int top;
-
 	private boolean hasUpgradeModuleUpgarde;
 
 	public GuiChassiPipe(EntityPlayer player, PipeLogisticsChassi chassi, boolean hasUpgradeModuleUpgarde) { //, GuiScreen previousGui) {
 		super(null);
-		_player = player;
 		_chassiPipe = chassi;
 		_moduleInventory = chassi.getModuleInventory();
 		//_previousGui = previousGui;
 		this.hasUpgradeModuleUpgarde = hasUpgradeModuleUpgarde;
 
-		DummyContainer dummy = new DummyContainer(_player.inventory, _moduleInventory);
+		DummyContainer dummy = new DummyContainer(player.inventory, _moduleInventory);
 		if (_chassiPipe.getChassiSize() < 5) {
 			dummy.addNormalSlotsForPlayerInventory(18, 97);
 		} else {
@@ -110,8 +104,8 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 
-		left = width / 2 - xSize / 2;
-		top = height / 2 - ySize / 2;
+		int left = width / 2 - xSize / 2;
+		int top = height / 2 - ySize / 2;
 
 		buttonList.clear();
 		moduleConfigButtons.clear();

@@ -3,9 +3,7 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
-import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
@@ -21,7 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
@@ -93,8 +91,7 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 
 	public abstract LPPositionSet<DoubleCoordinatesType<SubBlockTypeForShare>> getRotatedSubBlocks();
 
-	@SuppressWarnings("rawtypes")
-	public abstract void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb);
+	public abstract void addCollisionBoxesToList(List<AxisAlignedBB> arraylist, AxisAlignedBB axisalignedbb);
 
 	public abstract AxisAlignedBB getCompleteBox();
 

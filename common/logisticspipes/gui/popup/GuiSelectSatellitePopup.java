@@ -22,17 +22,13 @@ import logisticspipes.utils.tuples.Pair;
 public class GuiSelectSatellitePopup extends SubGuiScreen {
 	String GUI_LANG_KEY = "gui.popup.selectsatellite.";
 
-	private boolean fluidSatellites;
 	private final Consumer<UUID> handleResult;
 	private List<Pair<String, UUID>> pipeList = Collections.EMPTY_LIST;
 	private final TextListDisplay textList;
-	private BlockPos position;
 
 	public GuiSelectSatellitePopup(BlockPos pos, boolean fluidSatellites, Consumer<UUID> handleResult) {
 		super(150, 170, 0, 0);
-		this.fluidSatellites = fluidSatellites;
 		this.handleResult = handleResult;
-		this.position = pos;
 		this.textList = new TextListDisplay(this, 6, 16, 6, 30, 12, new TextListDisplay.List() {
 
 			@Override
@@ -50,7 +46,7 @@ public class GuiSelectSatellitePopup extends SubGuiScreen {
 				return 0xFFFFFF;
 			}
 		});
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSatellitePipeListPacket.class).setFlag(fluidSatellites).setBlockPos(this.position));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSatellitePipeListPacket.class).setFlag(fluidSatellites).setBlockPos(pos));
 	}
 
 	protected void drawTitle() {

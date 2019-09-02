@@ -98,7 +98,7 @@ public class Vector3d {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append("[").append(x).append(",").append(y).append(",").append(z).append("]").append("(").append(abs()).append(")").toString();
+		return String.format("[%s,%s,%s](%s)", x, y, z, abs());
 	}
 
 	@Override

@@ -6,10 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.annotation.Nonnull;
+
 import logisticspipes.network.abstractpackets.ListSyncPacket;
 import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.entity.player.EntityPlayer;
+
 
 public class SyncList<E> implements List<E> {
 
@@ -100,18 +103,21 @@ public class SyncList<E> implements List<E> {
 		return list.contains(paramObject);
 	}
 
+	@Nonnull
 	@Override
 	public Iterator<E> iterator() {
 		return new SyncIter(list.iterator());
 	}
 
+	@Nonnull
 	@Override
 	public Object[] toArray() {
 		return list.toArray();
 	}
 
+	@Nonnull
 	@Override
-	public <T> T[] toArray(T[] paramArrayOfT) {
+	public <T> T[] toArray(@Nonnull T[] paramArrayOfT) {
 		return list.toArray(paramArrayOfT);
 	}
 
@@ -130,33 +136,33 @@ public class SyncList<E> implements List<E> {
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> paramCollection) {
+	public boolean containsAll(@Nonnull Collection<?> paramCollection) {
 		return list.containsAll(paramCollection);
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends E> paramCollection) {
+	public boolean addAll(@Nonnull Collection<? extends E> paramCollection) {
 		boolean flag = list.addAll(paramCollection);
 		markDirty();
 		return flag;
 	}
 
 	@Override
-	public boolean addAll(int paramInt, Collection<? extends E> paramCollection) {
+	public boolean addAll(int paramInt, @Nonnull Collection<? extends E> paramCollection) {
 		boolean flag = list.addAll(paramInt, paramCollection);
 		markDirty();
 		return flag;
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> paramCollection) {
+	public boolean removeAll(@Nonnull Collection<?> paramCollection) {
 		boolean flag = list.removeAll(paramCollection);
 		markDirty();
 		return flag;
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> paramCollection) {
+	public boolean retainAll(@Nonnull Collection<?> paramCollection) {
 		boolean flag = list.retainAll(paramCollection);
 		markDirty();
 		return flag;
@@ -205,16 +211,19 @@ public class SyncList<E> implements List<E> {
 		return index;
 	}
 
+	@Nonnull
 	@Override
 	public ListIterator<E> listIterator() {
 		return new SyncListIter(list.listIterator());
 	}
 
+	@Nonnull
 	@Override
 	public ListIterator<E> listIterator(int paramInt) {
 		return new SyncListIter(list.listIterator(paramInt));
 	}
 
+	@Nonnull
 	@Override
 	public List<E> subList(int paramInt1, int paramInt2) {
 		throw new UnsupportedOperationException();

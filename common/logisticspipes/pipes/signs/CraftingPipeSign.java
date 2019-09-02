@@ -87,10 +87,10 @@ public class CraftingPipeSign implements IPipeSign {
 				} catch (Exception e) {
 					try {
 						name = item.getUnlocalizedName();
-					} catch (Exception e1) {}
+					} catch (Exception ignored) {}
 				}
 
-				var17.drawString("ID: " + String.valueOf(Item.getIdFromItem(item)), -var17.getStringWidth("ID: " + String.valueOf(Item.getIdFromItem(item))) / 2, 0 * 10 - 4 * 5, 0);
+				var17.drawString(String.format("ID: %d", Item.getIdFromItem(item)), -var17.getStringWidth(String.format("ID: %d", Item.getIdFromItem(item))) / 2, 0 * 10 - 4 * 5, 0);
 				ModuleCrafter logisticsMod = cpipe.getLogisticsModule();
 				/*if (logisticsMod.satelliteId != 0) {
 					var17.drawString("Sat ID: " + String.valueOf(logisticsMod.satelliteId), -var17.getStringWidth("Sat ID: " + String.valueOf(logisticsMod.satelliteId)) / 2, 1 * 10 - 4 * 5, 0);

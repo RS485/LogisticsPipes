@@ -1,5 +1,7 @@
 package logisticspipes.utils.gui;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -11,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiCheckBox extends GuiButton {
 
-	private boolean state = false;
+	private boolean state;
 
 	public GuiCheckBox(int par1, int par2, int par3, int par4, int par5, boolean startState) {
 		super(par1, par2, par3, par4, par5, "");
@@ -22,7 +24,7 @@ public class GuiCheckBox extends GuiButton {
 	 * Draws this button to the screen.
 	 */
 	@Override
-	public void drawButton(Minecraft minecraft, int par2, int par3, float partial) {
+	public void drawButton(@Nonnull Minecraft minecraft, int par2, int par3, float partial) {
 		if (visible) {
 			boolean var5 = par2 >= x && par3 >= y && par2 < x + width && par3 < y + height;
 			int var6 = getHoverState(var5);

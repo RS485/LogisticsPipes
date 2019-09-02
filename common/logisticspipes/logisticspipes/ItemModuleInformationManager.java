@@ -14,7 +14,7 @@ import logisticspipes.proxy.MainProxy;
 
 public class ItemModuleInformationManager {
 
-	public static void saveInfotmation(ItemStack itemStack, LogisticsModule module) {
+	public static void saveInformation(ItemStack itemStack, LogisticsModule module) {
 		if (module == null) {
 			return;
 		}

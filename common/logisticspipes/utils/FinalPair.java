@@ -26,7 +26,7 @@ public class FinalPair<T1, T2> {
 
 	@Override
 	public String toString() {
-		return new StringBuilder("<").append(_value1.toString()).append(",").append(_value2.toString()).append(">").toString();
+		return String.format("<%s,%s>", _value1, _value2);
 	}
 
 	@Override

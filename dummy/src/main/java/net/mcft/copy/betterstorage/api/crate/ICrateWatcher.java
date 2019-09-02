@@ -8,6 +8,6 @@ public interface ICrateWatcher {
 	 *  changed. The stack will represent which items were
 	 *  added or removed. Stack size is negative if items
 	 *  were removed. */
-	public void onCrateItemsModified(ItemStack stack);
+	void onCrateItemsModified(ItemStack stack);
 	
 }

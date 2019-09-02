@@ -41,6 +41,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -54,7 +55,6 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -76,7 +76,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
-	private static final Charset UTF_8 = Charset.forName("utf-8");
+	private static final Charset UTF_8 = StandardCharsets.UTF_8;
 	private static final HashMap<Long, LPDataIOWrapper> BUFFER_WRAPPER_MAP = new HashMap<>();
 	ByteBuf localBuffer;
 	private int reference;

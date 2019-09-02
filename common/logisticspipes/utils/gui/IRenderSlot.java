@@ -2,17 +2,17 @@ package logisticspipes.utils.gui;
 
 public interface IRenderSlot {
 
-	public void mouseClicked(int button);
+	void mouseClicked(int button);
 
-	public boolean drawSlotBackground();
+	boolean drawSlotBackground();
 
-	public int getXPos();
+	int getXPos();
 
-	public int getYPos();
+	int getYPos();
 
-	public String getToolTipText();
+	String getToolTipText();
 
-	public boolean displayToolTip();
+	boolean displayToolTip();
 
-	public abstract int getSize();
+	int getSize();
 }

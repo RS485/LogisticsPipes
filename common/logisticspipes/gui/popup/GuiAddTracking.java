@@ -30,7 +30,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 
 public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 
-	private final String PREFIX = "gui.networkstatistics.add.";
+	private static final String PREFIX = "gui.networkstatistics.add.";
 
 	ItemDisplay itemDisplay;
 	InputBar search;
@@ -184,6 +184,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		for (String s : search.split(" ")) {
 			if (!value.contains(s)) {
 				flag = false;
+				break;
 			}
 		}
 		return flag;

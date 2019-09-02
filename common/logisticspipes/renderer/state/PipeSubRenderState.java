@@ -5,9 +5,6 @@ import logisticspipes.renderer.newpipe.RenderEntry;
 
 import java.util.List;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class PipeSubRenderState {
 	public List<RenderEntry> cachedRenderer = null;
 	public GLRenderList renderList;

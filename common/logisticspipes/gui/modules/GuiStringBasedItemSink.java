@@ -47,8 +47,8 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 38, guiTop + 18, 50, 10, "Add"));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 107, guiTop + 18, 50, 10, "Remove"));
-		((GuiButton) buttonList.get(0)).enabled = false;
-		((GuiButton) buttonList.get(1)).enabled = false;
+		buttonList.get(0).enabled = false;
+		buttonList.get(1).enabled = false;
 	}
 
 	@Override
@@ -92,27 +92,27 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 			name = "";
 			mc.fontRenderer.drawString(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()), guiLeft + 28, guiTop + 7, 0x404040);
 			if (_itemSink.getStringList().contains(_itemSink.getStringForItem(tmpInv.getIDStackInSlot(0).getItem()))) {
-				((GuiButton) buttonList.get(0)).enabled = false;
-				((GuiButton) buttonList.get(1)).enabled = true;
+				buttonList.get(0).enabled = false;
+				buttonList.get(1).enabled = true;
 			} else if (_itemSink.getStringList().size() < 9) {
-				((GuiButton) buttonList.get(0)).enabled = true;
-				((GuiButton) buttonList.get(1)).enabled = false;
+				buttonList.get(0).enabled = true;
+				buttonList.get(1).enabled = false;
 			} else {
-				((GuiButton) buttonList.get(0)).enabled = false;
-				((GuiButton) buttonList.get(1)).enabled = false;
+				buttonList.get(0).enabled = false;
+				buttonList.get(1).enabled = false;
 			}
 		} else if (name.equals("")) {
-			((GuiButton) buttonList.get(0)).enabled = false;
-			((GuiButton) buttonList.get(1)).enabled = false;
+			buttonList.get(0).enabled = false;
+			buttonList.get(1).enabled = false;
 		} else {
 			if (_itemSink.getStringList().contains(name)) {
 				mc.fontRenderer.drawString(name, guiLeft + 28, guiTop + 7, 0x404040);
-				((GuiButton) buttonList.get(0)).enabled = false;
-				((GuiButton) buttonList.get(1)).enabled = true;
+				buttonList.get(0).enabled = false;
+				buttonList.get(1).enabled = true;
 			} else {
 				name = "";
-				((GuiButton) buttonList.get(0)).enabled = false;
-				((GuiButton) buttonList.get(1)).enabled = false;
+				buttonList.get(0).enabled = false;
+				buttonList.get(1).enabled = false;
 			}
 		}
 		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY, 0.0);

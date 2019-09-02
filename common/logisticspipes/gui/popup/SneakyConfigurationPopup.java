@@ -21,7 +21,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class SneakyConfigurationPopup extends SubGuiScreen {
 
-	private final String PREFIX = "gui.pipecontroller.popup.";
+	private static final String PREFIX = "gui.pipecontroller.popup.";
 
 	private SideConfigDisplay configDisplay;
 	private List<DoubleCoordinates> config;

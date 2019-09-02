@@ -2,13 +2,11 @@ package logisticspipes.textures.provider;
 
 import java.util.ArrayList;
 
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.object3d.interfaces.TextureTransformation;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

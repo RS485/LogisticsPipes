@@ -2,27 +2,27 @@ package logisticspipes.interfaces;
 
 public interface IHUDConfig {
 
-	public boolean isHUDChassie();
+	boolean isHUDChassie();
 
-	public boolean isHUDCrafting();
+	boolean isHUDCrafting();
 
-	public boolean isHUDInvSysCon();
+	boolean isHUDInvSysCon();
 
-	public boolean isHUDPowerLevel();
+	boolean isHUDPowerLevel();
 
-	public boolean isHUDProvider();
+	boolean isHUDProvider();
 
-	public boolean isHUDSatellite();
+	boolean isHUDSatellite();
 
-	public void setHUDChassie(boolean state);
+	void setHUDChassie(boolean state);
 
-	public void setHUDCrafting(boolean state);
+	void setHUDCrafting(boolean state);
 
-	public void setHUDInvSysCon(boolean state);
+	void setHUDInvSysCon(boolean state);
 
-	public void setHUDPowerJunction(boolean state);
+	void setHUDPowerJunction(boolean state);
 
-	public void setHUDProvider(boolean state);
+	void setHUDProvider(boolean state);
 
-	public void setHUDSatellite(boolean state);
+	void setHUDSatellite(boolean state);
 }

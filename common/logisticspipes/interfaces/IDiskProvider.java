@@ -6,13 +6,13 @@ import net.minecraft.item.ItemStack;
 
 public interface IDiskProvider {
 
-	public ItemStack getDisk();
+	ItemStack getDisk();
 
-	public int getX();
+	int getX();
 
-	public int getY();
+	int getY();
 
-	public int getZ();
+	int getZ();
 
-	public ItemDisplay getItemDisplay();
+	ItemDisplay getItemDisplay();
 }

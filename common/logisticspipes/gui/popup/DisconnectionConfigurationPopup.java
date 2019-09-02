@@ -19,7 +19,7 @@ import logisticspipes.utils.string.StringUtils;
 
 public class DisconnectionConfigurationPopup extends SubGuiScreen {
 
-	private final String PREFIX = "gui.pipecontroller.popup.";
+	private static final String PREFIX = "gui.pipecontroller.popup.";
 
 	private SideConfigDisplay configDisplay;
 	private CoreRoutedPipe pipe;

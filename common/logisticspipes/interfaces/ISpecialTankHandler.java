@@ -6,9 +6,9 @@ import net.minecraft.tileentity.TileEntity;
 
 public interface ISpecialTankHandler {
 
-	public boolean init();
+	boolean init();
 
-	public boolean isType(TileEntity tile);
+	boolean isType(TileEntity tile);
 
-	public List<TileEntity> getBaseTilesFor(TileEntity tile);
+	List<TileEntity> getBaseTilesFor(TileEntity tile);
 }

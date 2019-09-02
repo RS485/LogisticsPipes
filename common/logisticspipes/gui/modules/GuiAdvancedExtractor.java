@@ -8,8 +8,6 @@
 
 package logisticspipes.gui.modules;
 
-import java.io.IOException;
-
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.AdvancedExtractorIncludePacket;

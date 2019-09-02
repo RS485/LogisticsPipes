@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.state.IBlockState;
@@ -40,7 +41,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
@@ -156,7 +156,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	protected IRouter router;
 	protected String routerId;
 	protected Object routerIdLock = new Object();
-	protected int _delayOffset = 0;
+	protected int _delayOffset;
 	protected boolean _initialInit = true;
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
@@ -675,9 +675,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				}
 			}
 		}
-		for (int i = 0; i < queuedParticles.length; i++) {
-			queuedParticles[i] = 0;
-		}
+		Arrays.fill(queuedParticles, 0);
 		hasQueuedParticles = false;
 	}
 
@@ -1026,7 +1024,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 		if (!stillNeedReplace) {
-			if (getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
+			if (getRouter().isSideDisconnected(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
 				return true;
 			}
 		}
@@ -1432,8 +1430,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (router == null) {
 			return null;
 		}
-		CoreRoutedPipe pipe = router.getPipe();
-		return pipe;
+		return router.getPipe();
 	}
 
 	@CCCommand(description = "Returns the global LP object which is used to access general LP methods.", needPermission = false)
@@ -1535,7 +1532,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Nullable
 	@Override
-	public IInventoryUtil getSneakyInventory(@NotNull EnumFacing direction) {
+	public IInventoryUtil getSneakyInventory(@Nonnull EnumFacing direction) {
 		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
 		if (pointedItemHandler == null) {
 			return null;

@@ -1,6 +1,7 @@
 package logisticspipes.entity;
 
 import com.mojang.authlib.GameProfile;
+
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -11,7 +12,9 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 
+@SuppressWarnings("EntityConstructor")
 public class FakePlayerLP extends FakePlayer {
 
     public static GameProfile LPPLAYER = new GameProfile(UUID.fromString("e7d8e347-3828-4f39-b76f-ea519857c004"), "[LogisticsPipes]");
@@ -27,7 +30,8 @@ public class FakePlayerLP extends FakePlayer {
         this.posZ = 0;
     }
 
-    @Override
+    @Nonnull
+	@Override
     public ITextComponent getDisplayName() {
         return new TextComponentString(getName());
     }
@@ -36,11 +40,11 @@ public class FakePlayerLP extends FakePlayer {
     public void onUpdate() { }
 
     @Override
-    public void unlockRecipes(List<IRecipe> p_192021_1_) { }
+    public void unlockRecipes(@Nonnull List<IRecipe> p_192021_1_) { }
 
     @Override
     public void unlockRecipes(ResourceLocation[] p_193102_1_) { }
 
     @Override
-    public void resetRecipes(List<IRecipe> p_192022_1_) { }
+    public void resetRecipes(@Nonnull List<IRecipe> p_192022_1_) { }
 }

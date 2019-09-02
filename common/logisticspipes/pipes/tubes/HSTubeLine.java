@@ -76,11 +76,11 @@ public class HSTubeLine extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb) {
+	public void addCollisionBoxesToList(List<AxisAlignedBB> arraylist, AxisAlignedBB axisalignedbb) {
 		DoubleCoordinates pos = getLPPosition();
 		LPPositionSet<DoubleCoordinates> set = new LPPositionSet<>(DoubleCoordinates.class);
 		set.addFrom(LineTubeRenderer.tubeLine.get(orientation.getRenderOrientation()).bounds().toAABB());
-		set.stream().forEach(o -> o.add(pos));
+		set.forEach(o -> o.add(pos));
 		AxisAlignedBB box = set.toABB();
 		if (box != null && (axisalignedbb == null || axisalignedbb.intersects(box))) {
 			arraylist.add(box);

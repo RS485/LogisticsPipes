@@ -32,7 +32,7 @@ public class LogisticsDictPromise extends LogisticsPromise {
 
 	@Override
 	public IOrderInfoProvider fullFill(IResource requestType, IAdditionalTargetInformation info) {
-		IRequestItems destination = null;
+		IRequestItems destination;
 		if (requestType instanceof ItemResource) {
 			destination = ((ItemResource) requestType).getTarget();
 		} else if (requestType instanceof DictResource) {

@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.gui;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;

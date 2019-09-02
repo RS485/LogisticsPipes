@@ -64,7 +64,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public boolean isFertile(World world, BlockPos pos) {
+	public boolean isFertile(@Nonnull World world, @Nonnull BlockPos pos) {
 		Block block = mcmpBlockAccess.getBlock();
 		return block != null ? block.isFertile(world, pos) : super.isFertile(world, pos);
 	}
@@ -86,7 +86,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public void onPlantGrow(IBlockState state, World world, BlockPos pos, BlockPos source) {
+	public void onPlantGrow(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, BlockPos source) {
 		Block block = mcmpBlockAccess.getBlock();
 		if (block != null) {
 			block.onPlantGrow(state, world, pos, source);
@@ -179,7 +179,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public void randomTick(World world, BlockPos pos, IBlockState state, Random random) {
+	public void randomTick(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull Random random) {
 		Block block = mcmpBlockAccess.getBlock();
 		if (block != null) {
 			block.randomTick(world, pos, state, random);
@@ -190,7 +190,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public boolean isSideSolid(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+	public boolean isSideSolid(IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, EnumFacing side) {
 		Block block = mcmpBlockAccess.getBlock();
 		return block != null ? block.isSideSolid(state, world, pos, side) : super.isSideSolid(state, world, pos, side);
 	}
@@ -216,6 +216,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 		return block != null ? block.isLadder(state, world, pos, entity) : super.isLadder(state, world, pos, entity);
 	}
 
+	@Nonnull
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
 	public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing face) {
@@ -289,7 +290,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public boolean isFlammable(IBlockAccess world, BlockPos pos, EnumFacing face) {
+	public boolean isFlammable(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EnumFacing face) {
 		Block block = mcmpBlockAccess.getBlock();
 		return block != null ? block.isFlammable(world, pos, face) : super.isFlammable(world, pos, face);
 	}
@@ -303,7 +304,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public boolean canSustainPlant(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing direction, IPlantable plantable) {
+	public boolean canSustainPlant(@Nonnull IBlockState state, @Nonnull IBlockAccess world, BlockPos pos, @Nonnull EnumFacing direction, IPlantable plantable) {
 		Block block = mcmpBlockAccess.getBlock();
 		return block != null ? block.canSustainPlant(state, world, pos, direction, plantable) : super.canSustainPlant(state, world, pos, direction, plantable);
 	}
@@ -317,14 +318,14 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public boolean canCreatureSpawn(IBlockState state, IBlockAccess world, BlockPos pos, EntityLiving.SpawnPlacementType type) {
+	public boolean canCreatureSpawn(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, EntityLiving.SpawnPlacementType type) {
 		Block block = mcmpBlockAccess.getBlock();
 		return block != null ? block.canCreatureSpawn(state, world, pos, type) : super.canCreatureSpawn(state, world, pos, type);
 	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public boolean isFireSource(World world, BlockPos pos, EnumFacing side) {
+	public boolean isFireSource(@Nonnull World world, BlockPos pos, EnumFacing side) {
 		Block block = mcmpBlockAccess.getBlock();
 		return block != null ? block.isFireSource(world, pos, side) : super.isFireSource(world, pos, side);
 	}
@@ -372,7 +373,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World world, BlockPos pos) {
+	public float getPlayerRelativeBlockHardness(IBlockState state, @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos) {
 		Pair<Vec3d, Vec3d> vectors = RayTraceHelper.getRayTraceVectors(player);
 		RayTraceResult hit = collisionRayTrace(getDefaultState(), world, pos, vectors.getLeft(), vectors.getRight());
 		if (hit != null && hit.subHit >= 0) {
@@ -459,9 +460,10 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 		return false;
 	}
 
+	@Nonnull
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public ItemStack getPickBlock(IBlockState state, RayTraceResult hit, World world, BlockPos pos, EntityPlayer player) {
+	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult hit, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
 		if (hit != null && hit.subHit >= 0) {
 			return getTile(world, pos).map(t -> t.get(MCMultiPart.slotRegistry.getValue(hit.subHit))).filter(Optional::isPresent)
 					.map(o -> o.get().getPart().getPickPart(o.get(), (RayTraceResult) hit.hitInfo, player)).orElse(ItemStack.EMPTY);

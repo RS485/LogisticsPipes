@@ -4,17 +4,17 @@ import net.minecraft.world.World;
 
 public interface IHeadUpDisplayRendererProvider {
 
-	public IHeadUpDisplayRenderer getRenderer();
+	IHeadUpDisplayRenderer getRenderer();
 
-	public int getX();
+	int getX();
 
-	public int getY();
+	int getY();
 
-	public int getZ();
+	int getZ();
 
-	public World getWorldForHUD();
+	World getWorldForHUD();
 
-	public void startWatching();
+	void startWatching();
 
-	public void stopWatching();
+	void stopWatching();
 }

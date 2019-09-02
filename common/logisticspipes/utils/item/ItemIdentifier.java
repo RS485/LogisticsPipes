@@ -14,9 +14,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.Lock;
@@ -326,7 +326,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		} else {
 			nextUniqueID = r.uniqueID;
 		}
-		FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag.copy());
+		FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag);
 		ItemKey realKey = new ItemKey(item, damage, finaltag);
 		ItemIdentifier ret = new ItemIdentifier(item, damage, finaltag, nextUniqueID);
 		ItemIdentifier.keyRefMap.put(realKey, new IDReference(realKey, nextUniqueID, ret));
@@ -479,7 +479,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			}
 
 			if (tab != null) {
-				creativeTabName = tab.tabLabel;
+				creativeTabName = tab.getTabLabel();
 			}
 		}
 		return creativeTabName;
@@ -579,10 +579,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			map.put("value", ItemIdentifier.getArrayAsMap(((NBTTagIntArray) nbt).getIntArray()));
 			return map;
 		} else if (nbt instanceof NBTTagList) {
-			List internal = ((NBTTagList) nbt).tagList;
 			HashMap<Integer, Object> content = new HashMap<>();
 			int i = 1;
-			for (Object object : internal) {
+			for (Object object : ((NBTTagList) nbt)) {
 				if (object instanceof NBTBase) {
 					content.put(i, ItemIdentifier.getNBTBaseAsMap((NBTBase) object));
 				}
@@ -593,16 +592,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			map.put("value", content);
 			return map;
 		} else if (nbt instanceof NBTTagCompound) {
-			Map internal = ((NBTTagCompound) nbt).tagMap;
 			HashMap<Object, Object> content = new HashMap<>();
 			HashMap<Integer, Object> keys = new HashMap<>();
 			int i = 1;
-			for (Object object : internal.entrySet()) {
-				Entry e = (Entry) object;
-				if (e.getValue() instanceof NBTBase) {
-					content.put(e.getKey(), ItemIdentifier.getNBTBaseAsMap((NBTBase) e.getValue()));
-					keys.put(i, e.getKey());
-				}
+			for (String key : ((NBTTagCompound) nbt).getKeySet()) {
+				NBTBase value = ((NBTTagCompound) nbt).getTag(key);
+				content.put(key, ItemIdentifier.getNBTBaseAsMap(value));
+				keys.put(i, key);
 				i++;
 			}
 			HashMap<Object, Object> map = new HashMap<>();
@@ -764,21 +760,21 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			sb.append(")");
 		} else if (nbt instanceof NBTTagList) {
 			sb.append("TagList(data=");
-			for (int i = 0; i < ((NBTTagList) nbt).tagList.size(); i++) {
-				debugDumpTag((((NBTTagList) nbt).tagList.get(i)), sb);
-				if (i < ((NBTTagList) nbt).tagList.size() - 1) {
+			for (int i = 0; i < ((NBTTagList) nbt).tagCount(); i++) {
+				debugDumpTag((((NBTTagList) nbt).get(i)), sb);
+				if (i < ((NBTTagList) nbt).tagCount() - 1) {
 					sb.append(",");
 				}
 			}
 			sb.append(")");
 		} else if (nbt instanceof NBTTagCompound) {
 			sb.append("TagCompound(data=");
-			Object[] oe = ((NBTTagCompound) nbt).tagMap.entrySet().toArray();
-			for (int i = 0; i < oe.length; i++) {
-				Entry<String, NBTBase> e = (Entry<String, NBTBase>) (oe[i]);
-				sb.append("\"").append(e.getKey()).append("\"=");
-				debugDumpTag((e.getValue()), sb);
-				if (i < oe.length - 1) {
+			for (Iterator<String> iter = ((NBTTagCompound) nbt).getKeySet().iterator(); iter.hasNext(); ) {
+				String key = iter.next();
+				NBTBase value = ((NBTTagCompound) nbt).getTag(key);
+				sb.append("\"").append(key).append("\"=");
+				debugDumpTag((value), sb);
+				if (iter.hasNext()) {
 					sb.append(",");
 				}
 			}

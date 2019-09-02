@@ -2,8 +2,8 @@ package logisticspipes.utils.math;
 
 public class Vertex {
 	public Vector3d xyz = new Vector3d();
-	public Vector2f uv = null;
-	public Vector3f normal = null;
+	public Vector2f uv;
+	public Vector3f normal;
 
 	public Vertex(Vector3d xyz, Vector3f normal, Vector2f uv) {
 		this.xyz.set(xyz);

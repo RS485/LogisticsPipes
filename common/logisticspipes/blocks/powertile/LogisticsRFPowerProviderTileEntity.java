@@ -1,5 +1,6 @@
 package logisticspipes.blocks.powertile;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -14,6 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+
 
 public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTileEntity {
 
@@ -137,7 +139,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
 		if(capability == CapabilityEnergy.ENERGY) {
 			return true;
 		}
@@ -146,7 +148,7 @@ public class LogisticsRFPowerProviderTileEntity extends LogisticsPowerProviderTi
 
 	@Nullable
 	@Override
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
 		if(capability == CapabilityEnergy.ENERGY) {
 			return (T) energyInterface;
 		}

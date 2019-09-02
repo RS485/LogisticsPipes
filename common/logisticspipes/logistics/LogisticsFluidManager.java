@@ -51,12 +51,10 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 			int amount = ((IFluidSink) pipe).sinkAmount(stack);
 			if (amount > 0) {
-				Pair<Integer, Integer> result = new Pair<>(candidateRouter.destination.getSimpleID(), amount);
-				return result;
+				return new Pair<>(candidateRouter.destination.getSimpleID(), amount);
 			}
 		}
-		Pair<Integer, Integer> result = new Pair<>(0, 0);
-		return result;
+		return new Pair<>(0, 0);
 	}
 
 	@Override
@@ -107,9 +105,8 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 				}
 			}
 		}
-		TreeSet<FluidIdentifierStack> itemIdentifierStackList = allAvailableItems.entrySet().stream()
+		return allAvailableItems.entrySet().stream()
 				.map(item -> new FluidIdentifierStack(item.getKey(), item.getValue()))
 				.collect(Collectors.toCollection(TreeSet::new));
-		return itemIdentifierStackList;
 	}
 }

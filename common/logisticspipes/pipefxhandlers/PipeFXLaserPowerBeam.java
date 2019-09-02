@@ -33,10 +33,10 @@ public class PipeFXLaserPowerBeam extends Particle {
 
 	@Setter
 	private boolean reverse = false;
-	private float length = 0.0F;
-	private float yaw = 0.0F;
-	private float pitch = 0.0F;
-	private float random = 0;
+	private float length;
+	private float yaw;
+	private float pitch;
+	private float random;
 	private TileEntity tile;
 
 	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, EnumFacing dir, int color, TileEntity tile) {

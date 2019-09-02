@@ -7,7 +7,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.asm.addinfo.IAddInfo;
 import logisticspipes.asm.addinfo.IAddInfoProvider;
-import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -15,19 +14,15 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 import lombok.AllArgsConstructor;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
@@ -82,7 +77,7 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 		String fluidID = fluid.getName();
 		if (tag == null) {
 			if(proposal != null) {
-				if(proposal.fluidID == fluidID && proposal.tag == null) {
+				if(proposal.fluidID.equals(fluidID) && proposal.tag == null) {
 					return proposal;
 				}
 			}
@@ -128,7 +123,7 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 			}
 			HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = FluidIdentifier._fluidIdentifierTagCache
 					.computeIfAbsent(fluidID, k -> new HashMap<>(16, 0.5f));
-			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound) tag.copy());
+			FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag);
 			int id = FluidIdentifier.getUnusedId();
 			FluidIdentifier unknownFluid = new FluidIdentifier(fluidID, FluidRegistry.getFluidName(fluid), finaltag, id);
 			fluidNBTList.put(finaltag, unknownFluid);
@@ -140,7 +135,7 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 
 	private static FluidIdentifier getFluidIdentifierWithoutTag(Fluid fluid, String fluidID, FluidIdentifier proposal) {
 		if(proposal != null) {
-			if(proposal.fluidID == fluidID && proposal.tag == null) {
+			if(proposal.fluidID.equals(fluidID) && proposal.tag == null) {
 				return proposal;
 			}
 		}

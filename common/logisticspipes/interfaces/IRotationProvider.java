@@ -5,7 +5,7 @@ import net.minecraft.util.EnumFacing;
 public interface IRotationProvider {
 
 	@Deprecated
-	public int getRotation();
+	int getRotation();
 
 	default EnumFacing getFacing() {
 		switch(getRotation()) {
@@ -22,7 +22,7 @@ public interface IRotationProvider {
 	}
 
 	@Deprecated
-	public void setRotation(int rotation);
+	void setRotation(int rotation);
 
 	default void setFacing(EnumFacing facing) {
 		switch(facing) {

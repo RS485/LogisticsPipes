@@ -95,7 +95,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 			}
 
 			GL11.glTranslatef(0.0F, 0.0F, -0.000005F);
-			int color = 0;
+			int color;
 			if (hover && !clicked) {
 				color = Color.getValue(Color.LIGHT_YELLOW);
 			} else if (!clicked) {

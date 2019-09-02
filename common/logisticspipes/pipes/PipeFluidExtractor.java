@@ -1,12 +1,10 @@
 package logisticspipes.pipes;
 
 import logisticspipes.interfaces.ITankUtil;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifierStack;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -44,7 +42,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 				liquidToExtract[sideID] += Math.min(PipeFluidExtractor.flowRate, amountMissing);
 			}
 		}
-		FluidIdentifierStack extracted = container.drain(liquidToExtract[sideID] > PipeFluidExtractor.flowRate ? PipeFluidExtractor.flowRate : liquidToExtract[sideID], false);
+		FluidIdentifierStack extracted = container.drain(Math.min(liquidToExtract[sideID], PipeFluidExtractor.flowRate), false);
 
 		int inserted = 0;
 		if (extracted != null) {

@@ -342,7 +342,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			int slot = -1;
 			while ((slot = set.nextSetBit(slot + 1)) != -1) {
 				IDrawer drawer = _drawer.getDrawer(slot);
-				int avail = 0;
+				int avail;
 				if (!drawer.isEmpty()) {
 					avail = Math.min(stack.getCount(), drawer.getRemainingCapacity());
 					if (doAdd) {
@@ -381,7 +381,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 			}
 
 			if (drawer.canItemBeStored(stack)) {
-				int avail = 0;
+				int avail;
 				if (drawer.isEmpty()) {
 					avail = Math.min(stack.getCount(), drawer.getMaxCapacity(stack));
 					if (doAdd) {

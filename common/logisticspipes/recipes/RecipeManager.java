@@ -1,11 +1,14 @@
 package logisticspipes.recipes;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -167,7 +170,7 @@ public class RecipeManager {
 			out.getParentFile().mkdirs();
 			String text = new Gson().toJson(obj);
 			try {
-				Files.write(out.toPath(), text.getBytes("UTF-8"), StandardOpenOption.CREATE_NEW);
+				Files.write(out.toPath(), text.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE_NEW);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -190,14 +193,15 @@ public class RecipeManager {
 			GameData.register_impl(value);
 		}
 
-		public class ShapelessOrdererRecipe extends ShapelessOreRecipe {
+		public static class ShapelessOrdererRecipe extends ShapelessOreRecipe {
 			public ShapelessOrdererRecipe(ResourceLocation registryName, ItemStack result, Object... recipe) {
 				super(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), result, recipe);
 				setRegistryName(registryName);
 			}
 
+			@Nonnull
 			@Override
-			public ItemStack getCraftingResult(InventoryCrafting var1) {
+			public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1) {
 				ItemStack result = super.getCraftingResult(var1);
 				for (int i = 0; i < var1.getInventoryStackLimit(); i++) {
 					ItemStack stack = var1.getStackInSlot(i);

@@ -83,7 +83,6 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 				if (input instanceof String) {
 					List<ItemStack> ores = OreDictionary.getOres((String) input);
 					if (ores != null && ores.size() > 0) {
-						input = ores.get(0);
 					}
 				} else if (input instanceof ItemStack) {
 					processed = (ItemStack) input;

@@ -126,7 +126,7 @@ public class ItemDisplay {
 		}
 	}
 
-	private class StackComparitor implements Comparator<ItemIdentifierStack> {
+	private static class StackComparitor implements Comparator<ItemIdentifierStack> {
 
 		@Override
 		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
@@ -271,9 +271,9 @@ public class ItemDisplay {
 			buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 			int xPosition = (width / 2) - 50;
 			int yPosition = 40;
-			buf.pos(xPosition, yPosition + 100, zLevel).tex(0.04, 0.72 + (graphic * 0.03125)).endVertex();;
-			buf.pos(xPosition + 100, yPosition + 100, zLevel).tex(0.08, 0.72 + (graphic * 0.03125)).endVertex();;
-			buf.pos(xPosition + 100, yPosition, zLevel).tex(0.08, 0.69 + (graphic * 0.03125)).endVertex();;
+			buf.pos(xPosition, yPosition + 100, zLevel).tex(0.04, 0.72 + (graphic * 0.03125)).endVertex();
+			buf.pos(xPosition + 100, yPosition + 100, zLevel).tex(0.08, 0.72 + (graphic * 0.03125)).endVertex();
+			buf.pos(xPosition + 100, yPosition, zLevel).tex(0.08, 0.69 + (graphic * 0.03125)).endVertex();
 			buf.pos(xPosition, yPosition, zLevel).tex(0.04, 0.69 + (graphic * 0.03125)).endVertex();
 			tess.draw();
 		} else {

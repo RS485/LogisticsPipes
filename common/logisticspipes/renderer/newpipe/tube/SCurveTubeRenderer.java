@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import logisticspipes.LogisticsPipes;
@@ -109,7 +108,7 @@ public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlace
 
 	@Override
 	public void renderHighlight(ITubeOrientation orientation) {
-		SCurveTubeRenderer.tubeSCurve.get(orientation.getRenderOrientation()).render(new I3DOperation[] { LPColourMultiplier.instance(0xFFFFFFFF) });
+		SCurveTubeRenderer.tubeSCurve.get(orientation.getRenderOrientation()).render(LPColourMultiplier.instance(0xFFFFFFFF));
 	}
 
 	public static AxisAlignedBB getObjectBoundsAt(AxisAlignedBB boundingBox, ITubeOrientation orientation) {

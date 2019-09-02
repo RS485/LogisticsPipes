@@ -68,7 +68,7 @@ public class PlayerIdentifier {
 			String tmp = nbt.getString(prefix + "_id");
 			try {
 				id = UUID.fromString(tmp);
-			} catch (Exception e) {}
+			} catch (Exception ignored) {}
 		}
 		String username = nbt.getString(prefix + "_name");
 		return PlayerIdentifier.get(username, id);

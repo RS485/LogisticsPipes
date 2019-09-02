@@ -102,7 +102,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		return PacketHandler.toFMLPacket(msg, MainProxy.networkChannelName);
 	}
 
-	private static FMLProxyPacket toFMLPacket(ModernPacket msg, String channel) throws Exception {
+	private static FMLProxyPacket toFMLPacket(ModernPacket msg, String channel) {
 		ByteBuf buffer = Unpooled.buffer();
 		fillByteBuf(msg, buffer);
 
@@ -191,7 +191,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	}
 
 	@Override
-	protected final void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) throws Exception {
+	protected final void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) {
 		ByteBuf payload = msg.payload();
 		int packetID = payload.readShort();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();

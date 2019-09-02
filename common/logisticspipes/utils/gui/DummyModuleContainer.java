@@ -1,6 +1,5 @@
 package logisticspipes.utils.gui;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -14,15 +13,14 @@ import net.minecraft.item.ItemStack;
 
 public class DummyModuleContainer extends DummyContainer {
 
-	private ItemStack moduleStack;
 	private LogisticsModule module;
 	private int slot;
 
 	public DummyModuleContainer(EntityPlayer player, int slot) {
 		super(player.inventory, null);
 		this.slot = slot;
-		moduleStack = player.inventory.mainInventory.get(slot);
-		module = ((ItemModule)moduleStack.getItem()).getModuleForItem(moduleStack, null, new DummyWorldProvider(player.world), null);
+		ItemStack moduleStack = player.inventory.mainInventory.get(slot);
+		module = ((ItemModule) moduleStack.getItem()).getModuleForItem(moduleStack, null, new DummyWorldProvider(player.world), null);
 		module.registerPosition(ModulePositionType.IN_HAND, slot);
 		ItemModuleInformationManager.readInformation(moduleStack, module);
 	}
@@ -46,7 +44,7 @@ public class DummyModuleContainer extends DummyContainer {
 	@Override
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		super.onContainerClosed(par1EntityPlayer);
-		ItemModuleInformationManager.saveInfotmation(par1EntityPlayer.inventory.mainInventory.get(slot), module);
+		ItemModuleInformationManager.saveInformation(par1EntityPlayer.inventory.mainInventory.get(slot), module);
 		par1EntityPlayer.inventory.markDirty();
 	}
 }

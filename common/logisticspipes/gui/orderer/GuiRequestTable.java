@@ -262,9 +262,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 						GL11.glEnable(GL11.GL_LIGHTING);
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						RenderHelper.enableGUIStandardItemLighting();
-						ItemStack stack = null;
+						ItemStack stack;
 						IResource resource = entry.getValue().getValue1();
-						String s = null;
+						String s;
 						if(resource != null) {
 							stack = resource.getDisplayItem().makeNormalStack();
 							itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
@@ -290,7 +290,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 							}
 							List<IOrderInfoProvider> list = entry.getValue().getValue2().getList();
 							calculateSize(left, top, list);
-							String ident = "ID: " + Integer.toString(entry.getKey());
+							String ident = String.format("ID: %d", entry.getKey());
 							mc.fontRenderer.drawStringWithShadow(ident, left + 25, top + 7, 16777215);
 							int x = left + 6;
 							int y = top + 25;
@@ -596,6 +596,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		for (String s : search.split(" ")) {
 			if (!value.contains(s)) {
 				flag = false;
+				break;
 			}
 		}
 		return flag;

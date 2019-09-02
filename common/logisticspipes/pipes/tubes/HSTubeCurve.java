@@ -91,7 +91,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb) {
+	public void addCollisionBoxesToList(List<AxisAlignedBB> arraylist, AxisAlignedBB axisalignedbb) {
 		double x = getX();
 		double y = getY();
 		double z = getZ();

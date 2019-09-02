@@ -2,9 +2,9 @@ package logisticspipes.interfaces;
 
 public interface IHUDModuleHandler {
 
-	public void startHUDWatching();
+	void startHUDWatching();
 
-	public void stopHUDWatching();
+	void stopHUDWatching();
 
-	public IHUDModuleRenderer getHUDRenderer();
+	IHUDModuleRenderer getHUDRenderer();
 }

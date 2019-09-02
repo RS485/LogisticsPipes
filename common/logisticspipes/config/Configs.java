@@ -137,7 +137,7 @@ public class Configs {
 
 		if(Configs.CONFIGURATION.hasKey(Configs.CATEGORY_MULTITHREAD, "enabled")) {
 			//ConfigCategory.remove is deprecated, but there's no other way to remove a key-value pair without completely recreating the config...
-			Configs.CONFIGURATION.getCategory(Configs.CATEGORY_MULTITHREAD).remove(new String("enabled"));
+			Configs.CONFIGURATION.getCategory(Configs.CATEGORY_MULTITHREAD).remove("enabled");
 		}
 		Configs.MULTI_THREAD_NUMBER = Configs.CONFIGURATION.get(Configs.CATEGORY_MULTITHREAD, "count",
 				Configs.MULTI_THREAD_NUMBER, "Number of routing table update Threads, 0 to disable.").getInt();

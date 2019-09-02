@@ -42,7 +42,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

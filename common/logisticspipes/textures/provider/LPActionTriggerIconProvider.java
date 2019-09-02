@@ -1,6 +1,5 @@
 package logisticspipes.textures.provider;
 
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.IIconProvider;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,7 +21,7 @@ public class LPActionTriggerIconProvider implements IIconProvider {
 	public static int actionRobotRoutingIconIndex = 6;
 
 	@SideOnly(Side.CLIENT)
-	private TextureAtlasSprite icons[];
+	private TextureAtlasSprite[] icons;
 
 	public LPActionTriggerIconProvider() {
 		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {

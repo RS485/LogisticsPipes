@@ -139,7 +139,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	protected ItemIdentifierInventory _cleanupInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filer Items", 1);
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
 	protected SinkReply _sinkReply;
-	private PipeItemsCraftingLogistics _pipe;
 	private IRequestItems _invRequester;
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
 	private boolean cachedAreAllOrderesToBuffer;
@@ -155,7 +154,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public ModuleCrafter(PipeItemsCraftingLogistics parent) {
-		_pipe = parent;
 		_service = parent;
 		_invRequester = parent;
 		_world = parent;
@@ -403,7 +401,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 		int remaining = 0;
 		for (LogisticsItemOrder extra : _service.getItemOrderManager()) {
 			if(extra.getType() == ResourceType.EXTRA) {
-				if (extra.getResource().getItem().equals(requestedItem)) {
+				if (extra.getResource().getItem().equals(requestedItem.getAsItem())) {
 					remaining += extra.getResource().stack.getStackSize();
 				}
 			}
@@ -541,7 +539,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			if (resourceStack == null || resourceStack.getStackSize() == 0) {
 				continue;
 			}
-			IResource req = null;
+			IResource req;
 			if (getUpgradeManager().isFuzzyUpgrade() && fuzzyCraftingFlagArray[i].getBitSet().nextSetBit(0) != -1) {
 				DictResource dict;
 				req = dict = new DictResource(resourceStack, target[i]);

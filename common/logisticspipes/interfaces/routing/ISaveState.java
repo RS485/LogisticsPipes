@@ -19,7 +19,7 @@ public interface ISaveState {
 	 * @param nbttagcompound
 	 *            to read from
 	 */
-	public void readFromNBT(NBTTagCompound nbttagcompound);
+	void readFromNBT(NBTTagCompound nbttagcompound);
 
 	/**
 	 * Called to save all information of the given class into an NBTTagCompount
@@ -27,5 +27,5 @@ public interface ISaveState {
 	 * @param nbttagcompound
 	 *            to save the information in
 	 */
-	public void writeToNBT(NBTTagCompound nbttagcompound);
+	void writeToNBT(NBTTagCompound nbttagcompound);
 }

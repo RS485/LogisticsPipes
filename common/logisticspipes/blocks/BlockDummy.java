@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * A dummy block used for backwards compat to before the {@link LogisticsSolidBlock} split.
@@ -28,11 +29,13 @@ public class BlockDummy extends Block {
 		setBlockUnbreakable();
 	}
 
+	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new BlockStateContainer(this, PROP_BLOCKTYPE);
 	}
 
+	@Nonnull
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return getDefaultState().withProperty(PROP_BLOCKTYPE, meta);
@@ -49,6 +52,6 @@ public class BlockDummy extends Block {
 	}
 
 	@Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {}
+	public void breakBlock(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {}
 
 }

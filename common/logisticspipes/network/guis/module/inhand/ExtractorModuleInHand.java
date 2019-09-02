@@ -30,8 +30,8 @@ public class ExtractorModuleInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if (!(((DummyModuleContainer) dummy).getModule() instanceof LogisticsSneakyDirectionModule)) {
+		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
+		if (!(dummy.getModule() instanceof LogisticsSneakyDirectionModule)) {
 			return null;
 		}
 		return dummy;

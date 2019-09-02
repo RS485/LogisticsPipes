@@ -2,7 +2,6 @@ package logisticspipes.transport;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +22,6 @@ import logisticspipes.routing.IRouterManager;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.EnumFacingUtil;
-import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.SlidingWindowBitSet;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -39,7 +37,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.FluidStack;
 
 import lombok.Getter;
 import lombok.Setter;

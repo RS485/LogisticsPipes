@@ -1,5 +1,6 @@
 package com.enderio.core.common.util;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,6 +9,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 
 public class InventoryWrapper implements ISidedInventory {
 
@@ -39,13 +41,15 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getStackInSlot(int slot) {
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack decrStackSize(int slot, int amount) {
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -63,42 +67,43 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
 		return false;
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
+	public boolean isItemValidForSlot(int slot, @Nonnull ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
-		int[] slots = new int[0];
-		return slots;
+	@Nonnull
+	public int[] getSlotsForFace(@Nonnull EnumFacing side) {
+		return new int[0];
 	}
 
 	@Override
-	public boolean canInsertItem(int slot, ItemStack itemStack, EnumFacing side) {
+	public boolean canInsertItem(int slot, @Nonnull ItemStack itemStack, @Nonnull EnumFacing side) {
 		return isItemValidForSlot(slot, itemStack);
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack itemStack, EnumFacing side) {
+	public boolean canExtractItem(int slot, @Nonnull ItemStack itemStack, @Nonnull EnumFacing side) {
 		return slot >= 0 && slot < getSizeInventory();
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack removeStackFromSlot(int index) {
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player) {
+	public void openInventory(@Nonnull EntityPlayer player) {
 	}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {
+	public void closeInventory(@Nonnull EntityPlayer player) {
 	}
 
 	@Override
@@ -108,7 +113,6 @@ public class InventoryWrapper implements ISidedInventory {
 
 	@Override
 	public void setField(int id, int value) {
-
 	}
 
 	@Override
@@ -121,8 +125,9 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
+	@Nonnull
 	public String getName() {
-		return null;
+		return "";
 	}
 
 	@Override
@@ -131,8 +136,9 @@ public class InventoryWrapper implements ISidedInventory {
 	}
 
 	@Override
+	@Nonnull
 	public ITextComponent getDisplayName() {
-		return null;
+		return new TextComponentString("");
 	}
 
 }

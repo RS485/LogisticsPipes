@@ -21,9 +21,9 @@ import net.minecraft.enchantment.EnchantmentHelper;
 
 public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 
-	public static interface IHandleItemChoice {
+	public interface IHandleItemChoice {
 
-		public void handleItemChoice(int slot);
+		void handleItemChoice(int slot);
 	}
 
 	private final List<ItemIdentifierStack> candidate;
@@ -150,6 +150,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		for (String s : search.split(" ")) {
 			if (!value.contains(s)) {
 				flag = false;
+				break;
 			}
 		}
 		return flag;

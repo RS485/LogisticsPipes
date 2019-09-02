@@ -4,5 +4,5 @@ import net.minecraft.inventory.IInventory;
 
 public interface ISimpleInventoryEventHandler {
 
-	public void InventoryChanged(IInventory inventory);
+	void InventoryChanged(IInventory inventory);
 }

@@ -1,10 +1,6 @@
 package logisticspipes.network.abstractpackets;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.Function;
-
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import lombok.Getter;
@@ -73,7 +69,7 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getLogisticsModule(EntityPlayer player, Class<T> clazz) {
-		LogisticsModule module = null;
+		LogisticsModule module;
 		if (type == ModulePositionType.IN_PIPE) {
 			moduleBased = true;
 			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());

@@ -14,14 +14,13 @@ public class DebugWindow extends JFrame {
 
 	private int width;
 	private int height;
-	private JTextPane textArea = null;
-	private JScrollPane pane = null;
+	private JTextPane textArea;
 
 	public DebugWindow(String title, int width, int height) {
 		super(title);
 		setSize(width, height);
 		textArea = new JTextPane();
-		pane = new JScrollPane(textArea);
+		JScrollPane pane = new JScrollPane(textArea);
 		getContentPane().add(pane);
 		setVisible(true);
 	}
@@ -35,7 +34,7 @@ public class DebugWindow extends JFrame {
 		if (document != null) {
 			try {
 				document.insertString(document.getLength(), data, attr);
-			} catch (BadLocationException badlocationexception) {}
+			} catch (BadLocationException ignored) {}
 		}
 		getContentPane().validate();
 	}

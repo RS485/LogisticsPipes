@@ -6,7 +6,7 @@ public class GenericSparkleFactory {
 
 	public static EntitySparkleFX getSparkleInstance(World world, double x, double y, double z, float red, float green, float blue, int amount) {
 
-		EntitySparkleFX effect = null;
+		EntitySparkleFX effect;
 
 		float boundry = 0.4F;
 		int pipeWidth = 3;

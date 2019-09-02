@@ -108,7 +108,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		fluidSlotIDs = new int[liquidCrafter];
 
 		for (int i = 0; i < liquidCrafter; i++) {
-			int liquidLeft = 0;
+			int liquidLeft;
 			if (isAdvancedSat) {
 				liquidLeft = -40;
 			} else {
@@ -171,7 +171,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			if (isAdvancedSat) {
 				extention = new FluidCraftingExtention(i);
 			}
-			int liquidLeft = 0;
+			int liquidLeft;
 			if (isAdvancedSat) {
 				liquidLeft = guiLeft - 40;
 			} else {
@@ -264,32 +264,31 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		switch (guibutton.id) {
 			case 0:
 				openSubGuiForSatelliteSelection(0, false);
-				return;
+				break;
 			case 3:
 				_pipe.importFromCraftingTable(_player);
-				return;
+				break;
 			case 4:
 				_pipe.openAttachedGui(_player);
 				//LogisticsEventListener.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), 0); //TODO reactivate this
-				return;
+				break;
 			case 20:
 				_pipe.priorityUp(_player);
-				return;
+				break;
 			case 21:
 				_pipe.priorityDown(_player);
-				return;
+				break;
 			case 22:
 				openSubGuiForSatelliteSelection(100, true);
-				return;
+				break;
 			case 24:
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupToggle.class).setModulePos(_pipe));
-				return;
+				break;
 			case 25:
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupImport.class).setModulePos(_pipe));
-				return;
+				break;
 			default:
 				super.actionPerformed(guibutton);
-				return;
 		}
 	}
 

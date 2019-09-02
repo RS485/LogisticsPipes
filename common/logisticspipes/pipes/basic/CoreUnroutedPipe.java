@@ -166,8 +166,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	public ArrayList<ItemStack> computeItemDrop() {
-		ArrayList<ItemStack> result = new ArrayList<>();
-		return result;
+		return new ArrayList<>();
 	}
 
 	public LogisticsTileGenericPipe getContainer() {

@@ -16,19 +16,19 @@ public class InputBar {
 	public enum Align {
 		LEFT,
 		CENTER,
-		RIGHT;
+		RIGHT
 	}
 
 	public int minNumber = 0;
 
 	public String input1 = "";
 	public String input2 = "";
-	private boolean isActive = false;
+	private boolean isActive;
 	private boolean displaycursor = true;
 	private long oldSystemTime = 0;
-	private int searchWidth = 150;
-	private boolean numberOnly = false;
-	private Align align = Align.LEFT;
+	private int searchWidth;
+	private boolean numberOnly;
+	private Align align;
 
 	private final FontRenderer fontRenderer;
 	private final LogisticsBaseGuiScreen screen;
@@ -83,7 +83,7 @@ public class InputBar {
 			fontRenderer.drawString(input1 + input2, left + 2 + (this.heigth - 9) / 2f, top + (this.heigth - 9) / 2f, 0xFFFFFF, false);
 		}
 		if (isFocused()) {
-			float linex = 0;
+			float linex;
 			if (align == Align.RIGHT) {
 				linex = left + 2 + (this.heigth - 9) / 2f + searchWidth - fontRenderer.getStringWidth(input2);
 			} else if (align == Align.CENTER) {
@@ -217,11 +217,11 @@ public class InputBar {
 
 	private static String getClipboardString() {
 		try {
-			Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents((Object) null);
+			Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 			if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 				return (String) transferable.getTransferData(DataFlavor.stringFlavor);
 			}
-		} catch (Exception exception) {}
+		} catch (Exception ignored) {}
 		return "";
 	}
 }

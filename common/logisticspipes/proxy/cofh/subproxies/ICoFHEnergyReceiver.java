@@ -4,10 +4,10 @@ import net.minecraft.util.EnumFacing;
 
 public interface ICoFHEnergyReceiver {
 
-	public int getMaxEnergyStored();
+	int getMaxEnergyStored();
 
-	public int getEnergyStored();
+	int getEnergyStored();
 
-	public int receiveEnergy(EnumFacing opposite, int i, boolean b);
+	int receiveEnergy(EnumFacing opposite, int i, boolean b);
 
 }

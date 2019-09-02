@@ -60,7 +60,7 @@ public class Vector2d {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append("[").append(x).append(",").append(y).append("]").append("(").append(abs()).append(")").toString();
+		return String.format("[%s,%s](%s)", x, y, abs());
 	}
 
 	@Override

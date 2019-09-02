@@ -113,7 +113,7 @@ public class RenderTickHandler {
 						LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> globalPos = new LPPositionSet<>(DoubleCoordinatesType.class);
 						globalPos.add(new DoubleCoordinatesType<>(placeAt, CoreMultiBlockPipe.SubBlockTypeForShare.NON_SHARE));
 						LPPositionSet<DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare>> positions = multipipe.getSubBlocks();
-						orientation = multipipe.getTubeOrientation(player, (int) bPos.getX(), (int) bPos.getZ());
+						orientation = multipipe.getTubeOrientation(player, bPos.getX(), bPos.getZ());
 						if (orientation != null) {
 							orientation.rotatePositions(positions);
 							positions.stream().map(pos -> pos.add(placeAt)).forEach(globalPos::add);

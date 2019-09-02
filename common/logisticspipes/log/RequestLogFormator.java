@@ -19,7 +19,7 @@ public class RequestLogFormator extends Formatter {
 	@Override
 	public String format(LogRecord record) {
 		StringBuilder msg = new StringBuilder();
-		msg.append(dateFormat.format(Long.valueOf(record.getMillis())));
+		msg.append(dateFormat.format(record.getMillis()));
 		Level lvl = record.getLevel();
 
 		if (lvl == Level.FINEST) {
@@ -34,12 +34,12 @@ public class RequestLogFormator extends Formatter {
 			msg.append(" [WARNING] ");
 		} else if (lvl == Level.SEVERE) {
 			msg.append(" [SEVERE] ");
-		} else if (lvl == Level.SEVERE) {
-			msg.append(" [" + lvl.getLocalizedName() + "] ");
+		} else {
+			msg.append(" [").append(lvl.getLocalizedName()).append("] ");
 		}
 
 		if (record.getLoggerName() != null && !record.getLoggerName().equals("LogisticsPipes|Request") && !record.getLoggerName().equals("")) {
-			msg.append("[" + record.getLoggerName() + "] ");
+			msg.append("[").append(record.getLoggerName()).append("] ");
 		}
 
 		msg.append(record.getMessage());

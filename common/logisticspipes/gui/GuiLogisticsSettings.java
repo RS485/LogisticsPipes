@@ -23,7 +23,7 @@ import network.rs485.logisticspipes.config.ClientConfiguration;
 
 public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
-	private final String PREFIX = "gui.settings.";
+	private static final String PREFIX = "gui.settings.";
 
 	public GuiLogisticsSettings(final EntityPlayer player) {
 		super(180, 220);

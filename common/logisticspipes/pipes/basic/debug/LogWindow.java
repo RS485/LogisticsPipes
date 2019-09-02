@@ -36,10 +36,8 @@ public class LogWindow extends JPanel {
 	}
 
 	private JTextPane logArea;
-	private JScrollPane logPane;
 	private DefaultMutableTreeNode baseNode;
 	private JTree tree;
-	private JScrollPane treeView;
 	private List<StatusEntry> currentLayout = new ArrayList<>(0);
 	private JFrame frame;
 
@@ -48,7 +46,7 @@ public class LogWindow extends JPanel {
 		JTabbedPane tabbedPane = new JTabbedPane();
 
 		logArea = new JTextPane();
-		logPane = new JScrollPane(logArea);
+		JScrollPane logPane = new JScrollPane(logArea);
 		tabbedPane.addTab("Console", null, logPane, "");
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
@@ -56,7 +54,7 @@ public class LogWindow extends JPanel {
 		tree = new JTree(baseNode);
 		// tree.addTreeExpansionListener(this);
 		// tree.addMouseListener(this);
-		treeView = new JScrollPane(tree);
+		JScrollPane treeView = new JScrollPane(tree);
 		tabbedPane.addTab("Status List", null, treeView, "");
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
 		add(tabbedPane);
@@ -80,7 +78,7 @@ public class LogWindow extends JPanel {
 		if (document != null) {
 			try {
 				document.insertString(document.getLength(), data + "\n", attr);
-			} catch (BadLocationException badlocationexception) {}
+			} catch (BadLocationException ignored) {}
 		}
 		validate();
 	}

@@ -3,7 +3,6 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.LPBlocks;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCraftingPipe;
@@ -13,7 +12,6 @@ import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.pipefxhandlers.Particles;

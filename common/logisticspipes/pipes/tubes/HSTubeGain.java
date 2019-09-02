@@ -87,7 +87,7 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void addCollisionBoxesToList(List arraylist, AxisAlignedBB axisalignedbb) {
+	public void addCollisionBoxesToList(List<AxisAlignedBB> arraylist, AxisAlignedBB axisalignedbb) {
 		if (boxes == null || boxes.isEmpty()) {
 			boxes = new ArrayList<>();
 			double x = getX();
@@ -300,7 +300,7 @@ public class HSTubeGain extends CoreMultiBlockPipe {
 		if ((orientation.getDir().getOpposite() == travelItem.input) == (orientation.getOffset().getLength() != 0)) {
 			fPos = transport.getPipeLength() - fPos;
 		}
-		double b = 0;
+		double b;
 		if (fPos < 0.5) {
 			double a = 0.5 / transport.getPipeLength() * 3;
 			b = -0.15119241907684 * Math.pow(a, 4) + 0.903656706092028 * Math.pow(a, 3) - 1.50813502012070 * Math.pow(a, 2) + 0.466513091531934 * a

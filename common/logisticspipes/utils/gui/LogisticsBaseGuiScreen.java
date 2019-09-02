@@ -330,7 +330,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
-		for (GuiButton button : (List<GuiButton>) buttonList) {
+		for (GuiButton button : buttonList) {
 			if (extentionControllerLeft.renderButtonControlled(button)) {
 				button.visible = extentionControllerLeft.renderButton(button);
 			}
@@ -340,8 +340,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		}
 	}
 
+	@Nonnull
 	@SuppressWarnings("unchecked")
-	public <T extends GuiButton> T addButton(T button) {
+	public <T extends GuiButton> T addButton(@Nonnull T button) {
 		buttonList.add(button);
 		return button;
 	}
@@ -504,7 +505,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	private boolean isOverSlot(int par1, int par2) {
 		for (int k = 0; k < inventorySlots.inventorySlots.size(); ++k) {
-			Slot slot = (Slot) inventorySlots.inventorySlots.get(k);
+			Slot slot = inventorySlots.inventorySlots.get(k);
 			if (isMouseOverSlot(slot, par1, par2)) {
 				return true;
 			}

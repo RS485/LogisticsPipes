@@ -35,7 +35,7 @@ public class QueuedTasks {
 		if (event.phase != Phase.END) {
 			return;
 		}
-		Callable call = null;
+		Callable call;
 		while (!QueuedTasks.queue.isEmpty()) {
 			synchronized (QueuedTasks.queue) {
 				call = QueuedTasks.queue.removeFirst();

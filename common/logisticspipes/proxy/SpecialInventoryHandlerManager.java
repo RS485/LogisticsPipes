@@ -32,6 +32,6 @@ public class SpecialInventoryHandlerManager {
 		try {
 			Class.forName("powercrystals.minefactoryreloaded.api.IDeepStorageUnit");
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
-		} catch (ClassNotFoundException e) {}
+		} catch (ClassNotFoundException ignored) {}
 	}
 }

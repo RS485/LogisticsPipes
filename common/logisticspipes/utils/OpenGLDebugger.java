@@ -22,8 +22,6 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -88,7 +86,7 @@ public class OpenGLDebugger {
 		}
 	}
 
-	public class ExtendedHashMap extends HashMap<Integer, Object> {
+	public static class ExtendedHashMap extends HashMap<Integer, Object> {
 
 		private ArrayList<Integer> orderedKeys;
 		private ArrayList<Integer> newKeys;
@@ -232,9 +230,6 @@ public class OpenGLDebugger {
 		private JPanel mainPanel;
 		private JTable variableMonitorTable;
 		private JButton closeButton;
-		private JButton addButton;
-		private JTextField addTextField;
-		private JScrollPane monitorTableScrollPane;
 
 		public ProbeGUI() {
 			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -313,7 +308,7 @@ public class OpenGLDebugger {
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			gbc.insets = new Insets(0, 5, 0, 0);
 			mainPanel.add(closeButton, gbc);
-			addButton = new JButton();
+			JButton addButton = new JButton();
 			addButton.setText("Add");
 			gbc = new GridBagConstraints();
 			gbc.gridx = 1;
@@ -321,7 +316,7 @@ public class OpenGLDebugger {
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			gbc.insets = new Insets(0, 5, 0, 0);
 			mainPanel.add(addButton, gbc);
-			addTextField = new JTextField();
+			JTextField addTextField = new JTextField();
 			addTextField.setText("");
 			gbc = new GridBagConstraints();
 			gbc.gridx = 0;
@@ -330,7 +325,7 @@ public class OpenGLDebugger {
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			mainPanel.add(addTextField, gbc);
-			monitorTableScrollPane = new JScrollPane();
+			JScrollPane monitorTableScrollPane = new JScrollPane();
 			monitorTableScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			gbc = new GridBagConstraints();
 			gbc.gridx = 0;

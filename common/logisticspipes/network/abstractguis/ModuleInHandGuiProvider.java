@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;

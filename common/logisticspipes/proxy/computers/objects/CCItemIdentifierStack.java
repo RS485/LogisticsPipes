@@ -40,7 +40,7 @@ public class CCItemIdentifierStack implements ILPCCTypeDefinition {
 
 		@CCCommand(description = "Compares this ItemIdentifierStack to another one")
 		public boolean equals(ItemIdentifierStack stack) {
-			return stack.equals(stack);
+			return this.stack.equals(stack);
 		}
 
 		@Override

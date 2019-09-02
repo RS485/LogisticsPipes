@@ -2,14 +2,14 @@ package logisticspipes.utils.gui;
 
 public interface ISubGuiControler {
 
-	public void setSubGui(SubGuiScreen gui);
+	void setSubGui(SubGuiScreen gui);
 
-	public void resetSubGui();
+	void resetSubGui();
 
-	public boolean hasSubGui();
+	boolean hasSubGui();
 
-	public SubGuiScreen getSubGui();
+	SubGuiScreen getSubGui();
 
-	public LogisticsBaseGuiScreen getBaseScreen();
+	LogisticsBaseGuiScreen getBaseScreen();
 
 }

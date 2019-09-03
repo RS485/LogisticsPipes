@@ -11,7 +11,9 @@ import net.minecraft.nbt.NBTTagCompound;
 public class FinalNBTTagCompound extends NBTTagCompound {
 
 	public FinalNBTTagCompound(NBTTagCompound base) {
-		super.merge(base);
+		super();
+		NBTTagCompound copy = base.copy();
+		tagMap.putAll(copy.tagMap);
 	}
 
 	@Nonnull

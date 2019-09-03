@@ -2,7 +2,8 @@
   <configuration default="false" name="Minecraft Client" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="GradleStart" />
     <module name="LogisticsPipes.main" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/assets" />
+    <option name="VM_PARAMETERS" value="-Dfml.coreMods.load=logisticspipes.asm.LogisticsPipesCoreLoader" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Run" />
     <method v="2">

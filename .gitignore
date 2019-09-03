@@ -7,7 +7,10 @@
 
 ### ForgeGradle ###
 # Minecraft client/server files
-run/
+run/*
+run-server/*
+!run/.gitkeep
+!run-server/.gitkeep
 
 ### Intellij+iml ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

@@ -197,7 +197,7 @@ public class LogisticsPipes {
 		LaunchClassLoader loader = Launch.classLoader;
 		if (!LPConstants.COREMOD_LOADED) {
 			if (LPConstants.DEBUG) {
-				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
+				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. If you are running MC from an IDE make sure to add '-Dfml.coreMods.load=logisticspipes.asm.LogisticsPipesCoreLoader' to the VM arguments. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 			} else {
 				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. Your download seems to be corrupt/modified. Please redownload LP from our Jenkins [http://ci.rs485.network] and move it into your mods folder.");
 			}

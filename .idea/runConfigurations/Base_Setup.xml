@@ -10,7 +10,6 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="copyLPDummy" />
           <option value="setupDecompWorkspace" />
           <option value="assemble" />
         </list>

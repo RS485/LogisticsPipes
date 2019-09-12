@@ -1,8 +1,11 @@
 # LogisticsPipes
 
+[![Jenkins](https://img.shields.io/jenkins/build/https/ci.rs485.network/LogisticsPipes-0.10-mc112)](https://ci.rs485.network/job/LogisticsPipes-0.10-mc112/)
+![Lines of Code](https://tokei.rs/b1/github/RS485/LogisticsPipes?category=code)
+
 Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.
 
-Look into the [Minecraft Forum Thread](http://www.minecraftforum.net/topic/1831791-) for more information and recent downloads.
+Go to the [CurseForge Page](https://www.curseforge.com/minecraft/mc-mods/logistics-pipes) for more information and recent downloads.
 We advise anyone who is not a developer to go there.
 
 You are free to use this mod in your modpack without asking or noticing us.

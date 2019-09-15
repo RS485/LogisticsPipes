@@ -1,10 +1,10 @@
 package logisticspipes.interfaces;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
 
 public interface ISpecialTankUtil extends ITankUtil {
 
-	TileEntity getTileEntity();
+	BlockEntity getBlockEntity();
 
 	ISpecialTankAccessHandler getSpecialHandler();
 }

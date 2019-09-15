@@ -3,6 +3,7 @@ package logisticspipes.proxy.side;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -11,9 +12,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -67,7 +67,7 @@ import logisticspipes.utils.GuideBookContents;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy implements IProxy {
@@ -89,7 +89,7 @@ public class ClientProxy implements IProxy {
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 
-		SimpleServiceLocator.setRenderListHandler(new GLRenderListHandler());
+		SimpleServiceLocator.renderListHandler = new GLRenderListHandler();
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class ClientProxy implements IProxy {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+		final BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
@@ -166,11 +166,11 @@ public class ClientProxy implements IProxy {
 		if (par1IIconRegister != null) {
 			TextureMap par1 = (TextureMap) par1IIconRegister;
 			if ("NewPipeTexture".equals(override2) && !override1.contains("status_overlay")) {
-				Textures.LPnewPipeIconProvider.setIcon(index, par1.registerSprite(new ResourceLocation("logisticspipes", override1.replace("pipes/", "blocks/pipes/new_texture/"))));
+				Textures.LPnewPipeIconProvider.setIcon(index, par1.registerSprite(new Identifier("logisticspipes", override1.replace("pipes/", "blocks/pipes/new_texture/"))));
 			} else if (flag) {
-				Textures.LPpipeIconProvider.setIcon(index, par1.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1)));
+				Textures.LPpipeIconProvider.setIcon(index, par1.registerSprite(new Identifier("logisticspipes", "blocks/" + override1)));
 			} else {
-				Textures.LPpipeIconProvider.setIcon(index, par1.registerSprite(new ResourceLocation("logisticspipes", "blocks/" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
+				Textures.LPpipeIconProvider.setIcon(index, par1.registerSprite(new Identifier("logisticspipes", "blocks/" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", ""))));
 			}
 		}
 	}
@@ -226,7 +226,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void openFluidSelectGui(final int slotId) {
 		if (Minecraft.getMinecraft().currentScreen instanceof LogisticsBaseGuiScreen) {
-			final List<ItemIdentifierStack> list = new ArrayList<>();
+			final List<ItemStack> list = new ArrayList<>();
 			for (FluidIdentifier fluid : FluidIdentifier.all()) {
 				if (fluid == null) {
 					continue;
@@ -281,7 +281,7 @@ public class ClientProxy implements IProxy {
 					modelPath = String.format("%s.%d", modelPath, i);
 				}
 			}
-			ModelLoader.setCustomModelResourceLocation(item.getItem(), i, new ModelResourceLocation(new ResourceLocation(item.getItem().getRegistryName().getResourceDomain(), modelPath), "inventory"));
+			ModelLoader.setCustomModelResourceLocation(item.getItem(), i, new ModelResourceLocation(new Identifier(item.getItem().getRegistryName().getResourceDomain(), modelPath), "inventory"));
 		}
 	}
 

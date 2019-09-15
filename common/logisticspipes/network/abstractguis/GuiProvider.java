@@ -1,9 +1,7 @@
 package logisticspipes.network.abstractguis;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-
-import net.minecraftforge.common.util.FakePlayer;
+import net.minecraft.container.Container;
+import net.minecraft.entity.player.PlayerEntity;
 
 import lombok.Getter;
 
@@ -27,14 +25,14 @@ public abstract class GuiProvider {
 	/**
 	 * @return LogisticsBaseGuiScreen
 	 */
-	public abstract Object getClientGui(EntityPlayer player);
+	public abstract Object getClientGui(PlayerEntity player);
 
-	public abstract Container getContainer(EntityPlayer player);
+	public abstract Container getContainer(PlayerEntity player);
 
 	public abstract GuiProvider template();
 
-	public final void open(EntityPlayer player) {
-		if (player instanceof FakePlayer) return;
+	public final void open(PlayerEntity player) {
+		// if (player instanceof FakePlayer) return;
 		NewGuiHandler.openGui(this, player);
 	}
 }

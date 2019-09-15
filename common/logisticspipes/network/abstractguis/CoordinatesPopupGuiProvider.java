@@ -1,6 +1,6 @@
 package logisticspipes.network.abstractguis;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -49,7 +49,7 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 
 	}
 
-	public CoordinatesPopupGuiProvider setTilePos(TileEntity tile) {
+	public CoordinatesPopupGuiProvider setTilePos(BlockEntity tile) {
 		setPosX(tile.getPos().getX());
 		setPosY(tile.getPos().getY());
 		setPosZ(tile.getPos().getZ());
@@ -69,7 +69,7 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 	 *
 	 * @param world
 	 * @param clazz
-	 * @return TileEntity
+	 * @return BlockEntity
 	 */
 	public <T> T getTile(World world, Class<T> clazz) {
 		if (world == null) {
@@ -83,7 +83,7 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
+		final BlockEntity tile = world.getBlockEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
 				if (LPConstants.DEBUG) {

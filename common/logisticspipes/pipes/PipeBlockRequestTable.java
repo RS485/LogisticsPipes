@@ -10,14 +10,15 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.event.world.WorldEvent;
@@ -26,7 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -41,7 +42,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
@@ -52,11 +53,11 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.SimpleStackInventory;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
-public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
+public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenController, IRotationProvider {
 
 	public SimpleStackInventory diskInv = new SimpleStackInventory(1, "Disk Slot", 1);
 	public SimpleStackInventory inv = new SimpleStackInventory(27, "Crafting Resources", 64);
@@ -72,7 +73,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	private boolean init = false;
 
 	private PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
-	public Map<Integer, Pair<IResource, LinkedLogisticsOrderList>> watchedRequests = new HashMap<>();
+	public Map<Integer, Tuple2<Resource, LinkedLogisticsOrderList>> watchedRequests = new HashMap<>();
 	private int localLastUsedWatcherId = 0;
 
 	public ItemIdentifier targetType = null;
@@ -117,7 +118,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		if (tick % 2 == 0 && !localGuiWatcher.isEmpty()) {
 			checkForExpired();
 			if (getUpgradeManager().hasCraftingMonitoringUpgrade()) {
-				for (Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry : watchedRequests.entrySet()) {
+				for (Entry<Integer, Tuple2<Resource, LinkedLogisticsOrderList>> entry : watchedRequests.entrySet()) {
 					MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(container), localGuiWatcher);
 				}
 			}
@@ -127,9 +128,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	private void checkForExpired() {
-		Iterator<Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>>> iter = watchedRequests.entrySet().iterator();
+		Iterator<Entry<Integer, Tuple2<Resource, LinkedLogisticsOrderList>>> iter = watchedRequests.entrySet().iterator();
 		while (iter.hasNext()) {
-			Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry = iter.next();
+			Entry<Integer, Tuple2<Resource, LinkedLogisticsOrderList>> entry = iter.next();
 			if (isDone(entry.getValue().getValue2())) {
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(entry.getKey()).setTilePos(container), localGuiWatcher);
 				iter.remove();
@@ -165,9 +166,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				return;
 			}
 			IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
-			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, getRouter().getSimpleID(), false);
+			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, getRouter().getSimpleId(), false);
 			if (itemToSend.getDestinationUUID() != null) {
-				EnumFacing dir = getRouteLayer().getOrientationForItem(itemToSend, null);
+				Direction dir = getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
 				spawnParticle(Particles.OrangeParticle, 4);
 				toSortInv.clearInventorySlotContents(0);
@@ -200,17 +201,17 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public TextureType getRoutedTexture(EnumFacing connection) {
+	public TextureType getRoutedTexture(Direction connection) {
 		return Textures.empty_1;
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(EnumFacing connection) {
+	public TextureType getNonRoutedTexture(Direction connection) {
 		return Textures.empty_2;
 	}
 
 	/*public TextureAtlasSprite getTextureFor(int l) {
-		EnumFacing dir = EnumFacing.getFront(l);
+		Direction dir = Direction.getFront(l);
 		//if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			switch (dir) {
 				case UP:
@@ -505,7 +506,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
+	public void readFromNBT(CompoundTag par1nbtTagCompound) {
 		super.readFromNBT(par1nbtTagCompound);
 		inv.readFromNBT(par1nbtTagCompound, "inv");
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
@@ -517,7 +518,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
+	public void writeToNBT(CompoundTag par1nbtTagCompound) {
 		super.writeToNBT(par1nbtTagCompound);
 		inv.writeToNBT(par1nbtTagCompound, "inv");
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
@@ -539,14 +540,14 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				@Override
 				public void handleItem(IRoutedItem item) {
 					PipeBlockRequestTable.this.notifyOfItemArival(item.getInfo());
-					if (item.getItemIdentifierStack() != null) {
-						ItemIdentifierStack stack = item.getItemIdentifierStack();
+					if (item.getItemStack() != null) {
+						ItemStack stack = item.getItemStack();
 						stack.setStackSize(inv.addCompressed(stack.makeNormalStack(), false));
 					}
 				}
 
 				@Override
-				public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
+				public Direction itemArrived(IRoutedItem item, Direction denyed) {
 					return null;
 				}
 
@@ -560,34 +561,34 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public void handleOrderList(IResource stack, LinkedLogisticsOrderList orders) {
+	public void handleOrderList(Resource stack, LinkedLogisticsOrderList orders) {
 		if (!getUpgradeManager().hasCraftingMonitoringUpgrade()) {
 			return;
 		}
 		orders.setWatched();
-		watchedRequests.put(++localLastUsedWatcherId, new Pair<>(stack, orders));
+		watchedRequests.put(++localLastUsedWatcherId, new Tuple2<>(stack, orders));
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(orders).setStack(stack).setInteger(localLastUsedWatcherId).setTilePos(container), localGuiWatcher);
 	}
 
 	@Override
-	public void guiOpenedByPlayer(EntityPlayer player) {
+	public void guiOpenedByPlayer(PlayerEntity player) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrderWatchRemovePacket.class).setInteger(-1).setTilePos(container), player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(container), player);
 		localGuiWatcher.add(player);
-		for (Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry : watchedRequests.entrySet()) {
+		for (Entry<Integer, Tuple2<Resource, LinkedLogisticsOrderList>> entry : watchedRequests.entrySet()) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererWatchPacket.class).setOrders(entry.getValue().getValue2()).setStack(entry.getValue().getValue1()).setInteger(entry.getKey()).setTilePos(container), player);
 		}
 	}
 
 	@Override
-	public void guiClosedByPlayer(EntityPlayer player) {
+	public void guiClosedByPlayer(PlayerEntity player) {
 		localGuiWatcher.remove(player);
 	}
 
 	@Override
-	public void handleClientSideListInfo(int id, IResource stack, LinkedLogisticsOrderList orders) {
+	public void handleClientSideListInfo(int id, Resource stack, LinkedLogisticsOrderList orders) {
 		if (MainProxy.isClient(getWorld())) {
-			watchedRequests.put(id, new Pair<>(stack, orders));
+			watchedRequests.put(id, new Tuple2<>(stack, orders));
 		}
 	}
 

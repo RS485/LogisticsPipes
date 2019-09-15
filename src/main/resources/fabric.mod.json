@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "logisticspipes",
+  "version": "${version}",
+  "name": "Logistics Pipes",
+  "description": "Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.",
+  "authors": [
+    "RS485",
+    "LP Team"
+  ],
+  "contact": {
+    "homepage": "https://rs485.network/",
+    "sources": "https://github.com/RS485/LogisticsPipes"
+  },
+  "license": "MMPL",
+  "icon": "assets/logisticspipes/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [{ "value": "network.rs485.logisticspipes.LogisticsPipes", "adapter": "kotlin" }],
+    "client": [{ "value": "network.rs485.logisticspipes.LogisticsPipesClient", "adapter": "kotlin" }],
+    "commands": "network.rs485.logisticspipes.CommonConfigurationInit",
+    "commands_client": "network.rs485.logisticspipes.ClientConfigurationInit"
+  },
+  "mixins": [
+    "logisticspipes.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.6.1",
+    "fabric": "*",
+    "fabric-language-kotlin": ">=1.3.50"
+  }
+}

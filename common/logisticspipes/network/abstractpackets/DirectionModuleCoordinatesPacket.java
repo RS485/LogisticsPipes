@@ -1,6 +1,6 @@
 package logisticspipes.network.abstractpackets;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinates
 
 	@Getter
 	@Setter
-	private EnumFacing direction;
+	private Direction direction;
 
 	public DirectionModuleCoordinatesPacket(int id) {
 		super(id);

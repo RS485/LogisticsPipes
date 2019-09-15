@@ -4,26 +4,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class PlayerCollectionList {
 
-	private List<EqualWeakReference<EntityPlayer>> players = new ArrayList<>();
+	private List<EqualWeakReference<PlayerEntity>> players = new ArrayList<>();
 	private boolean checkingPlayers = false;
 
 	public void checkPlayers() {
 		checkingPlayers = true;
-		Iterator<EqualWeakReference<EntityPlayer>> iPlayers = players.iterator();
+		Iterator<EqualWeakReference<PlayerEntity>> iPlayers = players.iterator();
 		while (iPlayers.hasNext()) {
-			EqualWeakReference<EntityPlayer> playerReference = iPlayers.next();
+			EqualWeakReference<PlayerEntity> playerReference = iPlayers.next();
 			boolean remove = false;
 			if (playerReference.get() == null) {
 				remove = true;
-			} else if (playerReference.get().isDead) {
+			} else if (playerReference.get().removed) {
 				remove = true;
-			} else if (playerReference.get() instanceof EntityPlayerMP) {
-				if (!((EntityPlayerMP) playerReference.get()).connection.netManager.isChannelOpen()) {
+			} else if (playerReference.get() instanceof ServerPlayerEntity) {
+				if (!((ServerPlayerEntity) playerReference.get()).networkHandler.getConnection().isOpen()) {
 					remove = true;
 				}
 			}
@@ -34,7 +34,7 @@ public class PlayerCollectionList {
 		checkingPlayers = false;
 	}
 
-	public Iterable<EntityPlayer> players() {
+	public Iterable<PlayerEntity> players() {
 		checkPlayers();
 		return () -> new Itr(players.iterator());
 	}
@@ -54,11 +54,11 @@ public class PlayerCollectionList {
 		return players.size() == 0;
 	}
 
-	public void add(EntityPlayer player) {
+	public void add(PlayerEntity player) {
 		players.add(new EqualWeakReference<>(player));
 	}
 
-	public boolean remove(EntityPlayer player) {
+	public boolean remove(PlayerEntity player) {
 		if (contains(player) && players.size() > 0) {
 			return players.remove(new EqualWeakReference<>(player));
 		} else {
@@ -66,16 +66,16 @@ public class PlayerCollectionList {
 		}
 	}
 
-	public boolean contains(EntityPlayer player) {
+	public boolean contains(PlayerEntity player) {
 		checkPlayers();
 		return players.contains(new EqualWeakReference<>(player));
 	}
 
-	private static class Itr implements Iterator<EntityPlayer> {
+	private static class Itr implements Iterator<PlayerEntity> {
 
-		private final Iterator<EqualWeakReference<EntityPlayer>> iterator;
+		private final Iterator<EqualWeakReference<PlayerEntity>> iterator;
 
-		private Itr(Iterator<EqualWeakReference<EntityPlayer>> source) {
+		private Itr(Iterator<EqualWeakReference<PlayerEntity>> source) {
 			iterator = source;
 		}
 
@@ -85,8 +85,8 @@ public class PlayerCollectionList {
 		}
 
 		@Override
-		public EntityPlayer next() {
-			EqualWeakReference<EntityPlayer> reference = iterator.next();
+		public PlayerEntity next() {
+			EqualWeakReference<PlayerEntity> reference = iterator.next();
 			return reference.get();
 		}
 

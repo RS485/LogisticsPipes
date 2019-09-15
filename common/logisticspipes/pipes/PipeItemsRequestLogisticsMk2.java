@@ -1,11 +1,11 @@
 package logisticspipes.pipes;
 
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import logisticspipes.LPItems;
@@ -57,20 +57,20 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		if (disk != null) {
-			NBTTagCompound itemNBT = new NBTTagCompound();
+			CompoundTag itemNBT = new CompoundTag();
 			disk.writeToNBT(itemNBT);
 			nbttagcompound.setTag("Disk", itemNBT);
 		}
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		if (nbttagcompound.hasKey("Disk")) {
-			NBTTagCompound item = nbttagcompound.getCompoundTag("Disk");
+			CompoundTag item = nbttagcompound.getCompoundTag("Disk");
 			disk = ItemStackLoader.loadAndFixItemStackFromNBT(item);
 		}
 	}
@@ -93,7 +93,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	public void dropDisk() {
 		if (disk != null) {
-			EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), disk);
+			ItemEntity item = new ItemEntity(getWorld(), getX(), getY(), getZ(), disk);
 			getWorld().spawnEntity(item);
 			disk = null;
 		}

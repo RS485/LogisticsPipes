@@ -2,10 +2,10 @@ package logisticspipes.interfaces;
 
 import java.util.Collection;
 
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public interface IChestContentReceiver {
 
-	void setReceivedChestContent(Collection<ItemIdentifierStack> _allItems);
+	void setReceivedChestContent(Collection<ItemStack> _allItems);
 
 }

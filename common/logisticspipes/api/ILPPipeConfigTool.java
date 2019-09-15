@@ -1,6 +1,6 @@
 package logisticspipes.api;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -9,7 +9,10 @@ import net.minecraft.item.ItemStack;
  */
 public interface ILPPipeConfigTool {
 
-	boolean canWrench(EntityPlayer player, ItemStack wrench, ILPPipeTile pipe);
+	default boolean canWrench(PlayerEntity player, ItemStack wrench, ILPPipeTile pipe) {
+		return true;
+	}
 
-	void wrenchUsed(EntityPlayer player, ItemStack wrench, ILPPipeTile pipe);
+	default void wrenchUsed(PlayerEntity player, ItemStack wrench, ILPPipeTile pipe) {}
+
 }

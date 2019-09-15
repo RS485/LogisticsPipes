@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
 
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.item.Items;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -29,44 +29,44 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	private ModuleItemSink itemSinkModule;
 
-	public PipeItemsBasicLogistics(Item item) {
+	public PipeItemsBasicLogistics() {
 		super(new PipeTransportLogistics(true) {
 
 			@Override
-			public boolean canPipeConnect(TileEntity tile, EnumFacing dir) {
+			public boolean canPipeConnect(BlockEntity tile, Direction dir) {
 				if (super.canPipeConnect(tile, dir)) {
 					return true;
 				}
 				if (tile instanceof LogisticsSecurityTileEntity) {
-					EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
-					if (ori == null || ori == EnumFacing.DOWN || ori == EnumFacing.UP) {
+					Direction ori = OrientationsUtil.getOrientationOfTileWithTile(container, tile);
+					if (ori == null || ori == Direction.DOWN || ori == Direction.UP) {
 						return false;
 					}
 					return true;
 				}
 				if (tile instanceof LogisticsProgramCompilerTileEntity) {
-					EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
-					if (ori == null || ori == EnumFacing.DOWN) {
+					Direction ori = OrientationsUtil.getOrientationOfTileWithTile(container, tile);
+					if (ori == null || ori == Direction.DOWN) {
 						return false;
 					}
 					return true;
 				}
 				return false;
 			}
-		}, item);
+		}, Items.AIR);
 		itemSinkModule = new ModuleItemSink();
 		itemSinkModule.registerHandler(this, this);
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(EnumFacing connection) {
+	public TextureType getNonRoutedTexture(Direction connection) {
 		if (isSecurityProvider(connection)) {
 			return Textures.LOGISTICSPIPE_SECURITY_TEXTURE;
 		}
@@ -74,15 +74,15 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public boolean isLockedExit(EnumFacing orientation) {
+	public boolean isLockedExit(Direction orientation) {
 		if (isPowerJunction(orientation) || isSecurityProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
 
-	private boolean isPowerJunction(EnumFacing ori) {
-		TileEntity tilePipe = container.getTile(ori);
+	private boolean isPowerJunction(Direction ori) {
+		BlockEntity tilePipe = container.getTile(ori);
 		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
 		}
@@ -93,8 +93,8 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		return false;
 	}
 
-	private boolean isSecurityProvider(EnumFacing ori) {
-		TileEntity tilePipe = container.getTile(ori);
+	private boolean isSecurityProvider(Direction ori) {
+		BlockEntity tilePipe = container.getTile(ori);
 		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
 		}
@@ -120,7 +120,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void setTile(TileEntity tile) {
+	public void setTile(BlockEntity tile) {
 		super.setTile(tile);
 		itemSinkModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
@@ -132,9 +132,9 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		if (invUtil == null) {
 			invUtil = new WorldCoordinatesWrapper(container)
 					.connectedTileEntities(ConnectionPipeType.ITEM)
-					.filter(NeighborTileEntity::isItemHandler)
+					.filter(NeighborBlockEntity::isItemHandler)
 					.findFirst()
-					.map(NeighborTileEntity::getUtilForItemHandler)
+					.map(NeighborBlockEntity::getUtilForItemHandler)
 					.orElse(null);
 		}
 		return invUtil;

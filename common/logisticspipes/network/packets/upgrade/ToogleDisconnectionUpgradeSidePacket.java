@@ -2,8 +2,8 @@ package logisticspipes.network.packets.upgrade;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +21,7 @@ public class ToogleDisconnectionUpgradeSidePacket extends SlotPacket {
 
 	@Getter
 	@Setter
-	private EnumFacing side;
+	private Direction side;
 
 	public ToogleDisconnectionUpgradeSidePacket(int id) {
 		super(id);
@@ -32,11 +32,11 @@ public class ToogleDisconnectionUpgradeSidePacket extends SlotPacket {
 		UpgradeSlot slot = getSlot(player, UpgradeSlot.class);
 		ItemStack stack = slot.getStack();
 
-		if (!stack.hasTagCompound()) {
-			stack.setTagCompound(new NBTTagCompound());
+		if (!stack.hasTag()) {
+			stack.setTagCompound(new CompoundTag());
 		}
 
-		NBTTagCompound nbt = stack.getTagCompound();
+		CompoundTag nbt = stack.getTag();
 		String sideName = ConnectionUpgradeConfig.Sides.getNameForDirection(side);
 		nbt.setBoolean(sideName, !nbt.getBoolean(sideName));
 

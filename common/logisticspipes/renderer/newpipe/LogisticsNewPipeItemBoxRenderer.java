@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,14 +18,14 @@ import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public class LogisticsNewPipeItemBoxRenderer {
 
 	private static final int RENDER_SIZE = 40;
 
 	private int renderList = -1;
-	private static final ResourceLocation BLOCKS = new ResourceLocation("textures/atlas/blocks.png");
+	private static final Identifier BLOCKS = new Identifier("textures/atlas/blocks.png");
 	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<>();
 
 	@SideOnly(Side.CLIENT)
@@ -62,7 +62,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		GL11.glTranslated(-0.5, -0.5, -0.5);
 
 		if (itemstack != null && itemstack.getItem() instanceof LogisticsFluidContainer) {
-			FluidIdentifierStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(itemstack));
+			FluidIdentifierStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemStack.getFromStack(itemstack));
 			if (f != null) {
 				/*
 				FluidContainerRenderer.skipNext = true;

@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -24,9 +24,9 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.logistics.LogisticsManager;
+import logisticspipes.interfaces.routing.ItemRequestProvider;
+import logisticspipes.interfaces.routing.ItemRequester;
+import logisticspipes.logistics.LogisticsManagerImpl;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -49,10 +49,10 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource.Dict;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.request.resources.ItemResource;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
@@ -61,21 +61,21 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 @CCType(name = "Provider Module")
 public class ModuleProvider extends LogisticsSneakyDirectionModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
-	private EnumFacing _sneakyDirection = null;
+	private Direction _sneakyDirection = null;
 
 	private boolean isActive = false;
 
 	protected final int ticksToActiveAction = 6;
 	protected final int ticksToPassiveAction = 100;
 	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<>();
-	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
-	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<>();
+	public final ArrayList<ItemStack> displayList = new ArrayList<>();
+	private final ArrayList<ItemStack> oldList = new ArrayList<>();
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	protected int currentTick = 0;
@@ -86,13 +86,13 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	public ModuleProvider() {}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		isActive = nbttagcompound.getBoolean("isActive");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
+			_sneakyDirection = Direction.values()[nbttagcompound.getInteger("sneakydirection")];
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
@@ -102,13 +102,13 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 					_sneakyDirection = null;
 					break;
 				case 1:
-					_sneakyDirection = EnumFacing.UP;
+					_sneakyDirection = Direction.UP;
 					break;
 				case 2:
-					_sneakyDirection = EnumFacing.SOUTH;
+					_sneakyDirection = Direction.SOUTH;
 					break;
 				case 3:
-					_sneakyDirection = EnumFacing.DOWN;
+					_sneakyDirection = Direction.DOWN;
 					break;
 			}
 		}
@@ -116,7 +116,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("isActive", isActive);
 		nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
@@ -127,12 +127,12 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	@Override
-	public EnumFacing getSneakyDirection() {
+	public Direction getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(EnumFacing sneakyDirection) {
+	public void setSneakyDirection(Direction sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 		if (MainProxy.isServer(this._world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
@@ -191,7 +191,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 				firstOrder = order;
 			}
 			order = _service.getItemOrderManager().peekAtTopRequest(ResourceType.PROVIDER);
-			int sent = sendStack(order.getResource().stack, itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
+			int sent = sendStack(order.getResource().stack, itemsleft, order.getDestination().getRouter().getSimpleId(), order.getInformation());
 			if (sent < 0) {
 				break;
 			}
@@ -221,30 +221,30 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		List<ItemIdentifier> possible = new ArrayList<>();
 		if (tree.getRequestType() instanceof ItemResource) {
 			possible.add(((ItemResource) tree.getRequestType()).getItem());
-		} else if (tree.getRequestType() instanceof DictResource) {
+		} else if (tree.getRequestType() instanceof Resource.Dict) {
 			IInventoryUtil inv = _service.getPointedInventory(_extractionMode);
 			if (inv != null) {
 				Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 				possible.addAll(currentInv.keySet().stream()
-						.filter(item -> tree.getRequestType().matches(item, IResource.MatchSettings.NORMAL))
+						.filter(item -> tree.getRequestType().matches(item, Resource.MatchSettings.NORMAL))
 						.collect(Collectors.toList()));
 			}
 		}
 		for (ItemIdentifier item : possible) {
 			int canProvide = getAvailableItemCount(item);
-			canProvide -= root.getAllPromissesFor((IProvideItems) _service, item);
+			canProvide -= root.getAllPromissesFor((ItemRequestProvider) _service, item);
 			canProvide = Math.min(canProvide, tree.getMissingAmount());
 			if (canProvide < 1) {
 				return;
 			}
-			LogisticsPromise promise = new LogisticsPromise(item, canProvide, (IProvideItems) _service, ResourceType.PROVIDER);
+			LogisticsPromise promise = new LogisticsPromise(item, canProvide, (ItemRequestProvider) _service, ResourceType.PROVIDER);
 			tree.addPromise(promise);
 		}
 	}
 
 	@Override
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		return _service.getItemOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.PROVIDER, info);
+	public LogisticsOrder fullFill(LogisticsPromise promise, ItemRequester destination, IAdditionalTargetInformation info) {
+		return _service.getItemOrderManager().addOrder(new ItemStack(promise.item, promise.numberOfItems), destination, ResourceType.PROVIDER, info);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
@@ -288,7 +288,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 
 	// returns -1 on permanently failed, don't try another stack this tick
 	// returns 0 on "unable to do this delivery"
-	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
+	private int sendStack(ItemStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
 		IInventoryUtil inv = _service.getPointedInventory(_extractionMode);
 		if (inv == null) {
@@ -304,12 +304,12 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		int wanted = Math.min(available, stack.getStackSize());
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
-		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination, false);
+		Router dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination, false);
 		if (dRtr == null) {
 			_service.getItemOrderManager().sendFailed();
 			return 0;
 		}
-		SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
+		SinkReply reply = LogisticsManagerImpl.canSink(dRtr, null, true, stack.getItem(), null, true, false);
 		boolean defersend = false;
 		if (reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 			if (reply.maxNumberOfItems < wanted) {
@@ -415,7 +415,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		getAllItems(displayMap, new ArrayList<>(0));
 		displayList.ensureCapacity(displayMap.size());
 		displayList.addAll(displayMap.entrySet().stream()
-				.map(item -> new ItemIdentifierStack(item.getKey(), item.getValue()))
+				.map(item -> new ItemStack(item.getKey(), item.getValue()))
 				.collect(Collectors.toList()));
 		if (!oldList.equals(displayList)) {
 			oldList.clear();
@@ -454,7 +454,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

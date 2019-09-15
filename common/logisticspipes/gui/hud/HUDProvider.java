@@ -122,8 +122,8 @@ public class HUDProvider extends BasicHUDGui {
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer(0, 0, 0.0F, shifted, true);
 		itemStackRenderer.setDisplayAmount(DisplayAmount.ALWAYS);
 		itemStackRenderer.setScaleX(scaleX).setScaleY(scaleY).setScaleZ(scaleZ);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -36, -37, 4, 12, 18, 18, itemStackRenderer);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -36, 23, 4, 4, 18, 18, itemStackRenderer);
+		ItemStackRenderer.renderItemStackListIntoGui(pipe.displayList, null, page, -36, -37, 4, 12, 18, 18, itemStackRenderer);
+		ItemStackRenderer.renderItemStackListIntoGui(pipe.itemListOrderer, null, pageB, -36, 23, 4, 4, 18, 18, itemStackRenderer);
 		GL11.glScalef(0.875F, 0.875F, -1F);
 		String message = String.format("(%d/%d)", page + 1, getMaxPage());
 		mc.fontRenderer.drawString(message, 9, -50, 0);

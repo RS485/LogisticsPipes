@@ -14,7 +14,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.utils.StaticResolve;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 @StaticResolve
 public class RequestRunningCraftingTasks extends CoordinatesPacket {
@@ -31,7 +31,7 @@ public class RequestRunningCraftingTasks extends CoordinatesPacket {
 			return;
 		}
 
-		List<ItemIdentifierStack> items = new ArrayList<>();
+		List<ItemStack> items = new ArrayList<>();
 
 		for (ExitRoute r : pipe.getRouter().getIRoutersByCost()) {
 			if (r == null) {
@@ -39,7 +39,7 @@ public class RequestRunningCraftingTasks extends CoordinatesPacket {
 			}
 			if (r.destination.getPipe() instanceof PipeItemsCraftingLogistics) {
 				PipeItemsCraftingLogistics crafting = (PipeItemsCraftingLogistics) r.destination.getPipe();
-				List<ItemIdentifierStack> content = crafting.getItemOrderManager().getContentList(player.getEntityWorld());
+				List<ItemStack> content = crafting.getItemOrderManager().getContentList(player.getEntityWorld());
 				items.addAll(content);
 			}
 		}

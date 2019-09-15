@@ -1,6 +1,6 @@
 package logisticspipes.logisticspipes;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -15,9 +15,9 @@ public class ChassiTransportLayer extends TransportLayer {
 	}
 
 	@Override
-	public EnumFacing itemArrived(IRoutedItem item, EnumFacing blocked) {
-		if (item.getItemIdentifierStack() != null) {
-			_chassiPipe.recievedItem(item.getItemIdentifierStack().getStackSize());
+	public Direction itemArrived(IRoutedItem item, Direction blocked) {
+		if (item.getItemStack() != null) {
+			_chassiPipe.recievedItem(item.getItemStack().getStackSize());
 		}
 		return _chassiPipe.getPointedOrientation();
 	}
@@ -33,16 +33,16 @@ public class ChassiTransportLayer extends TransportLayer {
 			_chassiPipe.notifyOfItemArival(item.getInfo());
 			return false;
 		}
-		SinkReply reply = module.sinksItem(item.getItemIdentifierStack().getItem(), -1, 0, true, false, false);
+		SinkReply reply = module.sinksItem(item.getItemStack().getItem(), -1, 0, true, false, false);
 		if (reply == null || reply.maxNumberOfItems < 0) {
 			_chassiPipe.notifyOfItemArival(item.getInfo());
 			return false;
 		}
 
-		if (reply.maxNumberOfItems > 0 && item.getItemIdentifierStack().getStackSize() > reply.maxNumberOfItems) {
-			EnumFacing o = _chassiPipe.getPointedOrientation();
+		if (reply.maxNumberOfItems > 0 && item.getItemStack().getStackSize() > reply.maxNumberOfItems) {
+			Direction o = _chassiPipe.getPointedOrientation();
 			if (o == null) {
-				o = EnumFacing.UP;
+				o = Direction.UP;
 			}
 
 			item.split(reply.maxNumberOfItems, o);

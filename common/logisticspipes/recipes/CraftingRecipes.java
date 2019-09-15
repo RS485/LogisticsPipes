@@ -3,7 +3,7 @@ package logisticspipes.recipes;
 import java.util.Map;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.LPItems;
 import logisticspipes.items.ItemModule;
@@ -40,7 +40,7 @@ public class CraftingRecipes implements IRecipeProvider {
 
 	private void registerResetRecipe(String[] dyes) {
 		for (Map.Entry<Class<? extends LogisticsModule>, ItemModule> entry : LPItems.modules.entrySet()) {
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			LogisticsModule module = entry.getValue().getModuleForItem(new ItemStack(entry.getValue()), null, null, null);
 			boolean force = false;
 			try {
@@ -48,7 +48,7 @@ public class CraftingRecipes implements IRecipeProvider {
 			} catch (Exception e) {
 				force = true;
 			}
-			if (!nbt.equals(new NBTTagCompound()) || force) {
+			if (!nbt.equals(new CompoundTag()) || force) {
 				RecipeManager.craftingManager.addShapelessResetRecipe(entry.getValue(), 0);
 			}
 		}

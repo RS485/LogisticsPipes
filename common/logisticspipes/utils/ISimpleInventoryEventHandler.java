@@ -1,8 +1,6 @@
 package logisticspipes.utils;
 
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryListener;
 
-public interface ISimpleInventoryEventHandler {
-
-	void InventoryChanged(IInventory inventory);
-}
+@Deprecated
+public interface ISimpleInventoryEventHandler extends InventoryListener {}

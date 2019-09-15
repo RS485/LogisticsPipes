@@ -19,45 +19,45 @@ import java.util.TreeSet;
 import lombok.Getter;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ICraft;
+import logisticspipes.interfaces.routing.Crafter;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IProvide;
+import logisticspipes.interfaces.routing.RequestProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.request.RequestTree.workWeightedSorter;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.routing.order.LogisticsOrderManager;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class RequestTreeNode {
 
 	protected final RequestTree root;
 	@Getter
-	private final IResource requestType;
+	private final Resource requestType;
 	private final IAdditionalTargetInformation info;
 	private final RequestTreeNode parentNode;
 	private List<RequestTreeNode> subRequests = new ArrayList<>();
-	private List<IPromise> promises = new ArrayList<>();
-	private List<IExtraPromise> extrapromises = new ArrayList<>();
-	private List<IExtraPromise> byproducts = new ArrayList<>();
-	private SortedSet<ICraftingTemplate> usedCrafters = new TreeSet<>();
+	private List<Promise> promises = new ArrayList<>();
+	private List<ExtraPromise> extrapromises = new ArrayList<>();
+	private List<ExtraPromise> byproducts = new ArrayList<>();
+	private SortedSet<CraftingTemplate> usedCrafters = new TreeSet<>();
 	private Set<LogisticsOrderManager<?, ?>> usedExtrasFromManager = new HashSet<LogisticsOrderManager<?, ?>>();
-	private ICraftingTemplate lastCrafterTried = null;
+	private CraftingTemplate lastCrafterTried = null;
 	private int promiseAmount = 0;
 
-	protected RequestTreeNode(IResource requestType, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+	protected RequestTreeNode(Resource requestType, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		this(null, requestType, parentNode, requestFlags, info);
 	}
 
-	private RequestTreeNode(ICraftingTemplate template, IResource requestType, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+	private RequestTreeNode(CraftingTemplate template, Resource requestType, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		this.info = info;
 		this.parentNode = parentNode;
 		this.requestType = requestType;
@@ -86,13 +86,13 @@ public class RequestTreeNode {
 		// crafting is not done!
 	}
 
-	private static List<Pair<IProvide, List<IFilter>>> getProviders(IRouter destination, IResource item) {
+	private static List<Tuple2<RequestProvider, List<IFilter>>> getProviders(Router destination, Resource item) {
 
 		// get all the routers
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item);
 		List<ExitRoute> validSources = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
 
 			if (!r.isValidCache()) {
 				continue; //Skip Routers without a valid pipe
@@ -106,25 +106,25 @@ public class RequestTreeNode {
 		// closer providers are good
 		Collections.sort(validSources, new workWeightedSorter(1.0));
 
-		List<Pair<IProvide, List<IFilter>>> providers = new LinkedList<>();
+		List<Tuple2<RequestProvider, List<IFilter>>> providers = new LinkedList<>();
 		validSources.stream().filter(r -> r.containsFlag(PipeRoutingConnectionType.canRequestFrom)).forEach(r -> {
 			CoreRoutedPipe pipe = r.destination.getPipe();
-			if (pipe instanceof IProvide) {
+			if (pipe instanceof RequestProvider) {
 				List<IFilter> list = new LinkedList<>(r.filters);
-				providers.add(new Pair<>((IProvide) pipe, list));
+				providers.add(new Tuple2<>((RequestProvider) pipe, list));
 			}
 		});
 		return providers;
 	}
 
-	private static List<Pair<ICraftingTemplate, List<IFilter>>> getCrafters(IResource iRequestType, List<ExitRoute> validDestinations) {
-		List<Pair<ICraftingTemplate, List<IFilter>>> crafters = new ArrayList<>(validDestinations.size());
+	private static List<Tuple2<CraftingTemplate, List<IFilter>>> getCrafters(Resource iRequestType, List<ExitRoute> validDestinations) {
+		List<Tuple2<CraftingTemplate, List<IFilter>>> crafters = new ArrayList<>(validDestinations.size());
 		outer:
 		for (ExitRoute r : validDestinations) {
 			CoreRoutedPipe pipe = r.destination.getPipe();
 			if (r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
-				if (pipe instanceof ICraft) {
-					ICraftingTemplate craftable = ((ICraft) pipe).addCrafting(iRequestType);
+				if (pipe instanceof Crafter) {
+					CraftingTemplate craftable = ((Crafter) pipe).addCrafting(iRequestType);
 					if (craftable != null) {
 						for (IFilter filter : r.filters) {
 							if (filter.isBlocked() == filter.isFilteredItem(craftable.getResultItem()) || filter.blockCrafting()) {
@@ -132,7 +132,7 @@ public class RequestTreeNode {
 							}
 						}
 						List<IFilter> list = new LinkedList<>(r.filters);
-						crafters.add(new Pair<>(craftable, list));
+						crafters.add(new Tuple2<>(craftable, list));
 					}
 				}
 			}
@@ -142,11 +142,11 @@ public class RequestTreeNode {
 		return crafters;
 	}
 
-	protected static List<IResource> shrinkToList(Map<IResource, Integer> items) {
-		List<IResource> resources = new ArrayList<>();
+	protected static List<Resource> shrinkToList(Map<Resource, Integer> items) {
+		List<Resource> resources = new ArrayList<>();
 		outer:
-		for (Entry<IResource, Integer> entry : items.entrySet()) {
-			for (IResource resource : resources) {
+		for (Entry<Resource, Integer> entry : items.entrySet()) {
+			for (Resource resource : resources) {
 				if (resource.mergeForDisplay(entry.getKey(), entry.getValue())) {
 					continue outer;
 				}
@@ -156,7 +156,7 @@ public class RequestTreeNode {
 		return resources;
 	}
 
-	private boolean isCrafterUsed(ICraftingTemplate test) {
+	private boolean isCrafterUsed(CraftingTemplate test) {
 		if (!usedCrafters.isEmpty() && usedCrafters.contains(test)) {
 			return true;
 		}
@@ -167,7 +167,7 @@ public class RequestTreeNode {
 	}
 
 	// returns false if the crafter was already on the list.
-	private boolean declareCrafterUsed(ICraftingTemplate test) {
+	private boolean declareCrafterUsed(CraftingTemplate test) {
 		if (isCrafterUsed(test)) {
 			return false;
 		}
@@ -183,7 +183,7 @@ public class RequestTreeNode {
 		return requestType.getRequestedAmount() - promiseAmount;
 	}
 
-	public void addPromise(IPromise promise) {
+	public void addPromise(Promise promise) {
 		if (!promise.matches(requestType)) {
 			throw new IllegalArgumentException("wrong item");
 		}
@@ -228,10 +228,10 @@ public class RequestTreeNode {
 		subRequests.forEach(RequestTreeNode::removeSubPromisses);
 	}
 
-	protected void checkForExtras(IResource item, HashMap<IProvide, List<IExtraPromise>> extraMap) {
-		for (IExtraPromise extra : extrapromises) {
-			if (item.matches(extra.getItemType(), IResource.MatchSettings.NORMAL)) {
-				List<IExtraPromise> extras = extraMap.get(extra.getProvider());
+	protected void checkForExtras(Resource item, HashMap<RequestProvider, List<ExtraPromise>> extraMap) {
+		for (ExtraPromise extra : extrapromises) {
+			if (item.matches(extra.getItemType(), Resource.MatchSettings.NORMAL)) {
+				List<ExtraPromise> extras = extraMap.get(extra.getProvider());
 				if (extras == null) {
 					extras = new LinkedList<>();
 					extraMap.put(extra.getProvider(), extras);
@@ -244,25 +244,25 @@ public class RequestTreeNode {
 		}
 	}
 
-	protected void removeUsedExtras(IResource item, HashMap<IProvide, List<IExtraPromise>> extraMap) {
-		for (IPromise promise : promises) {
-			if (!item.matches(promise.getItemType(), IResource.MatchSettings.NORMAL)) {
+	protected void removeUsedExtras(Resource item, HashMap<RequestProvider, List<ExtraPromise>> extraMap) {
+		for (Promise promise : promises) {
+			if (!item.matches(promise.getItemType(), Resource.MatchSettings.NORMAL)) {
 				continue;
 			}
-			if (!(promise instanceof IExtraPromise)) {
+			if (!(promise instanceof ExtraPromise)) {
 				continue;
 			}
-			IExtraPromise epromise = (IExtraPromise) promise;
+			ExtraPromise epromise = (ExtraPromise) promise;
 			if (epromise.isProvided()) {
 				continue;
 			}
 			int usedcount = epromise.getAmount();
-			List<IExtraPromise> extras = extraMap.get(epromise.getProvider());
+			List<ExtraPromise> extras = extraMap.get(epromise.getProvider());
 			if (extras == null) {
 				continue;
 			}
-			for (Iterator<IExtraPromise> it = extras.iterator(); it.hasNext(); ) {
-				IExtraPromise extra = it.next();
+			for (Iterator<ExtraPromise> it = extras.iterator(); it.hasNext(); ) {
+				ExtraPromise extra = it.next();
 				if (extra.getAmount() >= usedcount) {
 					extra.lowerAmount(usedcount);
 					break;
@@ -282,22 +282,22 @@ public class RequestTreeNode {
 		for (RequestTreeNode subNode : subRequests) {
 			list.getSubOrders().add(subNode.fullFill());
 		}
-		for (IPromise promise : promises) {
+		for (Promise promise : promises) {
 			IOrderInfoProvider result = promise.fullFill(requestType, info);
 			if (result != null) {
 				list.add(result);
 			}
 		}
-		for (IExtraPromise promise : extrapromises) {
+		for (ExtraPromise promise : extrapromises) {
 			promise.registerExtras(requestType);
 		}
-		for (IExtraPromise promise : byproducts) {
+		for (ExtraPromise promise : byproducts) {
 			promise.registerExtras(requestType);
 		}
 		return list;
 	}
 
-	protected void buildMissingMap(Map<IResource, Integer> missing) {
+	protected void buildMissingMap(Map<Resource, Integer> missing) {
 		if (getMissingAmount() != 0) {
 			Integer count = missing.get(getRequestType());
 			if (count == null) {
@@ -311,9 +311,9 @@ public class RequestTreeNode {
 		}
 	}
 
-	protected void buildUsedMap(Map<IResource, Integer> used, Map<IResource, Integer> missing) {
+	protected void buildUsedMap(Map<Resource, Integer> used, Map<Resource, Integer> missing) {
 		int usedcount = 0;
-		for (IPromise promise : promises) {
+		for (Promise promise : promises) {
 			if (promise.getType() == ResourceType.PROVIDER) {
 				usedcount += promise.getAmount();
 			}
@@ -344,7 +344,7 @@ public class RequestTreeNode {
 		if (thisPipe == null) {
 			return false;
 		}
-		for (Pair<IProvide, List<IFilter>> provider : RequestTreeNode.getProviders(requestType.getRouter(), getRequestType())) {
+		for (Tuple2<RequestProvider, List<IFilter>> provider : RequestTreeNode.getProviders(requestType.getRouter(), getRequestType())) {
 			if (isDone()) {
 				break;
 			}
@@ -352,15 +352,15 @@ public class RequestTreeNode {
 				continue;
 			}
 			if (!thisPipe.sharesInterestWith(provider.getValue1().getRouter().getPipe())) {
-				provider.getValue1().canProvide(this, root, provider.getValue2());
+				provider.getValue1().tryProvide(this, root, provider.getValue2());
 			}
 		}
 		return isDone();
 	}
 
 	private boolean checkExtras() {
-		LinkedList<IExtraPromise> map = root.getExtrasFor(requestType);
-		for (IExtraPromise extraPromise : map) {
+		LinkedList<ExtraPromise> map = root.getExtrasFor(requestType);
+		for (ExtraPromise extraPromise : map) {
 			if (isDone()) {
 				break;
 			}
@@ -396,7 +396,7 @@ public class RequestTreeNode {
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(getRequestType());
 		List<ExitRoute> validSources = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
 
 			if (!r.isValidCache()) {
 				continue; //Skip Routers without a valid pipe
@@ -410,17 +410,17 @@ public class RequestTreeNode {
 		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
 		Collections.sort(validSources, wSorter);
 
-		List<Pair<ICraftingTemplate, List<IFilter>>> allCraftersForItem = RequestTreeNode.getCrafters(getRequestType(), validSources);
+		List<Tuple2<CraftingTemplate, List<IFilter>>> allCraftersForItem = RequestTreeNode.getCrafters(getRequestType(), validSources);
 
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
-		Iterator<Pair<ICraftingTemplate, List<IFilter>>> iterAllCrafters = allCraftersForItem.iterator();
+		Iterator<Tuple2<CraftingTemplate, List<IFilter>>> iterAllCrafters = allCraftersForItem.iterator();
 
 		//a queue to store the crafters, sorted by todo; we will fill up from least-most in a balanced way.
 		PriorityQueue<CraftingSorterNode> craftersSamePriority = new PriorityQueue<>(5);
 		ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<>();
 		//TODO ^ Make this a generic list
 		boolean done = false;
-		Pair<ICraftingTemplate, List<IFilter>> lastCrafter = null;
+		Tuple2<CraftingTemplate, List<IFilter>> lastCrafter = null;
 		int currentPriority = 0;
 		outer:
 		while (!done) {
@@ -438,9 +438,9 @@ public class RequestTreeNode {
 
 			if (lastCrafter != null && (craftersSamePriority.isEmpty() || (currentPriority == lastCrafter.getValue1().getPriority()))) {
 				currentPriority = lastCrafter.getValue1().getPriority();
-				Pair<ICraftingTemplate, List<IFilter>> crafter = lastCrafter;
+				Tuple2<CraftingTemplate, List<IFilter>> crafter = lastCrafter;
 				lastCrafter = null;
-				ICraftingTemplate template = crafter.getValue1();
+				CraftingTemplate template = crafter.getValue1();
 				if (isCrafterUsed(template)) {
 					continue;
 				}
@@ -539,12 +539,12 @@ public class RequestTreeNode {
 		usedExtrasFromManager.add(orderManager);
 	}
 
-	private int getSubRequests(int nCraftingSets, ICraftingTemplate template) {
+	private int getSubRequests(int nCraftingSets, CraftingTemplate template) {
 		boolean failed = false;
-		List<Pair<IResource, IAdditionalTargetInformation>> stacks = template.getComponents(nCraftingSets);
+		List<Tuple2<Resource, IAdditionalTargetInformation>> stacks = template.getComponents(nCraftingSets);
 		int workSetsAvailable = nCraftingSets;
 		ArrayList<RequestTreeNode> lastNodes = new ArrayList<>(stacks.size());
-		for (Pair<IResource, IAdditionalTargetInformation> stack : stacks) {
+		for (Tuple2<Resource, IAdditionalTargetInformation> stack : stacks) {
 			RequestTreeNode node = new RequestTreeNode(template, stack.getValue1(), this, RequestTree.defaultRequestFlags, stack.getValue2());
 			lastNodes.add(node);
 			if (!node.isDone()) {
@@ -567,14 +567,14 @@ public class RequestTreeNode {
 		return workSetsAvailable;
 	}
 
-	private int generateRequestTreeFor(int workSets, ICraftingTemplate template) {
+	private int generateRequestTreeFor(int workSets, CraftingTemplate template) {
 		//and try it
 		ArrayList<RequestTreeNode> newChildren = new ArrayList<>();
 		if (workSets > 0) {
 			//now set the amounts
-			List<Pair<IResource, IAdditionalTargetInformation>> stacks = template.getComponents(workSets);
+			List<Tuple2<Resource, IAdditionalTargetInformation>> stacks = template.getComponents(workSets);
 			boolean failed = false;
-			for (Pair<IResource, IAdditionalTargetInformation> stack : stacks) {
+			for (Tuple2<Resource, IAdditionalTargetInformation> stack : stacks) {
 				RequestTreeNode node = new RequestTreeNode(template, stack.getValue1(), this, RequestTree.defaultRequestFlags, stack.getValue2());
 				newChildren.add(node);
 				if (!node.isDone()) {
@@ -598,13 +598,13 @@ public class RequestTreeNode {
 			return;
 		}
 
-		ICraftingTemplate template = lastCrafterTried;
+		CraftingTemplate template = lastCrafterTried;
 
 		int nCraftingSetsNeeded = (getMissingAmount() + template.getResultStackSize() - 1) / template.getResultStackSize();
 
-		List<Pair<IResource, IAdditionalTargetInformation>> stacks = template.getComponents(nCraftingSetsNeeded);
+		List<Tuple2<Resource, IAdditionalTargetInformation>> stacks = template.getComponents(nCraftingSetsNeeded);
 
-		for (Pair<IResource, IAdditionalTargetInformation> stack : stacks) {
+		for (Tuple2<Resource, IAdditionalTargetInformation> stack : stacks) {
 			new RequestTreeNode(template, stack.getValue1(), this, RequestTree.defaultRequestFlags, stack.getValue2());
 		}
 
@@ -614,7 +614,7 @@ public class RequestTreeNode {
 	}
 
 	protected void logFailedRequestTree(RequestLog log) {
-		Map<IResource, Integer> missing = new HashMap<>();
+		Map<Resource, Integer> missing = new HashMap<>();
 		subRequests.stream().filter(node -> node instanceof RequestTree).filter(node -> !node.isDone())
 				.forEach(node -> {
 					node.recurseFailedRequestTree();
@@ -629,14 +629,14 @@ public class RequestTreeNode {
 
 	private class CraftingSorterNode implements Comparable<CraftingSorterNode> {
 
-		public final Pair<ICraftingTemplate, List<IFilter>> crafter;
+		public final Tuple2<CraftingTemplate, List<IFilter>> crafter;
 		public final int originalToDo;
 		private final int setSize;
 		private final int maxWorkSetsAvailable;
 		private final RequestTreeNode treeNode; // current node we are calculating
 		private int stacksOfWorkRequested;
 
-		CraftingSorterNode(Pair<ICraftingTemplate, List<IFilter>> crafter, int maxCount, RequestTree tree, RequestTreeNode treeNode) {
+		CraftingSorterNode(Tuple2<CraftingTemplate, List<IFilter>> crafter, int maxCount, RequestTree tree, RequestTreeNode treeNode) {
 			this.crafter = crafter;
 			this.treeNode = treeNode;
 			originalToDo = crafter.getValue1().getCrafter().getTodo();
@@ -658,7 +658,7 @@ public class RequestTreeNode {
 				return 0;
 			}
 
-			ICraftingTemplate template = crafter.getValue1();
+			CraftingTemplate template = crafter.getValue1();
 
 			return getSubRequests(nCraftingSetsNeeded, template);
 		}
@@ -673,13 +673,13 @@ public class RequestTreeNode {
 		 * Add promises for the requested work to the tree.
 		 */
 		boolean addWorkPromisesToTree() {
-			ICraftingTemplate template = crafter.getValue1();
+			CraftingTemplate template = crafter.getValue1();
 			int setsToCraft = Math.min(stacksOfWorkRequested, maxWorkSetsAvailable);
 			int setsAbleToCraft = calculateMaxWork(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
 
 			if (setsAbleToCraft > 0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
 				//if we got here, we can at least some of the remaining amount
-				IPromise job = template.generatePromise(setsAbleToCraft);
+				Promise job = template.generatePromise(setsAbleToCraft);
 				if (job.getAmount() != setsAbleToCraft * setSize) {
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");
 				}

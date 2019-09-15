@@ -2,7 +2,7 @@ package logisticspipes.network.abstractpackets;
 
 import java.util.function.Function;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -50,7 +50,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	}
 
-	public CoordinatesPacket setTilePos(TileEntity tile) {
+	public CoordinatesPacket setTilePos(BlockEntity tile) {
 		setDimension(tile.getWorld());
 		setPosX(tile.getPos().getX());
 		setPosY(tile.getPos().getY());
@@ -79,10 +79,10 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		return this;
 	}
 
-	public TileEntity getTile(World world, Function<TileEntity, Boolean> validateResult) {
-		TileEntity tile = getTile(world, TileEntity.class);
+	public BlockEntity getTile(World world, Function<BlockEntity, Boolean> validateResult) {
+		BlockEntity tile = getTile(world, BlockEntity.class);
 		if (!validateResult.apply(tile)) {
-			targetNotFound("TileEntity condition not met");
+			targetNotFound("BlockEntity condition not met");
 			return null;
 		}
 		return tile;
@@ -94,7 +94,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 *
 	 * @param world
 	 * @param clazz
-	 * @return TileEntity
+	 * @return BlockEntity
 	 */
 	public <T> T getTile(World world, Class<T> clazz) {
 		if (world == null) {
@@ -106,7 +106,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
+		final BlockEntity tile = world.getBlockEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
 				targetNotFound("Couldn't find " + clazz.getName() + ", found " + tile.getClass() + " at: " + new BlockPos(getPosX(), getPosY(), getPosZ()));
@@ -124,7 +124,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 *
 	 * @param world
 	 * @param clazz
-	 * @return TileEntity
+	 * @return BlockEntity
 	 */
 	public <T> T getTileOrPipe(World world, Class<T> clazz) {
 		if (world == null) {
@@ -136,7 +136,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
+		final BlockEntity tile = world.getBlockEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (clazz.isAssignableFrom(tile.getClass())) {
 				return (T) tile;

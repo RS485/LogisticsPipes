@@ -3,13 +3,13 @@ package logisticspipes.proxy.side;
 import java.io.File;
 import java.util.List;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -186,7 +186,7 @@ public class ServerProxy implements IProxy {
 			return null;
 		}
 
-		final TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+		final BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}

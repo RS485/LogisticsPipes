@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.gui.hud.modules.HUDStringBasedItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -69,7 +69,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 
 	@Override
 	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		NBTTagCompound nbt = new NBTTagCompound();
+		CompoundTag nbt = new CompoundTag();
 		writeToNBT(nbt);
 		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiSlot.class).setNbt(nbt);
 	}
@@ -90,7 +90,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		modList.clear();
 		int limit = nbttagcompound.getInteger("listSize");
 		for (int i = 0; i < limit; i++) {
@@ -100,7 +100,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		nbttagcompound.setInteger("listSize", modList.size());
 		for (int i = 0; i < modList.size(); i++) {
 			nbttagcompound.setString("Mod" + i, modList.get(i));
@@ -131,7 +131,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		NBTTagCompound nbt = new NBTTagCompound();
+		CompoundTag nbt = new CompoundTag();
 		writeToNBT(nbt);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setNbt(nbt).setModulePos(this), player);
 	}
@@ -144,11 +144,11 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	@Override
 	public void listChanged() {
 		if (MainProxy.isServer(_world.getWorld())) {
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setNbt(nbt).setModulePos(this), localModeWatchers);
 		} else {
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setNbt(nbt).setModulePos(this));
 		}

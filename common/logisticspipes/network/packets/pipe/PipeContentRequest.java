@@ -27,7 +27,7 @@ public class PipeContentRequest extends IntegerPacket {
 			item = ref.get();
 		}
 		if (item != null) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemIdentifierStack()).setTravelId(item.getId()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeContentPacket.class).setItem(item.getItemStack()).setTravelId(item.getId()), player);
 		}
 	}
 

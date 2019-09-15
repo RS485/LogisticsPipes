@@ -38,7 +38,7 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -208,11 +208,11 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 						if (itemStack.getItem() != LPItems.itemCard) {
 							return false;
 						}
-						if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
+						if (itemStack.getDamage() != LogisticsItemCard.SEC_CARD) {
 							return false;
 						}
 						return SimpleServiceLocator.securityStationManager
-								.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
+								.isAuthorized(UUID.fromString(itemStack.getTag().getString("UUID")));
 					}, 1));
 		}
 
@@ -231,7 +231,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			fontRenderer.drawString(StringUtils.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
 			if (!itemStack.isEmpty()) {
-				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
+				UUID id = UUID.fromString(itemStack.getTag().getString("UUID"));
 				fontRenderer.drawString("Id: ", 10, 68, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glTranslated(10, 80, 0);
 				GL11.glScaled(0.75D, 0.75D, 1.0D);
@@ -407,7 +407,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void renderForgroundContent() {
-			List<ItemIdentifierStack> _allItems = pipe.getClientSideOrderManager().stream()
+			List<ItemStack> _allItems = pipe.getClientSideOrderManager().stream()
 					.map(IOrderInfoProvider::getAsDisplayItem).collect(Collectors.toCollection(LinkedList::new));
 			_itemDisplay_5.setItemList(_allItems);
 			_itemDisplay_5.renderItemArea(zLevel);

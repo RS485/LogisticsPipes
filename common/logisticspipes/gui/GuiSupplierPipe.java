@@ -12,7 +12,7 @@ import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.opengl.GL11;
 
@@ -83,7 +83,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 		}
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/gui/supplier.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {

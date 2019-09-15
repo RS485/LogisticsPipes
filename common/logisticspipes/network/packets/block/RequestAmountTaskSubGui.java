@@ -16,7 +16,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 @StaticResolve
 public class RequestAmountTaskSubGui extends CoordinatesPacket {
@@ -36,10 +36,10 @@ public class RequestAmountTaskSubGui extends CoordinatesPacket {
 		Map<ItemIdentifier, Integer> _availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
 		LinkedList<ItemIdentifier> _craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getIRoutersByCost());
 
-		TreeSet<ItemIdentifierStack> _allItems = new TreeSet<>();
+		TreeSet<ItemStack> _allItems = new TreeSet<>();
 
 		for (Entry<ItemIdentifier, Integer> item : _availableItems.entrySet()) {
-			ItemIdentifierStack newStack = item.getKey().makeStack(item.getValue());
+			ItemStack newStack = item.getKey().makeStack(item.getValue());
 			_allItems.add(newStack);
 		}
 

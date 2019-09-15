@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 
@@ -19,24 +19,24 @@ import logisticspipes.proxy.object3d.operation.LPUVScale;
 public class LogisticsNewSolidBlockWorldRenderer {
 
 	enum CoverSides {
-		DOWN(EnumFacing.DOWN, "D"),
-		NORTH(EnumFacing.NORTH, "N"),
-		SOUTH(EnumFacing.SOUTH, "S"),
-		WEST(EnumFacing.WEST, "W"),
-		EAST(EnumFacing.EAST, "E");
+		DOWN(Direction.DOWN, "D"),
+		NORTH(Direction.NORTH, "N"),
+		SOUTH(Direction.SOUTH, "S"),
+		WEST(Direction.WEST, "W"),
+		EAST(Direction.EAST, "E");
 
-		private EnumFacing dir;
+		private Direction dir;
 		@Getter
 		private String letter;
 
-		CoverSides(EnumFacing dir, String letter) {
+		CoverSides(Direction dir, String letter) {
 			this.dir = dir;
 			this.letter = letter;
 		}
 
-		public EnumFacing getDir(BlockRotation rot) {
-			EnumFacing result = dir;
-			if (result != EnumFacing.DOWN) {
+		public Direction getDir(BlockRotation rot) {
+			Direction result = dir;
+			if (result != Direction.DOWN) {
 				switch (rot.getInteger()) {
 					case 0:
 						result = result.rotateY();
@@ -151,7 +151,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 		return map;
 	}
 /*
-	public void renderWorldBlock(IBlockAccess world, LogisticsSolidTileEntity blockTile, RenderBlocks renderer, int x, int y, int z) {
+	public void renderWorldBlock(BlockView world, LogisticsSolidTileEntity blockTile, RenderBlocks renderer, int x, int y, int z) {
 		Tessellator tess = Tessellator.instance;
 		SimpleServiceLocator.cclProxy.getRenderState().reset();
 		SimpleServiceLocator.cclProxy.getRenderState().setUseNormals(true);
@@ -180,7 +180,7 @@ public class LogisticsNewSolidBlockWorldRenderer {
 			for (CoverSides side : CoverSides.values()) {
 				boolean render = true;
 				DoubleCoordinates newPos = CoordinateUtils.sum(pos, side.getDir(rotation));
-				TileEntity sideTile = newPos.getTileEntity(blockTile.getworld());
+				BlockEntity sideTile = newPos.getBlockEntity(blockTile.getworld());
 				if (sideTile instanceof LogisticsTileGenericPipe) {
 					LogisticsTileGenericPipe tilePipe = (LogisticsTileGenericPipe) sideTile;
 					if (tilePipe.renderState.pipeConnectionMatrix.isConnected(side.getDir(rotation).getOpposite())) {

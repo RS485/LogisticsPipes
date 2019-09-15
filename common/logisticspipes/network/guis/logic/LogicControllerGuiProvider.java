@@ -1,8 +1,8 @@
 package logisticspipes.network.guis.logic;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.logic.LogicController;
 import logisticspipes.logic.gui.LogicLayoutGui;
@@ -21,7 +21,7 @@ public class LogicControllerGuiProvider extends CoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		TileEntity pipe = this.getTile(player.getEntityWorld(), TileEntity.class);
+		BlockEntity pipe = this.getTile(player.getEntityWorld(), BlockEntity.class);
 		if (pipe instanceof ILogicControllerTile) {
 			return new LogicLayoutGui(((ILogicControllerTile) pipe).getLogicController(), player);
 		}
@@ -30,7 +30,7 @@ public class LogicControllerGuiProvider extends CoordinatesGuiProvider {
 
 	@Override
 	public Container getContainer(EntityPlayer player) {
-		TileEntity pipe = this.getTile(player.getEntityWorld(), TileEntity.class);
+		BlockEntity pipe = this.getTile(player.getEntityWorld(), BlockEntity.class);
 		if (pipe instanceof ILogicControllerTile) {
 			LogicController controller = ((ILogicControllerTile) pipe).getLogicController();
 			DummyContainer dummy = new DummyContainer(player.inventory, null);

@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fluids.Fluid;
@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 public final class FluidRenderer {
 
 	public static final int DISPLAY_STAGES = 100;
-	//private static final ResourceLocation BLOCK_TEXTURE = TextureMap.locationBlocksTexture;
+	//private static final Identifier BLOCK_TEXTURE = TextureMap.locationBlocksTexture;
 	private static Map<Fluid, int[]> flowingRenderCache = new HashMap<>();
 	private static Map<Fluid, int[]> stillRenderCache = new HashMap<>();
 	private static final RenderInfo liquidBlock = new RenderInfo();
@@ -52,14 +52,14 @@ public final class FluidRenderer {
 		return icon;
 	}
 
-	public static ResourceLocation getFluidSheet(FluidStack liquid) {
+	public static Identifier getFluidSheet(FluidStack liquid) {
 		if (liquid == null) {
 			return FluidRenderer.BLOCK_TEXTURE;
 		}
 		return FluidRenderer.getFluidSheet(liquid.getFluid());
 	}
 
-	public static ResourceLocation getFluidSheet(Fluid liquid) {
+	public static Identifier getFluidSheet(Fluid liquid) {
 		return FluidRenderer.BLOCK_TEXTURE;
 	}
 

@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.pipe;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,10 +10,10 @@ import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.signs.IPipeSign;
+import logisticspipes.pipes.signs.PipeSign;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
 import logisticspipes.utils.StaticResolve;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -22,7 +22,7 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ItemIdentifierStack stack = null;
+	private ItemStack stack = null;
 
 	public ItemAmountSignUpdatePacket(int id) {
 		super(id);
@@ -35,7 +35,7 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 			return;
 		}
 
-		IPipeSign sign = ((CoreRoutedPipe) pipe.pipe).getPipeSign(EnumFacing.getFront(getInteger()));
+		PipeSign sign = ((CoreRoutedPipe) pipe.pipe).getPipeSign(Direction.getFront(getInteger()));
 		if (sign == null) {
 			return;
 		}
@@ -47,7 +47,7 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		if (input.readBoolean()) {
-			stack = input.readItemIdentifierStack();
+			stack = input.readItemStack();
 		}
 	}
 
@@ -58,7 +58,7 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 			output.writeBoolean(false);
 		} else {
 			output.writeBoolean(true);
-			output.writeItemIdentifierStack(stack);
+			output.writeItemStack(stack);
 		}
 	}
 

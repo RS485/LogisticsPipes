@@ -2,8 +2,8 @@ package logisticspipes.network.packets.gui;
 
 import java.util.UUID;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -22,7 +22,7 @@ public class OpenAddChannelGUIPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileEntity tile = player.getEntityWorld().getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
+		BlockEntity tile = player.getEntityWorld().getBlockEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		UUID securityID = null;
 		if (tile instanceof LogisticsSecurityTileEntity) {
 			LogisticsSecurityTileEntity security = (LogisticsSecurityTileEntity) tile;

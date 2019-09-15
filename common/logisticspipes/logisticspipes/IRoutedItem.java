@@ -10,14 +10,14 @@ package logisticspipes.logisticspipes;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
-import logisticspipes.utils.item.ItemIdentifierStack;
 
 /**
  * This interface describes the actions that must be available on an item that
@@ -60,17 +60,17 @@ public interface IRoutedItem {
 
 	boolean getArrived();
 
-	void addToJamList(IRouter router);
+	void addToJamList(Router router);
 
 	List<Integer> getJamList();
 
 	void checkIDFromUUID();
 
-	ItemIdentifierStack getItemIdentifierStack();
+	ItemStack getStack();
 
-	void readFromNBT(NBTTagCompound data);
+	void readFromNBT(CompoundTag data);
 
-	void writeToNBT(NBTTagCompound tagentityitem);
+	void writeToNBT(CompoundTag tagentityitem);
 
 	void setDistanceTracker(IDistanceTracker tracker);
 
@@ -78,5 +78,5 @@ public interface IRoutedItem {
 
 	ItemRoutingInformation getInfo();
 
-	void split(int itemsToTake, EnumFacing orientation);
+	void split(int itemsToTake, Direction orientation);
 }

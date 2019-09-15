@@ -10,8 +10,8 @@ import java.util.Map.Entry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -43,8 +43,8 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
 
 @CCType(name = "Advanced Extractor Module")
 public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
@@ -54,7 +54,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
 
-	private EnumFacing _sneakyDirection = null;
+	private Direction _sneakyDirection = null;
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 
@@ -70,17 +70,17 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	}
 
 	@Override
-	public EnumFacing getSneakyDirection() {
+	public Direction getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(EnumFacing sneakyDirection) {
+	public void setSneakyDirection(Direction sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
 		if (nbttagcompound.hasKey("sneakydirection")) {
@@ -88,7 +88,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 			if (sneak == 6) {
 				_sneakyDirection = null;
 			} else {
-				_sneakyDirection = EnumFacing.values()[sneak];
+				_sneakyDirection = Direction.values()[sneak];
 			}
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
@@ -99,20 +99,20 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 					_sneakyDirection = null;
 					break;
 				case 1:
-					_sneakyDirection = EnumFacing.UP;
+					_sneakyDirection = Direction.UP;
 					break;
 				case 2:
-					_sneakyDirection = EnumFacing.SOUTH;
+					_sneakyDirection = Direction.SOUTH;
 					break;
 				case 3:
-					_sneakyDirection = EnumFacing.DOWN;
+					_sneakyDirection = Direction.DOWN;
 					break;
 			}
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("itemsIncluded", areItemsIncluded());
 		nbttagcompound.setInteger("sneakydirection", _sneakyDirection == null ? 6 : _sneakyDirection.ordinal());
@@ -162,9 +162,9 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		}
 		currentTick = 0;
 
-		EnumFacing extractOrientation = _sneakyDirection;
+		Direction extractOrientation = _sneakyDirection;
 		if (extractOrientation == null) {
-			EnumFacing invOrientation = _service.getPointedOrientation();
+			Direction invOrientation = _service.getPointedOrientation();
 			if (invOrientation != null) {
 				extractOrientation = invOrientation.getOpposite();
 			}
@@ -186,7 +186,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				continue;
 			}
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), true, jamList);
+			Tuple2<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), true, jamList);
 			if (reply == null) {
 				continue;
 			}
@@ -238,7 +238,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				if (item.getItem().isDamageable()) {
 					return areItemsIncluded();
 				}
-				if (stack.getItemDamage() == item.getItemDamage()) {
+				if (stack.getDamage() == item.getItemDamage()) {
 					return areItemsIncluded();
 				}
 			}
@@ -271,12 +271,12 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
 		}
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 
@@ -293,7 +293,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setFlag(areItemsIncluded()).setModulePos(this), player);
 	}

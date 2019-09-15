@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
@@ -18,9 +18,9 @@ public class ItemModuleInformationManager {
 		if (module == null) {
 			return;
 		}
-		NBTTagCompound nbt = new NBTTagCompound();
+		CompoundTag nbt = new CompoundTag();
 		module.writeToNBT(nbt);
-		if (nbt.equals(new NBTTagCompound())) {
+		if (nbt.equals(new CompoundTag())) {
 			return;
 		}
 		if (MainProxy.isClient()) {
@@ -29,18 +29,18 @@ public class ItemModuleInformationManager {
 			String info2 = "to see the information.";
 			list.appendTag(new NBTTagString(info1));
 			list.appendTag(new NBTTagString(info2));
-			if (!itemStack.hasTagCompound()) {
-				itemStack.setTagCompound(new NBTTagCompound());
+			if (!itemStack.hasTag()) {
+				itemStack.setTagCompound(new CompoundTag());
 			}
-			NBTTagCompound stacktag = itemStack.getTagCompound();
+			CompoundTag stacktag = itemStack.getTag();
 			stacktag.setTag("informationList", list);
 			stacktag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
 			return;
 		}
-		if (!itemStack.hasTagCompound()) {
-			itemStack.setTagCompound(new NBTTagCompound());
+		if (!itemStack.hasTag()) {
+			itemStack.setTagCompound(new CompoundTag());
 		}
-		NBTTagCompound stacktag = itemStack.getTagCompound();
+		CompoundTag stacktag = itemStack.getTag();
 		stacktag.setTag("moduleInformation", nbt);
 		if (module instanceof IClientInformationProvider) {
 			List<String> information = ((IClientInformationProvider) module).getClientInformation();
@@ -59,10 +59,10 @@ public class ItemModuleInformationManager {
 		if (module == null) {
 			return;
 		}
-		if (itemStack.hasTagCompound()) {
-			NBTTagCompound nbt = itemStack.getTagCompound();
+		if (itemStack.hasTag()) {
+			CompoundTag nbt = itemStack.getTag();
 			if (nbt.hasKey("moduleInformation")) {
-				NBTTagCompound moduleInformation = nbt.getCompoundTag("moduleInformation");
+				CompoundTag moduleInformation = nbt.getCompoundTag("moduleInformation");
 				module.readFromNBT(moduleInformation);
 			}
 		}

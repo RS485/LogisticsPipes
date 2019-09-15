@@ -16,15 +16,15 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -32,22 +32,19 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
-import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
-import logisticspipes.gui.hud.HudChassisPipe;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequestProvider;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ChassiTransportLayer;
@@ -69,13 +66,12 @@ import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
-import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.request.ICraftingTemplate;
-import logisticspipes.request.IPromise;
+import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.Promise;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource.Dict;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
@@ -86,16 +82,15 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import logisticspipes.utils.item.ItemStack;
+import network.rs485.logisticspipes.config.LPConfiguration;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-@CCType(name = "LogisticsChassiePipe")
-public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
+public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ItemCrafter, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, ItemRequestProvider, ISendQueueContentRecieiver {
 
 	private final ChassiModule _module;
 	private final ItemIdentifierInventory _moduleInventory;
@@ -103,43 +98,37 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
 
-	// HUD
-	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
-	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	private HudChassisPipe hud;
-
 	public PipeLogisticsChassi(Item item) {
 		super(item);
-		_moduleInventory = new ItemIdentifierInventory(getChassiSize(), "Chassi pipe", 1);
+		_moduleInventory = new ItemIdentifierInventory(getChassiSize(), "Chassis pipe", 1);
 		_moduleInventory.addListener(this);
 		_upgradeManagers = new ModuleUpgradeManager[getChassiSize()];
 		for (int i = 0; i < getChassiSize(); i++) {
 			_upgradeManagers[i] = new ModuleUpgradeManager(this, upgradeManager);
 		}
 		_module = new ChassiModule(getChassiSize(), this);
-		hud = new HudChassisPipe(this, _module, _moduleInventory);
 		pointedDirection = null;
 	}
 
 	@Override
-	protected List<TileEntity> getConnectedRawInventories() {
+	protected List<BlockEntity> getConnectedRawInventories() {
 		if (_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
 		}
-		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
+		final NeighborBlockEntity<BlockEntity> pointedItemHandler = getPointedItemHandler();
 		if (pointedItemHandler == null) {
 			_cachedAdjacentInventories = Collections.emptyList();
 		} else {
-			_cachedAdjacentInventories = Collections.singletonList(pointedItemHandler.getTileEntity());
+			_cachedAdjacentInventories = Collections.singletonList(pointedItemHandler.getBlockEntity());
 		}
 		return _cachedAdjacentInventories;
 	}
 
 	public void nextOrientation() {
 		boolean found = false;
-		EnumFacing oldOrientation = pointedDirection;
+		Direction oldOrientation = pointedDirection;
 		for (int l = 0; l < 6; ++l) {
-			pointedDirection = EnumFacing.values()[(pointedDirection == null ? 6 : pointedDirection.ordinal() + 1) % 6];
+			pointedDirection = Direction.values()[(pointedDirection == null ? 6 : pointedDirection.ordinal() + 1) % 6];
 			if (isValidOrientation(pointedDirection)) {
 				found = true;
 				break;
@@ -155,13 +144,13 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 	}
 
-	public void setClientOrientation(EnumFacing dir) {
+	public void setClientOrientation(Direction dir) {
 		if (MainProxy.isClient(getWorld())) {
 			pointedDirection = dir;
 		}
 	}
 
-	private boolean isValidOrientation(EnumFacing connection) {
+	private boolean isValidOrientation(Direction connection) {
 		if (connection == null) {
 			return false;
 		}
@@ -169,7 +158,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			return false;
 		}
 		DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), connection);
-		TileEntity tile = pos.getTileEntity(getWorld());
+		BlockEntity tile = pos.getBlockEntity(getWorld());
 
 		if (tile == null) {
 			return false;
@@ -194,7 +183,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public TextureType getRoutedTexture(EnumFacing connection) {
+	public TextureType getRoutedTexture(Direction connection) {
 		if (getRouter().isSubPoweredExit(connection)) {
 			return Textures.LOGISTICSPIPE_SUBPOWER_TEXTURE;
 		}
@@ -202,7 +191,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(EnumFacing connection) {
+	public TextureType getNonRoutedTexture(Direction connection) {
 		if (connection.equals(pointedDirection)) {
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
@@ -228,7 +217,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		try {
 			super.readFromNBT(nbttagcompound);
 			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
@@ -250,7 +239,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
@@ -272,7 +261,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				}
 			}
 			for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
-				ItemIdentifierStack ms = _moduleInventory.getIDStackInSlot(i);
+				ItemStack ms = _moduleInventory.getIDStackInSlot(i);
 				if (ms != null) {
 					ItemStack s = ms.makeNormalStack();
 					ItemModuleInformationManager.saveInformation(s, getLogisticsModule().getSubModule(i));
@@ -288,7 +277,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {
 		if (MainProxy.isServer(getWorld())) {
 			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
@@ -306,7 +295,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
 		if (MainProxy.isServer(getWorld())) {
 			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
@@ -324,7 +313,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public int addToBuffer(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public int addToBuffer(ItemStack item, IAdditionalTargetInformation info) {
 		if (MainProxy.isServer(getWorld())) {
 			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
@@ -378,7 +367,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 		if (MainProxy.isServer()) {
 			if (!localModeWatchers.isEmpty()) {
-				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 			}
 		}
 	}
@@ -460,7 +449,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	/*** IProvideItems ***/
 	@Override
-	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
+	public void tryProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
 		if (!isEnabled()) {
 			return;
 		}
@@ -479,7 +468,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
+	public LogisticsOrder fulfill(LogisticsPromise promise, ItemRequester destination, IAdditionalTargetInformation info) {
 		if (!isEnabled()) {
 			return null;
 		}
@@ -536,8 +525,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if (mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendQueueContent.class).setIdentList(ItemIdentifierStack.getListSendQueue(_sendQueue)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendQueueContent.class).setIdentList(ItemStack.getListSendQueue(_sendQueue)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}
@@ -549,22 +538,22 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		localModeWatchers.remove(player);
 	}
 
-	public void handleModuleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
+	public void handleModuleItemIdentifierList(Collection<ItemStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
-	public void handleContentItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
+	public void handleContentItemIdentifierList(Collection<ItemStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
 	@Override
 	public int sendQueueChanged(boolean force) {
 		if (MainProxy.isServer(getWorld())) {
-			if (Configs.MULTI_THREAD_NUMBER > 0 && !force) {
+			if (LPConfiguration.INSTANCE.getThreads() > 0 && !force) {
 				HudUpdateTick.add(getRouter());
 			} else {
 				if (localModeWatchers != null && localModeWatchers.size() > 0) {
-					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);
+					LinkedList<ItemStack> items = ItemStack.getListSendQueue(_sendQueue);
 					MainProxy.sendToPlayerList(PacketHandler.getPacket(SendQueueContent.class).setIdentList(items).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 					return items.size();
 				}
@@ -574,7 +563,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public void handleSendQueueItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
+	public void handleSendQueueItemIdentifierList(Collection<ItemStack> _allItems) {
 		displayList.clear();
 		displayList.addAll(_allItems);
 	}
@@ -584,7 +573,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public void setTile(TileEntity tile) {
+	public void setTile(BlockEntity tile) {
 		super.setTile(tile);
 		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 			LogisticsModule current = _module.getModule(i);
@@ -669,28 +658,30 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		return getChassiSize();
 	}
 
-	public abstract ResourceLocation getChassiGUITexture();
+	public abstract Identifier getChassiGUITexture();
 
-	/** ICraftItems */
+	/**
+	 * ICraftItems
+	 */
 	public final LinkedList<LogisticsOrder> _extras = new LinkedList<>();
 
 	@Override
-	public void registerExtras(IPromise promise) {
+	public void registerExtras(Promise promise) {
 		if (!(promise instanceof LogisticsPromise)) {
 			throw new UnsupportedOperationException("Extra has to be an item for a chassis pipe");
 		}
-		ItemIdentifierStack stack = new ItemIdentifierStack(((LogisticsPromise) promise).item, ((LogisticsPromise) promise).numberOfItems);
-		_extras.add(new LogisticsItemOrder(new DictResource(stack, null), null, ResourceType.EXTRA, null));
+		ItemStack stack = new ItemStack(((LogisticsPromise) promise).item, ((LogisticsPromise) promise).numberOfItems);
+		_extras.add(new LogisticsItemOrder(new Resource.Dict(stack, null), null, ResourceType.EXTRA, null));
 	}
 
 	@Override
-	public ICraftingTemplate addCrafting(IResource toCraft) {
+	public CraftingTemplate addCrafting(Resource toCraft) {
 		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 
-			if (x instanceof ICraftItems) {
-				if (((ICraftItems) x).canCraft(toCraft)) {
-					return ((ICraftItems) x).addCrafting(toCraft);
+			if (x instanceof ItemCrafter) {
+				if (((ItemCrafter) x).canCraft(toCraft)) {
+					return ((ItemCrafter) x).addCrafting(toCraft);
 				}
 			}
 		}
@@ -700,28 +691,28 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public List<ItemIdentifierStack> getCraftedItems() {
-		List<ItemIdentifierStack> craftables = null;
+	public List<ItemStack> getCraftedItems() {
+		List<ItemStack> craftables = null;
 		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 
-			if (x instanceof ICraftItems) {
+			if (x instanceof ItemCrafter) {
 				if (craftables == null) {
 					craftables = new LinkedList<>();
 				}
-				craftables.addAll(((ICraftItems) x).getCraftedItems());
+				craftables.addAll(((ItemCrafter) x).getCraftedItems());
 			}
 		}
 		return craftables;
 	}
 
 	@Override
-	public boolean canCraft(IResource toCraft) {
+	public boolean canCraft(Resource toCraft) {
 		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule x = _module.getSubModule(i);
 
-			if (x instanceof ICraftItems) {
-				if (((ICraftItems) x).canCraft(toCraft)) {
+			if (x instanceof ItemCrafter) {
+				if (((ItemCrafter) x).canCraft(toCraft)) {
 					return true;
 				}
 			}

@@ -3,7 +3,7 @@ package logisticspipes.routing.order;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestFluid;
+import logisticspipes.interfaces.routing.FluidRequester;
 import logisticspipes.routing.FluidLogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.FluidIdentifier;
@@ -37,7 +37,7 @@ public class LogisticsFluidOrderManager extends LogisticsOrderManager<LogisticsF
 		super.sendFailed();
 	}
 
-	public LogisticsFluidOrder addOrder(FluidLogisticsPromise promise, IRequestFluid destination, ResourceType type, IAdditionalTargetInformation info) {
+	public LogisticsFluidOrder addOrder(FluidLogisticsPromise promise, FluidRequester destination, ResourceType type, IAdditionalTargetInformation info) {
 		if (promise.amount < 0) {
 			throw new RuntimeException("The amount can't be less than zero");
 		}

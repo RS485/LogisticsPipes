@@ -18,7 +18,7 @@ import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 @CCType(name = "LogisticsModule")
 public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
@@ -150,7 +150,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		return false;
 	}
 
-	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
+	public List<CCSinkResponder> queueCCSinkEvent(ItemStack item) {
 		return new ArrayList<>(0);
 	}
 

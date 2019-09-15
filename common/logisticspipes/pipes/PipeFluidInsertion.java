@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fluids.FluidStack;
 
@@ -17,14 +17,14 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class PipeFluidInsertion extends FluidRoutedPipe {
 
-	private List<Pair<Integer, Integer>> localJamList = new ArrayList<>();
-	private int[] nextSendMax = new int[EnumFacing.VALUES.length];
-	private int[] nextSendMin = new int[EnumFacing.VALUES.length];
+	private List<Tuple2<Integer, Integer>> localJamList = new ArrayList<>();
+	private int[] nextSendMax = new int[Direction.values().length];
+	private int[] nextSendMin = new int[Direction.values().length];
 
 	public PipeFluidInsertion(Item item) {
 		super(item);
@@ -35,8 +35,8 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 		super.enabledUpdateEntity();
 		List<Integer> tempJamList = new ArrayList<>();
 		if (!localJamList.isEmpty()) {
-			List<Pair<Integer, Integer>> toRemove = new ArrayList<>();
-			for (Pair<Integer, Integer> part : localJamList) {
+			List<Tuple2<Integer, Integer>> toRemove = new ArrayList<>();
+			for (Tuple2<Integer, Integer> part : localJamList) {
 				part.setValue2(part.getValue2() - 1);
 				if (part.getValue2() <= 0) {
 					toRemove.add(part);
@@ -49,7 +49,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 			}
 		}
 		PipeFluidTransportLogistics transport = (PipeFluidTransportLogistics) this.transport;
-		for (EnumFacing dir : EnumFacing.VALUES) {
+		for (Direction dir : Direction.values()) {
 			FluidStack stack = transport.sideTanks[dir.ordinal()].getFluid();
 			if (stack == null) {
 				continue;
@@ -65,7 +65,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 				continue;
 			}
 
-			Pair<Integer, Integer> result = SimpleServiceLocator.logisticsFluidManager.getBestReply(FluidIdentifierStack.getFromStack(stack), getRouter(), tempJamList);
+			Tuple2<Integer, Integer> result = SimpleServiceLocator.logisticsFluidManager.getBestReply(FluidIdentifierStack.getFromStack(stack), getRouter(), tempJamList);
 			if (result == null || result.getValue1() == null || result.getValue1() == 0 || result.getValue2() == 0) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;
@@ -79,7 +79,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 			}
 
 			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2(), true);
-			ItemIdentifierStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(FluidIdentifierStack.getFromStack(toSend));
+			ItemStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(FluidIdentifierStack.getFromStack(toSend));
 			IRoutedItem routed = SimpleServiceLocator.routedItemHelper.createNewTravelItem(liquidContainer);
 			routed.setDestination(result.getValue1());
 			routed.setTransportMode(TransportMode.Passive);
@@ -90,14 +90,14 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		nbttagcompound.setIntArray("nextSendMax", nextSendMax);
 		nbttagcompound.setIntArray("nextSendMin", nextSendMin);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		nextSendMax = nbttagcompound.getIntArray("nextSendMax");
 		if (nextSendMax.length < 6) {

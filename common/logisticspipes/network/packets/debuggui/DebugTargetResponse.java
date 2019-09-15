@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.debuggui;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
@@ -52,19 +52,19 @@ public class DebugTargetResponse extends ModernPacket {
 			player.sendMessage(new TextComponentString("Checking Block at: x:" + x + " y:" + y + " z:" + z));
 			Block id = player.world.getBlockState(new BlockPos(x, y, z)).getBlock();
 			player.sendMessage(new TextComponentString("Found Block with Id: " + id.getClass()));
-			final TileEntity tile = player.world.getTileEntity(new BlockPos(x, y, z));
+			final BlockEntity tile = player.world.getBlockEntity(new BlockPos(x, y, z));
 			if (tile == null) {
-				player.sendMessage(new TextComponentString(ChatColor.RED + "No TileEntity found"));
+				player.sendMessage(new TextComponentString(ChatColor.RED + "No BlockEntity found"));
 			} else {
 				LPChatListener.addTask(() -> {
 					player.sendMessage(new TextComponentString(
-							ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
+							ChatColor.GREEN + "Starting debuging of BlockEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
 					DebugGuiController.instance().startWatchingOf(tile, player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);
 					return true;
 				}, player);
 				player.sendMessage(new TextComponentString(
-						ChatColor.AQUA + "Start debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()
+						ChatColor.AQUA + "Start debuging of BlockEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()
 								+ ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no"
 								+ ChatColor.RESET + ">"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), player);

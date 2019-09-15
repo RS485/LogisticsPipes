@@ -1,6 +1,6 @@
 package logisticspipes.utils.math;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 public final class MatrixTranformations {
 
@@ -40,7 +40,7 @@ public final class MatrixTranformations {
 	 * @param targetArray the array that should be transformed
 	 * @param direction
 	 */
-	public static void transform(float[][] targetArray, EnumFacing direction) {
+	public static void transform(float[][] targetArray, Direction direction) {
 		if ((direction.ordinal() & 0x1) == 1) {
 			MatrixTranformations.mirrorY(targetArray);
 		}

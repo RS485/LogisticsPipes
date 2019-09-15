@@ -1,7 +1,7 @@
 package logisticspipes.utils;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -13,7 +13,11 @@ import logisticspipes.proxy.SimpleServiceLocator;
 
 public class TankUtilFactory {
 
-	public ITankUtil getTankUtilForTE(TileEntity tile, EnumFacing dirOnEntity) {
+	public static final TankUtilFactory INSTANCE = new TankUtilFactory();
+
+	private TankUtilFactory() {}
+
+	public ITankUtil getTankUtilForTE(BlockEntity tile, Direction dirOnEntity) {
 		if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) {
 			ISpecialTankHandler handler = SimpleServiceLocator.specialTankHandler.getTankHandlerFor(tile);
 			if (handler instanceof ISpecialTankAccessHandler) {

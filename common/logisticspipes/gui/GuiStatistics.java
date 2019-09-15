@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -34,7 +34,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.math.Vec2;
 import logisticspipes.utils.string.StringUtils;
 
@@ -92,7 +92,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
-		GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+		RenderSystem.color(1.0f, 1.0f, 1.0f, 1.0f);
 
 		drawBG();
 		getActiveTab().draw(mouseX, mouseY);
@@ -116,9 +116,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		// Second Tab
 		RenderHelper.enableGUIStandardItemLighting();
 		ItemStack stack = new ItemStack(Blocks.CRAFTING_TABLE, 1);
-		GlStateManager.enableDepth();
+		RenderSystem.enableDepth();
 		itemRender.renderItemAndEffectIntoGUI(stack, guiLeft + 31, guiTop + 3);
-		GlStateManager.disableDepth();
+		RenderSystem.disableDepth();
 		itemRender.zLevel = 0.0F;
 	}
 
@@ -161,11 +161,11 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		super.handleMouseInputSub();
 	}
 
-	public void handlePacket1(List<ItemIdentifierStack> identList) {
+	public void handlePacket1(List<ItemStack> identList) {
 		tabTracker.handlePacket(identList);
 	}
 
-	public void handlePacket2(List<ItemIdentifierStack> identList) {
+	public void handlePacket2(List<ItemStack> identList) {
 		tabCrafting.handlePacket(identList);
 	}
 
@@ -229,16 +229,16 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 				if (task != null) {
 					GuiGraphics.drawSlotBackground(mc, guiLeft + 10, guiTop + 99);
 					RenderHelper.enableGUIStandardItemLighting();
-					GlStateManager.enableDepth();
+					RenderSystem.enableDepth();
 					itemRender.renderItemAndEffectIntoGUI(task.item.makeNormalStack(1), guiLeft + 11, guiTop + 100);
-					GlStateManager.disableDepth();
+					RenderSystem.disableDepth();
 					itemRender.zLevel = 0.0F;
 					mc.fontRenderer.drawString(StringUtils.getWithMaxWidth(task.item.getFriendlyName(), 136, fontRenderer), guiLeft + 32, guiTop + 104, Color.getValue(Color.DARKER_GREY), false);
 
 					int xOrigo = xCenter - 72;
 					int yOrigo = yCenter + 90;
-					GlStateManager.pushMatrix();
-					GlStateManager.translate(xOrigo, yOrigo, 0);
+					RenderSystem.pushMatrix();
+					RenderSystem.translate(xOrigo, yOrigo, 0);
 
 					drawLine(0, 0, 150, 0, Color.DARKER_GREY);
 					drawLine(0, 0, 0, -80, Color.DARKER_GREY);
@@ -295,18 +295,18 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 						if (y > 0 && y < 80) {
 							drawLine(-4, (int) -y, 0, (int) -y, Color.DARKER_GREY);
-							GlStateManager.pushMatrix();
-							GlStateManager.rotate(90, 0, 0, 1);
+							RenderSystem.pushMatrix();
+							RenderSystem.rotate(90, 0, 0, 1);
 							String s = data[i] + "";
 							int w = mc.fontRenderer.getStringWidth(s);
 							mc.fontRenderer.drawString(s, (int) -y - w / 2f, 6, Color.DARKER_GREY.getValue(), false);
-							GlStateManager.popMatrix();
+							RenderSystem.popMatrix();
 						}
 
 						drawGraphPart((int) prevX, (int) prevY, (int) x, (int) y);
 					}
 				}
-				GlStateManager.popMatrix();
+				RenderSystem.popMatrix();
 			}
 		}
 
@@ -482,12 +482,12 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 		}
 
 		public void updateItemList() {
-			List<ItemIdentifierStack> allItems = tile.tasks.stream().map(task -> task.item.makeStack(1))
+			List<ItemStack> allItems = tile.tasks.stream().map(task -> task.item.makeStack(1))
 					.collect(Collectors.toList());
 			itemDisplay.setItemList(allItems);
 		}
 
-		public void handlePacket(List<ItemIdentifierStack> identList) {
+		public void handlePacket(List<ItemStack> identList) {
 			if (hasSubGui() && getSubGui() instanceof GuiAddTracking) {
 				((GuiAddTracking) getSubGui()).handlePacket(identList);
 			} else if (!hasSubGui()) {
@@ -563,7 +563,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 			}
 		}
 
-		public void handlePacket(List<ItemIdentifierStack> identList) {
+		public void handlePacket(List<ItemStack> identList) {
 			itemDisplay.setItemList(identList);
 		}
 

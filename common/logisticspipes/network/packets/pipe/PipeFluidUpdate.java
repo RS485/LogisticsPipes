@@ -3,7 +3,7 @@ package logisticspipes.network.packets.pipe;
 import java.util.BitSet;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -25,7 +25,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 
 	@Getter(value = AccessLevel.PRIVATE)
 	@Setter
-	private FluidStack[] renderCache = new FluidStack[EnumFacing.VALUES.length];
+	private FluidStack[] renderCache = new FluidStack[Direction.values().length];
 	private BitSet bits = new BitSet();
 
 	public PipeFluidUpdate(int id) {

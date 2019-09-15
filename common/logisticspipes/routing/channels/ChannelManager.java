@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 
@@ -43,7 +43,7 @@ public class ChannelManager implements IChannelManager {
 		}
 
 		@Override
-		public void readFromNBT(NBTTagCompound nbt) {
+		public void readFromNBT(CompoundTag nbt) {
 			channels = new ArrayList<>();
 			for (int i = 0; i < nbt.getInteger("dataSize"); i++) {
 				channels.add(i, new ChannelInformation(nbt.getCompoundTag("data" + i)));
@@ -52,11 +52,11 @@ public class ChannelManager implements IChannelManager {
 
 		@Nonnull
 		@Override
-		public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		public CompoundTag writeToNBT(CompoundTag compound) {
 			compound.setInteger("dataSize", channels.size());
 			for (int i = 0; i < channels.size(); i++) {
 				ChannelInformation channel = channels.get(i);
-				NBTTagCompound nbt = new NBTTagCompound();
+				CompoundTag nbt = new CompoundTag();
 				channel.writeToNBT(nbt);
 				compound.setTag("data" + i, nbt);
 			}

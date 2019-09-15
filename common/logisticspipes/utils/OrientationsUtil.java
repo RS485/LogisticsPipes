@@ -1,76 +1,50 @@
 package logisticspipes.utils;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
-
-import network.rs485.logisticspipes.world.IntegerCoordinates;
+import net.minecraft.util.math.Direction;
 
 public class OrientationsUtil {
 
-	public static EnumFacing getOrientationOfTilewithTile(TileEntity pipeTile, TileEntity tileTile) {
-		IntegerCoordinates pipe = new IntegerCoordinates(pipeTile.getPos());
-		IntegerCoordinates tile = new IntegerCoordinates(tileTile.getPos());
-		if (pipe.getZCoord() == tile.getZCoord()) {
-			if (pipe.getYCoord() == tile.getYCoord()) {
-				if (pipe.getXCoord() < tile.getXCoord()) {
-					return EnumFacing.EAST;
-				} else if (pipe.getXCoord() > tile.getXCoord()) {
-					return EnumFacing.WEST;
+	public static Direction getOrientationOfTileWithTile(BlockEntity pipeTile, BlockEntity tileTile) {
+		BlockPos pipe = pipeTile.getPos();
+		BlockPos tile = tileTile.getPos();
+		if (pipe.getZ() == tile.getZ()) {
+			if (pipe.getY() == tile.getY()) {
+				if (pipe.getX() < tile.getX()) {
+					return Direction.EAST;
+				} else if (pipe.getX() > tile.getX()) {
+					return Direction.WEST;
 				}
 			}
 		}
-		if (pipe.getXCoord() == tile.getXCoord()) {
-			if (pipe.getZCoord() == tile.getZCoord()) {
-				if (pipe.getYCoord() < tile.getYCoord()) {
-					return EnumFacing.UP;
-				} else if (pipe.getYCoord() > tile.getYCoord()) {
-					return EnumFacing.DOWN;
+		if (pipe.getX() == tile.getX()) {
+			if (pipe.getZ() == tile.getZ()) {
+				if (pipe.getY() < tile.getY()) {
+					return Direction.UP;
+				} else if (pipe.getY() > tile.getY()) {
+					return Direction.DOWN;
 				}
 			}
 		}
-		if (pipe.getXCoord() == tile.getXCoord()) {
-			if (pipe.getYCoord() == tile.getYCoord()) {
-				if (pipe.getZCoord() < tile.getZCoord()) {
-					return EnumFacing.SOUTH;
-				} else if (pipe.getZCoord() > tile.getZCoord()) {
-					return EnumFacing.NORTH;
+		if (pipe.getX() == tile.getX()) {
+			if (pipe.getY() == tile.getY()) {
+				if (pipe.getZ() < tile.getZ()) {
+					return Direction.SOUTH;
+				} else if (pipe.getZ() > tile.getZ()) {
+					return Direction.NORTH;
 				}
 			}
 		}
 		return null;
 	}
 
-	public static TileEntity getTileNextToThis(TileEntity tile, EnumFacing dir) {
-		int x = tile.getPos().getX();
-		int y = tile.getPos().getY();
-		int z = tile.getPos().getZ();
-		switch (dir) {
-			case UP:
-				y = y + 1;
-				break;
-			case DOWN:
-				y = y - 1;
-				break;
-			case SOUTH:
-				z = z + 1;
-				break;
-			case NORTH:
-				z = z - 1;
-				break;
-			case EAST:
-				x = x + 1;
-				break;
-			case WEST:
-				x = x - 1;
-				break;
-			default:
-				break;
-		}
-		return tile.getWorld().getTileEntity(new BlockPos(x, y, z));
+	public static BlockEntity getTileNextToThis(BlockEntity entity, Direction dir) {
+		return entity.getWorld().getBlockEntity(entity.getPos().offset(dir));
 	}
 
-	public static boolean isSide(EnumFacing ori) {
-		return ori == EnumFacing.EAST || ori == EnumFacing.WEST || ori == EnumFacing.SOUTH || ori == EnumFacing.NORTH;
+	public static boolean isSide(Direction ori) {
+		return ori.getAxis() != Direction.Axis.Y;
 	}
+
 }

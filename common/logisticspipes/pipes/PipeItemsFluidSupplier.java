@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -19,7 +19,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
@@ -36,10 +36,10 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
+public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemRequester, IRequireReliableTransport {
 
 	private boolean _lastRequestFailed = false;
 
@@ -47,7 +47,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		super(new PipeTransportLogistics(true) {
 
 			@Override
-			public boolean canPipeConnect(TileEntity tile, EnumFacing dir) {
+			public boolean canPipeConnect(BlockEntity tile, Direction dir) {
 				if (super.canPipeConnect(tile, dir)) {
 					return true;
 				}
@@ -94,11 +94,11 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		return ItemSendMode.Fast;
 	}
 
-	public void endReached(LPTravelingItemServer data, TileEntity tile) {
+	public void endReached(LPTravelingItemServer data, BlockEntity tile) {
 		getCacheHolder().trigger(CacheTypes.Inventory);
 		transport.markChunkModified(tile);
 		notifyOfItemArival(data.getInfo());
-		EnumFacing orientation = data.output.getOpposite();
+		Direction orientation = data.output.getOpposite();
 		if (getOriginalUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getOriginalUpgradeManager().getSneakyOrientation();
 		}
@@ -109,18 +109,18 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			return;
 		}
-		if (data.getItemIdentifierStack() == null) {
+		if (data.getItemStack() == null) {
 			return;
 		}
-		FluidIdentifierStack liquidId = FluidIdentifierStack.getFromStack(data.getItemIdentifierStack());
+		FluidIdentifierStack liquidId = FluidIdentifierStack.getFromStack(data.getItemStack());
 		if (liquidId == null) {
 			return;
 		}
-		while (data.getItemIdentifierStack().getStackSize() > 0 && util.fill(liquidId, false) == liquidId.getAmount() && this.useEnergy(5)) {
+		while (data.getItemStack().getStackSize() > 0 && util.fill(liquidId, false) == liquidId.getAmount() && this.useEnergy(5)) {
 			util.fill(liquidId, true);
-			data.getItemIdentifierStack().lowerStackSize(1);
-			Item item = data.getItemIdentifierStack().getItem().item;
-			if (item.hasContainerItem(data.getItemIdentifierStack().makeNormalStack())) {
+			data.getItemStack().lowerStackSize(1);
+			Item item = data.getItemStack().getItem().item;
+			if (item.hasContainerItem(data.getItemStack().makeNormalStack())) {
 				Item containerItem = item.getContainerItem();
 				transport.sendItem(new ItemStack(containerItem, 1));
 			}
@@ -151,8 +151,8 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		super.throttledUpdateEntity();
 
 		Iterator<ITankUtil> iterator = new WorldCoordinatesWrapper(container).connectedTileEntities()
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity()))
-				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()))
+				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity()))
+				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()))
 				.filter(Objects::nonNull)
 				.iterator();
 
@@ -229,12 +229,12 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				boolean success = false;
 
 				if (_requestPartials) {
-					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) container.pipe, null);
+					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (ItemRequester) container.pipe, null);
 					if (countToRequest > 0) {
 						success = true;
 					}
 				} else {
-					success = RequestTree.request(need.makeStack(countToRequest), (IRequestItems) container.pipe, null, null);
+					success = RequestTree.request(need.makeStack(countToRequest), (ItemRequester) container.pipe, null, null);
 				}
 
 				if (success) {
@@ -252,20 +252,20 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		_requestPartials = nbttagcompound.getBoolean("requestpartials");
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		dummyInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("requestpartials", _requestPartials);
 	}
 
-	private void decreaseRequested(ItemIdentifierStack item) {
+	private void decreaseRequested(ItemStack item) {
 		int remaining = item.getStackSize();
 		//see if we can get an exact match
 		Integer count = _requestedItems.get(item.getItem());
@@ -292,12 +292,12 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
 		decreaseRequested(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {
 		decreaseRequested(item);
 		delayThrottle();
 	}

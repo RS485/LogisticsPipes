@@ -10,10 +10,10 @@ package logisticspipes.pipes;
 import java.util.List;
 
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -22,9 +22,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
-public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
+public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements ItemRequester, IRequireReliableTransport {
 
 	private ModuleActiveSupplier module;
 
@@ -56,24 +56,24 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		module.readFromNBT(nbttagcompound);
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		module.writeToNBT(nbttagcompound);
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
 		module.itemLost(item, info);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {
 		module.itemArrived(item, info);
 	}
 

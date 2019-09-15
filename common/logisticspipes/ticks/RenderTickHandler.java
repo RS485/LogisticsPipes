@@ -1,17 +1,17 @@
 package logisticspipes.ticks;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
@@ -71,7 +71,7 @@ public class RenderTickHandler {
 		}
 	}
 
-	//private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/White.png");
+	//private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/White.png");
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
@@ -86,13 +86,13 @@ public class RenderTickHandler {
 				CoreUnroutedPipe pipe = ((ItemLogisticsPipe) stack.getItem()).getDummyPipe();
 
 				World world = player.getEntityWorld();
-				EnumFacing side = box.sideHit;
+				Direction side = box.sideHit;
 				BlockPos bPos = box.getBlockPos();
 
 				Block block = world.getBlockState(bPos).getBlock();
 
 				if (block == Blocks.SNOW_LAYER && block.isReplaceable(world, bPos)) {
-					side = EnumFacing.UP;
+					side = Direction.UP;
 				} else if (!block.isReplaceable(world, bPos)) {
 					bPos = bPos.offset(side);
 				}
@@ -114,7 +114,7 @@ public class RenderTickHandler {
 
 						for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> pos : globalPos) {
 							if (!player.getEntityWorld().mayPlace(LPBlocks.pipe, pos.getBlockPos(), false, side, player)) {
-								TileEntity tile = player.getEntityWorld().getTileEntity(pos.getBlockPos());
+								BlockEntity tile = player.getEntityWorld().getBlockEntity(pos.getBlockPos());
 								boolean canPlace = false;
 								if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 									if (CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), pos.getType())) {
@@ -136,7 +136,7 @@ public class RenderTickHandler {
 					}
 				}
 				if (isFreeSpace) {
-					GlStateManager.pushMatrix();
+					RenderSystem.pushMatrix();
 					double x;
 					double y;
 					double z;
@@ -151,17 +151,17 @@ public class RenderTickHandler {
 					}
 					GL11.glTranslated(x + 0.001, y + 0.001, z + 0.001);
 
-					GlStateManager.enableBlend();
+					RenderSystem.enableBlend();
 					//GL11.glDepthMask(false);
-					GlStateManager.disableTexture2D();
+					RenderSystem.disableTexture2D();
 					GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-					mc.renderEngine.bindTexture(new ResourceLocation("logisticspipes", "textures/blocks/pipes/white.png"));
+					mc.renderEngine.bindTexture(new Identifier("logisticspipes", "textures/blocks/pipes/white.png"));
 
 					SimpleServiceLocator.cclProxy.getRenderState().reset();
 					SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
 
-					GlStateManager.enableTexture2D();
+					RenderSystem.enableTexture2D();
 
 					SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0x50);
 					SimpleServiceLocator.cclProxy.getRenderState().startDrawing(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -171,9 +171,9 @@ public class RenderTickHandler {
 					SimpleServiceLocator.cclProxy.getRenderState().draw();
 
 					SimpleServiceLocator.cclProxy.getRenderState().setAlphaOverride(0xff);
-					GlStateManager.disableBlend();
-					GlStateManager.depthMask(true);
-					GlStateManager.popMatrix();
+					RenderSystem.disableBlend();
+					RenderSystem.depthMask(true);
+					RenderSystem.popMatrix();
 				}
 			}
 		}

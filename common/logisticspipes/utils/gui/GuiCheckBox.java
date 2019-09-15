@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.opengl.GL11;
 
@@ -29,7 +29,7 @@ public class GuiCheckBox extends GuiButton {
 			boolean var5 = par2 >= x && par3 >= y && par2 < x + width && par3 < y + height;
 			int var6 = getHoverState(var5);
 			//GL11.glBindTexture(GL11.GL_TEXTURE_2D, minecraft.renderEngine.getTexture("/logisticspipes/gui/checkbox-" + (state?"on":"out") + "" + (var6 == 2?"-mouse":"") + ".png"));
-			minecraft.renderEngine.bindTexture(new ResourceLocation("logisticspipes", "textures/gui/checkbox-" + (state ? "on" : "out") + "" + (var6 == 2 ? "-mouse" : "") + ".png"));
+			minecraft.renderEngine.bindTexture(new Identifier("logisticspipes", "textures/gui/checkbox-" + (state ? "on" : "out") + "" + (var6 == 2 ? "-mouse" : "") + ".png"));
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 			Tessellator tessellator = Tessellator.getInstance();

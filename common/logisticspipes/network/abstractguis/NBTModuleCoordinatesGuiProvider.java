@@ -1,6 +1,6 @@
 package logisticspipes.network.abstractguis;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ public abstract class NBTModuleCoordinatesGuiProvider extends ModuleCoordinatesG
 
 	@Getter
 	@Setter
-	private NBTTagCompound nbt;
+	private CompoundTag nbt;
 
 	public NBTModuleCoordinatesGuiProvider(int id) {
 		super(id);

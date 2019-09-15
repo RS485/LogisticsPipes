@@ -24,7 +24,7 @@ import logisticspipes.network.packets.pipe.PipeManagerContentPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> implements Iterable<T> {
 
@@ -43,8 +43,8 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 		this.listener = listener;
 	}
 
-	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
-		for (ItemIdentifierStack ident : list) {
+	private static void addToList(ItemStack stack, LinkedList<ItemStack> list) {
+		for (ItemStack ident : list) {
 			if (ident.getItem().equals(stack.getItem())) {
 				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
@@ -69,11 +69,11 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 		System.out.println();
 	}
 
-	public LinkedList<ItemIdentifierStack> getContentList(World world) {
+	public LinkedList<ItemStack> getContentList(World world) {
 		if (MainProxy.isClient(world) || _orders.size() == 0) {
 			return new LinkedList<>();
 		}
-		LinkedList<ItemIdentifierStack> list = new LinkedList<>();
+		LinkedList<ItemStack> list = new LinkedList<>();
 		for (LogisticsOrder request : _orders) {
 			LogisticsOrderManager.addToList(request.getAsDisplayItem(), list);
 		}

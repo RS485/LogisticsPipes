@@ -1,17 +1,15 @@
 package logisticspipes.utils;
 
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.RegistryNamespaced;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.util.registry.Registry;
+
+import org.apache.commons.lang3.NotImplementedException;
 
 public class CraftingUtil {
 
-	@SuppressWarnings("unchecked")
-	// Suppressed because getRecipeList shouldn't ever return something that
-	// isn't a recipe.
-	public static RegistryNamespaced<ResourceLocation, IRecipe> getRecipeList() {
-		return CraftingManager.REGISTRY;
+	public static Registry<Recipe<CraftingInventory>> getRecipeList() {
+		throw new NotImplementedException("not implemented");
 	}
 
 }

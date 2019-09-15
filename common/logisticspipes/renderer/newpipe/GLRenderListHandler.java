@@ -10,8 +10,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class GLRenderListHandler {
 
+	public static final GLRenderListHandler INSTANCE = new GLRenderListHandler();
+
 	private List<GLRenderList> collection = new ArrayList<>();
 	private final Object lockCollection = new Object();
+
+	private GLRenderListHandler() {}
 
 	public GLRenderList getNewRenderList() {
 		GLRenderList list = new GLRenderList();

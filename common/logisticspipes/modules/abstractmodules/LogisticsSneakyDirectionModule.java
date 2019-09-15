@@ -1,10 +1,10 @@
 package logisticspipes.modules.abstractmodules;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 public abstract class LogisticsSneakyDirectionModule extends LogisticsGuiModule {
 
-	public abstract EnumFacing getSneakyDirection();
+	public abstract Direction getSneakyDirection();
 
-	public abstract void setSneakyDirection(EnumFacing sneakyDirection);
+	public abstract void setSneakyDirection(Direction sneakyDirection);
 }

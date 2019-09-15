@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -22,8 +22,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
@@ -46,21 +46,21 @@ public class LogisticsBlockModel implements IModel {
 	public static class Loader implements ICustomModelLoader {
 
 		@Override
-		public boolean accepts(@Nonnull ResourceLocation modelLocation) {
+		public boolean accepts(@Nonnull Identifier modelLocation) {
 			return getType(modelLocation) != null;
 		}
 
 		@Override
 		@Nonnull
-		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
-			ResourceLocation baseTex = new ResourceLocation(modelLocation.getResourceDomain(), "solid_block/" + modelLocation.getResourcePath());
+		public IModel loadModel(@Nonnull Identifier modelLocation) {
+			Identifier baseTex = new Identifier(modelLocation.getResourceDomain(), "solid_block/" + modelLocation.getResourcePath());
 			return new LogisticsBlockModel(baseTex, Objects.requireNonNull(getType(modelLocation)));
 		}
 
 		@Nullable
-		private Type getType(ResourceLocation modelLocation) {
+		private Type getType(Identifier modelLocation) {
 			if (!(modelLocation instanceof ModelResourceLocation)) return null;
-			ResourceLocation clean = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
+			Identifier clean = new Identifier(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
 			String variant = ((ModelResourceLocation) modelLocation).getVariant();
 
 			if (variant.equals("inventory")) {
@@ -81,13 +81,13 @@ public class LogisticsBlockModel implements IModel {
 		public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {}
 	}
 
-	private final ResourceLocation inactive;
-	private final ResourceLocation active;
+	private final Identifier inactive;
+	private final Identifier active;
 
-	public LogisticsBlockModel(ResourceLocation texture, Type type) {
+	public LogisticsBlockModel(Identifier texture, Type type) {
 		this.inactive = texture;
 		if (type.isHasActiveTexture()) {
-			this.active = new ResourceLocation(texture.getResourceDomain(), texture.getResourcePath() + "_active");
+			this.active = new Identifier(texture.getResourceDomain(), texture.getResourcePath() + "_active");
 		} else {
 			this.active = texture;
 		}
@@ -95,13 +95,13 @@ public class LogisticsBlockModel implements IModel {
 
 	@Nonnull
 	@Override
-	public Collection<ResourceLocation> getTextures() {
+	public Collection<Identifier> getTextures() {
 		return Arrays.asList(inactive, active);
 	}
 
 	@Nonnull
 	@Override
-	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<Identifier, TextureAtlasSprite> bakedTextureGetter) {
 		final List<BakedQuad> quads = Lists.newArrayList();
 
 		TextureAtlasSprite inactiveT = bakedTextureGetter.apply(inactive);
@@ -111,7 +111,7 @@ public class LogisticsBlockModel implements IModel {
 
 			@Override
 			@Nonnull
-			public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
+			public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, long rand) {
 				if (side == null) {
 					if (quads.isEmpty()) {
 						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generateBlockRenderList(state, inactiveT, activeT), format, true));
@@ -157,7 +157,7 @@ public class LogisticsBlockModel implements IModel {
 		};
 	}
 
-	private List<RenderEntry> generateBlockRenderList(@Nullable IBlockState state, @Nonnull TextureAtlasSprite inactive, @Nonnull TextureAtlasSprite active) {
+	private List<RenderEntry> generateBlockRenderList(@Nullable BlockState state, @Nonnull TextureAtlasSprite inactive, @Nonnull TextureAtlasSprite active) {
 		List<RenderEntry> objectsToRender = new ArrayList<>();
 
 		LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.ZERO;
@@ -174,7 +174,7 @@ public class LogisticsBlockModel implements IModel {
 		for (LogisticsNewSolidBlockWorldRenderer.CoverSides side : LogisticsNewSolidBlockWorldRenderer.CoverSides.values()) {
 			boolean render = true;
 			if (state != null) {
-				if (!state.getValue(LogisticsSolidBlock.connectionPropertys.get(side.getDir(rotation)))) {
+				if (!state.getValue(LogisticsSolidBlock.connectionProperties.get(side.getDir(rotation)))) {
 					render = false;
 				}
 			}

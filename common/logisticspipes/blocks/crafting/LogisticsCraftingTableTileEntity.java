@@ -2,34 +2,34 @@ package logisticspipes.blocks.crafting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCraftResult;
-import net.minecraft.inventory.SlotCrafting;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.container.Slot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.CraftingResultInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.InventoryListener;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ItemScatterer;
 
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.fabricmc.fabric.api.util.NbtType;
 
 import logisticspipes.LPBlocks;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.config.Configs;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.entity.FakePlayerLP;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -37,84 +37,82 @@ import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.guis.block.AutoCraftingGui;
 import logisticspipes.network.packets.block.CraftingSetType;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.CraftingUtil;
-import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.util.items.ItemStackLoader;
+import network.rs485.logisticspipes.config.LPConfiguration;
+import network.rs485.logisticspipes.ext.InventoryKt;
+import network.rs485.logisticspipes.init.Blocks;
+import network.rs485.logisticspipes.inventory.InventoryWithStackSize;
+import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.util.ItemVariant;
 
-public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IInventory, IGuiTileEntity, ISimpleInventoryEventHandler, IGuiOpenControler {
+public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements Inventory, IGuiTileEntity, InventoryListener, IGuiOpenController {
 
-	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
-	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
-	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
+	public BasicInventory inv = new BasicInventory(18);
+	public InventoryWithStackSize matrix = new InventoryWithStackSize(18, 1);
+	public InventoryWithStackSize resultInv = new InventoryWithStackSize(18, 1);
 
-	private InventoryCraftResult vanillaResult = new InventoryCraftResult();
+	private CraftingResultInventory vanillaResult = new CraftingResultInventory();
 
-	public ItemIdentifier targetType = null;
-	//just use CraftingRequirement to store flags; field "stack" is ignored
-	public DictResource[] fuzzyFlags = new DictResource[9];
-	public DictResource outputFuzzyFlags = new DictResource(null, null);
-	private IRecipe cache;
-	private EntityPlayerMP fake;
-	private PlayerIdentifier placedBy = null;
+	public ItemVariant targetType = null;
 
-	private InvWrapper invWrapper = new InvWrapper(this);
+	// just use CraftingRequirement to store flags; field "stack" is ignored
+	public Resource.Dict[] fuzzyFlags = new Resource.Dict[9];
+	public Resource.Dict outputFuzzyFlags = new Resource.Dict(ItemStack.EMPTY, null);
+	private Recipe<CraftingInventory> cache;
+	private UUID placedBy = null;
 
 	private PlayerCollectionList guiWatcher = new PlayerCollectionList();
 
-	public LogisticsCraftingTableTileEntity() {
+	public LogisticsCraftingTableTileEntity(BlockEntityType<? extends LogisticsCraftingTableTileEntity> type) {
+		super(type);
 		matrix.addListener(this);
 		for (int i = 0; i < 9; i++) {
-			fuzzyFlags[i] = new DictResource(null, null);
+			fuzzyFlags[i] = new Resource.Dict(ItemStack.EMPTY, null);
 		}
 	}
 
 	public void cacheRecipe() {
-		ItemIdentifier oldTargetType = targetType;
+		ItemVariant oldTargetType = targetType;
 		cache = null;
-		resultInv.clearInventorySlotContents(0);
+		resultInv.removeInvStack(0);
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(placedBy);
 		for (int i = 0; i < 9; i++) {
-			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+			craftInv.setInvStack(i, matrix.getInvStack(i));
 		}
-		List<IRecipe> list = new ArrayList<>();
-		for (IRecipe r : CraftingUtil.getRecipeList()) {
+		List<Recipe<CraftingInventory>> list = new ArrayList<>();
+		for (Recipe<CraftingInventory> r : CraftingUtil.getRecipeList()) {
 			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
 		}
 		if (list.size() == 1) {
 			cache = list.get(0);
-			resultInv.setInventorySlotContents(0, cache.getCraftingResult(craftInv));
+			resultInv.setInvStack(0, cache.craft(craftInv));
 			targetType = null;
 		} else if (list.size() > 1) {
 			if (targetType != null) {
-				for (IRecipe recipe : list) {
+				for (Recipe<CraftingInventory> recipe : list) {
 					craftInv = new AutoCraftingInventory(placedBy);
 					for (int i = 0; i < 9; i++) {
-						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+						craftInv.setInvStack(i, matrix.getInvStack(i));
 					}
-					ItemStack result = recipe.getCraftingResult(craftInv);
-					if (!result.isEmpty() && targetType.equals(ItemIdentifier.get(result))) {
-						resultInv.setInventorySlotContents(0, result);
+					ItemStack result = recipe.craft(craftInv);
+					if (!result.isEmpty() && targetType.equals(ItemVariant.fromStack(result))) {
+						resultInv.setInvStack(0, result);
 						cache = recipe;
 						break;
 					}
 				}
 			}
 			if (cache == null) {
-				for (IRecipe r : list) {
-					ItemStack result = r.getCraftingResult(craftInv);
+				for (Recipe<CraftingInventory> r : list) {
+					ItemStack result = r.craft(craftInv);
 					if (!result.isEmpty()) {
 						cache = r;
-						resultInv.setInventorySlotContents(0, result);
-						targetType = ItemIdentifier.get(result);
+						resultInv.setInvStack(0, result);
+						targetType = ItemVariant.fromStack(result);
 						break;
 					}
 				}
@@ -122,8 +120,8 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		} else {
 			targetType = null;
 		}
-		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
-		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && MainProxy.isServer(getWorld())) {
+		outputFuzzyFlags = new Resource.Dict(resultInv.getInvStack(0), null);
+		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && !getWorld().isClient) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 	}
@@ -136,11 +134,11 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(placedBy);
 
 		for (int i = 0; i < 9; i++) {
-			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+			craftInv.setInvStack(i, matrix.getInvStack(i));
 		}
 
-		List<IRecipe> list = new ArrayList<>();
-		for (IRecipe r : CraftingUtil.getRecipeList()) {
+		List<Recipe<CraftingInventory>> list = new ArrayList<>();
+		for (Recipe<CraftingInventory> r : CraftingUtil.getRecipeList()) {
 			if (r.matches(craftInv, getWorld())) {
 				list.add(r);
 			}
@@ -148,17 +146,17 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 		if (list.size() > 1) {
 			boolean found = false;
-			IRecipe prev = null;
-			for (IRecipe recipe : list) {
+			Recipe<CraftingInventory> prev = null;
+			for (Recipe<CraftingInventory> recipe : list) {
 				if (found) {
 					cache = recipe;
 					break;
 				}
 				craftInv = new AutoCraftingInventory(placedBy);
 				for (int i = 0; i < 9; i++) {
-					craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+					craftInv.setInvStack(i, matrix.getInvStack(i));
 				}
-				if (targetType != null && targetType.equals(ItemIdentifier.get(recipe.getCraftingResult(craftInv)))) {
+				if (targetType != null && targetType.equals(ItemVariant.fromStack(recipe.craft(craftInv)))) {
 					if (down) {
 						found = true;
 					} else {
@@ -179,25 +177,25 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 			craftInv = new AutoCraftingInventory(placedBy);
 			for (int i = 0; i < 9; i++) {
-				craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+				craftInv.setInvStack(i, matrix.getInvStack(i));
 			}
 
-			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
+			targetType = ItemVariant.fromStack(cache.craft(craftInv));
 		}
 
-		if (!guiWatcher.isEmpty() && MainProxy.isServer(getWorld())) {
+		if (!guiWatcher.isEmpty() && !getWorld().isClient) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
 		}
 
 		cacheRecipe();
 	}
 
-	private boolean testFuzzy(ItemIdentifier item, ItemIdentifierStack item2, int slot) {
-		fuzzyFlags[slot].stack = item.makeStack(1);
-		return fuzzyFlags[slot].matches(item2.getItem(), IResource.MatchSettings.NORMAL);
+	private boolean testFuzzy(ItemVariant item, ItemStack item2, int slot) {
+		fuzzyFlags[slot] = fuzzyFlags[slot].withStack(item.makeStack());
+		return fuzzyFlags[slot].matches(item2, false);
 	}
 
-	public ItemStack getOutput(IResource wanted, IRoutedPowerProvider power) {
+	public ItemStack getOutput(Resource wanted, IRoutedPowerProvider power) {
 		boolean isFuzzy = isFuzzy();
 		if (cache == null) {
 			cacheRecipe();
@@ -206,45 +204,45 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			}
 		}
 		int[] toUse = new int[9];
-		int[] used = new int[inv.getSizeInventory()];
+		int[] used = new int[inv.getInvSize()];
 		outer:
 		for (int i = 0; i < 9; i++) {
-			ItemIdentifierStack item = matrix.getIDStackInSlot(i);
-			if (item == null) {
+			ItemStack stack = matrix.getInvStack(i);
+			if (stack == null) {
 				toUse[i] = -1;
 				continue;
 			}
-			ItemIdentifier ident = item.getItem();
-			for (int j = 0; j < inv.getSizeInventory(); j++) {
-				item = inv.getIDStackInSlot(j);
-				if (item == null) {
+			ItemVariant ident = ItemVariant.fromStack(stack);
+			for (int j = 0; j < inv.getInvSize(); j++) {
+				stack = inv.getInvStack(j);
+				if (stack == null) {
 					continue;
 				}
-				if (isFuzzy ? (testFuzzy(ident, item, i)) : ident.equalsForCrafting(item.getItem())) {
-					if (item.getStackSize() > used[j]) {
+				if (isFuzzy ? (testFuzzy(ident, stack, i)) : ident.equalsForCrafting(ItemVariant.fromStack(stack))) {
+					if (stack.getCount() > used[j]) {
 						used[j]++;
 						toUse[i] = j;
 						continue outer;
 					}
 				}
 			}
-			//Not enough material
+			// Not enough material
 			return null;
 		}
 		AutoCraftingInventory crafter = new AutoCraftingInventory(placedBy);
 		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
 			if (j != -1) {
-				crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
+				crafter.setInvStack(i, inv.getInvStack(j));
 			}
 		}
-		IRecipe recipe = cache;
-		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
+		Recipe<CraftingInventory> recipe = cache;
+		outputFuzzyFlags = outputFuzzyFlags.withStack(resultInv.getInvStack(0));
 		if (!recipe.matches(crafter, getWorld())) {
 			if (isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
 				recipe = null;
-				for (IRecipe r : CraftingUtil.getRecipeList()) {
-					if (r.matches(crafter, getWorld()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()), IResource.MatchSettings.NORMAL)) {
+				for (Recipe<CraftingInventory> r : CraftingUtil.getRecipeList()) {
+					if (r.matches(crafter, getWorld()) && outputFuzzyFlags.matches(r.getOutput(), false)) {
 						recipe = r;
 						break;
 					}
@@ -253,44 +251,48 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 					return null;
 				}
 			} else {
-				return null; //Fix MystCraft
+				return null; // Fix MystCraft
 			}
 		}
-		ItemStack result = recipe.getCraftingResult(crafter);
+		ItemStack result = recipe.craft(crafter);
 		if (result.isEmpty()) {
 			return null;
 		}
 		if (isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
-			if (!outputFuzzyFlags.matches(ItemIdentifier.get(result), IResource.MatchSettings.NORMAL)) {
+			if (!outputFuzzyFlags.matches(result, false)) {
 				return null;
 			}
-			if (!outputFuzzyFlags.matches(wanted.getAsItem(), IResource.MatchSettings.NORMAL)) {
+			if (!outputFuzzyFlags.matches(wanted.getAsItem(), false)) {
 				return null;
 			}
 		} else {
-			if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
+			if (resultInv.getInvStack(0).getItem() != result.getItem()) {
 				return null;
 			}
-			if (!wanted.matches(resultInv.getIDStackInSlot(0).getItem(), IResource.MatchSettings.WITHOUT_NBT)) {
+			if (!wanted.matches(resultInv.getInvStack(0), true)) {
 				return null;
 			}
 		}
-		if (!power.useEnergy(Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE)) {
+		if (!power.useEnergy(LPConfiguration.INSTANCE.getLogisticsCraftingTablePowerUsage())) {
 			return null;
 		}
 		crafter = new AutoCraftingInventory(placedBy);
 		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
 			if (j != -1) {
-				crafter.setInventorySlotContents(i, inv.decrStackSize(j, 1));
+				crafter.setInvStack(i, inv.takeInvStack(j, 1));
 			}
 		}
-		result = recipe.getCraftingResult(crafter);
-		if (fake == null) {
-			fake = MainProxy.getFakePlayer(this.world);
+		result = recipe.craft(crafter);
+		ServerWorld world;
+		if (this.world instanceof ServerWorld) {
+			world = (ServerWorld) this.world;
+		} else {
+			return result;
 		}
+		FakePlayerLP fake = FakePlayerLP.getInstance(world);
 		result = result.copy();
-		SlotCrafting craftingSlot = new SlotCrafting(fake, crafter, resultInv, 0, 0, 0) {
+		Slot craftingSlot = new Slot(fake, crafter, resultInv, 0, 0, 0) {
 
 			@Override
 			protected void onCrafting(@Nonnull ItemStack stack) {
@@ -303,8 +305,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		};
 		result = craftingSlot.onTake(fake, result);
 		for (int i = 0; i < 9; i++) {
-			ItemStack left = crafter.getStackInSlot(i);
-			crafter.setInventorySlotContents(i, ItemStack.EMPTY);
+			ItemStack left = crafter.removeInvStack(i);
 			if (!left.isEmpty()) {
 				left.setCount(inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
@@ -312,9 +313,8 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				}
 			}
 		}
-		for (int i = 0; i < fake.inventory.getSizeInventory(); i++) {
-			ItemStack left = fake.inventory.getStackInSlot(i);
-			fake.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+		for (int i = 0; i < fake.inventory.getInvSize(); i++) {
+			ItemStack left = fake.inventory.removeInvStack(i);
 			if (!left.isEmpty()) {
 				left.setCount(inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
@@ -327,11 +327,11 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public void onBlockBreak() {
-		inv.dropContents(world, getPos());
+		ItemScatterer.spawn(getWorld(), getPos(), inv);
 	}
 
 	@Override
-	public void InventoryChanged(IInventory inventory) {
+	public void onInvChange(Inventory inventory) {
 		if (inventory == matrix) {
 			cacheRecipe();
 		}
@@ -339,175 +339,130 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	public void handleNEIRecipePacket(ItemStack[] content) {
 		for (int i = 0; i < 9; i++) {
-			matrix.setInventorySlotContents(i, content[i]);
+			matrix.setInvStack(i, content[i]);
 		}
 		cacheRecipe();
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-		super.readFromNBT(par1nbtTagCompound);
-		inv.readFromNBT(par1nbtTagCompound, "inv");
-		matrix.readFromNBT(par1nbtTagCompound, "matrix");
-		if (par1nbtTagCompound.hasKey("placedBy")) {
-			String name = par1nbtTagCompound.getString("placedBy");
-			placedBy = PlayerIdentifier.convertFromUsername(name);
-		} else {
-			placedBy = PlayerIdentifier.readFromNBT(par1nbtTagCompound, "placedBy");
-		}
-		if (par1nbtTagCompound.hasKey("fuzzyFlags")) {
-			NBTTagList lst = par1nbtTagCompound.getTagList("fuzzyFlags", Constants.NBT.TAG_COMPOUND);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		InventoryKt.fromTag(inv, tag.getList("inv", NbtType.COMPOUND));
+		InventoryKt.fromTag(matrix, tag.getList("matrix", NbtType.COMPOUND));
+
+		placedBy = tag.getUuid("owner");
+
+		if (tag.containsKey("fuzzy_flags", NbtType.LIST)) {
+			ListTag list = tag.getList("fuzzy_flags", NbtType.COMPOUND);
 			for (int i = 0; i < 9; i++) {
-				NBTTagCompound comp = lst.getCompoundTagAt(i);
-				fuzzyFlags[i].ignore_dmg = comp.getBoolean("ignore_dmg");
-				fuzzyFlags[i].ignore_nbt = comp.getBoolean("ignore_nbt");
-				fuzzyFlags[i].use_od = comp.getBoolean("use_od");
-				fuzzyFlags[i].use_category = comp.getBoolean("use_category");
+				fuzzyFlags[i] = Resource.Dict.Companion.fromTag(list.getCompoundTag(i));
 			}
 		}
-		if (par1nbtTagCompound.hasKey("outputFuzzyFlags")) {
-			NBTTagCompound comp = par1nbtTagCompound.getCompoundTag("outputFuzzyFlags");
-			outputFuzzyFlags.ignore_dmg = comp.getBoolean("ignore_dmg");
-			outputFuzzyFlags.ignore_nbt = comp.getBoolean("ignore_nbt");
-			outputFuzzyFlags.use_od = comp.getBoolean("use_od");
-			outputFuzzyFlags.use_category = comp.getBoolean("use_category");
+
+		if (tag.containsKey("output_fuzzy_flags", NbtType.COMPOUND)) {
+			outputFuzzyFlags = Resource.Dict.Companion.fromTag(tag.getCompound("output_fuzzy_flags"));
 		}
-		if (par1nbtTagCompound.hasKey("targetType")) {
-			targetType = ItemIdentifier.get(ItemStackLoader.loadAndFixItemStackFromNBT(par1nbtTagCompound.getCompoundTag("targetType")));
+
+		if (tag.containsKey("output")) {
+			targetType = ItemVariant.fromTag(tag.getCompound("output"));
 		}
+
 		cacheRecipe();
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		par1nbtTagCompound = super.writeToNBT(par1nbtTagCompound);
-		inv.writeToNBT(par1nbtTagCompound, "inv");
-		matrix.writeToNBT(par1nbtTagCompound, "matrix");
-		if (placedBy != null) {
-			placedBy.writeToNBT(par1nbtTagCompound, "placedBy");
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		tag.put("inv", InventoryKt.toTag(inv));
+		tag.put("matrix", InventoryKt.toTag(matrix));
+
+		tag.putUuid("owner", placedBy);
+
+		ListTag list = new ListTag();
+		for (Resource.Dict fuzzyFlag : fuzzyFlags) {
+			list.add(fuzzyFlag.toTag());
 		}
-		NBTTagList lst = new NBTTagList();
-		for (int i = 0; i < 9; i++) {
-			NBTTagCompound comp = new NBTTagCompound();
-			comp.setBoolean("ignore_dmg", fuzzyFlags[i].ignore_dmg);
-			comp.setBoolean("ignore_nbt", fuzzyFlags[i].ignore_nbt);
-			comp.setBoolean("use_od", fuzzyFlags[i].use_od);
-			comp.setBoolean("use_category", fuzzyFlags[i].use_category);
-			lst.appendTag(comp);
-		}
-		par1nbtTagCompound.setTag("fuzzyFlags", lst);
-		{
-			NBTTagCompound comp = new NBTTagCompound();
-			comp.setBoolean("ignore_dmg", outputFuzzyFlags.ignore_dmg);
-			comp.setBoolean("ignore_nbt", outputFuzzyFlags.ignore_nbt);
-			comp.setBoolean("use_od", outputFuzzyFlags.use_od);
-			comp.setBoolean("use_category", outputFuzzyFlags.use_category);
-			par1nbtTagCompound.setTag("outputFuzzyFlags", comp);
-		}
+		tag.put("fuzzy_flags", list);
+
+		tag.put("output_fuzzy_flags", outputFuzzyFlags.toTag());
+
 		if (targetType != null) {
-			NBTTagCompound type = new NBTTagCompound();
-			targetType.makeNormalStack(1).writeToNBT(type);
-			par1nbtTagCompound.setTag("targetType", type);
-		} else {
-			par1nbtTagCompound.removeTag("targetType");
+			tag.put("output", targetType.toTag(new CompoundTag()));
 		}
-		return par1nbtTagCompound;
+
+		return tag;
+	}
+
+
+
+	@Override
+	public int getInvSize() {
+		return inv.getInvSize();
 	}
 
 	@Override
-	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			return true;
-		}
-		return super.hasCapability(capability, facing);
-	}
-
-	@Nullable
-	@Override
-	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
-		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-			return (T) invWrapper;
-		}
-		return super.getCapability(capability, facing);
+	public boolean isInvEmpty() {
+		return inv.isInvEmpty();
 	}
 
 	@Override
-	public int getSizeInventory() {
-		return inv.getSizeInventory();
+	public ItemStack getInvStack(int slot) {
+		return inv.getInvStack(slot);
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return inv.isEmpty();
+	public ItemStack takeInvStack(int slot, int count) {
+		return inv.takeInvStack(slot, count);
 	}
 
 	@Override
-	@Nonnull
-	public ItemStack getStackInSlot(int i) {
-		return inv.getStackInSlot(i);
+	public ItemStack removeInvStack(int slot) {
+		return inv.removeInvStack(slot);
 	}
 
 	@Override
-	@Nonnull
-	public ItemStack decrStackSize(int i, int j) {
-		return inv.decrStackSize(i, j);
+	public void setInvStack(int slot, ItemStack stack) {
+		inv.setInvStack(slot, stack);
 	}
 
 	@Override
-	@Nonnull
-	public ItemStack removeStackFromSlot(int i) {
-		return inv.removeStackFromSlot(i);
-	}
-
-	@Override
-	public void setInventorySlotContents(int i, @Nonnull ItemStack itemstack) {
-		inv.setInventorySlotContents(i, itemstack);
-	}
-
-	@Override
-	public int getInventoryStackLimit() {
-		return inv.getInventoryStackLimit();
-	}
-
-	@Override
-	public boolean isUsableByPlayer(@Nonnull EntityPlayer entityplayer) {
+	public boolean canPlayerUseInv(PlayerEntity var1) {
 		return true;
 	}
 
 	@Override
-	public void openInventory(@Nonnull EntityPlayer player) {}
+	public void onInvOpen(PlayerEntity playerEntity_1) {
+
+	}
 
 	@Override
-	public void closeInventory(@Nonnull EntityPlayer player) {}
+	public void onInvClose(PlayerEntity playerEntity_1) {
+
+	}
 
 	@Override
-	public boolean isItemValidForSlot(int i, @Nonnull ItemStack itemstack) {
-		if (i < 9 && i >= 0) {
-			ItemIdentifierStack stack = matrix.getIDStackInSlot(i);
+	public boolean isValidInvStack(int slot, ItemStack itemstack) {
+		if (slot < 9 && slot >= 0) {
+			ItemStack stack = matrix.getInvStack(slot);
 			if (stack != null && !itemstack.isEmpty()) {
-				if (isFuzzy() && fuzzyFlags[i].getBitSet().nextSetBit(0) != -1) {
-					fuzzyFlags[i].stack = stack;
-					return fuzzyFlags[i].matches(ItemIdentifier.get(itemstack), IResource.MatchSettings.NORMAL);
+				if (isFuzzy() && fuzzyFlags[slot].getBitSet().nextSetBit(0) != -1) {
+					fuzzyFlags[slot] = fuzzyFlags[slot].withStack(stack);
+					return fuzzyFlags[slot].matches(itemstack, false);
 				}
-				return stack.getItem().equalsWithoutNBT(ItemIdentifier.get(itemstack));
+				return stack.getItem() == itemstack.getItem();
 			}
 		}
 		return true;
 	}
 
 	@Override
-	public int getField(int id) {
+	public int countInInv(Item item_1) {
 		return 0;
 	}
 
 	@Override
-	public void setField(int id, int value) {
-
-	}
-
-	@Override
-	public int getFieldCount() {
-		return 0;
+	public boolean containsAnyInInv(Set<Item> set_1) {
+		return false;
 	}
 
 	@Override
@@ -515,14 +470,14 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	}
 
-	public void placedBy(EntityLivingBase par5EntityLivingBase) {
-		if (par5EntityLivingBase instanceof EntityPlayer) {
-			placedBy = PlayerIdentifier.get((EntityPlayer) par5EntityLivingBase);
+	public void placedBy(LivingEntity entity) {
+		if (entity instanceof PlayerEntity) {
+			placedBy = entity.getUuid();
 		}
 	}
 
 	public boolean isFuzzy() {
-		return world.getBlockState(pos).getBlock() == LPBlocks.crafterFuzzy;
+		return getCachedState().getBlock() == Blocks.INSTANCE.getFuzzyCraftingTable();
 	}
 
 	@Override
@@ -531,31 +486,16 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void guiOpenedByPlayer(EntityPlayer player) {
+	public void guiOpenedByPlayer(PlayerEntity player) {
 		guiWatcher.add(player);
 	}
 
 	@Override
-	public void guiClosedByPlayer(EntityPlayer player) {
+	public void guiClosedByPlayer(PlayerEntity player) {
 		guiWatcher.remove(player);
 	}
 
-	@Nonnull
-	@Override
-	public String getName() {
-		return "LogisticsCraftingTable";
-	}
 
-	@Override
-	public boolean hasCustomName() {
-		return true;
-	}
-
-	@Nonnull
-	@Override
-	public ITextComponent getDisplayName() {
-		return null;
-	}
 
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload worldEvent) {

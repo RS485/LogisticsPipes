@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -16,7 +16,7 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
@@ -37,14 +37,14 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 	public void renderContent(boolean shifted) {
 		if (selected == 0) {
 			Minecraft mc = FMLClientHandler.instance().getClient();
-			EnumFacing d = module.getSneakyDirection();
+			Direction d = module.getSneakyDirection();
 			mc.fontRenderer.drawString("Extract", -22, -22, 0);
 			mc.fontRenderer.drawString("from:", -22, -9, 0);
 			mc.fontRenderer.drawString(((d == null) ? "DEFAULT" : d.name()), -22, 18, 0);
 		} else {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, false, shifted);
+			ItemStackRenderer.renderItemStackListIntoGui(ItemStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, false, shifted);
 			GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 			if (module.areItemsIncluded()) {
 				mc.fontRenderer.drawString("Included", -22, 25, 0);

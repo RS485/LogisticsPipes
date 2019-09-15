@@ -4,70 +4,71 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 
-import org.lwjgl.input.Keyboard;
-
-import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.interfaces.ItemAdvancedExistence;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.string.StringUtils;
 
-public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExistance {
+public class LogisticsItemCard extends LogisticsItem implements ItemAdvancedExistence {
 
-	public static final int FREQ_CARD = 0;
-	public static final int SEC_CARD = 1;
+	private final Type type;
 
-	public LogisticsItemCard() {
-		hasSubtypes = true;
+	public LogisticsItemCard(Settings settings, Type type) {
+		super(settings);
+		this.type = type;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		super.addInformation(stack, worldIn, tooltip, flagIn);
-		if (!stack.hasTagCompound()) {
-			tooltip.add(StringUtils.translate("tooltip.logisticsItemCard"));
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext ctx) {
+		super.appendTooltip(stack, world, tooltip, ctx);
+		if (!stack.hasTag()) {
+			tooltip.add(new LiteralText(StringUtils.translate("tooltip.logisticsItemCard")));
 		} else {
-			if (stack.getTagCompound().hasKey("UUID")) {
-				if (stack.getItemDamage() == LogisticsItemCard.FREQ_CARD) {
-					tooltip.add("Freq. Card");
-				} else if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
-					tooltip.add("Sec. Card");
+			if (stack.getTag().hasUuid("UUID")) {
+				if (type == Type.FREQ_CARD) {
+					tooltip.add(new TranslatableText("item.logisticspipes.frequency_card.shortname"));
+				} else if (type == Type.SEC_CARD) {
+					tooltip.add(new TranslatableText("item.logisticspipes.security_card.shortname"));
 				}
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-					tooltip.add("Id: " + stack.getTagCompound().getString("UUID"));
-					if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
-						UUID id = UUID.fromString(stack.getTagCompound().getString("UUID"));
-						tooltip.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "Authorized" : "Deauthorized"));
+				if (Screen.hasShiftDown()) {
+					tooltip.add(new LiteralText("Id: " + stack.getTag().getUuid("UUID")));
+					if (type == Type.SEC_CARD) {
+						UUID id = stack.getTag().getUuid("UUID");
+						tooltip.add(new TranslatableText(SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "tooltip.logisticspipes.item_card_authorized" : "tooltip.logisticspipes.item_card_deauthorized"));
 					}
 				}
 			}
 		}
 	}
 
+	// TODO 1.15: share tag
+	// @Override
+	// public boolean getShareTag() {
+	// 	return true;
+	// }
+
 	@Override
-	public boolean getShareTag() {
+	public boolean canExistInNormalInventory(@NotNull ItemStack stack) {
 		return true;
 	}
 
 	@Override
-	public int getItemStackLimit() {
-		return 64;
+	public boolean canExistInWorld(@NotNull ItemStack stack) {
+		return type != Type.SEC_CARD;
 	}
 
-	@Override
-	public boolean canExistInNormalInventory(ItemStack stack) {
-		return true;
+	public enum Type {
+		FREQ_CARD,
+		SEC_CARD
 	}
 
-	@Override
-	public boolean canExistInWorld(ItemStack stack) {
-		return stack.getItemDamage() != LogisticsItemCard.SEC_CARD;
-	}
 }

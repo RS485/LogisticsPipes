@@ -18,7 +18,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.utils.StaticResolve;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 @StaticResolve
 public class RequestSatellitePipeListPacket extends BooleanCoordinatesPacket {
@@ -34,7 +34,7 @@ public class RequestSatellitePipeListPacket extends BooleanCoordinatesPacket {
 			return;
 		}
 		CoreRoutedPipe rPipe = (CoreRoutedPipe) pipe.pipe;
-		List<Pair<String, UUID>> list;
+		List<Tuple2<String, UUID>> list;
 		if (rPipe.getRouter() == null || rPipe.getRouter().getRouteTable() == null) {
 			return;
 		}
@@ -47,7 +47,7 @@ public class RequestSatellitePipeListPacket extends BooleanCoordinatesPacket {
 						return routingTable.size() > it.getRouterId() && routingTable.get(it.getRouterId()) != null && !routingTable.get(it.getRouterId()).isEmpty();
 					})
 					.sorted(Comparator.comparingDouble(it -> rPipe.getRouter().getRouteTable().get(it.getRouterId()).stream().map(it1 -> it1.distanceToDestination).min(Double::compare).get()))
-					.map(it -> new Pair<>(it.getSatellitePipeName(), it.getRouter().getId()))
+					.map(it -> new Tuple2<>(it.getSatellitePipeName(), it.getRouter().getId()))
 					.collect(Collectors.toList());
 		} else {
 			list = PipeItemsSatelliteLogistics.AllSatellites.stream()
@@ -58,7 +58,7 @@ public class RequestSatellitePipeListPacket extends BooleanCoordinatesPacket {
 						return routingTable.size() > it.getRouterId() && routingTable.get(it.getRouterId()) != null && !routingTable.get(it.getRouterId()).isEmpty();
 					})
 					.sorted(Comparator.comparingDouble(it -> rPipe.getRouter().getRouteTable().get(it.getRouterId()).stream().map(it1 -> it1.distanceToDestination).min(Double::compare).get()))
-					.map(it -> new Pair<>(it.getSatellitePipeName(), it.getRouter().getId()))
+					.map(it -> new Tuple2<>(it.getSatellitePipeName(), it.getRouter().getId()))
 					.collect(Collectors.toList());
 		}
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProvideSatellitePipeListPacket.class).setList(list), player);

@@ -11,42 +11,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.minecraft.item.ItemStack;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.ItemResource;
+import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
+import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.util.ItemStackComparator;
+import network.rs485.logisticspipes.util.ItemVariant;
 
-public class ItemCraftingTemplate implements IReqCraftingTemplate {
+public class ItemCraftingTemplate implements ReqCraftingTemplate {
 
-	protected ItemIdentifierStack _result;
-	protected ICraftItems _crafter;
+	protected ItemStack _result;
+	protected ItemCrafter _crafter;
 
-	protected ArrayList<Pair<IResource, IAdditionalTargetInformation>> _required = new ArrayList<>(9);
+	protected ArrayList<Tuple2<Resource, IAdditionalTargetInformation>> _required = new ArrayList<>(9);
 
-	protected ArrayList<ItemIdentifierStack> _byproduct = new ArrayList<>(9);
+	protected ArrayList<ItemStack> _byproduct = new ArrayList<>(9);
 
 	private final int priority;
 
-	public ItemCraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
+	public ItemCraftingTemplate(ItemStack result, ItemCrafter crafter, int priority) {
 		_result = result;
 		_crafter = crafter;
 		this.priority = priority;
 	}
 
-	public void addRequirement(IResource requirement, IAdditionalTargetInformation info) {
-		_required.add(new Pair<>(requirement, info));
+	public void addRequirement(Resource requirement, IAdditionalTargetInformation info) {
+		_required.add(new Tuple2<>(requirement, info));
 	}
 
-	public void addByproduct(ItemIdentifierStack stack) {
-		for (ItemIdentifierStack i : _byproduct) {
+	public void addByproduct(ItemStack stack) {
+		for (ItemStack i : _byproduct) {
 			if (i.getItem().equals(stack.getItem())) {
-				i.setStackSize(i.getStackSize() + stack.getStackSize());
+				i.setCount(i.getCount() + stack.getCount());
 				return;
 			}
 		}
@@ -55,13 +56,15 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public LogisticsPromise generatePromise(int nResultSets) {
-		return new LogisticsPromise(_result.getItem(), _result.getStackSize() * nResultSets, _crafter, ResourceType.CRAFTING);
+		ItemStack newStack = _result.copy();
+		newStack.setCount(newStack.getCount() * nResultSets);
+		return new LogisticsPromise(newStack, _crafter, ResourceType.CRAFTING);
 	}
 
 	//TODO: refactor so that other classes don't reach through the template to the crafter.
 	// needed to get the crafter todo, in order to sort
 	@Override
-	public ICraftItems getCrafter() {
+	public ItemCrafter getCrafter() {
 		return _crafter;
 	}
 
@@ -71,7 +74,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 	}
 
 	@Override
-	public int compareTo(ICraftingTemplate o) {
+	public int compareTo(CraftingTemplate o) {
 		int c = o.comparePriority(priority);
 		if (c == 0) {
 			c = o.compareStack(_result);
@@ -88,52 +91,51 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 	}
 
 	@Override
-	public int compareStack(ItemIdentifierStack stack) {
-		return stack.compareTo(this._result);
+	public int compareStack(ItemStack stack) {
+		return ItemStackComparator.INSTANCE.compare(stack, this._result);
 	}
 
 	@Override
-	public int compareCrafter(ICraftItems crafter) {
+	public int compareCrafter(ItemCrafter crafter) {
 		return crafter.compareTo(this._crafter);
 	}
 
 	@Override
-	public boolean canCraft(IResource type) {
-		if (type instanceof ItemResource) {
-			return ((ItemResource) type).getItem().equals(_result.getItem());
-		} else if (type instanceof DictResource) {
-			return type.matches(_result.getItem(), IResource.MatchSettings.NORMAL);
+	public boolean canCraft(Resource type) {
+		if (type instanceof Resource.Item) {
+			return ItemVariant.stacksEqual(((Resource.Item) type).getStack(), _result);
+		} else if (type instanceof Resource.Dict) {
+			return ((Resource.Dict) type).matches(_result, false);
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	@Override
 	public int getResultStackSize() {
-		return _result.getStackSize();
+		return _result.getCount();
 	}
 
 	@Override
-	public IResource getResultItem() {
-		return new ItemResource(_result, null);
+	public Resource getResultItem() {
+		return new Resource.Item(_result, null);
 	}
 
 	@Override
-	public List<IExtraPromise> getByproducts(int workSets) {
+	public List<ExtraPromise> getByproducts(int workSets) {
 		return _byproduct.stream()
-				.map(stack -> new LogisticsExtraPromise(stack.getItem(), stack.getStackSize() * workSets, getCrafter(), false))
+				.map(ItemStack::copy)
+				.peek(stack -> stack.setCount(stack.getCount() * workSets))
+				.map(stack -> new LogisticsExtraPromise(stack, getCrafter(), false))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Pair<IResource, IAdditionalTargetInformation>> getComponents(int nCraftingSetsNeeded) {
-		List<Pair<IResource, IAdditionalTargetInformation>> stacks = new ArrayList<>(_required.size());
-
+	public List<Tuple2<Resource, IAdditionalTargetInformation>> getComponents(int nCraftingSetsNeeded) {
 		// for each thing needed to satisfy this promise
-		for (Pair<IResource, IAdditionalTargetInformation> stack : _required) {
-			Pair<IResource, IAdditionalTargetInformation> pair = new Pair<>(stack.getValue1()
-					.clone(nCraftingSetsNeeded), stack.getValue2());
-			stacks.add(pair);
-		}
-		return stacks;
+		return _required.stream()
+				.map(stack -> new Tuple2<>(stack.getValue1().copy(), stack.getValue2()))
+				.map(tuple -> tuple.with1(stack -> stack.setRequestedAmount(stack.getRequestedAmount() * nCraftingSetsNeeded)))
+				.collect(Collectors.toCollection(() -> new ArrayList<>(_required.size())));
 	}
 }

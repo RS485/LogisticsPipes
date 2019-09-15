@@ -7,62 +7,59 @@
 
 package logisticspipes.routing;
 
+import net.minecraft.item.ItemStack;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IProvide;
-import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.request.IExtraPromise;
-import logisticspipes.request.IPromise;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.ItemResource;
+import logisticspipes.interfaces.routing.ItemRequestProvider;
+import logisticspipes.interfaces.routing.ItemRequester;
+import logisticspipes.interfaces.routing.RequestProvider;
+import logisticspipes.request.ExtraPromise;
+import logisticspipes.request.Promise;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
-import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.util.ItemVariant;
 
-public class LogisticsPromise implements IPromise {
+public class LogisticsPromise implements Promise {
 
-	public ItemIdentifier item;
-	public int numberOfItems;
-	public IProvideItems sender;
+	public ItemStack stack;
+	public ItemRequestProvider sender;
 	public ResourceType type;
 
-	public LogisticsPromise(ItemIdentifier item, int numberOfItems, IProvideItems sender, ResourceType type) {
-		this.item = item;
-		this.numberOfItems = numberOfItems;
+	public LogisticsPromise(ItemStack stack, ItemRequestProvider sender, ResourceType type) {
+		this.stack = stack;
 		this.sender = sender;
 		this.type = type;
 	}
 
 	@Override
 	public LogisticsPromise copy() {
-		return new LogisticsPromise(item, numberOfItems, sender, type);
+		return new LogisticsPromise(stack, sender, type);
 	}
 
 	@Override
-	public boolean matches(IResource requestType) {
-		return requestType.matches(item, IResource.MatchSettings.NORMAL);
+	public boolean matches(Resource requestType) {
+		return requestType.matchesAny(stack, false);
 	}
 
 	@Override
 	public int getAmount() {
-		return numberOfItems;
+		return stack.getCount();
 	}
 
 	@Override
-	public IExtraPromise split(int more) {
-		numberOfItems -= more;
-		return new LogisticsExtraPromise(getItemType(), more, sender, false);
+	public ExtraPromise split(int more) {
+		return new LogisticsExtraPromise(stack.split(more), sender, false);
 	}
 
 	@Override
-	public IProvide getProvider() {
+	public RequestProvider getProvider() {
 		return sender;
 	}
 
 	@Override
-	public ItemIdentifier getItemType() {
-		return item;
+	public ItemVariant getItemType() {
+		return ItemVariant.fromStack(stack);
 	}
 
 	@Override
@@ -71,15 +68,15 @@ public class LogisticsPromise implements IPromise {
 	}
 
 	@Override
-	public IOrderInfoProvider fullFill(IResource requestType, IAdditionalTargetInformation info) {
-		IRequestItems destination;
-		if (requestType instanceof ItemResource) {
-			destination = ((ItemResource) requestType).getTarget();
-		} else if (requestType instanceof DictResource) {
-			destination = ((DictResource) requestType).getTarget();
+	public IOrderInfoProvider fullFill(Resource requestType, IAdditionalTargetInformation info) {
+		ItemRequester destination;
+		if (requestType instanceof Resource.Item) {
+			destination = ((Resource.Item) requestType).getRequester();
+		} else if (requestType instanceof Resource.Dict) {
+			destination = ((Resource.Dict) requestType).getRequester();
 		} else {
-			throw new UnsupportedOperationException();
+			throw new IllegalArgumentException(String.format("Can't handle %s", requestType));
 		}
-		return sender.fullFill(this, destination, info);
+		return sender.fulfill(this, destination, info);
 	}
 }

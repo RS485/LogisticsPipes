@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class QueuedTasks {
 
@@ -50,11 +50,11 @@ public class QueuedTasks {
 		}
 		MainProxy.proxy.tick();
 		synchronized (LPTravelingItem.forceKeep) {
-			Iterator<Pair<Integer, Object>> iter = LPTravelingItem.forceKeep.iterator();
+			Iterator<Tuple2<Integer, Object>> iter = LPTravelingItem.forceKeep.iterator();
 			while (iter.hasNext()) {
-				Pair<Integer, Object> pair = iter.next();
-				pair.setValue1(pair.getValue1() - 1);
-				if (pair.getValue1() < 0) {
+				Tuple2<Integer, Object> tuple = iter.next();
+				tuple.setValue1(tuple.getValue1() - 1);
+				if (tuple.getValue1() < 0) {
 					iter.remove();
 				}
 			}

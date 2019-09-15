@@ -16,15 +16,16 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.gui.hud.HUDInvSysConnector;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
@@ -53,20 +54,20 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.transactor.ITransactor;
-import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.utils.tuples.Tuple2;
+import logisticspipes.utils.tuples.Tuple3;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannelRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver,
-		IGuiOpenControler {
+		IGuiOpenController {
 
 	private boolean init = false;
 	private HashMap<ItemIdentifier, List<ItemRoutingInformation>> itemsOnRoute = new HashMap<>();
 	public int resistance;
-	public Set<ItemIdentifierStack> oldList = new TreeSet<>();
-	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
+	public Set<ItemStack> oldList = new TreeSet<>();
+	public final LinkedList<ItemStack> displayList = new LinkedList<>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public final PlayerCollectionList localGuiWatchers = new PlayerCollectionList();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
@@ -131,14 +132,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 			final boolean shouldUpdate = new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
 					.anyMatch(neighbor -> neighbor.isItemHandler() &&
-							container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()) &&
+							container.canPipeConnect(neighbor.getBlockEntity(), neighbor.getDirection()) &&
 							checkOneConnectedInv(neighbor.getUtilForItemHandler(), neighbor.getDirection()));
 
 			if (shouldUpdate) updateContentListener();
 		}
 	}
 
-	private boolean checkOneConnectedInv(@Nonnull IInventoryUtil inv, EnumFacing dir) {
+	private boolean checkOneConnectedInv(@Nonnull IInventoryUtil inv, Direction dir) {
 		boolean contentchanged = false;
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 			List<ItemIdentifier> items = new ArrayList<>(itemsOnRoute.keySet());
@@ -167,7 +168,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 							if (inv instanceof ITransactor) {
 								((ITransactor) inv).add(toSend, dir.getOpposite(), true);
 							} else {
-								container.getWorld().spawnEntity(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.getX(), container.getY(), container.getZ()));
+								container.getWorld().spawnEntity(ItemStack.getFromStack(toSend).makeEntityItem(getWorld(), container.getX(), container.getY(), container.getZ()));
 							}
 							new UnsupportedOperationException("The extracted amount didn't match the requested one. (" + inv + ")").printStackTrace();
 							return contentchanged;
@@ -194,7 +195,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		return contentchanged;
 	}
 
-	public void sendStack(ItemRoutingInformation info, EnumFacing dir) {
+	public void sendStack(ItemRoutingInformation info, Direction dir) {
 		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(info);
 		super.queueRoutedItem(itemToSend, dir);
 		spawnParticle(Particles.OrangeParticle, 4);
@@ -212,14 +213,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		return connectedChannel != null;
 	}
 
-	public Set<ItemIdentifierStack> getExpectedItems() {
+	public Set<ItemStack> getExpectedItems() {
 		// got to be a TreeMap, because a TreeSet doesn't have the ability to retrieve the key.
-		Set<ItemIdentifierStack> list = new TreeSet<>();
+		Set<ItemStack> list = new TreeSet<>();
 		for (Entry<ItemIdentifier, List<ItemRoutingInformation>> entry : itemsOnRoute.entrySet()) {
 			if (entry.getValue().isEmpty()) {
 				continue;
 			}
-			ItemIdentifierStack currentStack = new ItemIdentifierStack(entry.getKey(), 0);
+			ItemStack currentStack = new ItemStack(entry.getKey(), 0);
 			for (ItemRoutingInformation e : entry.getValue()) {
 				currentStack.setStackSize(currentStack.getStackSize() + e.getItem().getStackSize());
 			}
@@ -263,7 +264,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		nbttagcompound.setInteger("resistance", resistance);
 		if (connectedChannel != null) {
@@ -272,7 +273,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		resistance = nbttagcompound.getInteger("resistance");
 		if (nbttagcompound.hasKey("connectedChannel")) {
@@ -286,12 +287,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		return hasConnectionUUID() && getWorld() != null && SimpleServiceLocator.connectionManager.hasChannelConnection(getRouter());
 	}
 
-	private boolean isInventoryConnected(@Nullable TileEntity tileEntityFilter) {
+	private boolean isInventoryConnected(@Nullable BlockEntity tileEntityFilter) {
 		return new WorldCoordinatesWrapper(this.container)
 				.allNeighborTileEntities()
-				.anyMatch(neighbor -> (tileEntityFilter == null || neighbor.getTileEntity() == tileEntityFilter) &&
+				.anyMatch(neighbor -> (tileEntityFilter == null || neighbor.getBlockEntity() == tileEntityFilter) &&
 						neighbor.isItemHandler() &&
-						this.container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()));
+						this.container.canPipeConnect(neighbor.getBlockEntity(), neighbor.getDirection()));
 	}
 
 	@Override
@@ -323,7 +324,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	@Override
 	public void addItem(ItemRoutingInformation info) {
-		if (info.getItem() != null && info.getItem().getStackSize() > 0 && info.destinationint >= 0) {
+		if (info.getItem() != null && info.getItem().getStackSize() > 0 && info.destinationId >= 0) {
 			ItemIdentifier insertedType = info.getItem().getItem();
 			List<ItemRoutingInformation> entry = itemsOnRoute.computeIfAbsent(insertedType, k -> new LinkedList<>());
 			// linked list as this is almost always very small, but experiences random removal
@@ -332,7 +333,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		}
 	}
 
-	public void handleItemEnterInv(ItemRoutingInformation info, TileEntity tile) {
+	public void handleItemEnterInv(ItemRoutingInformation info, BlockEntity tile) {
 		if (info.getItem().getStackSize() == 0) {
 			return; // system.throw("why you try to insert empty stack?");
 		}
@@ -340,22 +341,22 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 			if (hasRemoteConnection()) {
 				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
 				Optional<CoreRoutedPipe> bestConnection = connectedPipes.stream()
-						.map(con -> new Triplet<>(
+						.map(con -> new Tuple3<>(
 								con,
-								con.getRouter().getExitFor(info.destinationint, info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem()),
+								con.getRouter().getExitFor(info.destinationId, info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem()),
 								con.getRouter().getExitFor(getRouterId(), info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem())
 						))
 						.filter(triplet -> triplet.getValue2() != null && triplet.getValue3() != null)
 						.filter(triplet -> triplet.getValue2().exitOrientation != triplet.getValue3().exitOrientation)
-						.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Pair::getValue1);
+						.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Tuple2::getValue1);
 				if (!bestConnection.isPresent()) {
 					bestConnection = connectedPipes.stream()
-							.map(con -> new Pair<>(
+							.map(con -> new Tuple2<>(
 									con,
-									con.getRouter().getExitFor(info.destinationint, info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem())
+									con.getRouter().getExitFor(info.destinationId, info._transportMode == IRoutedItem.TransportMode.Active, info.getItem().getItem())
 							))
 							.filter(triplet -> triplet.getValue2() != null)
-							.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Pair::getValue1);
+							.min(Comparator.comparing(trip -> trip.getValue2().blockDistance)).map(Tuple2::getValue1);
 				}
 				if (bestConnection.isPresent() && bestConnection.get() instanceof IChannelRoutingConnection) {
 					IChannelRoutingConnection pipe = (IChannelRoutingConnection) bestConnection.get();
@@ -383,7 +384,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	private void updateContentListener() {
 		if (!localModeWatchers.isEmpty()) {
-			Set<ItemIdentifierStack> newList = getExpectedItems();
+			Set<ItemStack> newList = getExpectedItems();
 			if (!newList.equals(oldList)) {
 				oldList = newList;
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentSet(newList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
@@ -408,7 +409,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	@Override
-	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}
@@ -419,7 +420,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	@Override
-	public void guiOpenedByPlayer(EntityPlayer player) {
+	public void guiOpenedByPlayer(PlayerEntity player) {
 		localGuiWatchers.add(player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(this.resistance).setBlockPos(this.getPos()), player);
 
@@ -431,7 +432,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	@Override
-	public void guiClosedByPlayer(EntityPlayer player) {
+	public void guiClosedByPlayer(PlayerEntity player) {
 		localGuiWatchers.remove(player);
 	}
 

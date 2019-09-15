@@ -5,15 +5,15 @@ import net.minecraft.item.ItemStack;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public class RoutedItemHelper {
 
-	public LPTravelingItemServer createNewTravelItem(ItemStack item) {
-		return createNewTravelItem(ItemIdentifierStack.getFromStack(item));
-	}
+	public static final RoutedItemHelper INSTANCE = new RoutedItemHelper();
 
-	public LPTravelingItemServer createNewTravelItem(ItemIdentifierStack item) {
+	private RoutedItemHelper() {}
+
+	public LPTravelingItemServer createNewTravelItem(ItemStack item) {
 		return new LPTravelingItemServer(item);
 	}
 

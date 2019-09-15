@@ -2,7 +2,7 @@ package logisticspipes.modules;
 
 import java.util.Collection;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
@@ -13,10 +13,10 @@ import logisticspipes.utils.item.ItemIdentifier;
 public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(CompoundTag nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(CompoundTag nbttagcompound) {}
 
 	@Override
 	public int getX() {

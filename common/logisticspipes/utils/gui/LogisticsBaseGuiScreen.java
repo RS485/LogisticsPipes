@@ -26,7 +26,7 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.text.TextFormatting;
 
 import codechicken.nei.api.INEIGuiHandler;
@@ -43,7 +43,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
@@ -52,9 +52,9 @@ import logisticspipes.utils.string.StringUtils;
 @ModDependentInterface(modId = { LPConstants.neiModID }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
 public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler, IGuiAccess {
 
-	protected static final ResourceLocation ITEMSINK = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
-	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
-	protected static final ResourceLocation CHASSI1 = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
+	protected static final Identifier ITEMSINK = new Identifier("logisticspipes", "textures/gui/itemsink.png");
+	protected static final Identifier SUPPLIER = new Identifier("logisticspipes", "textures/gui/supplier.png");
+	protected static final Identifier CHASSI1 = new Identifier("logisticspipes", "textures/gui/itemsink.png");
 
 	@Getter
 	protected int right;
@@ -248,7 +248,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	private void onRenderSlot(Slot slot) {
 		if (slot instanceof IFuzzySlot) {
-			final DictResource resource = ((IFuzzySlot) slot).getFuzzyFlags();
+			final Resource.Dict resource = ((IFuzzySlot) slot).getFuzzyFlags();
 			int x1 = slot.xPos;
 			int y1 = slot.yPos;
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -439,7 +439,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					sel = (par2 - posY - 4) / 11;
 				}
 			}
-			DictResource resource = fuzzySlot.getFuzzyFlags();
+			Resource.Dict resource = fuzzySlot.getFuzzyFlags();
 			BitSet set = resource.getBitSet();
 			if (sel == 0) {
 				resource.use_od = !resource.use_od;

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -12,7 +12,7 @@ public abstract class RequestPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ItemIdentifierStack stack;
+	private ItemStack stack;
 
 	public RequestPacket(int id) {
 		super(id);
@@ -26,12 +26,12 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		output.writeItemIdentifierStack(stack);
+		output.writeItemStack(stack);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		stack = input.readItemIdentifierStack();
+		stack = input.readItemStack();
 	}
 }

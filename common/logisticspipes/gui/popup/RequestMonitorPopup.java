@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
@@ -33,7 +33,7 @@ import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 
@@ -81,7 +81,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 	}
 
-	private static final ResourceLocation achievementTextures = new ResourceLocation("logisticspipes", "textures/gui/gui_border.png");
+	private static final Identifier achievementTextures = new Identifier("logisticspipes", "textures/gui/gui_border.png");
 	private final PipeBlockRequestTable _table;
 	private final int orderId;
 
@@ -574,11 +574,11 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 	}
 
-	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
+	private void renderItemAt(ItemStack item, int x, int y) {
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
 			itemRender.renderItemAndEffectIntoGUI(item.getItem().makeNormalStack(1), x, y);
 			itemRender.renderItemOverlayIntoGUI(fontRenderer, item.getItem().makeNormalStack(1), x, y, "");
-			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
+			String s = StringUtils.getFormattedStackSize(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			itemRender.zLevel = 0.0F;

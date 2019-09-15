@@ -1,6 +1,6 @@
 package logisticspipes.renderer.state;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -12,12 +12,12 @@ public class ConnectionMatrix {
 	private int isTDPipeMask = 0;
 	private boolean dirty = false;
 
-	public boolean isConnected(EnumFacing direction) {
+	public boolean isConnected(Direction direction) {
 		// test if the direction.ordinal()'th bit of mask is set
 		return (mask & (1 << direction.ordinal())) != 0;
 	}
 
-	public void setConnected(EnumFacing direction, boolean value) {
+	public void setConnected(Direction direction, boolean value) {
 		if (isConnected(direction) != value) {
 			// invert the direction.ordinal()'th bit of mask
 			mask ^= 1 << direction.ordinal();
@@ -29,12 +29,12 @@ public class ConnectionMatrix {
 		}
 	}
 
-	public boolean isBCConnected(EnumFacing direction) {
+	public boolean isBCConnected(Direction direction) {
 		// test if the direction.ordinal()'th bit of mask is set
 		return direction != null && (isBCPipeMask & (1 << direction.ordinal())) != 0;
 	}
 
-	public void setBCConnected(EnumFacing direction, boolean value) {
+	public void setBCConnected(Direction direction, boolean value) {
 		if (isBCConnected(direction) != value) {
 			// invert the direction.ordinal()'th bit of mask
 			isBCPipeMask ^= 1 << direction.ordinal();
@@ -42,12 +42,12 @@ public class ConnectionMatrix {
 		}
 	}
 
-	public boolean isTDConnected(EnumFacing direction) {
+	public boolean isTDConnected(Direction direction) {
 		// test if the direction.ordinal()'th bit of mask is set
 		return direction != null && (isTDPipeMask & (1 << direction.ordinal())) != 0;
 	}
 
-	public void setTDConnected(EnumFacing direction, boolean value) {
+	public void setTDConnected(Direction direction, boolean value) {
 		if (isTDConnected(direction) != value) {
 			// invert the direction.ordinal()'th bit of mask
 			isTDPipeMask ^= 1 << direction.ordinal();
@@ -58,7 +58,7 @@ public class ConnectionMatrix {
 	/**
 	 * Return a mask representing the connectivity for all sides.
 	 *
-	 * @return mask in EnumFacing order, least significant bit = first entry
+	 * @return mask in Direction order, least significant bit = first entry
 	 */
 	public int getMask() {
 		return mask;

@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTTagList;
 
 import org.lwjgl.input.Keyboard;
@@ -25,7 +25,7 @@ import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
@@ -43,7 +43,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	private int wheeldown = 0;
 	private boolean editsearch = false;
 	private boolean editname = false;
-	private LinkedList<ItemIdentifierStack> macroItems = new LinkedList<>();
+	private LinkedList<ItemStack> macroItems = new LinkedList<>();
 	private String name1;
 	private String name2 = "";
 	private String Search1 = "";
@@ -69,9 +69,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 		NBTTagList inventar = null;
 
-		NBTTagList list = diskProvider.getDisk().getTagCompound().getTagList("macroList", 10);
+		NBTTagList list = diskProvider.getDisk().getTag().getTagList("macroList", 10);
 		for (int i = 0; i < list.tagCount(); i++) {
-			NBTTagCompound tag = list.getCompoundTagAt(i);
+			CompoundTag tag = list.getCompoundTagAt(i);
 			String name = tag.getString("name");
 			if (name.equals(name1 + name2)) {
 				inventar = tag.getTagList("inventar", 10);
@@ -82,16 +82,16 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			return;
 		}
 		for (int i = 0; i < inventar.tagCount(); i++) {
-			NBTTagCompound itemNBT = inventar.getCompoundTagAt(i);
+			CompoundTag itemNBT = inventar.getCompoundTagAt(i);
 			int itemID = itemNBT.getInteger("id");
 			int itemData = itemNBT.getInteger("data");
-			NBTTagCompound tag = null;
+			CompoundTag tag = null;
 			if (itemNBT.hasKey("nbt")) {
 				tag = itemNBT.getCompoundTag("nbt");
 			}
 			ItemIdentifier item = ItemIdentifier.get(Item.getItemById(itemID), itemData, tag);
 			int amount = itemNBT.getInteger("amount");
-			ItemIdentifierStack stack = new ItemIdentifierStack(item, amount);
+			ItemStack stack = new ItemStack(item, amount);
 			macroItems.add(stack);
 		}
 	}
@@ -170,7 +170,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 		tooltip = null;
 
-		for (ItemIdentifierStack itemStack : diskProvider.getItemDisplay()._allItems) {
+		for (ItemStack itemStack : diskProvider.getItemDisplay()._allItems) {
 			ItemIdentifier item = itemStack.getItem();
 			if (!itemSearched(item)) {
 				continue;
@@ -197,7 +197,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				if (mousePosX != 0 && mousePosY != 0) {
 					if ((mousePosX >= x && mousePosX < x + panelxSize && mousePosY >= y && mousePosY < y + panelySize) || (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize && (wheeldown != 0 || wheelup != 0))) {
 						boolean handled = false;
-						for (ItemIdentifierStack stack : macroItems) {
+						for (ItemStack stack : macroItems) {
 							if (stack.getItem().equals(item)) {
 								if (mousebutton == 0 || wheelup != 0) {
 									stack.setStackSize(stack.getStackSize() + (1 + (wheelup != 0 ? wheelup - 1 : 0)));
@@ -213,7 +213,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 						}
 						if (!handled) {
 							int i = 0;
-							for (ItemIdentifierStack stack : macroItems) {
+							for (ItemStack stack : macroItems) {
 								if (item.equals(stack.getItem()) && item.itemDamage < stack.getItem().itemDamage) {
 									if (mousebutton == 0 || wheelup != 0) {
 										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
@@ -254,13 +254,13 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 9, guiTop + 17, 9, 45, panelxSize, panelySize, 100.0F, DisplayAmount.NEVER);
+		ItemStackRenderer.renderItemStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 9, guiTop + 17, 9, 45, panelxSize, panelySize, 100.0F, DisplayAmount.NEVER);
 
 		ppi = 0;
 		column = 0;
 		row = 0;
 
-		for (ItemIdentifierStack itemStack : macroItems) {
+		for (ItemStack itemStack : macroItems) {
 			ItemIdentifier item = itemStack.getItem();
 			if (!itemSearched(item)) {
 				continue;
@@ -288,7 +288,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				column = 0;
 			}
 		}
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, 100.0F, DisplayAmount.ALWAYS);
+		ItemStackRenderer.renderItemStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, 100.0F, DisplayAmount.ALWAYS);
 	}
 
 	@Override
@@ -370,9 +370,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		Gui.drawRect(guiLeft + 6, bottom - 52, right - 12, bottom - 32, Color.getValue(Color.DARKER_GREY));
 	}
 
-	private int getSearchedItemNumber(List<ItemIdentifierStack> list) {
+	private int getSearchedItemNumber(List<ItemStack> list) {
 		int count = 0;
-		for (ItemIdentifierStack item : list) {
+		for (ItemStack item : list) {
 			if (itemSearched(item.getItem())) {
 				count++;
 			}
@@ -447,8 +447,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		} else if (guibutton.id == 4) {
 			if (!(name1 + name2).equals("") && macroItems.size() != 0) {
 				NBTTagList inventar = new NBTTagList();
-				for (ItemIdentifierStack stack : macroItems) {
-					NBTTagCompound itemNBT = new NBTTagCompound();
+				for (ItemStack stack : macroItems) {
+					CompoundTag itemNBT = new CompoundTag();
 					itemNBT.setInteger("id", Item.getIdFromItem(stack.getItem().item));
 					itemNBT.setInteger("data", stack.getItem().itemDamage);
 					if (stack.getItem().tag != null) {
@@ -459,10 +459,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				}
 
 				boolean flag = false;
-				NBTTagList list = diskProvider.getDisk().getTagCompound().getTagList("macroList", 10);
+				NBTTagList list = diskProvider.getDisk().getTag().getTagList("macroList", 10);
 
 				for (int i = 0; i < list.tagCount(); i++) {
-					NBTTagCompound tag = list.getCompoundTagAt(i);
+					CompoundTag tag = list.getCompoundTagAt(i);
 					String name = tag.getString("name");
 					if (name.equals(name1 + name2)) {
 						flag = true;
@@ -471,12 +471,12 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					}
 				}
 				if (!flag) {
-					NBTTagCompound nbt = new NBTTagCompound();
+					CompoundTag nbt = new CompoundTag();
 					nbt.setString("name", name1 + name2);
 					nbt.setTag("inventar", inventar);
 					list.appendTag(nbt);
 				}
-				diskProvider.getDisk().getTagCompound().setTag("macroList", list);
+				diskProvider.getDisk().getTag().setTag("macroList", list);
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(diskProvider.getDisk()).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 				exitGui();
 			} else if (macroItems.size() != 0) {

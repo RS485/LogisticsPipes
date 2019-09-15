@@ -11,7 +11,7 @@ package logisticspipes.utils.gui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
@@ -124,9 +124,9 @@ public final class SimpleGraphics {
 			y2 = temp;
 		}
 
-		// no blend //GlStateManager.enableBlend();
-		GlStateManager.disableTexture2D();
-		// no blend //GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		// no blend //RenderSystem.enableBlend();
+		RenderSystem.disableTexture2D();
+		// no blend //RenderSystem.tryBlendFuncSeparate(RenderSystem.SourceFactor.SRC_ALPHA, RenderSystem.DestFactor.ONE_MINUS_SRC_ALPHA, RenderSystem.SourceFactor.ONE, RenderSystem.DestFactor.ZERO);
 		GL11.glColor4f(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
 
 		Tessellator tessellator = Tessellator.getInstance();
@@ -138,8 +138,8 @@ public final class SimpleGraphics {
 		buf.pos(x1, y1, zLevel).endVertex();
 		tessellator.draw();
 
-		GlStateManager.enableTexture2D();
-		// no blend //GlStateManager.disableBlend();
+		RenderSystem.enableTexture2D();
+		// no blend //RenderSystem.disableBlend();
 	}
 
 	/**
@@ -165,11 +165,11 @@ public final class SimpleGraphics {
 	 * int, int)
 	 */
 	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) { // TODO
-		GlStateManager.disableTexture2D();
-		GlStateManager.enableBlend();
-		GlStateManager.disableAlpha();
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-		GlStateManager.shadeModel(7425);
+		RenderSystem.disableTexture2D();
+		RenderSystem.enableBlend();
+		RenderSystem.disableAlpha();
+		RenderSystem.tryBlendFuncSeparate(RenderSystem.SourceFactor.SRC_ALPHA, RenderSystem.DestFactor.ONE_MINUS_SRC_ALPHA, RenderSystem.SourceFactor.ONE, RenderSystem.DestFactor.ZERO);
+		RenderSystem.shadeModel(7425);
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder buf = tessellator.getBuffer();
@@ -180,10 +180,10 @@ public final class SimpleGraphics {
 		buf.pos(x2, y2, zLevel).color(Color.getRed(colorB), Color.getGreen(colorB), Color.getBlue(colorB), Color.getAlpha(colorB)).endVertex();
 		tessellator.draw();
 
-		GlStateManager.shadeModel(7424);
-		GlStateManager.disableBlend();
-		GlStateManager.enableAlpha();
-		GlStateManager.enableTexture2D();
+		RenderSystem.shadeModel(7424);
+		RenderSystem.disableBlend();
+		RenderSystem.enableAlpha();
+		RenderSystem.enableTexture2D();
 	}
 
 	/**

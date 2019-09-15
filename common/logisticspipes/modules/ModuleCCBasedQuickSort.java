@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 
@@ -39,18 +39,18 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
+import logisticspipes.utils.tuples.Tuple3;
 
 public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
-	private Map<Integer, Pair<Integer, List<CCSinkResponder>>> sinkResponses = new HashMap<>();
+	private Map<Integer, Tuple2<Integer, List<CCSinkResponder>>> sinkResponses = new HashMap<>();
 
 	@Getter
 	private int timeout = 100;
@@ -62,16 +62,16 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	private IHUDModuleRenderer HUD = new HUDCCBasedQuickSort(this);
 
-	private void createSinkMessage(int slot, ItemIdentifierStack stack) {
+	private void createSinkMessage(int slot, ItemStack stack) {
 		List<CCSinkResponder> respones = new ArrayList<>();
-		IRouter sourceRouter = _service.getRouter();
+		Router sourceRouter = _service.getRouter();
 		if (sourceRouter == null) {
 			return;
 		}
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn((ItemIdentifier) null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations.addAll(exits.stream()
@@ -96,7 +96,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 				respones.addAll(candidateRouter.destination.getLogisticsModule().queueCCSinkEvent(stack));
 			}
 		}
-		sinkResponses.put(slot, new Pair<>(0, respones));
+		sinkResponses.put(slot, new Tuple2<>(0, respones));
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		send();
 
 		if (!sinkResponses.containsKey(lastStackLookedAt)) {
-			createSinkMessage(lastStackLookedAt, ItemIdentifierStack.getFromStack(slot));
+			createSinkMessage(lastStackLookedAt, ItemStack.getFromStack(slot));
 		}
 
 		lastStackLookedAt++;
@@ -159,9 +159,9 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	private void handleSinkResponses(IInventoryUtil invUtil) {
 		boolean changed = false;
-		Iterator<Entry<Integer, Pair<Integer, List<CCSinkResponder>>>> iter = sinkResponses.entrySet().iterator();
+		Iterator<Entry<Integer, Tuple2<Integer, List<CCSinkResponder>>>> iter = sinkResponses.entrySet().iterator();
 		while (iter.hasNext()) {
-			Entry<Integer, Pair<Integer, List<CCSinkResponder>>> pair = iter.next();
+			Entry<Integer, Tuple2<Integer, List<CCSinkResponder>>> pair = iter.next();
 			pair.getValue().setValue1(pair.getValue().getValue1() + 1);
 			boolean canBeHandled = true;
 			for (CCSinkResponder response : pair.getValue().getValue2()) {
@@ -196,10 +196,10 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		if (stack.isEmpty() || !ItemIdentifier.get(stack).equals(ident)) {
 			return false;
 		}
-		final IRouter source = _service.getRouter();
+		final Router source = _service.getRouter();
 
 		// list of triplets: priority: Integer, distance: Double, sink: CCSinkResponder
-		List<Triplet<Integer, Double, CCSinkResponder>> possibilities = new ArrayList<>();
+		List<Tuple3<Integer, Double, CCSinkResponder>> possibilities = new ArrayList<>();
 
 		for (CCSinkResponder sink : list) {
 			if (!sink.isDone()) {
@@ -208,7 +208,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			if (sink.getCanSink() < 1) {
 				continue;
 			}
-			IRouter r = SimpleServiceLocator.routerManager.getRouter(sink.getRouterId());
+			Router r = SimpleServiceLocator.routerManager.getRouter(sink.getRouterId());
 			if (r == null) {
 				continue;
 			}
@@ -224,7 +224,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 				minDistance = Math.min(route.distanceToDestination, minDistance);
 			}
 			if (minDistance != Integer.MAX_VALUE) {
-				possibilities.add(new Triplet<>(sink.getPriority(), minDistance, sink));
+				possibilities.add(new Tuple3<>(sink.getPriority(), minDistance, sink));
 			}
 		}
 		if (possibilities.isEmpty()) {
@@ -241,7 +241,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		});
 
 		boolean isSent = false;
-		for (Triplet<Integer, Double, CCSinkResponder> triple : possibilities) {
+		for (Tuple3<Integer, Double, CCSinkResponder> triple : possibilities) {
 			CCSinkResponder sink = triple.getValue3();
 			if (sink.getCanSink() < 0) {
 				continue;
@@ -264,7 +264,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		timeout = nbttagcompound.getInteger("Timeout");
 		if (timeout == 0) {
@@ -273,7 +273,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		nbttagcompound.setInteger("Timeout", timeout);
 	}

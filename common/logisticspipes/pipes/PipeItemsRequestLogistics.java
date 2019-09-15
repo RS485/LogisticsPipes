@@ -20,7 +20,7 @@ import net.minecraft.util.text.TextComponentString;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRequestAPI;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -32,19 +32,19 @@ import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.request.RequestLog;
 import logisticspipes.request.RequestTree;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource.Dict;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
 
 @CCType(name = "LogisticsPipes:Request")
-public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {
+public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemRequester, IRequestAPI {
 
 	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<>();
 
@@ -130,37 +130,37 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public SimulationResult simulateRequest(ItemStack wanted) {
-		final List<IResource> used = new ArrayList<>();
-		final List<IResource> missing = new ArrayList<>();
+		final List<Resource> used = new ArrayList<>();
+		final List<Resource> missing = new ArrayList<>();
 		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
 
 			@Override
-			public void handleMissingItems(List<IResource> items) {
+			public void handleMissingItems(List<Resource> items) {
 				missing.addAll(items);
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(IResource item, LinkedLogisticsOrderList parts) {}
+			public void handleSucessfullRequestOf(Resource item, LinkedLogisticsOrderList parts) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(List<IResource> items, LinkedLogisticsOrderList parts) {
+			public void handleSucessfullRequestOfList(List<Resource> items, LinkedLogisticsOrderList parts) {
 				used.addAll(items);
 			}
 		});
 		List<ItemStack> usedList = new ArrayList<>(used.size());
 		List<ItemStack> missingList = new ArrayList<>(missing.size());
-		for (IResource e : used) {
+		for (Resource e : used) {
 			if (e instanceof ItemResource) {
 				usedList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			} else if (e instanceof DictResource) {
-				usedList.add(((DictResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			} else if (e instanceof Resource.Dict) {
+				usedList.add(((Resource.Dict) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
 			}
 		}
-		for (IResource e : missing) {
+		for (Resource e : missing) {
 			if (e instanceof ItemResource) {
 				missingList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			} else if (e instanceof DictResource) {
-				missingList.add(((DictResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			} else if (e instanceof Resource.Dict) {
+				missingList.add(((Resource.Dict) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
 			}
 		}
 
@@ -172,26 +172,26 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public List<ItemStack> performRequest(ItemStack wanted) {
-		final List<IResource> missing = new ArrayList<>();
+		final List<Resource> missing = new ArrayList<>();
 		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
 
 			@Override
-			public void handleMissingItems(List<IResource> items) {
+			public void handleMissingItems(List<Resource> items) {
 				missing.addAll(items);
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(IResource item, LinkedLogisticsOrderList parts) {}
+			public void handleSucessfullRequestOf(Resource item, LinkedLogisticsOrderList parts) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(List<IResource> items, LinkedLogisticsOrderList parts) {}
+			public void handleSucessfullRequestOfList(List<Resource> items, LinkedLogisticsOrderList parts) {}
 		}, null);
 		List<ItemStack> missingList = new ArrayList<>(missing.size());
-		for (IResource e : missing) {
+		for (Resource e : missing) {
 			if (e instanceof ItemResource) {
 				missingList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			} else if (e instanceof DictResource) {
-				missingList.add(((DictResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
+			} else if (e instanceof Resource.Dict) {
+				missingList.add(((Resource.Dict) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
 			}
 		}
 
@@ -199,15 +199,15 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	}
 
 	/* CC */
-	@CCCommand(description = "Requests the given ItemIdentifierStack")
+	@CCCommand(description = "Requests the given ItemStack")
 	@CCQueued
-	public Object[] makeRequest(ItemIdentifierStack stack) throws Exception {
+	public Object[] makeRequest(ItemStack stack) throws Exception {
 		return makeRequest(stack.getItem(), Double.valueOf(stack.getStackSize()), false);
 	}
 
-	@CCCommand(description = "Requests the given ItemIdentifierStack")
+	@CCCommand(description = "Requests the given ItemStack")
 	@CCQueued
-	public Object[] makeRequest(ItemIdentifierStack stack, Boolean forceCrafting) throws Exception {
+	public Object[] makeRequest(ItemStack stack, Boolean forceCrafting) throws Exception {
 		return makeRequest(stack.getItem(), Double.valueOf(stack.getStackSize()), forceCrafting);
 	}
 
@@ -231,12 +231,12 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@CCCommand(description = "Asks for all available ItemIdentifier inside the Logistics Network")
 	@CCQueued
-	public List<Pair<ItemIdentifier, Integer>> getAvailableItems() {
+	public List<Tuple2<ItemIdentifier, Integer>> getAvailableItems() {
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
-		List<Pair<ItemIdentifier, Integer>> list = new LinkedList<>();
+		List<Tuple2<ItemIdentifier, Integer>> list = new LinkedList<>();
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
 			int amount = item.getValue();
-			list.add(new Pair<>(item.getKey(), amount));
+			list.add(new Tuple2<>(item.getKey(), amount));
 		}
 		return list;
 	}

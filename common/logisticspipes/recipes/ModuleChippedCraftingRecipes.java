@@ -10,8 +10,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 
 import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
@@ -52,12 +52,12 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 		ADVANCED_4
 	}
 
-	private void registerModuleRecipe(CraftingParts parts, RecipeType type, ResourceLocation recipeCategory, Class<? extends LogisticsModule> moduleClass, Class<? extends LogisticsModule> baseModuleClass) {
+	private void registerModuleRecipe(CraftingParts parts, RecipeType type, Identifier recipeCategory, Class<? extends LogisticsModule> moduleClass, Class<? extends LogisticsModule> baseModuleClass) {
 		Item module = LPItems.modules.get(moduleClass);
 		Item baseModule = baseModuleClass == null ? LPItems.blankModule : LPItems.modules.get(baseModuleClass);
 		ItemStack programmerStack = new ItemStack(LPItems.logisticsProgrammer);
-		programmerStack.setTagCompound(new NBTTagCompound());
-		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, module.getRegistryName().toString());
+		programmerStack.setTagCompound(new CompoundTag());
+		programmerStack.getTag().setString(ItemLogisticsProgrammer.RECIPE_TARGET, module.getRegistryName().toString());
 		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);
 
 		if (!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
@@ -189,21 +189,21 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 
 	@Override
 	protected void loadRecipes(CraftingParts parts) {
-		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleItemSink.class, null);
-		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModulePassiveSupplier.class, null);
-		registerModuleRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleExtractor.class, null);
-		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModulePolymorphicItemSink.class, null);
-		registerModuleRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleQuickSort.class, null);
-		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleTerminus.class, null);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleAdvancedExtractor.class, ModuleExtractor.class);
-		registerModuleRecipe(parts, RecipeType.LEVEL_4, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleProvider.class, null);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleModBasedItemSink.class, null);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleOreDictItemSink.class, null);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_5, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleEnchantmentSink.class, ModuleItemSink.class);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_6, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleEnchantmentSinkMK2.class, ModuleEnchantmentSink.class);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleCreativeTabBasedItemSink.class, null);
-		registerModuleRecipe(parts, RecipeType.ADVANCED_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleCrafter.class, null);
-		registerModuleRecipe(parts, RecipeType.ADVANCED_4, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleActiveSupplier.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModuleItemSink.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModulePassiveSupplier.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModuleExtractor.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModulePolymorphicItemSink.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModuleQuickSort.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModuleTerminus.class, null);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_1, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModuleAdvancedExtractor.class, ModuleExtractor.class);
+		registerModuleRecipe(parts, RecipeType.LEVEL_4, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS, ModuleProvider.class, null);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS_2, ModuleModBasedItemSink.class, null);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS_2, ModuleOreDictItemSink.class, null);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_5, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS_2, ModuleEnchantmentSink.class, ModuleItemSink.class);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_6, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS_2, ModuleEnchantmentSinkMK2.class, ModuleEnchantmentSink.class);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS_2, ModuleCreativeTabBasedItemSink.class, null);
+		registerModuleRecipe(parts, RecipeType.ADVANCED_1, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS_2, ModuleCrafter.class, null);
+		registerModuleRecipe(parts, RecipeType.ADVANCED_4, LogisticsProgramCompilerTileEntity.ProgramCategories.CHASSIS_2, ModuleActiveSupplier.class, null);
 	}
 
 	@Override

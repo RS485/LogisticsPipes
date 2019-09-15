@@ -12,10 +12,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -28,10 +28,11 @@ import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
+import network.rs485.logisticspipes.config.LPConfiguration;
 
 public class ItemDisplay {
 
@@ -44,13 +45,13 @@ public class ItemDisplay {
 		NAME_DOWN,
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/icons.png");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/icons.png");
 	private static final int PANELSIZEX = 20;
 	private static final int PANELSIZEY = 20;
 
-	private ItemIdentifierStack selectedItem = null;
-	public final LinkedList<ItemIdentifierStack> _allItems = new LinkedList<>();
-	private final Map<Pair<Integer, Integer>, ItemIdentifierStack> map = new HashMap<>();
+	private ItemStack selectedItem = null;
+	public final LinkedList<ItemStack> _allItems = new LinkedList<>();
+	private final Map<Tuple2<Integer, Integer>, ItemStack> map = new HashMap<>();
 
 	@Getter
 	private int page = 0;
@@ -105,7 +106,7 @@ public class ItemDisplay {
 		this.requestCountBar.reposition(amountPosLeft - (this.amountWidth / 2), amountPosTop - 2, this.amountWidth, 12);
 	}
 
-	public void setItemList(Collection<ItemIdentifierStack> allItems) {
+	public void setItemList(Collection<ItemStack> allItems) {
 		listbyserver = true;
 		_allItems.clear();
 		_allItems.addAll(allItems);
@@ -114,7 +115,7 @@ public class ItemDisplay {
 		if (selectedItem == null) {
 			return;
 		}
-		for (ItemIdentifierStack itemStack : _allItems) {
+		for (ItemStack itemStack : _allItems) {
 			if (itemStack.getItem().equals(selectedItem.getItem())) {
 				selectedItem = itemStack;
 				found = true;
@@ -126,10 +127,10 @@ public class ItemDisplay {
 		}
 	}
 
-	private static class StackComparitor implements Comparator<ItemIdentifierStack> {
+	private static class StackComparitor implements Comparator<ItemStack> {
 
 		@Override
-		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+		public int compare(ItemStack o1, ItemStack o2) {
 			if (ItemDisplay.option == DisplayOption.ID) {
 				int c = basicCompare(o1, o2);
 				if (c != 0) {
@@ -183,7 +184,7 @@ public class ItemDisplay {
 			}
 		}
 
-		private int basicCompare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+		private int basicCompare(ItemStack o1, ItemStack o2) {
 			return o1.compareTo(o2);
 		}
 	}
@@ -223,7 +224,7 @@ public class ItemDisplay {
 
 	private int getSearchedItemNumber() {
 		int count = 0;
-		for (ItemIdentifierStack item : _allItems) {
+		for (ItemStack item : _allItems) {
 			if (search == null || search.itemSearched(item.getItem())) {
 				count++;
 			}
@@ -244,8 +245,8 @@ public class ItemDisplay {
 	}
 
 	public void renderItemArea(double zLevel) {
-		GlStateManager.pushMatrix();
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.pushMatrix();
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		screen.drawRect(left, top, left + width, top + height, Color.GREY);
 
@@ -261,7 +262,7 @@ public class ItemDisplay {
 		int mouseX = Mouse.getX() * scaleX / mc.displayWidth - left;
 		int mouseY = scaleY - Mouse.getY() * scaleY / mc.displayHeight - top;
 
-		GlStateManager.translate(left, top, 0.0F);
+		RenderSystem.translate(left, top, 0.0F);
 
 		if (!listbyserver) {
 			int graphic = ((int) (System.currentTimeMillis() / 250) % 5);
@@ -278,7 +279,7 @@ public class ItemDisplay {
 			tess.draw();
 		} else {
 
-			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
+			for (ItemStack itemIdentifierStack : _allItems) {
 				ItemIdentifier item = itemIdentifierStack.getItem();
 				if (search != null && !search.itemSearched(item)) {
 					continue;
@@ -297,9 +298,9 @@ public class ItemDisplay {
 				int realX = x - 2;
 				int realY = y - 2;
 
-				Pair<Integer, Integer> pair = new Pair<>(realX, realY);
-				if (map.get(pair) != itemIdentifierStack) {
-					map.put(pair, itemIdentifierStack);
+				Tuple2<Integer, Integer> tuple = new Tuple2<>(realX, realY);
+				if (map.get(tuple) != itemIdentifierStack) {
+					map.put(tuple, itemIdentifierStack);
 				}
 
 				if (mouseX >= realX && mouseX < realX + panelxSize && mouseY >= realY && mouseY < realY + panelySize) {
@@ -329,12 +330,12 @@ public class ItemDisplay {
 					}
 				}
 
-				GlStateManager.enableLighting();
+				RenderSystem.enableLighting();
 				// use GuiGraphics to render the ItemStacks
 				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, false, false);
 				itemstackRenderer.setItemIdentStack(itemIdentifierStack).setDisplayAmount(DisplayAmount.HIDE_ONE);
 				itemstackRenderer.renderInGui();
-				GlStateManager.disableLighting();
+				RenderSystem.disableLighting();
 
 				x += panelxSize;
 				if (x > width) {
@@ -344,7 +345,7 @@ public class ItemDisplay {
 			}
 
 		}
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 
 	}
 
@@ -357,14 +358,16 @@ public class ItemDisplay {
 		}
 
 		if (isShift && !isControl && isShiftPageChange()) {
+			boolean invertWheel = LPConfiguration.INSTANCE.getItemListInvertWheel();
+
 			if (wheel > 0) {
-				if (!Configs.LOGISTICS_ORDERER_PAGE_INVERTWHEEL) {
+				if (!invertWheel) {
 					prevPage();
 				} else {
 					nextPage();
 				}
 			} else {
-				if (!Configs.LOGISTICS_ORDERER_PAGE_INVERTWHEEL) {
+				if (!invertWheel) {
 					nextPage();
 				} else {
 					prevPage();
@@ -375,9 +378,10 @@ public class ItemDisplay {
 			try {
 				requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
 			} catch (Exception ignored) {}
+			boolean invertWheel = LPConfiguration.INSTANCE.getItemCountInvertWheel();
 			if (isShift && !isControl && !isShiftPageChange()) {
 				if (wheel > 0) {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(4)));
 					} else {
 						if (requestCount == 1) {
@@ -386,7 +390,7 @@ public class ItemDisplay {
 						requestCount += wheel * getAmountChangeMode(4);
 					}
 				} else {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						if (requestCount == 1) {
 							requestCount -= 1;
 						}
@@ -397,13 +401,13 @@ public class ItemDisplay {
 				}
 			} else if (!isControl) {
 				if (wheel > 0) {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(1)));
 					} else {
 						requestCount += wheel * getAmountChangeMode(1);
 					}
 				} else {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						requestCount += -(wheel * getAmountChangeMode(1));
 					} else {
 						requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(1));
@@ -411,7 +415,7 @@ public class ItemDisplay {
 				}
 			} else if (isControl && !isShift) {
 				if (wheel > 0) {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(2));
 					} else {
 						if (requestCount == 1) {
@@ -420,7 +424,7 @@ public class ItemDisplay {
 						requestCount += wheel * getAmountChangeMode(2);
 					}
 				} else {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						if (requestCount == 1) {
 							requestCount -= 1;
 						}
@@ -431,7 +435,7 @@ public class ItemDisplay {
 				}
 			} else if (isControl && isShift) {
 				if (wheel > 0) {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(3));
 					} else {
 						if (requestCount == 1) {
@@ -440,7 +444,7 @@ public class ItemDisplay {
 						requestCount += wheel * getAmountChangeMode(3);
 					}
 				} else {
-					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if (!invertWheel) {
 						if (requestCount == 1) {
 							requestCount -= 1;
 						}
@@ -518,7 +522,7 @@ public class ItemDisplay {
 		requestCountBar.input2 = "";
 	}
 
-	public ItemIdentifierStack getSelectedItem() {
+	public ItemStack getSelectedItem() {
 		return selectedItem;
 	}
 
@@ -540,7 +544,7 @@ public class ItemDisplay {
 			return false;
 		}
 		selectedItem = null;
-		for (Entry<Pair<Integer, Integer>, ItemIdentifierStack> entry : map.entrySet()) {
+		for (Entry<Tuple2<Integer, Integer>, ItemStack> entry : map.entrySet()) {
 			if (x >= entry.getKey().getValue1() && x < entry.getKey().getValue1() + ItemDisplay.PANELSIZEX && y >= entry.getKey().getValue2() && y < entry.getKey().getValue2() + ItemDisplay.PANELSIZEY) {
 				selectedItem = entry.getValue();
 				return true;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.items.IItemHandler;
 
@@ -17,7 +17,7 @@ public class TransactorSimple extends Transactor {
 	}
 
 	@Override
-	public int inject(ItemStack stack, EnumFacing orientation, boolean doAdd) {
+	public int inject(ItemStack stack, Direction orientation, boolean doAdd) {
 		List<IInvSlot> filledSlots = new ArrayList<>(inventory.getSlots());
 		List<IInvSlot> emptySlots = new ArrayList<>(inventory.getSlots());
 		for (IInvSlot slot : InventoryIterator.getIterable(inventory, orientation)) {

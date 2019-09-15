@@ -3,10 +3,11 @@ package logisticspipes.network.guis.pipe;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import logisticspipes.LPItems;
 import logisticspipes.gui.GuiPipeController;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
@@ -42,16 +43,16 @@ public class PipeController extends CoordinatesGuiProvider {
 			return null;
 		}
 		final CoreRoutedPipe pipe = (CoreRoutedPipe) tile.pipe;
-		DummyContainer dummy = new DummyContainer(player, null, pipe.getOriginalUpgradeManager().getGuiController(), new IGuiOpenControler() {
+		DummyContainer dummy = new DummyContainer(player, null, pipe.getOriginalUpgradeManager().getGuiController(), new IGuiOpenController() {
 
 			//Network Statistics
 			@Override
-			public void guiOpenedByPlayer(EntityPlayer player) {
+			public void guiOpenedByPlayer(PlayerEntity player) {
 				pipe.playerStartWatching(player, 0);
 			}
 
 			@Override
-			public void guiClosedByPlayer(EntityPlayer player) {
+			public void guiClosedByPlayer(PlayerEntity player) {
 				pipe.playerStopWatching(player, 0);
 			}
 		});
@@ -99,10 +100,10 @@ public class PipeController extends CoordinatesGuiProvider {
 			if (itemStack.getItem() != LPItems.itemCard) {
 				return false;
 			}
-			if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
+			if (itemStack.getDamage() != LogisticsItemCard.SEC_CARD) {
 				return false;
 			}
-			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
+			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTag().getString("UUID")));
 		}, 1);
 		dummy.addRestrictedSlot(0, tile.logicController.diskInv, 14, 36, LPItems.disk);
 		return dummy;

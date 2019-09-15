@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -24,9 +24,9 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.ICustomModelLoader;
@@ -62,7 +62,7 @@ import logisticspipes.textures.Textures;
 
 public class LogisticsNewPipeModel implements IModel {
 
-	private static final ResourceLocation BASE_TEXTURE = new ResourceLocation("logisticspipes", "blocks/blank_pipe");
+	private static final Identifier BASE_TEXTURE = new Identifier("logisticspipes", "blocks/blank_pipe");
 	public static TextureAtlasSprite BASE_TEXTURE_SPRITE;
 	public static TextureTransformation BASE_TEXTURE_TRANSFORM;
 
@@ -78,10 +78,10 @@ public class LogisticsNewPipeModel implements IModel {
 	public static class LogisticsNewPipeModelLoader implements ICustomModelLoader {
 
 		@Override
-		public boolean accepts(ResourceLocation modelLocation) {
+		public boolean accepts(Identifier modelLocation) {
 			if (modelLocation.getResourceDomain().equals("logisticspipes")) {
 				if (modelLocation instanceof ModelResourceLocation) {
-					ResourceLocation rl = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
+					Identifier rl = new Identifier(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
 					if (((ModelResourceLocation) modelLocation).getVariant().equals("inventory")) {
 						Item item = ForgeRegistries.ITEMS.getValue(rl);
 						if (item instanceof ItemLogisticsPipe) {
@@ -100,7 +100,7 @@ public class LogisticsNewPipeModel implements IModel {
 
 		@Nonnull
 		@Override
-		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
+		public IModel loadModel(@Nonnull Identifier modelLocation) {
 			return new LogisticsNewPipeModel((ModelResourceLocation) modelLocation);
 		}
 
@@ -119,27 +119,27 @@ public class LogisticsNewPipeModel implements IModel {
 
 	@Override
 	@Nonnull
-	public Collection<ResourceLocation> getDependencies() {
+	public Collection<Identifier> getDependencies() {
 		return Collections.emptyList();
 	}
 
 	@Override
 	@Nonnull
-	public Collection<ResourceLocation> getTextures() {
+	public Collection<Identifier> getTextures() {
 		return Collections.emptyList();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	@Nonnull
-	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<Identifier, TextureAtlasSprite> bakedTextureGetter) {
 		final List<BakedQuad> quads = Lists.newArrayList();
 		return new IBakedModel() {
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			@Nonnull
-			public List<BakedQuad> getQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side, long rand) {
+			public List<BakedQuad> getQuads(@Nullable BlockState blockstate, @Nullable Direction side, long rand) {
 				List<BakedQuad> result = Collections.emptyList();
 				BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
 				if (layer == BlockRenderLayer.CUTOUT || layer == null || blockstate == null) {
@@ -148,14 +148,14 @@ public class LogisticsNewPipeModel implements IModel {
 				return addOtherQuads(result, blockstate, side, rand);
 			}
 
-			private List<BakedQuad> addOtherQuads(List<BakedQuad> list, IBlockState blockstate, EnumFacing side, long rand) {
+			private List<BakedQuad> addOtherQuads(List<BakedQuad> list, BlockState blockstate, Direction side, long rand) {
 				if (blockstate != null) {
 					return SimpleServiceLocator.mcmpProxy.addQuads(list, blockstate, side, rand);
 				}
 				return list;
 			}
 
-			private List<BakedQuad> getLPQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side) {
+			private List<BakedQuad> getLPQuads(@Nullable BlockState blockstate, @Nullable Direction side) {
 				if (blockstate != null) {
 					if (side == null) {
 						IExtendedBlockState eState = (IExtendedBlockState) blockstate;
@@ -219,7 +219,7 @@ public class LogisticsNewPipeModel implements IModel {
 		};
 	}
 
-	private List<RenderEntry> generatePipeRenderList(IBlockState blockstate) {
+	private List<RenderEntry> generatePipeRenderList(BlockState blockstate) {
 		List<RenderEntry> objectsToRender = new ArrayList<>();
 
 		if (blockstate.getValue(LogisticsBlockGenericPipe.modelTypeProperty) == LogisticsBlockGenericPipe.PipeRenderModel.REQUEST_TABLE) {
@@ -321,7 +321,7 @@ public class LogisticsNewPipeModel implements IModel {
 			}
 
 			//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
-			for (EnumFacing dir : EnumFacing.VALUES) {
+			for (Direction dir : Direction.values()) {
 				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 					TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(getPipe().getTextureIndex());
 					if (icon != null) {

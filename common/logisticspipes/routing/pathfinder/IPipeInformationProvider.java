@@ -1,16 +1,19 @@
 package logisticspipes.routing.pathfinder;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.util.ItemVariant;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface IPipeInformationProvider {
@@ -24,11 +27,7 @@ public interface IPipeInformationProvider {
 
 	boolean isCorrect(ConnectionPipeType type);
 
-	int getX();
-
-	int getY();
-
-	int getZ();
+	BlockPos getPos();
 
 	World getWorld();
 
@@ -38,23 +37,23 @@ public interface IPipeInformationProvider {
 
 	CoreRoutedPipe getRoutingPipe();
 
-	TileEntity getNextConnectedTile(EnumFacing direction);
+	BlockEntity getNextConnectedTile(Direction direction);
 
 	boolean isFirewallPipe();
 
 	IFilter getFirewallFilter();
 
-	TileEntity getTile();
+	BlockEntity getTile();
 
 	boolean divideNetwork();
 
 	boolean powerOnly();
 
-	boolean isOnewayPipe();
+	boolean isOneWayPipe();
 
-	boolean isOutputOpen(EnumFacing direction);
+	boolean isOutputOpen(Direction direction);
 
-	boolean canConnect(TileEntity to, EnumFacing direction, boolean flag);
+	boolean canConnect(BlockEntity to, Direction direction, boolean flag);
 
 	double getDistance();
 
@@ -66,13 +65,13 @@ public interface IPipeInformationProvider {
 
 	boolean isPowerPipe();
 
-	double getDistanceTo(int destinationint, EnumFacing ignore, ItemIdentifier ident, boolean isActive, double travled, double max, List<DoubleCoordinates> visited);
+	double getDistanceTo(UUID destination, Direction ignore, ItemVariant item, boolean isActive, double traveled, double max, List<BlockPos> visited);
 
-	boolean acceptItem(LPTravelingItem item, TileEntity from);
+	boolean acceptItem(LPTravelingItem item, BlockEntity from);
 
-	void refreshTileCacheOnSide(EnumFacing side);
+	void refreshTileCacheOnSide(Direction side);
 
 	boolean isMultiBlock();
 
-	Stream<TileEntity> getPartsOfPipe();
+	Stream<BlockEntity> getPartsOfPipe();
 }

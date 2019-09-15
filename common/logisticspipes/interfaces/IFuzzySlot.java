@@ -1,10 +1,10 @@
 package logisticspipes.interfaces;
 
-import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.Resource.Dict;
 
 public interface IFuzzySlot {
 
-	DictResource getFuzzyFlags();
+	Resource.Dict getFuzzyFlags();
 
 	int getX();
 

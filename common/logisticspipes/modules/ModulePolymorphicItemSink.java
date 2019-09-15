@@ -2,7 +2,7 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -45,10 +45,10 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(CompoundTag nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(CompoundTag nbttagcompound) {}
 
 	@Override
 	public LogisticsModule getSubModule(int slot) {

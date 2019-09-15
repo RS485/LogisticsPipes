@@ -1,6 +1,6 @@
 package logisticspipes.asm;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
 
 import lombok.SneakyThrows;
 
@@ -14,7 +14,7 @@ public class LogisticsASMHookClass {
 	}
 
 	@SneakyThrows(Exception.class)
-	public static void validate(TileEntity tile) {
+	public static void validate(BlockEntity tile) {
 		try {
 			TEControl.validate(tile);
 		} catch (Exception e) {
@@ -26,7 +26,7 @@ public class LogisticsASMHookClass {
 	}
 
 	@SneakyThrows(Exception.class)
-	public static void invalidate(TileEntity tile) {
+	public static void invalidate(BlockEntity tile) {
 		try {
 			TEControl.invalidate(tile);
 		} catch (Exception e) {

@@ -11,22 +11,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -38,6 +38,7 @@ import static net.minecraft.util.EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
@@ -52,8 +53,8 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	@Nonnull
-	public List<ItemStack> getDrops(IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
-		TileEntity tile = world.getTileEntity(pos);
+	public List<ItemStack> getDrops(BlockView world, @Nonnull BlockPos pos, @Nonnull BlockState state, int fortune) {
+		BlockEntity tile = world.getBlockEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			return mainPipeList.stream()
@@ -75,9 +76,9 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings({ "all" })
-	public TextureAtlasSprite getIcon(IBlockAccess iblockaccess, int i, int j, int k, int l) {
+	public TextureAtlasSprite getIcon(BlockView iblockaccess, int i, int j, int k, int l) {
 		DoubleCoordinates pos = new DoubleCoordinates(i, j, k);
-		TileEntity tile = pos.getTileEntity(iblockaccess);
+		BlockEntity tile = pos.getBlockEntity(iblockaccess);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipe = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			if (!mainPipe.isEmpty() && mainPipe.get(0).pipe != null && mainPipe.get(0).pipe.isMultiBlock()) {
@@ -92,7 +93,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	@Nonnull
-	public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
+	public BlockEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
 		if (LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock == null && MainProxy.isServer(worldIn)) {
 			new RuntimeException("Unknown MultiBlock controller").printStackTrace();
 		}
@@ -100,9 +101,9 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public void breakBlock(World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
+	public void breakBlock(World worldIn, @Nonnull BlockPos pos, @Nonnull BlockState state) {
 		if (redirectedToMainPipe) return;
-		TileEntity tile = worldIn.getTileEntity(pos);
+		BlockEntity tile = worldIn.getBlockEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			mainPipeList.stream()
@@ -118,7 +119,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public void dropBlockAsItemWithChance(World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, float chance, int fortune) {
+	public void dropBlockAsItemWithChance(World world, @Nonnull BlockPos pos, @Nonnull BlockState state, float chance, int fortune) {
 		if (world.isRemote) {
 			return;
 		}
@@ -129,44 +130,44 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public float getBlockHardness(IBlockState state, World par1World, BlockPos pos) {
-		return Configs.pipeDurability;
+	public float getBlockHardness(BlockState state, World par1World, BlockPos pos) {
+		return LPConfiguration.INSTANCE.getPipeDurability();
 	}
 
 	@Override
-	public boolean isNormalCube(IBlockState state) {
+	public boolean isNormalCube(BlockState state) {
 		return false;
 	}
 
 	@Override
-	public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public boolean isNormalCube(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 
 	@Override
-	public boolean canBeReplacedByLeaves(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
+	public boolean canBeReplacedByLeaves(@Nonnull BlockState state, @Nonnull BlockView world, @Nonnull BlockPos pos) {
 		return false;
 	}
 
 	@Override
 	@Nonnull
-	public EnumBlockRenderType getRenderType(IBlockState state) {
+	public EnumBlockRenderType getRenderType(BlockState state) {
 		return ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(BlockState state) {
 		return false;
 	}
 
 	@Override
-	public boolean isFullCube(IBlockState state) {
+	public boolean isFullCube(BlockState state) {
 		return false;
 	}
 
 	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
-		TileEntity tile = worldIn.getTileEntity(pos);
+	public void addCollisionBoxToList(BlockState state, World worldIn, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+		BlockEntity tile = worldIn.getBlockEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			mainPipeList.stream()
@@ -178,8 +179,8 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	@Nullable
-	public RayTraceResult collisionRayTrace(IBlockState blockState, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
-		TileEntity tile = worldIn.getTileEntity(pos);
+	public RayTraceResult collisionRayTrace(BlockState blockState, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
+		BlockEntity tile = worldIn.getBlockEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			return mainPipeList.stream()
@@ -204,8 +205,8 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	@Nonnull
-	public AxisAlignedBB getSelectedBoundingBox(IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos) {
-		TileEntity tile = worldIn.getTileEntity(pos);
+	public AxisAlignedBB getSelectedBoundingBox(BlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos) {
+		BlockEntity tile = worldIn.getBlockEntity(pos);
 		Optional<AxisAlignedBB> result = Optional.empty();
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -220,9 +221,9 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
+	public void onNeighborChange(BlockView world, BlockPos pos, BlockPos neighbor) {
 		super.onNeighborChange(world, pos, neighbor);
-		TileEntity tile = world.getTileEntity(pos);
+		BlockEntity tile = world.getBlockEntity(pos);
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			((LogisticsTileGenericSubMultiBlock) tile).scheduleNeighborChange();
 		}
@@ -231,10 +232,10 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
-		TileEntity tile = world.getTileEntity(pos);
+		BlockEntity tile = world.getBlockEntity(pos);
 		Optional<Boolean> result = Optional.empty();
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
-			IBlockState state = tile.getBlockType().getExtendedState(tile.getBlockType().getDefaultState(), world, pos);
+			BlockState state = tile.getBlockType().getExtendedState(tile.getBlockType().getDefaultState(), world, pos);
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			result = mainPipeList.stream()
 					.filter(Objects::nonNull)
@@ -248,8 +249,8 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	@Nonnull
-	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
-		TileEntity tile = world.getTileEntity(pos);
+	public ItemStack getPickBlock(@Nonnull BlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
+		BlockEntity tile = world.getBlockEntity(pos);
 		Optional<ItemStack> result = Optional.empty();
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
@@ -270,9 +271,9 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void addHitEffects(LogisticsTileGenericPipe mainPipe, IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
+	private void addHitEffects(LogisticsTileGenericPipe mainPipe, BlockState state, World world, RayTraceResult target, ParticleManager manager) {
 		final TextureAtlasSprite icon = mainPipe.pipe.getIconProvider().getIcon(mainPipe.pipe.getIconIndexForItem());
-		final EnumFacing sideHit = target.sideHit;
+		final Direction sideHit = target.sideHit;
 		final float b = 0.1F;
 		final AxisAlignedBB boundingBox = state.getBoundingBox(world, target.getBlockPos());
 
@@ -313,8 +314,8 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean addHitEffects(IBlockState state, World world, RayTraceResult target, ParticleManager manager) {
-		TileEntity tile = world.getTileEntity(target.getBlockPos());
+	public boolean addHitEffects(BlockState state, World world, RayTraceResult target, ParticleManager manager) {
+		BlockEntity tile = world.getBlockEntity(target.getBlockPos());
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			List<LogisticsTileGenericPipe> mainPipeList = ((LogisticsTileGenericSubMultiBlock) tile).getMainPipe();
 			Optional<LogisticsTileGenericPipe> result = mainPipeList.stream()

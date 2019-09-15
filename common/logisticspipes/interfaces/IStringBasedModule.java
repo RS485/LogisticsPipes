@@ -2,7 +2,7 @@ package logisticspipes.interfaces;
 
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.utils.item.ItemIdentifier;
 
@@ -14,5 +14,5 @@ public interface IStringBasedModule {
 
 	void listChanged();
 
-	void readFromNBT(NBTTagCompound nbt);
+	void readFromNBT(CompoundTag nbt);
 }

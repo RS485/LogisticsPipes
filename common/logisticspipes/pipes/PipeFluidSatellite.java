@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 
@@ -20,7 +20,7 @@ import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ITankUtil;
-import logisticspipes.interfaces.routing.IRequestFluid;
+import logisticspipes.interfaces.routing.FluidRequester;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.modules.ModuleSatellite;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -39,9 +39,9 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
-public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
+public class PipeFluidSatellite extends FluidRoutedPipe implements FluidRequester, IRequireReliableFluidTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
 	// from baseLogicLiquidSatellite
 	public static HashSet<PipeFluidSatellite> AllSatellites = new HashSet<>();
@@ -52,8 +52,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
+	public final LinkedList<ItemStack> itemList = new LinkedList<>();
+	public final LinkedList<ItemStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<>();
 
@@ -104,8 +104,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		liquidLost(liquid, amount);
 	}
 
-	private void addToList(ItemIdentifierStack stack) {
-		for (ItemIdentifierStack ident : itemList) {
+	private void addToList(ItemStack stack) {
+		for (ItemStack ident : itemList) {
 			if (ident.getItem().equals(stack.getItem())) {
 				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
@@ -131,7 +131,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	@Override
-	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(Collection<ItemStack> list) {
 		itemList.clear();
 		itemList.addAll(list);
 	}
@@ -170,7 +170,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		if (nbttagcompound.hasKey("satelliteid")) {
 			int satelliteId = nbttagcompound.getInteger("satelliteid");
@@ -182,7 +182,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		nbttagcompound.setString("satellitePipeName", satellitePipeName);
 		super.writeToNBT(nbttagcompound);
 	}

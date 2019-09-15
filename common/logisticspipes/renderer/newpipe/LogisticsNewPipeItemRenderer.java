@@ -24,7 +24,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import org.lwjgl.opengl.GL11;
 
@@ -87,7 +87,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 		}
 
 		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
-		for (EnumFacing dir : EnumFacing.VALUES) {
+		for (Direction dir : Direction.values()) {
 			for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 				TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
 				if (icon != null) {

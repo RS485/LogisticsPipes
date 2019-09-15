@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -317,7 +317,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 135, 43, 0x404040);
 			} else {
 				String name = _pipe.clientSideSatelliteNames.satelliteName;
-				name = StringUtils.getCuttedString(name, 55, mc.fontRenderer);
+				name = StringUtils.getCutString(name, 55, mc.fontRenderer);
 				mc.fontRenderer.drawString(name, 143 - (mc.fontRenderer.getStringWidth(name) / 2), 43, 0x404040);
 			}
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 75, 0x404040);
@@ -328,10 +328,10 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 9 + (i * 18), 57, 0x404040);
 				} else {
 					String name = _pipe.clientSideSatelliteNames.advancedSatelliteNameArray[i];
-					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
-					GlStateManager.pushMatrix();
-					GlStateManager.translate(20 + (i * 18), 39, 0);
-					GlStateManager.rotate(90, 0, 0, 1);
+					name = StringUtils.getCutString(name, 40, mc.fontRenderer);
+					RenderSystem.pushMatrix();
+					RenderSystem.translate(20 + (i * 18), 39, 0);
+					RenderSystem.rotate(90, 0, 0, 1);
 					mc.fontRenderer.drawString(name, 0, 0, 0x404040);
 					GL11.glPopMatrix();
 				}
@@ -462,7 +462,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 					}
 				} else {
 					String name = _pipe.clientSideSatelliteNames.liquidSatelliteNameArray[i];
-					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
+					name = StringUtils.getCutString(name, 40, mc.fontRenderer);
 					mc.fontRenderer.drawString(name, left + 22 - (fontRenderer.getStringWidth(name) / 2), top + 146, 0x404040);
 					for (int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = true;

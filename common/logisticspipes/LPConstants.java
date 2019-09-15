@@ -1,10 +1,13 @@
 package logisticspipes;
 
+import network.rs485.logisticspipes.LogisticsPipesKt;
+
 public class LPConstants {
 
 	private LPConstants() {}
 
-	public static final String LP_MOD_ID = "logisticspipes";
+	@Deprecated
+	public static final String LP_MOD_ID = LogisticsPipesKt.ModID;
 
 	public static final float FACADE_THICKNESS = 2F / 16F;
 	public static final float PIPE_NORMAL_SPEED = 0.01F;
@@ -36,11 +39,5 @@ public class LPConstants {
 	public static final String ironChestModID = "ironchest";
 	public static final String cofhCoreModID = "cofhcore";
 	public static final String mcmpModID = "mcmultipart";
-
-	public static boolean COREMOD_LOADED = false;
-
-	public static void loadedCoremod() {
-		LPConstants.COREMOD_LOADED = true;
-	}
 
 }

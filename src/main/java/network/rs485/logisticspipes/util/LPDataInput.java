@@ -47,18 +47,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
 import io.netty.buffer.ByteBuf;
 
 import logisticspipes.network.IReadListObject;
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.PlayerIdentifier;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
 
+@Deprecated
 public interface LPDataInput {
 
 	@Nullable
@@ -106,10 +105,10 @@ public interface LPDataInput {
 	String readUTF();
 
 	@Nullable
-	EnumFacing readFacing();
+	Direction readFacing();
 
 	@Nullable
-	ResourceLocation readResourceLocation();
+	Identifier readResourceLocation();
 
 	@Nonnull
 	<T extends Enum<T>> EnumSet<T> readEnumSet(Class<T> clazz);
@@ -118,7 +117,7 @@ public interface LPDataInput {
 	BitSet readBitSet();
 
 	@Nullable
-	NBTTagCompound readNBTTagCompound();
+	CompoundTag readNBTTagCompound();
 
 	@Nullable
 	boolean[] readBooleanArray();
@@ -131,12 +130,6 @@ public interface LPDataInput {
 
 	@Nonnull
 	byte[] readBytes(int length);
-
-	@Nullable
-	ItemIdentifier readItemIdentifier();
-
-	@Nullable
-	ItemIdentifierStack readItemIdentifierStack();
 
 	@Nonnull
 	ItemStack readItemStack();

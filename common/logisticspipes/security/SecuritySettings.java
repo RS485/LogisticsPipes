@@ -1,6 +1,6 @@
 package logisticspipes.security;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.routing.ISaveState;
 
@@ -19,7 +19,7 @@ public class SecuritySettings implements ISaveState {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		String prev = name;
 		name = nbttagcompound.getString("name");
 		if (name.equals("")) {
@@ -34,7 +34,7 @@ public class SecuritySettings implements ISaveState {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		if (name == null || name.isEmpty()) {
 			return;
 		}

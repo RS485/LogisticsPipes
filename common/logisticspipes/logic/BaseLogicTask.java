@@ -2,8 +2,8 @@ package logisticspipes.logic;
 
 import java.util.UUID;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 
@@ -23,7 +23,7 @@ public abstract class BaseLogicTask {
 	@Getter
 	protected UUID uuid;
 
-	public BaseLogicTask(NBTTagCompound nbt) {
+	public BaseLogicTask(CompoundTag nbt) {
 		posX = nbt.getInteger("posX");
 		posY = nbt.getInteger("posY");
 		name = nbt.getString("name");
@@ -37,13 +37,13 @@ public abstract class BaseLogicTask {
 		uuid = UUID.randomUUID();
 	}
 
-	public final NBTTagCompound getNBTTagCompound() {
-		NBTTagCompound nbt = new NBTTagCompound();
+	public final CompoundTag getNBTTagCompound() {
+		CompoundTag nbt = new CompoundTag();
 		addToNBT(nbt);
 		return nbt;
 	}
 
-	protected void addToNBT(NBTTagCompound nbt) {
+	protected void addToNBT(CompoundTag nbt) {
 		nbt.setInteger("posX", posX);
 		nbt.setInteger("posY", posY);
 		nbt.setString("name", name);
@@ -69,5 +69,5 @@ public abstract class BaseLogicTask {
 
 	public abstract String getTypeName();
 
-	public abstract void syncTick(TileEntity tile);
+	public abstract void syncTick(BlockEntity tile);
 }

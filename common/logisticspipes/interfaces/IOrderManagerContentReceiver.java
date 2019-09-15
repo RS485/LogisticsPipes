@@ -2,9 +2,9 @@ package logisticspipes.interfaces;
 
 import java.util.Collection;
 
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public interface IOrderManagerContentReceiver {
 
-	void setOrderManagerContent(Collection<ItemIdentifierStack> _allItems);
+	void setOrderManagerContent(Collection<ItemStack> _allItems);
 }

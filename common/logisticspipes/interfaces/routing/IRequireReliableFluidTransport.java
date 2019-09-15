@@ -1,12 +1,12 @@
 package logisticspipes.interfaces.routing;
 
-import logisticspipes.utils.FluidIdentifier;
+import alexiil.mc.lib.attributes.fluid.volume.FluidKey;
 
 public interface IRequireReliableFluidTransport {
 
-	void liquidLost(FluidIdentifier item, int amount);
+	void liquidLost(FluidKey item, int amount);
 
-	void liquidNotInserted(FluidIdentifier item, int amount);
+	void liquidNotInserted(FluidKey item, int amount);
 
-	void liquidArrived(FluidIdentifier item, int amount);
+	void liquidArrived(FluidKey item, int amount);
 }

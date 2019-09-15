@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -164,7 +164,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 	 */
 	private void sendIMCOutdatedMessage(VersionInfo versionInfo) {
 		if (Loader.isModLoaded("VersionChecker")) {
-			NBTTagCompound tag = new NBTTagCompound();
+			CompoundTag tag = new CompoundTag();
 			tag.setString("oldVersion", LPConstants.VERSION);
 			tag.setString("newVersion", versionInfo.getNewestBuild());
 			tag.setString("updateUrl", "http://ci.rs485.network/view/Logistics%20Pipes/");

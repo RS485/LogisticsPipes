@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
@@ -15,7 +15,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
@@ -86,20 +86,20 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		}
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + 135);
 
-		ItemIdentifierStack[] items = new ItemIdentifierStack[9];
+		ItemStack[] items = new ItemStack[9];
 		for (int i = 0; i < 9; i++) {
 			if (_crafter.matrix.getIDStackInSlot(i) != null) {
 				items[i] = _crafter.matrix.getIDStackInSlot(i);
 			}
 		}
 
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 79, 9, 9, 18, 18, 0.0F, DisplayAmount.NEVER);
+		ItemStackRenderer.renderItemStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 79, 9, 9, 18, 18, 0.0F, DisplayAmount.NEVER);
 
-		GlStateManager.translate(0, 0, 200F);
+		RenderSystem.translate(0, 0, 200F);
 		for (int a = 0; a < 9; a++) {
 			Gui.drawRect(guiLeft + 8 + (a * 18), guiTop + 80, guiLeft + 24 + (a * 18), guiTop + 96, 0xc08b8b8b);
 		}
-		GlStateManager.translate(0, 0, -200F);
+		RenderSystem.translate(0, 0, -200F);
 	}
 
 	@Override

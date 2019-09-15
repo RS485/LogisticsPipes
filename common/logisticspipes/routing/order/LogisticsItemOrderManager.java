@@ -7,18 +7,18 @@ import java.util.List;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.request.resources.DictResource;
+import logisticspipes.interfaces.routing.ItemRequester;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
-public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsItemOrder, DictResource.Identifier> {
+public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsItemOrder, Resource.Dict.Identifier> {
 
-	private static class IC implements LogisticsOrderLinkedList.IIdentityProvider<LogisticsItemOrder, DictResource.Identifier> {
+	private static class IC implements LogisticsOrderLinkedList.IIdentityProvider<LogisticsItemOrder, Resource.Dict.Identifier> {
 
 		@Override
-		public DictResource.Identifier getIdentity(LogisticsItemOrder o) {
+		public Resource.Dict.Identifier getIdentity(LogisticsItemOrder o) {
 			if (o == null || o.getResource() == null) {
 				return null;
 			}
@@ -33,17 +33,17 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 
 	private static class LogisticsItemOrderExtra extends LogisticsItemOrder {
 
-		public LogisticsItemOrderExtra(DictResource item, IRequestItems destination, ResourceType type, IAdditionalTargetInformation info) {
+		public LogisticsItemOrderExtra(Resource.Dict item, ItemRequester destination, ResourceType type, IAdditionalTargetInformation info) {
 			super(item, destination, type, info);
 		}
 	}
 
 	public LogisticsItemOrderManager(ILPPositionProvider pos) {
-		super(new LogisticsOrderLinkedList<LogisticsItemOrder, DictResource.Identifier>(new IC()), pos);
+		super(new LogisticsOrderLinkedList<LogisticsItemOrder, Resource.Dict.Identifier>(new IC()), pos);
 	}
 
 	public LogisticsItemOrderManager(IChangeListener listener, ILPPositionProvider pos) {
-		super(listener, pos, new LogisticsOrderLinkedList<LogisticsItemOrder, DictResource.Identifier>(new IC()));
+		super(listener, pos, new LogisticsOrderLinkedList<LogisticsItemOrder, Resource.Dict.Identifier>(new IC()));
 	}
 
 	@Override
@@ -52,30 +52,30 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 		super.sendFailed();
 	}
 
-	public LogisticsItemOrder addOrder(ItemIdentifierStack stack, IRequestItems requester, ResourceType type, IAdditionalTargetInformation info) {
-		LogisticsItemOrder order = new LogisticsItemOrder(new DictResource(stack, null), requester, type, info);
+	public LogisticsItemOrder addOrder(ItemStack stack, ItemRequester requester, ResourceType type, IAdditionalTargetInformation info) {
+		LogisticsItemOrder order = new LogisticsItemOrder(new Resource.Dict(stack, null), requester, type, info);
 		_orders.addLast(order);
 		listen();
 		return order;
 	}
 
-	public LogisticsItemOrder addOrder(DictResource stack, IRequestItems requester, ResourceType type, IAdditionalTargetInformation info) {
+	public LogisticsItemOrder addOrder(Resource.Dict stack, ItemRequester requester, ResourceType type, IAdditionalTargetInformation info) {
 		LogisticsItemOrder order = new LogisticsItemOrder(stack, requester, type, info);
 		_orders.addLast(order);
 		listen();
 		return order;
 	}
 
-	public LogisticsItemOrderExtra addExtra(DictResource stack) {
+	public LogisticsItemOrderExtra addExtra(Resource.Dict stack) {
 		LogisticsItemOrderExtra order = new LogisticsItemOrderExtra(stack, null, ResourceType.EXTRA, null);
 		_orders.addLast(order);
 		listen();
 		return order;
 	}
 
-	public void removeExtras(DictResource resource) {
+	public void removeExtras(Resource.Dict resource) {
 		int itemsToRemove = resource.getRequestedAmount();
-		DictResource.Identifier ident = resource.getIdentifier();
+		Resource.Dict.Identifier ident = resource.getIdentifier();
 		Iterator<LogisticsItemOrder> iter = _orders.iterator();
 		List<LogisticsItemOrder> toRemove = new LinkedList<LogisticsItemOrder>();
 		while (iter.hasNext()) {

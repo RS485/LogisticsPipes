@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RayTraceResult;
 
 import net.minecraftforge.client.GuiIngameForge;
@@ -33,14 +33,15 @@ import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.math.Vector3d;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
+import network.rs485.logisticspipes.config.LPConfiguration;
 
 public class LogisticsHUDRenderer {
 
@@ -91,8 +92,8 @@ public class LogisticsHUDRenderer {
 	}
 
 	private void refreshList(double x, double y, double z) {
-		ArrayList<Pair<Double, IHeadUpDisplayRendererProvider>> newList = new ArrayList<>();
-		for (IRouter router : SimpleServiceLocator.routerManager.getRouters()) {
+		ArrayList<Tuple2<Double, IHeadUpDisplayRendererProvider>> newList = new ArrayList<>();
+		for (Router router : SimpleServiceLocator.routerManager.getRouters()) {
 			if (router == null) {
 				continue;
 			}
@@ -102,8 +103,8 @@ public class LogisticsHUDRenderer {
 			}
 			if (pipe.getWorld().provider.getDimension() == FMLClientHandler.instance().getClient().world.provider.getDimension()) {
 				double dis = Math.hypot(pipe.getX() - x + 0.5, Math.hypot(pipe.getY() - y + 0.5, pipe.getZ() - z + 0.5));
-				if (dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75) {
-					newList.add(new Pair<>(dis, (IHeadUpDisplayRendererProvider) pipe));
+				if (dis < LPConfiguration.INSTANCE.getHudRenderDistance() && dis > 0.75) {
+					newList.add(new Tuple2<>(dis, (IHeadUpDisplayRendererProvider) pipe));
 					if (!list.contains(pipe)) {
 						((IHeadUpDisplayRendererProvider) pipe).startWatching();
 					}
@@ -115,8 +116,8 @@ public class LogisticsHUDRenderer {
 		providers.stream().filter(provider -> provider.getWorldForHUD().provider.getDimension() == FMLClientHandler.instance().getClient().world.provider.getDimension())
 				.forEach(provider -> {
 					double dis = Math.hypot(provider.getX() - x + 0.5, Math.hypot(provider.getY() - y + 0.5, provider.getZ() - z + 0.5));
-					if (dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isHUDInvalid() && provider.isHUDExistent()) {
-						newList.add(new Pair<>(dis, provider));
+					if (dis < LPConfiguration.INSTANCE.getHudRenderDistance() && dis > 0.75 && !provider.isHUDInvalid() && provider.isHUDExistent()) {
+						newList.add(new Tuple2<>(dis, provider));
 						if (!list.contains(provider)) {
 							provider.startWatching();
 						}
@@ -143,7 +144,7 @@ public class LogisticsHUDRenderer {
 		});
 		for (IHeadUpDisplayRendererProvider part : list) {
 			boolean contains = false;
-			for (Pair<Double, IHeadUpDisplayRendererProvider> inpart : newList) {
+			for (Tuple2<Double, IHeadUpDisplayRendererProvider> inpart : newList) {
 				if (inpart.getValue2().equals(part)) {
 					contains = true;
 					break;
@@ -154,7 +155,7 @@ public class LogisticsHUDRenderer {
 			}
 		}
 		clearList(false);
-		for (Pair<Double, IHeadUpDisplayRendererProvider> part : newList) {
+		for (Tuple2<Double, IHeadUpDisplayRendererProvider> part : newList) {
 			list.addLast(part.getValue2());
 		}
 	}
@@ -174,7 +175,7 @@ public class LogisticsHUDRenderer {
 	private boolean displayCross = false;
 
 	//TODO: only load this once, rather than twice
-	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/icons.png");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/icons.png");
 
 	public void renderPlayerDisplay(long renderTicks) {
 		if (!displayRenderer()) {
@@ -326,7 +327,7 @@ public class LogisticsHUDRenderer {
 			if (progress != 0) {
 				List<String> textData = new ArrayList<>();
 
-				//TileEntity tile = new DoubleCoordinates(box.blockX, box.blockY, box.blockZ).getTileEntity(DimensionManager.getWorld(0));
+				//BlockEntity tile = new DoubleCoordinates(box.blockX, box.blockY, box.blockZ).getBlockEntity(DimensionManager.getWorld(0));
 				//Insert debug code here
 
 				if (textData.isEmpty()) {

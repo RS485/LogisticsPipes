@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.NEISetCraftingRecipe;
@@ -20,28 +20,28 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.StringUtils;
 
 public class GuiRecipeImport extends SubGuiScreen {
 
 	public static class Canidates {
 
-		public Canidates(Set<ItemIdentifierStack> set) {
+		public Canidates(Set<ItemStack> set) {
 			this.set = set;
 		}
 
-		Set<ItemIdentifierStack> set;
-		public List<ItemIdentifierStack> order;
+		Set<ItemStack> set;
+		public List<ItemStack> order;
 		int pos = 0;
 	}
 
-	private final TileEntity tile;
+	private final BlockEntity tile;
 	private final Canidates[] grid = new Canidates[9];
 	private final List<Canidates> list;
 	private Object[] tooltip = null;
 
-	public GuiRecipeImport(TileEntity tile, ItemStack[][] stacks) {
+	public GuiRecipeImport(BlockEntity tile, ItemStack[][] stacks) {
 		super(150, 200, 0, 0);
 		this.tile = tile;
 		list = new ArrayList<>();
@@ -49,10 +49,10 @@ public class GuiRecipeImport extends SubGuiScreen {
 			if (stacks[i] == null) {
 				continue;
 			}
-			Set<ItemIdentifierStack> part = new TreeSet<>();
-			List<ItemIdentifierStack> order = new ArrayList<>();
+			Set<ItemStack> part = new TreeSet<>();
+			List<ItemStack> order = new ArrayList<>();
 			for (ItemStack stack : stacks[i]) {
-				ItemIdentifierStack iStack = ItemIdentifierStack.getFromStack(stack);
+				ItemStack iStack = ItemStack.getFromStack(stack);
 				part.add(iStack);
 				order.add(iStack);
 			}
@@ -109,7 +109,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				if (grid[x + y * 3] == null) {
 					continue;
 				}
-				ItemIdentifierStack stack = grid[x + y * 3].order.get(grid[x + y * 3].pos);
+				ItemStack stack = grid[x + y * 3].order.get(grid[x + y * 3].pos);
 				ItemStack itemStack = stack.makeNormalStack();
 
 				FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
@@ -130,7 +130,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		int x = 0;
 		int y = 0;
 		for (Canidates canidate : list) {
-			ItemIdentifierStack stack = canidate.order.get(canidate.pos);
+			ItemStack stack = canidate.order.get(canidate.pos);
 			ItemStack itemStack = stack.makeNormalStack();
 			FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 			if (font == null) {

@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.opengl.GL11;
 
@@ -29,7 +29,7 @@ import logisticspipes.utils.string.StringUtils;
 public class GuiItemSink extends ModuleBaseGui {
 
 	private static final String PREFIX = "gui.itemsink.";
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/gui/itemsink.png");
 
 	private final ModuleItemSink _itemSink;
 	private final boolean isFuzzy;

@@ -182,7 +182,7 @@ public class ItemUpgrade extends LogisticsItem {
 				tooltip.add(MessageFormat.format(base, join(module)));
 			}
 		} else {
-			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
+			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getTranslationKey(stack));
 			String key = baseKey + 1;
 			String translation = StringUtils.translate(key);
 			if (translation.equals(key)) {

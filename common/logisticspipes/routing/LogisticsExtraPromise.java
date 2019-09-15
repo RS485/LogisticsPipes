@@ -1,17 +1,18 @@
 package logisticspipes.routing;
 
+import net.minecraft.item.ItemStack;
+
 import lombok.Getter;
 
-import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.request.IExtraPromise;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.interfaces.routing.ItemCrafter;
+import logisticspipes.interfaces.routing.ItemRequestProvider;
+import logisticspipes.request.ExtraPromise;
+import network.rs485.logisticspipes.routing.request.Resource;
 
-public class LogisticsExtraPromise extends LogisticsPromise implements IExtraPromise {
+public class LogisticsExtraPromise extends LogisticsPromise implements ExtraPromise {
 
-	public LogisticsExtraPromise(ItemIdentifier item, int numberOfItems, IProvideItems sender, boolean provided) {
-		super(item, numberOfItems, sender, null);
+	public LogisticsExtraPromise(ItemStack stack, ItemRequestProvider sender, boolean provided) {
+		super(stack, sender, null);
 		this.provided = provided;
 	}
 
@@ -20,23 +21,23 @@ public class LogisticsExtraPromise extends LogisticsPromise implements IExtraPro
 
 	@Override
 	public LogisticsExtraPromise copy() {
-		return new LogisticsExtraPromise(item, numberOfItems, sender, provided);
+		return new LogisticsExtraPromise(stack, sender, provided);
 	}
 
 	@Override
-	public void registerExtras(IResource requestType) {
-		if (sender instanceof ICraftItems) {
-			((ICraftItems) sender).registerExtras(this);
+	public void registerExtras(Resource requestType) {
+		if (sender instanceof ItemCrafter) {
+			((ItemCrafter) sender).registerExtras(this);
 		}
 	}
 
 	@Override
-	public void lowerAmount(int usedcount) {
-		numberOfItems -= usedcount;
+	public void lowerAmount(int usedCount) {
+		stack.decrement(usedCount);
 	}
 
 	@Override
 	public void setAmount(int amount) {
-		numberOfItems = amount;
+		stack.setCount(amount);
 	}
 }

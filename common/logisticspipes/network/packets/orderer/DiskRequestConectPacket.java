@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.orderer;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.LPItems;
 import logisticspipes.network.PacketHandler;
@@ -34,8 +34,8 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 		if (pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
 			if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk() != null) {
 				if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().getItem().equals(LPItems.disk)) {
-					if (!((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().hasTagCompound()) {
-						((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
+					if (!((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().hasTag()) {
+						((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().setTagCompound(new CompoundTag());
 					}
 				}
 			}
@@ -44,8 +44,8 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 		if (pipe.pipe instanceof PipeBlockRequestTable) {
 			if (((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0) != null) {
 				if (((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).getItem().equals(LPItems.disk)) {
-					if (!((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).hasTagCompound()) {
-						((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).setTagCompound(new NBTTagCompound());
+					if (!((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).hasTag()) {
+						((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).setTagCompound(new CompoundTag());
 					}
 				}
 			}

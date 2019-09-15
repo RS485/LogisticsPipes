@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 
@@ -35,11 +35,11 @@ public class CardManagmentInventory implements IInventory {
 		}
 		ItemStack card = inv.getStackInSlot(3);
 		if (!card.isEmpty()) {
-			NBTTagCompound nbt = card.getTagCompound();
+			CompoundTag nbt = card.getTag();
 			if (nbt == null) {
-				nbt = new NBTTagCompound();
+				nbt = new CompoundTag();
 			}
-			NBTTagCompound colors = nbt.getCompoundTag("colors");
+			CompoundTag colors = nbt.getCompoundTag("colors");
 			int slot = i - 4;
 
 			int colorCode;
@@ -83,12 +83,12 @@ public class CardManagmentInventory implements IInventory {
 	@Override
 	public void setInventorySlotContents(int i, @Nonnull ItemStack itemstack) {
 		if (i > -1 && i < 4) {
-			if (i == 0 && !itemstack.isEmpty() && !inv.getStackInSlot(1).isEmpty() && inv.getStackInSlot(2).isEmpty() && inv.getStackInSlot(1).getItemDamage() == itemstack.getItemDamage()) {
+			if (i == 0 && !itemstack.isEmpty() && !inv.getStackInSlot(1).isEmpty() && inv.getStackInSlot(2).isEmpty() && inv.getStackInSlot(1).getDamage() == itemstack.getItemDamage()) {
 				itemstack.setTagCompound(inv.getStackInSlot(1).getTagCompound());
 				inv.setInventorySlotContents(2, itemstack);
 				return;
 			}
-			if (i == 1 && !itemstack.isEmpty() && !inv.getStackInSlot(0).isEmpty() && inv.getStackInSlot(2).isEmpty() && inv.getStackInSlot(0).getItemDamage() == itemstack.getItemDamage()) {
+			if (i == 1 && !itemstack.isEmpty() && !inv.getStackInSlot(0).isEmpty() && inv.getStackInSlot(2).isEmpty() && inv.getStackInSlot(0).getDamage() == itemstack.getItemDamage()) {
 				itemstack.setTagCompound(inv.getStackInSlot(0).getTagCompound());
 				inv.setInventorySlotContents(2, itemstack);
 				return;
@@ -98,11 +98,11 @@ public class CardManagmentInventory implements IInventory {
 		}
 		ItemStack card = inv.getStackInSlot(3);
 		if (!card.isEmpty()) {
-			NBTTagCompound nbt = card.getTagCompound();
+			CompoundTag nbt = card.getTag();
 			if (nbt == null) {
-				nbt = new NBTTagCompound();
+				nbt = new CompoundTag();
 			}
-			NBTTagCompound colors = nbt.getCompoundTag("colors");
+			CompoundTag colors = nbt.getCompoundTag("colors");
 			int slot = i - 4;
 			colors.setInteger("color:" + slot, MinecraftColor.getColor(itemstack).ordinal());
 			nbt.setTag("colors", colors);

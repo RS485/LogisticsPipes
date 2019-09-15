@@ -3,8 +3,8 @@ package logisticspipes.renderer;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.world.BlockView;
 
 import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -36,8 +36,8 @@ public class LogisticsSolidBlockWorldRenderer implements ISimpleBlockRenderingHa
 	}
 
 	@Override
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-		TileEntity tile = world.getTileEntity(x, y, z);
+	public boolean renderWorldBlock(BlockView world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
+		BlockEntity tile = world.getBlockEntity(x, y, z);
 		if (tile instanceof LogisticsSolidTileEntity) {
 			if (config.isUseNewRenderer()) {
 				newRenderer.renderWorldBlock(world, (LogisticsSolidTileEntity) tile, renderer, x, y, z);

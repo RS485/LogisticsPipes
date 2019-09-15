@@ -16,7 +16,7 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.StringUtils;
 
 public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
@@ -26,12 +26,12 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		void handleItemChoice(int slot);
 	}
 
-	private final List<ItemIdentifierStack> candidate;
+	private final List<ItemStack> candidate;
 	private final IHandleItemChoice handler;
 	private ItemDisplay itemDisplay = null;
 	private InputBar search;
 
-	public SelectItemOutOfList(List<ItemIdentifierStack> candidate, IHandleItemChoice handler) {
+	public SelectItemOutOfList(List<ItemStack> candidate, IHandleItemChoice handler) {
 		super(156, 188, 0, 0);
 		this.candidate = candidate;
 		this.handler = handler;
@@ -91,7 +91,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		} else if (id == 0) {
 			itemDisplay.prevPage();
 		} else if (id == 2) {
-			ItemIdentifierStack stack = itemDisplay.getSelectedItem();
+			ItemStack stack = itemDisplay.getSelectedItem();
 			int index = candidate.indexOf(stack);
 			if (index >= 0) {
 				handler.handleItemChoice(index);

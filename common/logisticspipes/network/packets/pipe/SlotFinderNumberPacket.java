@@ -1,11 +1,11 @@
 package logisticspipes.network.packets.pipe;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -53,7 +53,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
-		TileEntity inv = this.getTile(player.world, tile -> tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
+		BlockEntity inv = this.getTile(player.world, tile -> tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
 		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, null);
 		Slot result = null;
 		if (player.openContainer.inventorySlots.get(inventorySlot).slotNumber == inventorySlot) {
@@ -82,7 +82,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			}
 		} else {
 			ItemStack dummyStack = new ItemStack(Blocks.STONE, 0, 0);
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
 			dummyStack.setTagCompound(nbt); // dummyStack: yay, I am unique
 			result.putStack(dummyStack);

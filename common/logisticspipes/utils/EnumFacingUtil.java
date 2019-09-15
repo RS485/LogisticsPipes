@@ -1,13 +1,14 @@
 package logisticspipes.utils;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 public class EnumFacingUtil {
 
-	public static EnumFacing getOrientation(int input) {
-		if (input < 0 || EnumFacing.VALUES.length <= input) {
+	@Deprecated
+	public static Direction getOrientation(int input) {
+		if (input < 0 || input > 5) {
 			return null;
 		}
-		return EnumFacing.VALUES[input];
+		return Direction.byId(input);
 	}
 }

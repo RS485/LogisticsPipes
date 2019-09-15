@@ -1,23 +1,23 @@
 package logisticspipes.hud;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IHUDConfig;
 
 public class HUDConfig implements IHUDConfig {
 
-	private NBTTagCompound configTag;
+	private CompoundTag configTag;
 
 	public HUDConfig(ItemStack stack) {
 		this(stack.getTagCompound());
 		stack.setTagCompound(configTag);
 	}
 
-	public HUDConfig(NBTTagCompound tag) {
+	public HUDConfig(CompoundTag tag) {
 		configTag = tag;
 		if (configTag == null) {
-			configTag = new NBTTagCompound();
+			configTag = new CompoundTag();
 		}
 
 		if (configTag.hasNoTags()) {

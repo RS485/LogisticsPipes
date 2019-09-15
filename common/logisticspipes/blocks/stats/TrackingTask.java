@@ -1,10 +1,10 @@
 package logisticspipes.blocks.stats;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -21,7 +21,7 @@ public class TrackingTask {
 		if (tickCount % everyNthTick != 0) {
 			return;
 		}
-		IRouter router = pipe.getRouter();
+		Router router = pipe.getRouter();
 		if (router == null) {
 			return;
 		}
@@ -31,7 +31,7 @@ public class TrackingTask {
 		}
 	}
 
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(CompoundTag nbt) {
 		int[] amountRecorded_A = nbt.getIntArray("amountRecorded_A");
 		int[] amountRecorded_B = nbt.getIntArray("amountRecorded_B");
 		for (int i = 0; i < amountRecorded.length; i++) {
@@ -44,7 +44,7 @@ public class TrackingTask {
 		item = ItemIdentifier.get(ItemStackLoader.loadAndFixItemStackFromNBT(nbt));
 	}
 
-	public void writeToNBT(NBTTagCompound nbt) {
+	public void writeToNBT(CompoundTag nbt) {
 		int[] amountRecorded_A = new int[amountRecorded.length];
 		int[] amountRecorded_B = new int[amountRecorded.length];
 		for (int i = 0; i < amountRecorded.length; i++) {

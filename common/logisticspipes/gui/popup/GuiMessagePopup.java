@@ -52,7 +52,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 			if (text[i] == null) {
 				continue;
 			}
-			String msg = StringUtils.getCuttedString(text[i], mWidth - 10, fontRenderer);
+			String msg = StringUtils.getCutString(text[i], mWidth - 10, fontRenderer);
 			int stringWidth = mc.fontRenderer.getStringWidth(msg);
 			mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}

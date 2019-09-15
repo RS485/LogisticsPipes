@@ -29,7 +29,7 @@ public class EntrencsTransport extends PipeTransportLogistics {
 							PipeItemsSystemDestinationLogistics dPipe = (PipeItemsSystemDestinationLogistics) lPipe;
 							if (dPipe.getTargetUUID() != null) {
 								if (dPipe.getTargetUUID().equals(pipe.getLocalFreqUUID())) {
-									data.setDestination(dPipe.getRouter().getSimpleID());
+									data.setDestination(dPipe.getRouter().getSimpleId());
 									data.setArrived(false);
 								}
 							}

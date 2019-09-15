@@ -2,10 +2,10 @@ package logisticspipes.network.packets;
 
 import java.util.Arrays;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +32,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileEntity tile = getTile(player.world, TileEntity.class);
+		BlockEntity tile = getTile(player.world, BlockEntity.class);
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity) tile).handleNEIRecipePacket(getContent());
 		} else if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {

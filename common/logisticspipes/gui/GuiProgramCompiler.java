@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
@@ -104,11 +104,11 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 					return "";
 				}
 				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
-				ResourceLocation sel = getProgramListForSelectionIndex(list).get(index);
+				Identifier sel = getProgramListForSelectionIndex(list).get(index);
 
 				Item selItem = Item.REGISTRY.getObject(sel);
 				if (selItem != null) {
-					return StringUtils.translate(selItem.getUnlocalizedName() + ".name");
+					return StringUtils.translate(selItem.getTranslationKey() + ".name");
 				}
 				return "UNDEFINED";
 			}
@@ -119,10 +119,10 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 					return 0xFFFFFF;
 				}
 				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
-				ResourceLocation sel = getProgramListForSelectionIndex(list).get(index);
+				Identifier sel = getProgramListForSelectionIndex(list).get(index);
 
 				NBTTagList listPrograms = compiler.getNBTTagListForKey("compilerPrograms");
-				return StreamSupport.stream(listPrograms.spliterator(), false).anyMatch(it -> new ResourceLocation(((NBTTagString) it).getString()).equals(sel))
+				return StreamSupport.stream(listPrograms.spliterator(), false).anyMatch(it -> new Identifier(((NBTTagString) it).getString()).equals(sel))
 						? 0xAAFFAA : 0xFFAAAA;
 			}
 		};
@@ -190,11 +190,11 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				}
 				if (selIndex != -1) {
 					NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
-					ResourceLocation sel = getProgramListForSelectionIndex(list).get(selIndex);
+					Identifier sel = getProgramListForSelectionIndex(list).get(selIndex);
 
 					NBTTagList listPrograms = compiler.getNBTTagListForKey("compilerPrograms");
 					boolean flag = StreamSupport.stream(listPrograms.spliterator(), false)
-							.anyMatch(it -> new ResourceLocation(((NBTTagString) it).getString()).equals(sel));
+							.anyMatch(it -> new Identifier(((NBTTagString) it).getString()).equals(sel));
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(CompilerTriggerTaskPacket.class).setCategory(sel).setType(flag ? "flash" : "program").setTilePos(compiler));
 				}
 				break;
@@ -213,11 +213,11 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			String name;
 			Item item = Item.REGISTRY.getObject(compiler.getCurrentTask());
 			if (item != null) {
-				name = item.getUnlocalizedName() + ".name";
+				name = item.getTranslationKey() + ".name";
 			} else {
 				name = "gui.compiler." + compiler.getCurrentTask().toString().replace(':', '.');
 			}
-			String text = StringUtils.getCuttedString(StringUtils.translate(name),
+			String text = StringUtils.getCutString(StringUtils.translate(name),
 					160, fontRenderer);
 			fontRenderer.drawString(text, guiLeft + 10, guiTop + 70, 0x000000);
 			drawRect(guiLeft + 9, guiTop + 50, guiLeft + 171, guiTop + 66, Color.BLACK);
@@ -250,10 +250,10 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 			if (selIndex != -1) {
 				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
-				ResourceLocation sel = getProgramListForSelectionIndex(list).get(selIndex);
+				Identifier sel = getProgramListForSelectionIndex(list).get(selIndex);
 
 				NBTTagList listProgramms = compiler.getNBTTagListForKey("compilerPrograms");
-				if (StreamSupport.stream(listProgramms.spliterator(), false).anyMatch(it -> new ResourceLocation(((NBTTagString) it).getString()).equals(sel))) {
+				if (StreamSupport.stream(listProgramms.spliterator(), false).anyMatch(it -> new Identifier(((NBTTagString) it).getString()).equals(sel))) {
 					programmerButton.displayString = "Flash";
 					programmerButton.enabled = !compiler.getInventory().getStackInSlot(1).isEmpty();
 				} else {
@@ -264,13 +264,13 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		}
 	}
 
-	private List<ResourceLocation> getProgramListForSelectionIndex(NBTTagList list) {
+	private List<Identifier> getProgramListForSelectionIndex(NBTTagList list) {
 		return StreamSupport.stream(list.spliterator(), false).flatMap(
-				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new ResourceLocation(((NBTTagString) nbtBase).getString()))
+				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new Identifier(((NBTTagString) nbtBase).getString()))
 						.stream())
-				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getUnlocalizedName() + ".name").toLowerCase().contains(search.getContent().toLowerCase()))
-				.sorted(Comparator.comparing(o -> getSortingClass(Item.REGISTRY.getObject((ResourceLocation) o)))
-						.thenComparing(o -> StringUtils.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName() + ".name").toLowerCase())
+				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getTranslationKey() + ".name").toLowerCase().contains(search.getContent().toLowerCase()))
+				.sorted(Comparator.comparing(o -> getSortingClass(Item.REGISTRY.getObject((Identifier) o)))
+						.thenComparing(o -> StringUtils.translate(Item.REGISTRY.getObject((Identifier) o).getTranslationKey() + ".name").toLowerCase())
 				)
 				.collect(Collectors.toList());
 	}

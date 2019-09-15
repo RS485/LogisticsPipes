@@ -12,39 +12,39 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.interfaces.routing.ItemCrafter;
+import logisticspipes.request.resources.Resource.Dict;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.LogisticsDictPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
 
-public class DictCraftingTemplate implements IReqCraftingTemplate {
+public class DictCraftingTemplate implements ReqCraftingTemplate {
 
-	protected DictResource _result;
-	protected ICraftItems _crafter;
+	protected Resource.Dict _result;
+	protected ItemCrafter _crafter;
 
-	protected ArrayList<Pair<IResource, IAdditionalTargetInformation>> _required = new ArrayList<>(9);
+	protected ArrayList<Tuple2<Resource, IAdditionalTargetInformation>> _required = new ArrayList<>(9);
 
-	protected ArrayList<ItemIdentifierStack> _byproduct = new ArrayList<>(9);
+	protected ArrayList<ItemStack> _byproduct = new ArrayList<>(9);
 
 	private final int priority;
 
-	public DictCraftingTemplate(DictResource result, ICraftItems crafter, int priority) {
+	public DictCraftingTemplate(Resource.Dict result, ItemCrafter crafter, int priority) {
 		_result = result;
 		_crafter = crafter;
 		this.priority = priority;
 	}
 
-	public void addRequirement(IResource requirement, IAdditionalTargetInformation info) {
-		_required.add(new Pair<>(requirement, info));
+	public void addRequirement(Resource requirement, IAdditionalTargetInformation info) {
+		_required.add(new Tuple2<>(requirement, info));
 	}
 
-	public void addByproduct(ItemIdentifierStack stack) {
-		for (ItemIdentifierStack i : _byproduct) {
+	public void addByproduct(ItemStack stack) {
+		for (ItemStack i : _byproduct) {
 			if (i.getItem().equals(stack.getItem())) {
 				i.setStackSize(i.getStackSize() + stack.getStackSize());
 				return;
@@ -61,7 +61,7 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 	//TODO: refactor so that other classes don't reach through the template to the crafter.
 	// needed to get the crafter todo, in order to sort
 	@Override
-	public ICraftItems getCrafter() {
+	public ItemCrafter getCrafter() {
 		return _crafter;
 	}
 
@@ -71,7 +71,7 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 	}
 
 	@Override
-	public int compareTo(ICraftingTemplate o) {
+	public int compareTo(CraftingTemplate o) {
 		int c = o.comparePriority(priority);
 		if (c == 0) {
 			c = o.compareStack(_result.stack);
@@ -88,19 +88,19 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 	}
 
 	@Override
-	public int compareStack(ItemIdentifierStack stack) {
+	public int compareStack(ItemStack stack) {
 		return stack.compareTo(this._result.stack);
 	}
 
 	@Override
-	public int compareCrafter(ICraftItems crafter) {
+	public int compareCrafter(ItemCrafter crafter) {
 		return crafter.compareTo(this._crafter);
 	}
 
 	@Override
-	public boolean canCraft(IResource type) {
-		if (type instanceof DictResource) {
-			return type.matches(_result.getItem(), IResource.MatchSettings.NORMAL) && _result.matches(((DictResource) type).getItem(), IResource.MatchSettings.NORMAL) && _result.getBitSet().equals(((DictResource) type).getBitSet());
+	public boolean canCraft(Resource type) {
+		if (type instanceof Resource.Dict) {
+			return type.matches(_result.getItem(), Resource.MatchSettings.NORMAL) && _result.matches(((Resource.Dict) type).getItem(), Resource.MatchSettings.NORMAL) && _result.getBitSet().equals(((Resource.Dict) type).getBitSet());
 		}
 		return false;
 	}
@@ -111,26 +111,26 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 	}
 
 	@Override
-	public IResource getResultItem() {
+	public Resource getResultItem() {
 		return _result;
 	}
 
 	@Override
-	public List<IExtraPromise> getByproducts(int workSets) {
+	public List<ExtraPromise> getByproducts(int workSets) {
 		return _byproduct.stream()
 				.map(stack -> new LogisticsExtraPromise(stack.getItem(), stack.getStackSize() * workSets, getCrafter(), false))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Pair<IResource, IAdditionalTargetInformation>> getComponents(int nCraftingSetsNeeded) {
-		List<Pair<IResource, IAdditionalTargetInformation>> stacks = new ArrayList<>(_required.size());
+	public List<Tuple2<Resource, IAdditionalTargetInformation>> getComponents(int nCraftingSetsNeeded) {
+		List<Tuple2<Resource, IAdditionalTargetInformation>> stacks = new ArrayList<>(_required.size());
 
 		// for each thing needed to satisfy this promise
-		for (Pair<IResource, IAdditionalTargetInformation> stack : _required) {
-			Pair<IResource, IAdditionalTargetInformation> pair = new Pair<>(stack.getValue1()
-					.clone(nCraftingSetsNeeded), stack.getValue2());
-			stacks.add(pair);
+		for (Tuple2<Resource, IAdditionalTargetInformation> stack : _required) {
+			Tuple2<Resource, IAdditionalTargetInformation> tuple = new Tuple2<>(stack.getValue1()
+					.copy(nCraftingSetsNeeded), stack.getValue2());
+			stacks.add(tuple);
 		}
 		return stacks;
 	}

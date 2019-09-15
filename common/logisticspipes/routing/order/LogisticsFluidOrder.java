@@ -3,14 +3,14 @@ package logisticspipes.routing.order;
 import lombok.Getter;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestFluid;
-import logisticspipes.routing.IRouter;
+import logisticspipes.interfaces.routing.FluidRequester;
+import logisticspipes.routing.Router;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public class LogisticsFluidOrder extends LogisticsOrder {
 
-	public LogisticsFluidOrder(FluidIdentifier fuild, Integer amount, IRequestFluid destination, ResourceType type, IAdditionalTargetInformation info) {
+	public LogisticsFluidOrder(FluidIdentifier fuild, Integer amount, FluidRequester destination, ResourceType type, IAdditionalTargetInformation info) {
 		super(type, info);
 		if (destination == null) {
 			throw new NullPointerException();
@@ -24,15 +24,15 @@ public class LogisticsFluidOrder extends LogisticsOrder {
 	private final FluidIdentifier fluid;
 	@Getter
 	private int amount;
-	private final IRequestFluid destination;
+	private final FluidRequester destination;
 
 	@Override
-	public ItemIdentifierStack getAsDisplayItem() {
+	public ItemStack getAsDisplayItem() {
 		return fluid.getItemIdentifier().makeStack(amount);
 	}
 
 	@Override
-	public IRouter getRouter() {
+	public Router getRouter() {
 		return destination.getRouter();
 	}
 

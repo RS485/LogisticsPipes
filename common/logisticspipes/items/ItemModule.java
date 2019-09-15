@@ -5,19 +5,19 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import net.minecraftforge.registries.IForgeRegistry;
@@ -53,7 +53,7 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.StringUtils;
 
 public class ItemModule extends LogisticsItem {
@@ -153,9 +153,9 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@Nonnull
-	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, Direction facing, float hitX, float hitY, float hitZ) {
 		if (MainProxy.isServer(player.world)) {
-			TileEntity tile = world.getTileEntity(pos);
+			BlockEntity tile = world.getBlockEntity(pos);
 			if (tile instanceof LogisticsTileGenericPipe) {
 				if (player.getDisplayName().getUnformattedText().equals("ComputerCraft")) { // Allow turtle to place modules in pipes.
 					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
@@ -198,8 +198,8 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		if (stack.hasTagCompound()) {
-			NBTTagCompound nbt = stack.getTagCompound();
+		if (stack.hasTag()) {
+			CompoundTag nbt = stack.getTag();
 			assert nbt != null;
 
 			if (nbt.hasKey("informationList")) {
@@ -213,7 +213,7 @@ public class ItemModule extends LogisticsItem {
 							data = ((NBTTagString) nbttag).getString();
 							if (data.startsWith("<that>")) {
 								String prefix = data.substring(6);
-								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");
+								CompoundTag module = nbt.getCompoundTag("moduleInformation");
 								int size = module.getTagList(prefix + "items", module.getId()).tagCount();
 								if (module.hasKey(prefix + "itemsCount")) {
 									size = module.getInteger(prefix + "itemsCount");
@@ -221,7 +221,7 @@ public class ItemModule extends LogisticsItem {
 								ItemIdentifierInventory inv = new ItemIdentifierInventory(size, "InformationTempInventory", Integer.MAX_VALUE);
 								inv.readFromNBT(module, prefix);
 								for (int pos = 0; pos < inv.getSizeInventory(); pos++) {
-									ItemIdentifierStack identStack = inv.getIDStackInSlot(pos);
+									ItemStack identStack = inv.getIDStackInSlot(pos);
 									if (identStack != null) {
 										if (identStack.getStackSize() > 1) {
 											tooltip.add("  " + identStack.getStackSize() + "x " + identStack.getFriendlyName());

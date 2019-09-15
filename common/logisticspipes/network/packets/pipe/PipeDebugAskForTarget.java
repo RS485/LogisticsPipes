@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.pipe;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 
@@ -40,7 +40,7 @@ public class PipeDebugAskForTarget extends ModernPacket {
 		RayTraceResult box = FMLClientHandler.instance().getClient().objectMouseOver;
 		if (box != null && box.typeOfHit == RayTraceResult.Type.BLOCK) {
 			if (!isServer) {
-				TileEntity tile = new DoubleCoordinates(box.getBlockPos()).getTileEntity(player.getEntityWorld());
+				BlockEntity tile = new DoubleCoordinates(box.getBlockPos()).getBlockEntity(player.getEntityWorld());
 				if (tile instanceof LogisticsTileGenericPipe) {
 					((LogisticsTileGenericPipe) tile).pipe.debug.debugThisPipe = !((LogisticsTileGenericPipe) tile).pipe.debug.debugThisPipe;
 					if (((LogisticsTileGenericPipe) tile).pipe.debug.debugThisPipe) {

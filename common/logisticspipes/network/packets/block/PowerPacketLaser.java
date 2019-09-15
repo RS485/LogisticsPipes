@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.block;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ public class PowerPacketLaser extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private EnumFacing dir;
+	private Direction dir;
 	@Getter
 	@Setter
 	private int color;

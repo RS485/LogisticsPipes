@@ -8,41 +8,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.IRouter;
-import logisticspipes.routing.IRouterManager;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.order.IDistanceTracker;
-import logisticspipes.utils.EnumFacingUtil;
-import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.SlidingWindowBitSet;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import logisticspipes.utils.tuples.Tuple2;
+import network.rs485.logisticspipes.init.Items;
+import network.rs485.logisticspipes.item.FluidContainerItem;
 
 public abstract class LPTravelingItem {
 
 	public static final Map<Integer, WeakReference<LPTravelingItemServer>> serverList = new HashMap<>();
 	public static final Map<Integer, WeakReference<LPTravelingItemClient>> clientList = new HashMap<>();
-	public static final List<Pair<Integer, Object>> forceKeep = new ArrayList<>();
+	public static final List<Tuple2<Integer, Object>> forceKeep = new ArrayList<>();
 	public static final SlidingWindowBitSet clientSideKnownIDs = new SlidingWindowBitSet(20); // 20
 
 	private static int nextFreeId = 0;
@@ -51,18 +49,18 @@ public abstract class LPTravelingItem {
 
 	public int lastTicked = 0;
 
-	protected TileEntity container;
+	protected BlockEntity container;
 	protected float position = 0;
 	protected float yaw = 0;
-	public EnumFacing input = null;
-	public EnumFacing output = null;
-	public final EnumSet<EnumFacing> blacklist = EnumSet.noneOf(EnumFacing.class);
+	public Direction input = null;
+	public Direction output = null;
+	public final EnumSet<Direction> blacklist = EnumSet.noneOf(Direction.class);
 
-	public LPTravelingItem() {
+	private LPTravelingItem() {
 		id = getNextId();
 	}
 
-	public LPTravelingItem(int id, float position, EnumFacing input, EnumFacing output, float yaw) {
+	private LPTravelingItem(int id, float position, Direction input, Direction output, float yaw) {
 		this.id = id;
 		this.position = position;
 		this.input = input;
@@ -102,11 +100,11 @@ public abstract class LPTravelingItem {
 		this.speed = speed;
 	}
 
-	public void setContainer(TileEntity container) {
+	public void setContainer(BlockEntity container) {
 		this.container = container;
 	}
 
-	public TileEntity getContainer() {
+	public BlockEntity getContainer() {
 		return container;
 	}
 
@@ -114,10 +112,10 @@ public abstract class LPTravelingItem {
 		return id;
 	}
 
-	public abstract ItemIdentifierStack getItemIdentifierStack();
+	public abstract ItemStack getStack();
 
 	public boolean isCorrupted() {
-		return getItemIdentifierStack() == null || getItemIdentifierStack().getStackSize() <= 0;
+		return getStack() == null || getStack().getCount() <= 0;
 	}
 
 	public int getAge() {
@@ -135,25 +133,25 @@ public abstract class LPTravelingItem {
 	public static final class LPTravelingItemClient extends LPTravelingItem {
 
 		@Setter
-		private ItemIdentifierStack item;
+		private ItemStack item;
 		private int age;
 		private float hoverStart = (float) (Math.random() * Math.PI * 2.0D);
 
-		public LPTravelingItemClient(int id, float position, EnumFacing input, EnumFacing output, float yaw) {
+		public LPTravelingItemClient(int id, float position, Direction input, Direction output, float yaw) {
 			super(id, position, input, output, yaw);
 		}
 
-		public LPTravelingItemClient(int id, ItemIdentifierStack stack) {
+		public LPTravelingItemClient(int id, ItemStack stack) {
 			super(id);
 			item = stack;
 		}
 
 		@Override
-		public ItemIdentifierStack getItemIdentifierStack() {
+		public ItemStack getStack() {
 			return item;
 		}
 
-		public void updateInformation(EnumFacing input, EnumFacing output, float speed, float position, float yaw) {
+		public void updateInformation(Direction input, Direction output, float speed, float position, float yaw) {
 			this.input = input;
 			this.output = output;
 			this.speed = speed;
@@ -181,7 +179,7 @@ public abstract class LPTravelingItem {
 			LPTravelingItemClient copy = new LPTravelingItemClient(id, position, input, output, yaw);
 			copy.speed = speed;
 			copy.hoverStart = hoverStart;
-			copy.item = item.clone();
+			copy.item = item.copy();
 			copy.age = age;
 			copy.container = container;
 			return copy;
@@ -193,7 +191,7 @@ public abstract class LPTravelingItem {
 		@Getter
 		private ItemRoutingInformation info;
 
-		public LPTravelingItemServer(ItemIdentifierStack stack) {
+		public LPTravelingItemServer(ItemStack stack) {
 			super();
 			info = new ItemRoutingInformation();
 			info.setItem(stack);
@@ -204,14 +202,14 @@ public abstract class LPTravelingItem {
 			this.info = info;
 		}
 
-		public LPTravelingItemServer(NBTTagCompound data) {
+		public LPTravelingItemServer(CompoundTag data) {
 			super();
 			info = new ItemRoutingInformation();
 			readFromNBT(data);
 		}
 
 		@Override
-		public ItemIdentifierStack getItemIdentifierStack() {
+		public ItemStack getStack() {
 			return info.getItem();
 		}
 
@@ -220,16 +218,16 @@ public abstract class LPTravelingItem {
 		}
 
 		@Override
-		public void readFromNBT(NBTTagCompound data) {
+		public void readFromNBT(CompoundTag data) {
 			setPosition(data.getFloat("position"));
 			setSpeed(data.getFloat("speed"));
-			if (data.hasKey("input")) {
-				input = EnumFacingUtil.getOrientation(data.getInteger("input"));
+			if (data.containsKey("input")) {
+				input = Direction.byId(data.getInt("input"));
 			} else {
 				input = null;
 			}
-			if (data.hasKey("output")) {
-				output = EnumFacingUtil.getOrientation(data.getInteger("output"));
+			if (data.containsKey("output")) {
+				output = Direction.byId(data.getInt("output"));
 			} else {
 				output = null;
 			}
@@ -237,70 +235,71 @@ public abstract class LPTravelingItem {
 		}
 
 		@Override
-		public void writeToNBT(NBTTagCompound data) {
-			data.setFloat("position", getPosition());
-			data.setFloat("speed", getSpeed());
+		public void writeToNBT(CompoundTag data) {
+			data.putFloat("position", getPosition());
+			data.putFloat("speed", getSpeed());
 			if (input != null) {
-				data.setInteger("input", input.ordinal());
+				data.putInt("input", input.ordinal());
 			}
 			if (output != null) {
-				data.setInteger("output", output.ordinal());
+				data.putInt("output", output.ordinal());
 			}
 			info.writeToNBT(data);
 		}
 
-		public EntityItem toEntityItem() {
+		public ItemEntity toEntityItem() {
 			World world = container.getWorld();
-			if (MainProxy.isServer(world)) {
-				if (getItemIdentifierStack().getStackSize() <= 0) {
+			if (world != null && world.isClient) {
+				if (getStack().isEmpty()) {
 					return null;
 				}
 
-				if (getItemIdentifierStack().makeNormalStack().getItem() instanceof LogisticsFluidContainer) {
+				if (getStack().getItem() != Items.INSTANCE.getFluidContainer()) {
 					itemWasLost();
 					return null;
 				}
 
-				EnumFacing exitdirection = output;
-				if (exitdirection == null) {
-					exitdirection = input;
+				Direction exitDirection = output;
+				if (exitDirection == null) {
+					exitDirection = input;
 				}
 
-				DoubleCoordinates position = new DoubleCoordinates(container).add(new DoubleCoordinates(0.5, 0.375, 0.5));
+				Vec3d position = new Vec3d(container.getPos()).add(0.5, 0.375, 0.5);
 
-				switch (exitdirection) {
+				switch (exitDirection) {
 					case DOWN:
-						CoordinateUtils.add(position, exitdirection, 0.5);
+						position = position.add(new Vec3d(exitDirection.getVector()).multiply(0.5));
 						break;
 					case UP:
-						CoordinateUtils.add(position, exitdirection, 0.75);
+						position = position.add(new Vec3d(exitDirection.getVector()).multiply(0.75));
 						break;
 					case NORTH:
 					case SOUTH:
 					case WEST:
 					case EAST:
-						CoordinateUtils.add(position, exitdirection, 0.625);
+						position = position.add(new Vec3d(exitDirection.getVector()).multiply(0.625));
 						break;
 					default:
 						break;
 				}
 
-				DoubleCoordinates motion = new DoubleCoordinates(0, 0, 0);
-				CoordinateUtils.add(motion, exitdirection, getSpeed() * 2.0);
+				Vec3d motion = new Vec3d(exitDirection.getVector()).multiply(getSpeed() * 2.0);
 
-				EntityItem entityitem = getItemIdentifierStack().makeEntityItem(world, position.getXCoord(), position.getYCoord(), position.getZCoord());
+				ItemEntity item = new ItemEntity(world, position.x, position.y, position.z, getStack());
 
-				//entityitem.lifespan = 1200;
-				//entityitem.delayBeforeCanPickup = 10;
+				// item.lifespan = 1200;
+				// item.delayBeforeCanPickup = 10;
 
-				//uniformly distributed in -0.005 .. 0.01 to increase bias toward smaller values
-				float f3 = world.rand.nextFloat() * 0.015F - 0.005F;
-				entityitem.motionX = (float) world.rand.nextGaussian() * f3 + motion.getXCoord();
-				entityitem.motionY = (float) world.rand.nextGaussian() * f3 + motion.getYCoord();
-				entityitem.motionZ = (float) world.rand.nextGaussian() * f3 + motion.getZCoord();
+				// uniformly distributed in -0.005 .. 0.01 to increase bias toward smaller values
+				float f3 = world.getRandom().nextFloat() * 0.015F - 0.005F;
+				item.setVelocity(
+						(float) world.getRandom().nextGaussian() * f3 + motion.x,
+						(float) world.getRandom().nextGaussian() * f3 + motion.y,
+						(float) world.getRandom().nextGaussian() * f3 + motion.z
+				);
 				itemWasLost();
 
-				return entityitem;
+				return item;
 			} else {
 				return null;
 			}
@@ -308,12 +307,12 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public void clearDestination() {
-			if (info.destinationint >= 0) {
+			if (info.destinationId >= 0) {
 				itemWasLost();
-				info.jamlist.add(info.destinationint);
+				info.jamlist.add(info.destinationId);
 			}
 			//keep buffercounter and jamlist
-			info.destinationint = -1;
+			info.destinationId = -1;
 			info.destinationUUID = null;
 			info._doNotBuffer = false;
 			info.arrived = false;
@@ -323,21 +322,21 @@ public abstract class LPTravelingItem {
 
 		public void itemWasLost() {
 			if (container != null) {
-				if (MainProxy.isClient(container.getWorld())) {
+				if (container.getWorld() == null || container.getWorld().isClient) {
 					return;
 				}
 			}
-			if (info.destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(info.destinationint)) {
-				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationint);
+			if (info.destinationId >= 0 && SimpleServiceLocator.routerManager.isRouter(info.destinationId)) {
+				Router destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationId);
 				if (destinationRouter.getPipe() != null) {
 					destinationRouter.getPipe().notifyOfReroute(info);
 					if (destinationRouter.getPipe() instanceof IRequireReliableTransport) {
-						((IRequireReliableTransport) destinationRouter.getPipe()).itemLost(info.getItem().clone(), info.targetInfo);
+						((IRequireReliableTransport) destinationRouter.getPipe()).itemLost(info.getItem(), info.targetInfo);
 					}
 					if (destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
-						if (info.getItem().getItem().isFluidContainer()) {
-							FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(info.getItem());
-							((IRequireReliableFluidTransport) destinationRouter.getPipe()).liquidLost(liquid.getFluid(), liquid.getAmount());
+						if (info.getItem().getItem() == Items.INSTANCE.getFluidContainer()) {
+							FluidVolume liquid = FluidContainerItem.Companion.getFluid(info.getItem());
+							((IRequireReliableFluidTransport) destinationRouter.getPipe()).liquidLost(liquid.getFluidKey(), liquid.getAmount());
 						}
 					}
 				}
@@ -346,13 +345,13 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public int getDestination() {
-			return info.destinationint;
+			return info.destinationId;
 		}
 
 		@Override
 		public void setDestination(int destination) {
-			info.destinationint = destination;
-			IRouter router = SimpleServiceLocator.routerManager.getRouter(destination);
+			info.destinationId = destination;
+			Router router = SimpleServiceLocator.routerManager.getRouter(destination);
 			if (router != null) {
 				info.destinationUUID = router.getId();
 			} else {
@@ -381,14 +380,13 @@ public abstract class LPTravelingItem {
 		}
 
 		@Override
-		public void split(int itemsToTake, EnumFacing orientation) {
-			if (getItemIdentifierStack().getItem().isFluidContainer()) {
+		public void split(int itemsToTake, Direction orientation) {
+			if (getStack().getItem() == Items.INSTANCE.getFluidContainer()) {
 				throw new UnsupportedOperationException("Can't split up a FluidContainer");
 			}
-			ItemIdentifierStack stackToKeep = getItemIdentifierStack();
-			ItemIdentifierStack stackToSend = stackToKeep.clone();
-			stackToKeep.setStackSize(itemsToTake);
-			stackToSend.setStackSize(stackToSend.getStackSize() - itemsToTake);
+
+			ItemStack stackToKeep = getStack();
+			ItemStack stackToSend = stackToKeep.split(stackToKeep.getCount() - itemsToTake);
 
 			newId();
 
@@ -399,7 +397,7 @@ public abstract class LPTravelingItem {
 			newItem.setDestination(getDestination());
 			newItem.clearDestination();
 
-			if (container instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) container).pipe.transport instanceof PipeTransportLogistics) {
+			if (container instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) container).pipe.transport != null) {
 				((LogisticsTileGenericPipe) container).pipe.transport.injectItem((LPTravelingItem) newItem, orientation);
 			}
 		}
@@ -415,8 +413,8 @@ public abstract class LPTravelingItem {
 		}
 
 		@Override
-		public void addToJamList(IRouter router) {
-			info.jamlist.add(router.getSimpleID());
+		public void addToJamList(Router router) {
+			info.jamlist.add(router.getSimpleId());
 		}
 
 		@Override
@@ -441,15 +439,15 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public void checkIDFromUUID() {
-			IRouterManager rm = SimpleServiceLocator.routerManager;
-			IRouter router = rm.getRouter(info.destinationint);
+			RouterManager rm = SimpleServiceLocator.routerManager;
+			Router router = rm.getRouter(info.destinationId);
 			if (router == null || info.destinationUUID != router.getId()) {
-				info.destinationint = rm.getIDforUUID(info.destinationUUID);
+				info.destinationId = rm.getIdForUuid(info.destinationUUID);
 			}
 		}
 
 		public void refreshDestinationInformation() {
-			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationint);
+			Router destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationId);
 			if (destinationRouter != null && destinationRouter.getPipe() instanceof CoreRoutedPipe) {
 				destinationRouter.getPipe().refreshItem(getInfo());
 			}

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -30,7 +30,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
@@ -86,12 +86,12 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 	}
 
@@ -125,7 +125,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
 	}
 
 	@Override
@@ -139,14 +139,14 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
 		}
 	}
 

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.items.IItemHandler;
 
@@ -16,9 +16,9 @@ public class ItemInsertionHandler implements IItemHandler {
 	public static final List<ILPItemAcceptor> ACCEPTORS = new ArrayList<>();
 
 	private final LogisticsTileGenericPipe pipe;
-	private final EnumFacing dir;
+	private final Direction dir;
 
-	public ItemInsertionHandler(LogisticsTileGenericPipe pipe, EnumFacing dir) {
+	public ItemInsertionHandler(LogisticsTileGenericPipe pipe, Direction dir) {
 		this.pipe = pipe;
 		this.dir = dir;
 	}
@@ -54,7 +54,7 @@ public class ItemInsertionHandler implements IItemHandler {
 		return 64;
 	}
 
-	public static ItemStack handleItemInsetion(LogisticsTileGenericPipe pipe, EnumFacing from, ItemStack stack) {
+	public static ItemStack handleItemInsetion(LogisticsTileGenericPipe pipe, Direction from, ItemStack stack) {
 		for (ILPItemAcceptor acceptor : ACCEPTORS) {
 			if (acceptor.accept(pipe, from, stack)) {
 				return ItemStack.EMPTY;

@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -64,7 +64,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		}
 	}
 
-	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
+	private static final Identifier achievementTextures = new Identifier("textures/gui/achievement/achievement_background.png");
 
 	private final ItemRenderer renderitem = new ItemRenderer(mc);
 

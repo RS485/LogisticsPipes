@@ -5,7 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.text.TextComponentString;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.routing.IRequestFluid;
+import logisticspipes.interfaces.routing.FluidRequester;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -14,7 +14,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 
-public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IRequestFluid {
+public class PipeFluidRequestLogistics extends FluidRoutedPipe implements FluidRequester {
 
 	public PipeFluidRequestLogistics(Item item) {
 		super(item);

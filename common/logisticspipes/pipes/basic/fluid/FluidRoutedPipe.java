@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -34,10 +34,10 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Triplet;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
+import logisticspipes.utils.tuples.Tuple3;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe {
@@ -49,12 +49,12 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void setTile(TileEntity tile) {
+	public void setTile(BlockEntity tile) {
 		super.setTile(tile);
 	}
 
 	@Override
-	public boolean logisitcsIsPipeConnected(TileEntity tile, EnumFacing dir) {
+	public boolean logisitcsIsPipeConnected(BlockEntity tile, Direction dir) {
 		if (SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
 			return SimpleServiceLocator.enderIOProxy.isFluidConduit(tile, dir.getOpposite());
 		}
@@ -69,17 +69,17 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public TextureType getNonRoutedTexture(EnumFacing connection) {
+	public TextureType getNonRoutedTexture(Direction connection) {
 		if (isFluidSidedTexture(connection)) {
 			return Textures.LOGISTICSPIPE_LIQUID_TEXTURE;
 		}
 		return super.getNonRoutedTexture(connection);
 	}
 
-	private boolean isFluidSidedTexture(EnumFacing connection) {
-		final NeighborTileEntity<TileEntity> neighbor = new WorldCoordinatesWrapper(container).getNeighbor(connection);
+	private boolean isFluidSidedTexture(Direction connection) {
+		final NeighborBlockEntity<BlockEntity> neighbor = new WorldCoordinatesWrapper(container).getNeighbor(connection);
 		if (neighbor == null) return false;
-		TileEntity tileEntity = neighbor.getTileEntity();
+		BlockEntity tileEntity = neighbor.getBlockEntity();
 		ITankUtil liq = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tileEntity, connection.getOpposite());
 		return (liq != null && liq.containsTanks());
 	}
@@ -96,8 +96,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	public final List<ITankUtil> getAdjacentTanks(boolean flag) {
 		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
-				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
-				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()))
+				.filter(adjacent -> isConnectableTank(adjacent.getBlockEntity(), adjacent.getDirection(), flag))
+				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()))
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
@@ -107,12 +107,12 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 *            Weather to list a Nearby Pipe or not
 	 */
 
-	public final List<Triplet<ITankUtil, TileEntity, EnumFacing>> getAdjacentTanksAdvanced(boolean flag) {
+	public final List<Tuple3<ITankUtil, BlockEntity, Direction>> getAdjacentTanksAdvanced(boolean flag) {
 		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
-				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
-				.map(adjacent -> new Triplet<>(
-						SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()),
-						adjacent.getTileEntity(),
+				.filter(adjacent -> isConnectableTank(adjacent.getBlockEntity(), adjacent.getDirection(), flag))
+				.map(adjacent -> new Tuple3<>(
+						SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()),
+						adjacent.getBlockEntity(),
 						adjacent.getDirection()))
 				.filter(triplet -> triplet.getValue1() != null)
 				.collect(Collectors.toList());
@@ -120,15 +120,15 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	/***
 	 * @param tile
-	 *            The connected TileEntity
+	 *            The connected BlockEntity
 	 * @param dir
-	 *            The direction the TileEntity is in relative to the currect
+	 *            The direction the BlockEntity is in relative to the currect
 	 *            pipe
 	 * @param flag
 	 *            Weather to list a Nearby Pipe or not
 	 */
 
-	public final boolean isConnectableTank(TileEntity tile, EnumFacing dir, boolean flag) {
+	public final boolean isConnectableTank(BlockEntity tile, Direction dir, boolean flag) {
 		if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) {
 			return true;
 		}
@@ -167,8 +167,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		super.enabledUpdateEntity();
 		if (canInsertFromSideToTanks()) {
 			int validDirections = 0;
-			List<Triplet<ITankUtil, TileEntity, EnumFacing>> list = getAdjacentTanksAdvanced(true);
-			for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : list) {
+			List<Tuple3<ITankUtil, BlockEntity, Direction>> list = getAdjacentTanksAdvanced(true);
+			for (Tuple3<ITankUtil, BlockEntity, Direction> pair : list) {
 				if (pair.getValue2() instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) pair.getValue2()).pipe instanceof CoreRoutedPipe) {
 						continue;
@@ -199,7 +199,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			if (stack == null) {
 				return;
 			}
-			for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : list) {
+			for (Tuple3<ITankUtil, BlockEntity, Direction> pair : list) {
 				if (pair.getValue2() instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) pair.getValue2()).pipe instanceof CoreRoutedPipe) {
 						continue;
@@ -228,7 +228,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	public int countOnRoute(FluidIdentifier ident) {
 		int amount = 0;
 		for (ItemRoutingInformation next : _inTransitToMe) {
-			ItemIdentifierStack item = next.getItem();
+			ItemStack item = next.getItem();
 			if (item.getItem().isFluidContainer()) {
 				FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
 				if (liquid.getFluid().equals(ident)) {
@@ -245,17 +245,17 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	public abstract boolean canReceiveFluid();
 
-	public boolean endReached(LPTravelingItemServer arrivingItem, TileEntity tile) {
+	public boolean endReached(LPTravelingItemServer arrivingItem, BlockEntity tile) {
 		if (canInsertToTanks() && MainProxy.isServer(getWorld())) {
 			getCacheHolder().trigger(CacheTypes.Inventory);
-			if (arrivingItem.getItemIdentifierStack() == null || !(arrivingItem.getItemIdentifierStack().getItem().isFluidContainer())) {
+			if (arrivingItem.getItemStack() == null || !(arrivingItem.getItemStack().getItem().isFluidContainer())) {
 				return false;
 			}
-			if (getRouter().getSimpleID() != arrivingItem.getDestination()) {
+			if (getRouter().getSimpleId() != arrivingItem.getDestination()) {
 				return false;
 			}
 			int filled;
-			FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemIdentifierStack());
+			FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemStack());
 			if (isConnectableTank(tile, arrivingItem.output, false)) {
 				List<ITankUtil> adjTanks = getAdjacentTanks(false);
 				//Try to put liquid into all adjacent tanks.
@@ -288,7 +288,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			}
 
 			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid));
-			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsFluidManager.getBestReply(liquid, getRouter(), routedItem.getJamList());
+			Tuple2<Integer, Integer> replies = SimpleServiceLocator.logisticsFluidManager.getBestReply(liquid, getRouter(), routedItem.getJamList());
 			int dest = replies.getValue1();
 			routedItem.setDestination(dest);
 			routedItem.setTransportMode(TransportMode.Passive);
@@ -308,8 +308,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		if (!(other instanceof FluidRoutedPipe)) {
 			return false;
 		}
-		List<TileEntity> theirs = ((FluidRoutedPipe) other).getAllTankTiles();
-		for (TileEntity tile : getAllTankTiles()) {
+		List<BlockEntity> theirs = ((FluidRoutedPipe) other).getAllTankTiles();
+		for (BlockEntity tile : getAllTankTiles()) {
 			if (theirs.contains(tile)) {
 				return true;
 			}
@@ -317,9 +317,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		return false;
 	}
 
-	public List<TileEntity> getAllTankTiles() {
-		List<TileEntity> list = new ArrayList<>();
-		for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : getAdjacentTanksAdvanced(false)) {
+	public List<BlockEntity> getAllTankTiles() {
+		List<BlockEntity> list = new ArrayList<>();
+		for (Tuple3<ITankUtil, BlockEntity, Direction> pair : getAdjacentTanksAdvanced(false)) {
 			list.addAll(SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.getValue2()));
 		}
 		return list;

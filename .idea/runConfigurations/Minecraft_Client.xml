@@ -1,11 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Minecraft Client" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="GradleStart" />
+    <option name="MAIN_CLASS_NAME" value="net.fabricmc.loader.launch.knot.KnotClient" />
     <module name="LogisticsPipes.main" />
-    <option name="VM_PARAMETERS" value="-Dfml.coreMods.load=logisticspipes.asm.LogisticsPipesCoreLoader" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
-    <RunnerSettings RunnerId="Run" />
-    <ConfigurationWrapper RunnerId="Run" />
+    <option name="PROGRAM_PARAMETERS" value=" --assetIndex &quot;19w35a-1.15&quot; --assetsDir &quot;$USER_HOME$/.gradle/caches/fabric-loom/assets&quot;" />
+    <option name="VM_PARAMETERS" value="-Dfabric.development=true" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

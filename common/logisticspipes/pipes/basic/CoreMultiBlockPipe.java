@@ -3,11 +3,11 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -17,7 +17,7 @@ import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeMultiBlockTransportLogistics;
 import logisticspipes.utils.LPPositionSet;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 
 public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
@@ -34,18 +34,18 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 		GAIN_B
 	}
 
-	private static List<Pair<SubBlockTypeForShare, SubBlockTypeForShare>> allowedCombinations;
+	private static List<Tuple2<SubBlockTypeForShare, SubBlockTypeForShare>> allowedCombinations;
 
 	static {
 		allowedCombinations = new ArrayList<>();
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.S_CURVE_A, SubBlockTypeForShare.S_CURVE_B));
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.S_CURVE_A, SubBlockTypeForShare.S_CURVE_A));
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_A, SubBlockTypeForShare.CURVE_INNER_A));
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.CURVE_INNER_B));
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_A, SubBlockTypeForShare.S_CURVE_A));
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.S_CURVE_A));
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.GAIN_A, SubBlockTypeForShare.GAIN_B));
-		allowedCombinations.add(new Pair<>(SubBlockTypeForShare.GAIN_A, SubBlockTypeForShare.GAIN_A));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.S_CURVE_A, SubBlockTypeForShare.S_CURVE_B));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.S_CURVE_A, SubBlockTypeForShare.S_CURVE_A));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.CURVE_OUT_A, SubBlockTypeForShare.CURVE_INNER_A));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.CURVE_INNER_B));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.CURVE_OUT_A, SubBlockTypeForShare.S_CURVE_A));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.CURVE_OUT_B, SubBlockTypeForShare.S_CURVE_A));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.GAIN_A, SubBlockTypeForShare.GAIN_B));
+		allowedCombinations.add(new Tuple2<>(SubBlockTypeForShare.GAIN_A, SubBlockTypeForShare.GAIN_A));
 	}
 
 	public static boolean canShare(List<SubBlockTypeForShare> list, SubBlockTypeForShare toAdd) {
@@ -55,7 +55,7 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 		if (list.isEmpty()) return true;
 		SubBlockTypeForShare contained = list.get(0);
 		if (contained == SubBlockTypeForShare.NON_SHARE) return false;
-		for (Pair<SubBlockTypeForShare, SubBlockTypeForShare> allowed : allowedCombinations) {
+		for (Tuple2<SubBlockTypeForShare, SubBlockTypeForShare> allowed : allowedCombinations) {
 			if (allowed.getValue1() == contained) {
 				if (allowed.getValue2() == toAdd) {
 					return true;
@@ -104,9 +104,9 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 		return (float) (getItemRenderYaw(getPipeLength(), item) - getItemRenderYaw(0.0F, item));
 	}
 
-	public abstract EnumFacing getExitForInput(EnumFacing commingFrom);
+	public abstract Direction getExitForInput(Direction commingFrom);
 
-	public abstract TileEntity getConnectedEndTile(EnumFacing output);
+	public abstract BlockEntity getConnectedEndTile(Direction output);
 
 	@Override
 	public abstract boolean actAsNormalPipe();
@@ -116,7 +116,7 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 	public abstract ISpecialPipeRenderer getSpecialRenderer();
 
 	@Override
-	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
+	public boolean canPipeConnect(BlockEntity tile, Direction side) {
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			return true;
 		}

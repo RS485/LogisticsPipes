@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -65,12 +65,12 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 	}
 

@@ -44,9 +44,9 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
 import io.netty.buffer.ByteBuf;
 
@@ -54,8 +54,9 @@ import logisticspipes.network.IWriteListObject;
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
+@Deprecated
 public interface LPDataOutput {
 
 	/**
@@ -116,21 +117,17 @@ public interface LPDataOutput {
 
 	void writeUTFArray(@Nullable String[] arr);
 
-	void writeFacing(@Nullable EnumFacing direction);
+	void writeFacing(@Nullable Direction direction);
 
-	void writeResourceLocation(@Nullable ResourceLocation resource);
+	void writeResourceLocation(@Nullable Identifier resource);
 
 	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 
 	void writeBitSet(BitSet bits);
 
-	void writeNBTTagCompound(@Nullable NBTTagCompound tag);
+	void writeNBTTagCompound(@Nullable CompoundTag tag);
 
 	void writeItemStack(ItemStack itemstack);
-
-	void writeItemIdentifier(@Nullable ItemIdentifier item);
-
-	void writeItemIdentifierStack(@Nullable ItemIdentifierStack stack);
 
 	<T> void writeCollection(@Nullable Collection<T> collection, IWriteListObject<T> handler);
 

@@ -9,7 +9,7 @@ import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.StaticResolve;
@@ -21,7 +21,7 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 
 	@Getter
 	@Setter
-	private IResource stack;
+	private Resource stack;
 
 	@Getter
 	@Setter

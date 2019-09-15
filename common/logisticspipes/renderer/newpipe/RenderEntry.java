@@ -1,6 +1,6 @@
 package logisticspipes.renderer.newpipe;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import lombok.Data;
 
@@ -10,9 +10,9 @@ import logisticspipes.proxy.object3d.interfaces.IModel3D;
 @Data
 public class RenderEntry {
 
-	private static final ResourceLocation BLOCKS = new ResourceLocation("textures/atlas/blocks.png");
+	private static final Identifier BLOCKS = new Identifier("textures/atlas/blocks.png");
 
-	public RenderEntry(IModel3D model, I3DOperation[] operations, ResourceLocation texture) {
+	public RenderEntry(IModel3D model, I3DOperation[] operations, Identifier texture) {
 		this.model = model;
 		this.operations = operations;
 		this.texture = texture;
@@ -26,7 +26,7 @@ public class RenderEntry {
 		this(model, new I3DOperation[] {});
 	}
 
-	public RenderEntry(IModel3D model, ResourceLocation texture) {
+	public RenderEntry(IModel3D model, Identifier texture) {
 		this(model, new I3DOperation[] {}, texture);
 	}
 
@@ -40,5 +40,5 @@ public class RenderEntry {
 
 	private final IModel3D model;
 	private final I3DOperation[] operations;
-	private final ResourceLocation texture;
+	private final Identifier texture;
 }

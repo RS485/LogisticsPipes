@@ -5,18 +5,22 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
+import drawer.NbtFormatKt;
 import lombok.Getter;
+import net.fabricmc.fabric.api.util.NbtType;
 
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.network.NewGuiHandler;
@@ -34,18 +38,18 @@ import logisticspipes.utils.item.SimpleStackInventory;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, IGuiOpenControler {
+public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, IGuiOpenController {
 
-	public static class ProgrammCategories {
+	public static class ProgramCategories {
 
-		public static final ResourceLocation BASIC = new ResourceLocation("logisticspipes", "compilercategory.basic");
-		public static final ResourceLocation TIER_2 = new ResourceLocation("logisticspipes", "compilercategory.tier_2");
-		public static final ResourceLocation FLUID = new ResourceLocation("logisticspipes", "compilercategory.fluid");
-		public static final ResourceLocation TIER_3 = new ResourceLocation("logisticspipes", "compilercategory.tier_3");
-		public static final ResourceLocation CHASSIS = new ResourceLocation("logisticspipes", "compilercategory.chassis");
-		public static final ResourceLocation CHASSIS_2 = new ResourceLocation("logisticspipes", "compilercategory.chassis_2");
-		public static final ResourceLocation CHASSIS_3 = new ResourceLocation("logisticspipes", "compilercategory.chassis_3");
-		public static final ResourceLocation MODDED = new ResourceLocation("logisticspipes", "compilercategory.modded");
+		public static final Identifier BASIC = new Identifier("logisticspipes", "compilercategory.basic");
+		public static final Identifier TIER_2 = new Identifier("logisticspipes", "compilercategory.tier_2");
+		public static final Identifier FLUID = new Identifier("logisticspipes", "compilercategory.fluid");
+		public static final Identifier TIER_3 = new Identifier("logisticspipes", "compilercategory.tier_3");
+		public static final Identifier CHASSIS = new Identifier("logisticspipes", "compilercategory.chassis");
+		public static final Identifier CHASSIS_2 = new Identifier("logisticspipes", "compilercategory.chassis_2");
+		public static final Identifier CHASSIS_3 = new Identifier("logisticspipes", "compilercategory.chassis_3");
+		public static final Identifier MODDED = new Identifier("logisticspipes", "compilercategory.modded");
 
 		static {
 			//Force the order of keys
@@ -60,11 +64,11 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		}
 	}
 
-	public static final Map<ResourceLocation, Set<ResourceLocation>> programByCategory = new LinkedHashMap<>();
+	public static final Map<Identifier, Set<Identifier>> programByCategory = new LinkedHashMap<>();
 	private final PlayerCollectionList playerList = new PlayerCollectionList();
 	private String taskType = "";
 	@Getter
-	private ResourceLocation currentTask = null;
+	private Identifier currentTask = null;
 	@Getter
 	private double taskProgress = 0;
 	@Getter
@@ -78,21 +82,21 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		return NewGuiHandler.getGui(ProgramCompilerGui.class);
 	}
 
-	public NBTTagList getNBTTagListForKey(String key) {
-		NBTTagCompound nbt = this.getInventory().getStackInSlot(0).getTagCompound();
+	public ListTag getNBTTagListForKey(String key) {
+		CompoundTag nbt = this.getInventory().getStackInSlot(0).getTag();
 		if (nbt == null) {
-			this.getInventory().getStackInSlot(0).setTagCompound(new NBTTagCompound());
-			nbt = this.getInventory().getStackInSlot(0).getTagCompound();
+			this.getInventory().getStackInSlot(0).setTag(new CompoundTag());
+			nbt = this.getInventory().getStackInSlot(0).getTag();
 		}
 
-		if (!nbt.hasKey(key)) {
-			NBTTagList list = new NBTTagList();
-			nbt.setTag(key, list);
+		if (!nbt.containsKey(key)) {
+			ListTag list = new ListTag();
+			nbt.put(key, list);
 		}
-		return nbt.getTagList(key, 8 /* String */);
+		return nbt.getList(key, NbtType.STRING);
 	}
 
-	public void triggerNewTask(ResourceLocation category, String taskType) {
+	public void triggerNewTask(Identifier category, String taskType) {
 		if (currentTask != null) return;
 		this.taskType = taskType;
 		currentTask = category;
@@ -102,7 +106,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	}
 
 	@Override
-	public void guiOpenedByPlayer(EntityPlayer player) {
+	public void guiOpenedByPlayer(PlayerEntity player) {
 		playerList.add(player);
 		MainProxy.sendPacketToPlayer(getClientUpdatePacket(), player);
 	}
@@ -118,7 +122,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	}
 
 	@Override
-	public void guiClosedByPlayer(EntityPlayer player) {
+	public void guiClosedByPlayer(PlayerEntity player) {
 		playerList.remove(player);
 	}
 
@@ -128,10 +132,10 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		if (MainProxy.isServer(world)) {
 			if (currentTask != null) {
 				wasAbleToConsumePower = false;
-				for (EnumFacing dir : EnumFacing.VALUES) {
-					if (dir == EnumFacing.UP) continue;
+				for (Direction dir : Direction.values()) {
+					if (dir == Direction.UP) continue;
 					DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), dir);
-					TileEntity tile = pos.getTileEntity(getWorld());
+					BlockEntity tile = pos.getBlockEntity(getWorld());
 					if (!(tile instanceof LogisticsTileGenericPipe)) {
 						continue;
 					}
@@ -163,10 +167,10 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 					} else if (taskType.equals("flash")) {
 						if (!getInventory().getStackInSlot(1).isEmpty()) {
 							ItemStack programmer = getInventory().getStackInSlot(1);
-							if (!programmer.hasTagCompound()) {
-								programmer.setTagCompound(new NBTTagCompound());
+							if (!programmer.hasTag()) {
+								programmer.setTagCompound(new CompoundTag());
 							}
-							programmer.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, currentTask.toString());
+							programmer.getTag().setString(ItemLogisticsProgrammer.RECIPE_TARGET, currentTask.toString());
 						}
 					} else {
 						throw new UnsupportedOperationException(taskType);
@@ -200,14 +204,25 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(CompoundTag nbt) {
 		inventory.readFromNBT(nbt, "programcompilerinv");
 		super.readFromNBT(nbt);
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+	public CompoundTag writeToNBT(CompoundTag nbt) {
 		inventory.writeToNBT(nbt, "programcompilerinv");
 		return super.writeToNBT(nbt);
+	}
+
+	@Override
+	public void fromTag(CompoundTag compoundTag_1) {
+		super.fromTag(compoundTag_1);
+		inventory.read
+	}
+
+	@Override
+	public CompoundTag toTag(CompoundTag compoundTag_1) {
+		return super.toTag(compoundTag_1);
 	}
 }

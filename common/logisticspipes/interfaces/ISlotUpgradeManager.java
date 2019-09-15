@@ -1,7 +1,7 @@
 package logisticspipes.interfaces;
 
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -22,7 +22,7 @@ public interface ISlotUpgradeManager {
 
 	boolean hasSneakyUpgrade();
 
-	EnumFacing getSneakyOrientation();
+	Direction getSneakyOrientation();
 
 	boolean hasOwnSneakyUpgrade();
 

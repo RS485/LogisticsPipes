@@ -2,16 +2,16 @@ package logisticspipes.routing;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import logisticspipes.LPConstants;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
@@ -19,86 +19,63 @@ import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
-public class ClientRouter implements IRouter {
+public class ClientRouter implements Router {
 
-	private final int _xCoord;
-	private final int _yCoord;
-	private final int _zCoord;
+	private final BlockPos pos;
 
-	public ClientRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord) {
-		_xCoord = xCoord;
-		_yCoord = yCoord;
-		_zCoord = zCoord;
+	public ClientRouter(BlockPos pos) {
+		this.pos = pos;
 	}
 
 	@Override
 	public void destroy() {}
 
 	@Override
-	public int getSimpleID() {
-		return -420;
+	public int getSimpleId() {
+		return -1;
 	}
 
 	@Override
-	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {
+	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {}
 
+	@Override
+	public boolean isRoutedExit(Direction connection) {
+		throw new UnsupportedOperationException("Can't route on the client");
 	}
 
 	@Override
-	public boolean isRoutedExit(EnumFacing connection) {
-		if (LPConstants.DEBUG) {
-			throw new UnsupportedOperationException("noClientRouting");
-		}
-		return false;
+	public boolean hasRoute(int id, boolean flag, ItemStack stack) {
+		throw new UnsupportedOperationException("Can't route on the client");
 	}
 
 	@Override
-	public boolean hasRoute(int id, boolean flag, ItemIdentifier item) {
-		if (LPConstants.DEBUG) {
-			throw new UnsupportedOperationException("noClientRouting");
-		}
-		return false;
-	}
-
-	@Override
-	public ExitRoute getExitFor(int id, boolean flag, ItemIdentifier item) {
-		if (LPConstants.DEBUG) {
-			throw new UnsupportedOperationException("noClientRouting");
-		}
-		return null;
+	public ExitRoute getExitFor(int id, boolean flag, ItemStack stack) {
+		throw new UnsupportedOperationException("Can't route on the client");
 	}
 
 	@Override
 	public ArrayList<List<ExitRoute>> getRouteTable() {
-		if (LPConstants.DEBUG) {
-			throw new UnsupportedOperationException("noClientRouting");
-		}
-		return new ArrayList<>();
+		throw new UnsupportedOperationException("Can't route on the client");
 	}
 
 	@Override
 	public List<ExitRoute> getIRoutersByCost() {
-		if (LPConstants.DEBUG) {
-			throw new UnsupportedOperationException("noClientRouting");
-		}
-		return new LinkedList<>();
+		throw new UnsupportedOperationException("Can't route on the client");
 	}
 
 	@Override
 	public CoreRoutedPipe getPipe() {
-		World world = MainProxy.proxy.getWorld();
-		if (world == null) {
-			return null;
-		}
-		TileEntity tile = world.getTileEntity(new BlockPos(_xCoord, _yCoord, _zCoord));
+		World world = MinecraftClient.getInstance().world;
 
-		if (!(tile instanceof LogisticsTileGenericPipe)) {
-			return null;
-		}
+		if (world == null) return null;
+
+		BlockEntity tile = world.getBlockEntity(pos);
+
+		if (!(tile instanceof LogisticsTileGenericPipe)) return null;
+
 		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return null;
@@ -146,7 +123,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider() {
+	public List<Tuple2<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider() {
 		return null;
 	}
 
@@ -166,7 +143,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean isSideDisconnected(EnumFacing dir) {
+	public boolean isSideDisconnected(Direction dir) {
 		return false;
 	}
 
@@ -176,7 +153,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<ExitRoute> getDistanceTo(IRouter r) {
+	public List<ExitRoute> getDistanceTo(Router r) {
 		return null;
 	}
 
@@ -194,12 +171,12 @@ public class ClientRouter implements IRouter {
 	public void forceLsaUpdate() {}
 
 	@Override
-	public boolean isSubPoweredExit(EnumFacing connection) {
+	public boolean isSubPoweredExit(Direction connection) {
 		return false;
 	}
 
 	@Override
-	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> getSubSystemPowerProvider() {
+	public List<Tuple2<ISubSystemPowerProvider, List<IFilter>>> getSubSystemPowerProvider() {
 		return null;
 	}
 
@@ -209,7 +186,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<ExitRoute> getRoutersOnSide(EnumFacing exitOrientation) {
+	public List<ExitRoute> getRoutersOnSide(Direction exitOrientation) {
 		return null;
 	}
 
@@ -219,10 +196,10 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public int getDistanceToNextPowerPipe(EnumFacing dir) {
+	public int getDistanceToNextPowerPipe(Direction dir) {
 		return 0;
 	}
 
 	@Override
-	public void queueTask(int i, IRouterQueuedTask callable) {}
+	public void queueTask(int ticks, RouterQueuedTask callable) {}
 }

@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -23,7 +23,7 @@ import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class ModuleQuickSort extends LogisticsGuiModule {
 
@@ -40,10 +40,10 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 	public ModuleQuickSort() {}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(CompoundTag nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(CompoundTag nbttagcompound) {}
 
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
@@ -95,7 +95,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				}
 
 				LinkedList<Integer> jamList = new LinkedList<>();
-				Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), false, jamList);
+				Tuple2<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), false, jamList);
 				if (reply == null) {
 					if (lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
@@ -180,7 +180,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
+			Tuple2<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			if (reply == null) {
 				if (lastStackLookedAt == lastSuceededStack) {
 					stalled = true;

@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
 
 import net.minecraftforge.fml.common.FMLLog;
@@ -118,7 +118,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		LPDataIOWrapper.writeData(buffer, msg::writeData);
 	}
 
-	public static void addPacketToNBT(ModernPacket packet, NBTTagCompound nbt) {
+	public static void addPacketToNBT(ModernPacket packet, CompoundTag nbt) {
 		ByteBuf dataBuffer = buffer();
 		PacketHandler.fillByteBuf(packet, dataBuffer);
 
@@ -130,7 +130,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void queueAndRemovePacketFromNBT(NBTTagCompound nbt) {
+	public static void queueAndRemovePacketFromNBT(CompoundTag nbt) {
 		byte[] data = nbt.getByteArray("LogisticsPipes:PacketData");
 		if (data.length > 0) {
 			LPDataIOWrapper.provideData(data, dataInput -> {

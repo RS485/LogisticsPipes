@@ -15,7 +15,7 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -107,7 +107,7 @@ public class RecipeManager {
 			//			System.arraycopy(objects, 1, indices, 0, indices.length);
 			//			dumpRecipe(stack, objects[0], indices);
 
-			GameData.register_impl(new ShapedOreRecipe(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, result.toArray()).setRegistryName(getFreeRecipeResourceLocation(stack)));
+			GameData.register_impl(new ShapedOreRecipe(new Identifier(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, result.toArray()).setRegistryName(getFreeRecipeResourceLocation(stack)));
 		}
 
 		private void dumpRecipe(ItemStack result, Object layout, RecipeIndex... indices) {
@@ -159,7 +159,7 @@ public class RecipeManager {
 
 			JsonObject r = new JsonObject();
 			r.addProperty("item", result.getItem().getRegistryName().toString());
-			if (result.getItemDamage() > 0) r.addProperty("data", result.getItemDamage());
+			if (result.getDamage() > 0) r.addProperty("data", result.getItemDamage());
 			if (result.getCount() > 1) r.addProperty("count", result.getCount());
 			obj.add("result", r);
 			obj.add("key", keys);
@@ -189,7 +189,7 @@ public class RecipeManager {
 
 		@SuppressWarnings("unchecked")
 		public void addShapelessRecipe(ItemStack stack, Object... objects) {
-			GameData.register_impl(new ShapelessOreRecipe(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, objects).setRegistryName(getFreeRecipeResourceLocation(stack)));
+			GameData.register_impl(new ShapelessOreRecipe(new Identifier(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, objects).setRegistryName(getFreeRecipeResourceLocation(stack)));
 		}
 
 		@SuppressWarnings("unchecked")
@@ -201,8 +201,8 @@ public class RecipeManager {
 
 		public static class ShapelessOrdererRecipe extends ShapelessOreRecipe {
 
-			public ShapelessOrdererRecipe(ResourceLocation registryName, ItemStack result, Object... recipe) {
-				super(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), result, recipe);
+			public ShapelessOrdererRecipe(Identifier registryName, ItemStack result, Object... recipe) {
+				super(new Identifier(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), result, recipe);
 				setRegistryName(registryName);
 			}
 
@@ -222,17 +222,17 @@ public class RecipeManager {
 		}
 	}
 
-	private static ResourceLocation getFreeRecipeResourceLocation(ItemStack stack) {
+	private static Identifier getFreeRecipeResourceLocation(ItemStack stack) {
 		return getFreeRecipeResourceLocation(stack.getItem());
 	}
 
-	private static ResourceLocation getFreeRecipeResourceLocation(Item item) {
-		ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, item.getRegistryName().getResourcePath());
-		ResourceLocation recipeLoc = baseLoc;
+	private static Identifier getFreeRecipeResourceLocation(Item item) {
+		Identifier baseLoc = new Identifier(LPConstants.LP_MOD_ID, item.getRegistryName().getResourcePath());
+		Identifier recipeLoc = baseLoc;
 		int index = 0;
 		while (CraftingManager.REGISTRY.containsKey(recipeLoc)) {
 			index++;
-			recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
+			recipeLoc = new Identifier(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
 		}
 		return recipeLoc;
 	}

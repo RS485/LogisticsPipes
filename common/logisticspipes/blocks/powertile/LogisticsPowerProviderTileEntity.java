@@ -10,15 +10,16 @@ import java.util.stream.Stream;
 
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -40,21 +41,20 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Triplet;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import logisticspipes.utils.tuples.Tuple2;
+import logisticspipes.utils.tuples.Tuple3;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 @CCType(name = "LogisticsPowerProvider")
 public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTileEntity
-		implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+		implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenController, IHeadUpDisplayBlockRendererProvider {
 
 	public static final int BC_COLOR = 0x00ffff;
-	public static final int RF_COLOR = 0xff0000;
 	public static final int IC2_COLOR = 0xffff00;
 
 	// true if it needs more power, turns off at full, turns on at 50%.
@@ -90,19 +90,19 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 		if (globalRequest > 0) {
 			final double fullfillRatio = Math.min(1, Math.min(internalStorage, getMaxProvidePerTick()) / globalRequest);
 			if (fullfillRatio > 0) {
-				final Function<NeighborTileEntity<LogisticsTileGenericPipe>, CoreRoutedPipe> getPipe =
-						(NeighborTileEntity<LogisticsTileGenericPipe> neighbor) -> (CoreRoutedPipe) neighbor.getTileEntity().pipe;
+				final Function<NeighborBlockEntity<LogisticsTileGenericPipe>, CoreRoutedPipe> getPipe =
+						(NeighborBlockEntity<LogisticsTileGenericPipe> neighbor) -> (CoreRoutedPipe) neighbor.getBlockEntity().pipe;
 				orders.entrySet().stream()
-						.map(routerIdToOrderCount -> new Pair<>(SimpleServiceLocator.routerManager.getRouter(routerIdToOrderCount.getKey()),
+						.map(routerIdToOrderCount -> new Tuple2<>(SimpleServiceLocator.routerManager.getRouter(routerIdToOrderCount.getKey()),
 								Math.min(internalStorage, routerIdToOrderCount.getValue() * fullfillRatio)))
 						.filter(destinationToPower -> destinationToPower.getValue1() != null && destinationToPower.getValue1().getPipe() != null)
 						.forEach(destinationToPower -> new WorldCoordinatesWrapper(this)
 								.allNeighborTileEntities()
 								.flatMap(neighbor -> neighbor.getJavaInstanceOf(LogisticsTileGenericPipe.class).map(Stream::of).orElseGet(Stream::empty))
-								.filter(neighbor -> neighbor.getTileEntity().pipe instanceof CoreRoutedPipe &&
+								.filter(neighbor -> neighbor.getBlockEntity().pipe instanceof CoreRoutedPipe &&
 										!getPipe.apply(neighbor).stillNeedReplace() && getPipe.apply(neighbor).getRouter() != null)
 								.flatMap(neighbor -> getPipe.apply(neighbor).getRouter().getDistanceTo(destinationToPower.getValue1()).stream()
-										.map(exitRoute -> new Pair<>(neighbor, exitRoute)))
+										.map(exitRoute -> new Tuple2<>(neighbor, exitRoute)))
 								.filter(neighborToExit -> neighborToExit.getValue2().containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom) &&
 										neighborToExit.getValue2().filters.stream().noneMatch(IFilter::blockPower))
 								.findFirst()
@@ -130,14 +130,14 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	protected abstract void handlePower(CoreRoutedPipe pipe, double toSend);
 
-	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, EnumFacing exitOrientation, boolean addBall) {
+	private void sendPowerLaserPackets(Router sourceRouter, Router destinationRouter, Direction exitOrientation, boolean addBall) {
 		if (sourceRouter == destinationRouter) {
 			return;
 		}
-		LinkedList<Triplet<IRouter, EnumFacing, Boolean>> todo = new LinkedList<>();
-		todo.add(new Triplet<>(sourceRouter, exitOrientation, addBall));
+		LinkedList<Tuple3<Router, Direction, Boolean>> todo = new LinkedList<>();
+		todo.add(new Tuple3<>(sourceRouter, exitOrientation, addBall));
 		while (!todo.isEmpty()) {
-			Triplet<IRouter, EnumFacing, Boolean> part = todo.pollFirst();
+			Tuple3<Router, Direction, Boolean> part = todo.pollFirst();
 			List<ExitRoute> exits = part.getValue1().getRoutersOnSide(part.getValue2());
 			for (ExitRoute exit : exits) {
 				if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
@@ -146,7 +146,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 					if (pipe != null && pipe.isInitialized()) {
 						pipe.container.addLaser(exit.exitOrientation, distance, getLaserColor(), false, part.getValue3());
 					}
-					IRouter nextRouter = exit.destination; // Use new sourceRouter
+					Router nextRouter = exit.destination; // Use new sourceRouter
 					if (nextRouter == destinationRouter) {
 						return;
 					}
@@ -158,7 +158,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 									continue outerRouters;
 								}
 							}
-							todo.addLast(new Triplet<>(nextRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation));
+							todo.addLast(new Tuple3<>(nextRouter, newExit.exitOrientation, newExit.exitOrientation != exit.exitOrientation));
 						}
 					}
 				}
@@ -236,7 +236,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(CompoundTag nbt) {
 		super.readFromNBT(nbt);
 		if (nbt.getTag("internalStorage") instanceof NBTTagFloat) { // support for old float
 			internalStorage = nbt.getFloat("internalStorage");
@@ -248,7 +248,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+	public CompoundTag writeToNBT(CompoundTag nbt) {
 		nbt = super.writeToNBT(nbt);
 		nbt.setDouble("internalStorageDouble", internalStorage);
 		nbt.setInteger("maxMode", maxMode);
@@ -298,17 +298,17 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getTileEntity(pos) == this;
+		return getWorld().getBlockEntity(pos) == this;
 	}
 
 	@Override
-	public void guiOpenedByPlayer(EntityPlayer player) {
+	public void guiOpenedByPlayer(PlayerEntity player) {
 		guiListener.add(player);
 		updateClients();
 	}
 
 	@Override
-	public void guiClosedByPlayer(EntityPlayer player) {
+	public void guiClosedByPlayer(PlayerEntity player) {
 		guiListener.remove(player);
 	}
 

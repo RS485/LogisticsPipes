@@ -2,7 +2,7 @@ package logisticspipes.routing.channels;
 
 import java.util.UUID;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +29,7 @@ public class ChannelInformation {
 	private AccessRights rights;
 	private UUID responsibleSecurityID;
 
-	public ChannelInformation(NBTTagCompound nbt) {
+	public ChannelInformation(CompoundTag nbt) {
 		name = nbt.getString("name");
 		channelIdentifier = UUID.fromString(nbt.getString("channelIdentifier"));
 		owner = PlayerIdentifier.readFromNBT(nbt, "owner");
@@ -41,7 +41,7 @@ public class ChannelInformation {
 		}
 	}
 
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+	public CompoundTag writeToNBT(CompoundTag compound) {
 		compound.setString("name", name);
 		compound.setString("channelIdentifier", channelIdentifier.toString());
 		owner.writeToNBT(compound, "owner");

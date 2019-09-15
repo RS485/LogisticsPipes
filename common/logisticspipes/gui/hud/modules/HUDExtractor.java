@@ -3,7 +3,7 @@ package logisticspipes.gui.hud.modules;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -23,7 +23,7 @@ public class HUDExtractor implements IHUDModuleRenderer {
 	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 
-		EnumFacing d = module.getSneakyDirection();
+		Direction d = module.getSneakyDirection();
 		mc.fontRenderer.drawString("Extract", -22, -22, 0);
 		mc.fontRenderer.drawString("from:", -22, -9, 0);
 		mc.fontRenderer.drawString(((d == null) ? "DEFAULT" : d.name()), -22, 18, 0);

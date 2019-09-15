@@ -3,7 +3,7 @@ package logisticspipes.blocks.stats;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IGuiTileEntity;
@@ -13,7 +13,7 @@ import logisticspipes.network.guis.block.StatisticsGui;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity {
@@ -43,11 +43,11 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(CompoundTag nbt) {
 		super.readFromNBT(nbt);
 		int size = nbt.getInteger("taskSize");
 		for (int i = 0; i < size; i++) {
-			NBTTagCompound tag = (NBTTagCompound) nbt.getTag("Task_" + i);
+			CompoundTag tag = (CompoundTag) nbt.getTag("Task_" + i);
 			TrackingTask task = new TrackingTask();
 			task.readFromNBT(tag);
 			tasks.add(task);
@@ -55,12 +55,12 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+	public CompoundTag writeToNBT(CompoundTag nbt) {
 		nbt = super.writeToNBT(nbt);
 		nbt.setInteger("taskSize", tasks.size());
 		int count = 0;
 		for (TrackingTask task : tasks) {
-			NBTTagCompound tag = new NBTTagCompound();
+			CompoundTag tag = new CompoundTag();
 			task.writeToNBT(tag);
 			nbt.setTag("Task_" + count, tag);
 			count++;
@@ -76,9 +76,9 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 	public CoreRoutedPipe getConnectedPipe() {
 		if (cachedConnectedPipe == null) {
 			new WorldCoordinatesWrapper(this).allNeighborTileEntities()
-					.filter(NeighborTileEntity::isLogisticsPipe)
-					.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof CoreRoutedPipe)
-					.map(adjacent -> (CoreRoutedPipe) (((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe))
+					.filter(NeighborBlockEntity::isLogisticsPipe)
+					.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getBlockEntity()).pipe instanceof CoreRoutedPipe)
+					.map(adjacent -> (CoreRoutedPipe) (((LogisticsTileGenericPipe) adjacent.getBlockEntity()).pipe))
 					.findFirst()
 					.ifPresent(coreRoutedPipe -> cachedConnectedPipe = coreRoutedPipe);
 		}

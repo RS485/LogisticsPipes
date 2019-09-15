@@ -15,7 +15,11 @@ import logisticspipes.proxy.interfaces.ILPPipeConfigToolWrapper;
 
 public class ConfigToolHandler {
 
+	public static final ConfigToolHandler INSTANCE = new ConfigToolHandler();
+
 	public List<ILPPipeConfigToolWrapper> wrappers = new ArrayList<>();
+
+	private ConfigToolHandler() {}
 
 	public boolean canWrench(EntityPlayer player, ItemStack wrench, ILPPipeTile pipe) {
 		if (wrench == null || wrench.isEmpty()) return false;

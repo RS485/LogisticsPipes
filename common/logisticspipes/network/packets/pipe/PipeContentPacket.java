@@ -11,8 +11,8 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.utils.StaticResolve;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -21,7 +21,7 @@ public class PipeContentPacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private ItemIdentifierStack item;
+	private ItemStack item;
 	@Getter
 	@Setter
 	private int travelId;
@@ -32,7 +32,7 @@ public class PipeContentPacket extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
-		item = input.readItemIdentifierStack();
+		item = input.readItemStack();
 		travelId = input.readInt();
 	}
 
@@ -47,7 +47,7 @@ public class PipeContentPacket extends ModernPacket {
 			content = new LPTravelingItemClient(travelId, item);
 			LPTravelingItem.clientList.put(travelId, new WeakReference<>(content));
 			synchronized (LPTravelingItem.forceKeep) {
-				LPTravelingItem.forceKeep.add(new Pair<>(10, content)); //Keep in memory for min 10 ticks
+				LPTravelingItem.forceKeep.add(new Tuple2<>(10, content)); //Keep in memory for min 10 ticks
 			}
 		} else {
 			content.setItem(item);
@@ -56,7 +56,7 @@ public class PipeContentPacket extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeItemIdentifierStack(item);
+		output.writeItemStack(item);
 		output.writeInt(travelId);
 	}
 

@@ -3,18 +3,18 @@ package logisticspipes.pipes.basic;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.blocks.powertile.LogisticsPowerProviderTileEntity;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
-import logisticspipes.utils.tuples.Pair;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import logisticspipes.utils.tuples.Tuple2;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PowerSupplierHandler {
@@ -31,7 +31,7 @@ public class PowerSupplierHandler {
 		this.pipe = pipe;
 	}
 
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		if (internalBufferRF > 0) {
 			nbttagcompound.setDouble("bufferRF", internalBufferRF);
 		}
@@ -40,7 +40,7 @@ public class PowerSupplierHandler {
 		}
 	}
 
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		if (nbttagcompound.getTag("bufferRF") instanceof NBTTagFloat) { // support for old float
 			internalBufferRF = nbttagcompound.getFloat("bufferRF");
 		} else {
@@ -65,16 +65,16 @@ public class PowerSupplierHandler {
 	private void requestICPower() {
 		//Use Buffer
 
-		final List<NeighborTileEntity<TileEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
+		final List<NeighborBlockEntity<BlockEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
 
 		double globalNeed = 0;
 		double[] need = new double[adjacentTileEntities.size()];
 		int i = 0;
-		for (NeighborTileEntity<TileEntity> adjacent : adjacentTileEntities) {
-			if (SimpleServiceLocator.IC2Proxy.isEnergySink(adjacent.getTileEntity())) {
-				if (pipe.canPipeConnect(adjacent.getTileEntity(), adjacent.getDirection())) {
-					if (SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.getTileEntity(), pipe.container, adjacent.getOurDirection())) { // TODO pipe.container must be IEnergySource
-						globalNeed += need[i] = SimpleServiceLocator.IC2Proxy.demandedEnergyUnits(adjacent.getTileEntity());
+		for (NeighborBlockEntity<BlockEntity> adjacent : adjacentTileEntities) {
+			if (SimpleServiceLocator.IC2Proxy.isEnergySink(adjacent.getBlockEntity())) {
+				if (pipe.canPipeConnect(adjacent.getBlockEntity(), adjacent.getDirection())) {
+					if (SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.getBlockEntity(), pipe.container, adjacent.getOurDirection())) { // TODO pipe.container must be IEnergySource
+						globalNeed += need[i] = SimpleServiceLocator.IC2Proxy.demandedEnergyUnits(adjacent.getBlockEntity());
 					}
 				}
 			}
@@ -84,14 +84,14 @@ public class PowerSupplierHandler {
 		if (globalNeed != 0 && !Double.isNaN(globalNeed)) {
 			double fullfillable = Math.min(1, internalBufferIC2 / globalNeed);
 			i = 0;
-			for (NeighborTileEntity<TileEntity> adjacent : adjacentTileEntities) {
-				if (SimpleServiceLocator.IC2Proxy.isEnergySink(adjacent.getTileEntity()) && pipe.canPipeConnect(adjacent.getTileEntity(), adjacent.getDirection())
-						&& SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.getTileEntity(), pipe.container, adjacent.getOurDirection())) { // TODO pipe.container must be IEnergySource
+			for (NeighborBlockEntity<BlockEntity> adjacent : adjacentTileEntities) {
+				if (SimpleServiceLocator.IC2Proxy.isEnergySink(adjacent.getBlockEntity()) && pipe.canPipeConnect(adjacent.getBlockEntity(), adjacent.getDirection())
+						&& SimpleServiceLocator.IC2Proxy.acceptsEnergyFrom(adjacent.getBlockEntity(), pipe.container, adjacent.getOurDirection())) { // TODO pipe.container must be IEnergySource
 					if (internalBufferIC2 + 1 < need[i] * fullfillable) {
 						return;
 					}
 					double toUse = Math.min(pipe.getUpgradeManager().getIC2PowerLevel(), need[i] * fullfillable);
-					double unUsed = SimpleServiceLocator.IC2Proxy.injectEnergyUnits(adjacent.getTileEntity(), adjacent.getOurDirection(), toUse);
+					double unUsed = SimpleServiceLocator.IC2Proxy.injectEnergyUnits(adjacent.getBlockEntity(), adjacent.getOurDirection(), toUse);
 					double used = toUse - unUsed;
 					if (used > 0) {
 						//MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.IC2_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
@@ -108,42 +108,42 @@ public class PowerSupplierHandler {
 		}
 
 		//Rerequest Buffer
-		List<Pair<ISubSystemPowerProvider, List<IFilter>>> provider = pipe.getRouter().getSubSystemPowerProvider();
+		List<Tuple2<ISubSystemPowerProvider, List<IFilter>>> provider = pipe.getRouter().getSubSystemPowerProvider();
 		double available = 0;
 		outer:
-		for (Pair<ISubSystemPowerProvider, List<IFilter>> pair : provider) {
-			for (IFilter filter : pair.getValue2()) {
+		for (Tuple2<ISubSystemPowerProvider, List<IFilter>> tuple : provider) {
+			for (IFilter filter : tuple.getValue2()) {
 				if (filter.blockPower()) {
 					continue outer;
 				}
 			}
-			if (pair.getValue1().usePaused()) {
+			if (tuple.getValue1().usePaused()) {
 				continue;
 			}
-			if (!pair.getValue1().getBrand().equals("EU")) {
+			if (!tuple.getValue1().getBrand().equals("EU")) {
 				continue;
 			}
-			available += pair.getValue1().getPowerLevel();
+			available += tuple.getValue1().getPowerLevel();
 		}
 		if (available > 0) {
 			double neededPower = PowerSupplierHandler.INTERNAL_IC2_BUFFER_MAX - internalBufferIC2;
 			if (neededPower > 0) {
 				if (pipe.useEnergy((int) (neededPower / 10000), false)) {
 					outer:
-					for (Pair<ISubSystemPowerProvider, List<IFilter>> pair : provider) {
-						for (IFilter filter : pair.getValue2()) {
+					for (Tuple2<ISubSystemPowerProvider, List<IFilter>> tuple : provider) {
+						for (IFilter filter : tuple.getValue2()) {
 							if (filter.blockPower()) {
 								continue outer;
 							}
 						}
-						if (pair.getValue1().usePaused()) {
+						if (tuple.getValue1().usePaused()) {
 							continue;
 						}
-						if (!pair.getValue1().getBrand().equals("EU")) {
+						if (!tuple.getValue1().getBrand().equals("EU")) {
 							continue;
 						}
-						double requestamount = neededPower * (pair.getValue1().getPowerLevel() / available);
-						pair.getValue1().requestPower(pipe.getRouterId(), requestamount);
+						double requestamount = neededPower * (tuple.getValue1().getPowerLevel() / available);
+						tuple.getValue1().requestPower(pipe.getRouterId(), requestamount);
 					}
 				}
 			}
@@ -153,15 +153,15 @@ public class PowerSupplierHandler {
 	private boolean requestRFPower() {
 		//Use Buffer
 
-		final List<NeighborTileEntity<TileEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
+		final List<NeighborBlockEntity<BlockEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
 
 		double globalNeed = 0;
 		double[] need = new double[adjacentTileEntities.size()];
 		int i = 0;
-		for (NeighborTileEntity<TileEntity> adjacent : adjacentTileEntities) {
-			if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.getTileEntity(), adjacent.getOurDirection())) {
-				if (pipe.canPipeConnect(adjacent.getTileEntity(), adjacent.getDirection())) {
-					ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.getTileEntity(), adjacent.getOurDirection());
+		for (NeighborBlockEntity<BlockEntity> adjacent : adjacentTileEntities) {
+			if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.getBlockEntity(), adjacent.getOurDirection())) {
+				if (pipe.canPipeConnect(adjacent.getBlockEntity(), adjacent.getDirection())) {
+					ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.getBlockEntity(), adjacent.getOurDirection());
 					globalNeed += need[i] = (energyReceiver.getMaxEnergyStored() - energyReceiver.getEnergyStored());
 				}
 			}
@@ -171,11 +171,11 @@ public class PowerSupplierHandler {
 		if (globalNeed != 0 && !Double.isNaN(globalNeed)) {
 			double fullfillable = Math.min(1, internalBufferRF / globalNeed);
 			i = 0;
-			for (NeighborTileEntity<TileEntity> adjacent : adjacentTileEntities) {
-				if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.getTileEntity(), adjacent.getOurDirection())) {
-					if (pipe.canPipeConnect(adjacent.getTileEntity(), adjacent.getDirection())) {
-						EnumFacing oppositeDir = adjacent.getOurDirection();
-						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.getTileEntity(), oppositeDir);
+			for (NeighborBlockEntity<BlockEntity> adjacent : adjacentTileEntities) {
+				if (SimpleServiceLocator.powerProxy.isEnergyReceiver(adjacent.getBlockEntity(), adjacent.getOurDirection())) {
+					if (pipe.canPipeConnect(adjacent.getBlockEntity(), adjacent.getDirection())) {
+						Direction oppositeDir = adjacent.getOurDirection();
+						ICoFHEnergyReceiver energyReceiver = SimpleServiceLocator.powerProxy.getEnergyReceiver(adjacent.getBlockEntity(), oppositeDir);
 						if (internalBufferRF + 1 < need[i] * fullfillable) {
 							return true;
 						}
@@ -194,42 +194,42 @@ public class PowerSupplierHandler {
 			}
 		}
 		//Rerequest Buffer
-		List<Pair<ISubSystemPowerProvider, List<IFilter>>> provider = pipe.getRouter().getSubSystemPowerProvider();
+		List<Tuple2<ISubSystemPowerProvider, List<IFilter>>> provider = pipe.getRouter().getSubSystemPowerProvider();
 		double available = 0;
 		outer:
-		for (Pair<ISubSystemPowerProvider, List<IFilter>> pair : provider) {
-			for (IFilter filter : pair.getValue2()) {
+		for (Tuple2<ISubSystemPowerProvider, List<IFilter>> tuple : provider) {
+			for (IFilter filter : tuple.getValue2()) {
 				if (filter.blockPower()) {
 					continue outer;
 				}
 			}
-			if (pair.getValue1().usePaused()) {
+			if (tuple.getValue1().usePaused()) {
 				continue;
 			}
-			if (!pair.getValue1().getBrand().equals("RF")) {
+			if (!tuple.getValue1().getBrand().equals("RF")) {
 				continue;
 			}
-			available += pair.getValue1().getPowerLevel();
+			available += tuple.getValue1().getPowerLevel();
 		}
 		if (available > 0) {
 			double neededPower = PowerSupplierHandler.INTERNAL_RF_BUFFER_MAX - internalBufferRF;
 			if (neededPower > 0) {
 				if (pipe.useEnergy((int) (neededPower / 100), false)) {
 					outer:
-					for (Pair<ISubSystemPowerProvider, List<IFilter>> pair : provider) {
-						for (IFilter filter : pair.getValue2()) {
+					for (Tuple2<ISubSystemPowerProvider, List<IFilter>> tuple : provider) {
+						for (IFilter filter : tuple.getValue2()) {
 							if (filter.blockPower()) {
 								continue outer;
 							}
 						}
-						if (pair.getValue1().usePaused()) {
+						if (tuple.getValue1().usePaused()) {
 							continue;
 						}
-						if (!pair.getValue1().getBrand().equals("RF")) {
+						if (!tuple.getValue1().getBrand().equals("RF")) {
 							continue;
 						}
-						double requestamount = neededPower * (pair.getValue1().getPowerLevel() / available);
-						pair.getValue1().requestPower(pipe.getRouterId(), requestamount);
+						double requestamount = neededPower * (tuple.getValue1().getPowerLevel() / available);
+						tuple.getValue1().requestPower(pipe.getRouterId(), requestamount);
 					}
 				}
 			}

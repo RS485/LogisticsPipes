@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 
@@ -22,7 +22,7 @@ public class LogicController {
 	@Getter
 	private boolean unresolvedTasks = false;
 
-	public void calculate(TileEntity tile) {
+	public void calculate(BlockEntity tile) {
 		if (oldThread != null && oldThread.isAlive()) {
 			return;
 		}
@@ -80,12 +80,12 @@ public class LogicController {
 		//*/
 	}
 
-	public void writeToNBT(NBTTagCompound nbt) {
+	public void writeToNBT(CompoundTag nbt) {
 		diskInv.writeToNBT(nbt, "LogicDiskInv");
 		//TODO
 	}
 
-	public void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(CompoundTag nbt) {
 		diskInv.readFromNBT(nbt, "LogicDiskInv");
 		//TODO
 	}

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -43,8 +43,8 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
 
 @CCType(name = "ItemSink Module")
 public class ModuleItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
@@ -108,7 +108,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		}
 		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
 		if (upgradeManager != null && upgradeManager.isFuzzyUpgrade()) {
-			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
+			for (Tuple2<ItemStack, Integer> stack : _filterInventory) {
 				if (stack == null) {
 					continue;
 				}
@@ -165,7 +165,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		_isDefaultRoute = nbttagcompound.getBoolean("defaultdestination");
 		if (nbttagcompound.hasKey("ignoreData")) {
@@ -175,7 +175,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("defaultdestination", isDefaultRoute());
 		nbttagcompound.setByteArray("ignoreData", ignoreData.toByteArray());
@@ -208,7 +208,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), player);
 	}
 
@@ -220,7 +220,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
 		}
 	}
 
@@ -230,7 +230,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 
@@ -249,7 +249,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		li.addAll(mapIC.keySet());
 		li.addAll(mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
 		if (getUpgradeManager().isFuzzyUpgrade()) {
-			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
+			for (Tuple2<ItemStack, Integer> stack : _filterInventory) {
 				if (stack.getValue1() == null) {
 					continue;
 				}

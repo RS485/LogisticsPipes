@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
@@ -38,7 +38,7 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 	//Global Access
 	public static Map<SpeedupDirection, IModel3D> tubeSpeedup = new HashMap<>();
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/HS-Speedup.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/HS-Speedup.png");
 
 	static {
 		SpeedupTubeRenderer.loadModels();

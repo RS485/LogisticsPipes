@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.opengl.GL11;
 
@@ -56,7 +56,7 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 		mc.fontRenderer.drawString(StringUtils.translate(GuiFluidSupplierPipe.PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
 	}
 
-	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
+	protected static final Identifier SUPPLIER = new Identifier("logisticspipes", "textures/gui/supplier.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {

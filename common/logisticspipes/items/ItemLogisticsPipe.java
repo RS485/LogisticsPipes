@@ -11,17 +11,17 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -58,10 +58,10 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, Direction facing, float hitX, float hitY, float hitZ) {
 		Block block = LPBlocks.pipe;
 
-		IBlockState iblockstate = worldIn.getBlockState(pos);
+		BlockState iblockstate = worldIn.getBlockState(pos);
 		Block worldBlock = iblockstate.getBlock();
 
 		if (!worldBlock.isReplaceable(worldIn, pos)) {
@@ -84,7 +84,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 				}
 
 				if (LogisticsBlockGenericPipe.placePipe(pipe, worldIn, pos, block, null)) {
-					IBlockState state = worldIn.getBlockState(pos);
+					BlockState state = worldIn.getBlockState(pos);
 					if (state.getBlock() == block) {
 						//setTileEntityNBT(world, player, pos, stack);
 						block.onBlockPlacedBy(worldIn, pos, state, player, itemstack);
@@ -92,7 +92,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 						if (player instanceof EntityPlayerMP)
 							CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, pos, itemstack);
 
-						IBlockState newBlockState = worldIn.getBlockState(pos);
+						BlockState newBlockState = worldIn.getBlockState(pos);
 						SoundType soundtype = newBlockState.getBlock().getSoundType(newBlockState, worldIn, pos, player);
 						worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F,
 								soundtype.getPitch() * 0.8F);
@@ -123,7 +123,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 
 			for (DoubleCoordinatesType<CoreMultiBlockPipe.SubBlockTypeForShare> iPos : globalPos) {
 				if (!player.canPlayerEdit(iPos.getBlockPos(), facing, itemstack) || !worldIn.mayPlace(block, iPos.getBlockPos(), false, facing, null)) {
-					TileEntity tile = worldIn.getTileEntity(iPos.getBlockPos());
+					BlockEntity tile = worldIn.getBlockEntity(iPos.getBlockPos());
 					boolean canPlace = false;
 					if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 						if (CoreMultiBlockPipe.canShare(((LogisticsTileGenericSubMultiBlock) tile).getSubTypes(), iPos.getType())) {
@@ -145,7 +145,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 				}
 
 				if (LogisticsBlockGenericPipe.placePipe(pipe, worldIn, placeAt.getBlockPos(), block, orientation)) {
-					IBlockState state = worldIn.getBlockState(placeAt.getBlockPos());
+					BlockState state = worldIn.getBlockState(placeAt.getBlockPos());
 					if (state.getBlock() == block) {
 						//setTileEntityNBT(world, player, pos, stack);
 						block.onBlockPlacedBy(worldIn, pos, state, player, itemstack);
@@ -153,7 +153,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 						if (player instanceof EntityPlayerMP)
 							CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, placeAt.getBlockPos(), itemstack);
 
-						IBlockState newBlockState = worldIn.getBlockState(placeAt.getBlockPos());
+						BlockState newBlockState = worldIn.getBlockState(placeAt.getBlockPos());
 						SoundType soundtype = newBlockState.getBlock().getSoundType(newBlockState, worldIn, placeAt.getBlockPos(), player);
 						worldIn.playSound(player, placeAt.getBlockPos(), soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F,
 								soundtype.getPitch() * 0.8F);

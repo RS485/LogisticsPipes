@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "network.rs485.logisticspipes.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ItemMixin",
+    "RecipeMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.Collection;
 import java.util.Objects;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
@@ -13,7 +13,7 @@ import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipe
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 //IHUDModuleHandler,
@@ -59,7 +59,7 @@ public class ModuleSatellite extends LogisticsModule {
 
 		int count = worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
 				.map(adjacent -> adjacent.sneakyInsertion().from(getUpgradeManager()))
-				.map(NeighborTileEntity::getInventoryUtil)
+				.map(NeighborBlockEntity::getInventoryUtil)
 				.filter(Objects::nonNull)
 				.map(util -> util.roomForItem(item, 9999))
 				.reduce(Integer::sum).orElse(0);
@@ -76,10 +76,10 @@ public class ModuleSatellite extends LogisticsModule {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(CompoundTag nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(CompoundTag nbttagcompound) {}
 
 	@Override
 	public void tick() {}

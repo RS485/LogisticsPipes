@@ -43,9 +43,9 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import lombok.Data;
@@ -55,41 +55,31 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 
 @Data
 public class WorldCoordinatesWrapper {
 
 	private World world;
-	private IntegerCoordinates coords;
+	private BlockPos pos;
 
 	public WorldCoordinatesWrapper(World world) {
 		setWorld(world);
-		setCoords(new IntegerCoordinates());
+		setPos(BlockPos.ORIGIN);
 	}
 
-	public WorldCoordinatesWrapper(World world, IntegerCoordinates coords) {
+	public WorldCoordinatesWrapper(World world, BlockPos pos) {
 		setWorld(world);
-		setCoords(coords);
+		setPos(pos);
 	}
 
-	public WorldCoordinatesWrapper(World world, BlockPos coords) {
-		setWorld(world);
-		setCoords(new IntegerCoordinates(coords));
-	}
-
-	public WorldCoordinatesWrapper(World world, int xCoord, int yCoord, int zCoord) {
-		setWorld(world);
-		setCoords(new IntegerCoordinates(xCoord, yCoord, zCoord));
-	}
-
-	public WorldCoordinatesWrapper(TileEntity tileEntity) {
+	public WorldCoordinatesWrapper(BlockEntity tileEntity) {
 		this(tileEntity.getWorld(), tileEntity.getPos());
 	}
 
 	@Nullable
-	private static TileEntity getTileEntity(World world, IntegerCoordinates coords) {
-		return world.getTileEntity(new BlockPos(coords.getXCoord(), coords.getYCoord(), coords.getZCoord()));
+	private static BlockEntity getBlockEntity(World world, BlockPos pos) {
+		return world.getBlockEntity(pos);
 	}
 
 	public void setWorld(World world) {
@@ -97,46 +87,46 @@ public class WorldCoordinatesWrapper {
 		this.world = world;
 	}
 
-	public void setCoords(IntegerCoordinates coords) {
-		if (coords == null) throw new NullPointerException("Coordinates must not be null");
-		this.coords = coords;
+	public void setPos(BlockPos pos) {
+		if (pos == null) throw new NullPointerException("Coordinates must not be null");
+		this.pos = pos;
 	}
 
-	public Stream<NeighborTileEntity<TileEntity>> allNeighborTileEntities() {
-		return Arrays.stream(EnumFacing.VALUES).map(this::getNeighbor).filter(Objects::nonNull);
+	public Stream<NeighborBlockEntity<BlockEntity>> allNeighborTileEntities() {
+		return Arrays.stream(Direction.values()).map(this::getNeighbor).filter(Objects::nonNull);
 	}
 
-	public Stream<NeighborTileEntity<TileEntity>> connectedTileEntities() {
-		TileEntity pipe = getTileEntity();
+	public Stream<NeighborBlockEntity<BlockEntity>> connectedTileEntities() {
+		BlockEntity pipe = getBlockEntity();
 		if (SimpleServiceLocator.pipeInformationManager.isNotAPipe(pipe)) {
 			LogisticsPipes.log.warn("The coordinates didn't hold a pipe at all", new Throwable("Stack trace"));
 			return Stream.empty();
 		}
-		return allNeighborTileEntities().filter(adjacent -> MainProxy.checkPipesConnections(pipe, adjacent.getTileEntity(), adjacent.getDirection()));
+		return allNeighborTileEntities().filter(adjacent -> MainProxy.checkPipesConnections(pipe, adjacent.getBlockEntity(), adjacent.getDirection()));
 	}
 
-	public Stream<NeighborTileEntity<TileEntity>> connectedTileEntities(ConnectionPipeType pipeType) {
-		TileEntity pipe = getTileEntity();
+	public Stream<NeighborBlockEntity<BlockEntity>> connectedTileEntities(ConnectionPipeType pipeType) {
+		BlockEntity pipe = getBlockEntity();
 		if (!SimpleServiceLocator.pipeInformationManager.isPipe(pipe, true, pipeType)) {
 			if (LPConstants.DEBUG) {
 				LogisticsPipes.log.warn("The coordinates didn't hold the pipe type " + pipeType, new Throwable("Stack trace"));
 			}
 			return Stream.empty();
 		}
-		return allNeighborTileEntities().filter(neighbor -> MainProxy.checkPipesConnections(pipe, neighbor.getTileEntity(), neighbor.getDirection()));
+		return allNeighborTileEntities().filter(neighbor -> MainProxy.checkPipesConnections(pipe, neighbor.getBlockEntity(), neighbor.getDirection()));
 	}
 
 	@Nullable
-	public TileEntity getTileEntity() {
-		return WorldCoordinatesWrapper.getTileEntity(world, coords);
+	public BlockEntity getBlockEntity() {
+		return WorldCoordinatesWrapper.getBlockEntity(world, coords);
 	}
 
 	@Nullable
-	public NeighborTileEntity<TileEntity> getNeighbor(@Nonnull EnumFacing direction) {
-		IntegerCoordinates newCoords = CoordinateUtils.add(new IntegerCoordinates(coords), direction);
-		TileEntity tileEntity = WorldCoordinatesWrapper.getTileEntity(world, newCoords);
+	public NeighborBlockEntity<BlockEntity> getNeighbor(@Nonnull Direction direction) {
+		BlockPos newPos = pos.offset(direction);
+		BlockEntity tileEntity = WorldCoordinatesWrapper.getBlockEntity(world, newCoords);
 		if (tileEntity == null) return null;
-		return new NeighborTileEntity<>(tileEntity, direction);
+		return new NeighborBlockEntity<>(tileEntity, direction);
 	}
 
 }

@@ -16,7 +16,7 @@ import java.util.Set;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
@@ -24,9 +24,9 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -40,29 +40,29 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.request.ICraftingTemplate;
-import logisticspipes.request.IPromise;
+import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.Promise;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.IHavePriority;
+import logisticspipes.utils.AbsolutePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 @CCType(name = "LogisticsPipes:Crafting")
-public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
+public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ItemCrafter, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, AbsolutePriority {
 
 	protected ModuleCrafter craftingModule;
 
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
-	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
+	public final LinkedList<ItemStack> oldList = new LinkedList<>();
+	public final LinkedList<ItemStack> displayList = new LinkedList<>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HUDCrafting HUD = new HUDCrafting(this);
 
@@ -105,16 +105,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
+	public void tryProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
 		if (!isEnabled()) {
 			return;
 		}
-		craftingModule.canProvide(tree, root, filters);
+		craftingModule.tryProvide(tree, root, filters);
 
 	}
 
 	@Override
-	public ICraftingTemplate addCrafting(IResource toCraft) {
+	public CraftingTemplate addCrafting(Resource toCraft) {
 
 		if (!isEnabled()) {
 			return null;
@@ -124,12 +124,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		return craftingModule.fullFill(promise, destination, info);
+	public LogisticsOrder fulfill(LogisticsPromise promise, ItemRequester destination, IAdditionalTargetInformation info) {
+		return craftingModule.fulfill(promise, destination, info);
 	}
 
 	@Override
-	public void registerExtras(IPromise promise) {
+	public void registerExtras(Promise promise) {
 		craftingModule.registerExtras(promise);
 	}
 
@@ -139,12 +139,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public boolean canCraft(IResource toCraft) {
+	public boolean canCraft(Resource toCraft) {
 		return craftingModule.canCraft(toCraft);
 	}
 
 	@Override
-	public List<ItemIdentifierStack> getCraftedItems() {
+	public List<ItemStack> getCraftedItems() {
 		return craftingModule.getCraftedItems();
 	}
 
@@ -198,7 +198,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	private void checkContentUpdate() {
 		doContentUpdate = false;
-		LinkedList<ItemIdentifierStack> all = _orderItemManager.getContentList(getWorld());
+		LinkedList<ItemStack> all = _orderItemManager.getContentList(getWorld());
 		if (!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);
@@ -207,7 +207,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}
@@ -240,13 +240,13 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		craftingModule.readFromNBT(nbttagcompound);
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		craftingModule.writeToNBT(nbttagcompound);
 	}
@@ -258,12 +258,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {
 		craftingModule.itemArrived(item, info);
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
 		craftingModule.itemLost(item, info);
 	}
 

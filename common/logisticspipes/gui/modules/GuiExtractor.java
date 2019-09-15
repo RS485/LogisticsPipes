@@ -12,8 +12,8 @@ import java.util.Locale;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
 import org.lwjgl.opengl.GL11;
 
@@ -56,13 +56,13 @@ public class GuiExtractor extends ModuleBaseGui {
 	private void refreshButtons() {
 		for (Object p : buttonList) {
 			GuiButton button = (GuiButton) p;
-			button.displayString = isExtract(button.id == 6 ? null : EnumFacing.getFront(button.id));
+			button.displayString = isExtract(button.id == 6 ? null : Direction.getFront(button.id));
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
-		_directionReceiver.setSneakyDirection(guibutton.id == 6 ? null : EnumFacing.getFront(guibutton.id));
+		_directionReceiver.setSneakyDirection(guibutton.id == 6 ? null : Direction.getFront(guibutton.id));
 
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setDirection(_directionReceiver.getSneakyDirection()).setModulePos(_directionReceiver));
 
@@ -80,7 +80,7 @@ public class GuiExtractor extends ModuleBaseGui {
 		mc.fontRenderer.drawString("Extract orientation", xSize / 2 - mc.fontRenderer.getStringWidth("Extract orientation") / 2, 10, 0x404040);
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/extractor.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/gui/extractor.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
@@ -92,7 +92,7 @@ public class GuiExtractor extends ModuleBaseGui {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
-	private String isExtract(EnumFacing o) {
+	private String isExtract(Direction o) {
 		String s = (o == null ? "DEFAULT" : o.name());
 		if (o == _directionReceiver.getSneakyDirection()) {
 			return "\u00a7a>" + s + "<";
@@ -100,7 +100,7 @@ public class GuiExtractor extends ModuleBaseGui {
 		return s.toLowerCase(Locale.US);
 	}
 
-	public void setMode(EnumFacing o) {
+	public void setMode(Direction o) {
 		_directionReceiver.setSneakyDirection(o);
 		refreshButtons();
 	}

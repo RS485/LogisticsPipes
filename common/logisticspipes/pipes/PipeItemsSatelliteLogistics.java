@@ -17,7 +17,7 @@ import java.util.WeakHashMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 
@@ -28,7 +28,7 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.ModuleSatellite;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -46,9 +46,9 @@ import logisticspipes.request.RequestTree;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
-public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
+public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements ItemRequester, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
 	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -58,10 +58,10 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
+	public final LinkedList<ItemStack> itemList = new LinkedList<>();
+	public final LinkedList<ItemStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
-	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
+	protected final LinkedList<ItemStack> _lostItems = new LinkedList<>();
 
 	@Getter
 	public String satellitePipeName = "";
@@ -104,8 +104,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
-	private void addToList(ItemIdentifierStack stack) {
-		for (ItemIdentifierStack ident : itemList) {
+	private void addToList(ItemStack stack) {
+		for (ItemStack ident : itemList) {
 			if (ident.getItem().equals(stack.getItem())) {
 				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
@@ -121,7 +121,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			for (int i = 0; i < inv.getSizeInventory(); i++) {
 				ItemStack stackInSlot = inv.getStackInSlot(i);
 				if (!stackInSlot.isEmpty()) {
-					addToList(ItemIdentifierStack.getFromStack(stackInSlot));
+					addToList(ItemStack.getFromStack(stackInSlot));
 				}
 			}
 		}
@@ -151,7 +151,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(Collection<ItemStack> list) {
 		itemList.clear();
 		itemList.addAll(list);
 	}
@@ -162,7 +162,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		if (nbttagcompound.hasKey("satelliteid")) {
 			int satelliteId = nbttagcompound.getInteger("satelliteid");
@@ -174,7 +174,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		nbttagcompound.setString("satellitePipeName", satellitePipeName);
 		super.writeToNBT(nbttagcompound);
 	}
@@ -219,9 +219,9 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		if (_lostItems.isEmpty()) {
 			return;
 		}
-		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
+		final Iterator<ItemStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			ItemIdentifierStack stack = iterator.next();
+			ItemStack stack = iterator.next();
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe, null);
 			if (received > 0) {
 				if (received == stack.getStackSize()) {
@@ -234,12 +234,12 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
 		_lostItems.add(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {}
+	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {}
 
 	public void setSatelliteName(String name) {
 		satellitePipeName = name;

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 
@@ -71,15 +71,15 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 	public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		RenderHelper.disableStandardItemLighting();
 		renderGuiBackground(mouseX, mouseY);
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.disableLighting();
-		GlStateManager.disableDepth();
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.disableLighting();
+		RenderSystem.disableDepth();
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		RenderHelper.enableGUIStandardItemLighting();
 
-		GlStateManager.pushMatrix();
+		RenderSystem.pushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.enableRescaleNormal();
+		RenderSystem.enableRescaleNormal();
 		short short1 = 240;
 		short short2 = 240;
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) short1 / 1.0F, (float) short2 / 1.0F);
@@ -87,10 +87,10 @@ public abstract class SubGuiScreen extends GuiScreen implements ISubGuiControler
 
 		this.drawGuiContainerForegroundLayer(mouseX, mouseY, partialTicks);
 
-		GlStateManager.popMatrix();
+		RenderSystem.popMatrix();
 
-		GlStateManager.enableLighting();
-		GlStateManager.enableDepth();
+		RenderSystem.enableLighting();
+		RenderSystem.enableDepth();
 		if (subGui != null) {
 			GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT);
 			if (!subGui.hasSubGui()) {

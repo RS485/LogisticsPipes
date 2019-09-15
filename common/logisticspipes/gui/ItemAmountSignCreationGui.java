@@ -1,7 +1,7 @@
 package logisticspipes.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.signs.ItemAmountPipeSign;
@@ -11,7 +11,7 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 
 public class ItemAmountSignCreationGui extends LogisticsBaseGuiScreen {
 
-	public ItemAmountSignCreationGui(EntityPlayer player, CoreRoutedPipe pipe, EnumFacing dir) {
+	public ItemAmountSignCreationGui(EntityPlayer player, CoreRoutedPipe pipe, Direction dir) {
 		super(180, 125, 0, 0);
 		ItemAmountPipeSign sign = ((ItemAmountPipeSign) pipe.getPipeSign(dir));
 		DummyContainer dummy = new DummyContainer(player.inventory, sign.itemTypeInv);

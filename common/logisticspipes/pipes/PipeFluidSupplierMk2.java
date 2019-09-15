@@ -7,14 +7,14 @@ import java.util.Map.Entry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import net.minecraftforge.fluids.FluidTank;
 
 import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.routing.IRequestFluid;
+import logisticspipes.interfaces.routing.FluidRequester;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -27,9 +27,9 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
-public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport {
+public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements FluidRequester, IRequireReliableFluidTransport {
 
 	private boolean _lastRequestFailed = false;
 
@@ -120,7 +120,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 			//How much do I want?
 			Map<FluidIdentifier, Integer> wantFluids = new HashMap<>();
-			ItemIdentifierStack stack = dummyInventory.getIDStackInSlot(0);
+			ItemStack stack = dummyInventory.getIDStackInSlot(0);
 			if (stack == null) return;
 			FluidIdentifier fIdent = FluidIdentifier.get(stack.getItem());
 			wantFluids.put(fIdent, amount);
@@ -202,7 +202,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		_requestPartials = nbttagcompound.getBoolean("requestpartials");
@@ -211,7 +211,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		dummyInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("requestpartials", _requestPartials);

@@ -1,9 +1,10 @@
 package logisticspipes.modules;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -12,17 +13,17 @@ import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
 
 	private IQueueCCEvent eventQueuer;
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(CompoundTag nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(CompoundTag nbttagcompound) {}
 
 	@Override
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {
@@ -84,10 +85,10 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
+	public List<CCSinkResponder> queueCCSinkEvent(ItemStack item) {
 		CCSinkResponder resonse = new CCSinkResponder(item, _service.getSourceID(), eventQueuer);
 		eventQueuer.queueEvent("ItemSink", new Object[] { SimpleServiceLocator.ccProxy.getAnswer(resonse) });
-		return new OneList<>(resonse);
+		return Collections.singletonList(resonse);
 	}
 
 }

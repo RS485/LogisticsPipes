@@ -1,8 +1,8 @@
 package logisticspipes.utils.gui;
 
-import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.util.ItemVariant;
 
 public interface IItemSearch {
 
-	boolean itemSearched(ItemIdentifier item);
+	boolean itemSearched(ItemVariant item);
 }

@@ -25,7 +25,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.RequestComponentPacket;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
@@ -37,7 +37,8 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
+import network.rs485.logisticspipes.config.LPConfiguration;
 
 public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer {
 
@@ -71,7 +72,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 
 	public abstract void refreshItems();
 
-	public void handlePacket(Collection<ItemIdentifierStack> allItems) {
+	public void handlePacket(Collection<ItemStack> allItems) {
 		itemDisplay.setItemList(allItems);
 	}
 
@@ -90,7 +91,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		buttonList.add(new SmallGuiButton(6, xCenter + 26, bottom - 26, 10, 10, "+")); // +1
 		buttonList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
 		buttonList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
-		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
+		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, LPConfiguration.INSTANCE.getDisplayRequestPopup())); // Popup
 
 		buttonList.add(new SmallGuiButton(20, xCenter - 13, bottom - 41, 26, 10, "Sort")); // Sort
 
@@ -186,7 +187,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(Collection<IResource> items, boolean error, ISubGuiControler control, EntityPlayer player) {
+	public void handleRequestAnswer(Collection<Resource> items, boolean error, ISubGuiControler control, EntityPlayer player) {
 		while (control.hasSubGui()) {
 			control = control.getSubGui();
 		}
@@ -197,7 +198,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		}
 	}
 
-	public void handleSimulateAnswer(Collection<IResource> used, Collection<IResource> missing, ISubGuiControler control, EntityPlayer player) {
+	public void handleSimulateAnswer(Collection<Resource> used, Collection<Resource> missing, ISubGuiControler control, EntityPlayer player) {
 		while (control.hasSubGui()) {
 			control = control.getSubGui();
 		}
@@ -207,7 +208,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0 && itemDisplay.getSelectedItem() != null) {
-			final ItemIdentifierStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
+			final ItemStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setStack(stack).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).setDimension(dimension));
 			refreshItems();
 		} else if (guibutton.id == 1) {
@@ -230,10 +231,10 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 			itemDisplay.add(3);
 		} else if (guibutton.id == 8) {
 			GuiCheckBox button = (GuiCheckBox) guibutton;
-			Configs.DISPLAY_POPUP = button.change();
+			LPConfiguration.INSTANCE.setDisplayRequestPopup(button.change());
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && itemDisplay.getSelectedItem() != null) {
-			final ItemIdentifierStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
+			final ItemStack stack = itemDisplay.getSelectedItem().getItem().makeStack(itemDisplay.getRequestCount());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setStack(stack).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).setDimension(dimension));
 		} else if (guibutton.id == 20) {
 			itemDisplay.cycle();

@@ -9,245 +9,51 @@ package logisticspipes.proxy;
 
 import java.util.LinkedList;
 
-import logisticspipes.interfaces.ISecurityStationManager;
-import logisticspipes.interfaces.routing.IChannelConnectionManager;
-import logisticspipes.interfaces.routing.IChannelManagerProvider;
-import logisticspipes.logistics.ILogisticsFluidManager;
-import logisticspipes.logistics.ILogisticsManager;
-import logisticspipes.proxy.interfaces.IBCProxy;
-import logisticspipes.proxy.interfaces.IBetterStorageProxy;
-import logisticspipes.proxy.interfaces.ICCLProxy;
-import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IEnderIOProxy;
-import logisticspipes.proxy.interfaces.IEnderStorageProxy;
-import logisticspipes.proxy.interfaces.IFactorizationProxy;
-import logisticspipes.proxy.interfaces.IIC2Proxy;
-import logisticspipes.proxy.interfaces.IIronChestProxy;
-import logisticspipes.proxy.interfaces.INEIProxy;
-import logisticspipes.proxy.interfaces.IOpenComputersProxy;
-import logisticspipes.proxy.interfaces.IPowerProxy;
-import logisticspipes.proxy.interfaces.ITDProxy;
-import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
-import logisticspipes.proxy.progressprovider.MachineProgressProvider;
-import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
-import logisticspipes.proxy.specialconnection.SpecialTileConnection;
-import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
+import logisticspipes.interfaces.SecurityStationManager;
+import logisticspipes.interfaces.routing.ChannelConnectionManager;
+import logisticspipes.interfaces.routing.ChannelManagerProvider;
+import logisticspipes.logistics.LogisticsFluidManager;
+import logisticspipes.logistics.LogisticsFluidManagerImpl;
+import logisticspipes.logistics.LogisticsManager;
+import logisticspipes.logistics.LogisticsManagerImpl;
+import logisticspipes.proxy.interfaces.CraftingRecipeProvider;
 import logisticspipes.renderer.newpipe.GLRenderListHandler;
-import logisticspipes.routing.IRouterManager;
+import logisticspipes.routing.RouterManager;
+import logisticspipes.routing.RouterManagerImpl;
+import logisticspipes.routing.channels.ChannelManagerProviderImpl;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
-import logisticspipes.ticks.ClientPacketBufferHandlerThread;
-import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.TankUtilFactory;
-import network.rs485.logisticspipes.proxy.mcmp.IMCMPProxy;
 
 public final class SimpleServiceLocator {
 
 	private SimpleServiceLocator() {}
 
-	public static IBCProxy buildCraftProxy = null;
+	public static final ChannelConnectionManager connectionManager = RouterManagerImpl.INSTANCE;
 
-	public static void setBuildCraftProxy(final IBCProxy bcProxy) {
-		SimpleServiceLocator.buildCraftProxy = bcProxy;
-	}
+	public static final SecurityStationManager securityStationManager = RouterManagerImpl.INSTANCE;
 
-	public static IIC2Proxy IC2Proxy;
+	public static final RouterManager routerManager = RouterManagerImpl.INSTANCE;
 
-	public static void setElectricItemProxy(final IIC2Proxy ic2Proxy) {
-		SimpleServiceLocator.IC2Proxy = ic2Proxy;
-	}
+	public static final LogisticsManager logisticsManager = LogisticsManagerImpl.INSTANCE;
 
-	public static ICCProxy ccProxy;
+	public static final LogisticsFluidManager logisticsFluidManager = LogisticsFluidManagerImpl.INSTANCE;
 
-	public static void setCCProxy(final ICCProxy cProxy) {
-		SimpleServiceLocator.ccProxy = cProxy;
-	}
+	public static final InventoryUtilFactory inventoryUtilFactory = InventoryUtilFactory.INSTANCE;
 
-	public static IChannelConnectionManager connectionManager;
+	public static final TankUtilFactory tankUtilFactory = TankUtilFactory.INSTANCE;
 
-	public static void setChannelConnectionManager(final IChannelConnectionManager conMngr) {
-		SimpleServiceLocator.connectionManager = conMngr;
-	}
+	public static final LinkedList<CraftingRecipeProvider> craftingRecipeProviders = new LinkedList<>();
 
-	public static ISecurityStationManager securityStationManager;
+	public static final PipeInformationManager pipeInformationManager = PipeInformationManager.INSTANCE;
 
-	public static void setSecurityStationManager(final ISecurityStationManager secStationMngr) {
-		SimpleServiceLocator.securityStationManager = secStationMngr;
-	}
+	public static final RoutedItemHelper routedItemHelper = RoutedItemHelper.INSTANCE;
 
-	public static IRouterManager routerManager;
+	public static final GLRenderListHandler renderListHandler = GLRenderListHandler.INSTANCE;
 
-	public static void setRouterManager(final IRouterManager routerMngr) {
-		SimpleServiceLocator.routerManager = routerMngr;
-	}
+	public static final ConfigToolHandler configToolHandler = ConfigToolHandler.INSTANCE;
 
-	public static ILogisticsManager logisticsManager;
+	public static final ChannelManagerProvider channelManagerProvider = ChannelManagerProviderImpl.INSTANCE;
 
-	public static void setLogisticsManager(final ILogisticsManager logisticsMngr) {
-		SimpleServiceLocator.logisticsManager = logisticsMngr;
-	}
-
-	public static ILogisticsFluidManager logisticsFluidManager;
-
-	public static void setLogisticsFluidManager(final ILogisticsFluidManager logisticsMngr) {
-		SimpleServiceLocator.logisticsFluidManager = logisticsMngr;
-	}
-
-	public static InventoryUtilFactory inventoryUtilFactory;
-
-	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory) {
-		SimpleServiceLocator.inventoryUtilFactory = invUtilFactory;
-	}
-
-	public static TankUtilFactory tankUtilFactory;
-
-	public static void setTankUtilFactory(final TankUtilFactory tankUtilFactory) {
-		SimpleServiceLocator.tankUtilFactory = tankUtilFactory;
-	}
-
-	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<>();
-
-	public static void addCraftingRecipeProvider(ICraftingRecipeProvider provider) {
-		SimpleServiceLocator.craftingRecipeProviders.add(provider);
-	}
-
-	public static SpecialPipeConnection specialpipeconnection;
-
-	public static void setSpecialConnectionHandler(final SpecialPipeConnection special) {
-		SimpleServiceLocator.specialpipeconnection = special;
-	}
-
-	public static SpecialTileConnection specialtileconnection;
-
-	public static void setSpecialConnectionHandler(final SpecialTileConnection special) {
-		SimpleServiceLocator.specialtileconnection = special;
-	}
-
-	public static IThermalExpansionProxy thermalExpansionProxy;
-
-	public static void setThermalExpansionProxy(IThermalExpansionProxy proxy) {
-		SimpleServiceLocator.thermalExpansionProxy = proxy;
-	}
-
-	public static IBetterStorageProxy betterStorageProxy;
-
-	public static void setBetterStorageProxy(IBetterStorageProxy proxy) {
-		SimpleServiceLocator.betterStorageProxy = proxy;
-	}
-
-	public static SpecialTankHandler specialTankHandler;
-
-	public static void setSpecialTankHandler(SpecialTankHandler proxy) {
-		SimpleServiceLocator.specialTankHandler = proxy;
-	}
-
-	public static ClientPacketBufferHandlerThread clientBufferHandler;
-
-	public static void setClientPacketBufferHandlerThread(ClientPacketBufferHandlerThread proxy) {
-		SimpleServiceLocator.clientBufferHandler = proxy;
-	}
-
-	public static ServerPacketBufferHandlerThread serverBufferHandler;
-
-	public static void setServerPacketBufferHandlerThread(ServerPacketBufferHandlerThread proxy) {
-		SimpleServiceLocator.serverBufferHandler = proxy;
-	}
-
-	public static INEIProxy neiProxy;
-
-	public static void setNEIProxy(INEIProxy proxy) {
-		SimpleServiceLocator.neiProxy = proxy;
-	}
-
-	public static IFactorizationProxy factorizationProxy;
-
-	public static void setFactorizationProxy(IFactorizationProxy proxy) {
-		SimpleServiceLocator.factorizationProxy = proxy;
-	}
-
-	public static PipeInformationManager pipeInformationManager;
-
-	public static void setPipeInformationManager(PipeInformationManager manager) {
-		SimpleServiceLocator.pipeInformationManager = manager;
-	}
-
-	public static IEnderIOProxy enderIOProxy;
-
-	public static void setEnderIOProxy(IEnderIOProxy proxy) {
-		SimpleServiceLocator.enderIOProxy = proxy;
-	}
-
-	public static IIronChestProxy ironChestProxy;
-
-	public static void setIronChestProxy(IIronChestProxy proxy) {
-		SimpleServiceLocator.ironChestProxy = proxy;
-	}
-
-	public static IEnderStorageProxy enderStorageProxy;
-
-	public static void setEnderStorageProxy(IEnderStorageProxy proxy) {
-		SimpleServiceLocator.enderStorageProxy = proxy;
-	}
-
-	public static MachineProgressProvider machineProgressProvider;
-
-	public static void setMachineProgressProvider(MachineProgressProvider provider) {
-		SimpleServiceLocator.machineProgressProvider = provider;
-	}
-
-	public static RoutedItemHelper routedItemHelper;
-
-	public static void setRoutedItemHelper(RoutedItemHelper helper) {
-		SimpleServiceLocator.routedItemHelper = helper;
-	}
-
-	public static IOpenComputersProxy openComputersProxy;
-
-	public static void setOpenComputersProxy(IOpenComputersProxy proxy) {
-		SimpleServiceLocator.openComputersProxy = proxy;
-	}
-
-	public static GLRenderListHandler renderListHandler;
-
-	public static void setRenderListHandler(GLRenderListHandler handler) {
-		SimpleServiceLocator.renderListHandler = handler;
-	}
-
-	public static IPowerProxy powerProxy;
-
-	public static void setPowerProxy(IPowerProxy proxy) {
-		SimpleServiceLocator.powerProxy = proxy;
-	}
-
-	public static ITDProxy thermalDynamicsProxy;
-
-	public static void setThermalDynamicsProxy(ITDProxy proxy) {
-		SimpleServiceLocator.thermalDynamicsProxy = proxy;
-	}
-
-	public static ICCLProxy cclProxy;
-
-	public static void setCCLProxy(ICCLProxy proxy) {
-		SimpleServiceLocator.cclProxy = proxy;
-	}
-
-	public static ConfigToolHandler configToolHandler;
-
-	public static void setConfigToolHandler(ConfigToolHandler configToolHandler) {
-		SimpleServiceLocator.configToolHandler = configToolHandler;
-	}
-
-	public static IMCMPProxy mcmpProxy;
-
-	public static void setMCMPProxy(IMCMPProxy proxy) {
-		SimpleServiceLocator.mcmpProxy = proxy;
-	}
-
-	public static IChannelManagerProvider channelManagerProvider;
-
-	public static void setChannelManagerProvider(IChannelManagerProvider managerProvider) {
-		SimpleServiceLocator.channelManagerProvider = managerProvider;
-	}
 }

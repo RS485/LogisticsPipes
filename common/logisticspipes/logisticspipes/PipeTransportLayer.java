@@ -4,14 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 /**
@@ -23,29 +23,29 @@ public class PipeTransportLayer extends TransportLayer {
 
 	private final CoreRoutedPipe routedPipe;
 	private final ITrackStatistics _trackStatistics;
-	private final IRouter _router;
+	private final Router _router;
 
-	public PipeTransportLayer(CoreRoutedPipe routedPipe, ITrackStatistics trackStatistics, IRouter router) {
+	public PipeTransportLayer(CoreRoutedPipe routedPipe, ITrackStatistics trackStatistics, Router router) {
 		this.routedPipe = routedPipe;
 		_trackStatistics = trackStatistics;
 		_router = router;
 	}
 
 	@Override
-	public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
-		if (item.getItemIdentifierStack() != null) {
-			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
+	public Direction itemArrived(IRoutedItem item, Direction denyed) {
+		if (item.getItemStack() != null) {
+			_trackStatistics.recievedItem(item.getItemStack().getStackSize());
 		}
 
-		final List<NeighborTileEntity<TileEntity>> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
+		final List<NeighborBlockEntity<BlockEntity>> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
 				.connectedTileEntities(IPipeInformationProvider.ConnectionPipeType.ITEM)
 				.collect(Collectors.toList());
-		LinkedList<EnumFacing> possibleEnumFacing = new LinkedList<>();
+		LinkedList<Direction> possibleEnumFacing = new LinkedList<>();
 
 		// 1st prio, deliver to adjacent IInventories
 
-		for (NeighborTileEntity<TileEntity> adjacent : adjacentEntities) {
-			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity())) {
+		for (NeighborBlockEntity<BlockEntity> adjacent : adjacentEntities) {
+			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity())) {
 				continue;
 			}
 			if (_router.isRoutedExit(adjacent.getDirection())) {
@@ -69,7 +69,7 @@ public class PipeTransportLayer extends TransportLayer {
 		}
 
 		// 2nd prio, deliver to non-routed exit
-		for (NeighborTileEntity<TileEntity> adjacent : adjacentEntities) {
+		for (NeighborBlockEntity<BlockEntity> adjacent : adjacentEntities) {
 			if (_router.isRoutedExit(adjacent.getDirection())) {
 				continue;
 			}

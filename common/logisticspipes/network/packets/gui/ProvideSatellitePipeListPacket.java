@@ -14,7 +14,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -23,7 +23,7 @@ public class ProvideSatellitePipeListPacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private List<Pair<String, UUID>> list;
+	private List<Tuple2<String, UUID>> list;
 
 	public ProvideSatellitePipeListPacket(int id) {
 		super(id);
@@ -32,7 +32,7 @@ public class ProvideSatellitePipeListPacket extends ModernPacket {
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		list = input.readArrayList(input1 -> new Pair<>(input1.readUTF(), input1.readUUID()));
+		list = input.readArrayList(input1 -> new Tuple2<>(input1.readUTF(), input1.readUUID()));
 	}
 
 	@Override

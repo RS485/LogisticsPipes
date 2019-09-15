@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -33,15 +33,15 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Pair;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import logisticspipes.utils.tuples.Tuple2;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 
 public class ModuleExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
 
-	private EnumFacing _sneakyDirection = null;
+	private Direction _sneakyDirection = null;
 
 	private IHUDModuleRenderer HUD = new HUDExtractor(this);
 
@@ -68,12 +68,12 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public EnumFacing getSneakyDirection() {
+	public Direction getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(EnumFacing sneakyDirection) {
+	public void setSneakyDirection(Direction sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
 	}
@@ -100,13 +100,13 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		if (nbttagcompound.hasKey("sneakydirection")) {
 			int sneak = nbttagcompound.getInteger("sneakydirection");
 			if (sneak == 6) {
 				_sneakyDirection = null;
 			} else {
-				_sneakyDirection = EnumFacing.values()[sneak];
+				_sneakyDirection = Direction.values()[sneak];
 			}
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
@@ -117,20 +117,20 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 					_sneakyDirection = null;
 					break;
 				case 1:
-					_sneakyDirection = EnumFacing.UP;
+					_sneakyDirection = Direction.UP;
 					break;
 				case 2:
-					_sneakyDirection = EnumFacing.SOUTH;
+					_sneakyDirection = Direction.SOUTH;
 					break;
 				case 3:
-					_sneakyDirection = EnumFacing.DOWN;
+					_sneakyDirection = Direction.DOWN;
 					break;
 			}
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		nbttagcompound.setInteger("sneakydirection", _sneakyDirection == null ? 6 : _sneakyDirection.ordinal());
 	}
 
@@ -142,13 +142,13 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		currentTick = 0;
 
 		//Extract Item
-		final NeighborTileEntity<TileEntity> pointedItemHandler = _service.getPointedItemHandler();
+		final NeighborBlockEntity<BlockEntity> pointedItemHandler = _service.getPointedItemHandler();
 		if (pointedItemHandler == null) {
 			return;
 		}
-		EnumFacing extractOrientation = _sneakyDirection;
+		Direction extractOrientation = _sneakyDirection;
 		if (extractOrientation == null) {
-			final EnumFacing pointedOrientation = _service.getPointedOrientation();
+			final Direction pointedOrientation = _service.getPointedOrientation();
 			if (pointedOrientation != null) {
 				extractOrientation = pointedOrientation.getOpposite();
 			}
@@ -167,7 +167,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 			}
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
+			Tuple2<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
 			if (reply == null) {
 				continue;
 			}

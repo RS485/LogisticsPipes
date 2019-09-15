@@ -1,9 +1,10 @@
 package logisticspipes.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import logisticspipes.LPItems;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.items.ItemModule;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.Color;
@@ -16,13 +17,13 @@ public class GuiCardManager extends LogisticsBaseGuiScreen {
 	public GuiCardManager(EntityPlayer player) {
 		super(180, 180, 0, 0);
 		final CardManagmentInventory Cinv = new CardManagmentInventory();
-		DummyContainer dummy = new DummyContainer(player, Cinv, new IGuiOpenControler() {
+		DummyContainer dummy = new DummyContainer(player, Cinv, new IGuiOpenController() {
 
 			@Override
-			public void guiOpenedByPlayer(EntityPlayer player) {}
+			public void guiOpenedByPlayer(PlayerEntity player) {}
 
 			@Override
-			public void guiClosedByPlayer(EntityPlayer player) {
+			public void guiClosedByPlayer(PlayerEntity player) {
 				Cinv.close(player, (int) player.posX, (int) player.posY, (int) player.posZ);
 			}
 		});

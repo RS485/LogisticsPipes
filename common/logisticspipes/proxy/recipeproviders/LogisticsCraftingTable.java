@@ -2,48 +2,50 @@ package logisticspipes.proxy.recipeproviders;
 
 import java.util.BitSet;
 
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
-import logisticspipes.request.resources.DictResource;
+import logisticspipes.proxy.interfaces.FuzzyRecipeProvider;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
+import network.rs485.logisticspipes.routing.request.Resource;
 
-public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
+public class LogisticsCraftingTable implements FuzzyRecipeProvider {
 
 	@Override
-	public boolean canOpenGui(TileEntity tile) {
+	public boolean canOpenGui(BlockEntity tile) {
 		return (tile instanceof LogisticsCraftingTableTileEntity);
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
+	public boolean importRecipe(BlockEntity tile, Inventory inventory) {
 		if (!(tile instanceof LogisticsCraftingTableTileEntity)) {
 			return false;
 		}
 
 		LogisticsCraftingTableTileEntity bench = (LogisticsCraftingTableTileEntity) tile;
-		ItemIdentifierStack result = bench.resultInv.getIDStackInSlot(0);
+		ItemStack result = bench.resultInv.getInvStack(0);
 
 		if (result == null) {
 			return false;
 		}
 
-		inventory.setInventorySlotContents(9, result);
+		inventory.setInvStack(9, result);
 
 		// Import
-		for (int i = 0; i < bench.matrix.getSizeInventory(); i++) {
-			if (i >= inventory.getSizeInventory() - 2) {
+		for (int i = 0; i < bench.matrix.getInvSize(); i++) {
+			if (i >= inventory.getInvSize() - 2) {
 				break;
 			}
-			final ItemStack newStack = bench.matrix.getStackInSlot(i).copy();
+			final ItemStack newStack = bench.matrix.getInvStack(i).copy();
 			if (!newStack.isEmpty() && newStack.getCount() > 1) {
 				newStack.setCount(1);
 			}
-			inventory.setInventorySlotContents(i, newStack);
+			inventory.setInvStack(i, newStack);
 		}
 
 		if (!bench.isFuzzy()) {
@@ -54,7 +56,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 	}
 
 	@Override
-	public void importFuzzyFlags(TileEntity tile, ItemIdentifierInventory inventory, DictResource[] flags, DictResource output) {
+	public void importFuzzyFlags(BlockEntity tile, Inventory inventory, Resource.Dict[] flags, Resource.Dict output) {
 		if (!(tile instanceof LogisticsCraftingTableTileEntity)) {
 			return;
 		}
@@ -76,13 +78,13 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 		//compact with fuzzy flags
 
 		for (int i = 0; i < 9; i++) {
-			final ItemIdentifierStack stackInSlot = inventory.getIDStackInSlot(i);
+			final ItemStack stackInSlot = inventory.getIDStackInSlot(i);
 			if (stackInSlot == null) {
 				continue;
 			}
 			final ItemIdentifier itemInSlot = stackInSlot.getItem();
 			for (int j = i + 1; j < 9; j++) {
-				final ItemIdentifierStack stackInOtherSlot = inventory.getIDStackInSlot(j);
+				final ItemStack stackInOtherSlot = inventory.getIDStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
 				}

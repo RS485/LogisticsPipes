@@ -8,11 +8,11 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
 
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.request.resources.Resource;
+import logisticspipes.request.resources.Resource.ColorCode;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.StringUtils;
 
 public class GuiRequestPopup extends SubGuiScreen {
@@ -29,11 +29,11 @@ public class GuiRequestPopup extends SubGuiScreen {
 				textArray.add((String) o);
 			} else if (o instanceof Collection<?>) {
 				for (Object oTwo : (Collection<?>) o) {
-					if (oTwo instanceof ItemIdentifierStack) {
-						textArray.add(((ItemIdentifierStack) oTwo).getFriendlyName());
+					if (oTwo instanceof ItemStack) {
+						textArray.add(((ItemStack) oTwo).getFriendlyName());
 					}
-					if (oTwo instanceof IResource) {
-						textArray.add(((IResource) oTwo).getDisplayText(ColorCode.NONE));
+					if (oTwo instanceof Resource) {
+						textArray.add(((Resource) oTwo).getDisplayText(ColorCode.NONE));
 					}
 				}
 			} else {
@@ -72,7 +72,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 			if (text[i] == null) {
 				continue;
 			}
-			String msg = StringUtils.getCuttedString(text[i], mWidth - 10, fontRenderer);
+			String msg = StringUtils.getCutString(text[i], mWidth - 10, fontRenderer);
 			int stringWidth = mc.fontRenderer.getStringWidth(msg);
 			mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}

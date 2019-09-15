@@ -153,7 +153,7 @@ public class HudChassisPipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, (float) (-0.005F * distance));
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
+			ItemStackRenderer.renderItemStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 	}

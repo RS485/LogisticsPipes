@@ -8,26 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.network.abstractguis.PopupGuiProvider;
-import logisticspipes.network.exception.TargetNotFoundException;
 import logisticspipes.network.packets.gui.OpenGUIPacket;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolverUtil;
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
-import logisticspipes.utils.gui.SubGuiScreen;
-import network.rs485.logisticspipes.util.LPDataIOWrapper;
 
 public class NewGuiHandler {
 
@@ -73,82 +58,84 @@ public class NewGuiHandler {
 		}
 	}
 
-	public static void openGui(GuiProvider guiProvider, EntityPlayer oPlayer) {
-		if (!(oPlayer instanceof EntityPlayerMP)) {
-			throw new UnsupportedOperationException("Gui can only be opened on the server side");
-		}
-		EntityPlayerMP player = (EntityPlayerMP) oPlayer;
-		Container container = guiProvider.getContainer(player);
-		if (container == null) {
-			if (guiProvider instanceof PopupGuiProvider) {
-				OpenGUIPacket packet = PacketHandler.getPacket(OpenGUIPacket.class);
-				packet.setGuiID(guiProvider.getId());
-				packet.setWindowID(-2);
-				packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
-				MainProxy.sendPacketToPlayer(packet, player);
-			}
-			return;
-		}
-		player.getNextWindowId();
-		player.closeContainer();
-		int windowId = player.currentWindowId;
-
-		OpenGUIPacket packet = PacketHandler.getPacket(OpenGUIPacket.class);
-		packet.setGuiID(guiProvider.getId());
-		packet.setWindowID(windowId);
-		packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
-		MainProxy.sendPacketToPlayer(packet, player);
-
-		player.openContainer = container;
-		player.openContainer.windowId = windowId;
-		player.openContainer.addListener(player);
-		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(player, player.openContainer));
+	public static void openGui(GuiProvider guiProvider, PlayerEntity oPlayer) {
+		// TODO
+		// if (!(oPlayer instanceof ServerPlayerEntity)) {
+		// 	throw new UnsupportedOperationException("Gui can only be opened on the server side");
+		// }
+		// ServerPlayerEntity player = (ServerPlayerEntity) oPlayer;
+		// Container container = guiProvider.getContainer(player);
+		// if (container == null) {
+		// 	if (guiProvider instanceof PopupGuiProvider) {
+		// 		OpenGUIPacket packet = PacketHandler.getPacket(OpenGUIPacket.class);
+		// 		packet.setGuiID(guiProvider.getId());
+		// 		packet.setWindowID(-2);
+		// 		packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
+		// 		MainProxy.sendPacketToPlayer(packet, player);
+		// 	}
+		// 	return;
+		// }
+		// player.getNextWindowId();
+		// player.closeContainer();
+		// int windowId = player.currentWindowId;
+		//
+		// OpenGUIPacket packet = PacketHandler.getPacket(OpenGUIPacket.class);
+		// packet.setGuiID(guiProvider.getId());
+		// packet.setWindowID(windowId);
+		// packet.setGuiData(LPDataIOWrapper.collectData(guiProvider::writeData));
+		// MainProxy.sendPacketToPlayer(packet, player);
+		//
+		// player.openContainer = container;
+		// player.openContainer.windowId = windowId;
+		// player.openContainer.addListener(player);
+		// net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(player, player.openContainer));
 	}
 
-	@SideOnly(Side.CLIENT)
-	public static void openGui(OpenGUIPacket packet, EntityPlayer player) {
-		int guiID = packet.getGuiID();
-		GuiProvider provider = NewGuiHandler.guilist.get(guiID).template();
-		LPDataIOWrapper.provideData(packet.getGuiData(), provider::readData);
-
-		if (provider instanceof PopupGuiProvider && packet.getWindowID() == -2) {
-			if (FMLClientHandler.instance().getClient().currentScreen instanceof LogisticsBaseGuiScreen) {
-				LogisticsBaseGuiScreen baseGUI = (LogisticsBaseGuiScreen) FMLClientHandler.instance().getClient().currentScreen;
-				SubGuiScreen newSub;
-				try {
-					newSub = (SubGuiScreen) provider.getClientGui(player);
-				} catch (TargetNotFoundException e) {
-					throw e;
-				} catch (Exception e) {
-					LogisticsPipes.log.error(packet.getClass().getName());
-					LogisticsPipes.log.error(packet.toString());
-					throw new RuntimeException(e);
-				}
-				if (newSub != null) {
-					if (!baseGUI.hasSubGui()) {
-						baseGUI.setSubGui(newSub);
-					} else {
-						SubGuiScreen canidate = baseGUI.getSubGui();
-						while (canidate.hasSubGui()) {
-							canidate = canidate.getSubGui();
-						}
-						canidate.setSubGui(newSub);
-					}
-				}
-			}
-		} else {
-			GuiContainer screen;
-			try {
-				screen = (GuiContainer) provider.getClientGui(player);
-			} catch (TargetNotFoundException e) {
-				throw e;
-			} catch (Exception e) {
-				LogisticsPipes.log.error(packet.getClass().getName());
-				LogisticsPipes.log.error(packet.toString());
-				throw new RuntimeException(e);
-			}
-			screen.inventorySlots.windowId = packet.getWindowID();
-			FMLCommonHandler.instance().showGuiScreen(screen);
-		}
+	// @SideOnly(Side.CLIENT)
+	public static void openGui(OpenGUIPacket packet, PlayerEntity player) {
+		// TODO
+		// int guiID = packet.getGuiID();
+		// GuiProvider provider = NewGuiHandler.guilist.get(guiID).template();
+		// LPDataIOWrapper.provideData(packet.getGuiData(), provider::readData);
+		//
+		// if (provider instanceof PopupGuiProvider && packet.getWindowID() == -2) {
+		// 	if (FMLClientHandler.instance().getClient().currentScreen instanceof LogisticsBaseGuiScreen) {
+		// 		LogisticsBaseGuiScreen baseGUI = (LogisticsBaseGuiScreen) FMLClientHandler.instance().getClient().currentScreen;
+		// 		SubGuiScreen newSub;
+		// 		try {
+		// 			newSub = (SubGuiScreen) provider.getClientGui(player);
+		// 		} catch (TargetNotFoundException e) {
+		// 			throw e;
+		// 		} catch (Exception e) {
+		// 			LogisticsPipes.log.error(packet.getClass().getName());
+		// 			LogisticsPipes.log.error(packet.toString());
+		// 			throw new RuntimeException(e);
+		// 		}
+		// 		if (newSub != null) {
+		// 			if (!baseGUI.hasSubGui()) {
+		// 				baseGUI.setSubGui(newSub);
+		// 			} else {
+		// 				SubGuiScreen canidate = baseGUI.getSubGui();
+		// 				while (canidate.hasSubGui()) {
+		// 					canidate = canidate.getSubGui();
+		// 				}
+		// 				canidate.setSubGui(newSub);
+		// 			}
+		// 		}
+		// 	}
+		// } else {
+		// 	GuiContainer screen;
+		// 	try {
+		// 		screen = (GuiContainer) provider.getClientGui(player);
+		// 	} catch (TargetNotFoundException e) {
+		// 		throw e;
+		// 	} catch (Exception e) {
+		// 		LogisticsPipes.log.error(packet.getClass().getName());
+		// 		LogisticsPipes.log.error(packet.toString());
+		// 		throw new RuntimeException(e);
+		// 	}
+		// 	screen.inventorySlots.windowId = packet.getWindowID();
+		// 	FMLCommonHandler.instance().showGuiScreen(screen);
+		// }
 	}
 }

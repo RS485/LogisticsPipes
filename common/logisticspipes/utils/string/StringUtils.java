@@ -6,14 +6,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.UnmodifiableListIterator;
-import org.lwjgl.input.Keyboard;
 
 public final class StringUtils {
 
@@ -31,9 +33,9 @@ public final class StringUtils {
 		UnmodifiableListIterator<Character> iter = chars.listIterator();
 		while (iter.hasNext()) {
 			Character c = iter.next();
-			if (c.charValue() == '%' && iter.hasNext()) {
+			if (c == '%' && iter.hasNext()) {
 				Character c2 = iter.next();
-				if (c2.charValue() == 'c') {
+				if (c2 == 'c') {
 					StringBuilder handled = new StringBuilder();
 					ChatColor[] values = ChatColor.values();
 					List<ChatColor> colors = new ArrayList<>(values.length);
@@ -49,7 +51,7 @@ public final class StringUtils {
 							if (color.name().length() <= i) {
 								break outer;
 							}
-							if (c3.charValue() != color.name().charAt(i)) {
+							if (c3 != color.name().charAt(i)) {
 								colorIter.remove();
 							}
 						}
@@ -73,36 +75,36 @@ public final class StringUtils {
 	}
 
 	public static String translate(String key) {
-		String result = StringUtils.handleColor(I18n.translateToLocal(key));
+		String result = StringUtils.handleColor(I18n.translate(key));
 		if (result.equals(key) && !StringUtils.UNTRANSLATED_STRINGS.contains(key) && !key.contains(".tip")) {
 			StringUtils.UNTRANSLATED_STRINGS.add(key);
 		}
 		return result;
 	}
 
-	public static void addShiftAddition(ItemStack stack, List<String> list) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
+	public static void addShiftAddition(ItemStack stack, List<Text> list) {
+		if (Screen.hasShiftDown()) {
+			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getTranslationKey(stack));
 			String key = baseKey + 1;
 			String translation = StringUtils.translate(key);
 			int i = 1;
 
 			while (!translation.equals(key)) {
-				list.add(translation);
+				list.add(new LiteralText(translation));
 				key = baseKey + ++i;
 				translation = StringUtils.translate(key);
 			}
 		} else {
-			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
+			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getTranslationKey(stack));
 			String key = baseKey + 1;
 			String translation = StringUtils.translate(key);
 			if (!translation.equals(key)) {
-				list.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
+				list.add(new LiteralText(StringUtils.translate(StringUtils.KEY_HOLDSHIFT)));
 			}
 		}
 	}
 
-	public static String getFormatedStackSize(long stackSize, boolean forceDisplayNumber) {
+	public static String getFormattedStackSize(long stackSize, boolean forceDisplayNumber) {
 		String s;
 		if (stackSize == 1 && !forceDisplayNumber) {
 			s = "";
@@ -132,9 +134,9 @@ public final class StringUtils {
 		return percent + "%";
 	}
 
-	public static String getWithMaxWidth(String name, int width, FontRenderer fontRenderer) {
+	public static String getWithMaxWidth(String name, int width, TextRenderer textRenderer) {
 		boolean changed = false;
-		while (fontRenderer.getStringWidth(name) > width) {
+		while (textRenderer.getStringWidth(name) > width) {
 			name = name.substring(0, name.length() - 2);
 			changed = true;
 		}
@@ -144,7 +146,7 @@ public final class StringUtils {
 		return name;
 	}
 
-	public static String getCuttedString(String input, int maxLength, FontRenderer renderer) {
+	public static String getCutString(String input, int maxLength, TextRenderer renderer) {
 		if (renderer.getStringWidth(input) < maxLength) {
 			return input;
 		}

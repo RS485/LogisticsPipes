@@ -6,8 +6,9 @@ import javax.annotation.Nullable;
 
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -27,7 +28,7 @@ import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -45,10 +46,11 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.PlayerCollectionList;
+import network.rs485.logisticspipes.config.LPConfiguration;
 
 @ModDependentInterface(modId = { LPConstants.ic2ModID }, interfacePath = { "ic2.api.energy.tile.IEnergySink" })
 @CCType(name = "LogisticsPowerJunction")
-public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink {
+public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity implements IGuiTileEntity, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenController, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
 
@@ -139,7 +141,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 			return false;
 		}
 		if (canUseEnergy(amount, null)) {
-			internalStorage -= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
+			internalStorage -= (int) ((amount * LPConfiguration.INSTANCE.getPowerUsageMultiplier()) + 0.5D);
 			if (internalStorage < LogisticsPowerJunctionTileEntity.MAX_STORAGE / 2) {
 				needMorePowerTriggerCheck = true;
 			}
@@ -153,7 +155,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		if (providersToIgnore != null && providersToIgnore.contains(this)) {
 			return false;
 		}
-		return internalStorage >= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
+		return internalStorage >= (int) ((amount * LPConfiguration.INSTANCE.getPowerUsageMultiplier()) + 0.5D);
 	}
 
 	@Override
@@ -190,7 +192,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
+	public void readFromNBT(CompoundTag par1nbtTagCompound) {
 		super.readFromNBT(par1nbtTagCompound);
 		internalStorage = par1nbtTagCompound.getInteger("powerLevel");
 		if (par1nbtTagCompound.hasKey("needMorePowerTriggerCheck")) {
@@ -199,7 +201,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
+	public CompoundTag writeToNBT(CompoundTag par1nbtTagCompound) {
 		par1nbtTagCompound = super.writeToNBT(par1nbtTagCompound);
 		par1nbtTagCompound.setInteger("powerLevel", internalStorage);
 		par1nbtTagCompound.setBoolean("needMorePowerTriggerCheck", needMorePowerTriggerCheck);
@@ -289,13 +291,13 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void guiOpenedByPlayer(EntityPlayer player) {
+	public void guiOpenedByPlayer(PlayerEntity player) {
 		guiListener.add(player);
 		updateClients();
 	}
 
 	@Override
-	public void guiClosedByPlayer(EntityPlayer player) {
+	public void guiClosedByPlayer(PlayerEntity player) {
 		guiListener.remove(player);
 	}
 
@@ -348,7 +350,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public boolean isHUDExistent() {
-		return getWorld().getTileEntity(pos) == this;
+		return getWorld().getBlockEntity(pos) == this;
 	}
 
 	@Override
@@ -359,7 +361,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.ic2ModID)
-	public boolean acceptsEnergyFrom(IEnergyEmitter tile, EnumFacing dir) {
+	public boolean acceptsEnergyFrom(IEnergyEmitter tile, Direction dir) {
 		return true;
 	}
 
@@ -384,7 +386,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.ic2ModID)
-	public double injectEnergy(EnumFacing directionFrom, double amount, double voltage) {
+	public double injectEnergy(Direction directionFrom, double amount, double voltage) {
 		internalBuffer += amount * LogisticsPowerJunctionTileEntity.IC2Multiplier;
 		transferFromIC2Buffer();
 		return 0;
@@ -402,7 +404,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing) {
 		if (capability == CapabilityEnergy.ENERGY) {
 			return true;
 		}
@@ -414,7 +416,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Nullable
 	@Override
-	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
 		if (capability == CapabilityEnergy.ENERGY) {
 			return (T) energyInterface;
 		}

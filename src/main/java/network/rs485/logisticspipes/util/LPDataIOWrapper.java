@@ -58,10 +58,9 @@ import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 
 import io.netty.buffer.ByteBuf;
 import static io.netty.buffer.Unpooled.buffer;
@@ -71,9 +70,8 @@ import logisticspipes.network.IReadListObject;
 import logisticspipes.network.IWriteListObject;
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.PlayerIdentifier;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
 
+@Deprecated
 public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	private static final Charset UTF_8 = StandardCharsets.UTF_8;
@@ -231,7 +229,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeFacing(@Nullable EnumFacing direction) {
+	public void writeFacing(@Nullable Direction direction) {
 		if (direction == null) {
 			writeByte(Byte.MIN_VALUE);
 		} else {
@@ -240,7 +238,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeResourceLocation(@Nullable ResourceLocation resource) {
+	public void writeResourceLocation(@Nullable Identifier resource) {
 		if (resource == null) {
 			writeBoolean(false);
 		} else {
@@ -270,7 +268,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeNBTTagCompound(@Nullable NBTTagCompound tag) {
+	public void writeNBTTagCompound(@Nullable CompoundTag tag) {
 		if (tag == null) {
 			writeByte(0);
 		} else {
@@ -333,29 +331,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		} else {
 			writeInt(Item.getIdFromItem(itemstack.getItem()));
 			writeInt(itemstack.getCount());
-			writeInt(itemstack.getItemDamage());
-			writeNBTTagCompound(itemstack.getTagCompound());
-		}
-	}
-
-	@Override
-	public void writeItemIdentifier(@Nullable ItemIdentifier item) {
-		if (item == null) {
-			writeInt(0);
-		} else {
-			writeInt(Item.getIdFromItem(item.item));
-			writeInt(item.itemDamage);
-			writeNBTTagCompound(item.tag);
-		}
-	}
-
-	@Override
-	public void writeItemIdentifierStack(@Nullable ItemIdentifierStack stack) {
-		if (stack == null) {
-			writeInt(-1);
-		} else {
-			writeInt(stack.getStackSize());
-			writeItemIdentifier(stack.getItem());
+			writeInt(itemstack.getDamage());
+			writeNBTTagCompound(itemstack.getTag());
 		}
 	}
 
@@ -471,22 +448,22 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Nullable
 	@Override
-	public EnumFacing readFacing() {
+	public Direction readFacing() {
 		byte b = localBuffer.readByte();
 
 		if (b == Byte.MIN_VALUE) {
 			return null;
-		} else if (b < 0 || b >= EnumFacing.VALUES.length) {
-			throw new IndexOutOfBoundsException("Invalid value for EnumFacing");
+		} else if (b < 0 || b >= Direction.values().length) {
+			throw new IndexOutOfBoundsException("Invalid value for Direction");
 		}
-		return EnumFacing.VALUES[b];
+		return Direction.values()[b];
 	}
 
 	@Nullable
 	@Override
-	public ResourceLocation readResourceLocation() {
+	public Identifier readResourceLocation() {
 		if (readBoolean()) {
-			return new ResourceLocation(Objects.requireNonNull(readUTF()));
+			return new Identifier(Objects.requireNonNull(readUTF()));
 		}
 		return null;
 	}
@@ -520,7 +497,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Nullable
 	@Override
-	public NBTTagCompound readNBTTagCompound() {
+	public CompoundTag readNBTTagCompound() {
 		boolean isEmpty = (readByte() == 0);
 		if (isEmpty) {
 			return null;
@@ -588,31 +565,6 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		byte[] arr = new byte[length];
 		localBuffer.readBytes(arr, 0, length);
 		return arr;
-	}
-
-	@Nullable
-	@Override
-	public ItemIdentifier readItemIdentifier() {
-		final int itemId = readInt();
-		if (itemId == 0) {
-			return null;
-		}
-
-		int damage = readInt();
-		NBTTagCompound tag = readNBTTagCompound();
-		return ItemIdentifier.get(Item.getItemById(itemId), damage, tag);
-	}
-
-	@Nullable
-	@Override
-	public ItemIdentifierStack readItemIdentifierStack() {
-		int stacksize = readInt();
-		if (stacksize == -1) {
-			return null;
-		}
-
-		ItemIdentifier item = readItemIdentifier();
-		return new ItemIdentifierStack(item, stacksize);
 	}
 
 	@Nonnull

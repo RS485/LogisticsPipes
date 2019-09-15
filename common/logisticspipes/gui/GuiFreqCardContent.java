@@ -21,7 +21,7 @@ public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 			if (itemStack.getItem() != LPItems.itemCard) {
 				return false;
 			}
-			if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
+			if (itemStack.getDamage() != LogisticsItemCard.FREQ_CARD) {
 				return false;
 			}
 			return true;

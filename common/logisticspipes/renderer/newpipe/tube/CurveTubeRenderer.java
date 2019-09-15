@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
@@ -26,7 +26,7 @@ import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
@@ -43,12 +43,12 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 
 	//Tube Models
 	static Map<TurnDirection, List<IModel3D>> tubeTurnBase = new HashMap<>();
-	static Map<TurnDirection, Map<Pair<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<>();
+	static Map<TurnDirection, Map<Tuple2<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<>();
 
 	//Tube global Access
 	public static Map<TurnDirection, IModel3D> tubeCurve = new HashMap<>();
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
 
 	static {
 		CurveTubeRenderer.loadModels();

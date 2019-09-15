@@ -8,9 +8,9 @@ import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 
 import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -41,9 +41,9 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 	public void renderInventoryBlock(Block block, int metadata, int modelID, RenderBlocks renderer) {}
 
 	@Override
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
+	public boolean renderWorldBlock(BlockView world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		Tessellator tess = Tessellator.instance;
-		TileEntity tile = world.getTileEntity(x, y, z);
+		BlockEntity tile = world.getBlockEntity(x, y, z);
 		LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
 		PipeRenderState renderState = pipeTile.renderState;
 
@@ -92,7 +92,7 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		tess.addTranslation(0.00002F, 0.00002F, 0.00002F);
 		renderer.setRenderBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 
-		for (EnumFacing dir : EnumFacing.VALUES) {
+		for (Direction dir : Direction.values()) {
 			if (pipeTile.tilePart.hasPipePluggable(dir)) {
 				IBCPipePluggable p = pipeTile.tilePart.getBCPipePluggable(dir);
 				p.renderPluggable(renderer, dir, LogisticsPipeWorldRenderer.renderPass, x, y, z);
@@ -102,8 +102,8 @@ public class LogisticsNewPipeWorldRenderer implements ISimpleBlockRenderingHandl
 		tess.addTranslation(-0.00002F, -0.00002F, -0.00002F);
 
 		boolean[] solidSides = new boolean[6];
-		for (EnumFacing dir : EnumFacing.VALUES) {
-			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((TileEntity) pipeTile), dir);
+		for (Direction dir : Direction.values()) {
+			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates((BlockEntity) pipeTile), dir);
 			Block blockSide = pos.getBlock(pipeTile.getWorld());
 			if (blockSide != null && blockSide.isSideSolid(pipeTile.getWorld(), pos.getXInt(), pos.getYInt(), pos.getZInt(), dir.getOpposite())
 					&& !renderState.pipeConnectionMatrix.isConnected(dir)) {

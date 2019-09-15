@@ -12,10 +12,11 @@ import java.util.Objects;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -25,7 +26,7 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.interfaces.routing.ITargetSlotInformation;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
@@ -44,18 +45,18 @@ import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import logisticspipes.utils.item.ItemStack;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
+public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequester, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
@@ -98,7 +99,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(dummyInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(dummyInventory)).setModulePos(this), player);
 	}
 
 	@Override
@@ -113,14 +114,14 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemStack> list) {
 		dummyInventory.handleItemIdentifierList(list);
 	}
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(dummyInventory)).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(dummyInventory)).setModulePos(this), localModeWatchers);
 		}
 	}
 
@@ -203,7 +204,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> !adjacent.isLogisticsPipe())
 				.map(neighbor -> neighbor.sneakyInsertion().from(getUpgradeManager()))
-				.map(NeighborTileEntity::getInventoryUtil)
+				.map(NeighborBlockEntity::getInventoryUtil)
 				.filter(Objects::nonNull)
 				.filter(invUtil -> invUtil.getSizeInventory() > 0)
 				.forEach(invUtil -> {
@@ -219,7 +220,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		_service.getDebug().log("Supplier: Start calculating pattern request");
 		setRequestFailed(false);
 		for (int i = 0; i < 9; i++) {
-			ItemIdentifierStack needed = dummyInventory.getIDStackInSlot(i);
+			ItemStack needed = dummyInventory.getIDStackInSlot(i);
 			if (needed == null) {
 				continue;
 			}
@@ -227,9 +228,9 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 				continue;
 			}
 			ItemStack stack = invUtil.getStackInSlot(slotArray[i]);
-			ItemIdentifierStack have = null;
+			ItemStack have = null;
 			if (!stack.isEmpty()) {
-				have = ItemIdentifierStack.getFromStack(stack);
+				have = ItemStack.getFromStack(stack);
 			}
 			int haveCount = 0;
 			if (have != null) {
@@ -254,7 +255,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 				continue;
 			}
 
-			ItemIdentifierStack toRequest = new ItemIdentifierStack(needed.getItem(), neededCount);
+			ItemStack toRequest = new ItemStack(needed.getItem(), neededCount);
 
 			_service.getDebug().log("Supplier: Missing for slot " + i + ": " + toRequest);
 
@@ -396,7 +397,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		if (nbttagcompound.hasKey("requestmode")) {
 			_requestMode = SupplyMode.values()[nbttagcompound.getShort("requestmode")];
@@ -421,7 +422,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		dummyInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setShort("requestmode", (short) _requestMode.ordinal());
 		nbttagcompound.setShort("patternmode", (short) _patternMode.ordinal());
@@ -431,7 +432,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		}
 	}
 
-	private void decreaseRequested(ItemIdentifierStack item) {
+	private void decreaseRequested(ItemStack item) {
 		int remaining = item.getStackSize();
 		//see if we can get an exact match
 		Integer count = _requestedItems.get(item.getItem());
@@ -470,13 +471,13 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
 		_service.getDebug().log("Supplier: Registered Item Lost: " + item);
 		decreaseRequested(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {
 		_service.getDebug().log("Supplier: Registered Item Arrived: " + item);
 		decreaseRequested(item);
 	}
@@ -550,22 +551,22 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public IRouter getRouter() {
+	public Router getRouter() {
 		return _service.getRouter();
 	}
 
 	@Override
-	public void itemCouldNotBeSend(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	public void itemCouldNotBeSend(ItemStack item, IAdditionalTargetInformation info) {
 		itemLost(item, info);
 	}
 
 	@Override
 	public int getID() {
-		return _service.getRouter().getSimpleID();
+		return _service.getRouter().getSimpleId();
 	}
 
 	@Override
-	public int compareTo(IRequestItems value2) {
+	public int compareTo(@NotNull ItemRequester other) {
 		return 0;
 	}
 

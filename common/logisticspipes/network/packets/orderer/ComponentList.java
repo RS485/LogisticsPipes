@@ -16,10 +16,11 @@ import logisticspipes.config.Configs;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.request.resources.Resource;
+import logisticspipes.request.resources.Resource.ColorCode;
 import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -28,11 +29,11 @@ public class ComponentList extends ModernPacket {
 
 	@Getter
 	@Setter
-	private Collection<IResource> used = new ArrayList<>();
+	private Collection<Resource> used = new ArrayList<>();
 
 	@Getter
 	@Setter
-	private Collection<IResource> missing = new ArrayList<>();
+	private Collection<Resource> missing = new ArrayList<>();
 
 	public ComponentList(int id) {
 		super(id);
@@ -46,17 +47,17 @@ public class ComponentList extends ModernPacket {
 	@Override
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
-		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+		if (LPConfiguration.INSTANCE.getDisplayRequestPopup() && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
 			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen)
 					.handleSimulateAnswer(used, missing, (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
-		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
+		} else if (LPConfiguration.INSTANCE.getDisplayRequestPopup() && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
 			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen)
 					.handleSimulateAnswer(used, missing, (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
-			for (IResource item : used) {
+			for (Resource item : used) {
 				player.sendMessage(new TextComponentString("Component: " + item.getDisplayText(ColorCode.SUCCESS)));
 			}
-			for (IResource item : missing) {
+			for (Resource item : missing) {
 				player.sendMessage(new TextComponentString("Missing: " + item.getDisplayText(ColorCode.MISSING)));
 			}
 		}

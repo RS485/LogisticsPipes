@@ -1,66 +1,76 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '2.3-SNAPSHOT'
-        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.3.0'
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "$kotlin_version"
-    }
+// TODO signing, cursegradle, language
+
+plugins {
+    id 'fabric-loom' version '0.2.5-SNAPSHOT'
+    id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.3.50'
 }
 
-apply plugin: 'maven'
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'signing'
-apply plugin: 'com.matthewprenger.cursegradle'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
-def ENV = System.getenv()
-
-allprojects {
-    group = "network.rs485"
-    version = "0.10.2"
-    ext.builtby = "unknown"
-
-    if (ENV.BUILD_NUMBER) {
-        version = "$version.${ENV.BUILD_NUMBER}"
-    } else if (ENV.VERSION) {
-        version = "$version.${ENV.VERSION}"
-    } else {
-        version = "$version-SNAPSHOT"
-    }
-
-    if (ENV.JENKINS_URL) {
-        ext.builtby = ENV.JENKINS_URL
-    } else if (ENV.JITPACK) {
-        ext.builtby = "JitPack.io"
-        group = ENV.GROUP
-    }
-
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    kotlinOptions.jvmTarget = '1.8'
+    kotlinOptions.freeCompilerArgs += '-Xjvm-default=enable'
 }
 
-subprojects {
-    rootProject.clean.dependsOn tasks.matching { it.name == "clean" }
-}
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
 
-archivesBaseName = "logisticspipes"
+repositories {
+    jcenter()
+    maven {
+        name = "BuildCraft"
+        url = "https://mod-buildcraft.com/maven"
+    }
+    maven {
+        url = 'https://maven.therealfarfetchd.dev'
+    }
+}
 
 minecraft {
-    version = "$forge_version"
-    mappings = "$mapping_version"
-    replace '%VERSION%', project.version
-    replace '%MCVERSION%', project.minecraft.version
-    replace '%DEBUG%', "false"
-    replaceIn "LPConstants.java"
+}
+
+dependencies {
+    //to change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
+    // You may need to force-disable transitiveness on them.
+
+    implementation(group: "net.fabricmc", name: "fabric-language-kotlin", version: fabric_kotlin_version) {
+        exclude module: 'fabric-loader'
+    }
+
+    modImplementation "alexiil.mc.lib:libblockattributes-all:0.4.9"
+    modImplementation 'com.lettuce.fudge:fabric-drawer:1.1.0'
+    modImplementation "io.github.prospector.modmenu:ModMenu:${project.modmenu_version}"
+    modImplementation 'therealfarfetchd.qcommon:cfg:1.0.0-5'
+
+    compileOnly 'org.projectlombok:lombok:1.16.8'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.+'
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": project.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
 }
 
 sourceSets {
@@ -68,114 +78,29 @@ sourceSets {
     main.resources.srcDirs += 'resources'
 }
 
-jar {
-    from sourceSets.api.output
-    manifest {
-        attributes(
-                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLAT': 'lp_at.cfg',
-                'Implementation-Vendor': 'RS485',
-                'Implementation-Title': 'LogisticsPipes',
-                'Implementation-Version': version,
-                'Built-By': builtby)
-    }
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
 }
 
-sourceJar {
-    from sourceSets.api.allSource
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+jar {
+    from "LICENSE.md"
 }
 
 test {
     reports {
         html.enabled = true
     }
-}
-
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
-
-repositories {
-    jcenter()
-    maven {
-        name = "RS485 Cache"
-        url = "https://rs485.network/maven-cache/"
-    }
-    maven {
-        name = 'CB Repo'
-        url = "http://chickenbones.net/maven/"
-    }
-    maven {
-        name = "JEI Maven."
-        url = "http://dvs1.progwml6.com/files/maven"
-    }
-    maven {
-        url "http://maven.shadowfacts.net/"
-    }
-    maven {
-        url = "https://cc.crzd.me/maven/"
-    }
-    maven {
-        url = "http://maven.cil.li/"
-    }
-    maven {
-        name = "buildcraft"
-        url = "https://mod-buildcraft.com/maven/"
-    }
-    maven { // JEI Bees & Thaumcraft
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven/"
-    }
-    maven {
-		url "http://maven.amadornes.com/"
-	}
-	maven {
-		name = "CoFH Maven"
-		url = "https://maven.covers1624.net"
-	}
-}
-
-dependencies {
-    compileOnly project(':dummy')
-    compileOnly 'org.projectlombok:lombok:1.16.8'
-    deobfCompile 'com.mod-buildcraft:buildcraft:7.99.+'
-    implementation 'net.shadowfacts:Forgelin:1.8.+'
-    implementation 'MCMultiPart2:MCMultiPart:2.5.+:deobf'
-    deobfProvided 'mezz.jei:jei_1.12.2:4.15.0.268:api'
-    // already in environment because of NEI
-//    runtime 'mezz.jei:jei_1.12.2:4.15.0.268'
-    compile 'codechicken:CodeChickenLib:1.12.2-3.2.+:deobf'
-    compile 'codechicken:NotEnoughItems:1.12.2-2.4.+:deobf'
-    compile 'codechicken:EnderStorage:1.12.2-2.4.+:deobf'
-    compile 'net.industrial-craft:industrialcraft-2:2.8.97-ex112:api'
-    compile 'li.cil.oc:OpenComputers:MC1.12.2-1.7.+:api'
-    compile 'appeng:appliedenergistics2:rv6-stable-6:api'
-    compile 'cofh:CoFHCore:1.12.2-4.+:deobf'
-    compile 'cofh:CoFHWorld:1.12.2-1.2+:deobf'
-    compile 'cofh:RedstoneFlux:1.12-2.1.+:deobf'
-    compile 'cofh:ThermalDynamics:1.12.2-2.+:deobf'
-    compile 'cofh:ThermalFoundation:1.12.2-2.6.+:deobf'
-    compile 'cofh:ThermalExpansion:1.12.2-5.+:deobf'
-    compileOnly 'dan200.computercraft:ComputerCraft:1.80pr1-build5'
-    deobfCompile 'thaumcraft:Thaumcraft:1.12.2:6.1.BETA26'
-    runtimeOnly 'baubles:Baubles:1.12:1.5.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.+'
 }
 
 tasks.withType(Test) {
@@ -185,131 +110,23 @@ tasks.withType(Test) {
     }
 }
 
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    from sourceSets.api.output
-    classifier = 'deobf'
-    manifest {
-        attributes(
-                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLAT': 'lp_at.cfg',
-                'Implementation-Vendor': 'RS485',
-                'Implementation-Title': 'LogisticsPipes',
-                'Implementation-Version': version,
-                'Built-By': builtby)
-    }
-}
-
-task apiJar(type: Jar, dependsOn: apiClasses) {
-    from sourceSets.api.output
-    from sourceSets.api.allSource
-    classifier = "api"
-    jar.dependsOn += "apiJar"
-}
-
-curseforge {
-    apiKey = project.hasProperty('LogisticsPipes.curseForgeApiKey') ? project.findProperty("LogisticsPipes.curseForgeApiKey") : '0'
-    project {
-        id = "232838"
-        changelog = project.hasProperty('changelog') ? project.findProperty('changelog') : ''
-        releaseType = 'beta'
-        relations {
-            requiredDependency 'codechicken-lib-1-8'
-            requiredDependency 'shadowfacts-forgelin'
-        }
-
-        mainArtifact(jar) {
-            displayName = 'Logistics Pipes ' + project.version
-        }
-    }
-}
-
-artifacts {
-    archives apiJar
-    archives jar
-    archives deobfJar
-    archives sourceJar
-}
-
-task enableSigningTasks {
-    doFirst {
-        tasks.withType(Sign) {
-            enabled = true
-        }
-    }
-}
-
-signing {
-    useGpgCmd()
-    sign apiJar
-    sign jar
-    sign deobfJar
-    sign sourceJar
-}
-
-task sign {
-    dependsOn enableSigningTasks
-    dependsOn(tasks.withType(Sign))
-}
-
-tasks.withType(Sign) {
-    // disable signing by default
-    enabled = false
-    mustRunAfter enableSigningTasks
-    ext.useJarsigner = (name != "signSourceJar") // dont sign source jar, it doesn't have classes
-}
-
-gradle.taskGraph.whenReady { taskGraph ->
-    taskGraph.allTasks.each {
-        if (it instanceof Sign && it.useJarsigner) {
-            def inputFiles = it.getInputFiles()
-            it.doFirst {
-                // see https://ant.apache.org/manual/Tasks/signjar.html for arguments
-                // ForgeGradle also uses ant.signjar: https://fckaf.de/DCw
-                inputFiles.each { file ->
-                    ant.signjar(
-                            jar: file,
-                            alias: "1",
-                            storetype: findProperty("LogisticsPipes.storetype"),
-                            keystore: findProperty("LogisticsPipes.keystore"),
-                            storepass: findProperty("LogisticsPipes.storepass"),
-                            verbose: "true",
-                            preservelastmodified: "true"
-                    )
-                }
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
             }
         }
     }
-}
 
-task downloadLanguage(type: Download) {
-    url "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
-    output new File(temporaryDir, "language.zip")
-}
-
-task languageMain(dependsOn: downloadLanguage, type: Copy) {
-    from zipTree(downloadLanguage.output)
-    into "$buildDir/resources/main/assets/logisticspipes/lang/"
-    include "*/*.lang"
-
-    includeEmptyDirs false
-    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1)) }
-}
-
-task languageBook(dependsOn: downloadLanguage, type: Copy) {
-    from zipTree(downloadLanguage.output)
-    into "$buildDir/resources/main/assets/logisticspipes/book/"
-    include "*/book/"
-
-    includeEmptyDirs false
-    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2)) }
-}
-
-task language(dependsOn: [languageMain, languageBook], type: Copy) {
-    processResources.dependsOn language
-}
-
-install.repositories.mavenInstaller.pom.whenConfigured { pom ->
-    pom.dependencies.clear()
+    // select the repositories you want to publish to
+    repositories {
+        // uncomment to publish to the local maven
+        // mavenLocal()
+    }
 }

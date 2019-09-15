@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -22,6 +22,7 @@ import logisticspipes.pipefxhandlers.PipeFXLaserPowerBall;
 import logisticspipes.pipefxhandlers.PipeFXLaserPowerBeam;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsTileRenderController {
@@ -36,7 +37,7 @@ public class LogisticsTileRenderController {
 	@AllArgsConstructor
 	private static class LaserKey {
 
-		final EnumFacing dir;
+		final Direction dir;
 		final int color;
 	}
 
@@ -65,9 +66,9 @@ public class LogisticsTileRenderController {
 
 	private class LaserBeamDataClient extends LaserBeamData {
 
-		public LaserBeamDataClient(float length, int timeout, boolean reverse, EnumFacing dir, int color) {
+		public LaserBeamDataClient(float length, int timeout, boolean reverse, Direction dir, int color) {
 			super(length, timeout, reverse);
-			entity = new PipeFXLaserPowerBeam(pipe.getWorld(), new DoubleCoordinates((TileEntity) pipe), length, dir, color, pipe).setReverse(reverse);
+			entity = new PipeFXLaserPowerBeam(pipe.getWorld(), new DoubleCoordinates((BlockEntity) pipe), length, dir, color, pipe).setReverse(reverse);
 			Minecraft.getMinecraft().effectRenderer.addEffect(entity);
 
 		}
@@ -123,7 +124,7 @@ public class LogisticsTileRenderController {
 
 		public LaserBallDataClient(float length, int timeout, int color) {
 			super(length, timeout);
-			entity = new PipeFXLaserPowerBall(pipe.getWorld(), new DoubleCoordinates((TileEntity) pipe), color, pipe);
+			entity = new PipeFXLaserPowerBall(pipe.getWorld(), new DoubleCoordinates((BlockEntity) pipe), color, pipe);
 			Minecraft.getMinecraft().effectRenderer.addEffect(entity);
 		}
 
@@ -189,8 +190,8 @@ public class LogisticsTileRenderController {
 		}
 	}
 
-	public void addLaser(EnumFacing dir, float length, int color, boolean reverse, boolean renderBall) {
-		if (!Configs.ENABLE_PARTICLE_FX) {
+	public void addLaser(Direction dir, float length, int color, boolean reverse, boolean renderBall) {
+		if (!LPConfiguration.INSTANCE.getEnableParticleFx()) {
 			return;
 		}
 		boolean sendPacket = false;
@@ -221,7 +222,7 @@ public class LogisticsTileRenderController {
 		}
 	}
 
-	public void removeLaser(EnumFacing dir, int color, boolean isBall) {
+	public void removeLaser(Direction dir, int color, boolean isBall) {
 		if (!MainProxy.isClient(pipe.getWorld())) {
 			return;
 		}

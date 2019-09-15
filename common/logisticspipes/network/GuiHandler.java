@@ -1,8 +1,9 @@
 package logisticspipes.network;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,7 +22,7 @@ import logisticspipes.gui.orderer.FluidGuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
@@ -47,9 +48,9 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
 
-		TileEntity tile = null;
+		BlockEntity tile = null;
 		if (y != -1) {
-			tile = world.getTileEntity(new BlockPos(x, y, z));
+			tile = world.getBlockEntity(new BlockPos(x, y, z));
 		}
 		LogisticsTileGenericPipe pipe = null;
 		if (tile instanceof LogisticsTileGenericPipe) {
@@ -167,7 +168,7 @@ public class GuiHandler implements IGuiHandler {
 						if (itemStack.getItem() != LPItems.itemCard) {
 							return false;
 						}
-						if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
+						if (itemStack.getDamage() != LogisticsItemCard.FREQ_CARD) {
 							return false;
 						}
 						return true;
@@ -186,15 +187,15 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) {
 						return null;
 					}
-					dummy = new DummyContainer(player, ((PipeFluidBasic) pipe.pipe).filterInv, new IGuiOpenControler() {
+					dummy = new DummyContainer(player, ((PipeFluidBasic) pipe.pipe).filterInv, new IGuiOpenController() {
 
 						@Override
-						public void guiOpenedByPlayer(EntityPlayer player) {
+						public void guiOpenedByPlayer(PlayerEntity player) {
 							((PipeFluidBasic) fpipe.pipe).guiOpenedByPlayer(player);
 						}
 
 						@Override
-						public void guiClosedByPlayer(EntityPlayer player) {
+						public void guiClosedByPlayer(PlayerEntity player) {
 							((PipeFluidBasic) fpipe.pipe).guiClosedByPlayer(player);
 						}
 					});
@@ -248,7 +249,7 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
 
-		TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
+		BlockEntity tile = world.getBlockEntity(new BlockPos(x, y, z));
 		LogisticsTileGenericPipe pipe = null;
 		if (tile instanceof LogisticsTileGenericPipe) {
 			pipe = (LogisticsTileGenericPipe) tile;

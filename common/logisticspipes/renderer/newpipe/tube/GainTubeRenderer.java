@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AxisAlignedBB;
 
 import logisticspipes.LogisticsPipes;
@@ -28,7 +28,7 @@ import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.renderer.newpipe.RenderEntry;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
@@ -45,12 +45,12 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 
 	//Tube Models
 	static Map<TubeGainRenderOrientation, List<IModel3D>> tubeTurnBase = new HashMap<>();
-	static Map<TubeGainRenderOrientation, Map<Pair<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<>();
+	static Map<TubeGainRenderOrientation, Map<Tuple2<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<>();
 
 	//Tube global Access
 	public static Map<TubeGainRenderOrientation, IModel3D> tubeGain = new HashMap<>();
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
 
 	static {
 		GainTubeRenderer.loadModels();

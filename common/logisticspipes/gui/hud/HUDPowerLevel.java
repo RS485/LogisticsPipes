@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.opengl.GL11;
 
@@ -17,7 +17,7 @@ import logisticspipes.utils.string.StringUtils;
 public class HUDPowerLevel extends BasicHUDGui implements IHeadUpDisplayRenderer {
 
 	private final IPowerLevelDisplay junction;
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/gui/power_junction.png");
 
 	public HUDPowerLevel(IPowerLevelDisplay junction) {
 		this.junction = junction;

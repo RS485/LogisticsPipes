@@ -5,7 +5,7 @@ import java.io.IOException;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NBTTagList;
 
 import org.lwjgl.input.Keyboard;
@@ -38,8 +38,8 @@ public class GuiDiskPopup extends SubGuiScreen {
 		super(150, 200, 0, 0);
 		this.diskProvider = diskProvider;
 		name2 = "";
-		if (diskProvider.getDisk().hasTagCompound()) {
-			name1 = diskProvider.getDisk().getTagCompound().getString("name");
+		if (diskProvider.getDisk().hasTag()) {
+			name1 = diskProvider.getDisk().getTag().getString("name");
 		} else {
 			name1 = "Disk";
 		}
@@ -47,10 +47,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 			@Override
 			public int getSize() {
-				NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
+				CompoundTag nbt = diskProvider.getDisk().getTag();
 				if (nbt == null) {
-					diskProvider.getDisk().setTagCompound(new NBTTagCompound());
-					nbt = diskProvider.getDisk().getTagCompound();
+					diskProvider.getDisk().setTagCompound(new CompoundTag());
+					nbt = diskProvider.getDisk().getTag();
 				}
 
 				if (!nbt.hasKey("macroList")) {
@@ -63,10 +63,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 			@Override
 			public String getTextAt(int index) {
-				NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
+				CompoundTag nbt = diskProvider.getDisk().getTag();
 				if (nbt == null) {
-					diskProvider.getDisk().setTagCompound(new NBTTagCompound());
-					nbt = diskProvider.getDisk().getTagCompound();
+					diskProvider.getDisk().setTagCompound(new CompoundTag());
+					nbt = diskProvider.getDisk().getTag();
 				}
 
 				if (!nbt.hasKey("macroList")) {
@@ -105,9 +105,9 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private void writeDiskName() {
 		editname = false;
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
-		NBTTagCompound nbt = new NBTTagCompound();
-		if (diskProvider.getDisk().hasTagCompound()) {
-			nbt = diskProvider.getDisk().getTagCompound();
+		CompoundTag nbt = new CompoundTag();
+		if (diskProvider.getDisk().hasTag()) {
+			nbt = diskProvider.getDisk().getTag();
 		}
 		nbt.setString("name", name1 + name2);
 		diskProvider.getDisk().setTagCompound(nbt);
@@ -177,10 +177,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	private void handleDelete() {
-		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
+		CompoundTag nbt = diskProvider.getDisk().getTag();
 		if (nbt == null) {
-			diskProvider.getDisk().setTagCompound(new NBTTagCompound());
-			nbt = diskProvider.getDisk().getTagCompound();
+			diskProvider.getDisk().setTagCompound(new CompoundTag());
+			nbt = diskProvider.getDisk().getTag();
 		}
 
 		if (!nbt.hasKey("macroList")) {
@@ -203,12 +203,12 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 	private void handleAddEdit() {
 		String macroname = "";
-		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
+		CompoundTag nbt = diskProvider.getDisk().getTag();
 		if (nbt != null) {
 			if (nbt.hasKey("macroList")) {
 				NBTTagList list = nbt.getTagList("macroList", 10);
 				if (textList.getSelected() != -1 && textList.getSelected() < list.tagCount()) {
-					NBTTagCompound entry = list.getCompoundTagAt(textList.getSelected());
+					CompoundTag entry = list.getCompoundTagAt(textList.getSelected());
 					macroname = entry.getString("name");
 				}
 			}

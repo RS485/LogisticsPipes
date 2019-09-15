@@ -2,7 +2,7 @@ package logisticspipes.network.packets.orderer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import logisticspipes.interfaces.routing.IRequestFluid;
+import logisticspipes.interfaces.routing.FluidRequester;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.RequestPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -26,9 +26,9 @@ public class SubmitFluidRequestPacket extends RequestPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(getDimension(), getPosX(), getPosY(), getPosZ(), player);
-		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(pipe.pipe instanceof IRequestFluid)) {
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(pipe.pipe instanceof FluidRequester)) {
 			return;
 		}
-		RequestHandler.requestFluid(player, getStack(), (CoreRoutedPipe) pipe.pipe, (IRequestFluid) pipe.pipe);
+		RequestHandler.requestFluid(player, getStack(), (CoreRoutedPipe) pipe.pipe, (FluidRequester) pipe.pipe);
 	}
 }

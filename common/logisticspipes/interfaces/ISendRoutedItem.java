@@ -7,20 +7,20 @@ import net.minecraft.item.ItemStack;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public interface ISendRoutedItem {
 
 	int getSourceID();
 
-	IRouter getRouter();
+	Router getRouter();
 
-	Pair<Integer, SinkReply> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude);
+	Tuple2<Integer, SinkReply> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude);
 
-	IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode);
+	IRoutedItem sendStack(ItemStack stack, Tuple2<Integer, SinkReply> reply, ItemSendMode mode);
 
 	IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode, IAdditionalTargetInformation info);
 }

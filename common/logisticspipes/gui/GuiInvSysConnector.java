@@ -27,7 +27,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 import logisticspipes.utils.string.StringUtils;
@@ -37,7 +37,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 	private static final String PREFIX = "gui.invsyscon.";
 
 	private int page = 0;
-	private final List<ItemIdentifierStack> _allItems = new ArrayList<>();
+	private final List<ItemStack> _allItems = new ArrayList<>();
 	private final PipeItemsInvSysConnector pipe;
 	private InputBar resistanceCountBar;
 
@@ -84,7 +84,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 78, guiLeft + 170, guiTop + 132, Color.GREY);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "ConnectionInformation") + ":", guiLeft + 10, guiTop + 21, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.getCuttedString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Channel") + ": " + (connectedChannel != null ? connectedChannel.getName() : "UNDEFINED"), 150, this.fontRenderer), guiLeft + 15, guiTop + 38, 0x404040);
+		mc.fontRenderer.drawString(StringUtils.getCutString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Channel") + ": " + (connectedChannel != null ? connectedChannel.getName() : "UNDEFINED"), 150, this.fontRenderer), guiLeft + 15, guiTop + 38, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 68, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 69, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 55, 0x404040);
@@ -94,12 +94,12 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 79, 9, 27, 18, 18, 100.0F, DisplayAmount.ALWAYS);
+		ItemStackRenderer.renderItemStackListIntoGui(_allItems, null, page, 9, 79, 9, 27, 18, 18, 100.0F, DisplayAmount.ALWAYS);
 
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
-		for (ItemIdentifierStack itemStack : _allItems) {
+		for (ItemStack itemStack : _allItems) {
 			ppi++;
 
 			if (ppi <= 27 * page) {
@@ -212,7 +212,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		}
 	}
 
-	public void handleContentAnswer(Collection<ItemIdentifierStack> allItems) {
+	public void handleContentAnswer(Collection<ItemStack> allItems) {
 		_allItems.clear();
 		_allItems.addAll(allItems);
 	}

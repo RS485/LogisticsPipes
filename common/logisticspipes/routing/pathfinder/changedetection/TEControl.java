@@ -2,9 +2,9 @@ package logisticspipes.routing.pathfinder.changedetection;
 
 import java.util.ArrayList;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import logisticspipes.asm.te.ILPTEInformation;
@@ -22,7 +22,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class TEControl {
 
-	public static void validate(final TileEntity tile) {
+	public static void validate(final BlockEntity tile) {
 		final World world = tile.getWorld();
 		if (world == null) {
 			return;
@@ -49,12 +49,12 @@ public class TEControl {
 				if (!SimpleServiceLocator.pipeInformationManager.isPipe(tile, true, ConnectionPipeType.UNDEFINED)) {
 					return null;
 				}
-				for (EnumFacing dir : EnumFacing.VALUES) {
+				for (Direction dir : Direction.values()) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;
 					}
-					TileEntity nextTile = newPos.getTileEntity(world);
+					BlockEntity nextTile = newPos.getBlockEntity(world);
 					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
 						if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
 							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
@@ -73,7 +73,7 @@ public class TEControl {
 		}
 	}
 
-	public static void invalidate(final TileEntity tile) {
+	public static void invalidate(final BlockEntity tile) {
 		final World world = tile.getWorld();
 		if (world == null) {
 			return;
@@ -87,12 +87,12 @@ public class TEControl {
 		if (((ILPTEInformation) tile).getObject() != null) {
 			QueuedTasks.queueTask(() -> {
 				DoubleCoordinates pos = new DoubleCoordinates(tile);
-				for (EnumFacing dir : EnumFacing.VALUES) {
+				for (Direction dir : Direction.values()) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;
 					}
-					TileEntity nextTile = newPos.getTileEntity(world);
+					BlockEntity nextTile = newPos.getBlockEntity(world);
 					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
 						if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
 							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
@@ -121,15 +121,15 @@ public class TEControl {
 		if (!pos.blockExists(world)) {
 			return;
 		}
-		final TileEntity tile = pos.getTileEntity(world);
+		final BlockEntity tile = pos.getBlockEntity(world);
 		if (SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
 			QueuedTasks.queueTask(() -> {
-				for (EnumFacing dir : EnumFacing.VALUES) {
+				for (Direction dir : Direction.values()) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;
 					}
-					TileEntity nextTile = newPos.getTileEntity(world);
+					BlockEntity nextTile = newPos.getBlockEntity(world);
 					if (nextTile instanceof LogisticsTileGenericPipe) {
 						((LogisticsTileGenericPipe) nextTile).scheduleNeighborChange();
 					}
@@ -143,12 +143,12 @@ public class TEControl {
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			info.getUpdateQueued().add(pos);
 			QueuedTasks.queueTask(() -> {
-				for (EnumFacing dir : EnumFacing.VALUES) {
+				for (Direction dir : Direction.values()) {
 					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
 					if (!newPos.blockExists(world)) {
 						continue;
 					}
-					TileEntity nextTile = newPos.getTileEntity(world);
+					BlockEntity nextTile = newPos.getBlockEntity(world);
 					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
 						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
 							listener.pipeModified(pos);

@@ -1,51 +1,52 @@
 package logisticspipes.entity;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.WorldServer;
-
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 
 import com.mojang.authlib.GameProfile;
 
-@SuppressWarnings("EntityConstructor")
-public class FakePlayerLP extends FakePlayer {
+public class FakePlayerLP extends ServerPlayerEntity {
+
+	private static final WeakHashMap<ServerWorld, FakePlayerLP> players = new WeakHashMap<>();
 
 	public static GameProfile LPPLAYER = new GameProfile(UUID.fromString("e7d8e347-3828-4f39-b76f-ea519857c004"), "[LogisticsPipes]");
 
-	public String myName = "[LogisticsPipes]";
-
-	public FakePlayerLP(WorldServer world) {
-		super(world, LPPLAYER);
-		connection = new FakeNetServerHandler(FMLCommonHandler.instance().getMinecraftServerInstance(), this);
-		this.addedToChunk = false;
-		this.posX = 0;
-		this.posY = 0;
-		this.posZ = 0;
+	public FakePlayerLP(ServerWorld world) {
+		super(world.getServer(), world, LPPLAYER, new ServerPlayerInteractionManager(world));
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
 	}
 
 	@Nonnull
 	@Override
-	public ITextComponent getDisplayName() {
-		return new TextComponentString(getName());
+	public Text getDisplayName() {
+		return getName();
 	}
 
 	@Override
-	public void onUpdate() { }
+	public void tick() { }
 
 	@Override
-	public void unlockRecipes(@Nonnull List<IRecipe> p_192021_1_) { }
+	public int unlockRecipes(Collection<Recipe<?>> collection_1) {
+		return 0;
+	}
 
 	@Override
-	public void unlockRecipes(ResourceLocation[] p_193102_1_) { }
+	public int lockRecipes(Collection<Recipe<?>> collection_1) {
+		return 0;
+	}
 
-	@Override
-	public void resetRecipes(@Nonnull List<IRecipe> p_192022_1_) { }
+	public static FakePlayerLP getInstance(ServerWorld world) {
+		return players.computeIfAbsent(world, FakePlayerLP::new);
+	}
+
 }

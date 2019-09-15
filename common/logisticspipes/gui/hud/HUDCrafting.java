@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
@@ -53,17 +53,17 @@ public class HUDCrafting extends BasicHUDGui {
 			mc.fontRenderer.drawString(message, -16, -10, 0);
 		}
 		GL11.glScalef(0.8F, 0.8F, -1F);
-		List<ItemIdentifierStack> list = new ArrayList<>();
-		List<ItemIdentifierStack> craftables = pipe.getCraftedItems();
+		List<ItemStack> list = new ArrayList<>();
+		List<ItemStack> craftables = pipe.getCraftedItems();
 		if (craftables != null && craftables.size() > 0) {
 			//TODO: handle multiple crafables.
 			list.add(craftables.get(0));
 		}
 		if (pipe.displayList.size() > 0) {
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, 11, -18, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
+			ItemStackRenderer.renderItemStackListIntoGui(list, null, 0, 11, -18, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
+			ItemStackRenderer.renderItemStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 		} else {
-			ItemStackRenderer.renderItemIdentifierStackListIntoGui(list, null, 0, -9, -1, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
+			ItemStackRenderer.renderItemStackListIntoGui(list, null, 0, -9, -1, 1, 1, 18, 18, 100.0F, DisplayAmount.ALWAYS, false, shifted);
 		}
 	}
 

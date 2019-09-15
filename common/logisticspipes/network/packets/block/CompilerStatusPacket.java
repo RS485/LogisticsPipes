@@ -2,7 +2,7 @@ package logisticspipes.network.packets.block;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,7 @@ public class CompilerStatusPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ResourceLocation category;
+	private Identifier category;
 
 	@Getter
 	@Setter

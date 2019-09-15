@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -301,7 +301,7 @@ public class LPDataIOWrapperTest {
 
 	@org.junit.jupiter.api.Test
 	public void testForgeDirection() {
-		EnumFacing value = EnumFacing.UP;
+		Direction value = Direction.UP;
 		ByteBuf testBuffer = buffer(Long.BYTES);
 
 		LPDataIOWrapper.writeData(testBuffer, output -> output.writeFacing(value));
@@ -551,7 +551,7 @@ public class LPDataIOWrapperTest {
 
 	@org.junit.jupiter.api.Test
 	public void testNBTTagCompound() {
-		NBTTagCompound tag = new NBTTagCompound();
+		CompoundTag tag = new CompoundTag();
 		tag.setBoolean("bool", true);
 		tag.setByte("byte", (byte) 127);
 		tag.setByteArray("byteArray", new byte[] { -1, 127, 0, 12 });
@@ -562,7 +562,7 @@ public class LPDataIOWrapperTest {
 		tag.setLong("long", -1);
 		tag.setShort("short", (short) 15);
 		tag.setString("string", "text");
-		tag.setTag("tag", new NBTTagCompound());
+		tag.setTag("tag", new CompoundTag());
 
 		byte[] data = LPDataIOWrapper.collectData(output -> output.writeNBTTagCompound(tag));
 

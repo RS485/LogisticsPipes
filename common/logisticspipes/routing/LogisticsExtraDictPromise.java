@@ -2,15 +2,15 @@ package logisticspipes.routing;
 
 import lombok.Getter;
 
-import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.request.IExtraPromise;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.interfaces.routing.ItemCrafter;
+import logisticspipes.interfaces.routing.ItemRequestProvider;
+import logisticspipes.request.ExtraPromise;
+import logisticspipes.request.resources.Resource.Dict;
+import logisticspipes.request.resources.Resource;
 
-public class LogisticsExtraDictPromise extends LogisticsDictPromise implements IExtraPromise {
+public class LogisticsExtraDictPromise extends LogisticsDictPromise implements ExtraPromise {
 
-	public LogisticsExtraDictPromise(DictResource item, int numberOfItems, IProvideItems sender, boolean provided) {
+	public LogisticsExtraDictPromise(Resource.Dict item, int numberOfItems, ItemRequestProvider sender, boolean provided) {
 		super(item, numberOfItems, sender, null);
 		this.provided = provided;
 	}
@@ -24,9 +24,9 @@ public class LogisticsExtraDictPromise extends LogisticsDictPromise implements I
 	}
 
 	@Override
-	public void registerExtras(IResource requestType) {
-		if (sender instanceof ICraftItems) {
-			((ICraftItems) sender).registerExtras(this);
+	public void registerExtras(Resource requestType) {
+		if (sender instanceof ItemCrafter) {
+			((ItemCrafter) sender).registerExtras(this);
 		}
 	}
 

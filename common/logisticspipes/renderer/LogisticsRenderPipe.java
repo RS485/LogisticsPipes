@@ -5,10 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -16,9 +17,8 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.ForgeHooksClient;
@@ -31,15 +31,15 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.pipes.signs.IPipeSign;
+import logisticspipes.pipes.signs.PipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.debug.PerformanceMeter;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.world.CoordinateUtils;
@@ -49,7 +49,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 	private static final int LIQUID_STAGES = 40;
 	private static final int MAX_ITEMS_TO_RENDER = 10;
-	private static final ResourceLocation SIGN = new ResourceLocation("textures/entity/sign.png");
+	private static final Identifier SIGN = new Identifier("textures/entity/sign.png");
 	public static LogisticsNewRenderPipe secondRenderer = new LogisticsNewRenderPipe();
 	public static LogisticsNewPipeItemBoxRenderer boxRenderer = new LogisticsNewPipeItemBoxRenderer();
 	public static ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
@@ -72,24 +72,24 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			return;
 		}
 
-		GlStateManager.enableDepth();
-		GlStateManager.depthFunc(515);
-		GlStateManager.depthMask(true);
+		RenderSystem.enableDepth();
+		RenderSystem.depthFunc(515);
+		RenderSystem.depthMask(true);
 
 		if (destroyStage >= 0) {
 			this.bindTexture(DESTROY_STAGES[destroyStage]);
-			GlStateManager.matrixMode(GL11.GL_TEXTURE);
-			GlStateManager.pushMatrix();
-			GlStateManager.scale(4.0F, 4.0F, 1.0F);
-			//GlStateManager.translate(0.0625F, 0.0625F, 0.0625F);
-			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+			RenderSystem.matrixMode(GL11.GL_TEXTURE);
+			RenderSystem.pushMatrix();
+			RenderSystem.scale(4.0F, 4.0F, 1.0F);
+			//RenderSystem.translate(0.0625F, 0.0625F, 0.0625F);
+			RenderSystem.matrixMode(GL11.GL_MODELVIEW);
 		}
 
-		GlStateManager.pushMatrix();
-		GlStateManager.enableRescaleNormal();
+		RenderSystem.pushMatrix();
+		RenderSystem.enableRescaleNormal();
 
 		if (destroyStage < 0) {
-			GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
+			RenderSystem.color(1.0F, 1.0F, 1.0F, alpha);
 		}
 
 		if (!inHand) {
@@ -98,7 +98,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			}
 		}
 
-		double distance = !inHand ? new DoubleCoordinates((TileEntity) tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().player)) : 0;
+		double distance = !inHand ? new DoubleCoordinates((BlockEntity) tileentity).distanceTo(new DoubleCoordinates(Minecraft.getMinecraft().player)) : 0;
 
 		LogisticsRenderPipe.secondRenderer.renderTileEntityAt(tileentity, x, y, z, partialTicks, distance);
 
@@ -111,13 +111,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			}
 		}
 
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.popMatrix();
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.popMatrix();
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		if (destroyStage >= 0) {
-			GlStateManager.matrixMode(GL11.GL_TEXTURE);
-			GlStateManager.popMatrix();
-			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+			RenderSystem.matrixMode(GL11.GL_TEXTURE);
+			RenderSystem.popMatrix();
+			RenderSystem.matrixMode(GL11.GL_MODELVIEW);
 		}
 
 		if (!inHand) {
@@ -141,7 +141,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 				break;
 			}
 
-			if (item.getItemIdentifierStack() == null) {
+			if (item.getItemStack() == null) {
 				continue;
 			}
 			if (!item.getContainer().getPos().equals(lPipe.container.getPos())) {
@@ -179,7 +179,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			double itemPitch = lPipe.getItemRenderPitch(fPos, item);
 			double itemYawForPitch = lPipe.getItemRenderYaw(fPos, item);
 
-			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
+			ItemStack itemstack = item.getItemStack().makeNormalStack();
 			doRenderItem(itemstack, pipe.container.getWorld(), lX + pos.getXCoord(), lY + pos.getYCoord(), lZ + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, itemYawForPitch, partialTickTime);
 			count++;
 		}
@@ -187,10 +187,10 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		count = 0;
 		double dist = 0.135;
 		DoubleCoordinates pos = new DoubleCoordinates(0.5, 0.5, 0.5);
-		CoordinateUtils.add(pos, EnumFacing.SOUTH, dist);
-		CoordinateUtils.add(pos, EnumFacing.EAST, dist);
-		CoordinateUtils.add(pos, EnumFacing.UP, dist);
-		for (Pair<ItemIdentifierStack, Pair<Integer, Integer>> item : pipe.transport._itemBuffer) {
+		CoordinateUtils.add(pos, Direction.SOUTH, dist);
+		CoordinateUtils.add(pos, Direction.EAST, dist);
+		CoordinateUtils.add(pos, Direction.UP, dist);
+		for (Tuple2<ItemStack, Tuple2<Integer, Integer>> item : pipe.transport._itemBuffer) {
 			if (item == null || item.getValue1() == null) {
 				continue;
 			}
@@ -200,14 +200,14 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			if (count >= 27) {
 				break;
 			} else if (count % 9 == 0) {
-				CoordinateUtils.add(pos, EnumFacing.SOUTH, dist * 2.0);
-				CoordinateUtils.add(pos, EnumFacing.EAST, dist * 2.0);
-				CoordinateUtils.add(pos, EnumFacing.DOWN, dist);
+				CoordinateUtils.add(pos, Direction.SOUTH, dist * 2.0);
+				CoordinateUtils.add(pos, Direction.EAST, dist * 2.0);
+				CoordinateUtils.add(pos, Direction.DOWN, dist);
 			} else if (count % 3 == 0) {
-				CoordinateUtils.add(pos, EnumFacing.SOUTH, dist * 2.0);
-				CoordinateUtils.add(pos, EnumFacing.WEST, dist);
+				CoordinateUtils.add(pos, Direction.SOUTH, dist * 2.0);
+				CoordinateUtils.add(pos, Direction.WEST, dist);
 			} else {
-				CoordinateUtils.add(pos, EnumFacing.NORTH, dist);
+				CoordinateUtils.add(pos, Direction.NORTH, dist);
 			}
 		}
 
@@ -230,25 +230,25 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		GL11.glPopMatrix();
 	}
 
-	private boolean needDistance(List<Pair<EnumFacing, IPipeSign>> list) {
-		List<Pair<EnumFacing, IPipeSign>> copy = new ArrayList<>(list);
-		Iterator<Pair<EnumFacing, IPipeSign>> iter = copy.iterator();
+	private boolean needDistance(List<Tuple2<Direction, PipeSign>> list) {
+		List<Tuple2<Direction, PipeSign>> copy = new ArrayList<>(list);
+		Iterator<Tuple2<Direction, PipeSign>> iter = copy.iterator();
 		boolean north = false, south = false, east = false, west = false;
 		while (iter.hasNext()) {
-			Pair<EnumFacing, IPipeSign> pair = iter.next();
-			if (pair.getValue1() == EnumFacing.UP || pair.getValue1() == EnumFacing.DOWN || pair.getValue1() == null) {
+			Tuple2<Direction, PipeSign> tuple = iter.next();
+			if (tuple.getValue1() == Direction.UP || tuple.getValue1() == Direction.DOWN || tuple.getValue1() == null) {
 				iter.remove();
 			}
-			if (pair.getValue1() == EnumFacing.NORTH) {
+			if (tuple.getValue1() == Direction.NORTH) {
 				north = true;
 			}
-			if (pair.getValue1() == EnumFacing.SOUTH) {
+			if (tuple.getValue1() == Direction.SOUTH) {
 				south = true;
 			}
-			if (pair.getValue1() == EnumFacing.EAST) {
+			if (tuple.getValue1() == Direction.EAST) {
 				east = true;
 			}
-			if (pair.getValue1() == EnumFacing.WEST) {
+			if (tuple.getValue1() == Direction.WEST) {
 				west = true;
 			}
 		}
@@ -266,14 +266,14 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 	private void renderPipeSigns(CoreRoutedPipe pipe, double x, double y, double z, float partialTickTime) {
 		if (!pipe.getPipeSigns().isEmpty()) {
-			List<Pair<EnumFacing, IPipeSign>> list = pipe.getPipeSigns();
-			for (Pair<EnumFacing, IPipeSign> pair : list) {
-				if (pipe.container.renderState.pipeConnectionMatrix.isConnected(pair.getValue1())) {
+			List<Tuple2<Direction, PipeSign>> list = pipe.getPipeSigns();
+			for (Tuple2<Direction, PipeSign> tuple : list) {
+				if (pipe.container.renderState.pipeConnectionMatrix.isConnected(tuple.getValue1())) {
 					continue;
 				}
 				GL11.glPushMatrix();
 				GL11.glTranslatef((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
-				switch (pair.getValue1()) {
+				switch (tuple.getValue1()) {
 					case UP:
 						GL11.glRotatef(90, 1.0F, 0.0F, 0.0F);
 						break;
@@ -306,13 +306,13 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 						break;
 					default:
 				}
-				renderSign(pipe, pair.getValue2(), partialTickTime);
+				renderSign(pipe, tuple.getValue2(), partialTickTime);
 				GL11.glPopMatrix();
 			}
 		}
 	}
 
-	private void renderSign(CoreRoutedPipe pipe, IPipeSign type, float partialTickTime) {
+	private void renderSign(CoreRoutedPipe pipe, PipeSign type, float partialTickTime) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -347,23 +347,23 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		Minecraft mc = Minecraft.getMinecraft();
 		RenderItem itemRender = mc.getRenderItem();
 
-		GlStateManager.disableLighting();
-		GlStateManager.color(1F, 1F, 1F); //Forge: Reset color in case Items change it.
-		GlStateManager.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
+		RenderSystem.disableLighting();
+		RenderSystem.color(1F, 1F, 1F); //Forge: Reset color in case Items change it.
+		RenderSystem.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
 		itemRender.zLevel = 100.0F;
-		GlStateManager.enableRescaleNormal();
+		RenderSystem.enableRescaleNormal();
 
 		// itemRender.renderItemAndEffectIntoGUI(itemstack, 0, 0);
 		// item render code
-		GlStateManager.pushMatrix();
+		RenderSystem.pushMatrix();
 		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		mc.renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
-		GlStateManager.enableRescaleNormal();
-		GlStateManager.enableAlpha();
-		GlStateManager.alphaFunc(516, 0.1F);
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.enableAlpha();
+		RenderSystem.alphaFunc(516, 0.1F);
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(RenderSystem.SourceFactor.SRC_ALPHA, RenderSystem.DestFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		// mezz.jei.render.ItemStackFastRenderer#getBakedModel
 		ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
@@ -371,20 +371,20 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		bakedModel = bakedModel.getOverrides().handleItemState(bakedModel, itemstack, null, null);
 
 		// make item/block flat and position it
-		GlStateManager.translate(0.05F, 0F, 0F);
-		GlStateManager.scale(0.8F, 0.8F, 0.001F);
+		RenderSystem.translate(0.05F, 0F, 0F);
+		RenderSystem.scale(0.8F, 0.8F, 0.001F);
 
 		// model rotation
 		bakedModel = ForgeHooksClient.handleCameraTransforms(bakedModel, ItemCameraTransforms.TransformType.GUI, false);
 
 		// model scaling to fit on sign
-		GlStateManager.scale(0.4F, 0.4F, 0.4F);
+		RenderSystem.scale(0.4F, 0.4F, 0.4F);
 
 		itemRender.renderItem(itemstack, bakedModel);
 
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.disableAlpha();
-		GlStateManager.popMatrix();
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.disableAlpha();
+		RenderSystem.popMatrix();
 		mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 		mc.renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
 		// item render code end

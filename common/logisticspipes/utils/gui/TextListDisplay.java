@@ -95,7 +95,7 @@ public class TextListDisplay {
 				flag = true;
 			}
 			String name = list.getTextAt(i);
-			name = StringUtils.getCuttedString(name, gui.getXSize() - borderRight - borderLeft - 6, gui.getMC().fontRenderer);
+			name = StringUtils.getCutString(name, gui.getXSize() - borderRight - borderLeft - 6, gui.getMC().fontRenderer);
 			gui.getMC().fontRenderer.drawString(name, gui.getGuiLeft() + borderLeft + 4, gui.getGuiTop() + borderTop + 4 + ((i - scroll) * 10), list.getTextColor(i));
 		}
 

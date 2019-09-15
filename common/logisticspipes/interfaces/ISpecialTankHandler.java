@@ -2,13 +2,13 @@ package logisticspipes.interfaces;
 
 import java.util.List;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
 
 public interface ISpecialTankHandler {
 
 	boolean init();
 
-	boolean isType(TileEntity tile);
+	boolean isType(BlockEntity tile);
 
-	List<TileEntity> getBaseTilesFor(TileEntity tile);
+	List<BlockEntity> getBaseTilesFor(BlockEntity tile);
 }

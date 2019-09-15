@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.util;
 
+@Deprecated
 public interface LPFinalSerializable {
 
 	void write(LPDataOutput output);

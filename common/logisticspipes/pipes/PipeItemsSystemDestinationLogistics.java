@@ -2,10 +2,10 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -43,14 +43,14 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 		if (inv.getStackInSlot(0) == null) {
 			return null;
 		}
-		if (!inv.getStackInSlot(0).hasTagCompound()) {
+		if (!inv.getStackInSlot(0).hasTag()) {
 			return null;
 		}
-		if (!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
+		if (!inv.getStackInSlot(0).getTag().hasKey("UUID")) {
 			return null;
 		}
 		spawnParticle(Particles.WhiteParticle, 2);
-		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
+		return UUID.fromString(inv.getStackInSlot(0).getTag().getString("UUID"));
 	}
 
 	@Override
@@ -59,13 +59,13 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		inv.writeToNBT(nbttagcompound);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		inv.readFromNBT(nbttagcompound);
 	}
@@ -74,7 +74,7 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 		if (inv.getStackInSlot(0) == null) {
 			return;
 		}
-		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
+		ItemEntity item = new ItemEntity(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
 		getWorld().spawnEntity(item);
 		inv.clearInventorySlotContents(0);
 	}

@@ -6,10 +6,10 @@ public class SearchNode implements Comparable<SearchNode> {
 
 	public int distance;
 	private final EnumSet<PipeRoutingConnectionType> connectionFlags;
-	public final IRouter node;
-	public IRouter root;
+	public final Router node;
+	public Router root;
 
-	public SearchNode(IRouter r, int d, EnumSet<PipeRoutingConnectionType> enumSet, IRouter p) {
+	public SearchNode(Router r, int d, EnumSet<PipeRoutingConnectionType> enumSet, Router p) {
 		distance = d;
 		connectionFlags = enumSet;
 		node = r;

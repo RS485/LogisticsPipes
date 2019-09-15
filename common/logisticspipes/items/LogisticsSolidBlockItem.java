@@ -28,7 +28,7 @@ public class LogisticsSolidBlockItem extends ItemBlock implements ILogisticsItem
 	@Nonnull
 	@Override
 	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name");
+		return StringUtils.translate(getTranslationKey(itemstack) + ".name");
 	}
 
 }

@@ -1,7 +1,7 @@
 package logisticspipes.network.guis.item;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +22,7 @@ public class ItemAmountSignGui extends CoordinatesGuiProvider {
 
 	@Getter
 	@Setter
-	private EnumFacing dir;
+	private Direction dir;
 
 	public ItemAmountSignGui(int id) {
 		super(id);

@@ -1,10 +1,10 @@
 package logisticspipes.pipes;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fluids.FluidTank;
 
@@ -20,7 +20,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.utils.tuples.Tuple3;
 
 public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 
@@ -60,7 +60,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 		}
 		int onTheWay = this.countOnRoute(ident);
 		long freeSpace = -onTheWay;
-		for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : getAdjacentTanksAdvanced(true)) {
+		for (Tuple3<ITankUtil, BlockEntity, Direction> pair : getAdjacentTanksAdvanced(true)) {
 			FluidTank tank = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue3().ordinal()];
 			freeSpace += pair.getValue1().getFreeSpaceInsideTank(ident);
 			freeSpace += ident.getFreeSpaceInsideTank(tank);
@@ -72,13 +72,13 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		filterInv.writeToNBT(nbttagcompound);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		filterInv.readFromNBT(nbttagcompound);
 	}

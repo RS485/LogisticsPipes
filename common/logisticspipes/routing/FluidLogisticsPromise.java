@@ -7,23 +7,23 @@
 
 package logisticspipes.routing;
 
+import alexiil.mc.lib.attributes.fluid.volume.FluidKey;
+
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IProvide;
-import logisticspipes.interfaces.routing.IProvideFluids;
-import logisticspipes.request.IExtraPromise;
-import logisticspipes.request.IPromise;
+import logisticspipes.interfaces.routing.RequestProvider;
+import logisticspipes.interfaces.routing.FluidRequestProvider;
+import logisticspipes.request.ExtraPromise;
+import logisticspipes.request.Promise;
 import logisticspipes.request.resources.FluidResource;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
-import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.item.ItemIdentifier;
 
-public class FluidLogisticsPromise implements IPromise {
+public class FluidLogisticsPromise implements Promise {
 
-	public FluidIdentifier liquid;
+	public FluidKey liquid;
 	public int amount;
-	public IProvideFluids sender;
+	public FluidRequestProvider sender;
 	public ResourceType type;
 
 	@Override
@@ -37,7 +37,7 @@ public class FluidLogisticsPromise implements IPromise {
 	}
 
 	@Override
-	public boolean matches(IResource requestType) {
+	public boolean matches(Resource requestType) {
 		if (requestType instanceof FluidResource) {
 			FluidResource fluid = (FluidResource) requestType;
 			return fluid.getFluid().equals(liquid);
@@ -51,13 +51,13 @@ public class FluidLogisticsPromise implements IPromise {
 	}
 
 	@Override
-	public IExtraPromise split(int more) {
+	public ExtraPromise split(int more) {
 		// TODO Add When Fluid crafing is supported
 		throw new UnsupportedOperationException("Fluid Promises can't be split");
 	}
 
 	@Override
-	public IProvide getProvider() {
+	public RequestProvider getProvider() {
 		return sender;
 	}
 
@@ -72,7 +72,7 @@ public class FluidLogisticsPromise implements IPromise {
 	}
 
 	@Override
-	public IOrderInfoProvider fullFill(IResource requestType, IAdditionalTargetInformation info) {
-		return sender.fullFill(this, ((FluidResource) requestType).getTarget(), type, info);
+	public IOrderInfoProvider fullFill(Resource requestType, IAdditionalTargetInformation info) {
+		return sender.fulfill(this, ((FluidResource) requestType).getTarget(), type, info);
 	}
 }

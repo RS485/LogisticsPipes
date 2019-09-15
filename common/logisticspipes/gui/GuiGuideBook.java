@@ -1,35 +1,39 @@
 package logisticspipes.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
-import logisticspipes.items.ItemGuideBook;
 import logisticspipes.utils.GuideBookContents;
+import network.rs485.logisticspipes.init.Items;
+import network.rs485.logisticspipes.init.Packets;
+import network.rs485.logisticspipes.item.GuideBookItem;
+import network.rs485.logisticspipes.packet.GuideBookPagePacket;
 
-public class GuiGuideBook extends GuiScreen {
+public class GuiGuideBook extends Screen {
 
-	private static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
+	private static final Identifier GUI_BOOK_TEXTURE = new Identifier(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
-	private GuiButton nextPageBtn, prevPageBtn, slider;
+	private ButtonWidget nextPageBtn;
+	private ButtonWidget prevPageBtn;
+	private ButtonWidget slider;
 
-	private EnumHand hand;
+	private Hand hand;
 
 	// Slider vars
-	private int dragSrcY;
 	private float sliderProgress;
 	private int sliderTopY;
 	private int sliderBotY;
@@ -51,15 +55,15 @@ public class GuiGuideBook extends GuiScreen {
 
 	private boolean needsInit = true;
 
-	public GuiGuideBook(EnumHand hand, GuideBookContents gbc) {
-		super();
+	public GuiGuideBook(Hand hand, GuideBookContents gbc) {
+		super(new TranslatableText("gui.logisticspipes.guide_book"));
 		this.hand = hand;
 		this.gbc = gbc;
 		this.page = gbc.getPage(0);
 	}
 
 	@Override
-	public void initGui() {
+	protected void init() {
 		// Defining drawing constraints
 		final int sliderWidth = 20;
 		final int sliderHeight = 20;
@@ -86,22 +90,35 @@ public class GuiGuideBook extends GuiScreen {
 		maxLines = (acrossY + borderSize) / 10;
 
 		// Setting up buttons
-		this.buttonList.clear();
-		this.nextPageBtn = this.addButton(new GuiButton(0, this.width / 2 + 100, this.height - 30, 20, 20, ">"));
-		this.prevPageBtn = this.addButton(new GuiButton(1, this.width / 2 - 120, this.height - 30, 20, 20, "<"));
-		this.slider = this.addButton(new GuiButton(2, rightX - borderSize - sliderHeight, 0, sliderWidth, sliderHeight, "|||"));
+		this.buttons.clear();
+
+		this.nextPageBtn = this.addButton(new ButtonWidget(this.width / 2 + 100, this.height - 30, 20, 20, ">", _button -> {
+			if ((page.getIndex() + 1) < gbc.getPages()) {
+				setPage(page.getIndex() + 1);
+			}
+		}));
+
+		this.prevPageBtn = this.addButton(new ButtonWidget(this.width / 2 - 120, this.height - 30, 20, 20, "<", _button -> {
+			if ((page.getIndex() - 1) >= 0) {
+				setPage(page.getIndex() - 1);
+			}
+		}));
+
+		this.slider = this.addButton(new ButtonWidget(rightX - borderSize - sliderHeight, 0, sliderWidth, sliderHeight, "|||", _button -> {}));
+
 		updateSliderPosition();
 
 		// Getting information from item NBT
 		if (needsInit) {
-			ItemStack book;
-			if (hand == EnumHand.MAIN_HAND)
-				book = mc.player.getHeldItemMainhand();
-			else
-				book = mc.player.getHeldItemOffhand();
-			if (book.hasTagCompound()) {
-				NBTTagCompound nbtTagCompound = book.getTagCompound();
-				GuideBookContents.Page p = gbc.getPage(nbtTagCompound.getInteger("page"));
+			ItemStack book = minecraft.player.getStackInHand(hand);
+			if (book.getItem() != Items.GuideBook) {
+				minecraft.openScreen(null);
+				return;
+			}
+
+			if (book.hasTag()) {
+				CompoundTag nbtTagCompound = book.getTag();
+				GuideBookContents.Page p = gbc.getPage(nbtTagCompound.getInt("page"));
 				if (p != null) this.page = p;
 				this.sliderProgress = nbtTagCompound.getFloat("sliderProgress");
 			} else {
@@ -113,17 +130,17 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	private void drawPageContents() {
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		// Calculating translation amount and setting slider properties
 
-		final List<String> text = splitLines(page.getText(), fontRenderer, maxLength);
+		final List<String> text = splitLines(page.getText(), font, maxLength);
 
 		if (text.size() <= maxLines) {
-			slider.enabled = false;
+			slider.active = false;
 			sliderProgress = 0;
 			updateSliderPosition();
 		} else {
-			slider.enabled = true;
+			slider.active = true;
 		}
 
 		// Drawing Translated Text
@@ -131,7 +148,7 @@ public class GuiGuideBook extends GuiScreen {
 		for (int i = 0; i < text.size(); i++) {
 			int drawY = textY + (10 * i) - (int) translateY;
 			if (drawY > textY - 20 && drawY < (this.height * 7 / 8) - 10) {
-				drawString(this.fontRenderer, text.get(i), textX, drawY, 0xFFFFFF);
+				drawString(font, text.get(i), textX, drawY, 0xFFFFFF);
 			}
 		}
 	}
@@ -140,81 +157,60 @@ public class GuiGuideBook extends GuiScreen {
 		int rightX = leftX + tileSize + acrossX;
 		int bottomY = topY + tileSize + acrossY;
 
-		GlStateManager.enableBlend();
+		RenderSystem.enableBlend();
 		// Drawing Foreground Border
-		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+		minecraft.getTextureManager().bindTexture(GUI_BOOK_TEXTURE);
+		// TODO
 		// TopLeft, TopRight, BottomLeft & BottomRight
-		drawScaledCustomSizeModalRect(leftX, topY, 0, 0, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
-		drawScaledCustomSizeModalRect(rightX, topY, tileSize, 0, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
-		drawScaledCustomSizeModalRect(leftX, bottomY, 0, tileSize, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
-		drawScaledCustomSizeModalRect(rightX, bottomY, tileSize, tileSize, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(leftX, topY, 0, 0, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(rightX, topY, tileSize, 0, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(leftX, bottomY, 0, tileSize, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(rightX, bottomY, tileSize, tileSize, tileSize, tileSize, tileSize, tileSize, textureSizeX, textureSizeY);
 		// Top, Bottom, Left & Right
-		drawScaledCustomSizeModalRect(leftX + tileSize, topY, 24, 0, 8, tileSize, acrossX, tileSize, textureSizeX, textureSizeY);
-		drawScaledCustomSizeModalRect(leftX + tileSize, bottomY, 24, tileSize, 8, tileSize, acrossX, tileSize, textureSizeX, textureSizeY);
-		drawScaledCustomSizeModalRect(leftX, topY + tileSize, 0, 24, tileSize, 8, tileSize, acrossY, textureSizeX, textureSizeY);
-		drawScaledCustomSizeModalRect(rightX, topY + tileSize, tileSize, 24, tileSize, 8, tileSize, acrossY, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(leftX + tileSize, topY, 24, 0, 8, tileSize, acrossX, tileSize, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(leftX + tileSize, bottomY, 24, tileSize, 8, tileSize, acrossX, tileSize, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(leftX, topY + tileSize, 0, 24, tileSize, 8, tileSize, acrossY, textureSizeX, textureSizeY);
+		// drawScaledCustomSizeModalRect(rightX, topY + tileSize, tileSize, 24, tileSize, 8, tileSize, acrossY, textureSizeX, textureSizeY);
 	}
 
 	private void drawPageBackground() {
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
-		drawScaledCustomSizeModalRect(leftX + borderSize, topY + borderSize, tileSize * 2, 0, tileSize / 2, tileSize / 2, acrossX + tileSize, acrossY + tileSize, textureSizeX, textureSizeY);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		minecraft.getTextureManager().bindTexture(GUI_BOOK_TEXTURE);
+		// TODO
+		// drawScaledCustomSizeModalRect(leftX + borderSize, topY + borderSize, tileSize * 2, 0, tileSize / 2, tileSize / 2, acrossX + tileSize, acrossY + tileSize, textureSizeX, textureSizeY);
 	}
 
 	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawDefaultBackground();
+	public void render(int mouseX, int mouseY, float delta) {
+		renderBackground();
 		drawPageBackground();
 		drawPageContents();
 		drawPageBorder();
-		drawCenteredString(this.fontRenderer, gbc.getTitle(), this.width / 2, this.height / 8 + 4, 0xFFFFFF);
-		drawCenteredString(this.fontRenderer, String.format("Page %d out of %d", page.getIndex() + 1, gbc.getPages()), this.width / 2, this.height - 25, 0xFFFFFF);
-		super.drawScreen(mouseX, mouseY, partialTicks);
+		drawCenteredString(font, gbc.getTitle(), this.width / 2, this.height / 8 + 4, 0xFFFFFF);
+		drawCenteredString(font, String.format("Page %d out of %d", page.getIndex() + 1, gbc.getPages()), this.width / 2, this.height - 25, 0xFFFFFF);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	@Override
-	public boolean doesGuiPauseGame() {
+	public boolean isPauseScreen() {
 		return false;
 	}
 
-	@Override
-	protected void actionPerformed(GuiButton button) {
-		switch (button.id) {
-			case 0:
-				if ((page.getIndex() + 1) < gbc.getPages()) {
-					setPage(page.getIndex() + 1);
-				}
-				break;
-			case 1:
-				if ((page.getIndex() - 1) >= 0) {
-					setPage(page.getIndex() - 1);
-				}
-				break;
-		}
-	}
-
 	private void updateButtonStates() {
-		this.nextPageBtn.enabled = page.getIndex() < gbc.getPages() - 1;
-		this.prevPageBtn.enabled = page.getIndex() > 0;
+		this.nextPageBtn.active = page.getIndex() < gbc.getPages() - 1;
+		this.prevPageBtn.active = page.getIndex() > 0;
 	}
 
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-		dragSrcY = mouseY;
-	}
-
-	@Override
-	protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-		if (slider.enabled) {
-			int dy = mouseY - dragSrcY;
-			slider.y = MathHelper.clamp(slider.y + dy, sliderTopY, sliderBotY);
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dX, double dY) {
+		if (slider.active) {
+			slider.y = (int) MathHelper.clamp(slider.y + dY, sliderTopY, sliderBotY);
 			sliderProgress = ((float) slider.y - sliderTopY) / (sliderBotY - sliderTopY);
-			dragSrcY = mouseY;
+			return true;
 		}
-		super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+		return super.mouseDragged(mouseX, mouseY, button, dX, dY);
 	}
 
 	private void setPage(int index) {
@@ -229,14 +225,9 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	@Override
-	protected void mouseReleased(int mouseX, int mouseY, int state) {
-		super.mouseReleased(mouseX, mouseY, state);
-	}
-
-	@Override
-	public void onGuiClosed() {
-		ItemGuideBook.setCurrentPage(page.getIndex(), sliderProgress, hand);
-		super.onGuiClosed();
+	public void onClose() {
+		Packets.C2S.GuideBookPage.send(new GuideBookPagePacket(hand, sliderProgress, page.getIndex()));
+		super.onClose();
 	}
 
 	/*
@@ -247,7 +238,7 @@ public class GuiGuideBook extends GuiScreen {
 		slider.y = (int) (sliderTopY + (sliderBotY - sliderTopY) * sliderProgress);
 	}
 
-	private static ArrayList<String> splitLines(String text, FontRenderer fontRenderer, int maxLength) {
+	private static ArrayList<String> splitLines(String text, TextRenderer font, int maxLength) {
 		if (text.charAt(text.length() - 1) != '\n') text += '\n';
 		ArrayList<String> lines = new ArrayList<>();
 		StringBuilder currentLine = new StringBuilder();
@@ -258,21 +249,21 @@ public class GuiGuideBook extends GuiScreen {
 				lines.add(currentLine.toString());
 				currentLine.delete(0, currentLine.length());
 				lastSplitPoint = 0;
-				curLength = fontRenderer.getStringWidth(currentLine.toString());
+				curLength = font.getStringWidth(currentLine.toString());
 			} else if (Character.isWhitespace(c)) {
 				currentLine.append(c);
-				curLength += fontRenderer.getCharWidth(c);
+				curLength += font.getCharWidth(c);
 				lastSplitPoint = currentLine.length();
 			} else {
-				if ((currentLine.length() > 1 && curLength + fontRenderer.getCharWidth(c) > maxLength)) {
+				if ((currentLine.length() > 1 && curLength + font.getCharWidth(c) > maxLength)) {
 					if (lastSplitPoint == 0) lastSplitPoint = currentLine.length();
 					lines.add(currentLine.substring(0, lastSplitPoint));
 					currentLine.delete(0, lastSplitPoint);
 					lastSplitPoint = 0;
-					curLength = fontRenderer.getStringWidth(currentLine.toString());
+					curLength = font.getStringWidth(currentLine.toString());
 				}
 				currentLine.append(c);
-				curLength += fontRenderer.getCharWidth(c);
+				curLength += font.getCharWidth(c);
 			}
 		}
 		return lines;

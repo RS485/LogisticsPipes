@@ -1,8 +1,7 @@
 package logisticspipes.interfaces.routing;
 
-import logisticspipes.utils.FluidIdentifierStack;
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 
 public interface IFluidSink {
-
-	int sinkAmount(FluidIdentifierStack stack);
+	int sinkAmount(FluidVolume stack);
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
@@ -18,7 +18,7 @@ public interface ILegacyActiveModule {
 
 	void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filter);
 
-	LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info);
+	LogisticsOrder fullFill(LogisticsPromise promise, ItemRequester destination, IAdditionalTargetInformation info);
 
 	void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter);
 }

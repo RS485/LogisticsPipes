@@ -1,7 +1,7 @@
 package logisticspipes.network.guis.module.inpipe;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 
 	@Getter
 	@Setter
-	private EnumFacing sneakyOrientation;
+	private Direction sneakyOrientation;
 
 	public ProviderModuleGuiProvider(int id) {
 		super(id);

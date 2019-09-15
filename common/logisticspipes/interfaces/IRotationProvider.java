@@ -1,46 +1,44 @@
 package logisticspipes.interfaces;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 public interface IRotationProvider {
 
 	@Deprecated
-	int getRotation();
-
-	default EnumFacing getFacing() {
-		switch (getRotation()) {
-			case 0:
-				return EnumFacing.WEST;
-			case 1:
-				return EnumFacing.EAST;
-			case 2:
-				return EnumFacing.NORTH;
-			case 3:
-			default:
-				return EnumFacing.SOUTH;
+	default int getRotation() {
+		switch (getFacing()) {
+			case WEST:
+				return 0;
+			case EAST:
+				return 1;
+			case NORTH:
+				return 2;
+			case SOUTH:
+				return 3;
 		}
+		return 0;
 	}
+
+	Direction getFacing();
 
 	@Deprecated
-	void setRotation(int rotation);
-
-	default void setFacing(EnumFacing facing) {
-		switch (facing) {
-			case NORTH:
-				setRotation(3);
+	default void setRotation(int rotation) {
+		switch (rotation) {
+			case 0:
+				setFacing(Direction.WEST);
 				break;
-			case DOWN:
-			case UP:
-			case SOUTH:
-				setRotation(2);
+			case 1:
+				setFacing(Direction.EAST);
 				break;
-			case WEST:
-				setRotation(1);
+			case 2:
+				setFacing(Direction.NORTH);
 				break;
-			case EAST:
-				setRotation(0);
+			case 3:
+				setFacing(Direction.SOUTH);
 				break;
 		}
 	}
+
+	void setFacing(Direction facing);
 
 }

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import logisticspipes.LPItems;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -16,7 +16,7 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
-public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
+public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements ItemRequester {
 
 	public PipeItemsRemoteOrdererLogistics(Item item) {
 		super(item);

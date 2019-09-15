@@ -1,7 +1,7 @@
 package logisticspipes.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 import org.lwjgl.opengl.GL11;
 
@@ -24,7 +24,7 @@ public class GuiPowerProvider extends LogisticsBaseGuiScreen {
 		this.junction = junction;
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/gui/power_junction.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {

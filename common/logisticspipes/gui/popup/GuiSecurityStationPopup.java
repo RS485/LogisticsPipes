@@ -3,7 +3,7 @@ package logisticspipes.gui.popup;
 import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.PacketHandler;
@@ -61,37 +61,37 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 		if (button.id == 0) {
 			activeSetting.openGui = !activeSetting.openGui;
 			refreshCheckBoxes();
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
 		} else if (button.id == 1) {
 			activeSetting.openRequest = !activeSetting.openRequest;
 			refreshCheckBoxes();
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
 		} else if (button.id == 2) {
 			activeSetting.openUpgrades = !activeSetting.openUpgrades;
 			refreshCheckBoxes();
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
 		} else if (button.id == 3) {
 			activeSetting.openNetworkMonitor = !activeSetting.openNetworkMonitor;
 			refreshCheckBoxes();
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
 		} else if (button.id == 4) {
 			activeSetting.removePipes = !activeSetting.removePipes;
 			refreshCheckBoxes();
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
 		} else if (button.id == 5) {
 			activeSetting.accessRoutingChannels = !activeSetting.accessRoutingChannels;
 			refreshCheckBoxes();
-			NBTTagCompound nbt = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setBlockPos(_tile.getPos()));
 		} else if (button.id == 6) {

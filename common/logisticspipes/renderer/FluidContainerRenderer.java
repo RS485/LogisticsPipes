@@ -16,8 +16,8 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import net.minecraftforge.client.model.BakedItemModel;
@@ -45,13 +45,13 @@ public class FluidContainerRenderer implements IModel {
 	public static class FluidContainerRendererModelLoader implements ICustomModelLoader {
 
 		@Override
-		public boolean accepts(@Nonnull ResourceLocation modelLocation) {
+		public boolean accepts(@Nonnull Identifier modelLocation) {
 			return modelLocation.getResourceDomain().equals("logisticspipes") && modelLocation.getResourcePath().equals("models/item/fluid_container");
 		}
 
 		@Nonnull
 		@Override
-		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
+		public IModel loadModel(@Nonnull Identifier modelLocation) {
 			return new FluidContainerRenderer();
 		}
 
@@ -61,18 +61,18 @@ public class FluidContainerRenderer implements IModel {
 		}
 	}
 
-	private static final ResourceLocation STENCIL = new ResourceLocation("logisticspipes:items/liquids/stencil");
-	private static final ResourceLocation EMPTY = new ResourceLocation("logisticspipes:items/liquids/empty");
+	private static final Identifier STENCIL = new Identifier("logisticspipes:items/liquids/stencil");
+	private static final Identifier EMPTY = new Identifier("logisticspipes:items/liquids/empty");
 
 	@Nonnull
 	@Override
-	public Collection<ResourceLocation> getTextures() {
+	public Collection<Identifier> getTextures() {
 		return ImmutableList.of(EMPTY, STENCIL);
 	}
 
 	@Nonnull
 	@Override
-	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<Identifier, TextureAtlasSprite> bakedTextureGetter) {
 		ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap = PerspectiveMapWrapper.getTransforms(state);
 
 		ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
@@ -93,11 +93,11 @@ public class FluidContainerRenderer implements IModel {
 
 		private VertexFormat format;
 		private ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap;
-		private Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
+		private Function<Identifier, TextureAtlasSprite> bakedTextureGetter;
 
 		public FluidContainerItemOverrideList(IModelState state, VertexFormat format,
 				ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transformMap,
-				Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+				Function<Identifier, TextureAtlasSprite> bakedTextureGetter) {
 			super(ImmutableList.of());
 			this.format = format;
 			this.transformMap = transformMap;
@@ -115,7 +115,7 @@ public class FluidContainerRenderer implements IModel {
 
 				Fluid fluid = fluidIdent.getFluid();
 
-				ResourceLocation fluidSprite = fluid.getStill(fluidIdent.makeFluidStack(1000));
+				Identifier fluidSprite = fluid.getStill(fluidIdent.makeFluidStack(1000));
 
 				TRSRTransformation transform = new SimpleModelState(transformMap).apply(Optional.empty())
 						.orElse(TRSRTransformation.identity());
@@ -124,11 +124,11 @@ public class FluidContainerRenderer implements IModel {
 				builder.addAll(
 						ItemTextureQuadConverter
 								.convertTexture(format, transform, this.bakedTextureGetter.apply(STENCIL), this.bakedTextureGetter.apply(fluidSprite),
-										NORTH_Z, EnumFacing.NORTH, fluid.getColor()));
+										NORTH_Z, Direction.NORTH, fluid.getColor()));
 				builder.addAll(
 						ItemTextureQuadConverter
 								.convertTexture(format, transform, this.bakedTextureGetter.apply(STENCIL), this.bakedTextureGetter.apply(fluidSprite),
-										SOUTH_Z, EnumFacing.SOUTH, fluid.getColor()));
+										SOUTH_Z, Direction.SOUTH, fluid.getColor()));
 
 				builder.addAll(originalModel.getQuads(null, null, 0));
 

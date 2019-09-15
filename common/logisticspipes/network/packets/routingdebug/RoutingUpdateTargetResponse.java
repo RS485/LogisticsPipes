@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.routingdebug;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
@@ -54,9 +54,9 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 			player.sendMessage(new TextComponentString("Checking Block at: x:" + x + " y:" + y + " z:" + z));
 			Block id = player.world.getBlockState(new BlockPos(x, y, z)).getBlock();
 			player.sendMessage(new TextComponentString("Found Block with Id: " + Block.getIdFromBlock(id)));
-			final TileEntity tile = player.world.getTileEntity(new BlockPos(x, y, z));
+			final BlockEntity tile = player.world.getBlockEntity(new BlockPos(x, y, z));
 			if (tile == null) {
-				player.sendMessage(new TextComponentString(ChatColor.RED + "No TileEntity found"));
+				player.sendMessage(new TextComponentString(ChatColor.RED + "No BlockEntity found"));
 			} else if (!(tile instanceof LogisticsTileGenericPipe)) {
 				player.sendMessage(new TextComponentString(ChatColor.RED + "No LogisticsTileGenericPipe found"));
 			} else if (!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {

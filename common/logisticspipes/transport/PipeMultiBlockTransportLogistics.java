@@ -2,8 +2,8 @@ package logisticspipes.transport;
 
 import java.util.List;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.Explosion;
 
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
@@ -23,7 +23,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
+	public boolean canPipeConnect(BlockEntity tile, Direction side) {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.isHSTube()) {
 			return true;
 		}
@@ -81,7 +81,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 
 	@Override
 	protected void reachedEnd(LPTravelingItem item) {
-		TileEntity tile = null;
+		BlockEntity tile = null;
 		if (getMultiPipe() != null) {
 			tile = getMultiPipe().getConnectedEndTile(item.output);
 		}
@@ -95,7 +95,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, EnumFacing dir) {
+	protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, BlockEntity tile, Direction dir) {
 		markChunkModified(tile);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreMultiBlockPipe) {
 			passToNextPipe(arrivingItem, tile);
@@ -115,7 +115,7 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, EnumFacing dir) {
+	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, BlockEntity tile, Direction dir) {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreMultiBlockPipe) {
 			passToNextPipe(arrivingItem, tile);
 			return;
@@ -139,8 +139,8 @@ public class PipeMultiBlockTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	public CoreUnroutedPipe getNextPipe(EnumFacing output) {
-		TileEntity tile = null;
+	public CoreUnroutedPipe getNextPipe(Direction output) {
+		BlockEntity tile = null;
 		if (getMultiPipe() != null) {
 			tile = getMultiPipe().getConnectedEndTile(output);
 		}

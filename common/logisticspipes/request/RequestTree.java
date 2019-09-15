@@ -11,19 +11,19 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IProvide;
-import logisticspipes.interfaces.routing.IRequestFluid;
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.RequestProvider;
+import logisticspipes.interfaces.routing.FluidRequester;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.request.resources.FluidResource;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.IHavePriority;
+import logisticspipes.utils.AbsolutePriority;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public class RequestTree extends RequestTreeNode {
 
@@ -37,13 +37,13 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	public static final EnumSet<ActiveRequestType> defaultRequestFlags = EnumSet.of(ActiveRequestType.Provide, ActiveRequestType.Craft);
-	private HashMap<FinalPair<IProvide, ItemIdentifier>, Integer> _promisetotals;
+	private HashMap<FinalPair<RequestProvider, ItemIdentifier>, Integer> _promisetotals;
 
-	public RequestTree(IResource requestType, RequestTree parent, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+	public RequestTree(Resource requestType, RequestTree parent, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		super(requestType, parent, requestFlags, info);
 	}
 
-	private int getExistingPromisesFor(FinalPair<IProvide, ItemIdentifier> key) {
+	private int getExistingPromisesFor(FinalPair<RequestProvider, ItemIdentifier> key) {
 		if (_promisetotals == null) {
 			_promisetotals = new HashMap<>();
 		}
@@ -54,16 +54,16 @@ public class RequestTree extends RequestTreeNode {
 		return n;
 	}
 
-	public int getAllPromissesFor(IProvide provider, ItemIdentifier item) {
-		FinalPair<IProvide, ItemIdentifier> key = new FinalPair<>(provider, item);
+	public int getAllPromissesFor(RequestProvider provider, ItemIdentifier item) {
+		FinalPair<RequestProvider, ItemIdentifier> key = new FinalPair<>(provider, item);
 		return getExistingPromisesFor(key);
 	}
 
-	public LinkedList<IExtraPromise> getExtrasFor(IResource item) {
-		HashMap<IProvide, List<IExtraPromise>> extraMap = new HashMap<>();
+	public LinkedList<ExtraPromise> getExtrasFor(Resource item) {
+		HashMap<RequestProvider, List<ExtraPromise>> extraMap = new HashMap<>();
 		checkForExtras(item, extraMap);
 		removeUsedExtras(item, extraMap);
-		LinkedList<IExtraPromise> extras = new LinkedList<>();
+		LinkedList<ExtraPromise> extras = new LinkedList<>();
 		extraMap.values().forEach(extras::addAll);
 		return extras;
 	}
@@ -73,29 +73,29 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	public void sendMissingMessage(RequestLog log) {
-		Map<IResource, Integer> missing = new HashMap<>();
+		Map<Resource, Integer> missing = new HashMap<>();
 		buildMissingMap(missing);
 		log.handleMissingItems(RequestTreeNode.shrinkToList(missing));
 	}
 
 	public void sendUsedMessage(RequestLog log) {
-		Map<IResource, Integer> used = new HashMap<>();
-		Map<IResource, Integer> missing = new HashMap<>();
+		Map<Resource, Integer> used = new HashMap<>();
+		Map<Resource, Integer> missing = new HashMap<>();
 		buildUsedMap(used, missing);
 		log.handleSucessfullRequestOfList(RequestTreeNode.shrinkToList(used), new LinkedLogisticsOrderList());
 		log.handleMissingItems(RequestTreeNode.shrinkToList(missing));
 	}
 
-	protected void promiseAdded(IPromise promise) {
-		FinalPair<IProvide, ItemIdentifier> key = new FinalPair<>(promise.getProvider(), promise.getItemType());
+	protected void promiseAdded(Promise promise) {
+		FinalPair<RequestProvider, ItemIdentifier> key = new FinalPair<>(promise.getProvider(), promise.getItemType());
 		if (_promisetotals == null) {
 			_promisetotals = new HashMap<>();
 		}
 		_promisetotals.put(key, getExistingPromisesFor(key) + promise.getAmount());
 	}
 
-	protected void promiseRemoved(IPromise promise) {
-		FinalPair<IProvide, ItemIdentifier> key = new FinalPair<>(promise.getProvider(), promise.getItemType());
+	protected void promiseRemoved(Promise promise) {
+		FinalPair<RequestProvider, ItemIdentifier> key = new FinalPair<>(promise.getProvider(), promise.getItemType());
 		int r = getExistingPromisesFor(key) - promise.getAmount();
 		if (r == 0) {
 			_promisetotals.remove(key);
@@ -115,9 +115,9 @@ public class RequestTree extends RequestTreeNode {
 		@Override
 		public int compare(ExitRoute o1, ExitRoute o2) {
 			int c;
-			if (o1.destination.getPipe() instanceof IHavePriority) {
-				if (o2.destination.getPipe() instanceof IHavePriority) {
-					c = ((IHavePriority) o2.destination.getCachedPipe()).getPriority() - ((IHavePriority) o1.destination.getCachedPipe()).getPriority();
+			if (o1.destination.getPipe() instanceof AbsolutePriority) {
+				if (o2.destination.getPipe() instanceof AbsolutePriority) {
+					c = ((AbsolutePriority) o2.destination.getCachedPipe()).getPriority() - ((AbsolutePriority) o1.destination.getCachedPipe()).getPriority();
 					if (c != 0) {
 						return c;
 					}
@@ -125,7 +125,7 @@ public class RequestTree extends RequestTreeNode {
 					return -1;
 				}
 			} else {
-				if (o2.destination.getPipe() instanceof IHavePriority) {
+				if (o2.destination.getPipe() instanceof AbsolutePriority) {
 					return 1;
 				}
 			}
@@ -140,11 +140,11 @@ public class RequestTree extends RequestTreeNode {
 
 	}
 
-	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
-		Map<IResource, Integer> messages = new HashMap<>();
-		RequestTree tree = new RequestTree(new ItemResource(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.STONE), 0, null), 0), requester), null, requestFlags, info);
+	public static boolean request(List<ItemStack> items, ItemRequester requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+		Map<Resource, Integer> messages = new HashMap<>();
+		RequestTree tree = new RequestTree(new ItemResource(new ItemStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.STONE), 0, null), 0), requester), null, requestFlags, info);
 		boolean isDone = true;
-		for (ItemIdentifierStack stack : items) {
+		for (ItemStack stack : items) {
 			ItemIdentifier item = stack.getItem();
 			Integer count = messages.get(item);
 			if (count == null) {
@@ -170,7 +170,7 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 
-	public static int request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
+	public static int request(ItemStack item, ItemRequester requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed, EnumSet<ActiveRequestType> requestFlags, IAdditionalTargetInformation info) {
 		ItemResource req = new ItemResource(item, requester);
 		RequestTree tree = new RequestTree(req, null, requestFlags, info);
 		if (!simulateOnly && (tree.isDone() || ((tree.getPromiseAmount() > 0) && acceptPartial))) {
@@ -196,27 +196,27 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 
-	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, IAdditionalTargetInformation info) {
+	public static boolean request(ItemStack item, ItemRequester requester, RequestLog log, IAdditionalTargetInformation info) {
 		return RequestTree.request(item, requester, log, false, false, true, false, RequestTree.defaultRequestFlags, info) == item.getStackSize();
 	}
 
-	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester, IAdditionalTargetInformation info) {
+	public static int requestPartial(ItemStack item, ItemRequester requester, IAdditionalTargetInformation info) {
 		return RequestTree.request(item, requester, null, true, false, true, false, RequestTree.defaultRequestFlags, info);
 	}
 
-	public static int simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
+	public static int simulate(ItemStack item, ItemRequester requester, RequestLog log) {
 		return RequestTree.request(item, requester, log, true, true, false, true, RequestTree.defaultRequestFlags, null);
 	}
 
-	public static int requestFluidPartial(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {
+	public static int requestFluidPartial(FluidIdentifier liquid, int amount, FluidRequester pipe, RequestLog log) {
 		return RequestTree.requestFluid(liquid, amount, pipe, log, true);
 	}
 
-	public static boolean requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {
+	public static boolean requestFluid(FluidIdentifier liquid, int amount, FluidRequester pipe, RequestLog log) {
 		return RequestTree.requestFluid(liquid, amount, pipe, log, false) == amount;
 	}
 
-	private static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log, boolean acceptPartial) {
+	private static int requestFluid(FluidIdentifier liquid, int amount, FluidRequester pipe, RequestLog log, boolean acceptPartial) {
 		FluidResource req = new FluidResource(liquid, amount, pipe);
 		RequestTree request = new RequestTree(req, null, RequestTree.defaultRequestFlags, null);
 		if (request.isDone() || acceptPartial) {

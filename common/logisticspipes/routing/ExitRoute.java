@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -38,11 +38,11 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 	public final double destinationDistanceToRoot;
 	public final int blockDistance;
 	public final EnumSet<PipeRoutingConnectionType> connectionDetails;
-	public final IRouter destination;
-	public EnumFacing exitOrientation;
-	public EnumFacing insertOrientation;
+	public final Router destination;
+	public Direction exitOrientation;
+	public Direction insertOrientation;
 	public double distanceToDestination;
-	public IRouter root;
+	public Router root;
 	public List<IFilter> filters = Collections.unmodifiableList(new ArrayList<>(0));
 	/**
 	 * Used to store debug information. No use in the actual Routing table
@@ -50,7 +50,7 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 	 */
 	public ExitRouteDebug debug = new ExitRouteDebug();
 
-	public ExitRoute(IRouter source, IRouter destination, @Nullable EnumFacing exitOrientation, @Nullable EnumFacing insertOrientation, double metric,
+	public ExitRoute(Router source, Router destination, @Nullable Direction exitOrientation, @Nullable Direction insertOrientation, double metric,
 			EnumSet<PipeRoutingConnectionType> connectionDetails, int blockDistance) {
 		this.destination = destination;
 		this.root = source;
@@ -106,7 +106,7 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 		debug.index = input.readInt();
 	}
 
-	public ExitRoute(IRouter source, IRouter destination, double distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA,
+	public ExitRoute(Router source, Router destination, double distance, EnumSet<PipeRoutingConnectionType> enumSet, List<IFilter> filterA,
 			List<IFilter> filterB, int blockDistance) {
 		this(source, destination, null, null, distance, enumSet, blockDistance);
 		List<IFilter> filter = new ArrayList<>(filterA.size() + filterB.size());
@@ -116,9 +116,9 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private IRouter readRouter(LPDataInput input) {
+	private Router readRouter(LPDataInput input) {
 		DoubleCoordinates pos = new DoubleCoordinates(input);
-		TileEntity tile = pos.getTileEntity(MainProxy.getClientMainWorld());
+		BlockEntity tile = pos.getBlockEntity(MainProxy.getClientMainWorld());
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 			return ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter();
 		}
@@ -212,7 +212,7 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 	public int compareTo(ExitRoute o) {
 		int c = (int) Math.floor(distanceToDestination - o.distanceToDestination);
 		if (c == 0) {
-			return destination.getSimpleID() - o.destination.getSimpleID();
+			return destination.getSimpleId() - o.destination.getSimpleId();
 		}
 		return c;
 	}

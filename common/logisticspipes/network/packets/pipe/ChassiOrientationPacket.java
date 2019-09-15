@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.pipe;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,7 @@ public class ChassiOrientationPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private EnumFacing dir;
+	private Direction dir;
 
 	public ChassiOrientationPacket(int id) {
 		super(id);

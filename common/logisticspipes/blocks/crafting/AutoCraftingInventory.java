@@ -1,29 +1,30 @@
 package logisticspipes.blocks.crafting;
 
-import javax.annotation.Nonnull;
+import java.util.UUID;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.container.Container;
+import net.minecraft.container.ContainerType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.Inventory;
 
-import logisticspipes.utils.PlayerIdentifier;
+public class AutoCraftingInventory extends CraftingInventory {
 
-public class AutoCraftingInventory extends InventoryCrafting {
+	public final UUID placedByPlayer;
 
-	public final PlayerIdentifier placedByPlayer;
-
-	public AutoCraftingInventory(PlayerIdentifier playerID) {
-		super(new Container() {
+	public AutoCraftingInventory(UUID playerID) {
+		super(new Container(ContainerType.CRAFTING, -1) {
 
 			@Override
-			public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
+			public boolean canUse(PlayerEntity player) {
 				return false;
 			}
 
 			@Override
-			public void onCraftMatrixChanged(IInventory par1iInventory) {}
+			public void onContentChanged(Inventory inventory_1) {}
+
 		}, 3, 3);
+
 		placedByPlayer = playerID;
 	}
 }

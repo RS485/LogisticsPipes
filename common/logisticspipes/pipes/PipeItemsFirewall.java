@@ -4,7 +4,9 @@ import java.util.BitSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.BlockPos;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
@@ -14,13 +16,15 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FireWallFlag;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.IResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.item.ItemStack;
+import logisticspipes.utils.tuples.Tuple2;
+import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.util.ItemVariant;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
@@ -49,7 +53,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		inv.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("blockProvider", blockProvider);
@@ -60,7 +64,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		inv.readFromNBT(nbttagcompound);
 		blockProvider = nbttagcompound.getBoolean("blockProvider");
@@ -92,7 +96,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				}
 
 				@Override
-				public boolean isFilteredItem(ItemIdentifier item) {
+				public boolean isFilteredItem(ItemVariant item) {
 					return inv.containsUndamagedExcludeNBTItem(item.getIgnoringNBT().getUndamaged());
 				}
 
@@ -123,19 +127,19 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 				@Override
 				public String toString() {
-					return super.toString() + " (" + PipeItemsFirewall.this.getX() + ", " + PipeItemsFirewall.this.getY() + ", " + PipeItemsFirewall.this.getZ() + ")";
+					return String.format("%s (%s)", super.toString(), PipeItemsFirewall.this.getPos());
 				}
 
 				@Override
-				public DoubleCoordinates getLPPosition() {
-					return PipeItemsFirewall.this.getLPPosition();
+				public BlockPos getPos() {
+					return PipeItemsFirewall.this.getPos();
 				}
 
 				@Override
-				public boolean isFilteredItem(IResource resultItem) {
-					for (Pair<ItemIdentifierStack, Integer> pair : inv) {
-						ItemIdentifierStack stack = pair.getValue1();
-						if (stack != null && resultItem.matches(stack.getItem(), IResource.MatchSettings.NORMAL)) {
+				public boolean isFilteredItem(Resource resultItem) {
+					for (Tuple2<ItemStack, Integer> tuple : inv) {
+						ItemStack stack = tuple.getValue1();
+						if (stack != null && resultItem.matches(stack.getItem(), Resource.MatchSettings.NORMAL)) {
 							return true;
 						}
 					}

@@ -16,11 +16,12 @@ import logisticspipes.config.Configs;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.IResource.ColorCode;
+import logisticspipes.request.resources.Resource;
+import logisticspipes.request.resources.Resource.ColorCode;
 import logisticspipes.request.resources.ResourceNetwork;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.string.ChatColor;
+import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -29,7 +30,7 @@ public class MissingItems extends ModernPacket {
 
 	@Getter
 	@Setter
-	private Collection<IResource> items = new ArrayList<>();
+	private Collection<Resource> items = new ArrayList<>();
 
 	@Setter
 	@Getter
@@ -47,18 +48,18 @@ public class MissingItems extends ModernPacket {
 	@Override
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
-		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+		if (LPConfiguration.INSTANCE.getDisplayRequestPopup() && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
 			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen)
 					.handleRequestAnswer(getItems(), isFlag(), (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
-		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
+		} else if (LPConfiguration.INSTANCE.getDisplayRequestPopup() && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
 			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen)
 					.handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (isFlag()) {
-			for (IResource item : items) {
+			for (Resource item : items) {
 				player.sendMessage(new TextComponentString(ChatColor.RED + "Missing: " + item.getDisplayText(ColorCode.MISSING)));
 			}
 		} else {
-			for (IResource item : items) {
+			for (Resource item : items) {
 				player.sendMessage(new TextComponentString(ChatColor.GREEN + "Requested: " + item.getDisplayText(ColorCode.SUCCESS)));
 			}
 			player.sendMessage(new TextComponentString(ChatColor.GREEN + "Request successful!"));

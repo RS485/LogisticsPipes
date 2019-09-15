@@ -11,13 +11,13 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -47,7 +47,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.config.Configs;
-import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.interfaces.ItemAdvancedExistence;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerConfigToClientPacket;
@@ -71,8 +71,9 @@ import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.config.ClientConfiguration;
+import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.config.PlayerConfiguration;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
@@ -82,17 +83,17 @@ public class LogisticsEventListener {
 
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
-		if (event != null && event.getEntity() instanceof EntityItem && event.getEntity().world != null && !event.getEntity().world.isRemote) {
-			ItemStack stack = ((EntityItem) event.getEntity()).getItem(); //Get ItemStack
-			if (!stack.isEmpty() && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance) stack.getItem()).canExistInWorld(stack)) {
+		if (event != null && event.getEntity() instanceof ItemEntity && event.getEntity().world != null && !event.getEntity().world.isRemote) {
+			ItemStack stack = ((ItemEntity) event.getEntity()).getItem(); //Get ItemStack
+			if (!stack.isEmpty() && stack.getItem() instanceof ItemAdvancedExistence && !((ItemAdvancedExistence) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
 			}
-			if (stack.hasTagCompound()) {
-				for (String key : stack.getTagCompound().getKeySet()) {
+			if (stack.hasTag()) {
+				for (String key : stack.getTag().getKeySet()) {
 					if (key.startsWith("logisticspipes:routingdata")) {
-						ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(stack.getTagCompound().getCompoundTag(key));
+						ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(stack.getTag().getCompoundTag(key));
 						info.setItemTimedout();
-						((EntityItem) event.getEntity()).setItem(info.getItem().getItem().makeNormalStack(stack.getCount()));
+						((ItemEntity) event.getEntity()).setItem(info.getItem().getItem().makeNormalStack(stack.getCount()));
 						break;
 					}
 				}
@@ -103,7 +104,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void onPlayerLeftClickBlock(final PlayerInteractEvent.LeftClickBlock event) {
 		if (MainProxy.isServer(event.getEntityPlayer().world)) {
-			final TileEntity tile = event.getEntityPlayer().world.getTileEntity(event.getPos());
+			final BlockEntity tile = event.getEntityPlayer().world.getBlockEntity(event.getPos());
 			if (tile instanceof LogisticsTileGenericPipe) {
 				if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
 					if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.getEntityPlayer())) {
@@ -112,7 +113,7 @@ public class LogisticsEventListener {
 						((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
 						World world = event.getEntityPlayer().world;
 						BlockPos pos = tile.getPos();
-						IBlockState state = world.getBlockState(pos);
+						BlockState state = world.getBlockState(pos);
 						world.markAndNotifyBlock(tile.getPos(), world.getChunkFromBlockCoords(pos), state, state, 2);
 						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
 						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
@@ -128,14 +129,14 @@ public class LogisticsEventListener {
 	public void onPlayerLeftClickBlock(final PlayerInteractEvent.RightClickBlock event) {
 		if (MainProxy.isServer(event.getEntityPlayer().world)) {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().world, event.getPos());
-			TileEntity tileEntity = worldCoordinates.getTileEntity();
+			BlockEntity tileEntity = worldCoordinates.getBlockEntity();
 			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
 				List<WeakReference<ModuleQuickSort>> list = worldCoordinates.allNeighborTileEntities()
-						.filter(NeighborTileEntity::isLogisticsPipe)
-						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof PipeLogisticsChassi)
-						.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe).getPointedOrientation()
+						.filter(NeighborBlockEntity::isLogisticsPipe)
+						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getBlockEntity()).pipe instanceof PipeLogisticsChassi)
+						.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getBlockEntity()).pipe).getPointedOrientation()
 								== adjacent.getOurDirection())
-						.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe)
+						.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getBlockEntity()).pipe)
 						.flatMap(pipeLogisticsChassi -> Arrays.stream(pipeLogisticsChassi.getModules().getModules()))
 						.filter(logisticsModule -> logisticsModule instanceof ModuleQuickSort)
 						.map(logisticsModule -> new WeakReference<>((ModuleQuickSort) logisticsModule))
@@ -261,7 +262,7 @@ public class LogisticsEventListener {
 	public void clientLoggedIn(ClientConnectedToServerEvent event) {
 		SimpleServiceLocator.clientBufferHandler.clear();
 
-		if (Configs.CHECK_FOR_UPDATES) {
+		if (LPConfiguration.INSTANCE.getCheckForUpdates()) {
 			LogisticsPipes.singleThreadExecutor.execute(() -> {
 				// try to get player entity ten times, once a second
 				int times = 0;
@@ -303,10 +304,10 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onItemStackToolTip(ItemTooltipEvent event) {
-		if (event.getItemStack().hasTagCompound()) {
-			for (String key : event.getItemStack().getTagCompound().getKeySet()) {
+		if (event.getItemStack().hasTag()) {
+			for (String key : event.getItemStack().getTag().getKeySet()) {
 				if (key.startsWith("logisticspipes:routingdata")) {
-					ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(event.getItemStack().getTagCompound().getCompoundTag(key));
+					ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(event.getItemStack().getTag().getCompoundTag(key));
 					List<String> list = event.getToolTip();
 					list.set(0, ChatColor.RED + "!!! " + ChatColor.WHITE + list.get(0) + ChatColor.RED + " !!!" + ChatColor.WHITE);
 					list.add(1, StringUtils.translate("itemstackinfo.lprouteditem"));

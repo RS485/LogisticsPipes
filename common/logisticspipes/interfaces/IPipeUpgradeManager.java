@@ -1,6 +1,6 @@
 package logisticspipes.interfaces;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 public interface IPipeUpgradeManager {
 
@@ -14,7 +14,7 @@ public interface IPipeUpgradeManager {
 
 	int getSpeedUpgradeCount();
 
-	boolean isSideDisconnected(EnumFacing side);
+	boolean isSideDisconnected(Direction side);
 
 	boolean hasCCRemoteControlUpgrade();
 
@@ -26,6 +26,6 @@ public interface IPipeUpgradeManager {
 
 	boolean hasCombinedSneakyUpgrade();
 
-	EnumFacing[] getCombinedSneakyOrientation();
+	Direction[] getCombinedSneakyOrientation();
 
 }

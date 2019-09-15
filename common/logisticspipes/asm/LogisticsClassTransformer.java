@@ -91,7 +91,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 	private byte[] applyLPTransforms(String name, byte[] bytes) {
 		try {
-			if (name.equals("net.minecraft.tileentity.TileEntity")) {
+			if (name.equals("net.minecraft.block.entity.BlockEntity")) {
 				return handleTileEntityClass(bytes);
 			}
 			if (name.equals("net.minecraft.item.ItemStack")) {
@@ -420,7 +420,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 						Label l0 = new Label();
 						visitLabel(l0);
 						visitVarInsn(Opcodes.ALOAD, 0);
-						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "validate", "(Lnet/minecraft/tileentity/TileEntity;)V");
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "validate", "(Lnet/minecraft/tileentity/BlockEntity;)V");
 					}
 				};
 				m.accept(mv);
@@ -435,7 +435,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 						Label l0 = new Label();
 						visitLabel(l0);
 						visitVarInsn(Opcodes.ALOAD, 0);
-						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "invalidate", "(Lnet/minecraft/tileentity/TileEntity;)V");
+						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "invalidate", "(Lnet/minecraft/tileentity/BlockEntity;)V");
 					}
 				};
 				m.accept(mv);
@@ -449,7 +449,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			Label l0 = new Label();
 			mv.visitLabel(l0);
 			mv.visitVarInsn(Opcodes.ALOAD, 0);
-			mv.visitFieldInsn(Opcodes.GETFIELD, "net/minecraft/tileentity/TileEntity", "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;");
+			mv.visitFieldInsn(Opcodes.GETFIELD, "net/minecraft/tileentity/BlockEntity", "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;");
 			mv.visitInsn(Opcodes.ARETURN);
 			Label l1 = new Label();
 			mv.visitLabel(l1);
@@ -463,7 +463,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			mv.visitLabel(l0);
 			mv.visitVarInsn(Opcodes.ALOAD, 0);
 			mv.visitVarInsn(Opcodes.ALOAD, 1);
-			mv.visitFieldInsn(Opcodes.PUTFIELD, "net/minecraft/tileentity/TileEntity", "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;");
+			mv.visitFieldInsn(Opcodes.PUTFIELD, "net/minecraft/tileentity/BlockEntity", "informationObjectLogisticsPipes", "Llogisticspipes/asm/te/LPTileEntityObject;");
 			Label l1 = new Label();
 			mv.visitLabel(l1);
 			mv.visitInsn(Opcodes.RETURN);

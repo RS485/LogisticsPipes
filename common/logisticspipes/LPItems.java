@@ -5,8 +5,6 @@ import java.util.Map;
 
 import net.minecraft.item.Item;
 
-import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
-
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemGuideBook;
@@ -139,9 +137,6 @@ public class LPItems {
 	// Logistics Modules/Upgrades
 	@ObjectHolder("logisticspipes:module_blank")
 	public static ItemBlankModule blankModule;
-
-	public static Map<Class<? extends LogisticsModule>, ItemModule> modules = new HashMap<>();
-	public static Map<Class<? extends IPipeUpgrade>, ItemUpgrade> upgrades = new HashMap<>();
 
 	// Miscellaneous Items
 	@ObjectHolder("logisticspipes:remote_orderer")

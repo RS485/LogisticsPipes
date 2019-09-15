@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.module;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +19,7 @@ public class ModuleBasedItemSinkList extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
-	private NBTTagCompound nbt;
+	private CompoundTag nbt;
 
 	public ModuleBasedItemSinkList(int id) {
 		super(id);

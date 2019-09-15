@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import lombok.Getter;
 
-import logisticspipes.utils.tuples.Quartet;
+import logisticspipes.utils.tuples.Tuple4;
 
 public class QuickSortChestMarkerStorage {
 
@@ -14,14 +14,14 @@ public class QuickSortChestMarkerStorage {
 
 	private QuickSortChestMarkerStorage() {}
 
-	private HashMap<Quartet<Integer, Integer, Integer, Integer>, Integer> marker = new HashMap<>();
+	private HashMap<Tuple4<Integer, Integer, Integer, Integer>, Integer> marker = new HashMap<>();
 
 	@Getter
 	private boolean isActivated = false;
 
 	public void setSlots(int x, int y, int z, int slot, int pos) {
 		if (isActivated) {
-			marker.put(new Quartet<>(x, y, z, slot), pos);
+			marker.put(new Tuple4<>(x, y, z, slot), pos);
 		}
 	}
 

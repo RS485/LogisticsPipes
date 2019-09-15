@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
@@ -19,9 +19,9 @@ public class EntityModelFX extends Particle {
 
 	private final IModel3D model;
 	private final I3DOperation[] operations;
-	private final ResourceLocation texture;
+	private final Identifier texture;
 
-	public EntityModelFX(World world, double x, double y, double z, IModel3D model, I3DOperation[] i3dOperations, ResourceLocation texture) {
+	public EntityModelFX(World world, double x, double y, double z, IModel3D model, I3DOperation[] i3dOperations, Identifier texture) {
 		super(world, x, y, z, 0, -5, 0);
 		this.model = model;
 		this.operations = i3dOperations;

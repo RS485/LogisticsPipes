@@ -9,11 +9,11 @@ import java.util.function.Supplier;
 import scala.actors.threadpool.Arrays;
 
 import logisticspipes.LPConstants;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class StackTraceUtil {
 
-	private static final Map<Thread, LinkedList<Pair<StackTraceElement, String>>> informationMap = new HashMap<>();
+	private static final Map<Thread, LinkedList<Tuple2<StackTraceElement, String>>> informationMap = new HashMap<>();
 
 	public static abstract class Info {
 
@@ -26,7 +26,7 @@ public class StackTraceUtil {
 		public void end() {}
 	}
 
-	private static LinkedList<Pair<StackTraceElement, String>> getList() {
+	private static LinkedList<Tuple2<StackTraceElement, String>> getList() {
 		return StackTraceUtil.informationMap.computeIfAbsent(Thread.currentThread(), k -> new LinkedList<>());
 	}
 
@@ -50,7 +50,7 @@ public class StackTraceUtil {
 
 	private static Info addTraceInformationFor(final StackTraceElement calledFrom, final String information, final Info... infos) {
 		synchronized (StackTraceUtil.informationMap) {
-			StackTraceUtil.getList().addLast(new Pair<>(calledFrom, information));
+			StackTraceUtil.getList().addLast(new Tuple2<>(calledFrom, information));
 			return new Info() {
 
 				@Override
@@ -59,9 +59,9 @@ public class StackTraceUtil {
 						if (StackTraceUtil.getList().isEmpty()) {
 							throw new RuntimeException("There are to many end() calls");
 						} else {
-							Pair<StackTraceElement, String> pair = StackTraceUtil.getList().getLast();
-							if (!pair.getValue1().equals(calledFrom)) {
-								System.out.println("Found: " + pair.getValue1());
+							Tuple2<StackTraceElement, String> tuple = StackTraceUtil.getList().getLast();
+							if (!tuple.getValue1().equals(calledFrom)) {
+								System.out.println("Found: " + tuple.getValue1());
 								System.out.println("Looking for: " + calledFrom);
 								throw new RuntimeException("There is an end() call missing");
 							}
@@ -87,28 +87,28 @@ public class StackTraceUtil {
 						.asList(Thread.currentThread().getStackTrace()));
 				traceList.removeFirst();
 				traceList.removeFirst();
-				LinkedList<Pair<StackTraceElement, String>> paired = new LinkedList<>();
-				Pair<StackTraceElement, String> lastFound = null;
+				LinkedList<Tuple2<StackTraceElement, String>> paired = new LinkedList<>();
+				Tuple2<StackTraceElement, String> lastFound = null;
 				StackTraceElement current = traceList.removeLast();
 				while (current != null) {
-					Iterator<Pair<StackTraceElement, String>> iter = StackTraceUtil.getList().iterator();
+					Iterator<Tuple2<StackTraceElement, String>> iter = StackTraceUtil.getList().iterator();
 					if (lastFound != null) {
 						while (iter.hasNext()) {
-							Pair<StackTraceElement, String> pair = iter.next();
-							if (pair == lastFound) {
+							Tuple2<StackTraceElement, String> tuple = iter.next();
+							if (tuple == lastFound) {
 								break;
 							}
 						}
 					}
 					String result = null;
 					while (iter.hasNext()) {
-						Pair<StackTraceElement, String> pair = iter.next();
-						if (StackTraceUtil.compare(current, pair.getValue1())) {
-							lastFound = pair;
-							result = pair.getValue2();
+						Tuple2<StackTraceElement, String> tuple = iter.next();
+						if (StackTraceUtil.compare(current, tuple.getValue1())) {
+							lastFound = tuple;
+							result = tuple.getValue2();
 						}
 					}
-					paired.addFirst(new Pair<>(current, result));
+					paired.addFirst(new Tuple2<>(current, result));
 					if (traceList.isEmpty()) {
 						current = null;
 					} else {
@@ -117,10 +117,10 @@ public class StackTraceUtil {
 				}
 				System.err.print("StackTrace");
 				System.err.print(System.lineSeparator());
-				for (Pair<StackTraceElement, String> pair : paired) {
-					System.err.print("\tat " + pair.getValue1());
-					if (pair.getValue2() != null) {
-						System.err.print(" [" + pair.getValue2() + "]");
+				for (Tuple2<StackTraceElement, String> tuple : paired) {
+					System.err.print("\tat " + tuple.getValue1());
+					if (tuple.getValue2() != null) {
+						System.err.print(" [" + tuple.getValue2() + "]");
 					}
 					System.err.print(System.lineSeparator());
 				}

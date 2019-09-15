@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.routing.IRouter;
+import logisticspipes.routing.Router;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -51,10 +51,10 @@ public abstract class LogisticsOrder implements IOrderInfoProvider {
 		if (getRouter() == null) {
 			return -1;
 		}
-		return getRouter().getSimpleID();
+		return getRouter().getSimpleId();
 	}
 
-	public abstract IRouter getRouter();
+	public abstract Router getRouter();
 
 	@Override
 	public void setWatched() {

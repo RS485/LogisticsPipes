@@ -1,16 +1,17 @@
 package logisticspipes.interfaces.routing;
 
-import logisticspipes.request.resources.IResource;
-import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import net.minecraft.util.math.BlockPos;
+
+import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.util.ItemVariant;
 
 public interface IFilter {
 
 	boolean isBlocked();
 
-	boolean isFilteredItem(ItemIdentifier item);
+	boolean isFilteredItem(ItemVariant item);
 
-	boolean isFilteredItem(IResource resultItem);
+	boolean isFilteredItem(Resource resultItem);
 
 	boolean blockProvider();
 
@@ -20,5 +21,6 @@ public interface IFilter {
 
 	boolean blockPower();
 
-	DoubleCoordinates getLPPosition();
+	BlockPos getPos();
+
 }

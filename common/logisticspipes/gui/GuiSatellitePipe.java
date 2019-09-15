@@ -83,10 +83,10 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 		mc.fontRenderer.drawString(StringUtils.translate("gui.satellite.SatelliteName"), 33, 10, 0x404040);
 		String name = "";
 		if (_satellite != null) {
-			name = StringUtils.getCuttedString(_satellite.satellitePipeName, 100, mc.fontRenderer);
+			name = StringUtils.getCutString(_satellite.satellitePipeName, 100, mc.fontRenderer);
 		}
 		if (_liquidSatellite != null) {
-			name = StringUtils.getCuttedString(_liquidSatellite.satellitePipeName, 100, mc.fontRenderer);
+			name = StringUtils.getCutString(_liquidSatellite.satellitePipeName, 100, mc.fontRenderer);
 		}
 		mc.fontRenderer.drawString(name, 59 - mc.fontRenderer.getStringWidth(name) / 2, 24, 0x404040);
 	}

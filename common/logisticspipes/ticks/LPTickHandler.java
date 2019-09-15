@@ -3,15 +3,10 @@ package logisticspipes.ticks;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.collect.MapMaker;
 import lombok.AccessLevel;
@@ -49,7 +44,7 @@ public class LPTickHandler {
 		LogisticsPipes.getGlobalTickExecutor().tick();
 	}
 
-	private static Map<World, LPWorldInfo> worldInfo = new MapMaker().weakKeys().makeMap();
+	private static Map<World, LPWorldInfo> worldInfo = new WeakHashMap<>();
 
 	@SubscribeEvent
 	public void worldTick(WorldTickEvent event) {
@@ -80,7 +75,7 @@ public class LPTickHandler {
 		@Setter(value = AccessLevel.PRIVATE)
 		private long worldTick = 0;
 		@Getter
-		private Set<DoubleCoordinates> updateQueued = new HashSet<>();
+		private Set<BlockPos> updateQueued = new HashSet<>();
 
 		@Getter
 		@Setter

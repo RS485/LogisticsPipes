@@ -25,8 +25,9 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.config.LPConfiguration;
 
 public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 
@@ -115,7 +116,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 			refreshItems();
 		} else if (guibutton.id == 8) {
 			GuiCheckBox button = (GuiCheckBox) guibutton;
-			Configs.DISPLAY_POPUP = button.change();
+			LPConfiguration.INSTANCE.setDisplayRequestPopup(button.change());
 			Configs.savePopupState();
 		} else if (guibutton.id == 20) {
 			itemDisplay.cycle();
@@ -149,7 +150,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		}
 	}
 
-	public void handlePacket(List<ItemIdentifierStack> identList) {
+	public void handlePacket(List<ItemStack> identList) {
 		if (itemDisplay == null) {
 			itemDisplay = new ItemDisplay(this, fontRenderer, getBaseScreen(), null, guiLeft + 10, guiTop + 18, xSize - 20, ySize - 100, 0, 0, 0, new int[] { 1, 10, 64, 64 }, true);
 		}

@@ -2,12 +2,12 @@ package logisticspipes.pipes.tubes;
 
 import java.util.List;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Direction;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 		super(new PipeMultiBlockTransportLogistics() {
 
 			@Override
-			public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
+			public boolean canPipeConnect(BlockEntity tile, Direction side) {
 				if (side.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
 					return super.canPipeConnect_internal(tile, side);
 				}
@@ -50,7 +50,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			}
 
 			@Override
-			protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, TileEntity tile, EnumFacing dir) {
+			protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, BlockEntity tile, Direction dir) {
 				if (dir.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
 					arrivingItem.setSpeed(LPConstants.PIPE_NORMAL_SPEED * 20);
 					handleTileReachedServer_internal(arrivingItem, tile, dir);
@@ -60,7 +60,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			}
 
 			@Override
-			protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, EnumFacing dir) {
+			protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, BlockEntity tile, Direction dir) {
 				if (dir.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
 					if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 						arrivingItem.setSpeed(LPConstants.PIPE_NORMAL_SPEED * 20);
@@ -141,15 +141,15 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 		if (w < 0) {
 			w += 2 * Math.PI;
 		}
-		EnumFacing dir = null;
+		Direction dir = null;
 		if (0 < w && w <= halfPI) {
-			dir = EnumFacing.WEST;
+			dir = Direction.WEST;
 		} else if (halfPI < w && w <= 2 * halfPI) {
-			dir = EnumFacing.SOUTH;
+			dir = Direction.SOUTH;
 		} else if (2 * halfPI < w && w <= 3 * halfPI) {
-			dir = EnumFacing.EAST;
+			dir = Direction.EAST;
 		} else if (3 * halfPI < w && w <= 4 * halfPI) {
-			dir = EnumFacing.NORTH;
+			dir = Direction.NORTH;
 		}
 		for (SpeedupDirection ori : SpeedupDirection.values()) {
 			if (ori.dir1.getOpposite().equals(dir)) {
@@ -160,13 +160,13 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound data) {
+	public void writeToNBT(CompoundTag data) {
 		super.writeToNBT(data);
 		data.setString("orientation", orientation.name());
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound data) {
+	public void readFromNBT(CompoundTag data) {
 		super.readFromNBT(data);
 		orientation = SpeedupDirection.valueOf(data.getString("orientation"));
 	}
@@ -177,18 +177,18 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public EnumFacing getExitForInput(EnumFacing commingFrom) {
+	public Direction getExitForInput(Direction commingFrom) {
 		return commingFrom.getOpposite();
 	}
 
 	@Override
-	public TileEntity getConnectedEndTile(EnumFacing output) {
+	public BlockEntity getConnectedEndTile(Direction output) {
 		if (orientation.dir1 == output) {
 			DoubleCoordinates pos = new DoubleCoordinates(0, 0, -3);
 			LPPositionSet<DoubleCoordinates> set = new LPPositionSet<>(DoubleCoordinates.class);
 			set.add(pos);
 			orientation.rotatePositions(set);
-			TileEntity subTile = pos.add(getLPPosition()).getTileEntity(getWorld());
+			BlockEntity subTile = pos.add(getLPPosition()).getBlockEntity(getWorld());
 			if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
 				return ((LogisticsTileGenericSubMultiBlock) subTile).getTile(output);
 			}
@@ -214,7 +214,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public int getIconIndex(EnumFacing direction) {
+	public int getIconIndex(Direction direction) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -226,7 +226,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public boolean hasSpecialPipeEndAt(EnumFacing dir) {
+	public boolean hasSpecialPipeEndAt(Direction dir) {
 		return dir == orientation.dir1;
 	}
 
@@ -256,7 +256,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
+	public boolean canPipeConnect(BlockEntity tile, Direction side) {
 		if (tile instanceof LogisticsTileGenericSubMultiBlock) {
 			if (this.getOrientation().getDir1() != side) {
 				return false;
@@ -273,13 +273,13 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 	@AllArgsConstructor
 	public enum SpeedupDirection implements ITubeRenderOrientation, ITubeOrientation {
 		//@formatter:off
-		NORTH(EnumFacing.NORTH),
-		SOUTH(EnumFacing.SOUTH),
-		EAST(EnumFacing.EAST),
-		WEST(EnumFacing.WEST);
+		NORTH(Direction.NORTH),
+		SOUTH(Direction.SOUTH),
+		EAST(Direction.EAST),
+		WEST(Direction.WEST);
 		//@formatter:on
 		@Getter
-		EnumFacing dir1;
+		Direction dir1;
 
 		@Override
 		public void rotatePositions(IPositionRotateble set) {

@@ -1,6 +1,6 @@
 package logisticspipes.asm.wrapper;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.block.entity.BlockEntity;
 
 import logisticspipes.proxy.interfaces.IGenericProgressProvider;
 
@@ -15,7 +15,7 @@ public class GenericProgressProviderWrapper extends AbstractWrapper implements I
 	}
 
 	@Override
-	public boolean isType(TileEntity tile) {
+	public boolean isType(BlockEntity tile) {
 		if (isEnabled()) {
 			try {
 				return provider.isType(tile);
@@ -27,7 +27,7 @@ public class GenericProgressProviderWrapper extends AbstractWrapper implements I
 	}
 
 	@Override
-	public byte getProgress(TileEntity tile) {
+	public byte getProgress(BlockEntity tile) {
 		if (isEnabled()) {
 			try {
 				return provider.getProgress(tile);

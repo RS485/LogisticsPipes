@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import lombok.Getter;
 
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -16,7 +16,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 public class ClientSideOrderInfo implements IOrderInfoProvider {
 
 	@Getter
-	private final ItemIdentifierStack asDisplayItem;
+	private final ItemStack asDisplayItem;
 	@Getter
 	private final boolean isFinished;
 	@Getter
@@ -37,7 +37,7 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 	private final ItemIdentifier targetType;
 
 	public ClientSideOrderInfo(LPDataInput input) {
-		asDisplayItem = input.readItemIdentifierStack();
+		asDisplayItem = input.readItemStack();
 		routerId = input.readInt();
 		isFinished = input.readBoolean();
 		inProgress = input.readBoolean();

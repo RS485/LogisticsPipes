@@ -15,14 +15,14 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.text.TextFormatting;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -41,16 +41,16 @@ import logisticspipes.utils.Color;
 @SideOnly(Side.CLIENT)
 public final class GuiGraphics {
 
-	public static final ResourceLocation WIDGETS_TEXTURE = new ResourceLocation("textures/gui/widgets.png");
-	public static final ResourceLocation SLOT_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/slot.png");
-	public static final ResourceLocation BIG_SLOT_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/slot-big.png");
-	public static final ResourceLocation SMALL_SLOT_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/slot-small.png");
-	public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/GuiBackground.png");
-	public static final ResourceLocation LOCK_ICON = new ResourceLocation("logisticspipes", "textures/gui/lock.png");
-	public static final ResourceLocation LINES_ICON = new ResourceLocation("logisticspipes", "textures/gui/lines.png");
-	public static final ResourceLocation STATS_ICON = new ResourceLocation("logisticspipes", "textures/gui/stats.png");
-	public static final ResourceLocation SLOT_DISK_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/slot_disk.png");
-	public static final ResourceLocation SLOT_PROGRAMMER_TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/slot_programmer.png");
+	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+	public static final Identifier SLOT_TEXTURE = new Identifier("logisticspipes", "textures/gui/slot.png");
+	public static final Identifier BIG_SLOT_TEXTURE = new Identifier("logisticspipes", "textures/gui/slot-big.png");
+	public static final Identifier SMALL_SLOT_TEXTURE = new Identifier("logisticspipes", "textures/gui/slot-small.png");
+	public static final Identifier BACKGROUND_TEXTURE = new Identifier("logisticspipes", "textures/gui/GuiBackground.png");
+	public static final Identifier LOCK_ICON = new Identifier("logisticspipes", "textures/gui/lock.png");
+	public static final Identifier LINES_ICON = new Identifier("logisticspipes", "textures/gui/lines.png");
+	public static final Identifier STATS_ICON = new Identifier("logisticspipes", "textures/gui/stats.png");
+	public static final Identifier SLOT_DISK_TEXTURE = new Identifier("logisticspipes", "textures/gui/slot_disk.png");
+	public static final Identifier SLOT_PROGRAMMER_TEXTURE = new Identifier("logisticspipes", "textures/gui/slot_programmer.png");
 	public static float zLevel = 0.0F;
 
 	private GuiGraphics() {}
@@ -144,8 +144,8 @@ public final class GuiGraphics {
 			yHeight += 2 + (msg.size() - 1) * 10;
 		}
 
-		GlStateManager.disableDepth();
-		GlStateManager.disableLighting();
+		RenderSystem.disableDepth();
+		RenderSystem.disableLighting();
 
 		GuiGraphics.zLevel = 300.0F;
 		int bgColor = 0xf0100010;
@@ -182,7 +182,7 @@ public final class GuiGraphics {
 
 		GuiGraphics.zLevel = 0.0F;
 
-		GlStateManager.enableDepth();
+		RenderSystem.enableDepth();
 	}
 
 	public static void drawPlayerInventoryBackground(Minecraft mc, int xOffset, int yOffset) {
@@ -212,7 +212,7 @@ public final class GuiGraphics {
 		}
 	}
 
-	private static void doDrawSlotBackground(Minecraft mc, int x, int y, ResourceLocation slotDiskTexture) {
+	private static void doDrawSlotBackground(Minecraft mc, int x, int y, Identifier slotDiskTexture) {
 		GuiGraphics.zLevel = 0;
 		mc.renderEngine.bindTexture(slotDiskTexture);
 
@@ -228,29 +228,29 @@ public final class GuiGraphics {
 	}
 
 	public static void drawSlotDiskBackground(Minecraft mc, int x, int y) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_DISK_TEXTURE);
 	}
 
 	public static void drawSlotProgrammerBackground(Minecraft mc, int x, int y) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_PROGRAMMER_TEXTURE);
 	}
 
 	public static void drawSlotBackground(Minecraft mc, int x, int y) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_TEXTURE);
 	}
 
 	public static void drawSlotBackground(Minecraft mc, int x, int y, int color) {
-		GlStateManager.color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
+		RenderSystem.color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
 		doDrawSlotBackground(mc, x, y, GuiGraphics.SLOT_TEXTURE);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
 		GuiGraphics.zLevel = 0;
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(GuiGraphics.BIG_SLOT_TEXTURE);
 
 		Tessellator tess = Tessellator.getInstance();
@@ -265,7 +265,7 @@ public final class GuiGraphics {
 
 	public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
 		GuiGraphics.zLevel = 0;
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(GuiGraphics.SMALL_SLOT_TEXTURE);
 
 		Tessellator tess = Tessellator.getInstance();
@@ -282,8 +282,8 @@ public final class GuiGraphics {
 		if (icon == null) {
 			return;
 		}
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(new ResourceLocation(icon.getIconName()));
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(new Identifier(icon.getIconName()));
 
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
@@ -297,9 +297,9 @@ public final class GuiGraphics {
 
 	public static void drawLockBackground(Minecraft mc, int x, int y) {
 		GuiGraphics.zLevel = 0;
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(GuiGraphics.LOCK_ICON);
-		GlStateManager.enableBlend();
+		RenderSystem.enableBlend();
 
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
@@ -310,14 +310,14 @@ public final class GuiGraphics {
 		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();
 		tess.draw();
 
-		GlStateManager.disableBlend();
+		RenderSystem.disableBlend();
 	}
 
-	private static void drawTexture16by16(Minecraft mc, int x, int y, ResourceLocation tex) {
+	private static void drawTexture16by16(Minecraft mc, int x, int y, Identifier tex) {
 		GuiGraphics.zLevel = 0;
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(tex);
-		GlStateManager.enableBlend();
+		RenderSystem.enableBlend();
 
 		Tessellator tess = Tessellator.getInstance();
 		BufferBuilder buf = tess.getBuffer();
@@ -328,7 +328,7 @@ public final class GuiGraphics {
 		buf.pos(x, y, GuiGraphics.zLevel).tex(0, 0).endVertex();
 		tess.draw();
 
-		GlStateManager.disableBlend();
+		RenderSystem.disableBlend();
 	}
 
 	public static void drawLinesBackground(Minecraft mc, int x, int y) {

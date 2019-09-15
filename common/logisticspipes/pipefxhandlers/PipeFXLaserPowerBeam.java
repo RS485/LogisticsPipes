@@ -2,15 +2,15 @@ package logisticspipes.pipefxhandlers;
 
 import java.util.Random;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -25,8 +25,8 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 @Accessors(chain = true)
 public class PipeFXLaserPowerBeam extends Particle {
 
-	private static final ResourceLocation beam = new ResourceLocation("logisticspipes", "textures/particles/laserBeam.png");
-	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
+	private static final Identifier beam = new Identifier("logisticspipes", "textures/particles/laserBeam.png");
+	private static final Identifier field_110737_b = new Identifier("textures/particle/particles.png");
 	private static final int ROTATIONSPEED = 5;
 	private static final Random RAND = new Random();
 
@@ -36,9 +36,9 @@ public class PipeFXLaserPowerBeam extends Particle {
 	private float yaw;
 	private float pitch;
 	private float random;
-	private TileEntity tile;
+	private BlockEntity tile;
 
-	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, EnumFacing dir, int color, TileEntity tile) {
+	public PipeFXLaserPowerBeam(World par1World, DoubleCoordinates pos, float length, Direction dir, int color, BlockEntity tile) {
 		super(par1World, pos.getXCoord() + 0.5D, pos.getYCoord() + 0.5D, pos.getZCoord() + 0.5D, 0.0D, 0.0D, 0.0D);
 		setSize(0.02F, 0.02F);
 		this.tile = tile;

@@ -15,7 +15,7 @@ import logisticspipes.utils.gui.ColorSlot;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummySlot;
 import logisticspipes.utils.gui.FluidSlot;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -41,7 +41,7 @@ public class DummyContainerSlotClick extends ModernPacket {
 	@Override
 	public void readData(LPDataInput input) {
 		slotId = input.readInt();
-		stack = input.readItemIdentifierStack().makeNormalStack();
+		stack = input.readItemStack().makeNormalStack();
 		button = input.readInt();
 	}
 
@@ -59,7 +59,7 @@ public class DummyContainerSlotClick extends ModernPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		output.writeInt(slotId);
-		output.writeItemIdentifierStack(ItemIdentifierStack.getFromStack(stack));
+		output.writeItemStack(ItemStack.getFromStack(stack));
 		output.writeInt(button);
 	}
 

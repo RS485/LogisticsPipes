@@ -2,6 +2,8 @@ package logisticspipes.api;
 
 import java.util.List;
 
+import net.minecraft.util.math.BlockPos;
+
 /**
  * things implementing this interface are capable of providing power, but they
  * draw from another sources Implement ILogisticsPowerProvider if you wish to
@@ -26,9 +28,6 @@ public interface IRoutedPowerProvider {
 
 	boolean canUseEnergy(int amount, List<Object> providersToIgnore);
 
-	int getX(); // the coordinates of the associated tile (typically "this.xCoords"). needed for sending packets.
+	BlockPos getPos();
 
-	int getY();
-
-	int getZ();
 }

@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -27,10 +27,10 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 
 	@Getter
 	@Setter
-	private List<ItemIdentifierStack> identList;
+	private List<ItemStack> identList;
 
 	@Setter
-	private Set<ItemIdentifierStack> identSet;
+	private Set<ItemStack> identSet;
 
 	public InventoryModuleCoordinatesPacket(int id) {
 		super(id);
@@ -51,10 +51,10 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 			output.writeCollection(stackList, LPDataOutput::writeItemStack);
 		} else if (identList != null) {
 			output.writeByte(IDENT_MARKER);
-			output.writeCollection(identList, LPDataOutput::writeItemIdentifierStack);
+			output.writeCollection(identList, LPDataOutput::writeItemStack);
 		} else if (identSet != null) {
 			output.writeByte(IDENT_MARKER);
-			output.writeCollection(identSet, LPDataOutput::writeItemIdentifierStack);
+			output.writeCollection(identSet, LPDataOutput::writeItemStack);
 		} else {
 			throw new IllegalStateException("Wont send packet without content");
 		}
@@ -68,7 +68,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 		if (marker == STACK_MARKER) {
 			stackList = input.readLinkedList(LPDataInput::readItemStack);
 		} else if (marker == IDENT_MARKER) {
-			identList = input.readLinkedList(LPDataInput::readItemIdentifierStack);
+			identList = input.readLinkedList(LPDataInput::readItemStack);
 		} else {
 			throw new UnsupportedOperationException("Unknown marker: " + marker);
 		}

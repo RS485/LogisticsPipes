@@ -1,10 +1,11 @@
 package logisticspipes.network.guis.item;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import logisticspipes.LPItems;
 import logisticspipes.gui.GuiCardManager;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.items.ItemModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.utils.CardManagmentInventory;
@@ -26,13 +27,13 @@ public class ItemMangerGui extends GuiProvider {
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		final CardManagmentInventory Cinv = new CardManagmentInventory();
-		DummyContainer dummy = new DummyContainer(player, Cinv, new IGuiOpenControler() {
+		DummyContainer dummy = new DummyContainer(player, Cinv, new IGuiOpenController() {
 
 			@Override
-			public void guiOpenedByPlayer(EntityPlayer player) {}
+			public void guiOpenedByPlayer(PlayerEntity player) {}
 
 			@Override
-			public void guiClosedByPlayer(EntityPlayer player) {
+			public void guiClosedByPlayer(PlayerEntity player) {
 				Cinv.close(player, (int) player.posX, (int) player.posY, (int) player.posZ);
 			}
 		});

@@ -3,7 +3,7 @@ package logisticspipes.routing.order;
 import java.util.List;
 
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.util.LPFinalSerializable;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -12,7 +12,7 @@ public interface IOrderInfoProvider extends LPFinalSerializable {
 
 	boolean isFinished();
 
-	ItemIdentifierStack getAsDisplayItem();
+	ItemStack getAsDisplayItem();
 
 	ResourceType getType();
 
@@ -34,7 +34,7 @@ public interface IOrderInfoProvider extends LPFinalSerializable {
 
 	@Override
 	default void write(LPDataOutput output) {
-		output.writeItemIdentifierStack(getAsDisplayItem());
+		output.writeItemStack(getAsDisplayItem());
 		output.writeInt(getRouterId());
 		output.writeBoolean(isFinished());
 		output.writeBoolean(isInProgress());

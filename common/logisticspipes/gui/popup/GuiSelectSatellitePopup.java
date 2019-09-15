@@ -17,14 +17,14 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.gui.TextListDisplay;
 import logisticspipes.utils.string.StringUtils;
-import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Tuple2;
 
 public class GuiSelectSatellitePopup extends SubGuiScreen {
 
 	String GUI_LANG_KEY = "gui.popup.selectsatellite.";
 
 	private final Consumer<UUID> handleResult;
-	private List<Pair<String, UUID>> pipeList = Collections.EMPTY_LIST;
+	private List<Tuple2<String, UUID>> pipeList = Collections.EMPTY_LIST;
 	private final TextListDisplay textList;
 
 	public GuiSelectSatellitePopup(BlockPos pos, boolean fluidSatellites, Consumer<UUID> handleResult) {
@@ -115,7 +115,7 @@ public class GuiSelectSatellitePopup extends SubGuiScreen {
 		}
 	}
 
-	public void handleSatelliteList(List<Pair<String, UUID>> list) {
+	public void handleSatelliteList(List<Tuple2<String, UUID>> list) {
 		pipeList = list;
 	}
 }

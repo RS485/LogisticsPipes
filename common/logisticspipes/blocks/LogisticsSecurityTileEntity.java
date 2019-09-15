@@ -1,38 +1,30 @@
 package logisticspipes.blocks;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.Direction;
 
 import logisticspipes.LPConstants;
-import logisticspipes.LPItems;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.ISecurityProvider;
-import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.guis.block.SecurityStationGui;
 import logisticspipes.network.packets.block.SecurityStationAutoDestroy;
-import logisticspipes.network.packets.block.SecurityStationCC;
-import logisticspipes.network.packets.block.SecurityStationCCIDs;
 import logisticspipes.network.packets.block.SecurityStationId;
 import logisticspipes.network.packets.block.SecurityStationOpenPlayer;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -42,15 +34,14 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import network.rs485.logisticspipes.init.Items;
 
-public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implements IGuiOpenControler, ISecurityProvider, IGuiTileEntity {
+public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implements IGuiOpenController, ISecurityProvider, IGuiTileEntity {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "ID Slots", 64);
 	private PlayerCollectionList listener = new PlayerCollectionList();
 	private UUID secId = null;
 	private Map<String, SecuritySettings> settingsList = new HashMap<>();
-	public List<Integer> excludedCC = new ArrayList<>();
-	public boolean allowCC = false;
 	public boolean allowAutoDestroy = false;
 
 	public static PlayerCollectionList byPassed = new PlayerCollectionList();
@@ -97,8 +88,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	@Override
-	public void guiOpenedByPlayer(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setBlockPos(pos), player);
+	public void guiOpenedByPlayer(PlayerEntity player) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setBlockPos(pos), player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setBlockPos(pos), player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
@@ -106,12 +96,12 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	@Override
-	public void guiClosedByPlayer(EntityPlayer player) {
+	public void guiClosedByPlayer(PlayerEntity player) {
 		listener.remove(player);
 	}
 
 	public UUID getSecId() {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient) {
 			if (secId == null) {
 				secId = UUID.randomUUID();
 			}
@@ -120,76 +110,53 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	public void setClientUUID(UUID id) {
-		if (MainProxy.isClient(getWorld())) {
-			secId = id;
-		}
-	}
-
-	public void setClientCC(boolean flag) {
-		if (MainProxy.isClient(getWorld())) {
-			allowCC = flag;
-		}
+		secId = id;
 	}
 
 	public void setClientDestroy(boolean flag) {
-		if (MainProxy.isClient(getWorld())) {
-			allowAutoDestroy = flag;
-		}
+		allowAutoDestroy = flag;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-		super.readFromNBT(par1nbtTagCompound);
-		if (par1nbtTagCompound.hasKey("UUID")) {
-			secId = UUID.fromString(par1nbtTagCompound.getString("UUID"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.containsKey("UUID")) {
+			secId = UUID.fromString(tag.getString("UUID"));
 		}
-		allowCC = par1nbtTagCompound.getBoolean("allowCC");
-		allowAutoDestroy = par1nbtTagCompound.getBoolean("allowAutoDestroy");
-		inv.readFromNBT(par1nbtTagCompound);
+		allowAutoDestroy = tag.getBoolean("allowAutoDestroy");
+		inv.readFromNBT(tag);
 		settingsList.clear();
-		NBTTagList list = par1nbtTagCompound.getTagList("settings", 10);
-		while (list.tagCount() > 0) {
-			NBTBase base = list.removeTag(0);
-			String name = ((NBTTagCompound) base).getString("name");
-			NBTTagCompound value = ((NBTTagCompound) base).getCompoundTag("content");
+		ListTag list = tag.getList("settings", 10);
+		while (list.size() > 0) {
+			Tag base = list.remove(0);
+			String name = ((CompoundTag) base).getString("name");
+			CompoundTag value = ((CompoundTag) base).getCompound("content");
 			SecuritySettings settings = new SecuritySettings(name);
 			settings.readFromNBT(value);
 			settingsList.put(name, settings);
 		}
-		excludedCC.clear();
-		list = par1nbtTagCompound.getTagList("excludedCC", 3);
-		while (list.tagCount() > 0) {
-			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt) base).getInt());
-		}
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		par1nbtTagCompound = super.writeToNBT(par1nbtTagCompound);
-		par1nbtTagCompound.setString("UUID", getSecId().toString());
-		par1nbtTagCompound.setBoolean("allowCC", allowCC);
-		par1nbtTagCompound.setBoolean("allowAutoDestroy", allowAutoDestroy);
-		inv.writeToNBT(par1nbtTagCompound);
-		NBTTagList list = new NBTTagList();
+	public CompoundTag toTag(CompoundTag tag) {
+		tag = super.toTag(tag);
+		tag.putString("UUID", getSecId().toString());
+		tag.putBoolean("allowAutoDestroy", allowAutoDestroy);
+		inv.writeToNBT(tag);
+		ListTag list = new ListTag();
 		for (Entry<String, SecuritySettings> entry : settingsList.entrySet()) {
-			NBTTagCompound nbt = new NBTTagCompound();
-			nbt.setString("name", entry.getKey());
-			NBTTagCompound value = new NBTTagCompound();
+			CompoundTag nbt = new CompoundTag();
+			nbt.putString("name", entry.getKey());
+			CompoundTag value = new CompoundTag();
 			entry.getValue().writeToNBT(value);
-			nbt.setTag("content", value);
-			list.appendTag(nbt);
+			nbt.put("content", value);
+			list.add(nbt);
 		}
-		par1nbtTagCompound.setTag("settings", list);
-		list = new NBTTagList();
-		for (Integer i : excludedCC) {
-			list.appendTag(new NBTTagInt(i));
-		}
-		par1nbtTagCompound.setTag("excludedCC", list);
-		return par1nbtTagCompound;
+		tag.put("settings", list);
+		return tag;
 	}
 
-	public void buttonFreqCard(int integer, EntityPlayer player) {
+	public void buttonFreqCard(int integer, PlayerEntity player) {
 		switch (integer) {
 			case 0: //--
 				inv.clearInventorySlotContents(0);
@@ -199,49 +166,49 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				break;
 			case 2: //+
 				if (!useEnergy(10)) {
-					player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
+					player.sendMessage(new TranslatableText("lp.misc.noenergy"));
 					return;
 				}
 				if (inv.getIDStackInSlot(0) == null) {
-					ItemStack stack = new ItemStack(LPItems.itemCard, 1, LogisticsItemCard.SEC_CARD);
-					stack.setTagCompound(new NBTTagCompound());
-					stack.getTagCompound().setString("UUID", getSecId().toString());
+					ItemStack stack = new ItemStack(Items.INSTANCE.getSecurityCard());
+					stack.setTag(new CompoundTag());
+					stack.getTag().putUuid("UUID", getSecId());
 					inv.setInventorySlotContents(0, stack);
 				} else {
 					ItemStack slot = inv.getStackInSlot(0);
 					if (slot.getCount() < 64) {
-						slot.grow(1);
-						slot.setTagCompound(new NBTTagCompound());
-						slot.getTagCompound().setString("UUID", getSecId().toString());
+						slot.increment(1);
+						slot.setTag(new CompoundTag());
+						slot.getTag().putUuid("UUID", getSecId());
 						inv.setInventorySlotContents(0, slot);
 					}
 				}
 				break;
 			case 3: //++
 				if (!useEnergy(640)) {
-					player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
+					player.sendMessage(new TranslatableText("lp.misc.noenergy"));
 					return;
 				}
-				ItemStack stack = new ItemStack(LPItems.itemCard, 64, LogisticsItemCard.SEC_CARD);
-				stack.setTagCompound(new NBTTagCompound());
-				stack.getTagCompound().setString("UUID", getSecId().toString());
+				ItemStack stack = new ItemStack(Items.INSTANCE.getSecurityCard(), 64);
+				stack.setTag(new CompoundTag());
+				stack.getTag().putUuid("UUID", getSecId());
 				inv.setInventorySlotContents(0, stack);
 				break;
 		}
 	}
 
-	public void handleOpenSecurityPlayer(EntityPlayer player, String string) {
+	public void handleOpenSecurityPlayer(PlayerEntity player, String string) {
 		SecuritySettings setting = settingsList.get(string);
 		if (setting == null && string != null && !string.isEmpty()) {
 			setting = new SecuritySettings(string);
 			settingsList.put(string, setting);
 		}
-		NBTTagCompound nbt = new NBTTagCompound();
+		CompoundTag nbt = new CompoundTag();
 		setting.writeToNBT(nbt);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt), player);
 	}
 
-	public void saveNewSecuritySettings(NBTTagCompound tag) {
+	public void saveNewSecuritySettings(CompoundTag tag) {
 		SecuritySettings setting = settingsList.get(tag.getString("name"));
 		if (setting == null) {
 			setting = new SecuritySettings(tag.getString("name"));
@@ -250,69 +217,26 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 		setting.readFromNBT(tag);
 	}
 
-	public SecuritySettings getSecuritySettingsForPlayer(EntityPlayer entityplayer, boolean usePower) {
+	public SecuritySettings getSecuritySettingsForPlayer(PlayerEntity entityplayer, boolean usePower) {
 		if (LogisticsSecurityTileEntity.byPassed.contains(entityplayer)) {
 			return LogisticsSecurityTileEntity.allowAll;
 		}
 		if (usePower && !useEnergy(10)) {
-			entityplayer.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
+			entityplayer.sendMessage(new TranslatableText("lp.misc.noenergy"));
 			return new SecuritySettings("No Energy");
 		}
-		SecuritySettings setting = settingsList.get(entityplayer.getDisplayNameString());
-		//TODO Change to GameProfile based Authentication
+		SecuritySettings setting = settingsList.get(entityplayer.getDisplayName().asString());
+		// TODO Change to GameProfile based Authentication
 		if (setting == null) {
-			setting = new SecuritySettings(entityplayer.getDisplayNameString());
-			settingsList.put(entityplayer.getDisplayNameString(), setting);
+			setting = new SecuritySettings(entityplayer.getDisplayName().asString());
+			settingsList.put(entityplayer.getDisplayName().asString(), setting);
 		}
 		return setting;
-	}
-
-	public void changeCC() {
-		allowCC = !allowCC;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC ? 1 : 0).setBlockPos(pos), listener);
 	}
 
 	public void changeDestroy() {
 		allowAutoDestroy = !allowAutoDestroy;
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setBlockPos(pos), listener);
-	}
-
-	public void addCCToList(Integer id) {
-		if (!excludedCC.contains(id)) {
-			excludedCC.add(id);
-		}
-		Collections.sort(excludedCC);
-	}
-
-	public void removeCCFromList(Integer id) {
-		excludedCC.remove(id);
-	}
-
-	public void requestList(EntityPlayer player) {
-		NBTTagCompound tag = new NBTTagCompound();
-		NBTTagList list = new NBTTagList();
-		for (Integer i : excludedCC) {
-			list.appendTag(new NBTTagInt(i));
-		}
-		tag.setTag("list", list);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setBlockPos(pos), player);
-	}
-
-	public void handleListPacket(NBTTagCompound tag) {
-		excludedCC.clear();
-		NBTTagList list = tag.getTagList("list", 3);
-		while (list.tagCount() > 0) {
-			NBTBase base = list.removeTag(0);
-			excludedCC.add(((NBTTagInt) base).getInt());
-		}
-	}
-
-	@Override
-	public boolean getAllowCC(int id) {
-		if (!useEnergy(10)) {
-			return false;
-		}
-		return allowCC != excludedCC.contains(id);
 	}
 
 	@Override
@@ -325,7 +249,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	private boolean useEnergy(int amount) {
 		for (int i = 0; i < 4; i++) {
-			TileEntity tile = OrientationsUtil.getTileNextToThis(this, EnumFacing.VALUES[i + 2]);
+			BlockEntity tile = OrientationsUtil.getTileNextToThis(this, Direction.values()[i + 2]);
 			if (tile instanceof IRoutedPowerProvider) {
 				if (((IRoutedPowerProvider) tile).useEnergy(amount)) {
 					return true;
@@ -343,9 +267,9 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	}
 
 	@Override
-	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
-		super.addInfoToCrashReport(par1CrashReportCategory);
-		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
+	public void populateCrashReport(CrashReportSection crashReportSection_1) {
+		super.populateCrashReport(crashReportSection_1);
+		crashReportSection_1.add("LP-Version", LPConstants.VERSION);
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package logisticspipes.utils.transactor;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 public interface ITransactor {
 
-	ItemStack add(ItemStack stack, EnumFacing orientation, boolean doAdd);
+	ItemStack add(ItemStack stack, Direction orientation, boolean doAdd);
 }

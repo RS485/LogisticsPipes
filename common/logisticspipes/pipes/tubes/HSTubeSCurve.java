@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -61,7 +61,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public int getIconIndex(EnumFacing direction) {
+	public int getIconIndex(Direction direction) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -160,35 +160,35 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 		if (w < 0) {
 			w += 2 * Math.PI;
 		}
-		EnumFacing dir = null;
-		EnumFacing dir1 = null;
-		EnumFacing dir2 = null;
+		Direction dir = null;
+		Direction dir1 = null;
+		Direction dir2 = null;
 		double addition = 0;
 		if (0 < w && w <= halfPI) {
-			dir = EnumFacing.EAST;
-			dir1 = EnumFacing.NORTH;
-			dir2 = EnumFacing.SOUTH;
+			dir = Direction.EAST;
+			dir1 = Direction.NORTH;
+			dir2 = Direction.SOUTH;
 			addition = halfPI;
 		} else if (halfPI < w && w <= 2 * halfPI) {
-			dir = EnumFacing.NORTH;
-			dir1 = EnumFacing.EAST;
-			dir2 = EnumFacing.WEST;
+			dir = Direction.NORTH;
+			dir1 = Direction.EAST;
+			dir2 = Direction.WEST;
 		} else if (2 * halfPI < w && w <= 3 * halfPI) {
-			dir = EnumFacing.WEST;
-			dir1 = EnumFacing.NORTH;
-			dir2 = EnumFacing.SOUTH;
+			dir = Direction.WEST;
+			dir1 = Direction.NORTH;
+			dir2 = Direction.SOUTH;
 			addition = halfPI;
 		} else if (3 * halfPI < w && w <= 4 * halfPI) {
-			dir = EnumFacing.SOUTH;
-			dir1 = EnumFacing.EAST;
-			dir2 = EnumFacing.WEST;
+			dir = Direction.SOUTH;
+			dir1 = Direction.EAST;
+			dir2 = Direction.WEST;
 		}
 		w = Math.atan2(player.getLookVec().x, player.getLookVec().z);
 		w -= addition;
 		if (w < 0) {
 			w += 2 * Math.PI;
 		}
-		EnumFacing dir3 = null;
+		Direction dir3 = null;
 		if (0 < w && w <= 2 * halfPI) {
 			dir3 = dir1;
 		} else if (2 * halfPI < w && w <= 4 * halfPI) {
@@ -205,13 +205,13 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound data) {
+	public void writeToNBT(CompoundTag data) {
 		super.writeToNBT(data);
 		data.setString("orientation", orientation.name());
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound data) {
+	public void readFromNBT(CompoundTag data) {
 		super.readFromNBT(data);
 		orientation = CurveSOrientation.valueOf(data.getString("orientation"));
 	}
@@ -222,7 +222,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public EnumFacing getExitForInput(EnumFacing commingFrom) {
+	public Direction getExitForInput(Direction commingFrom) {
 		if (orientation.dir.getOpposite() == commingFrom) {
 			return orientation.dir;
 		}
@@ -233,7 +233,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	public TileEntity getConnectedEndTile(EnumFacing output) {
+	public BlockEntity getConnectedEndTile(Direction output) {
 		boolean useOwn;
 		if (orientation.getOffset().getLength() != 0) {
 			if (orientation.dir.getOpposite() == output) {
@@ -259,7 +259,7 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 			LPPositionSet<DoubleCoordinates> set = new LPPositionSet<>(DoubleCoordinates.class);
 			set.add(pos);
 			orientation.rotatePositions(set);
-			TileEntity subTile = pos.add(getLPPosition()).getTileEntity(getWorld());
+			BlockEntity subTile = pos.add(getLPPosition()).getBlockEntity(getWorld());
 			if (subTile instanceof LogisticsTileGenericSubMultiBlock) {
 				return ((LogisticsTileGenericSubMultiBlock) subTile).getTile(output);
 			}
@@ -383,14 +383,14 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	public enum CurveSOrientation implements ITubeOrientation {
 		//@formatter:off
 		// Name: Placement from  _ TurnDirection
-		NORTH_EAST(TurnSDirection.NORTH_INV, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH, EnumFacing.EAST),
-		NORTH_WEST(TurnSDirection.NORTH, new DoubleCoordinates(0, 0, 0), EnumFacing.NORTH, EnumFacing.WEST),
-		EAST_SOUTH(TurnSDirection.EAST_INV, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST, EnumFacing.SOUTH),
-		EAST_NORTH(TurnSDirection.EAST, new DoubleCoordinates(0, 0, 0), EnumFacing.EAST, EnumFacing.NORTH),
-		SOUTH_WEST(TurnSDirection.NORTH_INV, new DoubleCoordinates(-1, 0, 3), EnumFacing.SOUTH, EnumFacing.WEST),
-		SOUTH_EAST(TurnSDirection.NORTH, new DoubleCoordinates(1, 0, 3), EnumFacing.SOUTH, EnumFacing.EAST),
-		WEST_NORTH(TurnSDirection.EAST_INV, new DoubleCoordinates(-3, 0, -1), EnumFacing.WEST, EnumFacing.NORTH),
-		WEST_SOUTH(TurnSDirection.EAST, new DoubleCoordinates(-3, 0, 1), EnumFacing.WEST, EnumFacing.SOUTH);
+		NORTH_EAST(TurnSDirection.NORTH_INV, new DoubleCoordinates(0, 0, 0), Direction.NORTH, Direction.EAST),
+		NORTH_WEST(TurnSDirection.NORTH, new DoubleCoordinates(0, 0, 0), Direction.NORTH, Direction.WEST),
+		EAST_SOUTH(TurnSDirection.EAST_INV, new DoubleCoordinates(0, 0, 0), Direction.EAST, Direction.SOUTH),
+		EAST_NORTH(TurnSDirection.EAST, new DoubleCoordinates(0, 0, 0), Direction.EAST, Direction.NORTH),
+		SOUTH_WEST(TurnSDirection.NORTH_INV, new DoubleCoordinates(-1, 0, 3), Direction.SOUTH, Direction.WEST),
+		SOUTH_EAST(TurnSDirection.NORTH, new DoubleCoordinates(1, 0, 3), Direction.SOUTH, Direction.EAST),
+		WEST_NORTH(TurnSDirection.EAST_INV, new DoubleCoordinates(-3, 0, -1), Direction.WEST, Direction.NORTH),
+		WEST_SOUTH(TurnSDirection.EAST, new DoubleCoordinates(-3, 0, 1), Direction.WEST, Direction.SOUTH);
 		//@formatter:on
 
 		@Getter
@@ -398,9 +398,9 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 		@Getter
 		DoubleCoordinates offset;
 		@Getter
-		EnumFacing dir;
+		Direction dir;
 		@Getter
-		EnumFacing looking;
+		Direction looking;
 
 		@Override
 		public void rotatePositions(IPositionRotateble set) {
@@ -416,14 +416,14 @@ public class HSTubeSCurve extends CoreMultiBlockPipe {
 	@AllArgsConstructor
 	public enum TurnSDirection implements ITubeRenderOrientation {
 		//@formatter:off
-		NORTH(EnumFacing.NORTH),
-		EAST(EnumFacing.EAST),
-		NORTH_INV(EnumFacing.SOUTH),
-		EAST_INV(EnumFacing.WEST);
+		NORTH(Direction.NORTH),
+		EAST(Direction.EAST),
+		NORTH_INV(Direction.SOUTH),
+		EAST_INV(Direction.WEST);
 		//@formatter:on
 
 		@Getter
-		private EnumFacing dir1;
+		private Direction dir1;
 
 		public void rotatePositions(IPositionRotateble set) {
 			if (this == NORTH) {

@@ -5,9 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -42,11 +42,11 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileEntity tile = this.getTile(player.getEntityWorld(), TileEntity.class);
+		BlockEntity tile = this.getTile(player.getEntityWorld(), BlockEntity.class);
 		CoreRoutedPipe pipe = null;
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
-			for (EnumFacing dir : EnumFacing.VALUES) {
-				TileEntity conn = CoordinateUtils.add(((LogisticsCraftingTableTileEntity) tile).getLPPosition(), dir).getTileEntity(player.getEntityWorld());
+			for (Direction dir : Direction.values()) {
+				BlockEntity conn = CoordinateUtils.add(((LogisticsCraftingTableTileEntity) tile).getLPPosition(), dir).getBlockEntity(player.getEntityWorld());
 				if (conn instanceof LogisticsTileGenericPipe) {
 					if (((LogisticsTileGenericPipe) conn).pipe instanceof PipeItemsCraftingLogistics) {
 						pipe = (CoreRoutedPipe) ((LogisticsTileGenericPipe) conn).pipe;
@@ -101,7 +101,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 		super.readData(input);
 		content = input.readArrayList(input1 -> {
 			GuiRecipeImport.Canidates can = new GuiRecipeImport.Canidates(new TreeSet<>());
-			can.order = input1.readArrayList(LPDataInput::readItemIdentifierStack);
+			can.order = input1.readArrayList(LPDataInput::readItemStack);
 			return can;
 		});
 	}
@@ -110,7 +110,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeCollection(content, (data, object) -> data.writeCollection(object.order,
-				LPDataOutput::writeItemIdentifierStack));
+				LPDataOutput::writeItemStack));
 	}
 
 	@Override

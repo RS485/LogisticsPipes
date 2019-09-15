@@ -1,6 +1,6 @@
 package logisticspipes.utils.transactor;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.items.IItemHandler;
 
@@ -18,7 +18,7 @@ public final class InventoryIterator {
 	 * @param side
 	 * @return Iterable
 	 */
-	public static Iterable<IInvSlot> getIterable(IItemHandler inv, EnumFacing side) {
+	public static Iterable<IInvSlot> getIterable(IItemHandler inv, Direction side) {
 
 		return new InventoryIteratorSimple(inv);
 	}

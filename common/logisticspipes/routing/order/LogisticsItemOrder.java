@@ -3,14 +3,14 @@ package logisticspipes.routing.order;
 import lombok.Getter;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.routing.IRouter;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.interfaces.routing.ItemRequester;
+import logisticspipes.request.resources.Resource.Dict;
+import logisticspipes.routing.Router;
+import logisticspipes.utils.item.ItemStack;
 
 public class LogisticsItemOrder extends LogisticsOrder {
 
-	public LogisticsItemOrder(DictResource item, IRequestItems destination, ResourceType type, IAdditionalTargetInformation info) {
+	public LogisticsItemOrder(Resource.Dict item, ItemRequester destination, ResourceType type, IAdditionalTargetInformation info) {
 		super(type, info);
 		if (item == null) {
 			throw new NullPointerException();
@@ -20,12 +20,12 @@ public class LogisticsItemOrder extends LogisticsOrder {
 	}
 
 	@Getter
-	private final DictResource resource;
+	private final Resource.Dict resource;
 	@Getter
-	private final IRequestItems destination;
+	private final ItemRequester destination;
 
 	@Override
-	public IRouter getRouter() {
+	public Router getRouter() {
 		if (destination == null) {
 			return null;
 		}
@@ -41,7 +41,7 @@ public class LogisticsItemOrder extends LogisticsOrder {
 	}
 
 	@Override
-	public ItemIdentifierStack getAsDisplayItem() {
+	public ItemStack getAsDisplayItem() {
 		return resource.stack;
 	}
 

@@ -1,10 +1,10 @@
 package logisticspipes.utils
 
 import com.google.gson.JsonParser
-import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
-import net.minecraft.client.Minecraft
-import net.minecraft.util.ResourceLocation
+import net.minecraft.client.MinecraftClient
+import net.minecraft.util.Identifier
+import network.rs485.logisticspipes.ModID
 import java.io.IOException
 import java.io.InputStreamReader
 
@@ -13,7 +13,7 @@ class GuideBookContents private constructor(val lang: String, val pages: Int, va
     fun getPage(index: Int): Page? {
         if (index !in 0 until pages) return null
         try {
-            val res = rm.getResource(ResourceLocation(LPConstants.LP_MOD_ID, "book/$lang/page$index"))
+            val res = rm.getResource(Identifier(ModID, "book/$lang/page$index"))
             res.use {
                 val text = res.inputStream.bufferedReader().readLines().joinToString("\n")
                 return Page(index, text)
@@ -26,13 +26,13 @@ class GuideBookContents private constructor(val lang: String, val pages: Int, va
 
     companion object {
 
-        private val rm = Minecraft.getMinecraft().resourceManager
+        private val rm = MinecraftClient.getInstance().resourceManager
 
         @JvmStatic
         @JvmOverloads
-        fun load(lang: String = Minecraft.getMinecraft().languageManager.currentLanguage.languageCode): GuideBookContents? {
+        fun load(lang: String = MinecraftClient.getInstance().languageManager.language.code): GuideBookContents? {
             try {
-                val res = rm.getResource(ResourceLocation(LPConstants.LP_MOD_ID, "book/$lang/book.json"))
+                val res = rm.getResource(Identifier(ModID, "book/$lang/book.json"))
                 res.use {
                     val json = JsonParser().parse(InputStreamReader(res.inputStream)).asJsonObject
                     val title = json.get("title").asString

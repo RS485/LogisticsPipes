@@ -12,7 +12,7 @@ import lombok.Setter;
 import logisticspipes.gui.GuiStatistics;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -21,7 +21,7 @@ public class RunningCraftingTasks extends ModernPacket {
 
 	@Getter
 	@Setter
-	private List<ItemIdentifierStack> identList;
+	private List<ItemStack> identList;
 
 	public RunningCraftingTasks(int id) {
 		super(id);
@@ -36,12 +36,12 @@ public class RunningCraftingTasks extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeCollection(identList, LPDataOutput::writeItemIdentifierStack);
+		output.writeCollection(identList, LPDataOutput::writeItemStack);
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
-		identList = input.readArrayList(LPDataInput::readItemIdentifierStack);
+		identList = input.readArrayList(LPDataInput::readItemStack);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
@@ -38,8 +38,8 @@ public class EntitySparkleFX extends Particle {
 		canCollide = false;
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/particles/particles.png");
-	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
+	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/particles/particles.png");
+	private static final Identifier field_110737_b = new Identifier("textures/particle/particles.png");
 
 	@Override
 	public void renderParticle(BufferBuilder worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {

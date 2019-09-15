@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ import logisticspipes.network.packets.debuggui.DebugDataPacket;
 import logisticspipes.network.packets.debuggui.DebugPanelOpen;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 import network.rs485.debug.api.IDataConnection;
 import network.rs485.debug.api.IDebugGuiEntry;
 import network.rs485.debug.api.IObjectIdentification;
@@ -173,7 +173,7 @@ public class DebugGuiController {
 
 		@Override
 		public boolean toStringObject(Object o) {
-			return o.getClass() == EnumFacing.class || o.getClass() == ItemIdentifier.class || o.getClass() == ItemIdentifierStack.class;
+			return o.getClass() == Direction.class || o.getClass() == ItemIdentifier.class || o.getClass() == ItemStack.class;
 		}
 
 		@Override

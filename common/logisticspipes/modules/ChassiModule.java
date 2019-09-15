@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
@@ -19,7 +19,7 @@ import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemStack;
 
 public class ChassiModule extends LogisticsGuiModule {
 
@@ -106,10 +106,10 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(CompoundTag nbttagcompound) {
 		for (int i = 0; i < modules.length; i++) {
 			if (modules[i] != null) {
-				NBTTagCompound slot = nbttagcompound.getCompoundTag("slot" + i);
+				CompoundTag slot = nbttagcompound.getCompoundTag("slot" + i);
 				if (slot != null) {
 					modules[i].readFromNBT(slot);
 				}
@@ -118,10 +118,10 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(CompoundTag nbttagcompound) {
 		for (int i = 0; i < modules.length; i++) {
 			if (modules[i] != null) {
-				NBTTagCompound slot = new NBTTagCompound();
+				CompoundTag slot = new CompoundTag();
 				modules[i].writeToNBT(slot);
 				nbttagcompound.setTag("slot" + i, slot);
 			}
@@ -174,7 +174,7 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
+	public List<CCSinkResponder> queueCCSinkEvent(ItemStack item) {
 		List<CCSinkResponder> list = new ArrayList<>();
 		for (LogisticsModule module : modules) {
 			if (module != null) {

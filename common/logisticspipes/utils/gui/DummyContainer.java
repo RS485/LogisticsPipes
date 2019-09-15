@@ -28,7 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.IFuzzySlot;
-import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISlotUpgradeManager;
@@ -40,7 +40,7 @@ import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.DictResource;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.MinecraftColor;
 import logisticspipes.utils.ReflectionHelper;
@@ -54,7 +54,7 @@ public class DummyContainer extends Container {
 	public List<BitSet> inventoryFuzzySlotsContent = new ArrayList<>();
 	protected IInventory _playerInventory;
 	protected IInventory _dummyInventory;
-	protected IGuiOpenControler[] _controler;
+	protected IGuiOpenController[] _controler;
 	boolean wasDummyLookup;
 	boolean overrideMCAntiSend;
 	private List<Slot> transferTop = new ArrayList<>();
@@ -68,12 +68,12 @@ public class DummyContainer extends Container {
 		_controler = null;
 	}
 
-	public DummyContainer(EntityPlayer player, IInventory dummyInventory, IGuiOpenControler... controler) {
+	public DummyContainer(EntityPlayer player, IInventory dummyInventory, IGuiOpenController... controler) {
 		_playerInventory = player.inventory;
 		_dummyInventory = dummyInventory;
 		_controler = controler;
 		if (MainProxy.isServer()) {
-			for (IGuiOpenControler element : _controler) {
+			for (IGuiOpenController element : _controler) {
 				element.guiOpenedByPlayer(player);
 			}
 		}
@@ -173,11 +173,11 @@ public class DummyContainer extends Container {
 		return addSlotToContainer(new HandelableSlot(inventory, slotId, xCoord, yCoord, handler));
 	}
 
-	public Slot addFuzzyDummySlot(int slotId, int xCoord, int yCoord, DictResource dictResource) {
+	public Slot addFuzzyDummySlot(int slotId, int xCoord, int yCoord, Resource.Dict dictResource) {
 		return addSlotToContainer(new FuzzyDummySlot(_dummyInventory, slotId, xCoord, yCoord, dictResource));
 	}
 
-	public Slot addFuzzyUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord, DictResource dictResource) {
+	public Slot addFuzzyUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord, Resource.Dict dictResource) {
 		return addSlotToContainer(new FuzzyUnmodifiableSlot(inventory, slotId, xCoord, yCoord, dictResource));
 	}
 
@@ -745,7 +745,7 @@ public class DummyContainer extends Container {
 	@Override
 	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		if (_controler != null) {
-			for (IGuiOpenControler element : _controler) {
+			for (IGuiOpenController element : _controler) {
 				element.guiClosedByPlayer(par1EntityPlayer);
 			}
 		}

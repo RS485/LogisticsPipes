@@ -47,11 +47,11 @@ public class LogisticsItemOrder extends LogisticsOrder {
 
 	@Override
 	public int getAmount() {
-		return resource.stack.getStackSize();
+		return resource.stack.getCount();
 	}
 
 	@Override
 	public void reduceAmountBy(int amount) {
-		resource.stack.setStackSize(resource.stack.getStackSize() - amount);
+		resource.stack.setStackSize(resource.stack.getCount() - amount);
 	}
 }

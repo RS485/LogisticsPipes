@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -115,7 +115,7 @@ public class LogisticsTileGenericSubMultiBlock extends BlockEntity implements IS
 			}
 		}
 		if (nbt.hasKey("MainPipePosList")) {
-			NBTTagList list = nbt.getTagList("MainPipePosList", new CompoundTag().getId());
+			ListTag list = nbt.getTagList("MainPipePosList", new CompoundTag().getId());
 			for (int i = 0; i < list.tagCount(); i++) {
 				DoubleCoordinates pos = DoubleCoordinates.readFromNBT("MainPipePos_", list.getCompoundTagAt(i));
 				if (pos != null) {
@@ -124,7 +124,7 @@ public class LogisticsTileGenericSubMultiBlock extends BlockEntity implements IS
 			}
 		}
 		if (nbt.hasKey("SubTypeList")) {
-			NBTTagList list = nbt.getTagList("SubTypeList", new NBTTagString().getId());
+			ListTag list = nbt.getTagList("SubTypeList", new NBTTagString().getId());
 			subTypes.clear();
 			for (int i = 0; i < list.tagCount(); i++) {
 				String name = list.getStringTagAt(i);
@@ -141,14 +141,14 @@ public class LogisticsTileGenericSubMultiBlock extends BlockEntity implements IS
 	@Override
 	public CompoundTag writeToNBT(CompoundTag nbt) {
 		nbt = super.writeToNBT(nbt);
-		NBTTagList nbtList = new NBTTagList();
+		ListTag nbtList = new ListTag();
 		for (DoubleCoordinates pos : mainPipePos) {
 			CompoundTag compound = new CompoundTag();
 			pos.writeToNBT("MainPipePos_", compound);
 			nbtList.appendTag(compound);
 		}
 		nbt.setTag("MainPipePosList", nbtList);
-		NBTTagList nbtTypeList = new NBTTagList();
+		ListTag nbtTypeList = new ListTag();
 		for (CoreMultiBlockPipe.SubBlockTypeForShare type : subTypes) {
 			if (type == null) continue;
 			nbtTypeList.appendTag(new NBTTagString(type.name()));

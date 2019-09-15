@@ -14,7 +14,7 @@ import net.minecraft.util.math.Direction;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.interfaces.ISpecialInsertion;
+import logisticspipes.interfaces.SpecialInsertion;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
@@ -42,10 +42,10 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		//hack to avoid wrenching blocks
+		// hack to avoid wrenching blocks
 		int savedEquipped = player.inventory.currentItem;
 		boolean foundSlot = false;
-		//try to find a empty slot
+		// try to find a empty slot
 		for (int i = 0; i < 9; i++) {
 			if (player.inventory.getStackInSlot(i) == null) {
 				foundSlot = true;
@@ -53,7 +53,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 				break;
 			}
 		}
-		//okay, anything that's a block?
+		// okay, anything that's a block?
 		if (!foundSlot) {
 			for (int i = 0; i < 9; i++) {
 				ItemStack is = player.inventory.getStackInSlot(i);
@@ -64,7 +64,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 				}
 			}
 		}
-		//give up and select whatever is right of the current slot
+		// give up and select whatever is right of the current slot
 		if (!foundSlot) {
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
@@ -77,7 +77,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 			NeighborBlockEntity<BlockEntity> adjacent = adjacentIter.next();
 
 			if (adjacent.isItemHandler()) {
-				if (!(adjacent.getInventoryUtil() instanceof ISpecialInsertion)) {
+				if (!(adjacent.getInventoryUtil() instanceof SpecialInsertion)) {
 					continue;
 				}
 			}
@@ -103,18 +103,18 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 
 				if (SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.world, xCoord, yCoord, zCoord, player);
-					//@formatter:off
+					// @formatter:off
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
 							.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
-					//@formatter:on
+					// @formatter:on
 				}
 
 				if (block != null) {
 					if (block.onBlockActivated(player.world, pos.getBlockPos(), pos.getBlockState(player.world), player, EnumHand.MAIN_HAND, Direction.UP, 0, 0, 0)) {
-						//@formatter:off
+						// @formatter:off
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
 								.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
-						//@formatter:on
+						// @formatter:on
 						break;
 					}
 				}

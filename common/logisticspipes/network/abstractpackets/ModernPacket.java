@@ -28,8 +28,8 @@ public abstract class ModernPacket {
 	@Getter
 	@Setter
 	private boolean compressable;
-	//@Getter
-	//private byte[] data = null;
+	// @Getter
+	// private byte[] data = null;
 	@Getter
 	@Setter
 	private int debugId = 0;

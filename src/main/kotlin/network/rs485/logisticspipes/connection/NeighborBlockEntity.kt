@@ -39,9 +39,9 @@ package network.rs485.logisticspipes.connection
 
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
-import logisticspipes.interfaces.IInventoryUtil
+import logisticspipes.interfaces.WrappedInventory
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe
-import logisticspipes.proxy.SimpleServiceLocator
+import logisticspipes.utils.InventoryUtilFactory
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.util.math.Direction
 import java.util.*
@@ -63,11 +63,11 @@ open class NeighborBlockEntity<T : BlockEntity>(val blockEntity: T, val directio
         }
     }
 
-    fun getInventoryUtil(): IInventoryUtil? {
-        return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(blockEntity, getOurDirection())
+    fun getInventoryUtil(): WrappedInventory? {
+        return InventoryUtilFactory.INSTANCE.getInventoryUtil(blockEntity, getOurDirection())
     }
 
-    fun getUtilForItemHandler(): IInventoryUtil {
+    fun getUtilForItemHandler(): WrappedInventory {
         if (LPConstants.DEBUG) {
             if (!hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY)) {
                 error("Constraint broken: getUtilForItemHandler was called, but adjacent tile entity is not an item handler")

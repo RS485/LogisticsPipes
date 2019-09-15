@@ -25,7 +25,6 @@ import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
-import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenController;
@@ -211,7 +210,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	@Override
 	public void update() {
 		super.update();
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (internalStorage != lastUpdateStorage) {
 				updateClients();
 			}

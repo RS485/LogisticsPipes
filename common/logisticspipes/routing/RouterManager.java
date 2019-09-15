@@ -9,17 +9,18 @@ package logisticspipes.routing;
 
 import java.util.List;
 import java.util.UUID;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.Dimension;
 
 @ParametersAreNonnullByDefault
 public interface RouterManager {
+
+	static RouterManager getInstance() {
+		return RouterManagerImpl.INSTANCE;
+	}
 
 	Router getOrCreateRouter(UUID routerUuid, World world, BlockPos pos, boolean forceCreateDuplicateAtCoordinate);
 

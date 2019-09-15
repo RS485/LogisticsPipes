@@ -124,9 +124,9 @@ public final class SimpleGraphics {
 			y2 = temp;
 		}
 
-		// no blend //RenderSystem.enableBlend();
+		// no blend // RenderSystem.enableBlend();
 		RenderSystem.disableTexture2D();
-		// no blend //RenderSystem.tryBlendFuncSeparate(RenderSystem.SourceFactor.SRC_ALPHA, RenderSystem.DestFactor.ONE_MINUS_SRC_ALPHA, RenderSystem.SourceFactor.ONE, RenderSystem.DestFactor.ZERO);
+		// no blend // RenderSystem.tryBlendFuncSeparate(RenderSystem.SourceFactor.SRC_ALPHA, RenderSystem.DestFactor.ONE_MINUS_SRC_ALPHA, RenderSystem.SourceFactor.ONE, RenderSystem.DestFactor.ZERO);
 		GL11.glColor4f(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color));
 
 		Tessellator tessellator = Tessellator.getInstance();
@@ -139,7 +139,7 @@ public final class SimpleGraphics {
 		tessellator.draw();
 
 		RenderSystem.enableTexture2D();
-		// no blend //RenderSystem.disableBlend();
+		// no blend // RenderSystem.disableBlend();
 	}
 
 	/**

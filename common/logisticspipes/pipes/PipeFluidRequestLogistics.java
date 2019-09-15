@@ -8,7 +8,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.FluidRequester;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -26,7 +25,7 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements FluidR
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
 			} else {
@@ -43,7 +42,7 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements FluidR
 
 	@Override
 	public void sendFailed(FluidIdentifier value1, Integer value2) {
-		//Request Pipe doesn't handle this.
+		// Request Pipe doesn't handle this.
 	}
 
 	@Override

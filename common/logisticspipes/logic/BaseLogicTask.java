@@ -9,7 +9,7 @@ import lombok.Getter;
 
 public abstract class BaseLogicTask {
 
-	//Graphical Interface
+	// Graphical Interface
 	@Getter
 	protected int posX;
 	@Getter
@@ -19,7 +19,7 @@ public abstract class BaseLogicTask {
 	@Getter
 	protected String comment = "";
 
-	//Saving and Server/Client sync
+	// Saving and Server/Client sync
 	@Getter
 	protected UUID uuid;
 

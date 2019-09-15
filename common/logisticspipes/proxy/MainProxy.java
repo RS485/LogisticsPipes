@@ -1,25 +1,18 @@
 package logisticspipes.proxy;
 
-import java.util.Map;
-
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.Dimension;
 
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import com.google.common.collect.Maps;
 import lombok.Getter;
 
 import logisticspipes.LPItems;
-import logisticspipes.entity.FakePlayerLP;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.utils.OrientationsUtil;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 
 public class MainProxy {
 
@@ -40,8 +33,8 @@ public class MainProxy {
 		if (from == null || to == null) {
 			return false;
 		}
-		IPipeInformationProvider fromInfo = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(from);
-		IPipeInformationProvider toInfo = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(to);
+		IPipeInformationProvider fromInfo = PipeInformationManager.INSTANCE.getInformationProviderFor(from);
+		IPipeInformationProvider toInfo = PipeInformationManager.INSTANCE.getInformationProviderFor(to);
 		if (fromInfo == null && toInfo == null) {
 			return false;
 		}

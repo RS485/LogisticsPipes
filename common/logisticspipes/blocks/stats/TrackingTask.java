@@ -2,8 +2,8 @@ package logisticspipes.blocks.stats;
 
 import net.minecraft.nbt.CompoundTag;
 
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.Router;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -15,7 +15,7 @@ public class TrackingTask {
 	public int everyNthTick = 20 * 60;
 	public ItemIdentifier item;
 	public int arrayPos = 0;
-	public long[] amountRecorded = new long[1440]; //24h with 20ticks and 60sec
+	public long[] amountRecorded = new long[1440]; // 24h with 20ticks and 60sec
 
 	public void tick(int tickCount, CoreRoutedPipe pipe) {
 		if (tickCount % everyNthTick != 0) {
@@ -25,7 +25,7 @@ public class TrackingTask {
 		if (router == null) {
 			return;
 		}
-		amountRecorded[arrayPos++] = SimpleServiceLocator.logisticsManager.getAmountFor(item, router.getIRoutersByCost());
+		amountRecorded[arrayPos++] = LogisticsManager.getInstance().getAmountFor(item, router.getIRoutersByCost());
 		if (arrayPos >= amountRecorded.length) {
 			arrayPos = 0;
 		}

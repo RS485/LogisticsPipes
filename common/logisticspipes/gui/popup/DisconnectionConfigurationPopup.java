@@ -52,7 +52,7 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 	}
 
 	public void handleSelection(SideConfigDisplay.SelectedFace selection) {
-		//ItemStack stack = pipe.getOriginalUpgradeManager().getInv().getStackInSlot(pos);
+		// ItemStack stack = pipe.getOriginalUpgradeManager().getInv().getStackInSlot(pos);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(ToogleDisconnectionUpgradeSidePacket.class).setSide(selection.face).setSlot(pos));
 	}
 

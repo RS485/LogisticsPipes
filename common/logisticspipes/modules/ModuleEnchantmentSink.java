@@ -21,7 +21,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public int getX() {
 		if (slot.isInWorld()) {
-			return _service.getX();
+			return service.getX();
 		} else {
 			return 0;
 		}
@@ -30,7 +30,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public int getY() {
 		if (slot.isInWorld()) {
-			return _service.getY();
+			return service.getY();
 		} else {
 			return 0;
 		}
@@ -39,7 +39,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public int getZ() {
 		if (slot.isInWorld()) {
-			return _service.getZ();
+			return service.getZ();
 		} else {
 			return 0;
 		}
@@ -62,15 +62,10 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 			return null;
 		}
 
-		//check to see if item is enchanted
+		// check to see if item is enchanted
 		if (item.makeNormalStack(1).isItemEnchanted()) {
 			return _sinkReply;
 		}
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 
@@ -106,12 +101,8 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 
-	@Override
-	public boolean hasEffect() {
-		return true;
-	}
 }

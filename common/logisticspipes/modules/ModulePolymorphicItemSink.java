@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.minecraft.nbt.CompoundTag;
 
-import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
 import logisticspipes.utils.SinkReply;
@@ -29,7 +29,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		IInventoryUtil targetInventory = _service.getSneakyInventory(slot, positionInt);
+		WrappedInventory targetInventory = service.getSneakyInventory(slot, positionInt);
 		if (targetInventory == null) {
 			return null;
 		}
@@ -38,7 +38,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 			return null;
 		}
 
-		if (_service.canUseEnergy(3)) {
+		if (service.canUseEnergy(3)) {
 			return _sinkReply;
 		}
 		return null;
@@ -51,26 +51,21 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	public void writeToNBT(CompoundTag nbttagcompound) {}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
-	}
-
-	@Override
 	public void tick() {}
 
 	@Override
 	public final int getX() {
-		return _service.getX();
+		return service.getX();
 	}
 
 	@Override
 	public final int getY() {
-		return _service.getY();
+		return service.getY();
 	}
 
 	@Override
 	public final int getZ() {
-		return _service.getZ();
+		return service.getZ();
 	}
 
 	@Override
@@ -78,7 +73,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		return false;
 	}
 
-	//TODO: SINK UNDAMAGED MATCH CORRECTLY!
+	// TODO: SINK UNDAMAGED MATCH CORRECTLY!
 
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
@@ -96,7 +91,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

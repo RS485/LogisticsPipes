@@ -5,11 +5,11 @@ import java.util.List;
 
 import net.minecraft.util.math.Direction;
 
-import logisticspipes.proxy.specialconnection.SpecialPipeConnection.ConnectionInformation;
+import logisticspipes.proxy.specialconnection.SpecialPipeConnectionRegistry.ConnectionInformation;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
-public interface ISpecialPipedConnection {
+public interface SpecialPipeConnection {
 
 	boolean init();
 

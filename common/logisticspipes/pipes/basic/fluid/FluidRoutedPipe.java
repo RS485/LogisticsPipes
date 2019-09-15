@@ -17,12 +17,12 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import logisticspipes.LPConstants;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
+import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.LogisticsFluidOrderManager;
@@ -34,6 +34,8 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.RoutedItemHelper;
+import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
 import logisticspipes.utils.tuples.Tuple3;
@@ -59,7 +61,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			return SimpleServiceLocator.enderIOProxy.isFluidConduit(tile, dir.getOpposite());
 		}
 
-		ITankUtil liq = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tile, dir.getOpposite());
+		ITankUtil liq = TankUtilFactory.INSTANCE.getTankUtilForTE(tile, dir.getOpposite());
 		return (liq != null && liq.containsTanks()) || tile instanceof LogisticsTileGenericPipe;
 	}
 
@@ -80,7 +82,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		final NeighborBlockEntity<BlockEntity> neighbor = new WorldCoordinatesWrapper(container).getNeighbor(connection);
 		if (neighbor == null) return false;
 		BlockEntity tileEntity = neighbor.getBlockEntity();
-		ITankUtil liq = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tileEntity, connection.getOpposite());
+		ITankUtil liq = TankUtilFactory.INSTANCE.getTankUtilForTE(tileEntity, connection.getOpposite());
 		return (liq != null && liq.containsTanks());
 	}
 
@@ -97,7 +99,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	public final List<ITankUtil> getAdjacentTanks(boolean flag) {
 		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
 				.filter(adjacent -> isConnectableTank(adjacent.getBlockEntity(), adjacent.getDirection(), flag))
-				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()))
+				.map(adjacent -> TankUtilFactory.INSTANCE.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()))
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
@@ -111,7 +113,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
 				.filter(adjacent -> isConnectableTank(adjacent.getBlockEntity(), adjacent.getDirection(), flag))
 				.map(adjacent -> new Tuple3<>(
-						SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()),
+						TankUtilFactory.INSTANCE.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()),
 						adjacent.getBlockEntity(),
 						adjacent.getDirection()))
 				.filter(triplet -> triplet.getValue1() != null)
@@ -230,7 +232,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		for (ItemRoutingInformation next : _inTransitToMe) {
 			ItemStack item = next.getItem();
 			if (item.getItem().isFluidContainer()) {
-				FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
+				FluidIdentifierStack liquid = LogisticsFluidManager.getInstance().getFluidFromContainer(item);
 				if (liquid.getFluid().equals(ident)) {
 					amount += liquid.getAmount();
 				}
@@ -246,7 +248,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	public abstract boolean canReceiveFluid();
 
 	public boolean endReached(LPTravelingItemServer arrivingItem, BlockEntity tile) {
-		if (canInsertToTanks() && MainProxy.isServer(getWorld())) {
+		if (canInsertToTanks() && !getWorld().isClient()) {
 			getCacheHolder().trigger(CacheTypes.Inventory);
 			if (arrivingItem.getItemStack() == null || !(arrivingItem.getItemStack().getItem().isFluidContainer())) {
 				return false;
@@ -255,10 +257,10 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				return false;
 			}
 			int filled;
-			FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(arrivingItem.getItemStack());
+			FluidIdentifierStack liquid = LogisticsFluidManager.getInstance().getFluidFromContainer(arrivingItem.getItemStack());
 			if (isConnectableTank(tile, arrivingItem.output, false)) {
 				List<ITankUtil> adjTanks = getAdjacentTanks(false);
-				//Try to put liquid into all adjacent tanks.
+				// Try to put liquid into all adjacent tanks.
 				for (ITankUtil util : adjTanks) {
 					filled = util.fill(liquid, true);
 					liquid.lowerAmount(filled);
@@ -267,28 +269,28 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 					}
 					return true;
 				}
-				//Try inserting the liquid into the pipe side tank
+				// Try inserting the liquid into the pipe side tank
 				filled = ((PipeFluidTransportLogistics) transport).sideTanks[arrivingItem.output.ordinal()].fill(liquid.makeFluidStack(), true);
 				if (filled == liquid.getAmount()) {
 					return true;
 				}
 				liquid.lowerAmount(filled);
 			}
-			//Try inserting the liquid into the pipe internal tank
+			// Try inserting the liquid into the pipe internal tank
 			filled = ((PipeFluidTransportLogistics) transport).internalTank.fill(liquid.makeFluidStack(), true);
 			if (filled == liquid.getAmount()) {
 				return true;
 			}
-			//If liquids still exist,
+			// If liquids still exist,
 			liquid.lowerAmount(filled);
 
-			//TODO: FIX THIS
+			// TODO: FIX THIS
 			if (this instanceof IRequireReliableFluidTransport) {
 				((IRequireReliableFluidTransport) this).liquidNotInserted(liquid.getFluid(), liquid.getAmount());
 			}
 
-			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid));
-			Tuple2<Integer, Integer> replies = SimpleServiceLocator.logisticsFluidManager.getBestReply(liquid, getRouter(), routedItem.getJamList());
+			IRoutedItem routedItem = RoutedItemHelper.INSTANCE.createNewTravelItem(LogisticsFluidManager.getInstance().getFluidContainer(liquid));
+			Tuple2<Integer, Integer> replies = LogisticsFluidManager.getInstance().getBestReply(liquid, getRouter(), routedItem.getJamList());
 			int dest = replies.getValue1();
 			routedItem.setDestination(dest);
 			routedItem.setTransportMode(TransportMode.Passive);

@@ -23,7 +23,6 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -35,8 +34,6 @@ import org.apache.logging.log4j.Logger;
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.config.Configs;
-import logisticspipes.logistics.LogisticsFluidManagerImpl;
-import logisticspipes.logistics.LogisticsManagerImpl;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.PipeFluidSatellite;
@@ -45,7 +42,6 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericSubMultiBlock;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.recipes.CraftingRecipes;
 import logisticspipes.recipes.LPChipRecipes;
 import logisticspipes.recipes.ModuleChippedCraftingRecipes;
@@ -53,20 +49,14 @@ import logisticspipes.recipes.PipeChippedCraftingRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.UpgradeChippedCraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.routing.RouterManagerImpl;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
-import logisticspipes.routing.channels.ChannelManagerProviderImpl;
-import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.VersionChecker;
-import logisticspipes.utils.InventoryUtilFactory;
-import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.StaticResolverUtil;
-import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Tuple2;
-import network.rs485.grow.TickExecutor;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.config.ServerConfigurationManager;
@@ -97,7 +87,7 @@ public class LogisticsPipes {
 	public void init(FMLInitializationEvent event) {
 		registerRecipes(); // TODO data fileS!!!!!
 
-		//Register Network channels
+		// Register Network channels
 		MainProxy.createChannels();
 
 		for (int i = 0; i < LPConfiguration.INSTANCE.getThreads(); i++) {
@@ -125,9 +115,6 @@ public class LogisticsPipes {
 			LogisticsPipes.log.debug("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			LogisticsPipes.log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");
 		}
-
-		SimpleServiceLocator.pipeInformationManager = new PipeInformationManager();
-		SimpleServiceLocator.logisticsFluidManager = new LogisticsFluidManagerImpl();
 
 		MainProxy.proxy.initModelLoader();
 	}
@@ -174,7 +161,7 @@ public class LogisticsPipes {
 
 	@Mod.EventHandler
 	public void cleanup(FMLServerStoppingEvent event) {
-		SimpleServiceLocator.routerManager.serverStopClean();
+		RouterManager.getInstance().serverStopClean();
 		QueuedTasks.clearAllTasks();
 		HudUpdateTick.clearUpdateFlags();
 		PipeItemsSatelliteLogistics.cleanup();

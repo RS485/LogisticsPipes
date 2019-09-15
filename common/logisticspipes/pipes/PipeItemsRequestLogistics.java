@@ -21,26 +21,24 @@ import net.minecraft.util.text.TextComponentString;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRequestAPI;
 import logisticspipes.interfaces.routing.ItemRequester;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.request.RequestLog;
 import logisticspipes.request.RequestTree;
-import logisticspipes.request.resources.Resource.Dict;
-import logisticspipes.request.resources.Resource;
 import logisticspipes.request.resources.ItemResource;
+import logisticspipes.request.resources.Resource;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
 
 @CCType(name = "LogisticsPipes:Request")
@@ -68,7 +66,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemReq
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
 			} else {
@@ -82,7 +80,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemReq
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
 		if (getWorld().getTotalWorldTime() % 1200 == 0) {
-			_history.addLast(SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost()));
+			_history.addLast(LogisticsManager.getInstance().getAvailableItems(getRouter().getIRoutersByCost()));
 			if (_history.size() > 20) {
 				_history.removeFirst();
 			}
@@ -105,7 +103,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemReq
 		if (stillNeedReplace()) {
 			return new ArrayList<>();
 		}
-		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
+		Map<ItemIdentifier, Integer> items = LogisticsManager.getInstance().getAvailableItems(getRouter().getIRoutersByCost());
 		List<ItemStack> list = new ArrayList<>(items.size());
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
 			ItemStack is = item.getKey().unsafeMakeNormalStack(item.getValue());
@@ -119,7 +117,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemReq
 		if (stillNeedReplace()) {
 			return new ArrayList<>();
 		}
-		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
+		LinkedList<ItemIdentifier> items = LogisticsManager.getInstance().getCraftableItems(getRouter().getIRoutersByCost());
 		List<ItemStack> list = new ArrayList<>(items.size());
 		for (ItemIdentifier item : items) {
 			ItemStack is = item.unsafeMakeNormalStack(1);
@@ -202,13 +200,13 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemReq
 	@CCCommand(description = "Requests the given ItemStack")
 	@CCQueued
 	public Object[] makeRequest(ItemStack stack) throws Exception {
-		return makeRequest(stack.getItem(), Double.valueOf(stack.getStackSize()), false);
+		return makeRequest(stack.getItem(), Double.valueOf(stack.getCount()), false);
 	}
 
 	@CCCommand(description = "Requests the given ItemStack")
 	@CCQueued
 	public Object[] makeRequest(ItemStack stack, Boolean forceCrafting) throws Exception {
-		return makeRequest(stack.getItem(), Double.valueOf(stack.getStackSize()), forceCrafting);
+		return makeRequest(stack.getItem(), Double.valueOf(stack.getCount()), forceCrafting);
 	}
 
 	@CCCommand(description = "Requests the given ItemIdentifier with the given amount")
@@ -232,7 +230,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemReq
 	@CCCommand(description = "Asks for all available ItemIdentifier inside the Logistics Network")
 	@CCQueued
 	public List<Tuple2<ItemIdentifier, Integer>> getAvailableItems() {
-		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
+		Map<ItemIdentifier, Integer> items = LogisticsManager.getInstance().getAvailableItems(getRouter().getIRoutersByCost());
 		List<Tuple2<ItemIdentifier, Integer>> list = new LinkedList<>();
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
 			int amount = item.getValue();
@@ -244,13 +242,13 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements ItemReq
 	@CCCommand(description = "Asks for all craftable ItemIdentifier inside the Logistics Network")
 	@CCQueued
 	public List<ItemIdentifier> getCraftableItems() {
-		return SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
+		return LogisticsManager.getInstance().getCraftableItems(getRouter().getIRoutersByCost());
 	}
 
 	@CCCommand(description = "Asks for the amount of an ItemIdentifier Id inside the Logistics Network")
 	@CCQueued
 	public int getItemAmount(ItemIdentifier item) throws Exception {
-		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
+		Map<ItemIdentifier, Integer> items = LogisticsManager.getInstance().getAvailableItems(getRouter().getIRoutersByCost());
 		if (item == null) {
 			throw new Exception("Invalid ItemIdentifierID");
 		}

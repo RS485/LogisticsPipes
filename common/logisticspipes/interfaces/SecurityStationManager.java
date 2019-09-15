@@ -3,11 +3,16 @@ package logisticspipes.interfaces;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.routing.RouterManagerImpl;
 
 public interface SecurityStationManager {
+
+	static SecurityStationManager getInstance() {
+		return RouterManagerImpl.INSTANCE;
+	}
 
 	void add(LogisticsSecurityTileEntity tile);
 
@@ -25,7 +30,8 @@ public interface SecurityStationManager {
 
 	void sendClientAuthorizationList();
 
-	void sendClientAuthorizationList(EntityPlayer player);
+	void sendClientAuthorizationList(PlayerEntity player);
 
 	void setClientAuthorizationList(List<String> list);
+
 }

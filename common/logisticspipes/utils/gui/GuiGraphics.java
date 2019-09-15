@@ -186,27 +186,27 @@ public final class GuiGraphics {
 	}
 
 	public static void drawPlayerInventoryBackground(Minecraft mc, int xOffset, int yOffset) {
-		//Player "backpack"
+		// Player "backpack"
 		for (int row = 0; row < 3; row++) {
 			for (int column = 0; column < 9; column++) {
 				GuiGraphics.drawSlotBackground(mc, xOffset + column * 18 - 1, yOffset + row * 18 - 1);
 			}
 		}
-		//Player "hotbar"
+		// Player "hotbar"
 		for (int i1 = 0; i1 < 9; i1++) {
 			GuiGraphics.drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset + 58 - 1);
 		}
 	}
 
 	public static void drawPlayerHotbarBackground(Minecraft mc, int xOffset, int yOffset) {
-		//Player "hotbar"
+		// Player "hotbar"
 		for (int i1 = 0; i1 < 9; i1++) {
 			GuiGraphics.drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset - 1);
 		}
 	}
 
 	public static void drawPlayerArmorBackground(Minecraft mc, int xOffset, int yOffset) {
-		//Player "armor"
+		// Player "armor"
 		for (int i1 = 0; i1 < 4; i1++) {
 			GuiGraphics.drawSlotBackground(mc, xOffset - 1, yOffset - 1 - i1 * 18);
 		}
@@ -354,7 +354,7 @@ public final class GuiGraphics {
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
 		if (displayTop) {
-			//Top Side
+			// Top Side
 			buf.pos(guiLeft + 15, guiTop + 15, zLevel).tex(0.33, 0.33).endVertex();
 			buf.pos(right - 15, guiTop + 15, zLevel).tex(0.66, 0.33).endVertex();
 			buf.pos(right - 15, guiTop, zLevel).tex(0.66, 0).endVertex();
@@ -362,7 +362,7 @@ public final class GuiGraphics {
 		}
 
 		if (displayLeft) {
-			//Left Side
+			// Left Side
 			buf.pos(guiLeft, bottom - 15, zLevel).tex(0, 0.66).endVertex();
 			buf.pos(guiLeft + 15, bottom - 15, zLevel).tex(0.33, 0.66).endVertex();
 			buf.pos(guiLeft + 15, guiTop + 15, zLevel).tex(0.33, 0.33).endVertex();
@@ -370,7 +370,7 @@ public final class GuiGraphics {
 		}
 
 		if (displayBottom) {
-			//Bottom Side
+			// Bottom Side
 			buf.pos(guiLeft + 15, bottom, zLevel).tex(0.33, 1).endVertex();
 			buf.pos(right - 15, bottom, zLevel).tex(0.66, 1).endVertex();
 			buf.pos(right - 15, bottom - 15, zLevel).tex(0.66, 0.66).endVertex();
@@ -378,7 +378,7 @@ public final class GuiGraphics {
 		}
 
 		if (displayRight) {
-			//Right Side
+			// Right Side
 			buf.pos(right - 15, bottom - 15, zLevel).tex(0.66, 0.66).endVertex();
 			buf.pos(right, bottom - 15, zLevel).tex(1, 0.66).endVertex();
 			buf.pos(right, guiTop + 15, zLevel).tex(1, 0.33).endVertex();
@@ -386,7 +386,7 @@ public final class GuiGraphics {
 		}
 
 		if (displayTop && displayLeft) {
-			//Top Left
+			// Top Left
 			buf.pos(guiLeft, guiTop + 15, zLevel).tex(0, 0.33).endVertex();
 			buf.pos(guiLeft + 15, guiTop + 15, zLevel).tex(0.33, 0.33).endVertex();
 			buf.pos(guiLeft + 15, guiTop, zLevel).tex(0.33, 0).endVertex();
@@ -394,7 +394,7 @@ public final class GuiGraphics {
 		}
 
 		if (displayBottom && displayLeft) {
-			//Bottom Left
+			// Bottom Left
 			buf.pos(guiLeft, bottom, zLevel).tex(0, 1).endVertex();
 			buf.pos(guiLeft + 15, bottom, zLevel).tex(0.33, 1).endVertex();
 			buf.pos(guiLeft + 15, bottom - 15, zLevel).tex(0.33, 0.66).endVertex();
@@ -402,7 +402,7 @@ public final class GuiGraphics {
 		}
 
 		if (displayBottom && displayRight) {
-			//Bottom Right
+			// Bottom Right
 			buf.pos(right - 15, bottom, zLevel).tex(0.66, 1).endVertex();
 			buf.pos(right, bottom, zLevel).tex(1, 1).endVertex();
 			buf.pos(right, bottom - 15, zLevel).tex(1, 0.66).endVertex();
@@ -410,14 +410,14 @@ public final class GuiGraphics {
 		}
 
 		if (displayTop && displayRight) {
-			//Top Right
+			// Top Right
 			buf.pos(right - 15, guiTop + 15, zLevel).tex(0.66, 0.33).endVertex();
 			buf.pos(right, guiTop + 15, zLevel).tex(1, 0.33).endVertex();
 			buf.pos(right, guiTop, zLevel).tex(1, 0).endVertex();
 			buf.pos(right - 15, guiTop, zLevel).tex(0.66, 0).endVertex();
 		}
 
-		//Center
+		// Center
 		buf.pos(guiLeft + 15, bottom - 15, zLevel).tex(0.33, 0.66).endVertex();
 		buf.pos(right - 15, bottom - 15, zLevel).tex(0.66, 0.66).endVertex();
 		buf.pos(right - 15, guiTop + 15, zLevel).tex(0.66, 0.33).endVertex();

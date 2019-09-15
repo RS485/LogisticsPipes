@@ -18,7 +18,6 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -119,7 +118,7 @@ public class ClientRouter implements Router {
 
 	@Override
 	public void clearPipeCache() {
-		//Not On Client Side
+		// Not On Client Side
 	}
 
 	@Override

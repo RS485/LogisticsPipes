@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 public final class FluidRenderer {
 
 	public static final int DISPLAY_STAGES = 100;
-	//private static final Identifier BLOCK_TEXTURE = TextureMap.locationBlocksTexture;
+	// private static final Identifier BLOCK_TEXTURE = TextureMap.locationBlocksTexture;
 	private static Map<Fluid, int[]> flowingRenderCache = new HashMap<>();
 	private static Map<Fluid, int[]> stillRenderCache = new HashMap<>();
 	private static final RenderInfo liquidBlock = new RenderInfo();

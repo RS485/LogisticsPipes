@@ -5,7 +5,7 @@ import java.util.Random;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NBTTagString;
 
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -24,7 +24,7 @@ public class ItemModuleInformationManager {
 			return;
 		}
 		if (MainProxy.isClient()) {
-			NBTTagList list = new NBTTagList();
+			ListTag list = new ListTag();
 			String info1 = "Please reopen the window";
 			String info2 = "to see the information.";
 			list.appendTag(new NBTTagString(info1));
@@ -45,7 +45,7 @@ public class ItemModuleInformationManager {
 		if (module instanceof IClientInformationProvider) {
 			List<String> information = ((IClientInformationProvider) module).getClientInformation();
 			if (information.size() > 0) {
-				NBTTagList list = new NBTTagList();
+				ListTag list = new ListTag();
 				for (String info : information) {
 					list.appendTag(new NBTTagString(info));
 				}

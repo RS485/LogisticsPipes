@@ -20,8 +20,8 @@ import logisticspipes.gui.hud.modules.HUDCCBasedQuickSort;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -35,16 +35,15 @@ import logisticspipes.network.packets.modules.CCBasedQuickSortMode;
 import logisticspipes.network.packets.modules.CCBasedQuickSortSinkSize;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
 import logisticspipes.utils.tuples.Tuple3;
 
@@ -64,14 +63,14 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	private void createSinkMessage(int slot, ItemStack stack) {
 		List<CCSinkResponder> respones = new ArrayList<>();
-		Router sourceRouter = _service.getRouter();
+		Router sourceRouter = service.getRouter();
 		if (sourceRouter == null) {
 			return;
 		}
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn((ItemIdentifier) null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = RouterManager.getInstance().getRouterUnsafe(i, false);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations.addAll(exits.stream()
@@ -101,7 +100,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	@Override
 	public void tick() {
-		IInventoryUtil invUtil = _service.getPointedInventory();
+		WrappedInventory invUtil = service.getPointedInventory();
 		if (invUtil == null) {
 			return;
 		}
@@ -116,19 +115,19 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			currentTick = normalDelay;
 		}
 
-		//Extract Item
+		// Extract Item
 
-		if (!_service.canUseEnergy(500)) {
+		if (!service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
 
-		if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_service.canUseEnergy(500)) {
+		if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
 
-		//incremented at the end of the previous loop.
+		// incremented at the end of the previous loop.
 		if (lastStackLookedAt >= invUtil.getSizeInventory()) {
 			lastStackLookedAt = 0;
 		}
@@ -157,7 +156,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		checkSize();
 	}
 
-	private void handleSinkResponses(IInventoryUtil invUtil) {
+	private void handleSinkResponses(WrappedInventory invUtil) {
 		boolean changed = false;
 		Iterator<Entry<Integer, Tuple2<Integer, List<CCSinkResponder>>>> iter = sinkResponses.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -187,7 +186,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		}
 	}
 
-	private boolean handle(IInventoryUtil invUtil, int slot, List<CCSinkResponder> list) {
+	private boolean handle(WrappedInventory invUtil, int slot, List<CCSinkResponder> list) {
 		if (list.isEmpty()) {
 			return false;
 		}
@@ -196,7 +195,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		if (stack.isEmpty() || !ItemIdentifier.get(stack).equals(ident)) {
 			return false;
 		}
-		final Router source = _service.getRouter();
+		final Router source = service.getRouter();
 
 		// list of triplets: priority: Integer, distance: Double, sink: CCSinkResponder
 		List<Tuple3<Integer, Double, CCSinkResponder>> possibilities = new ArrayList<>();
@@ -208,7 +207,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			if (sink.getCanSink() < 1) {
 				continue;
 			}
-			Router r = SimpleServiceLocator.routerManager.getRouter(sink.getRouterId());
+			Router r = RouterManager.getInstance().getRouter(sink.getRouterId());
 			if (r == null) {
 				continue;
 			}
@@ -252,7 +251,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			}
 			int amount = Math.min(stack.getCount(), sink.getCanSink());
 			ItemStack extracted = invUtil.decrStackSize(slot, amount);
-			_service.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
+			service.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
 			isSent = true;
 		}
 		return isSent;
@@ -321,13 +320,13 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	public void setTimeout(int time) {
 		timeout = time;
-		if (MainProxy.isServer(this._world.getWorld())) {
+		if (MainProxy.isServer(this.world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setTimeOut(timeout).setModulePos(this), localModeWatchers);
 		}
 	}
 
 	public void setSinkSize(int integer) {
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(world.getWorld())) {
 			sinkSize = integer;
 		}
 	}

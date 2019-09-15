@@ -662,7 +662,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			for (Entry<Identifier, List<RenderEntry>> entries : sorted.entrySet()) {
 				if (entries.getKey().equals(TextureMap.LOCATION_BLOCKS_TEXTURE)) continue;
 				if (!renderLists.containsKey(entries.getKey())) {
-					renderLists.put(entries.getKey(), SimpleServiceLocator.renderListHandler.getNewRenderList());
+					renderLists.put(entries.getKey(), GLRenderListHandler.INSTANCE.getNewRenderList());
 				}
 				GLRenderList renderList = renderLists.get(entries.getKey());
 				if (renderList.isFilled() && !recalculateList) {
@@ -748,7 +748,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 					}
 					for (IModel3D model : LogisticsNewRenderPipe.sideNormal.get(dir)) {
 						double[] bounds = { Block.FULL_BLOCK_AABB.minY, Block.FULL_BLOCK_AABB.minZ, Block.FULL_BLOCK_AABB.minX, Block.FULL_BLOCK_AABB.maxY, Block.FULL_BLOCK_AABB.maxZ, Block.FULL_BLOCK_AABB.maxX };
-						if (pipeTile.getWorld() != null) { //This can be null in some cases now !!!
+						if (pipeTile.getWorld() != null) { // This can be null in some cases now !!!
 							DoubleCoordinates coords = CoordinateUtils.add(new DoubleCoordinates((BlockEntity) pipeTile), dir);
 							Block block = coords.getBlock(pipeTile.getWorld());
 							AxisAlignedBB bb = block.getCollisionBoundingBox(coords.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), coords.getBlockPos());

@@ -13,6 +13,10 @@ import network.rs485.logisticspipes.util.FluidReply;
 
 public interface LogisticsFluidManager {
 
+	static LogisticsFluidManager getInstance() {
+		return LogisticsFluidManagerImpl.INSTANCE;
+	}
+
 	FluidReply getBestReply(FluidVolume stack, Router sourceRouter, List<Integer> jamList);
 
 	ItemStack getFluidContainer(FluidVolume stack);

@@ -46,7 +46,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 	private static void addToList(ItemStack stack, LinkedList<ItemStack> list) {
 		for (ItemStack ident : list) {
 			if (ident.getItem().equals(stack.getItem())) {
-				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
+				ident.setStackSize(ident.getCount() + stack.getCount());
 				return;
 			}
 		}
@@ -193,11 +193,11 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 		if (watchingPlayers.isEmpty()) {
 			return;
 		}
-		//if(!oldOrders.equals(_orders)) {
+		// if(!oldOrders.equals(_orders)) {
 		//	oldOrders.clear();
 		//	oldOrders.addAll(_orders);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PipeManagerContentPacket.class).setManager(this).setLPPos(pos.getLPPosition()), watchingPlayers);
-		//}
+		// }
 	}
 
 	/**

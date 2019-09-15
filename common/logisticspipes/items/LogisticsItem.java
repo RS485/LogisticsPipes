@@ -8,16 +8,8 @@
 
 package logisticspipes.items;
 
-import java.util.List;
-import javax.annotation.Nullable;
-
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
 
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.item.ItemWithInfo;
 
 @Deprecated

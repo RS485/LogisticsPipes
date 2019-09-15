@@ -15,12 +15,11 @@ import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISlotUpgradeManager;
+import logisticspipes.interfaces.SlotUpgradeManager;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -101,12 +100,12 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			return null;
 		}
 		if (_filterInventory.containsUndamagedItem(item.getUndamaged())) {
-			if (_service.canUseEnergy(1)) {
+			if (service.canUseEnergy(1)) {
 				return _sinkReply;
 			}
 			return null;
 		}
-		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
+		final SlotUpgradeManager upgradeManager = getUpgradeManager();
 		if (upgradeManager != null && upgradeManager.isFuzzyUpgrade()) {
 			for (Tuple2<ItemStack, Integer> stack : _filterInventory) {
 				if (stack == null) {
@@ -126,7 +125,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 					ident2 = ident2.getIgnoringNBT();
 				}
 				if (ident1.equals(ident2)) {
-					if (_service.canUseEnergy(5)) {
+					if (service.canUseEnergy(5)) {
 						return _sinkReply;
 					}
 					return null;
@@ -137,7 +136,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) {
 				return null;
 			}
-			if (_service.canUseEnergy(1)) {
+			if (service.canUseEnergy(1)) {
 				return _sinkReplyDefault;
 			}
 			return null;
@@ -157,11 +156,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ItemSinkInHand.class);
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
 	}
 
 	@Override
@@ -219,7 +213,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
 		}
 	}
@@ -280,7 +274,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 
@@ -304,7 +298,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		if (slot < 0 || slot >= 9) {
 			return;
 		}
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(world.getWorld())) {
 			if (player == null) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(false).setModulePos(this));
 			}
@@ -314,7 +308,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), world.getWorld().provider.getDimension(), pak);
 		}
 	}
 
@@ -322,7 +316,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		if (slot < 0 || slot >= 9) {
 			return;
 		}
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(world.getWorld())) {
 			if (player == null) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(true).setModulePos(this));
 			}
@@ -332,15 +326,15 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(pak, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), world.getWorld().provider.getDimension(), pak);
 		}
 	}
 
 	public void importFromInventory() {
-		if (_service == null) {
+		if (service == null) {
 			return;
 		}
-		IInventoryUtil inv = _service.getPointedInventory();
+		WrappedInventory inv = service.getPointedInventory();
 		if (inv == null) {
 			return;
 		}

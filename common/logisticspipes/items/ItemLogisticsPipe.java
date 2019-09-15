@@ -86,7 +86,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 				if (LogisticsBlockGenericPipe.placePipe(pipe, worldIn, pos, block, null)) {
 					BlockState state = worldIn.getBlockState(pos);
 					if (state.getBlock() == block) {
-						//setTileEntityNBT(world, player, pos, stack);
+						// setTileEntityNBT(world, player, pos, stack);
 						block.onBlockPlacedBy(worldIn, pos, state, player, itemstack);
 
 						if (player instanceof EntityPlayerMP)
@@ -147,7 +147,7 @@ public class ItemLogisticsPipe extends LogisticsItem {
 				if (LogisticsBlockGenericPipe.placePipe(pipe, worldIn, placeAt.getBlockPos(), block, orientation)) {
 					BlockState state = worldIn.getBlockState(placeAt.getBlockPos());
 					if (state.getBlock() == block) {
-						//setTileEntityNBT(world, player, pos, stack);
+						// setTileEntityNBT(world, player, pos, stack);
 						block.onBlockPlacedBy(worldIn, pos, state, player, itemstack);
 
 						if (player instanceof EntityPlayerMP)

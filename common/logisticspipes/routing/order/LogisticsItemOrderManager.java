@@ -104,7 +104,7 @@ public class LogisticsItemOrderManager extends LogisticsOrderManager<LogisticsIt
 			if (!request.getResource().getItem().equals(item)) {
 				continue;
 			}
-			itemCount += request.getResource().stack.getStackSize();
+			itemCount += request.getResource().stack.getCount();
 		}
 		return itemCount;
 	}

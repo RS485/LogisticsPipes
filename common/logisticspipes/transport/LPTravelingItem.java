@@ -26,10 +26,9 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.SlidingWindowBitSet;
 import logisticspipes.utils.tuples.Tuple2;
@@ -161,7 +160,7 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public int getAge() {
-			return 0;//age;
+			return 0;// age;
 		}
 
 		@Override
@@ -171,7 +170,7 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public float getHoverStart() {
-			return 0;//hoverStart;
+			return 0;// hoverStart;
 		}
 
 		@Override
@@ -311,7 +310,7 @@ public abstract class LPTravelingItem {
 				itemWasLost();
 				info.jamlist.add(info.destinationId);
 			}
-			//keep buffercounter and jamlist
+			// keep buffercounter and jamlist
 			info.destinationId = -1;
 			info.destinationUUID = null;
 			info._doNotBuffer = false;
@@ -326,8 +325,8 @@ public abstract class LPTravelingItem {
 					return;
 				}
 			}
-			if (info.destinationId >= 0 && SimpleServiceLocator.routerManager.isRouter(info.destinationId)) {
-				Router destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationId);
+			if (info.destinationId >= 0 && RouterManager.getInstance().isRouter(info.destinationId)) {
+				Router destinationRouter = RouterManager.getInstance().getRouter(info.destinationId);
 				if (destinationRouter.getPipe() != null) {
 					destinationRouter.getPipe().notifyOfReroute(info);
 					if (destinationRouter.getPipe() instanceof IRequireReliableTransport) {
@@ -351,7 +350,7 @@ public abstract class LPTravelingItem {
 		@Override
 		public void setDestination(int destination) {
 			info.destinationId = destination;
-			Router router = SimpleServiceLocator.routerManager.getRouter(destination);
+			Router router = RouterManager.getInstance().getRouter(destination);
 			if (router != null) {
 				info.destinationUUID = router.getId();
 			} else {
@@ -439,7 +438,7 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public void checkIDFromUUID() {
-			RouterManager rm = SimpleServiceLocator.routerManager;
+			RouterManager rm = RouterManager.getInstance();
 			Router router = rm.getRouter(info.destinationId);
 			if (router == null || info.destinationUUID != router.getId()) {
 				info.destinationId = rm.getIdForUuid(info.destinationUUID);
@@ -447,7 +446,7 @@ public abstract class LPTravelingItem {
 		}
 
 		public void refreshDestinationInformation() {
-			Router destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationId);
+			Router destinationRouter = RouterManager.getInstance().getRouter(info.destinationId);
 			if (destinationRouter != null && destinationRouter.getPipe() instanceof CoreRoutedPipe) {
 				destinationRouter.getPipe().refreshItem(getInfo());
 			}

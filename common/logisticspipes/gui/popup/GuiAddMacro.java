@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 
 import org.lwjgl.input.Keyboard;
 
@@ -25,7 +25,6 @@ import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
@@ -67,9 +66,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		if ((name1 + name2).equals("")) {
 			return;
 		}
-		NBTTagList inventar = null;
+		ListTag inventar = null;
 
-		NBTTagList list = diskProvider.getDisk().getTag().getTagList("macroList", 10);
+		ListTag list = diskProvider.getDisk().getTag().getTagList("macroList", 10);
 		for (int i = 0; i < list.tagCount(); i++) {
 			CompoundTag tag = list.getCompoundTagAt(i);
 			String name = tag.getString("name");
@@ -200,10 +199,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 						for (ItemStack stack : macroItems) {
 							if (stack.getItem().equals(item)) {
 								if (mousebutton == 0 || wheelup != 0) {
-									stack.setStackSize(stack.getStackSize() + (1 + (wheelup != 0 ? wheelup - 1 : 0)));
+									stack.setStackSize(stack.getCount() + (1 + (wheelup != 0 ? wheelup - 1 : 0)));
 								} else if (mousebutton == 1 || wheeldown != 0) {
-									stack.setStackSize(stack.getStackSize() - (1 + (wheeldown != 0 ? wheeldown - 1 : 0)));
-									if (stack.getStackSize() <= 0) {
+									stack.setStackSize(stack.getCount() - (1 + (wheeldown != 0 ? wheeldown - 1 : 0)));
+									if (stack.getCount() <= 0) {
 										macroItems.remove(stack);
 									}
 								}
@@ -446,7 +445,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			prevPageMacro();
 		} else if (guibutton.id == 4) {
 			if (!(name1 + name2).equals("") && macroItems.size() != 0) {
-				NBTTagList inventar = new NBTTagList();
+				ListTag inventar = new ListTag();
 				for (ItemStack stack : macroItems) {
 					CompoundTag itemNBT = new CompoundTag();
 					itemNBT.setInteger("id", Item.getIdFromItem(stack.getItem().item));
@@ -454,12 +453,12 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					if (stack.getItem().tag != null) {
 						itemNBT.setTag("nbt", stack.getItem().tag);
 					}
-					itemNBT.setInteger("amount", stack.getStackSize());
+					itemNBT.setInteger("amount", stack.getCount());
 					inventar.appendTag(itemNBT);
 				}
 
 				boolean flag = false;
-				NBTTagList list = diskProvider.getDisk().getTag().getTagList("macroList", 10);
+				ListTag list = diskProvider.getDisk().getTag().getTagList("macroList", 10);
 
 				for (int i = 0; i < list.tagCount(); i++) {
 					CompoundTag tag = list.getCompoundTagAt(i);
@@ -507,27 +506,27 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					name1 += c;
 				}
 				return;
-			} else if (i == 203) { //Left
+			} else if (i == 203) { // Left
 				if (name1.length() > 0) {
 					name2 = name1.substring(name1.length() - 1) + name2;
 					name1 = name1.substring(0, name1.length() - 1);
 				}
-			} else if (i == 205) { //Right
+			} else if (i == 205) { // Right
 				if (name2.length() > 0) {
 					name1 += name2.substring(0, 1);
 					name2 = name2.substring(1);
 				}
-			} else if (i == 1) { //ESC
+			} else if (i == 1) { // ESC
 				editname = false;
-			} else if (i == 28) { //Enter
+			} else if (i == 28) { // Enter
 				editname = false;
-			} else if (i == 199) { //Pos
+			} else if (i == 199) { // Pos
 				name2 = name1 + name2;
 				name1 = "";
-			} else if (i == 207) { //Ende
+			} else if (i == 207) { // Ende
 				name1 = name1 + name2;
 				name2 = "";
-			} else if (i == 211) { //Entf
+			} else if (i == 211) { // Entf
 				if (name2.length() > 0) {
 					name2 = name2.substring(1);
 				}
@@ -548,27 +547,27 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					Search1 += c;
 				}
 				return;
-			} else if (i == 203) { //Left
+			} else if (i == 203) { // Left
 				if (Search1.length() > 0) {
 					Search2 = Search1.substring(Search1.length() - 1) + Search2;
 					Search1 = Search1.substring(0, Search1.length() - 1);
 				}
-			} else if (i == 205) { //Right
+			} else if (i == 205) { // Right
 				if (Search2.length() > 0) {
 					Search1 += Search2.substring(0, 1);
 					Search2 = Search2.substring(1);
 				}
-			} else if (i == 1) { //ESC
+			} else if (i == 1) { // ESC
 				editsearch = false;
-			} else if (i == 28) { //Enter
+			} else if (i == 28) { // Enter
 				editsearch = false;
-			} else if (i == 199) { //Pos
+			} else if (i == 199) { // Pos
 				Search2 = Search1 + Search2;
 				Search1 = "";
-			} else if (i == 207) { //Ende
+			} else if (i == 207) { // Ende
 				Search1 = Search1 + Search2;
 				Search2 = "";
-			} else if (i == 211) { //Entf
+			} else if (i == 211) { // Entf
 				if (Search2.length() > 0) {
 					Search2 = Search2.substring(1);
 				}

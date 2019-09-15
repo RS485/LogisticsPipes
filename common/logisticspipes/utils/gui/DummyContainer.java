@@ -31,7 +31,7 @@ import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISlotClick;
-import logisticspipes.interfaces.ISlotUpgradeManager;
+import logisticspipes.interfaces.SlotUpgradeManager;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.ChassiModule;
@@ -181,7 +181,7 @@ public class DummyContainer extends Container {
 		return addSlotToContainer(new FuzzyUnmodifiableSlot(inventory, slotId, xCoord, yCoord, dictResource));
 	}
 
-	public Slot addUpgradeSlot(int slotId, ISlotUpgradeManager manager, int upgradeSlotId, int xCoord, int yCoord, ISlotCheck slotCheck) {
+	public Slot addUpgradeSlot(int slotId, SlotUpgradeManager manager, int upgradeSlotId, int xCoord, int yCoord, ISlotCheck slotCheck) {
 		Slot slot = addSlotToContainer(new UpgradeSlot(manager, upgradeSlotId, slotId, xCoord, yCoord, slotCheck));
 		transferTop.add(slot);
 		return slot;
@@ -561,7 +561,7 @@ public class DummyContainer extends Container {
 			return superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
 		}
 		Slot slot = inventorySlots.get(slotId);
-		//debug dump
+		// debug dump
 		if (LPConstants.DEBUG && slot != null) {
 			ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {

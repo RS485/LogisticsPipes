@@ -81,7 +81,7 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 	@Override
 	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		//mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
+		// mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "title"), guiLeft + 5, guiTop + 6, 0x404040);
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		search.renderSearchBar();
@@ -138,9 +138,9 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 
 	@Override
 	protected void keyTyped(char c, int i) {
-		if (i == 201) { //PgUp
+		if (i == 201) { // PgUp
 			itemDisplay.prevPage();
-		} else if (i == 209) { //PgDn
+		} else if (i == 209) { // PgDn
 			itemDisplay.nextPage();
 		} else {
 			// Track everything except Escape when in search bar
@@ -166,8 +166,8 @@ public class GuiAddTracking extends SubGuiScreen implements IItemSearch {
 		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 			return true;
 		}
-		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
-		//Enchantment? Enchantment!
+		// if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
+		// Enchantment? Enchantment!
 		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for (Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
 			String enchantname = e.getKey().getName();

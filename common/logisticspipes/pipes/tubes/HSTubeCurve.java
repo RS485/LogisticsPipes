@@ -340,7 +340,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@AllArgsConstructor
 	public enum CurveOrientation implements ITubeOrientation {
-		//@formatter:off
+		// @formatter:off
 		// Name: Placement from  _ TurnDirection
 		NORTH_NORTH_EAST(TurnDirection.NORTH_EAST, new DoubleCoordinates(2, 0, 2), Direction.NORTH, Direction.EAST),
 		NORTH_WEST_NORTH(TurnDirection.WEST_NORTH, new DoubleCoordinates(0, 0, 0), Direction.NORTH, Direction.WEST),
@@ -350,7 +350,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 		SOUTH_EAST_SOUTH(TurnDirection.EAST_SOUTH, new DoubleCoordinates(0, 0, 0), Direction.SOUTH, Direction.EAST),
 		EAST_EAST_SOUTH(TurnDirection.EAST_SOUTH, new DoubleCoordinates(-2, 0, 2), Direction.EAST, Direction.SOUTH),
 		EAST_NORTH_EAST(TurnDirection.NORTH_EAST, new DoubleCoordinates(0, 0, 0), Direction.EAST, Direction.NORTH);
-		//@formatter:on
+		// @formatter:on
 		@Getter
 		TurnDirection renderOrientation;
 		@Getter
@@ -373,12 +373,12 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 
 	@AllArgsConstructor
 	public enum TurnDirection implements ITubeRenderOrientation {
-		//@formatter:off
+		// @formatter:off
 		NORTH_EAST(Direction.NORTH, Direction.EAST),
 		EAST_SOUTH(Direction.EAST, Direction.SOUTH),
 		SOUTH_WEST(Direction.SOUTH, Direction.WEST),
 		WEST_NORTH(Direction.WEST, Direction.NORTH);
-		//@formatter:on
+		// @formatter:on
 		@Getter
 		Direction dir1;
 		Direction dir2;

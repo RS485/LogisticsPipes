@@ -37,24 +37,20 @@
 
 package network.rs485.logisticspipes.init
 
-import logisticspipes.items.LogisticsFluidContainer
-import logisticspipes.items.LogisticsItemCard
 import net.minecraft.block.Block
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.item.Item.Settings
-import net.minecraft.item.ItemGroup
 import net.minecraft.util.DyeColor
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
 import network.rs485.logisticspipes.item.*
-import network.rs485.logisticspipes.pipe.upgrade.SneakyCombinationUpgrade
 
 object Items {
 
-    val SecurityCard = create("security_card", LogisticsItemCard(Settings().group(ItemGroups.All), LogisticsItemCard.Type.SEC_CARD))
-    val FrequencyCard = create("frequency_card", LogisticsItemCard(Settings().group(ItemGroups.All), LogisticsItemCard.Type.FREQ_CARD))
+    val SecurityCard = create("security_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.SECURITY))
+    val FrequencyCard = create("frequency_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.FREQUENCY))
 
     val BlankModule: ItemWithInfo = create("blank_module", ItemWithInfo(Settings().group(ItemGroups.All)))
     val Disk = create("disk", DiskItem(Settings().group(ItemGroups.All).maxCount(1)))
@@ -102,6 +98,22 @@ object Items {
     val SneakyUpgrade = create("sneaky_upgrade", UpgradeItem(Settings().group(ItemGroups.All), UpgradeTypes.Sneaky))
     val SpeedUpgrade = create("speed_upgrade", UpgradeItem(Settings().group(ItemGroups.All), UpgradeTypes.Speed))
     val StackExtractionUpgrade = create("stack_extraction_upgrade", UpgradeItem(Settings().group(ItemGroups.All), UpgradeTypes.StackExtraction))
+
+    val ItemSinkModule = create("item_sink_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.ItemSink))
+    val GroupItemSinkModule = create("group_item_sink_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.GroupItemSink))
+    val ModBasedItemSinkModule = create("mod_item_sink_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.ModBasedItemSink))
+    val PolymorphicItemSinkModule = create("polymorphic_item_sink_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.PolymorphicItemSink))
+    val TagItemSinkModule = create("tag_item_sink_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.TagItemSink))
+    val EnchantmentSinkModule = create("enchantment_sink_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.EnchantmentSink, enchantmentGlint = true))
+    val EnchantmentSinkMk2Module = create("enchantment_sink_mk2_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.EnchantmentSinkMk2, enchantmentGlint = true))
+    val ExtractorModule = create("extractor_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.Extractor))
+    val AdvancedExtractorModule = create("advanced_extractor_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.AdvancedExtractor))
+    val QuickSortModule = create("quick_sort_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.QuickSort))
+    val PassiveSupplierModule = create("passive_supplier_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.PassiveSupplier))
+    val ActiveSupplierModule = create("active_supplier_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.ActiveSupplier))
+    val CraftingModule = create("crafting_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.Crafting))
+    val ProviderModule = create("provider_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.Provider))
+    val TerminusModule = create("terminus_module", ModuleItem(Settings().group(ItemGroups.All), ModuleTypes.Terminus))
 
     private fun <T : Block> create(name: String, block: T): BlockItem {
         return create(name, BlockItem(block, Settings().group(ItemGroups.All)))

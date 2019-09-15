@@ -53,8 +53,8 @@ import lombok.Data;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 
 @Data
@@ -98,7 +98,7 @@ public class WorldCoordinatesWrapper {
 
 	public Stream<NeighborBlockEntity<BlockEntity>> connectedTileEntities() {
 		BlockEntity pipe = getBlockEntity();
-		if (SimpleServiceLocator.pipeInformationManager.isNotAPipe(pipe)) {
+		if (PipeInformationManager.INSTANCE.isNotAPipe(pipe)) {
 			LogisticsPipes.log.warn("The coordinates didn't hold a pipe at all", new Throwable("Stack trace"));
 			return Stream.empty();
 		}
@@ -107,7 +107,7 @@ public class WorldCoordinatesWrapper {
 
 	public Stream<NeighborBlockEntity<BlockEntity>> connectedTileEntities(ConnectionPipeType pipeType) {
 		BlockEntity pipe = getBlockEntity();
-		if (!SimpleServiceLocator.pipeInformationManager.isPipe(pipe, true, pipeType)) {
+		if (!PipeInformationManager.INSTANCE.isPipe(pipe, true, pipeType)) {
 			if (LPConstants.DEBUG) {
 				LogisticsPipes.log.warn("The coordinates didn't hold the pipe type " + pipeType, new Throwable("Stack trace"));
 			}

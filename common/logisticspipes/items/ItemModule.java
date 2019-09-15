@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -30,21 +30,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.modules.ModuleAdvancedExtractor;
-import logisticspipes.modules.ModuleCrafter;
-import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
-import logisticspipes.modules.ModuleEnchantmentSink;
-import logisticspipes.modules.ModuleEnchantmentSinkMK2;
-import logisticspipes.modules.ModuleExtractor;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.modules.ModuleModBasedItemSink;
-import logisticspipes.modules.ModuleOreDictItemSink;
-import logisticspipes.modules.ModulePassiveSupplier;
-import logisticspipes.modules.ModulePolymorphicItemSink;
-import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.ModuleQuickSort;
-import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -53,33 +38,9 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.StringUtils;
 
 public class ItemModule extends LogisticsItem {
-
-	private static class Module {
-
-		private Supplier<? extends LogisticsModule> moduleConstructor;
-		private Class<? extends LogisticsModule> moduleClass;
-
-		private Module(Supplier<? extends LogisticsModule> moduleConstructor) {
-			this.moduleConstructor = moduleConstructor;
-			this.moduleClass = moduleConstructor.get().getClass();
-		}
-
-		private LogisticsModule getILogisticsModule() {
-			if (moduleConstructor == null) {
-				return null;
-			}
-			return moduleConstructor.get();
-		}
-
-		private Class<? extends LogisticsModule> getILogisticsModuleClass() {
-			return moduleClass;
-		}
-
-	}
 
 	private Module moduleType;
 
@@ -87,26 +48,6 @@ public class ItemModule extends LogisticsItem {
 		super();
 		this.moduleType = moduleType;
 		setHasSubtypes(false);
-	}
-
-	public static void loadModules(IForgeRegistry<Item> registry) {
-		registerModule(registry, "item_sink", ModuleItemSink::new);
-		registerModule(registry, "passive_supplier", ModulePassiveSupplier::new);
-		registerModule(registry, "extractor", ModuleExtractor::new);
-		registerModule(registry, "item_sink_polymorphic", ModulePolymorphicItemSink::new);
-		registerModule(registry, "quick_sort", ModuleQuickSort::new);
-		registerModule(registry, "terminus", ModuleTerminus::new);
-		registerModule(registry, "extractor_advanced", ModuleAdvancedExtractor::new);
-		registerModule(registry, "provider", ModuleProvider::new);
-		registerModule(registry, "item_sink_mod", ModuleModBasedItemSink::new);
-		registerModule(registry, "item_sink_oredict", ModuleOreDictItemSink::new);
-		registerModule(registry, "enchantment_sink", ModuleEnchantmentSink::new);
-		registerModule(registry, "enchantment_sink_mk2", ModuleEnchantmentSinkMK2::new);
-		//registerModule(registry, "quick_sort_cc", ModuleCCBasedQuickSort::new);
-		//registerModule(registry, "item_sink_cc", ModuleCCBasedItemSink::new);
-		registerModule(registry, "crafter", ModuleCrafter::new);
-		registerModule(registry, "active_supplier", ModuleActiveSupplier::new);
-		registerModule(registry, "item_sink_creativetab", ModuleCreativeTabBasedItemSink::new);
 	}
 
 	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
@@ -129,17 +70,6 @@ public class ItemModule extends LogisticsItem {
 				((LogisticsGuiModule) module).getInHandGuiProviderForModule().open(player);
 			}
 		}
-	}
-
-	@Override
-	public boolean hasEffect(@Nonnull ItemStack stack) {
-		LogisticsModule module = getModuleForItem(stack, null, null, null);
-		if (module != null) {
-			if (stack.getCount() > 0) {
-				return module.hasEffect();
-			}
-		}
-		return false;
 	}
 
 	@Override
@@ -179,7 +109,7 @@ public class ItemModule extends LogisticsItem {
 			return null;
 		}
 		if (currentModule != null) {
-			if (moduleType.getILogisticsModuleClass().equals(currentModule.getClass())) {
+			if (moduleType.getLogisticsModuleClass().equals(currentModule.getClass())) {
 				return currentModule;
 			}
 		}
@@ -204,12 +134,12 @@ public class ItemModule extends LogisticsItem {
 
 			if (nbt.hasKey("informationList")) {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);
-					for (int i = 0; i < nbttaglist.tagCount(); i++) {
-						Object nbttag = nbttaglist.get(i);
+					ListTag listTag = nbt.getTagList("informationList", 8);
+					for (int i = 0; i < listTag.tagCount(); i++) {
+						Object nbttag = listTag.get(i);
 						String data = ((NBTTagString) nbttag).getString();
-						if (data.equals("<inventory>") && i + 1 < nbttaglist.tagCount()) {
-							nbttag = nbttaglist.get(i + 1);
+						if (data.equals("<inventory>") && i + 1 < listTag.tagCount()) {
+							nbttag = listTag.get(i + 1);
 							data = ((NBTTagString) nbttag).getString();
 							if (data.startsWith("<that>")) {
 								String prefix = data.substring(6);
@@ -223,8 +153,8 @@ public class ItemModule extends LogisticsItem {
 								for (int pos = 0; pos < inv.getSizeInventory(); pos++) {
 									ItemStack identStack = inv.getIDStackInSlot(pos);
 									if (identStack != null) {
-										if (identStack.getStackSize() > 1) {
-											tooltip.add("  " + identStack.getStackSize() + "x " + identStack.getFriendlyName());
+										if (identStack.getCount() > 1) {
+											tooltip.add("  " + identStack.getCount() + "x " + identStack.getFriendlyName());
 										} else {
 											tooltip.add("  " + identStack.getFriendlyName());
 										}

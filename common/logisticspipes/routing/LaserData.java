@@ -2,6 +2,8 @@ package logisticspipes.routing;
 
 import java.util.EnumSet;
 
+import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 import lombok.Data;
@@ -10,9 +12,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
-import network.rs485.logisticspipes.util.LPDataInput;
-import network.rs485.logisticspipes.util.LPDataOutput;
-
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
@@ -20,11 +19,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public class LaserData {
 
 	@NonNull
-	private int posX;
-	@NonNull
-	private int posY;
-	@NonNull
-	private int posZ;
+	private BlockPos pos;
 	@NonNull
 	private Direction dir;
 	@NonNull
@@ -33,11 +28,9 @@ public class LaserData {
 	private boolean startPipe = false;
 	private int length = 1;
 
-	public void writeData(LPDataOutput output) {
-		output.writeInt(posX);
-		output.writeInt(posY);
-		output.writeInt(posZ);
-		output.writeFacing(dir);
+	public void writeData(PacketByteBuf output) {
+		output.writeBlockPos(pos);
+		output.writeEnumConstant(dir);
 		output.writeBoolean(finalPipe);
 		output.writeBoolean(startPipe);
 		output.writeInt(length);
@@ -46,11 +39,9 @@ public class LaserData {
 		}
 	}
 
-	public LaserData readData(LPDataInput input) {
-		posX = input.readInt();
-		posY = input.readInt();
-		posZ = input.readInt();
-		dir = input.readFacing();
+	public LaserData readData(PacketByteBuf input) {
+		pos = input.readBlockPos();
+		dir = input.readEnumConstant(Direction.class);
 		finalPipe = input.readBoolean();
 		startPipe = input.readBoolean();
 		length = input.readInt();

@@ -27,11 +27,11 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		//allow using upgrade manager
+		// allow using upgrade manager
 		if (MainProxy.isPipeControllerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			return false;
 		}
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
@@ -86,7 +86,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	@Override
 	public void onAllowedRemoval() {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			dropDisk();
 		}
 	}

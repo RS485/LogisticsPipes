@@ -128,7 +128,7 @@ public final class CustomBlockRenderer {
 
 		// TODO: needs to cancel the test because the variable is now private... May need to
 		// duplicate the tessellator code.
-		//if (doTessellating && !tessellator.isDrawing)
+		// if (doTessellating && !tessellator.isDrawing)
 		tessellator.startDrawingQuads();
 
 		float light = 0;
@@ -202,7 +202,7 @@ public final class CustomBlockRenderer {
 
 		// TODO: needs to cancel the test because the variable is now private... May need to
 		// duplicate the tessellator code.
-		//if (doTessellating && tessellator.isDrawing)
+		// if (doTessellating && tessellator.isDrawing)
 		tessellator.draw();
 	}
 }

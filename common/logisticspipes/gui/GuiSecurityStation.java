@@ -17,6 +17,7 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.gui.popup.GuiSecurityStationPopup;
 import logisticspipes.interfaces.PlayerListReciver;
+import logisticspipes.interfaces.SecurityStationManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerListRequest;
 import logisticspipes.network.packets.block.SecurityAuthorizationPacket;
@@ -44,7 +45,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	private final LogisticsSecurityTileEntity _tile;
 	private final List<String> players = new LinkedList<>();
 
-	//Player name:
+	// Player name:
 	protected String searchinput1 = "";
 	protected String searchinput2 = "";
 	protected boolean editsearch = false;
@@ -68,7 +69,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		dummy.addNormalSlotsForPlayerInventory(10, 175);
 		inventorySlots = dummy;
 		_tile = tile;
-		authorized = SimpleServiceLocator.securityStationManager.isAuthorized(tile.getSecId());
+		authorized = SecurityStationManager.getInstance().isAuthorized(tile.getSecId());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,7 +141,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 			mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
 		}
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "pipeRemove") + ":", guiLeft + 10, guiTop + 78, 0x404040);
-		//mc.fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 90, 0x404040);
+		// mc.fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 90, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "Player") + ":", guiLeft + 180, guiTop + 127, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
@@ -151,7 +152,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 			addition = 0;
 		}
 
-		//SearchInput
+		// SearchInput
 		if (editsearch) {
 			drawRect(guiLeft + 180, bottom - 120, right - 8 + addition, bottom - 103, Color.BLACK);
 			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Color.WHITE);
@@ -172,7 +173,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 			}
 		}
 
-		//Click into search
+		// Click into search
 		if (lastClickedx != -10000000 && lastClickedy != -10000000) {
 			if (lastClickedx >= guiLeft + 182 && lastClickedx < right - 8 + addition && lastClickedy >= bottom - 120 && lastClickedy < bottom - 102) {
 				editsearch = true;
@@ -193,7 +194,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 				mc.fontRenderer.drawString(player, guiLeft + 180, pos, 0x404040);
 				pos += 11;
 			}
-			//Check mouse click
+			// Check mouse click
 			if (guiLeft + 180 < lastClickedx && lastClickedx < guiLeft + 280 && pos - 11 < lastClickedy && lastClickedy < pos) {
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
@@ -245,27 +246,27 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 					searchinput1 += c;
 				}
 				return;
-			} else if (i == 203) { //Left
+			} else if (i == 203) { // Left
 				if (searchinput1.length() > 0) {
 					searchinput2 = searchinput1.substring(searchinput1.length() - 1) + searchinput2;
 					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 				}
-			} else if (i == 205) { //Right
+			} else if (i == 205) { // Right
 				if (searchinput2.length() > 0) {
 					searchinput1 += searchinput2.substring(0, 1);
 					searchinput2 = searchinput2.substring(1);
 				}
-			} else if (i == 1) { //ESC
+			} else if (i == 1) { // ESC
 				editsearch = false;
-			} else if (i == 28) { //Enter
+			} else if (i == 28) { // Enter
 				editsearch = false;
-			} else if (i == 199) { //Pos
+			} else if (i == 199) { // Pos
 				searchinput2 = searchinput1 + searchinput2;
 				searchinput1 = "";
-			} else if (i == 207) { //Ende
+			} else if (i == 207) { // Ende
 				searchinput1 = searchinput1 + searchinput2;
 				searchinput2 = "";
-			} else if (i == 211) { //Entf
+			} else if (i == 211) { // Entf
 				if (searchinput2.length() > 0) {
 					searchinput2 = searchinput2.substring(1);
 				}

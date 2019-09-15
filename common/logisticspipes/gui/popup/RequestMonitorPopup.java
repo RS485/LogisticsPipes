@@ -246,13 +246,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 
 		imgPosX = 0;
 
-		//Clear everything
+		// Clear everything
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glLoadIdentity();
 		mc.entityRenderer.setupOverlayRendering();
 		drawForSreenShot(0, 0);
 
-		//Start Creating the Image
+		// Start Creating the Image
 		for (int x = left; x < right + width; x += width) {
 			imgPosY = 0;
 			for (int y = top; y < bottom + height; y += height) {
@@ -578,7 +578,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
 			itemRender.renderItemAndEffectIntoGUI(item.getItem().makeNormalStack(1), x, y);
 			itemRender.renderItemOverlayIntoGUI(fontRenderer, item.getItem().makeNormalStack(1), x, y, "");
-			String s = StringUtils.getFormattedStackSize(item.getStackSize(), false);
+			String s = StringUtils.getFormattedStackSize(item.getCount(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			itemRender.zLevel = 0.0F;

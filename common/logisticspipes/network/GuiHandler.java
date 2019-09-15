@@ -66,7 +66,7 @@ public class GuiHandler implements IGuiHandler {
 			ID -= 10000;
 		}
 
-		//Handle Module Configuration
+		// Handle Module Configuration
 		if (ID == -1) {
 			return getServerGuiElement(100 * -20 + x, player, world, 0, -1, z);
 		}

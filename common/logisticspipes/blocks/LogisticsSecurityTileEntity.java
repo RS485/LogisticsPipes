@@ -20,6 +20,7 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.ISecurityProvider;
+import logisticspipes.interfaces.SecurityStationManager;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
@@ -29,7 +30,6 @@ import logisticspipes.network.packets.block.SecurityStationId;
 import logisticspipes.network.packets.block.SecurityStationOpenPlayer;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
@@ -58,40 +58,40 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if (MainProxy.isServer(getWorld())) {
-			SimpleServiceLocator.securityStationManager.remove(this);
+		if (!getWorld().isClient()) {
+			SecurityStationManager.getInstance().remove(this);
 		}
 	}
 
 	@Override
 	public void validate() {
 		super.validate();
-		if (MainProxy.isServer(getWorld())) {
-			SimpleServiceLocator.securityStationManager.add(this);
+		if (!getWorld().isClient()) {
+			SecurityStationManager.getInstance().add(this);
 		}
 	}
 
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if (MainProxy.isServer(getWorld())) {
-			SimpleServiceLocator.securityStationManager.remove(this);
+		if (!getWorld().isClient()) {
+			SecurityStationManager.getInstance().remove(this);
 		}
 	}
 
 	public void deauthorizeStation() {
-		SimpleServiceLocator.securityStationManager.deauthorizeUUID(getSecId());
+		SecurityStationManager.getInstance().deauthorizeUUID(getSecId());
 	}
 
 	public void authorizeStation() {
-		SimpleServiceLocator.securityStationManager.authorizeUUID(getSecId());
+		SecurityStationManager.getInstance().authorizeUUID(getSecId());
 	}
 
 	@Override
 	public void guiOpenedByPlayer(PlayerEntity player) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy ? 1 : 0).setBlockPos(pos), player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setBlockPos(pos), player);
-		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
+		SecurityStationManager.getInstance().sendClientAuthorizationList();
 		listener.add(player);
 	}
 
@@ -158,13 +158,13 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	public void buttonFreqCard(int integer, PlayerEntity player) {
 		switch (integer) {
-			case 0: //--
+			case 0: // --
 				inv.clearInventorySlotContents(0);
 				break;
-			case 1: //-
+			case 1: // -
 				inv.decrStackSize(0, 1);
 				break;
-			case 2: //+
+			case 2: // +
 				if (!useEnergy(10)) {
 					player.sendMessage(new TranslatableText("lp.misc.noenergy"));
 					return;
@@ -184,7 +184,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 					}
 				}
 				break;
-			case 3: //++
+			case 3: // ++
 				if (!useEnergy(640)) {
 					player.sendMessage(new TranslatableText("lp.misc.noenergy"));
 					return;

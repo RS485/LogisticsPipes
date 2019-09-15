@@ -56,7 +56,7 @@ public class RenderTickHandler {
 			if (LogisticsHUDRenderer.instance().displayRenderer()) {
 				GL11.glPushMatrix();
 				Minecraft mc = FMLClientHandler.instance().getClient();
-				//Orientation
+				// Orientation
 				mc.entityRenderer.setupCameraTransform(event.renderTickTime, 1);
 				ActiveRenderInfo.updateRenderInfo(mc.player, mc.gameSettings.thirdPersonView == 2);
 				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks, event.renderTickTime);
@@ -71,12 +71,12 @@ public class RenderTickHandler {
 		}
 	}
 
-	//private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/White.png");
+	// private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/White.png");
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void renderWorldLast(RenderWorldLastEvent worldEvent) {
-		//if (LogisticsRenderPipe.config.isUseNewRenderer()) {
+		// if (LogisticsRenderPipe.config.isUseNewRenderer()) {
 		if (displayPipeGhost()) {
 			Minecraft mc = Minecraft.getMinecraft();
 			EntityPlayer player = mc.player;
@@ -152,7 +152,7 @@ public class RenderTickHandler {
 					GL11.glTranslated(x + 0.001, y + 0.001, z + 0.001);
 
 					RenderSystem.enableBlend();
-					//GL11.glDepthMask(false);
+					// GL11.glDepthMask(false);
 					RenderSystem.disableTexture2D();
 					GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -177,7 +177,7 @@ public class RenderTickHandler {
 				}
 			}
 		}
-		//}
+		// }
 	}
 
 	private boolean displayPipeGhost() {

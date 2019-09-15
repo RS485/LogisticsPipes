@@ -42,13 +42,13 @@ public class GuiExtractor extends ModuleBaseGui {
 		int left = width / 2 - xSize / 2;
 		int top = height / 2 - ySize / 2;
 
-		buttonList.add(new GuiButton(0, left + 110, top + 103, 40, 20, "")); //DOWN
-		buttonList.add(new GuiButton(1, left + 110, top + 43, 40, 20, "")); //UP
-		buttonList.add(new GuiButton(2, left + 50, top + 53, 50, 20, "")); //NORTH
-		buttonList.add(new GuiButton(3, left + 50, top + 93, 50, 20, "")); //SOUTH
-		buttonList.add(new GuiButton(4, left + 10, top + 73, 40, 20, "")); //WEST
-		buttonList.add(new GuiButton(5, left + 100, top + 73, 40, 20, "")); //EAST
-		buttonList.add(new GuiButton(6, left + 10, top + 23, 60, 20, "")); //DEFAULT
+		buttonList.add(new GuiButton(0, left + 110, top + 103, 40, 20, "")); // DOWN
+		buttonList.add(new GuiButton(1, left + 110, top + 43, 40, 20, "")); // UP
+		buttonList.add(new GuiButton(2, left + 50, top + 53, 50, 20, "")); // NORTH
+		buttonList.add(new GuiButton(3, left + 50, top + 93, 50, 20, "")); // SOUTH
+		buttonList.add(new GuiButton(4, left + 10, top + 73, 40, 20, "")); // WEST
+		buttonList.add(new GuiButton(5, left + 100, top + 73, 40, 20, "")); // EAST
+		buttonList.add(new GuiButton(6, left + 10, top + 23, 60, 20, "")); // DEFAULT
 
 		refreshButtons();
 	}
@@ -88,7 +88,7 @@ public class GuiExtractor extends ModuleBaseGui {
 		mc.renderEngine.bindTexture(GuiExtractor.TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
-		//drawRect(width/2 - xSize / 2, height / 2 - ySize /2, width/2 + xSize / 2, height / 2 + ySize /2, 0xFF404040);
+		// drawRect(width/2 - xSize / 2, height / 2 - ySize /2, width/2 + xSize / 2, height / 2 + ySize /2, 0xFF404040);
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 

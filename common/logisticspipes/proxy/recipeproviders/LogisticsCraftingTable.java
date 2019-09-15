@@ -8,10 +8,7 @@ import net.minecraft.item.ItemStack;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.proxy.interfaces.FuzzyRecipeProvider;
-import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.routing.request.Resource;
 
 public class LogisticsCraftingTable implements FuzzyRecipeProvider {
@@ -75,7 +72,7 @@ public class LogisticsCraftingTable implements FuzzyRecipeProvider {
 		}
 		output.loadFromBitSet(bench.outputFuzzyFlags.getBitSet());
 
-		//compact with fuzzy flags
+		// compact with fuzzy flags
 
 		for (int i = 0; i < 9; i++) {
 			final ItemStack stackInSlot = inventory.getIDStackInSlot(i);
@@ -89,7 +86,7 @@ public class LogisticsCraftingTable implements FuzzyRecipeProvider {
 					continue;
 				}
 				if (itemInSlot.equals(stackInOtherSlot.getItem()) && flags[i].getBitSet().equals(flags[j].getBitSet())) {
-					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
+					stackInSlot.setStackSize(stackInSlot.getCount() + stackInOtherSlot.getCount());
 					inventory.clearInventorySlotContents(j);
 					flags[j].loadFromBitSet(new BitSet()); // clear
 				}

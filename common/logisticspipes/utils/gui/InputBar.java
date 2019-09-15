@@ -155,33 +155,33 @@ public class InputBar {
 		if (i == 1) {
 			return false;
 		}
-		if (c == 13 || i == 28) { //Enter
+		if (c == 13 || i == 28) { // Enter
 			unFocus();
-		} else if (c == 8 || (i == 14 && System.getProperty("os.name").toLowerCase(Locale.US).contains("mac"))) { //Backspace
+		} else if (c == 8 || (i == 14 && System.getProperty("os.name").toLowerCase(Locale.US).contains("mac"))) { // Backspace
 			if (input1.length() > 0) {
 				input1 = input1.substring(0, input1.length() - 1);
 			}
-		} else if (i == 203) { //Left
+		} else if (i == 203) { // Left
 			if (input1.length() > 0) {
 				input2 = input1.substring(input1.length() - 1) + input2;
 				input1 = input1.substring(0, input1.length() - 1);
 			}
-		} else if (i == 205) { //Right
+		} else if (i == 205) { // Right
 			if (input2.length() > 0) {
 				input1 += input2.substring(0, 1);
 				input2 = input2.substring(1);
 			}
-		} else if (i == 199) { //Home
+		} else if (i == 199) { // Home
 			input2 = input1 + input2;
 			input1 = "";
-		} else if (i == 207) { //End
+		} else if (i == 207) { // End
 			input1 = input1 + input2;
 			input2 = "";
-		} else if (i == 211) { //Del
+		} else if (i == 211) { // Del
 			if (input2.length() > 0) {
 				input2 = input2.substring(1);
 			}
-		} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-v
+		} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { // Ctrl-v
 			boolean isFine = true;
 			if (numberOnly) {
 				try {
@@ -202,7 +202,7 @@ public class InputBar {
 				input1 += c;
 			}
 		} else {
-			//ignore this key/character
+			// ignore this key/character
 		}
 		return true;
 	}

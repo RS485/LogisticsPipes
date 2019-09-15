@@ -6,7 +6,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 
 import org.lwjgl.input.Keyboard;
 
@@ -54,10 +54,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 				}
 
 				if (!nbt.hasKey("macroList")) {
-					NBTTagList list = new NBTTagList();
+					ListTag list = new ListTag();
 					nbt.setTag("macroList", list);
 				}
-				NBTTagList list = nbt.getTagList("macroList", 10);
+				ListTag list = nbt.getTagList("macroList", 10);
 				return list.tagCount();
 			}
 
@@ -70,10 +70,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 				}
 
 				if (!nbt.hasKey("macroList")) {
-					NBTTagList list = new NBTTagList();
+					ListTag list = new ListTag();
 					nbt.setTag("macroList", list);
 				}
-				NBTTagList list = nbt.getTagList("macroList", 10);
+				ListTag list = nbt.getTagList("macroList", 10);
 				return list.getCompoundTagAt(index).getString("name");
 			}
 
@@ -132,7 +132,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		mc.fontRenderer.drawStringWithShadow("Disk", xCenter - (mc.fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
 
-		//NameInput
+		// NameInput
 		if (editname) {
 			Gui.drawRect(guiLeft + 10, guiTop + 28, right - 10, guiTop + 45, Color.getValue(Color.BLACK));
 			Gui.drawRect(guiLeft + 11, guiTop + 29, right - 11, guiTop + 44, Color.getValue(Color.WHITE));
@@ -143,7 +143,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 		mc.fontRenderer.drawString(name1 + name2, guiLeft + 15, guiTop + 33, 0xFFFFFF);
 
-		//Gui.drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, Color.getValue(Color.GREY));
+		// Gui.drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, Color.getValue(Color.GREY));
 
 		textList.renderGuiBackground(mouseX, mouseY);
 
@@ -184,12 +184,12 @@ public class GuiDiskPopup extends SubGuiScreen {
 		}
 
 		if (!nbt.hasKey("macroList")) {
-			NBTTagList list = new NBTTagList();
+			ListTag list = new ListTag();
 			nbt.setTag("macroList", list);
 		}
 
-		NBTTagList list = nbt.getTagList("macroList", 10);
-		NBTTagList listnew = new NBTTagList();
+		ListTag list = nbt.getTagList("macroList", 10);
+		ListTag listnew = new ListTag();
 
 		for (int i = 0; i < list.tagCount(); i++) {
 			if (i != textList.getSelected()) {
@@ -206,7 +206,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		CompoundTag nbt = diskProvider.getDisk().getTag();
 		if (nbt != null) {
 			if (nbt.hasKey("macroList")) {
-				NBTTagList list = nbt.getTagList("macroList", 10);
+				ListTag list = nbt.getTagList("macroList", 10);
 				if (textList.getSelected() != -1 && textList.getSelected() < list.tagCount()) {
 					CompoundTag entry = list.getCompoundTagAt(textList.getSelected());
 					macroname = entry.getString("name");
@@ -253,27 +253,27 @@ public class GuiDiskPopup extends SubGuiScreen {
 					name1 += c;
 				}
 				return;
-			} else if (i == 203) { //Left
+			} else if (i == 203) { // Left
 				if (name1.length() > 0) {
 					name2 = name1.substring(name1.length() - 1) + name2;
 					name1 = name1.substring(0, name1.length() - 1);
 				}
-			} else if (i == 205) { //Right
+			} else if (i == 205) { // Right
 				if (name2.length() > 0) {
 					name1 += name2.substring(0, 1);
 					name2 = name2.substring(1);
 				}
-			} else if (i == 1) { //ESC
+			} else if (i == 1) { // ESC
 				writeDiskName();
-			} else if (i == 28) { //Enter
+			} else if (i == 28) { // Enter
 				writeDiskName();
-			} else if (i == 199) { //Pos
+			} else if (i == 199) { // Pos
 				name2 = name1 + name2;
 				name1 = "";
-			} else if (i == 207) { //Ende
+			} else if (i == 207) { // Ende
 				name1 = name1 + name2;
 				name2 = "";
-			} else if (i == 211) { //Entf
+			} else if (i == 211) { // Entf
 				if (name2.length() > 0) {
 					name2 = name2.substring(1);
 				}

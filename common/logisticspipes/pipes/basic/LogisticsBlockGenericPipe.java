@@ -59,7 +59,6 @@ import lombok.Data;
 
 import logisticspipes.LPBlocks;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -749,7 +748,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 		ItemStack heldItem = player.inventory.mainInventory.get(player.inventory.currentItem);
 
-		//world.notifyBlocksOfNeighborChange(pos, LogisticsPipes.LogisticsPipeBlock);
+		// world.notifyBlocksOfNeighborChange(pos, LogisticsPipes.LogisticsPipeBlock);
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 
 		if (LogisticsBlockGenericPipe.isValid(pipe)) {
@@ -845,7 +844,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		}
 
 		ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
-		//if (config.isUseNewRenderer()) {
+		// if (config.isUseNewRenderer()) {
 		LogisticsNewRenderPipe.renderDestruction(pipe, world, pos.getX(), pos.getY(), pos.getZ(), effectRenderer);
 		/*} else {
 			TextureAtlasSprite icon = pipe.getIconProvider().getIcon(pipe.getIconIndexForItem());

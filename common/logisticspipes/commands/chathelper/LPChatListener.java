@@ -77,7 +77,7 @@ public class LPChatListener {
 			try {
 				realMessage = message.getFormattedText();
 			} catch (ClassCastException e) {
-				//Ignore that
+				// Ignore that
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

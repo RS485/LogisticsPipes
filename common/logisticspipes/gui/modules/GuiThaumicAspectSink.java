@@ -70,7 +70,7 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		mc.fontRenderer.drawString("Sunk Aspects", 8, 48, 0x404040);
 		mc.fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 
-		//handle clicks
+		// handle clicks
 		if (6 <= mouseX && mouseX < 6 + 9 * 18 && 24 <= mouseY && mouseY < 24 + 18) {
 			int i = (mouseX - 6) / 18;
 			if (stackTags != null && i < stackTags.size()) {
@@ -95,12 +95,12 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		mouseX = 0;
 		mouseY = 0;
 
-		//transfer tags from stack to gui list
+		// transfer tags from stack to gui list
 		if (tmpInv.getStackInSlot(0) != null && SimpleServiceLocator.thaumCraftProxy.isScannedObject(tmpInv.getStackInSlot(0), mc.thePlayer.getName())) {
 			stackTags = SimpleServiceLocator.thaumCraftProxy.getListOfTagsForStack(tmpInv.getStackInSlot(0));
 		}
 
-		//render aspects
+		// render aspects
 		GL11.glEnable(GL11.GL_LIGHTING);
 		if (stackTags != null) {
 			SimpleServiceLocator.thaumCraftProxy.renderAspectsInGrid(stackTags, 7, 25, 9, 1, this);
@@ -108,7 +108,7 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		SimpleServiceLocator.thaumCraftProxy.renderAspectsInGrid(_module.aspectList, 7, 58, 9, 1, this);
 		GL11.glDisable(GL11.GL_LIGHTING);
 
-		//render mouse-over overlay
+		// render mouse-over overlay
 		int pointerX = par1 - guiLeft;
 		int pointerY = par2 - guiTop;
 
@@ -138,7 +138,7 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 6);
 
-		//I can has purple aspect slots
+		// I can has purple aspect slots
 		for (int i = 0; i < 9; i++) {
 			GuiGraphics.drawSlotBackground(mc, guiLeft + 6 + i * 18, guiTop + 24, 0xffffe4ff);
 		}

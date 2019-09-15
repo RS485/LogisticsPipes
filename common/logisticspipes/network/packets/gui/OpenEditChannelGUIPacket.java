@@ -11,12 +11,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.interfaces.routing.ChannelManagerProvider;
 import logisticspipes.interfaces.routing.IChannelManager;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.EditChannelGuiProvider;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -54,7 +54,7 @@ public class OpenEditChannelGUIPacket extends CoordinatesPacket {
 			securityID = security.getSecId();
 		}
 		UUID finalSecurityID = securityID;
-		IChannelManager channelManager = SimpleServiceLocator.channelManagerProvider
+		IChannelManager channelManager = ChannelManagerProvider.getInstance()
 				.getChannelManager(player.getEntityWorld());
 		Optional<ChannelInformation> match = channelManager.getChannels().stream()
 				.filter(channel -> channel.getChannelIdentifier().toString().equals(getIdentifier())).findFirst();

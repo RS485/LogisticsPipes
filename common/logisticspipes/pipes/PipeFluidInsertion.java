@@ -9,14 +9,15 @@ import net.minecraft.util.math.Direction;
 
 import net.minecraftforge.fluids.FluidStack;
 
+import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
 
@@ -65,7 +66,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 				continue;
 			}
 
-			Tuple2<Integer, Integer> result = SimpleServiceLocator.logisticsFluidManager.getBestReply(FluidIdentifierStack.getFromStack(stack), getRouter(), tempJamList);
+			Tuple2<Integer, Integer> result = LogisticsFluidManager.getInstance().getBestReply(FluidIdentifierStack.getFromStack(stack), getRouter(), tempJamList);
 			if (result == null || result.getValue1() == null || result.getValue1() == 0 || result.getValue2() == 0) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;
@@ -79,8 +80,8 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 			}
 
 			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2(), true);
-			ItemStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(FluidIdentifierStack.getFromStack(toSend));
-			IRoutedItem routed = SimpleServiceLocator.routedItemHelper.createNewTravelItem(liquidContainer);
+			ItemStack liquidContainer = LogisticsFluidManager.getInstance().getFluidContainer(FluidIdentifierStack.getFromStack(toSend));
+			IRoutedItem routed = RoutedItemHelper.INSTANCE.createNewTravelItem(liquidContainer);
 			routed.setDestination(result.getValue1());
 			routed.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routed, dir);

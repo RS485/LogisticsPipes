@@ -16,7 +16,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 
@@ -50,20 +50,20 @@ public class InventoryUtilFactory {
 	}
 
 	@Nullable
-	public IInventoryUtil getInventoryUtil(NeighborBlockEntity<BlockEntity> adj) {
+	public WrappedInventory getInventoryUtil(NeighborBlockEntity<BlockEntity> adj) {
 		return getHidingInventoryUtil(adj.getBlockEntity(), adj.getOurDirection(), false, false, 0, 0);
 	}
 
 	@Nullable
-	public IInventoryUtil getInventoryUtil(BlockEntity inv, Direction dir) {
+	public WrappedInventory getInventoryUtil(BlockEntity inv, Direction dir) {
 		return getHidingInventoryUtil(inv, dir, false, false, 0, 0);
 	}
 
 	@Nullable
-	public IInventoryUtil getHidingInventoryUtil(BlockEntity tile, Direction dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		IInventoryUtil util = getUtilForInv(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
+	public WrappedInventory getHidingInventoryUtil(BlockEntity tile, Direction dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		WrappedInventory util = getUtilForInv(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 		if (util == null && tile != null && tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir)) {
-			util = new InventoryUtil(tile.getCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
+			util = new WrappedInventoryImpl(tile.getCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
 		}
 		return util;
 	}

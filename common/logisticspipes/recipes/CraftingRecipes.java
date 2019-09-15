@@ -9,8 +9,8 @@ import logisticspipes.LPItems;
 import logisticspipes.items.ItemModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 
-//@formatter:off
-//CHECKSTYLE:OFF
+// @formatter:off
+// CHECKSTYLE:OFF
 
 public class CraftingRecipes implements IRecipeProvider {
 	@Override

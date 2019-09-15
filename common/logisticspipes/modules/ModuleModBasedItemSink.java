@@ -16,7 +16,6 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IStringBasedModule;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -60,7 +59,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 			buildModIdSet();
 		}
 		if (modIdSet.contains(item.getModName())) {
-			if (_service.canUseEnergy(5)) {
+			if (service.canUseEnergy(5)) {
 				return _sinkReply;
 			}
 		}
@@ -79,10 +78,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiInHand.class);
 	}
 
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
-	}
+
 
 	private void buildModIdSet() {
 		modIdSet.clear();
@@ -143,7 +139,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 
 	@Override
 	public void listChanged() {
-		if (MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(world.getWorld())) {
 			CompoundTag nbt = new CompoundTag();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setNbt(nbt).setModulePos(this), localModeWatchers);
@@ -180,7 +176,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

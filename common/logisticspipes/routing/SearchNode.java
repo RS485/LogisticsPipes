@@ -20,7 +20,7 @@ public class SearchNode implements Comparable<SearchNode> {
 		return node != null && node.getCachedPipe() != null;
 	}
 
-	//copies
+	// copies
 	public EnumSet<PipeRoutingConnectionType> getFlags() {
 		return EnumSet.copyOf(connectionFlags);
 	}

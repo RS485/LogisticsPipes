@@ -163,7 +163,7 @@ public class LogisticsNewPipeModel implements IModel {
 						if (objectCache != null) {
 							Object localQuads = objectCache.getIfPresent(PipeRenderState.LocalCacheType.QUADS);
 							if (localQuads instanceof List) {
-								//noinspection unchecked
+								// noinspection unchecked
 								return (List<BakedQuad>) localQuads;
 							}
 						}
@@ -227,7 +227,7 @@ public class LogisticsNewPipeModel implements IModel {
 
 			LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.getRotation(blockstate.getValue(LogisticsBlockGenericPipe.rotationProperty));
 
-			//Draw
+			// Draw
 			objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.block.get(rotation), icon));
 			for (LogisticsNewSolidBlockWorldRenderer.CoverSides side : LogisticsNewSolidBlockWorldRenderer.CoverSides.values()) {
 				if (!blockstate.getValue(LogisticsBlockGenericPipe.connectionPropertys.get(side.getDir(rotation)))) {
@@ -261,7 +261,7 @@ public class LogisticsNewPipeModel implements IModel {
 
 			LogisticsNewSolidBlockWorldRenderer.BlockRotation rotation = LogisticsNewSolidBlockWorldRenderer.BlockRotation.ZERO;
 
-			//Draw
+			// Draw
 			objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.block.get(rotation), icon));
 			for (LogisticsNewSolidBlockWorldRenderer.CoverSides side : LogisticsNewSolidBlockWorldRenderer.CoverSides.values()) {
 				objectsToRender.add(new RenderEntry(LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation), icon));
@@ -320,7 +320,7 @@ public class LogisticsNewPipeModel implements IModel {
 						.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
 			}
 
-			//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
+			// ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
 			for (Direction dir : Direction.values()) {
 				for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 					TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(getPipe().getTextureIndex());

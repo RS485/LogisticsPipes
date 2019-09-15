@@ -80,7 +80,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 			}
 		}
 
-		//SearchInput
+		// SearchInput
 		if (editsearch) {
 			drawRect(guiLeft + 40, bottom - 30, right - 40, bottom - 13, Color.BLACK);
 			drawRect(guiLeft + 41, bottom - 29, right - 41, bottom - 14, Color.WHITE);
@@ -101,7 +101,7 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 			}
 		}
 
-		//Click into search
+		// Click into search
 		if (lastClickedx != -10000000 && lastClickedy != -10000000) {
 			if (lastClickedx >= guiLeft + 42 && lastClickedx < right - 42 && lastClickedy >= bottom - 30 && lastClickedy < bottom - 13) {
 				editsearch = true;
@@ -237,27 +237,27 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 					searchinput1 += c;
 				}
 				return;
-			} else if (i == 203) { //Left
+			} else if (i == 203) { // Left
 				if (searchinput1.length() > 0) {
 					searchinput2 = searchinput1.substring(searchinput1.length() - 1) + searchinput2;
 					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 				}
-			} else if (i == 205) { //Right
+			} else if (i == 205) { // Right
 				if (searchinput2.length() > 0) {
 					searchinput1 += searchinput2.substring(0, 1);
 					searchinput2 = searchinput2.substring(1);
 				}
-			} else if (i == 1) { //ESC
+			} else if (i == 1) { // ESC
 				editsearch = false;
-			} else if (i == 28) { //Enter
+			} else if (i == 28) { // Enter
 				editsearch = false;
-			} else if (i == 199) { //Pos
+			} else if (i == 199) { // Pos
 				searchinput2 = searchinput1 + searchinput2;
 				searchinput1 = "";
-			} else if (i == 207) { //Ende
+			} else if (i == 207) { // Ende
 				searchinput1 = searchinput1 + searchinput2;
 				searchinput2 = "";
-			} else if (i == 211) { //Entf
+			} else if (i == 211) { // Entf
 				if (searchinput2.length() > 0) {
 					searchinput2 = searchinput2.substring(1);
 				}

@@ -145,7 +145,7 @@ public class DevEnvHelper {
 				mfAttributes = jar.getManifest().getMainAttributes();
 				String ats = mfAttributes.getValue(ModAccessTransformer.FMLAT);
 				if (ats != null && !ats.isEmpty()) {
-					if (jar == null) //We could of loaded the external manifest earlier, if so the jar isn't loaded.
+					if (jar == null) // We could of loaded the external manifest earlier, if so the jar isn't loaded.
 						jar = new JarFile(coreMod);
 					ModAccessTransformer.addJar(jar, ats);
 				}
@@ -161,12 +161,12 @@ public class DevEnvHelper {
 					}
 				}
 			}
-			//AccessTransformer //For NEI
+			// AccessTransformer // For NEI
 			if (mfAttributes.getValue("AccessTransformer") != null) {
 				String cfg = mfAttributes.getValue("AccessTransformer");
 				((List<IClassTransformer>) transformers.get(classLoader)).add(new AccessTransformer(cfg) {});
 			}
-			//FMLAT //For newer NEI
+			// FMLAT // For newer NEI
 			if (mfAttributes.getValue("FMLAT") != null) {
 				String cfg = "META-INF/" + mfAttributes.getValue("FMLAT");
 				((List<IClassTransformer>) transformers.get(classLoader)).add(new AccessTransformer(cfg) {});
@@ -188,19 +188,19 @@ public class DevEnvHelper {
 				continue;
 			}
 
-			//try {
-			//classLoader.addURL(coreMod.toURI().toURL());
+			// try {
+			// classLoader.addURL(coreMod.toURI().toURL());
 			if (!mfAttributes.containsKey(DevEnvHelper.COREMODCONTAINSFMLMOD)) {
 				FMLRelaunchLog.finer("Adding %s to the list of known coremods, it will not be examined again", coreMod.getName());
 				((List<String>) loadedCoremods.get(null)).add(coreMod.getName());
 			} else {
 				FMLRelaunchLog.finer("Found FMLCorePluginContainsFMLMod marker in %s, it will be examined later for regular @Mod instances", coreMod.getName());
-				//((List<String>)reparsedCoremods.get(null)).add(coreMod.getName());
+				// ((List<String>)reparsedCoremods.get(null)).add(coreMod.getName());
 			}
-			//} catch(MalformedURLException e) {
+			// } catch(MalformedURLException e) {
 			//	FMLRelaunchLog.log(Level.ERROR, e, "Unable to convert file into a URL. weird");
 			//	continue;
-			//}
+			// }
 			loadCoreMod.invoke(null, classLoader, fmlCorePlugin, coreMod);
 		}
 
@@ -260,7 +260,7 @@ public class DevEnvHelper {
 				while (tmp.hasMoreElements()) {
 					tmp.nextElement();
 				}
-				//ucp = ucpF.get(Launch.classLoader);
+				// ucp = ucpF.get(Launch.classLoader);
 
 				@SuppressWarnings("unchecked")
 				List<Object> pathes = (List<Object>) pathF.get(ucp);
@@ -1174,8 +1174,8 @@ public class DevEnvHelper {
 		 * Does not close <var>r</var>.
 		 */
 		public static ExcFile read(Reader r) {
-			//example line:
-			//net/minecraft/src/NetClientHandler.<init>(Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V=java/net/UnknownHostException,java/io/IOException|p_i42_1_,p_i42_2_,p_i42_3_
+			// example line:
+			// net/minecraft/src/NetClientHandler.<init>(Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V=java/net/UnknownHostException,java/io/IOException|p_i42_1_,p_i42_2_,p_i42_3_
 
 			ExcFile rv = new ExcFile();
 

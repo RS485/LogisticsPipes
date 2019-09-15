@@ -34,8 +34,8 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 	}
 
 	private void renderPipeItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
-		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); //don't break other mods' guis when holding a pipe
-		//force transparency
+		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); // don't break other mods' guis when holding a pipe
+		// force transparency
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_BLEND);
 
@@ -50,7 +50,7 @@ public class LogisticsPipeItemRenderer implements IItemRenderer {
 		}
 
 		block.setBlockBounds(LogisticsPipeItemRenderer.PIPE_MIN_POS, 0.0F, LogisticsPipeItemRenderer.PIPE_MIN_POS, LogisticsPipeItemRenderer.PIPE_MAX_POS, 1.0F, LogisticsPipeItemRenderer.PIPE_MAX_POS);
-		//block.setBlockBounds(PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MAX_POS, PIPE_MAX_POS, PIPE_MAX_POS);
+		// block.setBlockBounds(PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MIN_POS, PIPE_MAX_POS, PIPE_MAX_POS, PIPE_MAX_POS);
 		block.setBlockBoundsForItemRender();
 		render.setRenderBoundsFromBlock(block);
 

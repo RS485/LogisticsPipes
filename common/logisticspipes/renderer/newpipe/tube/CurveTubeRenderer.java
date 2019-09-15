@@ -41,11 +41,11 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 		DOWN_RIGHT
 	}
 
-	//Tube Models
+	// Tube Models
 	static Map<TurnDirection, List<IModel3D>> tubeTurnBase = new HashMap<>();
 	static Map<TurnDirection, Map<Tuple2<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<>();
 
-	//Tube global Access
+	// Tube global Access
 	public static Map<TurnDirection, IModel3D> tubeCurve = new HashMap<>();
 
 	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
@@ -58,7 +58,7 @@ public class CurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacem
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/HSTube-Turn_result.obj"), 7, new LPScale(1 / 100f));
 
-			//tubeTurnMounts
+			// tubeTurnMounts
 			for (TurnDirection turn : TurnDirection.values()) {
 				CurveTubeRenderer.tubeTurnBase.put(turn, new ArrayList<>());
 			}

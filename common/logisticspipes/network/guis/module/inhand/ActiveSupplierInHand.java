@@ -36,7 +36,7 @@ public class ActiveSupplierInHand extends ModuleInHandGuiProvider {
 		dummy.setInventory(((ModuleActiveSupplier) dummy.getModule()).getDummyInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
-		//Pipe slots
+		// Pipe slots
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}

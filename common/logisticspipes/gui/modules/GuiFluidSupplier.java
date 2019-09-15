@@ -25,7 +25,7 @@ public class GuiFluidSupplier extends ModuleBaseGui {
 		DummyContainer dummy = new DummyContainer(playerInventory, _liquidSupplier.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
-		//Pipe slots
+		// Pipe slots
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}

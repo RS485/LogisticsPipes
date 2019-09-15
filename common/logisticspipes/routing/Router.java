@@ -16,7 +16,6 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
@@ -93,7 +92,7 @@ public interface Router extends LPFinalSerializable {
 
 	boolean isValidCache();
 
-	//force-update LSA version in the network
+	// force-update LSA version in the network
 	void forceLsaUpdate();
 
 	List<ExitRoute> getRoutersOnSide(Direction direction);

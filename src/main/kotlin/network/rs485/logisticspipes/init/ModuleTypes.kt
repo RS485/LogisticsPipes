@@ -63,11 +63,14 @@ object ModuleTypes {
     val QuickSort = create("quick_sort", ModuleType.Builder(::ModuleQuickSort).build())
     val PassiveSupplier = create("passive_supplier", ModuleType.Builder(::ModulePassiveSupplier).build())
     val ActiveSupplier = create("active_supplier", ModuleType.Builder(::ModuleActiveSupplier).build())
-    val FluidSupplier = create("fluid_supplier", ModuleType.Builder(::ModuleFluidSupplier).build())
     val Crafting = create("crafting", ModuleType.Builder(::ModuleCrafter).build())
-    val Satellite = create("satellite", ModuleType.Builder { ModuleSatellite(null) }.build())
     val Provider = create("provider", ModuleType.Builder(::ModuleProvider).build())
     val Terminus = create("terminus", ModuleType.Builder(::ModuleTerminus).build())
+
+    // these don't have an item, and are only used in pipes.
+    // TODO don't use modules as pipe logic, especially when they don't have a module form
+    val FluidSupplier = create("fluid_supplier", ModuleType.Builder { error("Can't construct") }.build())
+    val Satellite = create("satellite", ModuleType.Builder { error("Can't construct") }.build())
 
     private fun <T : ModuleType<*>> create(name: String, type: T): T {
         return Registry.register(Registries.ModuleType, Identifier(ModID, name), type).also { All += it }

@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.ItemRequestProvider;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -30,10 +30,10 @@ import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -66,14 +66,14 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	 */
 	@Override
 	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
-		Router sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
+		Router sourceRouter = RouterManager.getInstance().getRouter(sourceID);
 		if (sourceRouter == null) {
 			return null;
 		}
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(stack);
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = RouterManager.getInstance().getRouterUnsafe(i, false);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations
@@ -113,10 +113,10 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	 */
 	@Override
 	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) {
+		if (!RouterManager.getInstance().isRouter(sourceRouter)) {
 			return null;
 		}
-		Tuple3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<>(), null, true);
+		Tuple3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, RouterManager.getInstance().getRouter(sourceRouter), RouterManager.getInstance().getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<>(), null, true);
 		if (search.getValue2() == null) {
 			return null;
 		}
@@ -182,7 +182,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 			}
 		}
 		if (result.getValue1() != null) {
-			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(), false).getPipe();
+			CoreRoutedPipe pipe = RouterManager.getInstance().getRouterUnsafe(result.getValue1(), false).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
 			pipe.spawnParticle(Particles.BlueParticle, 10);
 		}
@@ -197,7 +197,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 		if (module == null) {
 			return null;
 		}
-		if (!(module.recievePassive() || activeRequest)) {
+		if (!(module.receivePassive() || activeRequest)) {
 			return null;
 		}
 		if (crp == null || !crp.isEnabled()) {
@@ -237,21 +237,21 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	@Override
 	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterID, boolean excludeSource) {
 
-		//Assert: only called server side.
+		// Assert: only called server side.
 
-		//If we for some reason can't get the router we can't do anything either
-		Router sourceRouter = SimpleServiceLocator.routerManager.getRouterUnsafe(sourceRouterID, false);
+		// If we for some reason can't get the router we can't do anything either
+		Router sourceRouter = RouterManager.getInstance().getRouterUnsafe(sourceRouterID, false);
 		if (sourceRouter == null) {
 			return item;
 		}
 
-		//Wipe current destination
+		// Wipe current destination
 		item.clearDestination();
 
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getItemStack().getItem());
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = RouterManager.getInstance().getRouterUnsafe(i, false);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations
@@ -261,7 +261,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 		}
 		Collections.sort(validDestinations);
 		if (item.getItemStack() != null && item.getItemStack().makeNormalStack().getItem() instanceof LogisticsFluidContainer) {
-			Tuple2<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item.getItemStack()), sourceRouter, item.getJamList());
+			Tuple2<Integer, Integer> bestReply = LogisticsFluidManager.getInstance().getBestReply(LogisticsFluidManager.getInstance().getFluidFromContainer(item.getItemStack()), sourceRouter, item.getJamList());
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0) {
 				item.setDestination(bestReply.getValue1());
 			}
@@ -331,7 +331,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	 */
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<ExitRoute> validDestinations) {
-		//TODO: Replace this entire function wiht a fetch from the pre-built arrays (path incoming later)
+		// TODO: Replace this entire function wiht a fetch from the pre-built arrays (path incoming later)
 		List<Map<ItemIdentifier, Integer>> items = new ArrayList<>(ServerRouter.getBiggestSimpleID());
 		for (int i = 0; i < ServerRouter.getBiggestSimpleID(); i++) {
 			items.add(new HashMap<>());
@@ -357,7 +357,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 			provider.getAllItems(items.get(r.destination.getSimpleId()), r.filters);
 			used.set(r.destination.getSimpleId(), true);
 		}
-		//TODO: Fix this doubly nested list
+		// TODO: Fix this doubly nested list
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<>();
 		for (Map<ItemIdentifier, Integer> allItems : items) {
 			for (Entry<ItemIdentifier, Integer> item : allItems.entrySet()) {

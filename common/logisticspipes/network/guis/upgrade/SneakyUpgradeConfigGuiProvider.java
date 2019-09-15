@@ -10,7 +10,7 @@ import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.UpgradeSlot;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -28,7 +28,7 @@ public class SneakyUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvide
 		LogisticsTileGenericPipe bPipe = getPipe(player.getEntityWorld());
 		if (bPipe != null && bPipe.pipe instanceof CoreRoutedPipe) {
 			List<DoubleCoordinates> list = new WorldCoordinatesWrapper(bPipe).connectedTileEntities()
-					.filter(in -> SimpleServiceLocator.pipeInformationManager.isNotAPipe(in.getBlockEntity()))
+					.filter(in -> PipeInformationManager.INSTANCE.isNotAPipe(in.getBlockEntity()))
 					.map(in -> new DoubleCoordinates(in.getBlockEntity()))
 					.collect(Collectors.toList());
 

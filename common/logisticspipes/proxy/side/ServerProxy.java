@@ -61,7 +61,7 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void registerParticles() {
-		//Only Client Side
+		// Only Client Side
 	}
 
 	private String getNameForCategory(String category, ItemIdentifier item) {
@@ -130,7 +130,7 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void tick() {
-		//Save Language Database
+		// Save Language Database
 		if (saveThreadTime != 0) {
 			if (saveThreadTime < System.currentTimeMillis()) {
 				saveThreadTime = 0;

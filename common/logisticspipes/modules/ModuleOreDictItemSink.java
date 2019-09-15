@@ -22,7 +22,6 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -38,12 +37,11 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
 	public final List<String> oreList = new LinkedList<>();
-	//map of Item:<set of damagevalues>, empty set if wildcard damage
+	// map of Item:<set of damagevalues>, empty set if wildcard damage
 	private Map<Item, Set<Integer>> oreItemIdMap;
 
 	private IHUDModuleRenderer HUD = new HUDOreDictItemSink(this);
@@ -95,11 +93,6 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 			buildOreItemIdMap();
 		}
 		return oreHudList;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
 	}
 
 	private void buildOreItemIdMap() {
@@ -193,7 +186,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	public void OreListChanged() {
-		if (MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(world.getWorld())) {
 			CompoundTag nbt = new CompoundTag();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(OreDictItemSinkList.class).setTag(nbt).setModulePos(this), localModeWatchers);
@@ -230,7 +223,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

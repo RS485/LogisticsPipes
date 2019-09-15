@@ -2,7 +2,7 @@ package logisticspipes.network.packets.orderer;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 
 import logisticspipes.LPItems;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
@@ -43,10 +43,10 @@ public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 			}
 			CompoundTag nbt = ((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().getTag();
 			if (!nbt.hasKey("macroList")) {
-				NBTTagList list = new NBTTagList();
+				ListTag list = new ListTag();
 				nbt.setTag("macroList", list);
 			}
-			NBTTagList list = nbt.getTagList("macroList", 10);
+			ListTag list = nbt.getTagList("macroList", 10);
 			for (int i = 0; i < list.tagCount(); i++) {
 				if (i == getInteger()) {
 					CompoundTag itemlist = list.getCompoundTagAt(i);
@@ -67,10 +67,10 @@ public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 			}
 			CompoundTag nbt = ((PipeBlockRequestTable) pipe.pipe).getDisk().getTag();
 			if (!nbt.hasKey("macroList")) {
-				NBTTagList list = new NBTTagList();
+				ListTag list = new ListTag();
 				nbt.setTag("macroList", list);
 			}
-			NBTTagList list = nbt.getTagList("macroList", 10);
+			ListTag list = nbt.getTagList("macroList", 10);
 			for (int i = 0; i < list.tagCount(); i++) {
 				if (i == getInteger()) {
 					CompoundTag itemlist = list.getCompoundTagAt(i);

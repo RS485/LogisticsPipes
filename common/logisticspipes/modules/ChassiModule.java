@@ -5,9 +5,9 @@ import java.util.List;
 
 import net.minecraft.nbt.CompoundTag;
 
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
@@ -29,7 +29,7 @@ public class ChassiModule extends LogisticsGuiModule {
 	public ChassiModule(int moduleCount, PipeLogisticsChassi parentChassis) {
 		modules = new LogisticsModule[moduleCount];
 		this.parentChassis = parentChassis;
-		_service = parentChassis;
+		service = parentChassis;
 		registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
@@ -59,7 +59,7 @@ public class ChassiModule extends LogisticsGuiModule {
 		SinkReply bestresult = null;
 		for (LogisticsModule module : modules) {
 			if (module != null) {
-				if (!forcePassive || module.recievePassive()) {
+				if (!forcePassive || module.receivePassive()) {
 					SinkReply result = module.sinksItem(item, bestPriority, bestCustomPriority, allowDefault, includeInTransit, forcePassive);
 					if (result != null && result.maxNumberOfItems >= 0) {
 						bestresult = result;
@@ -73,8 +73,8 @@ public class ChassiModule extends LogisticsGuiModule {
 		if (bestresult == null) {
 			return null;
 		}
-		//Always deny items when we can't put the item anywhere
-		IInventoryUtil invUtil = parentChassis.getSneakyInventory(ModulePositionType.SLOT, ((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
+		// Always deny items when we can't put the item anywhere
+		WrappedInventory invUtil = parentChassis.getSneakyInventory(ModulePositionType.SLOT, ((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
 		if (invUtil == null) {
 			return null;
 		}
@@ -140,7 +140,7 @@ public class ChassiModule extends LogisticsGuiModule {
 
 	@Override
 	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
-		//Not used in Chassie Module
+		// Not used in Chassie Module
 	}
 
 	@Override
@@ -164,9 +164,9 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		for (LogisticsModule module : modules) {
-			if (module != null && module.recievePassive()) {
+			if (module != null && module.receivePassive()) {
 				return true;
 			}
 		}

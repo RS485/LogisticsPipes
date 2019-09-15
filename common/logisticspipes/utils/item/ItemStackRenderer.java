@@ -174,7 +174,7 @@
 //		renderItem.zLevel += zLevel;
 //
 //		if (itemIdentStack != null) {
-//			if (itemIdentStack.getStackSize() < 1) {
+//			if (itemIdentStack.getCount() < 1) {
 //				itemstack = itemIdentStack.getItem().unsafeMakeNormalStack(1);
 //			} else {
 //				itemstack = itemIdentStack.unsafeMakeNormalStack();
@@ -231,7 +231,7 @@
 //			}
 //
 //			RenderSystem.disableLighting();
-//			String amountString = StringUtils.getFormattedStackSize(itemIdentStack != null ? itemIdentStack.getStackSize() : itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
+//			String amountString = StringUtils.getFormattedStackSize(itemIdentStack != null ? itemIdentStack.getCount() : itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
 //
 //			RenderSystem.translate(0.0F, 0.0F, zLevel + 130.0F);
 //

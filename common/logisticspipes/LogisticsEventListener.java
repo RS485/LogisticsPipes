@@ -46,8 +46,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ItemAdvancedExistence;
+import logisticspipes.interfaces.SecurityStationManager;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerConfigToClientPacket;
@@ -62,6 +62,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.pathfinder.changedetection.TEControl;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.VersionChecker;
@@ -84,7 +85,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
 		if (event != null && event.getEntity() instanceof ItemEntity && event.getEntity().world != null && !event.getEntity().world.isRemote) {
-			ItemStack stack = ((ItemEntity) event.getEntity()).getItem(); //Get ItemStack
+			ItemStack stack = ((ItemEntity) event.getEntity()).getItem(); // Get ItemStack
 			if (!stack.isEmpty() && stack.getItem() instanceof ItemAdvancedExistence && !((ItemAdvancedExistence) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
 			}
@@ -160,7 +161,7 @@ public class LogisticsEventListener {
 			}
 		}
 		if (MainProxy.isClient(event.getWorld())) {
-			SimpleServiceLocator.routerManager.clearClientRouters();
+			RouterManager.getInstance().clearClientRouters();
 			LogisticsHUDRenderer.instance().clear();
 		}
 	}
@@ -169,7 +170,7 @@ public class LogisticsEventListener {
 	public void WorldUnload(WorldEvent.Unload event) {
 		if (MainProxy.isServer(event.getWorld())) {
 			int dim = event.getWorld().provider.getDimension();
-			SimpleServiceLocator.routerManager.dimensionUnloaded(dim);
+			RouterManager.getInstance().dimensionUnloaded(dim);
 		}
 	}
 
@@ -193,7 +194,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void onPlayerLogin(PlayerLoggedInEvent event) {
 		if (MainProxy.isServer(event.player.world)) {
-			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(event.player);
+			SecurityStationManager.getInstance().sendClientAuthorizationList(event.player);
 		}
 
 		SimpleServiceLocator.serverBufferHandler.clear(event.player);
@@ -225,7 +226,7 @@ public class LogisticsEventListener {
 	@Getter(lazy = true)
 	private static final Queue<GuiEntry> guiPos = new LinkedList<>();
 
-	//Handle GuiRepoen
+	// Handle GuiRepoen
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onGuiOpen(GuiOpenEvent event) {

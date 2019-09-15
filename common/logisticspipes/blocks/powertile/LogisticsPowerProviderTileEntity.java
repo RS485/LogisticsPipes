@@ -18,7 +18,6 @@ import net.minecraft.util.math.Direction;
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.gui.hud.HUDPowerLevel;
-import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
@@ -36,13 +35,13 @@ import logisticspipes.network.packets.hud.HUDStopBlockWatchingPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.tuples.Tuple2;
@@ -93,7 +92,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 				final Function<NeighborBlockEntity<LogisticsTileGenericPipe>, CoreRoutedPipe> getPipe =
 						(NeighborBlockEntity<LogisticsTileGenericPipe> neighbor) -> (CoreRoutedPipe) neighbor.getBlockEntity().pipe;
 				orders.entrySet().stream()
-						.map(routerIdToOrderCount -> new Tuple2<>(SimpleServiceLocator.routerManager.getRouter(routerIdToOrderCount.getKey()),
+						.map(routerIdToOrderCount -> new Tuple2<>(RouterManager.getInstance().getRouter(routerIdToOrderCount.getKey()),
 								Math.min(internalStorage, routerIdToOrderCount.getValue() * fullfillRatio)))
 						.filter(destinationToPower -> destinationToPower.getValue1() != null && destinationToPower.getValue1().getPipe() != null)
 						.forEach(destinationToPower -> new WorldCoordinatesWrapper(this)

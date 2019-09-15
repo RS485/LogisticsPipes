@@ -19,14 +19,14 @@ import net.minecraftforge.fluids.FluidUtil;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
@@ -34,9 +34,9 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemRequester, IRequireReliableTransport {
@@ -51,10 +51,10 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 				if (super.canPipeConnect(tile, dir)) {
 					return true;
 				}
-				if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
+				if (PipeInformationManager.INSTANCE.isItemPipe(tile)) {
 					return false;
 				}
-				//TODO: FIXME
+				// TODO: FIXME
 				/*
 				if (tile instanceof IFluidHandler) {
 					IFluidHandler liq = (IFluidHandler) tile;
@@ -102,11 +102,11 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 		if (getOriginalUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getOriginalUpgradeManager().getSneakyOrientation();
 		}
-		ITankUtil util = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tile, orientation);
+		ITankUtil util = TankUtilFactory.INSTANCE.getTankUtilForTE(tile, orientation);
 		if (util == null) {
 			return;
 		}
-		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
+		if (PipeInformationManager.INSTANCE.isItemPipe(tile)) {
 			return;
 		}
 		if (data.getItemStack() == null) {
@@ -116,7 +116,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 		if (liquidId == null) {
 			return;
 		}
-		while (data.getItemStack().getStackSize() > 0 && util.fill(liquidId, false) == liquidId.getAmount() && this.useEnergy(5)) {
+		while (data.getItemStack().getCount() > 0 && util.fill(liquidId, false) == liquidId.getAmount() && this.useEnergy(5)) {
 			util.fill(liquidId, true);
 			data.getItemStack().lowerStackSize(1);
 			Item item = data.getItemStack().getItem().item;
@@ -151,8 +151,8 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 		super.throttledUpdateEntity();
 
 		Iterator<ITankUtil> iterator = new WorldCoordinatesWrapper(container).connectedTileEntities()
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity()))
-				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()))
+				.filter(adjacent -> !PipeInformationManager.INSTANCE.isItemPipe(adjacent.getBlockEntity()))
+				.map(adjacent -> TankUtilFactory.INSTANCE.getTankUtilForTE(adjacent.getBlockEntity(), adjacent.getDirection()))
 				.filter(Objects::nonNull)
 				.iterator();
 
@@ -163,7 +163,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 				continue;
 			}
 
-			//How much do I want?
+			// How much do I want?
 			Map<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
 			HashMap<FluidIdentifier, Integer> wantFluids = new HashMap<>();
 			for (Entry<ItemIdentifier, Integer> item : wantContainers.entrySet()) {
@@ -175,7 +175,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 				wantFluids.put(FluidIdentifier.get(liquidstack), item.getValue() * liquidstack.amount);
 			}
 
-			//How much do I have?
+			// How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
 			next.forEachFluid(fluid -> {
@@ -184,8 +184,8 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 				}
 			});
 
-			//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
-			//Reduce what I have and what have been requested already
+			// HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
+			// Reduce what I have and what have been requested already
 			for (Entry<FluidIdentifier, Integer> liquidId : wantFluids.entrySet()) {
 				Integer haveCount = haveFluids.get(liquidId.getKey());
 				if (haveCount != null) {
@@ -207,7 +207,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 
 			((PipeItemsFluidSupplier) container.pipe).setRequestFailed(false);
 
-			//Make request
+			// Make request
 
 			for (ItemIdentifier need : wantContainers.keySet()) {
 				FluidStack requestedFluidId = FluidUtil.getFluidContained(need.unsafeMakeNormalStack(1));
@@ -266,8 +266,8 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 	}
 
 	private void decreaseRequested(ItemStack item) {
-		int remaining = item.getStackSize();
-		//see if we can get an exact match
+		int remaining = item.getCount();
+		// see if we can get an exact match
 		Integer count = _requestedItems.get(item.getItem());
 		if (count != null) {
 			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
@@ -276,7 +276,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 		if (remaining <= 0) {
 			return;
 		}
-		//still remaining... was from fuzzyMatch on a crafter
+		// still remaining... was from fuzzyMatch on a crafter
 		for (Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
 			if (e.getKey().item == item.getItem().item && e.getKey().itemDamage == item.getItem().itemDamage) {
 				int expected = e.getValue();
@@ -287,7 +287,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements ItemReques
 				return;
 			}
 		}
-		//we have no idea what this is, log it.
+		// we have no idea what this is, log it.
 		debug.log("liquid supplier got unexpected item " + item.toString());
 	}
 

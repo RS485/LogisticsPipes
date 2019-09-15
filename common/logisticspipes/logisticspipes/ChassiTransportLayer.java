@@ -17,7 +17,7 @@ public class ChassiTransportLayer extends TransportLayer {
 	@Override
 	public Direction itemArrived(IRoutedItem item, Direction blocked) {
 		if (item.getItemStack() != null) {
-			_chassiPipe.recievedItem(item.getItemStack().getStackSize());
+			_chassiPipe.recievedItem(item.getItemStack().getCount());
 		}
 		return _chassiPipe.getPointedOrientation();
 	}
@@ -39,7 +39,7 @@ public class ChassiTransportLayer extends TransportLayer {
 			return false;
 		}
 
-		if (reply.maxNumberOfItems > 0 && item.getItemStack().getStackSize() > reply.maxNumberOfItems) {
+		if (reply.maxNumberOfItems > 0 && item.getItemStack().getCount() > reply.maxNumberOfItems) {
 			Direction o = _chassiPipe.getPointedOrientation();
 			if (o == null) {
 				o = Direction.UP;

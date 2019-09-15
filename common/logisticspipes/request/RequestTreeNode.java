@@ -18,18 +18,18 @@ import java.util.TreeSet;
 
 import lombok.Getter;
 
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.Crafter;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.RequestProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
@@ -92,10 +92,10 @@ public class RequestTreeNode {
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item);
 		List<ExitRoute> validSources = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = RouterManager.getInstance().getRouterUnsafe(i, false);
 
 			if (!r.isValidCache()) {
-				continue; //Skip Routers without a valid pipe
+				continue; // Skip Routers without a valid pipe
 			}
 
 			List<ExitRoute> e = destination.getDistanceTo(r);
@@ -192,9 +192,9 @@ public class RequestTreeNode {
 		}
 		if (promise.getAmount() > getMissingAmount()) {
 			int more = promise.getAmount() - getMissingAmount();
-			//promise.numberOfItems = getMissingAmount();
-			//Add Extra
-			//LogisticsExtraPromise extra = new LogisticsExtraPromise(promise.item, more, promise.sender, false);
+			// promise.numberOfItems = getMissingAmount();
+			// Add Extra
+			// LogisticsExtraPromise extra = new LogisticsExtraPromise(promise.item, more, promise.sender, false);
 			extrapromises.add(promise.split(more));
 		}
 		if (promise.getAmount() <= 0) {
@@ -396,10 +396,10 @@ public class RequestTreeNode {
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(getRequestType());
 		List<ExitRoute> validSources = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			Router r = RouterManager.getInstance().getRouterUnsafe(i, false);
 
 			if (!r.isValidCache()) {
-				continue; //Skip Routers without a valid pipe
+				continue; // Skip Routers without a valid pipe
 			}
 
 			List<ExitRoute> e = getRequestType().getRouter().getDistanceTo(r);
@@ -415,17 +415,17 @@ public class RequestTreeNode {
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		Iterator<Tuple2<CraftingTemplate, List<IFilter>>> iterAllCrafters = allCraftersForItem.iterator();
 
-		//a queue to store the crafters, sorted by todo; we will fill up from least-most in a balanced way.
+		// a queue to store the crafters, sorted by todo; we will fill up from least-most in a balanced way.
 		PriorityQueue<CraftingSorterNode> craftersSamePriority = new PriorityQueue<>(5);
 		ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<>();
-		//TODO ^ Make this a generic list
+		// TODO ^ Make this a generic list
 		boolean done = false;
 		Tuple2<CraftingTemplate, List<IFilter>> lastCrafter = null;
 		int currentPriority = 0;
 		outer:
 		while (!done) {
 
-			/// First: Create a list of all crafters with the same priority (craftersSamePriority).
+			// / First: Create a list of all crafters with the same priority (craftersSamePriority).
 			if (iterAllCrafters.hasNext()) {
 				if (lastCrafter == null) {
 					lastCrafter = iterAllCrafters.next();
@@ -458,9 +458,9 @@ public class RequestTreeNode {
 				continue;
 			}
 			if (craftersToBalance.isEmpty() && (craftersSamePriority == null || craftersSamePriority.isEmpty())) {
-				continue; //nothing at this priority was available for crafting
+				continue; // nothing at this priority was available for crafting
 			}
-			/// end of crafter prioriy selection.
+			// / end of crafter prioriy selection.
 
 			if (craftersSamePriority.size() == 1) { // then no need to balance.
 				craftersToBalance.add(craftersSamePriority.poll());
@@ -477,7 +477,7 @@ public class RequestTreeNode {
 				}
 				// while we crafters that can work and we have work to do.
 				while (!craftersToBalance.isEmpty() && itemsNeeded > 0) {
-					//while there is more, and the next crafter has the same toDo as the current one, add it to craftersToBalance.
+					// while there is more, and the next crafter has the same toDo as the current one, add it to craftersToBalance.
 					//  typically pulls 1 at a time, but may pull multiple, if they have the exact same todo.
 					while (!craftersSamePriority.isEmpty() && craftersSamePriority.peek().currentToDo() <= craftersToBalance.get(0).currentToDo()) {
 						craftersToBalance.add(craftersSamePriority.poll());
@@ -491,7 +491,7 @@ public class RequestTreeNode {
 						cap = Integer.MAX_VALUE;
 					}
 
-					//split the work between N crafters, up to "cap" (at which point we would be dividing the work between N+1 crafters.
+					// split the work between N crafters, up to "cap" (at which point we would be dividing the work between N+1 crafters.
 					int floor = craftersToBalance.get(0).currentToDo();
 					cap = Math.min(cap, floor + (itemsNeeded + craftersToBalance.size() - 1) / craftersToBalance.size());
 
@@ -524,10 +524,10 @@ public class RequestTreeNode {
 			// don't clear, because we might have under-requested, and need to consider these again
 			if (!craftersToBalance.isEmpty()) {
 				done = false;
-				//craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
+				// craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 			}
 		}
-		//LogisticsPipes.log.info("done");
+		// LogisticsPipes.log.info("done");
 		return isDone();
 	}
 
@@ -554,9 +554,9 @@ public class RequestTreeNode {
 		if (failed) {
 			// drop the failed requests.
 			lastNodes.forEach(RequestTreeNode::destroy);
-			//save last tried template for filling out the tree
+			// save last tried template for filling out the tree
 			lastCrafterTried = template;
-			//figure out how many we can actually get
+			// figure out how many we can actually get
 			for (int i = 0; i < stacks.size(); i++) {
 				workSetsAvailable = Math.min(workSetsAvailable, lastNodes.get(i).getPromiseAmount() / (stacks.get(i).getValue1().getRequestedAmount() / nCraftingSets));
 			}
@@ -568,10 +568,10 @@ public class RequestTreeNode {
 	}
 
 	private int generateRequestTreeFor(int workSets, CraftingTemplate template) {
-		//and try it
+		// and try it
 		ArrayList<RequestTreeNode> newChildren = new ArrayList<>();
 		if (workSets > 0) {
-			//now set the amounts
+			// now set the amounts
 			List<Tuple2<Resource, IAdditionalTargetInformation>> stacks = template.getComponents(workSets);
 			boolean failed = false;
 			for (Tuple2<Resource, IAdditionalTargetInformation> stack : stacks) {
@@ -678,7 +678,7 @@ public class RequestTreeNode {
 			int setsAbleToCraft = calculateMaxWork(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
 
 			if (setsAbleToCraft > 0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
-				//if we got here, we can at least some of the remaining amount
+				// if we got here, we can at least some of the remaining amount
 				Promise job = template.generatePromise(setsAbleToCraft);
 				if (job.getAmount() != setsAbleToCraft * setSize) {
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");

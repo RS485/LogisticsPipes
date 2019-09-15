@@ -57,7 +57,6 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Tuple2;
@@ -207,7 +206,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			}
 
 			itemDisplay.renderAmount(getStackAmount());
-			//SearchInput
+			// SearchInput
 			search.renderSearchBar();
 
 			itemDisplay.renderSortMode(right - 103, bottom - 52);
@@ -474,7 +473,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		} else if (guibutton.id == 16) {
 			requestMatrix(64);
 		} else if (guibutton.id == 17) {
-			//hideShowButton
+			// hideShowButton
 			// moveWhileSmall
 			showRequest = !showRequest;
 			if (showRequest) {
@@ -521,14 +520,14 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 				ItemIdentifier ident = ItemIdentifier.get(entry.getValue1());
 				for (ItemStack stack : list) {
 					if (!stack.getItem().equals(ident)) continue;
-					int toUse = Math.min(size, stack.getStackSize());
+					int toUse = Math.min(size, stack.getCount());
 					stack.lowerStackSize(toUse);
 					size -= toUse;
 				}
 			}
 			Iterator<ItemStack> iter = list.iterator();
 			while (iter.hasNext()) {
-				if (iter.next().getStackSize() <= 0) {
+				if (iter.next().getCount() <= 0) {
 					iter.remove();
 				}
 			}
@@ -557,7 +556,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 	@Override
 	public void specialItemRendering(ItemIdentifier item, int x, int y) {
-		//TODO Render Thaumcraft aspects
+		// TODO Render Thaumcraft aspects
 	}
 
 	@Override
@@ -579,8 +578,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 			return true;
 		}
-		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
-		//Enchantment? Enchantment!
+		// if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
+		// Enchantment? Enchantment!
 		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for (Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
 			String enchantname = e.getKey().getName();

@@ -30,6 +30,7 @@ import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.interfaces.IRotationProvider;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
@@ -41,7 +42,6 @@ import logisticspipes.network.packets.orderer.OrdererWatchPacket;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
@@ -51,9 +51,9 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.Tuple2;
 
@@ -85,11 +85,11 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		//allow using upgrade manager
+		// allow using upgrade manager
 		if (MainProxy.isPipeControllerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			return false;
 		}
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
@@ -165,8 +165,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				delay--;
 				return;
 			}
-			IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
-			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, getRouter().getSimpleId(), false);
+			IRoutedItem itemToSend = RoutedItemHelper.INSTANCE.createNewTravelItem(stack);
+			LogisticsManager.getInstance().assignDestinationFor(itemToSend, getRouter().getSimpleId(), false);
 			if (itemToSend.getDestinationUUID() != null) {
 				Direction dir = getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
@@ -212,7 +212,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	/*public TextureAtlasSprite getTextureFor(int l) {
 		Direction dir = Direction.getFront(l);
-		//if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
+		// if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			switch (dir) {
 				case UP:
 				case DOWN:
@@ -250,7 +250,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@Override
 	public void onAllowedRemoval() {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			inv.dropContents(getWorld(), getX(), getY(), getZ());
 			toSortInv.dropContents(getWorld(), getX(), getY(), getZ());
 			diskInv.dropContents(getWorld(), getX(), getY(), getZ());
@@ -299,7 +299,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		} else {
 			targetType = null;
 		}
-		if (targetType != oldTargetType && !localGuiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
+		if (targetType != oldTargetType && !localGuiWatcher.isEmpty() && getWorld() != null && !getWorld().isClient()) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(container), localGuiWatcher);
 		}
 	}
@@ -355,7 +355,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			}
 			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
 		}
-		if (!localGuiWatcher.isEmpty() && getWorld() != null && MainProxy.isServer(getWorld())) {
+		if (!localGuiWatcher.isEmpty() && getWorld() != null && !getWorld().isClient()) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(container), localGuiWatcher);
 		}
 		cacheRecipe();
@@ -405,10 +405,10 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 					}
 				}
 			}
-			//Not enough material
+			// Not enough material
 			return ItemStack.EMPTY;
 		}
-		AutoCraftingInventory crafter = new AutoCraftingInventory(null);//TODO
+		AutoCraftingInventory crafter = new AutoCraftingInventory(null);// TODO
 		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
 			if (j != -1) {
@@ -416,7 +416,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			}
 		}
 		if (!cache.matches(crafter, getWorld())) {
-			return ItemStack.EMPTY; //Fix MystCraft
+			return ItemStack.EMPTY; // Fix MystCraft
 		}
 		ItemStack result = cache.getCraftingResult(crafter);
 		if (result.isEmpty()) {
@@ -425,7 +425,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
 			return ItemStack.EMPTY;
 		}
-		crafter = new AutoCraftingInventory(null);//TODO
+		crafter = new AutoCraftingInventory(null);// TODO
 		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
 			if (j != -1) {
@@ -474,7 +474,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	public ItemStack getResultForClick() {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			ItemStack result = getOutput(true);
 			if (result.isEmpty()) {
 				result = getOutput(false);
@@ -513,8 +513,8 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		toSortInv.readFromNBT(par1nbtTagCompound, "toSortInv");
 		diskInv.readFromNBT(par1nbtTagCompound, "diskInv");
 		rotation = par1nbtTagCompound.getInteger("blockRotation");
-		//TODO NPEs on world load
-		//cacheRecipe();
+		// TODO NPEs on world load
+		// cacheRecipe();
 	}
 
 	@Override

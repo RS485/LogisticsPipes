@@ -13,11 +13,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -54,7 +54,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
 		BlockEntity inv = this.getTile(player.world, tile -> tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
-		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, null);
+		WrappedInventory util = InventoryUtilFactory.INSTANCE.getInventoryUtil(inv, null);
 		Slot result = null;
 		if (player.openContainer.inventorySlots.get(inventorySlot).slotNumber == inventorySlot) {
 			result = player.openContainer.inventorySlots.get(inventorySlot);
@@ -83,7 +83,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 		} else {
 			ItemStack dummyStack = new ItemStack(Blocks.STONE, 0, 0);
 			CompoundTag nbt = new CompoundTag();
-			nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
+			nbt.setBoolean("LPStackFinderBoolean", true); // Make it unique
 			dummyStack.setTagCompound(nbt); // dummyStack: yay, I am unique
 			result.putStack(dummyStack);
 			for (int i = 0; i < util.getSizeInventory(); i++) {
@@ -110,7 +110,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 		if (resultIndex == -1) {
 			player.sendMessage(new TextComponentTranslation("lp.chat.slotnotfound"));
 		} else {
-			//Copy pipe to coordinates to use the getPipe method
+			// Copy pipe to coordinates to use the getPipe method
 			setPosX(getPipePosX());
 			setPosY(getPipePosY());
 			setPosZ(getPipePosZ());

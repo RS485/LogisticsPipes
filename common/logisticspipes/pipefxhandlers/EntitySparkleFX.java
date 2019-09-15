@@ -62,7 +62,7 @@ public class EntitySparkleFX extends Particle {
 		float var17 = 1.0F;
 		BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		//tesselator.setBrightness(240);
+		// tesselator.setBrightness(240);
 		buffer.pos(var14 - rotationX * var13 - rotationXY * var13, var15 - rotationZ * var13, var16 - rotationYZ * var13 - rotationXZ * var13).tex(var10, var12).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();
 		buffer.pos(var14 - rotationX * var13 + rotationXY * var13, var15 + rotationZ * var13, var16 - rotationYZ * var13 + rotationXZ * var13).tex(var10, var11).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();
 		buffer.pos(var14 + rotationX * var13 + rotationXY * var13, var15 + rotationZ * var13, var16 + rotationYZ * var13 + rotationXZ * var13).tex(var9, var11).color(particleRed * var17, particleGreen * var17, particleBlue * var17, 1.0F).endVertex();

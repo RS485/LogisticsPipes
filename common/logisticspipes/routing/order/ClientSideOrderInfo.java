@@ -53,7 +53,7 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 		}
 	}
 
-	//Ignore this call
+	// Ignore this call
 	@Override
 	public void setWatched() {}
 }

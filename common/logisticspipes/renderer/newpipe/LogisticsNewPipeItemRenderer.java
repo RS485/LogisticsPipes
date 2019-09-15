@@ -86,7 +86,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 					.get(edge), LogisticsNewRenderPipe.basicPipeTexture));
 		}
 
-		//ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
+		// ArrayList<Pair<CCModel, IconTransformation>> objectsToRender2 = new ArrayList<Pair<CCModel, IconTransformation>>();
 		for (Direction dir : Direction.values()) {
 			for (IModel3D model : LogisticsNewRenderPipe.texturePlate_Outer.get(dir)) {
 				TextureTransformation icon = Textures.LPnewPipeIconProvider.getIcon(texture);
@@ -103,8 +103,8 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 	}
 
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
-		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); //don't break other mods' guis when holding a pipe
-		//force transparency
+		GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT); // don't break other mods' guis when holding a pipe
+		// force transparency
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glEnable(GL11.GL_BLEND);
 
@@ -118,7 +118,7 @@ public class LogisticsNewPipeItemRenderer implements IItemRenderer {
 
 		TextureTransformation icon = SimpleServiceLocator.cclProxy.createIconTransformer(Textures.LOGISTICS_REQUEST_TABLE_NEW);
 
-		//Draw
+		// Draw
 		LogisticsNewSolidBlockWorldRenderer.block.get(rotation).render(new I3DOperation[] { icon });
 		for (CoverSides side : CoverSides.values()) {
 			LogisticsNewSolidBlockWorldRenderer.texturePlate_Outer.get(side).get(rotation).render(new I3DOperation[] { icon });

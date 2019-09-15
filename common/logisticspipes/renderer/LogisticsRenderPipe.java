@@ -9,9 +9,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
-import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -37,7 +37,6 @@ import logisticspipes.renderer.newpipe.LogisticsNewPipeItemBoxRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.debug.PerformanceMeter;
@@ -81,7 +80,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			RenderSystem.matrixMode(GL11.GL_TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.scale(4.0F, 4.0F, 1.0F);
-			//RenderSystem.translate(0.0625F, 0.0625F, 0.0625F);
+			// RenderSystem.translate(0.0625F, 0.0625F, 0.0625F);
 			RenderSystem.matrixMode(GL11.GL_MODELVIEW);
 		}
 
@@ -104,7 +103,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 
 		if (!inHand && !tileentity.isOpaque()) {
 			if (tileentity.pipe.transport instanceof PipeFluidTransportLogistics) {
-				//renderFluids(pipe.pipe, x, y, z);
+				// renderFluids(pipe.pipe, x, y, z);
 			}
 			if (tileentity.pipe.transport != null) {
 				renderSolids(tileentity.pipe, x, y, z, partialTicks);
@@ -348,8 +347,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		RenderItem itemRender = mc.getRenderItem();
 
 		RenderSystem.disableLighting();
-		RenderSystem.color(1F, 1F, 1F); //Forge: Reset color in case Items change it.
-		RenderSystem.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
+		RenderSystem.color(1F, 1F, 1F); // Forge: Reset color in case Items change it.
+		RenderSystem.enableBlend(); // Forge: Make sure blend is enabled else tabs show a white border.
 		itemRender.zLevel = 100.0F;
 		RenderSystem.enableRescaleNormal();
 
@@ -390,7 +389,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		// item render code end
 
 		// not needed?
-		//itemRender.renderItemOverlays(mc.fontRenderer, itemstack, 0, 0);
+		// itemRender.renderItemOverlays(mc.fontRenderer, itemstack, 0, 0);
 		itemRender.zLevel = 0.0F;
 	}
 

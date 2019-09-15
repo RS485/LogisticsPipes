@@ -34,7 +34,7 @@ public class OrdererWatchPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		ResourceNetwork.writeResource(output, stack); //stack can be null
+		ResourceNetwork.writeResource(output, stack); // stack can be null
 		output.writeSerializable(orders);
 	}
 

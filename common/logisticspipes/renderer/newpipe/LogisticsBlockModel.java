@@ -118,7 +118,7 @@ public class LogisticsBlockModel implements IModel {
 					}
 					return quads;
 				} else {
-					return Collections.emptyList();//LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generateBlockRenderList(state), format);
+					return Collections.emptyList();// LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generateBlockRenderList(state), format);
 				}
 			}
 

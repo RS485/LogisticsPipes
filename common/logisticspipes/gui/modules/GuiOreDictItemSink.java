@@ -100,7 +100,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 			currentOffset = 0;
 		}
 
-		//draw unsunk list and highlight bar, handle clicks
+		// draw unsunk list and highlight bar, handle clicks
 		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 159, guiTop + 27, Color.DARK_GREY, 0.0);
 		for (int i = 0; i + currentOffset < unsunkNames.size() && i < 2; i++) {
 			if (27 <= pointerX && pointerX < 158 && 6 + (10 * i) <= pointerY && pointerY < 6 + (10 * (i + 1))) {
@@ -121,7 +121,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 			}
 		}
 
-		//draw main list and highlight bar, handle clicks
+		// draw main list and highlight bar, handle clicks
 		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY, 0.0);
 		for (int i = 0; i < _itemSink.oreList.size() && i < 9; i++) {
 			if (6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {

@@ -61,7 +61,7 @@ public class ItemCraftingTemplate implements ReqCraftingTemplate {
 		return new LogisticsPromise(newStack, _crafter, ResourceType.CRAFTING);
 	}
 
-	//TODO: refactor so that other classes don't reach through the template to the crafter.
+	// TODO: refactor so that other classes don't reach through the template to the crafter.
 	// needed to get the crafter todo, in order to sort
 	@Override
 	public ItemCrafter getCrafter() {

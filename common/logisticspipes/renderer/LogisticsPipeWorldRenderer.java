@@ -90,7 +90,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 					// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 					int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
 
-					//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
+					// workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
 					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
 
 					// render sub block
@@ -104,11 +104,11 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 				if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
 					LogisticsPipeWorldRenderer.resetToCenterDimensions(dim);
 
-					//Render opaque Layer
+					// Render opaque Layer
 					state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
 					LogisticsPipeWorldRenderer.renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
 
-					//Render Pipe Texture
+					// Render Pipe Texture
 					state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(null));
 					LogisticsPipeWorldRenderer.renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
 				}
@@ -130,10 +130,10 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 					// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 					int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
 
-					//workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
+					// workaround for 1.6 texture weirdness, rotate texture for N/S/E/W connections
 					renderblocks.uvRotateEast = renderblocks.uvRotateNorth = renderblocks.uvRotateWest = renderblocks.uvRotateSouth = (dir < 2) ? 0 : 1;
 
-					//Render opaque Layer
+					// Render opaque Layer
 					state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
 					LogisticsPipeWorldRenderer.renderOneWayBlock(renderblocks, block, x, y, z, dim, 0x3f);
 
@@ -187,7 +187,7 @@ public class LogisticsPipeWorldRenderer implements ISimpleBlockRenderingHandler 
 		block.setRenderMask(mask);
 		renderblocks.setRenderBounds(dim[2], dim[0], dim[1], dim[5], dim[3], dim[4]);
 		renderblocks.renderStandardBlock(block, x, y, z);
-		//flip back side texture
+		// flip back side texture
 		renderblocks.flipTexture = true;
 		block.setRenderMask((mask & 0x15) << 1 | (mask & 0x2a) >> 1); // pairwise swapped mask
 		renderblocks.setRenderBounds(dim[5], dim[3], dim[4], dim[2], dim[0], dim[1]);

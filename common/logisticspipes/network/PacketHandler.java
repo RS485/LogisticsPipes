@@ -44,7 +44,7 @@ import network.rs485.logisticspipes.util.LPDataInput;
 public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernPacket> {
 
 	public static final Map<Integer, StackTraceElement[]> debugMap = new HashMap<>();
-	//TODO correct to work with WeakReference (See FML original)
+	// TODO correct to work with WeakReference (See FML original)
 	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = AttributeKey.newInstance("lp:inboundpacket");
 	public static List<ModernPacket> packetlist;
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
@@ -56,7 +56,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		T packet = (T) PacketHandler.packetmap.get(clazz).template();
 		if (LPConstants.DEBUG && MainProxy.proxy.getSide().equals("Client")) {
 			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			synchronized (PacketHandler.debugMap) { //Unique id
+			synchronized (PacketHandler.debugMap) { // Unique id
 				int id = PacketHandler.packetDebugID++;
 				PacketHandler.debugMap.put(id, trace);
 				packet.setDebugId(id);
@@ -99,7 +99,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		}
 	}
 
-	//Used to provide the Description packet
+	// Used to provide the Description packet
 	public static FMLProxyPacket toFMLPacket(ModernPacket msg) throws Exception {
 		return PacketHandler.toFMLPacket(msg, MainProxy.networkChannelName);
 	}
@@ -144,8 +144,8 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		nbt.removeTag("LogisticsPipes:PacketData");
 	}
 
-	//hacky callback to process packets coming from by the packetbufferhandler decompressors
-	//TODO replace with proper netty implementation
+	// hacky callback to process packets coming from by the packetbufferhandler decompressors
+	// TODO replace with proper netty implementation
 	public static void onPacketData(final LPDataInput data, final EntityPlayer player) {
 		if (player == null) {
 			return;
@@ -215,7 +215,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		super.exceptionCaught(ctx, cause);
 	}
 
-	//horrible hack to carry the proper player for the side along...
+	// horrible hack to carry the proper player for the side along...
 	static class InboundModernPacketWrapper {
 
 		final ModernPacket packet;

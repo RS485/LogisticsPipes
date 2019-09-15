@@ -26,10 +26,10 @@ import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.modules.ModuleSatellite;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
@@ -46,7 +46,6 @@ import logisticspipes.request.RequestTree;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.item.ItemStack;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements ItemRequester, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
@@ -107,7 +106,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements ItemR
 	private void addToList(ItemStack stack) {
 		for (ItemStack ident : itemList) {
 			if (ident.getItem().equals(stack.getItem())) {
-				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
+				ident.setStackSize(ident.getCount() + stack.getCount());
 				return;
 			}
 		}
@@ -116,7 +115,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements ItemR
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		IInventoryUtil inv = this.getPointedInventory();
+		WrappedInventory inv = this.getPointedInventory();
 		if (inv != null) {
 			for (int i = 0; i < inv.getSizeInventory(); i++) {
 				ItemStack stackInSlot = inv.getStackInSlot(i);
@@ -224,10 +223,10 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements ItemR
 			ItemStack stack = iterator.next();
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe, null);
 			if (received > 0) {
-				if (received == stack.getStackSize()) {
+				if (received == stack.getCount()) {
 					iterator.remove();
 				} else {
-					stack.setStackSize(stack.getStackSize() - received);
+					stack.setStackSize(stack.getCount() - received);
 				}
 			}
 		}

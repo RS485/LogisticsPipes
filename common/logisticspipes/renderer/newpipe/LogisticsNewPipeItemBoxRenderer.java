@@ -15,10 +15,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.items.LogisticsFluidContainer;
+import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.item.ItemStack;
 
 public class LogisticsNewPipeItemBoxRenderer {
 
@@ -62,7 +62,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		GL11.glTranslated(-0.5, -0.5, -0.5);
 
 		if (itemstack != null && itemstack.getItem() instanceof LogisticsFluidContainer) {
-			FluidIdentifierStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemStack.getFromStack(itemstack));
+			FluidIdentifierStack f = LogisticsFluidManager.getInstance().getFluidFromContainer(ItemStack.getFromStack(itemstack));
 			if (f != null) {
 				/*
 				FluidContainerRenderer.skipNext = true;

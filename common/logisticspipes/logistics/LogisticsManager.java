@@ -22,6 +22,10 @@ import logisticspipes.utils.tuples.Tuple3;
 
 public interface LogisticsManager {
 
+	static LogisticsManager getInstance() {
+		return LogisticsManagerImpl.INSTANCE;
+	}
+
 	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
 
 	Tuple3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude);
@@ -35,7 +39,7 @@ public interface LogisticsManager {
 	String getBetterRouterName(Router r);
 
 	int getAmountFor(ItemIdentifier item, List<ExitRoute> validDestinations);
-	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, boolean realrequest, boolean denyCrafterAdding);
-	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors);
-	//boolean request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors);
+	// boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, boolean realrequest, boolean denyCrafterAdding);
+	// boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors);
+	// boolean request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors);
 }

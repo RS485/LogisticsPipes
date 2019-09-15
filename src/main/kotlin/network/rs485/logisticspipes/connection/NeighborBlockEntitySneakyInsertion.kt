@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.connection
 
-import logisticspipes.interfaces.ISlotUpgradeManager
+import logisticspipes.interfaces.SlotUpgradeManager
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.util.math.Direction
 
@@ -54,7 +54,7 @@ class NeighborBlockEntitySneakyInsertion<T : BlockEntity>(blockEntity: T, direct
         return this
     }
 
-    fun from(upgradeManager: ISlotUpgradeManager?): NeighborBlockEntitySneakyInsertion<T> {
+    fun from(upgradeManager: SlotUpgradeManager?): NeighborBlockEntitySneakyInsertion<T> {
         if (upgradeManager?.hasSneakyUpgrade() == true) sneakyDirection = upgradeManager.sneakyOrientation
         return this
     }

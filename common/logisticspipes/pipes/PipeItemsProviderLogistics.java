@@ -34,8 +34,8 @@ import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.ItemRequestProvider;
@@ -57,26 +57,27 @@ import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.request.resources.Resource.Dict;
-import logisticspipes.request.resources.Resource;
 import logisticspipes.request.resources.ItemResource;
-import logisticspipes.routing.Router;
+import logisticspipes.request.resources.Resource;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
 import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
@@ -127,7 +128,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements ItemRe
 		}
 
 		return new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity()))
+				.filter(adjacent -> !PipeInformationManager.INSTANCE.isItemPipe(adjacent.getBlockEntity()))
 				.map(this::getAdaptedInventoryUtil)
 				.filter(Objects::nonNull)
 				.map(util -> util.itemCount(item))
@@ -149,26 +150,26 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements ItemRe
 	private int sendStack(ItemStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
 		ItemIdentifier item = stack.getItem();
 
-		final Iterator<Tuple2<IInventoryUtil, Direction>> iterator = new WorldCoordinatesWrapper(container)
+		final Iterator<Tuple2<WrappedInventory, Direction>> iterator = new WorldCoordinatesWrapper(container)
 				.connectedTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity()))
+				.filter(adjacent -> !PipeInformationManager.INSTANCE.isItemPipe(adjacent.getBlockEntity()))
 				.flatMap(adjacent -> {
-					final IInventoryUtil invUtil = getAdaptedInventoryUtil(adjacent);
+					final WrappedInventory invUtil = getAdaptedInventoryUtil(adjacent);
 					return invUtil == null ? Stream.empty() : Stream.of(new Tuple2<>(invUtil, adjacent.getDirection()));
 				})
 				.iterator();
 
 		while (iterator.hasNext()) {
-			Tuple2<IInventoryUtil, Direction> next = iterator.next();
+			Tuple2<WrappedInventory, Direction> next = iterator.next();
 			int available = next.getValue1().itemCount(item);
 			if (available == 0) {
 				continue;
 			}
 
-			int wanted = Math.min(available, stack.getStackSize());
+			int wanted = Math.min(available, stack.getCount());
 			wanted = Math.min(wanted, maxCount);
 			wanted = Math.min(wanted, item.getMaxStackSize());
-			Router dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination, false);
+			Router dRtr = RouterManager.getInstance().getRouterUnsafe(destination, false);
 			if (dRtr == null) {
 				_orderManager.sendFailed();
 				return 0;
@@ -195,7 +196,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements ItemRe
 			int sent = removed.getCount();
 			useEnergy(sent * neededEnergy());
 
-			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(removed);
+			IRoutedItem routedItem = RoutedItemHelper.INSTANCE.createNewTravelItem(removed);
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
 			routedItem.setAdditionalTargetInformation(info);
@@ -209,7 +210,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements ItemRe
 		return 0;
 	}
 
-	private IInventoryUtil getAdaptedInventoryUtil(NeighborBlockEntity<BlockEntity> adjacent) {
+	private WrappedInventory getAdaptedInventoryUtil(NeighborBlockEntity<BlockEntity> adjacent) {
 		return CoreRoutedPipe.getInventoryForExtractionMode(getExtractionMode(), adjacent);
 	}
 
@@ -318,10 +319,10 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements ItemRe
 
 		final Iterator<Map<ItemIdentifier, Integer>> iterator = new WorldCoordinatesWrapper(container)
 				.connectedTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity()))
+				.filter(adjacent -> !PipeInformationManager.INSTANCE.isItemPipe(adjacent.getBlockEntity()))
 				.map(this::getAdaptedInventoryUtil)
 				.filter(Objects::nonNull)
-				.map(IInventoryUtil::getItemsAndCount)
+				.map(WrappedInventory::getItemsAndCount)
 				.iterator();
 
 		outer:
@@ -450,10 +451,10 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements ItemRe
 	}
 
 	@Override
-	//ToDo: work in progress, currently not active code.
+	// ToDo: work in progress, currently not active code.
 	public Set<ItemIdentifier> getSpecificInterests() {
 		return new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity()))
+				.filter(adjacent -> !PipeInformationManager.INSTANCE.isItemPipe(adjacent.getBlockEntity()))
 				.map(this::getAdaptedInventoryUtil)
 				.filter(Objects::nonNull)
 				.flatMap(inv -> inv.getItems().stream())

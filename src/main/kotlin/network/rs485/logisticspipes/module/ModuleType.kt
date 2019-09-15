@@ -66,9 +66,11 @@ abstract class ModuleType<T : LogisticsModule> {
     }
 
     class Builder<T : LogisticsModule>(private val constructor: () -> T) {
+
         fun build(): ModuleType<T> = object : ModuleType<T>() {
             override fun create(): T = constructor()
         }
+
     }
 
 }

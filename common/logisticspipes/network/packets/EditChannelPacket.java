@@ -8,9 +8,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
 import lombok.Setter;
 
+import logisticspipes.interfaces.routing.ChannelManagerProvider;
 import logisticspipes.interfaces.routing.IChannelManager;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -41,7 +41,7 @@ public class EditChannelPacket extends AddNewChannelPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(player.getEntityWorld());
+		IChannelManager manager = ChannelManagerProvider.getInstance().getChannelManager(player.getEntityWorld());
 		Optional<ChannelInformation> channelOpt = manager.getChannels().stream()
 				.filter(chan -> chan.getChannelIdentifier().equals(channelIdentifier))
 				.findFirst();

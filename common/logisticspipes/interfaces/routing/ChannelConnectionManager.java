@@ -5,8 +5,13 @@ import java.util.UUID;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManagerImpl;
 
 public interface ChannelConnectionManager {
+
+	static ChannelConnectionManager getInstance() {
+		return RouterManagerImpl.INSTANCE;
+	}
 
 	boolean hasChannelConnection(Router router);
 
@@ -15,4 +20,5 @@ public interface ChannelConnectionManager {
 	List<CoreRoutedPipe> getConnectedPipes(Router router);
 
 	void removeChannelConnection(Router router);
+
 }

@@ -28,10 +28,10 @@ import logisticspipes.network.packets.routingdebug.RoutingUpdateDoneDebug;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateInitDebug;
 import logisticspipes.network.packets.routingdebug.RoutingUpdateSourcePipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.QueuedTasks;
 
@@ -171,7 +171,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		for (int i = 0; i < closedSet.size(); i++) {
 			EnumSet<PipeRoutingConnectionType> set = closedSet.get(i);
 			if (set != null) {
-				Router router = SimpleServiceLocator.routerManager.getRouter(i);
+				Router router = RouterManager.getInstance().getRouter(i);
 				if (router != null) {
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugClosedSet.class).setPos(router.getLPPosition()).setSet(set), (EntityPlayer) sender);
 				}
@@ -180,7 +180,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		for (int i = 0; i < filterList.size(); i++) {
 			EnumMap<PipeRoutingConnectionType, List<List<IFilter>>> filters = filterList.get(i);
 			if (filters != null) {
-				Router router = SimpleServiceLocator.routerManager.getRouter(i);
+				Router router = RouterManager.getInstance().getRouter(i);
 				if (router != null) {
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugFilters.class).setPos(router.getLPPosition()).setFilters(filters), (EntityPlayer) sender);
 				}
@@ -196,7 +196,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		}
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setMsg(e), (EntityPlayer) sender);
 		if (prevNode == null || prevNode.debug.isTraced) {
-			//Display Information On Client Side
+			// Display Information On Client Side
 
 			wait("Continue with next pipe?", false);
 		}

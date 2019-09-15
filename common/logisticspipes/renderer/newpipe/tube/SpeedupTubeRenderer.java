@@ -35,7 +35,7 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 
 	static Map<SpeedupDirection, List<IModel3D>> tubeSpeedupBase = new HashMap<>();
 
-	//Global Access
+	// Global Access
 	public static Map<SpeedupDirection, IModel3D> tubeSpeedup = new HashMap<>();
 
 	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/HS-Speedup.png");
@@ -48,7 +48,7 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/HSTube-Speedup_result.obj"), 7, new LPScale(1 / 100f));
 
-			//tubeTurnMounts
+			// tubeTurnMounts
 			for (SpeedupDirection turn : SpeedupDirection.values()) {
 				SpeedupTubeRenderer.tubeSpeedupBase.put(turn, new ArrayList<>());
 			}

@@ -10,18 +10,18 @@ import java.util.Map;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.RequestProvider;
 import logisticspipes.interfaces.routing.FluidRequester;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ItemRequester;
+import logisticspipes.interfaces.routing.RequestProvider;
 import logisticspipes.request.resources.FluidResource;
-import logisticspipes.request.resources.Resource;
 import logisticspipes.request.resources.ItemResource;
+import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
+import logisticspipes.utils.AbsolutePriority;
 import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.AbsolutePriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemStack;
 
@@ -130,7 +130,7 @@ public class RequestTree extends RequestTreeNode {
 				}
 			}
 
-			//GetLoadFactor*64 should be an integer anyway.
+			// GetLoadFactor*64 should be an integer anyway.
 			c = (int) Math.floor(o1.destination.getCachedPipe().getLoadFactor() * 64) - (int) Math.floor(o2.destination.getCachedPipe().getLoadFactor() * 64);
 			if (distanceWeight != 0) {
 				c += (int) (Math.floor(o1.distanceToDestination * 64) - (int) Math.floor(o2.distanceToDestination * 64)) * distanceWeight;
@@ -150,7 +150,7 @@ public class RequestTree extends RequestTreeNode {
 			if (count == null) {
 				count = 0;
 			}
-			count += stack.getStackSize();
+			count += stack.getCount();
 			ItemResource req = new ItemResource(stack, requester);
 			messages.put(req, count);
 			RequestTree node = new RequestTree(req, tree, requestFlags, info);
@@ -176,7 +176,7 @@ public class RequestTree extends RequestTreeNode {
 		if (!simulateOnly && (tree.isDone() || ((tree.getPromiseAmount() > 0) && acceptPartial))) {
 			LinkedLogisticsOrderList list = tree.fullFillAll();
 			if (log != null) {
-				log.handleSucessfullRequestOf(req.copyForDisplayWith(item.getStackSize()), list);
+				log.handleSucessfullRequestOf(req.copyForDisplayWith(item.getCount()), list);
 			}
 			return tree.getPromiseAmount();
 		} else {
@@ -197,7 +197,7 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	public static boolean request(ItemStack item, ItemRequester requester, RequestLog log, IAdditionalTargetInformation info) {
-		return RequestTree.request(item, requester, log, false, false, true, false, RequestTree.defaultRequestFlags, info) == item.getStackSize();
+		return RequestTree.request(item, requester, log, false, false, true, false, RequestTree.defaultRequestFlags, info) == item.getCount();
 	}
 
 	public static int requestPartial(ItemStack item, ItemRequester requester, IAdditionalTargetInformation info) {

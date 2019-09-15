@@ -43,11 +43,11 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 		DOWN_RIGHT
 	}
 
-	//Tube Models
+	// Tube Models
 	static Map<TubeGainRenderOrientation, List<IModel3D>> tubeTurnBase = new HashMap<>();
 	static Map<TubeGainRenderOrientation, Map<Tuple2<TubeMount, Integer>, IModel3D>> tubeTurnMounts = new HashMap<>();
 
-	//Tube global Access
+	// Tube global Access
 	public static Map<TubeGainRenderOrientation, IModel3D> tubeGain = new HashMap<>();
 
 	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
@@ -60,7 +60,7 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/HSTube-Gain_result.obj"), 7, new LPScale(1 / 100f));
 
-			//tubeTurnMounts
+			// tubeTurnMounts
 			for (TubeGainRenderOrientation turn : TubeGainRenderOrientation.values()) {
 				GainTubeRenderer.tubeTurnBase.put(turn, new ArrayList<>());
 			}

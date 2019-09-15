@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL12;
 
 import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
+import logisticspipes.interfaces.SecurityStationManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
@@ -29,7 +30,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
@@ -38,7 +38,6 @@ import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -55,26 +54,26 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		DummyContainer dummy = new DummyContainer(player, null, pipe.getOriginalUpgradeManager().getGuiController());
 		dummy.addNormalSlotsForPlayerInventory(10, 135);
 
-		//Order is important here: (Slot Server/Client sync)
+		// Order is important here: (Slot Server/Client sync)
 		Upgrades upgrades = new Upgrades(dummy);
 		Security security = new Security(dummy);
 		Statistics statistics = new Statistics();
-		//Logic logic = new Logic();
-		addHiddenSlot(dummy.addRestrictedSlot(0, pipe.container.logicController.diskInv, 14, 36, LPItems.disk)); //Keep it for now, but hidden. Maybe it will be used again later
+		// Logic logic = new Logic();
+		addHiddenSlot(dummy.addRestrictedSlot(0, pipe.container.logicController.diskInv, 14, 36, LPItems.disk)); // Keep it for now, but hidden. Maybe it will be used again later
 		Tasks tasks = new Tasks();
 
-		//Here order doesn't matter/can be changed to reorganise tabs
+		// Here order doesn't matter/can be changed to reorganise tabs
 		if (LPConstants.DEBUG) {
 			addTab(upgrades);
 			addTab(security);
 			addTab(statistics);
-			//addTab(logic);
+			// addTab(logic);
 			addTab(tasks);
 		} else {
 			addTab(statistics);
 			addTab(upgrades);
 			addTab(security);
-			//addTab(logic);
+			// addTab(logic);
 			addTab(tasks);
 		}
 
@@ -211,7 +210,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 						if (itemStack.getDamage() != LogisticsItemCard.SEC_CARD) {
 							return false;
 						}
-						return SimpleServiceLocator.securityStationManager
+						return SecurityStationManager.getInstance()
 								.isAuthorized(UUID.fromString(itemStack.getTag().getString("UUID")));
 					}, 1));
 		}
@@ -238,7 +237,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 				fontRenderer.drawString(ChatColor.BLUE.toString() + id.toString(), 0, 0, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glScaled(1 / 0.75D, 1 / 0.75D, 1.0D);
 				GL11.glTranslated(-10, -80, 0);
-				fontRenderer.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, Color.getValue(Color.DARKER_GREY), false);
+				fontRenderer.drawString("Authorization: " + (SecurityStationManager.getInstance().isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, Color.getValue(Color.DARKER_GREY), false);
 			}
 		}
 	}

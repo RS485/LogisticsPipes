@@ -35,7 +35,7 @@ public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightP
 
 	static Map<TubeLineRenderOrientation, List<IModel3D>> tubeLineBase = new HashMap<>();
 
-	//Global Access
+	// Global Access
 	public static Map<TubeLineRenderOrientation, IModel3D> tubeLine = new HashMap<>();
 
 	private static final Identifier TEXTURE = new Identifier("logisticspipes", "textures/blocks/pipes/HS-Tube-Line.png");
@@ -48,7 +48,7 @@ public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightP
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/HSTube-Line_result.obj"), 7, new LPScale(1 / 100f));
 
-			//tubeTurnMounts
+			// tubeTurnMounts
 			for (TubeLineRenderOrientation turn : TubeLineRenderOrientation.values()) {
 				LineTubeRenderer.tubeLineBase.put(turn, new ArrayList<>());
 			}

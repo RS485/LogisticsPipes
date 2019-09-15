@@ -18,14 +18,14 @@ import net.minecraftforge.fluids.FluidStack;
 import logisticspipes.interfaces.ISpecialTankAccessHandler;
 import logisticspipes.interfaces.ISpecialTankUtil;
 import logisticspipes.interfaces.ITankUtil;
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.FluidRequestProvider;
 import logisticspipes.interfaces.routing.FluidRequester;
+import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.request.resources.FluidResource;
@@ -37,6 +37,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple3;
@@ -74,8 +75,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements FluidRequestPr
 					drained = handler.drainFrom(tile, order.getFluid(), amountToSend.get(), true);
 					int amount = drained.amount;
 					amountToSend.addAndGet(-amount);
-					ItemStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(FluidIdentifierStack.getFromStack(drained));
-					IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+					ItemStack stack = LogisticsFluidManager.getInstance().getFluidContainer(FluidIdentifierStack.getFromStack(drained));
+					IRoutedItem item = RoutedItemHelper.INSTANCE.createNewTravelItem(stack);
 					item.setDestination(order.getRouter().getSimpleId());
 					item.setTransportMode(TransportMode.Active);
 					this.queueRoutedItem(item, pair.getValue3());
@@ -108,8 +109,8 @@ public class PipeFluidProvider extends FluidRoutedPipe implements FluidRequestPr
 									}
 									amount = drained.getAmount();
 									amountToSend.addAndGet(-amount);
-									ItemStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(drained);
-									IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+									ItemStack stack = LogisticsFluidManager.getInstance().getFluidContainer(drained);
+									IRoutedItem item = RoutedItemHelper.INSTANCE.createNewTravelItem(stack);
 									item.setDestination(order.getRouter().getSimpleId());
 									item.setTransportMode(TransportMode.Active);
 									queueRoutedItem(item, pair.getValue3());
@@ -167,7 +168,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements FluidRequestPr
 			}
 		}
 		Map<FluidIdentifier, Integer> result = new HashMap<>();
-		//Reduce what has been reserved, add.
+		// Reduce what has been reserved, add.
 		for (Entry<FluidIdentifier, Integer> fluid : map.entrySet()) {
 			int remaining = fluid.getValue() - getFluidOrderManager().totalFluidsCountInOrders(fluid.getKey());
 			if (remaining < 1) {
@@ -249,7 +250,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements FluidRequestPr
 	}
 
 	@Override
-	//work in progress, currently not active code.
+	// work in progress, currently not active code.
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<>();
 		for (Tuple3<ITankUtil, BlockEntity, Direction> pair : getAdjacentTanksAdvanced(false)) {

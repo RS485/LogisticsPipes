@@ -90,7 +90,7 @@ public class GuiProvider extends ModuleBaseGui {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		mc.fontRenderer.drawString(_provider.getFilterInventory().getName(), xSize / 2 - mc.fontRenderer.getStringWidth(_provider.getFilterInventory().getName()) / 2, 6, 0x404040);
 		mc.fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		//mc.fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
+		// mc.fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 		mc.fontRenderer.drawString("Excess Inventory: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 }

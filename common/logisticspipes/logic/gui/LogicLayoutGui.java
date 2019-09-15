@@ -202,10 +202,10 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
-		//Draw Content
-		//Lines
+		// Draw Content
+		// Lines
 
-		//Draw Background
+		// Draw Background
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
@@ -218,8 +218,8 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 		mc.getTextureManager().bindTexture(LogicLayoutGui.achievementTextures);
 
-		//Draw Content
-		//Items
+		// Draw Content
+		// Items
 
 		GL11.glPopMatrix();
 
@@ -244,7 +244,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		//GL11.glEnable(GL11.GL_DEPTH_TEST);
+		// GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		RenderHelper.disableStandardItemLighting();
 	}
@@ -263,7 +263,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 			mc.getTextureManager().bindTexture(LogicLayoutGui.achievementTextures);
 			drawTexturedModalRect(startLeft - 5, yPos - 5, 0, 202, 26, 26);
 			GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
-			//renderItemAt(aList.getAsDisplayItem(), startLeft, yPos);
+			// renderItemAt(aList.getAsDisplayItem(), startLeft, yPos);
 			if (aList.isInProgress() && aList.getMachineProgress() != 0) {
 				Gui.drawRect(startLeft - 4, yPos + 20, startLeft + 20, yPos + 24, 0xff000000);
 				Gui.drawRect(startLeft - 3, yPos + 21, startLeft + 19, yPos + 23, 0xffffffff);

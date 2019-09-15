@@ -8,9 +8,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.Direction;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.Router;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -34,7 +34,7 @@ public class PipeTransportLayer extends TransportLayer {
 	@Override
 	public Direction itemArrived(IRoutedItem item, Direction denyed) {
 		if (item.getItemStack() != null) {
-			_trackStatistics.recievedItem(item.getItemStack().getStackSize());
+			_trackStatistics.recievedItem(item.getItemStack().getCount());
 		}
 
 		final List<NeighborBlockEntity<BlockEntity>> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
@@ -45,7 +45,7 @@ public class PipeTransportLayer extends TransportLayer {
 		// 1st prio, deliver to adjacent IInventories
 
 		for (NeighborBlockEntity<BlockEntity> adjacent : adjacentEntities) {
-			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getBlockEntity())) {
+			if (PipeInformationManager.INSTANCE.isItemPipe(adjacent.getBlockEntity())) {
 				continue;
 			}
 			if (_router.isRoutedExit(adjacent.getDirection())) {
@@ -92,7 +92,7 @@ public class PipeTransportLayer extends TransportLayer {
 		return possibleEnumFacing.get(routedPipe.getWorld().rand.nextInt(possibleEnumFacing.size()));
 	}
 
-	//Pipes are dumb and always want the item
+	// Pipes are dumb and always want the item
 	@Override
 	public boolean stillWantItem(IRoutedItem item) {
 		return true;

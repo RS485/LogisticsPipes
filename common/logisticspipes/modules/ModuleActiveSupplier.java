@@ -21,16 +21,15 @@ import org.jetbrains.annotations.NotNull;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISlotUpgradeManager;
+import logisticspipes.interfaces.SlotUpgradeManager;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.interfaces.routing.ITargetSlotInformation;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -52,7 +51,6 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -69,11 +67,6 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
 			boolean forcePassive) {
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 
@@ -110,7 +103,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 	@Override
 	public IHUDModuleRenderer getHUDRenderer() {
 		return null;
-		//return HUD;
+		// return HUD;
 	}
 
 	@Override
@@ -120,7 +113,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(dummyInventory)).setModulePos(this), localModeWatchers);
 		}
 	}
@@ -146,7 +139,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 
@@ -193,13 +186,13 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 
 	@Override
 	public void tick() {
-		if (!_service.isNthTick(100)) {
+		if (!service.isNthTick(100)) {
 			return;
 		}
 
-		_requestedItems.values().stream().filter(amount -> amount > 0).forEach(amount -> _service.spawnParticle(Particles.VioletParticle, 2));
+		_requestedItems.values().stream().filter(amount -> amount > 0).forEach(amount -> service.spawnParticle(Particles.VioletParticle, 2));
 
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getX(), getY(), getZ());
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(world.getWorld(), getX(), getY(), getZ());
 
 		worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> !adjacent.isLogisticsPipe())
@@ -216,8 +209,8 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 				});
 	}
 
-	private void createPatternRequest(IInventoryUtil invUtil) {
-		_service.getDebug().log("Supplier: Start calculating pattern request");
+	private void createPatternRequest(WrappedInventory invUtil) {
+		service.getDebug().log("Supplier: Start calculating pattern request");
 		setRequestFailed(false);
 		for (int i = 0; i < 9; i++) {
 			ItemStack needed = dummyInventory.getIDStackInSlot(i);
@@ -235,13 +228,13 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 			int haveCount = 0;
 			if (have != null) {
 				if (!have.getItem().equals(needed.getItem())) {
-					_service.getDebug().log("Supplier: Slot for " + i + ", " + needed + " already taken by " + have);
+					service.getDebug().log("Supplier: Slot for " + i + ", " + needed + " already taken by " + have);
 					setRequestFailed(true);
 					continue;
 				}
-				haveCount = have.getStackSize();
+				haveCount = have.getCount();
 			}
-			if ((_patternMode == PatternMode.Bulk50 && haveCount > needed.getStackSize() / 2) || (_patternMode == PatternMode.Bulk100 && haveCount >= needed.getStackSize())) {
+			if ((_patternMode == PatternMode.Bulk50 && haveCount > needed.getCount() / 2) || (_patternMode == PatternMode.Bulk100 && haveCount >= needed.getCount())) {
 				continue;
 			}
 
@@ -250,37 +243,37 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 				haveCount += requestedCount;
 			}
 
-			int neededCount = needed.getStackSize() - haveCount;
+			int neededCount = needed.getCount() - haveCount;
 			if (neededCount < 1) {
 				continue;
 			}
 
 			ItemStack toRequest = new ItemStack(needed.getItem(), neededCount);
 
-			_service.getDebug().log("Supplier: Missing for slot " + i + ": " + toRequest);
+			service.getDebug().log("Supplier: Missing for slot " + i + ": " + toRequest);
 
-			if (!_service.useEnergy(10)) {
+			if (!service.useEnergy(10)) {
 				break;
 			}
 
 			boolean success = false;
 
-			IAdditionalTargetInformation targetInformation = new PatternSupplierTargetInformation(slotArray[i], needed.getStackSize());
+			IAdditionalTargetInformation targetInformation = new PatternSupplierTargetInformation(slotArray[i], needed.getCount());
 
 			if (_patternMode != PatternMode.Full) {
-				_service.getDebug().log("Supplier: Requesting partial: " + toRequest);
+				service.getDebug().log("Supplier: Requesting partial: " + toRequest);
 				neededCount = RequestTree.requestPartial(toRequest, this, targetInformation);
-				_service.getDebug().log("Supplier: Requested: " + toRequest.getItem().makeStack(neededCount));
+				service.getDebug().log("Supplier: Requested: " + toRequest.getItem().makeStack(neededCount));
 				if (neededCount > 0) {
 					success = true;
 				}
 			} else {
-				_service.getDebug().log("Supplier: Requesting: " + toRequest);
+				service.getDebug().log("Supplier: Requesting: " + toRequest);
 				success = RequestTree.request(toRequest, this, null, targetInformation);
 				if (success) {
-					_service.getDebug().log("Supplier: Request success");
+					service.getDebug().log("Supplier: Request success");
 				} else {
-					_service.getDebug().log("Supplier: Request failed");
+					service.getDebug().log("Supplier: Request failed");
 				}
 			}
 
@@ -297,23 +290,23 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 		}
 	}
 
-	private void createSupplyRequest(IInventoryUtil invUtil) {
-		_service.getDebug().log("Supplier: Start calculating supply request");
-		//How many do I want?
+	private void createSupplyRequest(WrappedInventory invUtil) {
+		service.getDebug().log("Supplier: Start calculating supply request");
+		// How many do I want?
 		HashMap<ItemIdentifier, Integer> needed = new HashMap<>(dummyInventory.getItemsAndCount());
-		_service.getDebug().log("Supplier: Needed: " + needed);
+		service.getDebug().log("Supplier: Needed: " + needed);
 
-		//How many do I have?
+		// How many do I have?
 		Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
-		_service.getDebug().log("Supplier: Have:   " + have);
+		service.getDebug().log("Supplier: Have:   " + have);
 
-		//How many do I have?
+		// How many do I have?
 		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<>();
 		for (Entry<ItemIdentifier, Integer> item : have.entrySet()) {
 			haveUndamaged.merge(item.getKey().getUndamaged(), item.getValue(), (a, b) -> a + b);
 		}
 
-		//Reduce what I have and what have been requested already
+		// Reduce what I have and what have been requested already
 		for (Entry<ItemIdentifier, Integer> item : needed.entrySet()) {
 			Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
 			if (haveCount == null) {
@@ -344,18 +337,18 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 			}
 		}
 
-		_service.getDebug().log("Supplier: Missing:   " + needed);
+		service.getDebug().log("Supplier: Missing:   " + needed);
 
 		setRequestFailed(false);
 
-		//Make request
+		// Make request
 		for (Entry<ItemIdentifier, Integer> need : needed.entrySet()) {
 			Integer amountRequested = need.getValue();
 			if (amountRequested == null || amountRequested < 1) {
 				continue;
 			}
 			int neededCount = amountRequested;
-			if (!_service.useEnergy(10)) {
+			if (!service.useEnergy(10)) {
 				break;
 			}
 
@@ -364,19 +357,19 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 			IAdditionalTargetInformation targetInformation = new SupplierTargetInformation();
 
 			if (_requestMode != SupplyMode.Full) {
-				_service.getDebug().log("Supplier: Requesting partial: " + need.getKey().makeStack(neededCount));
+				service.getDebug().log("Supplier: Requesting partial: " + need.getKey().makeStack(neededCount));
 				neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), this, targetInformation);
-				_service.getDebug().log("Supplier: Requested: " + need.getKey().makeStack(neededCount));
+				service.getDebug().log("Supplier: Requested: " + need.getKey().makeStack(neededCount));
 				if (neededCount > 0) {
 					success = true;
 				}
 			} else {
-				_service.getDebug().log("Supplier: Requesting: " + need.getKey().makeStack(neededCount));
+				service.getDebug().log("Supplier: Requesting: " + need.getKey().makeStack(neededCount));
 				success = RequestTree.request(need.getKey().makeStack(neededCount), this, null, targetInformation);
 				if (success) {
-					_service.getDebug().log("Supplier: Request success");
+					service.getDebug().log("Supplier: Request success");
 				} else {
-					_service.getDebug().log("Supplier: Request failed");
+					service.getDebug().log("Supplier: Request failed");
 				}
 			}
 
@@ -384,10 +377,10 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 				Integer currentRequest = _requestedItems.get(need.getKey());
 				if (currentRequest == null) {
 					_requestedItems.put(need.getKey(), neededCount);
-					_service.getDebug().log("Supplier: Inserting Requested Items: " + neededCount);
+					service.getDebug().log("Supplier: Inserting Requested Items: " + neededCount);
 				} else {
 					_requestedItems.put(need.getKey(), currentRequest + neededCount);
-					_service.getDebug().log("Supplier: Raising Requested Items from: " + currentRequest + " to: " + currentRequest + neededCount);
+					service.getDebug().log("Supplier: Raising Requested Items from: " + currentRequest + " to: " + currentRequest + neededCount);
 				}
 			} else {
 				setRequestFailed(true);
@@ -433,11 +426,11 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 	}
 
 	private void decreaseRequested(ItemStack item) {
-		int remaining = item.getStackSize();
-		//see if we can get an exact match
+		int remaining = item.getCount();
+		// see if we can get an exact match
 		Integer count = _requestedItems.get(item.getItem());
 		if (count != null) {
-			_service.getDebug().log("Supplier: Exact match. Still missing: " + Math.max(0, count - remaining));
+			service.getDebug().log("Supplier: Exact match. Still missing: " + Math.max(0, count - remaining));
 			if (count - remaining > 0) {
 				_requestedItems.put(item.getItem(), count - remaining);
 			} else {
@@ -448,13 +441,13 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 		if (remaining <= 0) {
 			return;
 		}
-		//still remaining... was from fuzzyMatch on a crafter
+		// still remaining... was from fuzzyMatch on a crafter
 		Iterator<Entry<ItemIdentifier, Integer>> it = _requestedItems.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<ItemIdentifier, Integer> e = it.next();
 			if (e.getKey().equalsWithoutNBT(item.getItem())) {
 				int expected = e.getValue();
-				_service.getDebug().log("Supplier: Fuzzy match with" + e + ". Still missing: " + Math.max(0, expected - remaining));
+				service.getDebug().log("Supplier: Fuzzy match with" + e + ". Still missing: " + Math.max(0, expected - remaining));
 				if (expected - remaining > 0) {
 					e.setValue(expected - remaining);
 				} else {
@@ -466,19 +459,19 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 				return;
 			}
 		}
-		//we have no idea what this is, log it.
-		_service.getDebug().log("Supplier: supplier got unexpected item " + item.toString());
+		// we have no idea what this is, log it.
+		service.getDebug().log("Supplier: supplier got unexpected item " + item.toString());
 	}
 
 	@Override
 	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
-		_service.getDebug().log("Supplier: Registered Item Lost: " + item);
+		service.getDebug().log("Supplier: Registered Item Lost: " + item);
 		decreaseRequested(item);
 	}
 
 	@Override
 	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {
-		_service.getDebug().log("Supplier: Registered Item Arrived: " + item);
+		service.getDebug().log("Supplier: Registered Item Arrived: " + item);
 		decreaseRequested(item);
 	}
 
@@ -520,7 +513,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 	}
 
 	public int getAmountForSlot(int i) {
-		return dummyInventory.getIDStackInSlot(i).getStackSize();
+		return dummyInventory.getIDStackInSlot(i).getCount();
 	}
 
 	public void addStatusInformation(List<StatusEntry> status) {
@@ -552,7 +545,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 
 	@Override
 	public Router getRouter() {
-		return _service.getRouter();
+		return service.getRouter();
 	}
 
 	@Override
@@ -562,7 +555,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 
 	@Override
 	public int getID() {
-		return _service.getRouter().getSimpleId();
+		return service.getRouter().getSimpleId();
 	}
 
 	@Override
@@ -571,7 +564,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 	}
 
 	public boolean hasPatternUpgrade() {
-		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
+		final SlotUpgradeManager upgradeManager = getUpgradeManager();
 		if (upgradeManager != null) {
 			return upgradeManager.hasPatternUpgrade();
 		}

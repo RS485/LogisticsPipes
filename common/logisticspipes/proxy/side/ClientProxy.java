@@ -89,7 +89,6 @@ public class ClientProxy implements IProxy {
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 
-		SimpleServiceLocator.renderListHandler = new GLRenderListHandler();
 	}
 
 	@Override
@@ -117,17 +116,17 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public void updateNames(ItemIdentifier item, String name) {
-		//Not Client Side
+		// Not Client Side
 	}
 
 	@Override
 	public void tick() {
-		//Not Client Side
+		// Not Client Side
 	}
 
 	@Override
 	public void sendNameUpdateRequest(EntityPlayer player) {
-		//Not Client Side
+		// Not Client Side
 	}
 
 	@Override
@@ -188,7 +187,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void tickClient() {
 		MainProxy.addTick();
-		SimpleServiceLocator.renderListHandler.tick();
+		GLRenderListHandler.INSTANCE.tick();
 	}
 
 	@Override

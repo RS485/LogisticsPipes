@@ -8,12 +8,12 @@ import java.util.TreeSet;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.blocks.stats.LogisticsStatisticsTileEntity;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemStack;
@@ -33,8 +33,8 @@ public class RequestAmountTaskSubGui extends CoordinatesPacket {
 			return;
 		}
 
-		Map<ItemIdentifier, Integer> _availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
-		LinkedList<ItemIdentifier> _craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getIRoutersByCost());
+		Map<ItemIdentifier, Integer> _availableItems = LogisticsManager.getInstance().getAvailableItems(pipe.getRouter().getIRoutersByCost());
+		LinkedList<ItemIdentifier> _craftableItems = LogisticsManager.getInstance().getCraftableItems(pipe.getRouter().getIRoutersByCost());
 
 		TreeSet<ItemStack> _allItems = new TreeSet<>();
 

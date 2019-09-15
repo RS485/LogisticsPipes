@@ -207,7 +207,7 @@ public class MorePageDisplay {
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);
 			}
 		} else {
-			//display(sender,currentpage,true);
+			// display(sender,currentpage,true);
 			printLastLine(sender, true);
 			if (sender instanceof EntityPlayer) {
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (EntityPlayer) sender);

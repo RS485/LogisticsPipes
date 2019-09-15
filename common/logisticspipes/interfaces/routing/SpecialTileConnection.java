@@ -6,7 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 
-public interface ISpecialTileConnection {
+public interface SpecialTileConnection {
 
 	boolean init();
 

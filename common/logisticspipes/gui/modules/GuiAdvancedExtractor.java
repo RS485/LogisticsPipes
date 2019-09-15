@@ -29,7 +29,7 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-		//Default item toggle:
+		// Default item toggle:
 		buttonList.clear();
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 20, height / 2 - 34, 60, 20, () -> _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded"));
 
@@ -56,7 +56,7 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 		DummyContainer dummy = new DummyContainer(playerInventory, _advancedExtractor.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
-		//Pipe slots
+		// Pipe slots
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}

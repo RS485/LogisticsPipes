@@ -29,7 +29,7 @@ public class LogicController {
 		for (BaseLogicTask task : tasks) {
 			task.syncTick(tile);
 		}
-		//oldThread = new Thread() { @Override public void run() {
+		// oldThread = new Thread() { @Override public void run() {
 		for (BaseLogicConnection connection : connections) {
 			if (!connection.isInvalidConnection()) {
 				if (connection.getSource().getAmountOfOutput() <= connection.getSourceIndex()) {
@@ -77,16 +77,16 @@ public class LogicController {
 		/*}};
 		oldThread.setDaemon(true);
 		oldThread.start();
-		//*/
+		// */
 	}
 
 	public void writeToNBT(CompoundTag nbt) {
 		diskInv.writeToNBT(nbt, "LogicDiskInv");
-		//TODO
+		// TODO
 	}
 
 	public void readFromNBT(CompoundTag nbt) {
 		diskInv.readFromNBT(nbt, "LogicDiskInv");
-		//TODO
+		// TODO
 	}
 }

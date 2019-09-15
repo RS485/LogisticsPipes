@@ -57,7 +57,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements FluidRequeste
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<>();
 
-	//public int satelliteId;
+	// public int satelliteId;
 	@Getter
 	public String satellitePipeName;
 
@@ -107,7 +107,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements FluidRequeste
 	private void addToList(ItemStack stack) {
 		for (ItemStack ident : itemList) {
 			if (ident.getItem().equals(stack.getItem())) {
-				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
+				ident.setStackSize(ident.getCount() + stack.getCount());
 				return;
 			}
 		}

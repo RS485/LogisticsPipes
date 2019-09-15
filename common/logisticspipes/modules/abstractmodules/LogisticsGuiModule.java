@@ -25,7 +25,7 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	@Override
 	public final int getX() {
 		if (slot.isInWorld()) {
-			return _service.getX();
+			return service.getX();
 		} else {
 			return 0;
 		}
@@ -34,7 +34,7 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	@Override
 	public final int getY() {
 		if (slot.isInWorld()) {
-			return _service.getY();
+			return service.getY();
 		} else {
 			return -1;
 		}
@@ -43,7 +43,7 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	@Override
 	public final int getZ() {
 		if (slot.isInWorld()) {
-			return _service.getZ();
+			return service.getZ();
 		} else {
 			return -1 - positionInt;
 		}

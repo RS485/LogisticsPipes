@@ -6,17 +6,14 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
-import drawer.NbtFormatKt;
 import lombok.Getter;
 import net.fabricmc.fabric.api.util.NbtType;
 
@@ -52,7 +49,7 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 		public static final Identifier MODDED = new Identifier("logisticspipes", "compilercategory.modded");
 
 		static {
-			//Force the order of keys
+			// Force the order of keys
 			programByCategory.put(BASIC, new HashSet<>());
 			programByCategory.put(TIER_2, new HashSet<>());
 			programByCategory.put(FLUID, new HashSet<>());
@@ -159,10 +156,10 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 				}
 				if (taskProgress >= 1) {
 					if (taskType.equals("category")) {
-						NBTTagList list = getNBTTagListForKey("compilerCategories");
+						ListTag list = getNBTTagListForKey("compilerCategories");
 						list.appendTag(new NBTTagString(currentTask.toString()));
 					} else if (taskType.equals("program")) {
-						NBTTagList list = getNBTTagListForKey("compilerPrograms");
+						ListTag list = getNBTTagListForKey("compilerPrograms");
 						list.appendTag(new NBTTagString(currentTask.toString()));
 					} else if (taskType.equals("flash")) {
 						if (!getInventory().getStackInSlot(1).isEmpty()) {

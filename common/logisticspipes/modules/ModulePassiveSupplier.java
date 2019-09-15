@@ -13,10 +13,9 @@ import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.abstractmodules.LogisticsSimpleFilterModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
@@ -64,7 +63,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 			return null;
 		}
 
-		IInventoryUtil targetUtil = _service.getSneakyInventory(slot, positionInt);
+		WrappedInventory targetUtil = service.getSneakyInventory(slot, positionInt);
 		if (targetUtil == null) {
 			return null;
 		}
@@ -79,7 +78,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 			return null;
 		}
 
-		if (_service.canUseEnergy(2)) {
+		if (service.canUseEnergy(2)) {
 			return new SinkReply(_sinkReply, targetCount - haveCount);
 		}
 		return null;
@@ -93,11 +92,6 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	@Override
 	public void writeToNBT(CompoundTag nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
 	}
 
 	@Override
@@ -145,7 +139,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
 		}
 	}
@@ -174,7 +168,7 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

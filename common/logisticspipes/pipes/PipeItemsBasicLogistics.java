@@ -18,7 +18,7 @@ import net.minecraft.util.math.Direction;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -127,8 +127,8 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Nullable
 	@Override
-	public IInventoryUtil getPointedInventory() {
-		IInventoryUtil invUtil = super.getPointedInventory();
+	public WrappedInventory getPointedInventory() {
+		WrappedInventory invUtil = super.getPointedInventory();
 		if (invUtil == null) {
 			invUtil = new WorldCoordinatesWrapper(container)
 					.connectedTileEntities(ConnectionPipeType.ITEM)

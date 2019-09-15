@@ -91,7 +91,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements FluidReques
 		return true;
 	}
 
-	//from PipeFluidSupplierMk2
+	// from PipeFluidSupplierMk2
 	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(1, "Fluid to keep stocked", 127, true);
 	private int amount = 0;
 
@@ -118,20 +118,20 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements FluidReques
 				return;
 			}
 
-			//How much do I want?
+			// How much do I want?
 			Map<FluidIdentifier, Integer> wantFluids = new HashMap<>();
 			ItemStack stack = dummyInventory.getIDStackInSlot(0);
 			if (stack == null) return;
 			FluidIdentifier fIdent = FluidIdentifier.get(stack.getItem());
 			wantFluids.put(fIdent, amount);
 
-			//How much do I have?
+			// How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
-			//Check what is inside the connected tank
+			// Check what is inside the connected tank
 			fluidHandlerDirectionPair.getValue1().forEachFluid(fluid -> haveFluids.merge(fluid.getFluid(), fluid.getAmount(), (a, b) -> a + b));
 
-			//What does our sided internal tank have
+			// What does our sided internal tank have
 			if (fluidHandlerDirectionPair.getValue3().ordinal() < ((PipeFluidTransportLogistics) transport).sideTanks.length) {
 				FluidTank sideTank = ((PipeFluidTransportLogistics) transport).sideTanks[fluidHandlerDirectionPair.getValue3().ordinal()];
 				if (sideTank != null && sideTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(sideTank.getFluid()))) {
@@ -139,29 +139,29 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements FluidReques
 				}
 			}
 
-			//What does our center internal tank have
+			// What does our center internal tank have
 			FluidTank centerTank = ((PipeFluidTransportLogistics) transport).internalTank;
 			if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
 				haveFluids.merge(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount, (a, b) -> a + b);
 			}
 
-			//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
-			//Reduce what I have and what have been requested already
+			// HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
+			// Reduce what I have and what have been requested already
 			for (Entry<FluidIdentifier, Integer> liquidId : wantFluids.entrySet()) {
 				Integer haveCount = haveFluids.get(liquidId.getKey());
 				if (haveCount != null) {
 					liquidId.setValue(liquidId.getValue() - haveCount);
 				}
-				//@formatter:off
+				// @formatter:off
 						_requestedItems.entrySet().stream()
 								.filter(requestedItem -> requestedItem.getKey().equals(liquidId.getKey()))
 								.forEach(requestedItem -> liquidId.setValue(liquidId.getValue() - requestedItem.getValue()));
-						//@formatter:on
+						// @formatter:on
 			}
 
 			setRequestFailed(false);
 
-			//Make request
+			// Make request
 
 			for (FluidIdentifier need : wantFluids.keySet()) {
 				int countToRequest = wantFluids.get(need);
@@ -220,7 +220,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements FluidReques
 	}
 
 	private void decreaseRequested(FluidIdentifier liquid, int remaining) {
-		//see if we can get an exact match
+		// see if we can get an exact match
 		Integer count = _requestedItems.get(liquid);
 		if (count != null) {
 			_requestedItems.put(liquid, Math.max(0, count - remaining));
@@ -229,7 +229,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements FluidReques
 		if (remaining <= 0) {
 			return;
 		}
-		//still remaining... was from fuzzyMatch on a crafter
+		// still remaining... was from fuzzyMatch on a crafter
 		for (Entry<FluidIdentifier, Integer> e : _requestedItems.entrySet()) {
 			if (e.getKey().equals(liquid)) {
 				int expected = e.getValue();
@@ -240,7 +240,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements FluidReques
 				return;
 			}
 		}
-		//we have no idea what this is, log it.
+		// we have no idea what this is, log it.
 		debug.log("liquid supplier got unexpected item " + liquid.toString());
 	}
 

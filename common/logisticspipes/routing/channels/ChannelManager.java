@@ -17,11 +17,11 @@ import lombok.Data;
 
 import logisticspipes.LPConstants;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.interfaces.SecurityStationManager;
 import logisticspipes.interfaces.routing.IChannelManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.ChannelInformationPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.PlayerIdentifier;
 
@@ -85,7 +85,7 @@ public class ChannelManager implements IChannelManager {
 				return true;
 			case SECURED:
 				UUID secUUID = channel.getResponsibleSecurityID();
-				LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(secUUID);
+				LogisticsSecurityTileEntity station = SecurityStationManager.getInstance().getStation(secUUID);
 				SecuritySettings settings = station.getSecuritySettingsForPlayer(player, false);
 				if (settings != null) {
 					return settings.accessRoutingChannels;

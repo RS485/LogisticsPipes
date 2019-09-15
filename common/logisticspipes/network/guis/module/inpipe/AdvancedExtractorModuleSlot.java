@@ -43,7 +43,7 @@ public class AdvancedExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 		}
 		DummyContainer dummy = new DummyContainer(player.inventory, module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
-		//Pipe slots
+		// Pipe slots
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}

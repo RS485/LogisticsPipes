@@ -53,7 +53,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			negativeResourceCache = LaunchClassLoader.class.getDeclaredField("negativeResourceCache");
 			negativeResourceCache.setAccessible(true);
 		} catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 		try {
 			invalidClasses = LaunchClassLoader.class.getDeclaredField("invalidClasses");
@@ -66,7 +66,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		Thread thread = Thread.currentThread();
-		if (thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
+		if (thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { // Only clear when called from the main thread to avoid ConcurrentModificationException on start
 			clearNegativeInterfaceCache();
 		}
 		if (bytes == null) {
@@ -123,7 +123,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			return handleLPTransformation(bytes);
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) { //For better Debugging
+			if (LPConstants.DEBUG) { // For better Debugging
 				e.printStackTrace();
 				return bytes;
 			}
@@ -132,8 +132,8 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	}
 
 	public void clearNegativeInterfaceCache() {
-		//Remove previously not found Classes to Fix ClassNotFound Exceptions for Interfaces.
-		//TODO remove in future version when everybody starts using a ClassTransformer system for Interfaces.
+		// Remove previously not found Classes to Fix ClassNotFound Exceptions for Interfaces.
+		// TODO remove in future version when everybody starts using a ClassTransformer system for Interfaces.
 		if (negativeResourceCache != null) {
 			if (!interfacesToClearA.isEmpty()) {
 				handleField(negativeResourceCache, interfacesToClearA);
@@ -159,7 +159,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				}
 			}
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) { //For better Debugging
+			if (LPConstants.DEBUG) { // For better Debugging
 				e.printStackTrace();
 			}
 		}

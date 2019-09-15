@@ -10,7 +10,6 @@ import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
-import logisticspipes.utils.OneList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemStack;
@@ -32,27 +31,22 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 
 	@Override
 	public int getX() {
-		return _service.getX();
+		return service.getX();
 	}
 
 	@Override
 	public int getY() {
-		return _service.getY();
+		return service.getY();
 	}
 
 	@Override
 	public int getZ() {
-		return _service.getZ();
+		return service.getZ();
 	}
 
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
 			boolean forcePassive) {
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 
@@ -80,13 +74,13 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return false;
 	}
 
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemStack item) {
-		CCSinkResponder resonse = new CCSinkResponder(item, _service.getSourceID(), eventQueuer);
+		CCSinkResponder resonse = new CCSinkResponder(item, service.getSourceID(), eventQueuer);
 		eventQueuer.queueEvent("ItemSink", new Object[] { SimpleServiceLocator.ccProxy.getAnswer(resonse) });
 		return Collections.singletonList(resonse);
 	}

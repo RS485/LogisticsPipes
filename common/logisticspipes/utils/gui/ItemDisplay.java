@@ -24,7 +24,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISpecialItemRenderer;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -56,7 +55,7 @@ public class ItemDisplay {
 	@Getter
 	private int page = 0;
 	private int maxPage = 0;
-	//private int requestCount = 1;
+	// private int requestCount = 1;
 	private InputBar requestCountBar;
 	private Object[] tooltip = null;
 	private boolean listbyserver = false;
@@ -136,21 +135,21 @@ public class ItemDisplay {
 				if (c != 0) {
 					return c;
 				}
-				return o2.getStackSize() - o1.getStackSize();
+				return o2.getCount() - o1.getCount();
 			} else if (ItemDisplay.option == DisplayOption.ID_DOWN) {
 				int c = basicCompare(o2, o1);
 				if (c != 0) {
 					return c;
 				}
-				return o1.getStackSize() - o2.getStackSize();
+				return o1.getCount() - o2.getCount();
 			} else if (ItemDisplay.option == DisplayOption.SIZE) {
-				int c = o2.getStackSize() - o1.getStackSize();
+				int c = o2.getCount() - o1.getCount();
 				if (c != 0) {
 					return c;
 				}
 				return basicCompare(o1, o2);
 			} else if (ItemDisplay.option == DisplayOption.SIZE_DOWN) {
-				int c = o1.getStackSize() - o2.getStackSize();
+				int c = o1.getCount() - o2.getCount();
 				if (c != 0) {
 					return c;
 				}
@@ -164,7 +163,7 @@ public class ItemDisplay {
 				if (c != 0) {
 					return c;
 				}
-				return o2.getStackSize() - o1.getStackSize();
+				return o2.getCount() - o1.getCount();
 			} else if (ItemDisplay.option == DisplayOption.NAME_DOWN) {
 				int c = o2.getItem().getFriendlyName().compareToIgnoreCase(o1.getItem().getFriendlyName());
 				if (c != 0) {
@@ -174,13 +173,13 @@ public class ItemDisplay {
 				if (c != 0) {
 					return c;
 				}
-				return o1.getStackSize() - o2.getStackSize();
+				return o1.getCount() - o2.getCount();
 			} else {
 				int c = basicCompare(o1, o2);
 				if (c != 0) {
 					return c;
 				}
-				return o2.getStackSize() - o1.getStackSize();
+				return o2.getCount() - o1.getCount();
 			}
 		}
 
@@ -238,7 +237,7 @@ public class ItemDisplay {
 			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
 		} catch (Exception ignored) {}
 		String StackrequestCount = "" + (requestCount / stackAmount) + "+" + (requestCount % stackAmount);
-		//fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount + "") / 2, y, 0x404040);
+		// fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount + "") / 2, y, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", this.amountPosLeft - fontRenderer.getStringWidth(StackrequestCount + "") / 2, this.amountPosTop + 11, 0x404040);
 
 		requestCountBar.renderSearchBar();
@@ -307,7 +306,7 @@ public class ItemDisplay {
 					screen.drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Color.BLACK);
 					screen.drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.DARKER_GREY);
 
-					if (itemIdentifierStack.getStackSize() > 0) {
+					if (itemIdentifierStack.getCount() > 0) {
 						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.unsafeMakeNormalStack() };
 					} else {
 						tooltip = new Object[] { mouseX + left, mouseY + top, itemIdentifierStack.getItem().unsafeMakeNormalStack(1) };
@@ -477,8 +476,8 @@ public class ItemDisplay {
 	}
 
 	public void setMaxAmount() {
-		if (selectedItem != null && selectedItem.getStackSize() != 0) {
-			requestCountBar.input1 = Integer.toString(selectedItem.getStackSize());
+		if (selectedItem != null && selectedItem.getCount() != 0) {
+			requestCountBar.input1 = Integer.toString(selectedItem.getCount());
 			requestCountBar.input2 = "";
 		}
 	}
@@ -555,16 +554,16 @@ public class ItemDisplay {
 
 	public boolean keyTyped(char c, int i) {
 		if (!requestCountBar.handleKey(c, i)) {
-			if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-a
+			if (i == 30 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { // Ctrl-a
 				setMaxAmount();
 				return true;
-			} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { //Ctrl-d
+			} else if (i == 32 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { // Ctrl-d
 				resetAmount();
 				return true;
-			} else if (i == 201) { //PgUp
+			} else if (i == 201) { // PgUp
 				prevPage();
 				return true;
-			} else if (i == 209) { //PgDn
+			} else if (i == 209) { // PgDn
 				nextPage();
 				return true;
 			}

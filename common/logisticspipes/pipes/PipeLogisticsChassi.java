@@ -35,17 +35,17 @@ import logisticspipes.LPConstants;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.ISlotUpgradeManager;
+import logisticspipes.interfaces.SlotUpgradeManager;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.ItemRequestProvider;
 import logisticspipes.interfaces.routing.ItemRequester;
-import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ChassiTransportLayer;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
@@ -63,19 +63,20 @@ import logisticspipes.network.packets.pipe.SendQueueContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
+import logisticspipes.proxy.ConfigToolHandler;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.Promise;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.request.resources.Resource;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.order.LogisticsOrder;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -84,7 +85,6 @@ import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.world.CoordinateUtils;
@@ -163,7 +163,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 		if (tile == null) {
 			return false;
 		}
-		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
+		if (PipeInformationManager.INSTANCE.isItemPipe(tile)) {
 			return false;
 		}
 		return MainProxy.checkPipesConnections(container, tile, connection);
@@ -204,7 +204,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 	@Override
 	public void onNeighborBlockChange_Logistics() {
 		if (!isValidOrientation(pointedDirection)) {
-			if (MainProxy.isServer(getWorld())) {
+			if (!getWorld().isClient()) {
 				nextOrientation();
 			}
 		}
@@ -252,7 +252,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 	@Override
 	public void onAllowedRemoval() {
 		_moduleInventory.removeListener(this);
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			for (int i = 0; i < getChassiSize(); i++) {
 				LogisticsModule x = _module.getSubModule(i);
 				if (x instanceof ILegacyActiveModule) {
@@ -278,7 +278,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 
 	@Override
 	public void itemArrived(ItemStack item, IAdditionalTargetInformation info) {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
@@ -296,7 +296,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 
 	@Override
 	public void itemLost(ItemStack item, IAdditionalTargetInformation info) {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
@@ -314,7 +314,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 
 	@Override
 	public int addToBuffer(ItemStack item, IAdditionalTargetInformation info) {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (info instanceof ChassiTargetInformation) {
 				ChassiTargetInformation target = (ChassiTargetInformation) info;
 				LogisticsModule module = _module.getSubModule(target.moduleSlot);
@@ -328,7 +328,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 				}
 			}
 		}
-		return item.getStackSize();
+		return item.getCount();
 	}
 
 	@Override
@@ -376,7 +376,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 	public void ignoreDisableUpdateEntity() {
 		if (switchOrientationOnTick) {
 			switchOrientationOnTick = false;
-			if (MainProxy.isServer(getWorld())) {
+			if (!getWorld().isClient()) {
 				nextOrientation();
 			}
 		}
@@ -421,20 +421,20 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 			return false;
 		}
 
-		if (entityplayer.isSneaking() && SimpleServiceLocator.configToolHandler.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
-			if (MainProxy.isServer(getWorld())) {
+		if (entityplayer.isSneaking() && ConfigToolHandler.INSTANCE.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
+			if (!getWorld().isClient()) {
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi) container.pipe).nextOrientation();
 				} else {
 					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
-			SimpleServiceLocator.configToolHandler.wrenchUsed(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container);
+			ConfigToolHandler.INSTANCE.wrenchUsed(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container);
 			return true;
 		}
 
 		if (!entityplayer.isSneaking() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() instanceof ItemModule) {
-			if (MainProxy.isServer(getWorld())) {
+			if (!getWorld().isClient()) {
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
@@ -548,7 +548,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 
 	@Override
 	public int sendQueueChanged(boolean force) {
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			if (LPConfiguration.INSTANCE.getThreads() > 0 && !force) {
 				HudUpdateTick.add(getRouter());
 			} else {
@@ -591,21 +591,21 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 	@Override
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<>();
-		//if we don't have a pointed inventory we can't be interested in anything
+		// if we don't have a pointed inventory we can't be interested in anything
 		if (getPointedItemHandler() == null) {
 			return l1;
 		}
 		for (int moduleIndex = 0; moduleIndex < getChassiSize(); moduleIndex++) {
 			LogisticsModule module = _module.getSubModule(moduleIndex);
 			if (module != null && module.interestedInAttachedInventory()) {
-				IInventoryUtil inv = getSneakyInventory(module.getSlot(), module.getPositionInt());
+				WrappedInventory inv = getSneakyInventory(module.getSlot(), module.getPositionInt());
 				if (inv == null) {
 					continue;
 				}
 				Set<ItemIdentifier> items = inv.getItems();
 				l1.addAll(items);
 
-				//also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
+				// also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
 				l1.addAll(items.stream().map(ItemIdentifier::getIgnoringNBT).collect(Collectors.toList()));
 
 				boolean modulesInterestedInUndamged = false;
@@ -721,7 +721,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements Item
 	}
 
 	@Override
-	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
+	public SlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
 		if (slot != ModulePositionType.SLOT || positionInt >= _upgradeManagers.length) {
 			if (LPConstants.DEBUG) {
 				new UnsupportedOperationException("Position info arn't for a chassi pipe. (" + slot + "/" + positionInt + ")").printStackTrace();

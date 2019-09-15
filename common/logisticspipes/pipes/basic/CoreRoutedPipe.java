@@ -36,7 +36,8 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -49,26 +50,28 @@ import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.IClientState;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISecurityProvider;
-import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.SecurityStationManager;
+import logisticspipes.interfaces.SlotUpgradeManager;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.items.ItemPipeSignCreator;
+import logisticspipes.logistics.LogisticsFluidManager;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -94,23 +97,22 @@ import logisticspipes.pipes.basic.debug.DebugLogController;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.pipes.signs.PipeSign;
 import logisticspipes.pipes.upgrades.UpgradeManager;
+import logisticspipes.proxy.ConfigToolHandler;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.CCConstants;
-import logisticspipes.proxy.computers.interfaces.CCCommand;
-import logisticspipes.proxy.computers.interfaces.CCDirectCall;
 import logisticspipes.proxy.computers.interfaces.CCSecurtiyCheck;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -120,11 +122,12 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.EnumFacingUtil;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
 import logisticspipes.utils.tuples.Tuple3;
 import network.rs485.logisticspipes.config.LPConfiguration;
@@ -132,7 +135,6 @@ import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 import network.rs485.logisticspipes.util.ItemVariant;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 @CCType(name = "LogisticsPipes:Normal")
@@ -168,7 +170,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	protected LogisticsItemOrderManager _orderItemManager = null;
 	protected List<BlockEntity> _cachedAdjacentInventories;
 	protected Direction pointedDirection = null;
-	//public BaseRoutingLogic logic;
+	// public BaseRoutingLogic logic;
 	// from BaseRoutingLogic
 	protected int throttleTime = 20;
 	protected Map<Direction, PipeSign> signItem = new EnumMap<>(Direction.class);
@@ -195,7 +197,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 		CoreRoutedPipe.pipecount++;
 
-		//Roughly spread pipe updates throughout the frequency, no need to maintain balance
+		// Roughly spread pipe updates throughout the frequency, no need to maintain balance
 		_delayOffset = CoreRoutedPipe.pipecount % LPConfiguration.INSTANCE.getPipeDetectionFrequency();
 	}
 
@@ -214,7 +216,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
+	public SlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
 		return upgradeManager;
 	}
 
@@ -260,7 +262,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 		transport.injectItem(routedItem, from.getOpposite());
 
-		Router r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(), false);
+		Router r = RouterManager.getInstance().getRouterUnsafe(routedItem.getDestination(), false);
 		if (r != null) {
 			CoreRoutedPipe pipe = r.getCachedPipe();
 			if (pipe != null) {
@@ -278,14 +280,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	private void notifyOfSend(ItemRoutingInformation routedItem) {
 		_inTransitToMe.add(routedItem);
-		//LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
+		// LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
 	}
 
 	public void notifyOfReroute(ItemRoutingInformation routedItem) {
 		_inTransitToMe.remove(routedItem);
 	}
 
-	//When Recreating the Item from the TE version we have the same hashCode but a different instance so we need to refresh this
+	// When Recreating the Item from the TE version we have the same hashCode but a different instance so we need to refresh this
 	public void refreshItem(ItemRoutingInformation routedItem) {
 		if (_inTransitToMe.contains(routedItem)) {
 			_inTransitToMe.remove(routedItem);
@@ -359,14 +361,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		spawnParticleTick();
 		if (stillNeedReplace) {
 			stillNeedReplace = false;
-			//BlockState state = getWorld().getBlockState(getPos());
-			//getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
+			// BlockState state = getWorld().getBlockState(getPos());
+			// getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
 			/* TravelingItems are just held by a pipe, they don't need to know their world
 			 * for(Triplet<IRoutedItem, Direction, ItemSendMode> item : _sendQueue) {
-				//assign world to any entityitem we created in readfromnbt
+				// assign world to any entityitem we created in readfromnbt
 				item.getValue1().getTravelingItem().setWorld(getWorld());
 			}*/
-			//first tick just create a router and do nothing.
+			// first tick just create a router and do nothing.
 			firstInitialiseTick();
 			return;
 		}
@@ -387,7 +389,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			}
 			debug.log("Timed Out: " + p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 		}
-		//update router before ticking logic/transport
+		// update router before ticking logic/transport
 		getRouter().update(getWorld().getTotalWorldTime() % LPConfiguration.INSTANCE.getPipeDetectionFrequency() == _delayOffset || _initialInit || recheckConnections, this);
 		recheckConnections = false;
 		getOriginalUpgradeManager().securityTick();
@@ -442,10 +444,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return;
 		}
 		enabledUpdateEntity();
-		if (getLogisticsModule() == null) {
-			return;
+
+		LogisticsModule module = getLogisticsModule();
+		if (module instanceof Tickable) {
+			((Tickable) getLogisticsModule()).tick();
 		}
-		getLogisticsModule().tick();
 	}
 
 	protected void onAllowedRemoval() {}
@@ -454,7 +457,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	public void throttledUpdateEntity() {}
 
 	protected void delayThrottle() {
-		//delay 6(+1) ticks to prevent suppliers from ticking between a item arriving at them and the item hitting their adj. inv
+		// delay 6(+1) ticks to prevent suppliers from ticking between a item arriving at them and the item hitting their adj. inv
 		if (throttleTimeLeft < 7) {
 			throttleTimeLeft = 7;
 		}
@@ -466,7 +469,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	private void doDebugStuff(EntityPlayer entityplayer) {
-		//entityplayer.world.setWorldTime(4951);
+		// entityplayer.world.setWorldTime(4951);
 		Router r = getRouter();
 		if (!(r instanceof ServerRouter)) {
 			return;
@@ -542,11 +545,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		try {
 			onAllowedRemoval();
 			super.onBlockRemoval();
-			//invalidate() removes the router
+			// invalidate() removes the router
 			//				if (logic instanceof BaseRoutingLogic){
 			//					((BaseRoutingLogic)logic).destroy();
 			//				}
-			//Just in case
+			// Just in case
 			CoreRoutedPipe.pipecount = Math.max(CoreRoutedPipe.pipecount - 1, 0);
 
 			if (transport != null && transport instanceof PipeTransportLogistics) {
@@ -661,7 +664,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (!hasQueuedParticles) {
 			return;
 		}
-		if (MainProxy.isServer(getWorld())) {
+		if (!getWorld().isClient()) {
 			ArrayList<ParticleCount> tosend = new ArrayList<>(queuedParticles.length);
 			for (int i = 0; i < queuedParticles.length; i++) {
 				if (queuedParticles[i] > 0) {
@@ -722,7 +725,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			nbttagcompound.setTag("powerHandler", powerNBT);
 		}
 
-		NBTTagList sendqueue = new NBTTagList();
+		ListTag sendqueue = new ListTag();
 		for (Tuple3<IRoutedItem, Direction, ItemSendMode> p : _sendQueue) {
 			CompoundTag tagentry = new CompoundTag();
 			CompoundTag tagentityitem = new CompoundTag();
@@ -773,7 +776,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		powerHandler.readFromNBT(nbttagcompound.getCompoundTag("powerHandler"));
 
 		_sendQueue.clear();
-		NBTTagList sendqueue = nbttagcompound.getTagList("sendqueue", nbttagcompound.getId());
+		ListTag sendqueue = nbttagcompound.getTagList("sendqueue", nbttagcompound.getId());
 		for (int i = 0; i < sendqueue.tagCount(); i++) {
 			CompoundTag tagentry = sendqueue.getCompoundTagAt(i);
 			CompoundTag tagentityitem = tagentry.getCompoundTag("entityitem");
@@ -811,7 +814,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				if (routerId != null && !routerId.isEmpty()) {
 					routerIntId = UUID.fromString(routerId);
 				}
-				router = SimpleServiceLocator.routerManager
+				router = RouterManager.getInstance()
 						.getOrCreateRouter(routerIntId, getWorld().provider.getDimension(), getX(), getY(), getZ(), false);
 			}
 		}
@@ -830,7 +833,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	public void onNeighborBlockChange() {
 		super.onNeighborBlockChange();
 		clearCache();
-		if (!stillNeedReplace && MainProxy.isServer(getWorld())) {
+		if (!stillNeedReplace && !getWorld().isClient()) {
 			onNeighborBlockChange_Logistics();
 		}
 	}
@@ -842,14 +845,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		super.onBlockPlaced();
 	}
 
-	@CCCommand(description = "Returns the Internal LogisticsModule for this pipe")
 	public abstract LogisticsModule getLogisticsModule();
 
 	@Override
 	public final boolean blockActivated(EntityPlayer entityplayer) {
 		SecuritySettings settings = null;
 		if (MainProxy.isServer(entityplayer.world)) {
-			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
+			LogisticsSecurityTileEntity station = SecurityStationManager.getInstance().getStation(getOriginalUpgradeManager().getSecurityID());
 			if (station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
@@ -900,7 +902,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			return true;
 		}
 
-		if (SimpleServiceLocator.configToolHandler.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
+		if (ConfigToolHandler.INSTANCE.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
 			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openGui) {
 					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
@@ -912,7 +914,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
 			}
-			SimpleServiceLocator.configToolHandler.wrenchUsed(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container);
+			ConfigToolHandler.INSTANCE.wrenchUsed(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container);
 			return true;
 		}
 
@@ -1192,11 +1194,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	public ISecurityProvider getSecurityProvider() {
-		return SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
+		return SecurityStationManager.getInstance().getStation(getOriginalUpgradeManager().getSecurityID());
 	}
 
 	public boolean canBeDestroyedByPlayer(EntityPlayer entityPlayer) {
-		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
+		LogisticsSecurityTileEntity station = SecurityStationManager.getInstance().getStation(getOriginalUpgradeManager().getSecurityID());
 		if (station != null) {
 			return station.getSecuritySettingsForPlayer(entityPlayer, true).removePipes;
 		}
@@ -1249,7 +1251,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				if (queue == null) {
 					queuedDataForUnroutedItems.put(item.getItem(), queue = new LinkedList<>());
 				}
-				queue.add(new Tuple2<>(item.getStackSize(), information));
+				queue.add(new Tuple2<>(item.getCount(), information));
 			}
 		}
 	}
@@ -1264,7 +1266,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			Tuple2<Integer, ItemRoutingInformation> tuple = queue.peek();
 			int wantItem = tuple.getValue1();
 
-			if (wantItem <= item.getStackSize()) {
+			if (wantItem <= item.getCount()) {
 				if (queue.remove() != tuple) {
 					LogisticsPipes.log.fatal("Item queue mismatch");
 					return null;
@@ -1297,7 +1299,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (this instanceof IRequireReliableFluidTransport) {
 			ItemStack stack = information.getItem();
 			if (stack.getItem().isFluidContainer()) {
-				FluidIdentifierStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
+				FluidIdentifierStack liquid = LogisticsFluidManager.getInstance().getFluidFromContainer(stack);
 				if (liquid != null) {
 					((IRequireReliableFluidTransport) this).liquidArrived(liquid.getFluid(), liquid.getAmount());
 				}
@@ -1310,7 +1312,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		int count = 0;
 		for (ItemRoutingInformation next : _inTransitToMe) {
 			if (next.getItem().getItem().equals(it)) {
-				count += next.getItem().getStackSize();
+				count += next.getItem().getCount();
 			}
 		}
 		return count;
@@ -1345,7 +1347,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Nullable
 	@Override
-	public IInventoryUtil getPointedInventory() {
+	public WrappedInventory getPointedInventory() {
 		final NeighborBlockEntity<BlockEntity> pointedItemHandler = getPointedItemHandler();
 		if (pointedItemHandler == null) return null;
 		return pointedItemHandler.getUtilForItemHandler();
@@ -1353,7 +1355,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Nullable
 	@Override
-	public IInventoryUtil getPointedInventory(ExtractionMode mode) {
+	public WrappedInventory getPointedInventory(ExtractionMode mode) {
 		final NeighborBlockEntity<BlockEntity> neighborItemHandler = getPointedItemHandler();
 		if (neighborItemHandler == null) {
 			return null;
@@ -1361,39 +1363,39 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return getInventoryForExtractionMode(mode, neighborItemHandler);
 	}
 
-	public static IInventoryUtil getInventoryForExtractionMode(ExtractionMode mode, NeighborBlockEntity<BlockEntity> neighborItemHandler) {
+	public static WrappedInventory getInventoryForExtractionMode(ExtractionMode mode, NeighborBlockEntity<BlockEntity> neighborItemHandler) {
 		switch (mode) {
 			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
 						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
 						false, false, 1, 0);
 			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
 						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
 						false, false, 0, 1);
 			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
 						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
 						false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
 						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
 						true, false, 0, 0);
 			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
 						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
 						false, true, 0, 0);
 			default:
 				break;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
+		return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
 				neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
 				false, false, 0, 0);
 	}
 
 	@Nullable
 	@Override
-	public IInventoryUtil getSneakyInventory(ModulePositionType slot, int positionInt) {
+	public WrappedInventory getSneakyInventory(ModulePositionType slot, int positionInt) {
 		final NeighborBlockEntity<BlockEntity> pointedItemHandler = getPointedItemHandler();
 		if (pointedItemHandler == null) {
 			return null;
@@ -1403,7 +1405,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Nullable
 	@Override
-	public IInventoryUtil getSneakyInventory(@Nonnull Direction direction) {
+	public WrappedInventory getSneakyInventory(@Nonnull Direction direction) {
 		final NeighborBlockEntity<BlockEntity> pointedItemHandler = getPointedItemHandler();
 		if (pointedItemHandler == null) {
 			return null;
@@ -1431,12 +1433,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Override
 	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude) {
-		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleId(), routerIDsToExclude);
+		return LogisticsManager.getInstance().hasDestination(stack, allowDefault, getRouter().getSimpleId(), routerIDsToExclude);
 	}
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, Tuple2<Integer, SinkReply> reply, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+		IRoutedItem itemToSend = RoutedItemHelper.INSTANCE.createNewTravelItem(stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive) {
 			if (reply.getValue2().isDefault) {
@@ -1452,7 +1454,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode, IAdditionalTargetInformation info) {
-		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
+		IRoutedItem itemToSend = RoutedItemHelper.INSTANCE.createNewTravelItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		itemToSend.setAdditionalTargetInformation(info);
@@ -1466,7 +1468,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (pointedDirection == null) {
 			final Optional<Direction> firstDirection = new WorldCoordinatesWrapper(container)
 					.connectedTileEntities(ConnectionPipeType.ITEM)
-					.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isPipe(adjacent.getBlockEntity()))
+					.filter(adjacent -> !PipeInformationManager.INSTANCE.isPipe(adjacent.getBlockEntity()))
 					.map(NeighborBlockEntity::getDirection)
 					.findFirst();
 			firstDirection.ifPresent(enumFacing -> pointedDirection = enumFacing);

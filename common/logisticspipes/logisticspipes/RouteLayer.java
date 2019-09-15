@@ -8,9 +8,9 @@ package logisticspipes.logisticspipes;
 
 import net.minecraft.util.math.Direction;
 
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.Router;
 
@@ -33,25 +33,25 @@ public class RouteLayer {
 	public Direction getOrientationForItem(IRoutedItem item, Direction blocked) {
 
 		item.checkIDFromUUID();
-		//If a item has no destination, find one
+		// If a item has no destination, find one
 		if (item.getDestination() < 0) {
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleId(), false);
+			item = LogisticsManager.getInstance().assignDestinationFor(item, _router.getSimpleId(), false);
 			_pipe.debug.log("No Destination, assigned new destination: (" + item.getInfo());
 		}
 
-		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back
+		// If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back
 		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemStack().getItem()) || item.getArrived())) {
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleId(), false);
+			item = LogisticsManager.getInstance().assignDestinationFor(item, _router.getSimpleId(), false);
 			_pipe.debug.log("Unreachable Destination, sssigned new destination: (" + item.getInfo());
 		}
 
 		item.checkIDFromUUID();
-		//If we still have no destination or client side unroutable, drop it
+		// If we still have no destination or client side unroutable, drop it
 		if (item.getDestination() < 0) {
 			return null;
 		}
 
-		//Is the destination ourself? Deliver it
+		// Is the destination ourself? Deliver it
 		if (item.getDestinationUUID().equals(_router.getId())) {
 
 			_transport.handleItem(item);
@@ -62,7 +62,7 @@ public class RouteLayer {
 			}
 
 			if (item.getTransportMode() != TransportMode.Active && !_transport.stillWantItem(item)) {
-				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleId(), true), null);
+				return getOrientationForItem(LogisticsManager.getInstance().assignDestinationFor(item, _router.getSimpleId(), true), null);
 			}
 
 			item.setDoNotBuffer(true);
@@ -70,12 +70,12 @@ public class RouteLayer {
 			return _transport.itemArrived(item, blocked);
 		}
 
-		//Do we now know the destination?
+		// Do we now know the destination?
 		if (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemStack().getItem())) {
 			return null;
 		}
 
-		//Which direction should we send it
+		// Which direction should we send it
 		ExitRoute exit = _router.getExitFor(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemStack().getItem());
 		if (exit == null) {
 			return null;

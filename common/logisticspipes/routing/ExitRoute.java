@@ -161,7 +161,7 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 
 	@Override
 	public boolean equals(Object aThat) {
-		//check for self-comparison
+		// check for self-comparison
 		if (this == aThat) {
 			return true;
 		}
@@ -198,7 +198,7 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 		return destination != null && destination.getCachedPipe() != null;
 	}
 
-	//copies
+	// copies
 	public EnumSet<PipeRoutingConnectionType> getFlags() {
 		return EnumSet.copyOf(connectionDetails);
 	}

@@ -17,10 +17,9 @@ import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -43,7 +42,6 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
 
 @CCType(name = "Advanced Extractor Module")
@@ -91,7 +89,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				_sneakyDirection = Direction.values()[sneak];
 			}
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
-			//convert sneakyorientation to sneakydirection
+			// convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
@@ -134,11 +132,6 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		return null;
 	}
 
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
-	}
-
 	protected int ticksToAction() {
 		return 80 / (int) (Math.pow(2, getUpgradeManager().getActionSpeedUpgrade()));
 	}
@@ -164,13 +157,13 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 		Direction extractOrientation = _sneakyDirection;
 		if (extractOrientation == null) {
-			Direction invOrientation = _service.getPointedOrientation();
+			Direction invOrientation = service.getPointedOrientation();
 			if (invOrientation != null) {
 				extractOrientation = invOrientation.getOpposite();
 			}
 		}
 		if (extractOrientation == null) return;
-		IInventoryUtil inventory = _service.getSneakyInventory(extractOrientation);
+		WrappedInventory inventory = service.getSneakyInventory(extractOrientation);
 		if (inventory == null) {
 			return;
 		}
@@ -178,7 +171,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 		checkExtract(inventory);
 	}
 
-	private void checkExtract(IInventoryUtil invUtil) {
+	private void checkExtract(WrappedInventory invUtil) {
 		Map<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
 		int itemsleft = itemsToExtract();
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
@@ -186,7 +179,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 				continue;
 			}
 			List<Integer> jamList = new LinkedList<>();
-			Tuple2<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), true, jamList);
+			Tuple2<Integer, SinkReply> reply = service.hasDestination(item.getKey(), true, jamList);
 			if (reply == null) {
 				continue;
 			}
@@ -198,8 +191,8 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 
-				while (!_service.useEnergy(neededEnergy() * count) && count > 0) {
-					_service.spawnParticle(Particles.OrangeParticle, 2);
+				while (!service.useEnergy(neededEnergy() * count) && count > 0) {
+					service.spawnParticle(Particles.OrangeParticle, 2);
 					count--;
 				}
 
@@ -212,7 +205,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 					break;
 				}
 				count = stackToSend.getCount();
-				_service.sendStack(stackToSend, reply, itemSendMode());
+				service.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if (itemsleft <= 0) {
 					break;
@@ -222,7 +215,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 					jamList.add(reply.getValue1());
 				}
 
-				reply = _service.hasDestination(item.getKey(), true, jamList);
+				reply = service.hasDestination(item.getKey(), true, jamList);
 			}
 			if (itemsleft <= 0) {
 				return;
@@ -270,7 +263,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
 		}
 	}
@@ -329,7 +322,7 @@ public class ModuleAdvancedExtractor extends LogisticsSneakyDirectionModule impl
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return false;
 	}
 

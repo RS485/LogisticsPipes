@@ -53,7 +53,7 @@ public class LogisticsPipesCommand extends CommandBase {
 		try {
 			boolean managed = false;
 			if (LPConstants.DEBUG) {
-				//Check for unlisted Debug commands
+				// Check for unlisted Debug commands
 			}
 			if (!managed) {
 				mainCommand.executeCommand(sender, arguments);

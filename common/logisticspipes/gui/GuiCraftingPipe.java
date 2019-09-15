@@ -11,9 +11,9 @@ import java.io.IOException;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -269,7 +269,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				break;
 			case 4:
 				_pipe.openAttachedGui(_player);
-				//LogisticsEventListener.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), 0); //TODO reactivate this
+				// LogisticsEventListener.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), 0); // TODO reactivate this
 				break;
 			case 20:
 				_pipe.priorityUp(_player);

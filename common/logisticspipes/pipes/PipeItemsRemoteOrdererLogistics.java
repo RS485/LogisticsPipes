@@ -11,7 +11,6 @@ import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -30,7 +29,7 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		if (entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.remoteOrderer) {
-			if (MainProxy.isServer(getWorld())) {
+			if (!getWorld().isClient()) {
 				if (settings == null || settings.openRequest) {
 					ItemStack orderer = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
 					RemoteOrderer.connectToPipe(orderer, this);

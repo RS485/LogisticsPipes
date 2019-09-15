@@ -21,22 +21,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import logisticspipes.LPBlocks;
 import logisticspipes.api.ILPPipe;
-import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.pipes.basic.debug.DebugLogController;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
-import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
-import logisticspipes.textures.Textures;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.util.ItemVariant;
 import network.rs485.logisticspipes.world.CoordinateUtils;
@@ -337,7 +333,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 			if (ignore == dir) {
 				continue;
 			}
-			IPipeInformationProvider information = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(container.getNextConnectedTile(dir));
+			IPipeInformationProvider information = PipeInformationManager.INSTANCE.getInformationProviderFor(container.getNextConnectedTile(dir));
 			if (information != null) {
 				DoubleCoordinates pos = new DoubleCoordinates(information);
 				if (visited.contains(pos)) {

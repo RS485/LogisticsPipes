@@ -14,6 +14,7 @@ import lombok.Setter;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.popup.GuiRecipeImport;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -22,7 +23,6 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -71,7 +71,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 			int max = 0;
 			for (int i = 0; i < canidates.order.size(); i++) {
 				ItemIdentifier ident = canidates.order.get(i).getItem();
-				int newAmount = SimpleServiceLocator.logisticsManager.getAmountFor(ident, pipe.getRouter().getIRoutersByCost());
+				int newAmount = LogisticsManager.getInstance().getAmountFor(ident, pipe.getRouter().getIRoutersByCost());
 				if (newAmount > max) {
 					max = newAmount;
 					maxItemPos = i;
@@ -79,7 +79,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 			}
 			if (max < 64) {
 				if (craftable == null) {
-					craftable = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getIRoutersByCost());
+					craftable = LogisticsManager.getInstance().getCraftableItems(pipe.getRouter().getIRoutersByCost());
 				}
 				for (ItemIdentifier craft : craftable) {
 					for (int i = 0; i < canidates.order.size(); i++) {

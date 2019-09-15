@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.RenderSystem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
@@ -34,7 +34,6 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.math.Vec2;
 import logisticspipes.utils.string.StringUtils;
 
@@ -356,9 +355,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		@Override
 		public void keyTyped(char c, int i) {
-			if (i == Keyboard.KEY_PRIOR) { //PgUp
+			if (i == Keyboard.KEY_PRIOR) { // PgUp
 				itemDisplay.prevPage();
-			} else if (i == Keyboard.KEY_NEXT) { //PgDn
+			} else if (i == Keyboard.KEY_NEXT) { // PgDn
 				itemDisplay.nextPage();
 			}
 		}
@@ -544,9 +543,9 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		@Override
 		public void keyTyped(char c, int i) {
-			if (i == Keyboard.KEY_PRIOR) { //PgUp
+			if (i == Keyboard.KEY_PRIOR) { // PgUp
 				itemDisplay.prevPage();
-			} else if (i == Keyboard.KEY_NEXT) { //PgDn
+			} else if (i == Keyboard.KEY_NEXT) { // PgDn
 				itemDisplay.nextPage();
 			}
 		}

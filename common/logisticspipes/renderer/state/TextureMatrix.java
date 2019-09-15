@@ -4,7 +4,6 @@ import net.minecraft.util.math.Direction;
 
 import lombok.Getter;
 
-import logisticspipes.config.Configs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import network.rs485.logisticspipes.config.LPConfiguration;
@@ -13,10 +12,10 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class TextureMatrix {
 
-	//Old Pipe Renderer
+	// Old Pipe Renderer
 	private final int[] iconIndexes = new int[7];
 
-	//New Pipe Renderer
+	// New Pipe Renderer
 	@Getter
 	private int textureIndex;
 	@Getter

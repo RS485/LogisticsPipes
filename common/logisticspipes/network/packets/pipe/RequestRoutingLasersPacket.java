@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import logisticspipes.LPConstants;
-import logisticspipes.config.Configs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -24,9 +23,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.pathfinder.PathFinder;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.config.LPConfiguration;
@@ -68,7 +67,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		if (tile.pipe instanceof CoreRoutedPipe) {
 			Router router = ((CoreRoutedPipe) tile.pipe).getRouter();
 
-			//this is here to allow players to manually trigger a network-wide LSA update
+			// this is here to allow players to manually trigger a network-wide LSA update
 			router.forceLsaUpdate();
 
 			List<List<ExitRoute>> exits = router.getRouteTable();

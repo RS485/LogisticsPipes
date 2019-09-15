@@ -63,11 +63,11 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, zLevel, true);
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 13, guiTop + 92);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 59, guiTop + 17);
-		//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		//mc.renderEngine.func_110577_a("/logisticspipes/gui/supplier.png");
-		//int j = guiLeft;
-		//int k = guiTop;
-		//drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+		// GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		// mc.renderEngine.func_110577_a("/logisticspipes/gui/supplier.png");
+		// int j = guiLeft;
+		// int k = guiTop;
+		// drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
 	@SuppressWarnings("unchecked")

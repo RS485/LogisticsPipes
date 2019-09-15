@@ -161,7 +161,7 @@ public interface LPDataInput {
 	@Nonnull
 	PlayerIdentifier readPlayerIdentifier();
 
-	//LPSerializable readSerializable(Class<? extends LPSerializable> serializableClass);
+	// LPSerializable readSerializable(Class<? extends LPSerializable> serializableClass);
 
 	default void readSerializable(LPSerializable serializable) {
 		serializable.read(this);

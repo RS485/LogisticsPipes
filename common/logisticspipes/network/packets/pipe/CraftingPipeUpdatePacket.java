@@ -5,7 +5,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
@@ -18,11 +17,11 @@ public class CraftingPipeUpdatePacket extends ModuleCoordinatesPacket {
 
 	@Getter
 	@Setter
-	private int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
+	private int[] amount = new int[ModuleCrafter.MAX_LIQUID_CRAFTER];
 
 	@Getter
 	@Setter
-	private String[] liquidSatelliteNameArray = new String[ItemUpgrade.MAX_LIQUID_CRAFTER];
+	private String[] liquidSatelliteNameArray = new String[ModuleCrafter.MAX_LIQUID_CRAFTER];
 
 	@Getter
 	@Setter

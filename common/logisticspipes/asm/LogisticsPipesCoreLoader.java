@@ -6,7 +6,7 @@ import net.minecraft.launchwrapper.Launch;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
-//@IFMLLoadingPlugin.SortingIndex(1001) TODO: For next MC update. Changing this now, will change ASM check sums as well.
+// @IFMLLoadingPlugin.SortingIndex(1001) TODO: For next MC update. Changing this now, will change ASM check sums as well.
 public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 
 	public LogisticsPipesCoreLoader() throws Exception {
@@ -14,8 +14,8 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 		Launch.classLoader.findClass("logisticspipes.LPConstants").getMethod("loadedCoremod").invoke(null);
 		byte[] bs = Launch.classLoader.getClassBytes("net.minecraft.world.World");
 		if (bs != null) {
-			//Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("detectCoreModInDevEnv").invoke(null);
-			//Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("handleSpecialClassTransformer").invoke(null);
+			// Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("detectCoreModInDevEnv").invoke(null);
+			// Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("handleSpecialClassTransformer").invoke(null);
 		}
 	}
 

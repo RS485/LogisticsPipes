@@ -62,7 +62,7 @@ public class LogWindow extends JPanel {
 
 	private void createAndShowGUI() {
 		frame = new JFrame("");
-		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(this, BorderLayout.CENTER);
 		frame.pack();
 		frame.setVisible(true);

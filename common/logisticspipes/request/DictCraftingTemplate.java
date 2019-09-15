@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ItemCrafter;
-import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.request.resources.Resource;
+import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.routing.LogisticsDictPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
@@ -46,7 +46,7 @@ public class DictCraftingTemplate implements ReqCraftingTemplate {
 	public void addByproduct(ItemStack stack) {
 		for (ItemStack i : _byproduct) {
 			if (i.getItem().equals(stack.getItem())) {
-				i.setStackSize(i.getStackSize() + stack.getStackSize());
+				i.setStackSize(i.getCount() + stack.getCount());
 				return;
 			}
 		}
@@ -55,10 +55,10 @@ public class DictCraftingTemplate implements ReqCraftingTemplate {
 
 	@Override
 	public LogisticsPromise generatePromise(int nResultSets) {
-		return new LogisticsDictPromise(_result, _result.stack.getStackSize() * nResultSets, _crafter, ResourceType.CRAFTING);
+		return new LogisticsDictPromise(_result, _result.stack.getCount() * nResultSets, _crafter, ResourceType.CRAFTING);
 	}
 
-	//TODO: refactor so that other classes don't reach through the template to the crafter.
+	// TODO: refactor so that other classes don't reach through the template to the crafter.
 	// needed to get the crafter todo, in order to sort
 	@Override
 	public ItemCrafter getCrafter() {
@@ -107,7 +107,7 @@ public class DictCraftingTemplate implements ReqCraftingTemplate {
 
 	@Override
 	public int getResultStackSize() {
-		return _result.stack.getStackSize();
+		return _result.stack.getCount();
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class DictCraftingTemplate implements ReqCraftingTemplate {
 	@Override
 	public List<ExtraPromise> getByproducts(int workSets) {
 		return _byproduct.stream()
-				.map(stack -> new LogisticsExtraPromise(stack.getItem(), stack.getStackSize() * workSets, getCrafter(), false))
+				.map(stack -> new LogisticsExtraPromise(stack.getItem(), stack.getCount() * workSets, getCrafter(), false))
 				.collect(Collectors.toList());
 	}
 

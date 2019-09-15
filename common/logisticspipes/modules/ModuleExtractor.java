@@ -14,9 +14,8 @@ import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.interfaces.WrappedInventory;
 import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -38,7 +37,7 @@ import network.rs485.logisticspipes.connection.NeighborBlockEntity;
 
 public class ModuleExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
-	//protected final int ticksToAction = 100;
+	// protected final int ticksToAction = 100;
 	private int currentTick = 0;
 
 	private Direction _sneakyDirection = null;
@@ -95,11 +94,6 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
-	}
-
-	@Override
 	public void readFromNBT(CompoundTag nbttagcompound) {
 		if (nbttagcompound.hasKey("sneakydirection")) {
 			int sneak = nbttagcompound.getInteger("sneakydirection");
@@ -109,7 +103,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 				_sneakyDirection = Direction.values()[sneak];
 			}
 		} else if (nbttagcompound.hasKey("sneakyorientation")) {
-			//convert sneakyorientation to sneakydirection
+			// convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch (t) {
 				default:
@@ -141,21 +135,21 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		}
 		currentTick = 0;
 
-		//Extract Item
-		final NeighborBlockEntity<BlockEntity> pointedItemHandler = _service.getPointedItemHandler();
+		// Extract Item
+		final NeighborBlockEntity<BlockEntity> pointedItemHandler = service.getPointedItemHandler();
 		if (pointedItemHandler == null) {
 			return;
 		}
 		Direction extractOrientation = _sneakyDirection;
 		if (extractOrientation == null) {
-			final Direction pointedOrientation = _service.getPointedOrientation();
+			final Direction pointedOrientation = service.getPointedOrientation();
 			if (pointedOrientation != null) {
 				extractOrientation = pointedOrientation.getOpposite();
 			}
 		}
 
 		if (extractOrientation == null) return;
-		IInventoryUtil targetUtil = _service.getSneakyInventory(extractOrientation);
+		WrappedInventory targetUtil = service.getSneakyInventory(extractOrientation);
 		if (targetUtil == null) return;
 
 		int itemsleft = itemsToExtract();
@@ -167,7 +161,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 			}
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<>();
-			Tuple2<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
+			Tuple2<Integer, SinkReply> reply = service.hasDestination(slotitem, true, jamList);
 			if (reply == null) {
 				continue;
 			}
@@ -179,8 +173,8 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 
-				while (!_service.useEnergy(neededEnergy() * count) && count > 0) {
-					_service.spawnParticle(Particles.OrangeParticle, 2);
+				while (!service.useEnergy(neededEnergy() * count) && count > 0) {
+					service.spawnParticle(Particles.OrangeParticle, 2);
 					count--;
 				}
 
@@ -193,7 +187,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 					break;
 				}
 				count = stackToSend.getCount();
-				_service.sendStack(stackToSend, reply, itemSendMode());
+				service.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if (itemsleft <= 0) {
 					break;
@@ -203,7 +197,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 					break;
 				}
 				jamList.add(reply.getValue1());
-				reply = _service.hasDestination(ItemIdentifier.get(slot), true, jamList);
+				reply = service.hasDestination(ItemIdentifier.get(slot), true, jamList);
 			}
 			if (itemsleft <= 0) {
 				break;
@@ -265,7 +259,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return false;
 	}
 

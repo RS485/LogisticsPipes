@@ -24,10 +24,10 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.ItemCrafter;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
@@ -96,7 +96,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ItemCr
 		if (doContentUpdate) {
 			checkContentUpdate();
 		}
-		//craftingModule.enabledUpdateEntity();
+		// craftingModule.enabledUpdateEntity();
 	}
 
 	@Override

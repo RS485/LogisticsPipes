@@ -92,7 +92,7 @@ public class ClientViewController implements IDebugHUDProvider {
 	public void handlePacket(RoutingUpdateCanidatePipe routingUpdateCanidatePipe) {
 		DoubleCoordinates pos = routingUpdateCanidatePipe.getExitRoute().destination.getLPPosition();
 		canidates.add(routingUpdateCanidatePipe.getExitRoute().destination.getLPPosition());
-		//listHUD.add(new HUDRoutingTableDebugProvider(new HUDRoutingTableNewCandateUntrace(routingUpdateCanidatePipe.getExitRoute()), pos));
+		// listHUD.add(new HUDRoutingTableDebugProvider(new HUDRoutingTableNewCandateUntrace(routingUpdateCanidatePipe.getExitRoute()), pos));
 		getDebugInformation(pos).isNew = true;
 		getDebugInformation(pos).newIndex = routingUpdateCanidatePipe.getExitRoute().debug.index;
 	}

@@ -1,12 +1,12 @@
 package logisticspipes.interfaces;
 
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-import logisticspipes.pipes.upgrades.IPipeUpgrade;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.pipe.upgrade.Upgrade;
 
-public interface ISlotUpgradeManager {
+public interface SlotUpgradeManager {
 
 	boolean hasPatternUpgrade();
 
@@ -26,15 +26,16 @@ public interface ISlotUpgradeManager {
 
 	boolean hasOwnSneakyUpgrade();
 
-	IInventory getInv();
+	Inventory getInv();
 
-	IPipeUpgrade getUpgrade(int slot);
+	Upgrade getUpgrade(int slot);
 
-	DoubleCoordinates getPipePosition();
+	BlockPos getPipePosition();
 
 	int getActionSpeedUpgrade();
 
 	int getItemExtractionUpgrade();
 
 	int getItemStackExtractionUpgrade();
+
 }

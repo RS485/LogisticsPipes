@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import logisticspipes.LPItems;
 import logisticspipes.gui.GuiPipeController;
 import logisticspipes.interfaces.IGuiOpenController;
+import logisticspipes.interfaces.SecurityStationManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
@@ -16,7 +17,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SneakyUpgradeConfig;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
 
@@ -45,7 +45,7 @@ public class PipeController extends CoordinatesGuiProvider {
 		final CoreRoutedPipe pipe = (CoreRoutedPipe) tile.pipe;
 		DummyContainer dummy = new DummyContainer(player, null, pipe.getOriginalUpgradeManager().getGuiController(), new IGuiOpenController() {
 
-			//Network Statistics
+			// Network Statistics
 			@Override
 			public void guiOpenedByPlayer(PlayerEntity player) {
 				pipe.playerStartWatching(player, 0);
@@ -103,7 +103,7 @@ public class PipeController extends CoordinatesGuiProvider {
 			if (itemStack.getDamage() != LogisticsItemCard.SEC_CARD) {
 				return false;
 			}
-			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTag().getString("UUID")));
+			return SecurityStationManager.getInstance().isAuthorized(UUID.fromString(itemStack.getTag().getString("UUID")));
 		}, 1);
 		dummy.addRestrictedSlot(0, tile.logicController.diskInv, 14, 36, LPItems.disk);
 		return dummy;

@@ -24,7 +24,7 @@ public class HudUpdateTick {
 		if (index < 0) {
 			return;
 		}
-		HudUpdateTick.routersNeedingUpdate.set(index); //expands the bit-set when out of bounds.
+		HudUpdateTick.routersNeedingUpdate.set(index); // expands the bit-set when out of bounds.
 		if (HudUpdateTick.firstRouter == -1) {
 			HudUpdateTick.firstRouter = index;
 		}
@@ -34,9 +34,9 @@ public class HudUpdateTick {
 		if (HudUpdateTick.firstRouter == -1) {
 			return;
 		}
-		RouterManager rm = SimpleServiceLocator.routerManager;
+		RouterManager rm = RouterManager.getInstance();
 		int slotSentCount = 0;
-		//cork the compressor
+		// cork the compressor
 		SimpleServiceLocator.serverBufferHandler.setPause(true);
 		while (HudUpdateTick.firstRouter != -1 && slotSentCount < HudUpdateTick.inventorySlotsToUpdatePerTick) {
 			HudUpdateTick.routersNeedingUpdate.clear(HudUpdateTick.firstRouter);
@@ -49,7 +49,7 @@ public class HudUpdateTick {
 			}
 			HudUpdateTick.firstRouter = HudUpdateTick.routersNeedingUpdate.nextSetBit(HudUpdateTick.firstRouter);
 		}
-		//and let it compress and send
+		// and let it compress and send
 		SimpleServiceLocator.serverBufferHandler.setPause(false);
 	}
 }

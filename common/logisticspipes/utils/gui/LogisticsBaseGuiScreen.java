@@ -158,10 +158,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		currentDrawScreenMouseY = mouseY;
 		checkButtons();
 		if (subGui != null) {
-			//Save Mouse Pos
+			// Save Mouse Pos
 			int x = Mouse.getX();
 			int y = Mouse.getY();
-			//Set Pos 0,0
+			// Set Pos 0,0
 			try {
 				Field fX = Mouse.class.getDeclaredField("x");
 				Field fY = Mouse.class.getDeclaredField("y");
@@ -174,9 +174,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					e.printStackTrace();
 				}
 			}
-			//Draw super class (maybe NEI)
+			// Draw super class (maybe NEI)
 			super.drawScreen(0, 0, partialTicks);
-			//Resore Mouse Pos
+			// Resore Mouse Pos
 			try {
 				Field fX = Mouse.class.getDeclaredField("x");
 				Field fY = Mouse.class.getDeclaredField("y");
@@ -284,14 +284,14 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			}
 			if (fuzzySlotActiveGui && fuzzySlot == slot) {
 				if (!mouseOver) {
-					//Check within FuzzyGui
+					// Check within FuzzyGui
 					if (!isPointInRegion(slot.xPos, slot.yPos + 16, 60, 52, currentDrawScreenMouseX, currentDrawScreenMouseY)) {
 						fuzzySlotActiveGui = false;
 						fuzzySlot = null;
 					}
 				}
-				//int posX = -60;
-				//int posY = 0;
+				// int posX = -60;
+				// int posY = 0;
 				final int posX = slot.xPos + guiLeft;
 				final int posY = slot.yPos + 17 + guiTop;
 				renderAtTheEnd.add(() -> {

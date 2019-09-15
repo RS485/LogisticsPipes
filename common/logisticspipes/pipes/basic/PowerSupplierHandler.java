@@ -63,7 +63,7 @@ public class PowerSupplierHandler {
 	}
 
 	private void requestICPower() {
-		//Use Buffer
+		// Use Buffer
 
 		final List<NeighborBlockEntity<BlockEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
 
@@ -94,7 +94,7 @@ public class PowerSupplierHandler {
 					double unUsed = SimpleServiceLocator.IC2Proxy.injectEnergyUnits(adjacent.getBlockEntity(), adjacent.getOurDirection(), toUse);
 					double used = toUse - unUsed;
 					if (used > 0) {
-						//MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.IC2_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
+						// MainProxy.sendPacketToAllWatchingChunk(this.pipe.getX(), this.pipe.getZ(), MainProxy.getDimensionForWorld(this.pipe.getWorld()), PacketHandler.getPacket(PowerPacketLaser.class).setColor(LogisticsPowerProviderTileEntity.IC2_COLOR).setPos(this.pipe.getLPPosition()).setRenderBall(true).setDir(adTile.orientation).setLength(0.5F));
 						pipe.container.addLaser(adjacent.getDirection(), 0.5F, LogisticsPowerProviderTileEntity.IC2_COLOR, false, true);
 						internalBufferIC2 -= used;
 					}
@@ -107,7 +107,7 @@ public class PowerSupplierHandler {
 			}
 		}
 
-		//Rerequest Buffer
+		// Rerequest Buffer
 		List<Tuple2<ISubSystemPowerProvider, List<IFilter>>> provider = pipe.getRouter().getSubSystemPowerProvider();
 		double available = 0;
 		outer:
@@ -151,7 +151,7 @@ public class PowerSupplierHandler {
 	}
 
 	private boolean requestRFPower() {
-		//Use Buffer
+		// Use Buffer
 
 		final List<NeighborBlockEntity<BlockEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
 
@@ -193,7 +193,7 @@ public class PowerSupplierHandler {
 				++i;
 			}
 		}
-		//Rerequest Buffer
+		// Rerequest Buffer
 		List<Tuple2<ISubSystemPowerProvider, List<IFilter>>> provider = pipe.getRouter().getSubSystemPowerProvider();
 		double available = 0;
 		outer:

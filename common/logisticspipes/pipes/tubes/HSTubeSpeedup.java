@@ -17,10 +17,10 @@ import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.interfaces.ITubeRenderOrientation;
 import logisticspipes.pipes.basic.CoreMultiBlockPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericSubMultiBlock;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.tube.SpeedupTubeRenderer;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
@@ -53,7 +53,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			protected void handleTileReachedServer(LPTravelingItemServer arrivingItem, BlockEntity tile, Direction dir) {
 				if (dir.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
 					arrivingItem.setSpeed(LPConstants.PIPE_NORMAL_SPEED * 20);
-					handleTileReachedServer_internal(arrivingItem, tile, dir);
+					handleTileReachedServerInternal(arrivingItem, tile, dir);
 				} else {
 					super.handleTileReachedServer(arrivingItem, tile, dir);
 				}
@@ -62,7 +62,7 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 			@Override
 			protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, BlockEntity tile, Direction dir) {
 				if (dir.getOpposite() == ((HSTubeSpeedup) getMultiPipe()).orientation.dir1) {
-					if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
+					if (PipeInformationManager.INSTANCE.isItemPipe(tile)) {
 						arrivingItem.setSpeed(LPConstants.PIPE_NORMAL_SPEED * 20);
 						passToNextPipe(arrivingItem, tile);
 					}
@@ -272,12 +272,12 @@ public class HSTubeSpeedup extends CoreMultiBlockPipe {
 
 	@AllArgsConstructor
 	public enum SpeedupDirection implements ITubeRenderOrientation, ITubeOrientation {
-		//@formatter:off
+		// @formatter:off
 		NORTH(Direction.NORTH),
 		SOUTH(Direction.SOUTH),
 		EAST(Direction.EAST),
 		WEST(Direction.WEST);
-		//@formatter:on
+		// @formatter:on
 		@Getter
 		Direction dir1;
 

@@ -51,12 +51,12 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 		MainProxy.sendPacketToPlayer(((ModuleCrafter) dummy.getModule()).getCPipePacket(), player);
 		dummy.setInventory(((ModuleCrafter) dummy.getModule()).getDummyInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
-		//Input slots
+		// Input slots
 		for (int l = 0; l < 9; l++) {
 			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, ((ModuleCrafter) dummy.getModule()).fuzzyCraftingFlagArray[l]);
 		}
 
-		//Output slot
+		// Output slot
 		dummy.addFuzzyDummySlot(9, 90, 64, ((ModuleCrafter) dummy.getModule()).outputFuzzyFlags);
 		return dummy;
 	}

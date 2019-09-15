@@ -7,9 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
 import lombok.Setter;
 
+import logisticspipes.interfaces.routing.ChannelManagerProvider;
 import logisticspipes.interfaces.routing.IChannelManager;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -39,7 +39,7 @@ public class DeleteChannelPacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(player.getEntityWorld());
+		IChannelManager manager = ChannelManagerProvider.getInstance().getChannelManager(player.getEntityWorld());
 		manager.removeChannel(channelIdentifier);
 	}
 

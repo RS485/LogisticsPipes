@@ -69,12 +69,12 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 		MainProxy.sendPacketToPlayer(module.getCPipePacket(), player);
 		DummyContainer dummy = new DummyContainer(player, module.getDummyInventory(), module);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
-		//Input slots
+		// Input slots
 		for (int l = 0; l < 9; l++) {
 			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, module.fuzzyCraftingFlagArray[l]);
 		}
 
-		//Output slot
+		// Output slot
 		dummy.addFuzzyDummySlot(9, 90, 64, module.outputFuzzyFlags);
 
 		for (int i = 0; i < liquidCrafter; i++) {

@@ -32,14 +32,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.network.Environment;
-import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
-import li.cil.oc.api.network.SidedEnvironment;
 import static logisticspipes.pipes.basic.LogisticsBlockGenericPipe.PIPE_CONN_BB;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
@@ -48,8 +44,6 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILPPipe;
 import logisticspipes.api.ILPPipeTile;
-import logisticspipes.asm.ModDependentField;
-import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.interfaces.IClientState;
@@ -61,12 +55,9 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.block.PipeSolidSideCheck;
 import logisticspipes.network.packets.pipe.PipeTileStatePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.pipes.basic.ltgpmodcompat.LPDuctHolderTileEntity;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.subproxies.IBCPipeCapabilityProvider;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
-import logisticspipes.proxy.opencomputers.IOCTile;
 import logisticspipes.proxy.opencomputers.asm.BaseWrapperClass;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.renderer.LogisticsTileRenderController;
@@ -77,15 +68,14 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.LPPositionSet;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.ReflectionHelper;
+import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.StackTraceUtil;
 import logisticspipes.utils.StackTraceUtil.Info;
 import logisticspipes.utils.TileBuffer;
-import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.connection.PipeInventoryConnectionChecker;
 import network.rs485.logisticspipes.util.ItemVariant;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 import network.rs485.logisticspipes.world.DoubleCoordinatesType;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -172,7 +162,7 @@ public class LogisticsTileGenericPipe extends BlockEntity
 		imcmpltgpCompanion.update();
 		final Info superDebug = StackTraceUtil.addSuperTraceInformation(() -> "Time: " + getWorld().getWorldTime());
 		final Info debug = StackTraceUtil.addTraceInformation(() -> "(" + getX() + ", " + getY() + ", " + getZ() + ")", superDebug);
-		if (sendInitPacket && MainProxy.isServer(getWorld())) {
+		if (sendInitPacket && !getWorld().isClient()) {
 			sendInitPacket = false;
 			getRenderController().sendInit();
 		}
@@ -214,8 +204,8 @@ public class LogisticsTileGenericPipe extends BlockEntity
 			}
 		}
 
-		//Sideblocks need to be checked before this
-		//Network needs to be after this
+		// Sideblocks need to be checked before this
+		// Network needs to be after this
 
 		if (refreshRenderState) {
 			refreshRenderState();
@@ -254,7 +244,7 @@ public class LogisticsTileGenericPipe extends BlockEntity
 			Direction o = Direction.getFront(i);
 			renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
 		}
-		//New Pipe Texture States
+		// New Pipe Texture States
 		renderState.textureMatrix.refreshStates(pipe);
 	}
 
@@ -413,7 +403,7 @@ public class LogisticsTileGenericPipe extends BlockEntity
 
 	public boolean canPipeConnect(BlockEntity with, Direction side) {
 		if (MainProxy.isClient(world)) {
-			//XXX why is this ever called client side, its not *used* for anything.
+			// XXX why is this ever called client side, its not *used* for anything.
 			return false;
 		}
 		if (with == null) {
@@ -605,12 +595,12 @@ public class LogisticsTileGenericPipe extends BlockEntity
 
 	public int injectItem(ItemStack payload, boolean doAdd, Direction from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnectedCached(from)) {
-			if (doAdd && MainProxy.isServer(getWorld())) {
+			if (doAdd && !getWorld().isClient()) {
 				ItemStack leftStack = payload.copy();
 				int lastIterLeft;
 				do {
 					lastIterLeft = leftStack.getCount();
-					LPTravelingItem.LPTravelingItemServer travelingItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(leftStack);
+					LPTravelingItem.LPTravelingItemServer travelingItem = RoutedItemHelper.INSTANCE.createNewTravelItem(leftStack);
 					leftStack.setCount(pipe.transport.injectItem(travelingItem, from.getOpposite()));
 				} while (leftStack.getCount() != lastIterLeft && leftStack.getCount() != 0);
 				return payload.getCount() - leftStack.getCount();
@@ -640,8 +630,8 @@ public class LogisticsTileGenericPipe extends BlockEntity
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public void onConnect(Node node1) {}
-	//public int redstoneInput = 0;
-	//public int[] redstoneInputSide = new int[Direction.values().length];
+	// public int redstoneInput = 0;
+	// public int[] redstoneInputSide = new int[Direction.values().length];
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
@@ -1009,7 +999,7 @@ public class LogisticsTileGenericPipe extends BlockEntity
 
 	@Override
 	public Stream<BlockEntity> getPartsOfPipe() {
-		return this.subMultiBlock.stream().map(pos -> pos.getBlockEntity(world));
+		return this.subMultiBlock.stream().map(pos -> getWorld().getBlockEntity(pos));
 	}
 
 	public static class CoreState implements IClientState {

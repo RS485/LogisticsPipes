@@ -25,7 +25,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.api.IHUDArmor;
-import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IDebugHUDProvider;
 import logisticspipes.interfaces.IHUDConfig;
@@ -33,9 +32,10 @@ import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.Router;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
@@ -93,7 +93,7 @@ public class LogisticsHUDRenderer {
 
 	private void refreshList(double x, double y, double z) {
 		ArrayList<Tuple2<Double, IHeadUpDisplayRendererProvider>> newList = new ArrayList<>();
-		for (Router router : SimpleServiceLocator.routerManager.getRouters()) {
+		for (Router router : RouterManager.getInstance().getRouters()) {
 			if (router == null) {
 				continue;
 			}
@@ -174,7 +174,7 @@ public class LogisticsHUDRenderer {
 
 	private boolean displayCross = false;
 
-	//TODO: only load this once, rather than twice
+	// TODO: only load this once, rather than twice
 	private static final Identifier TEXTURE = new Identifier("textures/gui/icons.png");
 
 	public void renderPlayerDisplay(long renderTicks) {
@@ -290,7 +290,7 @@ public class LogisticsHUDRenderer {
 					if (pos.length == 2) {
 						if (renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
 							renderer.getRenderer().handleCursor(pos[0], pos[1]);
-							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().player.isSneaking()) {
+							if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { // if(FMLClientHandler.instance().getClient().player.isSneaking()) {
 								thisIsLast = renderer;
 								displayCross = true;
 							}
@@ -327,8 +327,8 @@ public class LogisticsHUDRenderer {
 			if (progress != 0) {
 				List<String> textData = new ArrayList<>();
 
-				//BlockEntity tile = new DoubleCoordinates(box.blockX, box.blockY, box.blockZ).getBlockEntity(DimensionManager.getWorld(0));
-				//Insert debug code here
+				// BlockEntity tile = new DoubleCoordinates(box.blockX, box.blockY, box.blockZ).getBlockEntity(DimensionManager.getWorld(0));
+				// Insert debug code here
 
 				if (textData.isEmpty()) {
 					textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.world, player, box);
@@ -397,12 +397,12 @@ public class LogisticsHUDRenderer {
 		}
 		GL11.glPopMatrix();
 
-		//Render Laser
+		// Render Laser
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		//GL11.glEnable(GL11.GL_LIGHTING);
+		// GL11.glEnable(GL11.GL_LIGHTING);
 		for (LaserData data : lasers) {
 			GL11.glPushMatrix();
 

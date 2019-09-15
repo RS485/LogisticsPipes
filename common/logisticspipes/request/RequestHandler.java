@@ -14,18 +14,19 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.interfaces.routing.FluidRequester;
+import logisticspipes.logistics.LogisticsFluidManager;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.ComponentList;
 import logisticspipes.network.packets.orderer.MissingItems;
 import logisticspipes.network.packets.orderer.OrdererContent;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.order.LinkedLogisticsOrderList;
@@ -95,12 +96,12 @@ public class RequestHandler {
 		LinkedList<ItemIdentifier> _craftableItems;
 
 		if (option == DisplayOptions.SupplyOnly || option == DisplayOptions.Both) {
-			_availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
+			_availableItems = LogisticsManager.getInstance().getAvailableItems(pipe.getRouter().getIRoutersByCost());
 		} else {
 			_availableItems = new HashMap<>();
 		}
 		if (option == DisplayOptions.CraftOnly || option == DisplayOptions.Both) {
-			_craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getIRoutersByCost());
+			_craftableItems = LogisticsManager.getInstance().getCraftableItems(pipe.getRouter().getIRoutersByCost());
 		} else {
 			_craftableItems = new LinkedList<>();
 		}
@@ -150,7 +151,7 @@ public class RequestHandler {
 			player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
-		NBTTagList list = itemlist.getTagList("inventar", 10);
+		ListTag list = itemlist.getTagList("inventar", 10);
 		final List<ItemStack> transaction = new ArrayList<>(list.tagCount());
 		for (int i = 0; i < list.tagCount(); i++) {
 			CompoundTag itemnbt = list.getCompoundTagAt(i);
@@ -216,7 +217,7 @@ public class RequestHandler {
 	}
 
 	public static void refreshFluid(EntityPlayer player, CoreRoutedPipe pipe) {
-		TreeSet<FluidIdentifierStack> _allItems = SimpleServiceLocator.logisticsFluidManager.getAvailableFluid(pipe.getRouter().getIRoutersByCost());
+		TreeSet<FluidIdentifierStack> _allItems = LogisticsFluidManager.getInstance().getAvailableFluid(pipe.getRouter().getIRoutersByCost());
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class)
 						.setIdentSet(
 								_allItems.stream()
@@ -232,7 +233,7 @@ public class RequestHandler {
 			return;
 		}
 
-		RequestTree.requestFluid(FluidIdentifier.get(stack.getItem()), stack.getStackSize(), requester, new RequestLog() {
+		RequestTree.requestFluid(FluidIdentifier.get(stack.getItem()), stack.getCount(), requester, new RequestLog() {
 
 			@Override
 			public void handleMissingItems(List<Resource> resources) {

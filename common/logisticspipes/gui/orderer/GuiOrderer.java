@@ -125,7 +125,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		}
 
 		itemDisplay.renderAmount(getStackAmount());
-		//SearchInput
+		// SearchInput
 		search.renderSearchBar();
 
 		itemDisplay.renderSortMode(xCenter, bottom - 52);
@@ -149,8 +149,8 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 			return true;
 		}
-		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
-		//Enchantment? Enchantment!
+		// if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
+		// Enchantment? Enchantment!
 		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for (Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
 			String enchantname = e.getKey().getName();

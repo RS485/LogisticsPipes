@@ -272,7 +272,6 @@ public class Matrix4d {
 
 	@Override
 	public String toString() {
-		return "Matrix4d(\n" + "  " + m00 + ", " + m01 + ", " + m02 + ", " + m03 + "\n" + "  " + m10 + ", " + m11 + ", " + m12 + ", " + m13 + "\n" + "  " + m20
-				+ ", " + m21 + ", " + m22 + ", " + m23 + "\n" + "  " + m30 + ", " + m31 + ", " + m32 + ", " + m33 + "\n" + ")\n";
+		return String.format("Matrix4d(\n  %s, %s, %s, %s\n  %s, %s, %s, %s\n  %s, %s, %s, %s\n  %s, %s, %s, %s\n)\n", m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
 	}
 }

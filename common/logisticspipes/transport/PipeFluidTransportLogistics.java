@@ -14,7 +14,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.PipeFluidUpdate;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.utils.SafeTimeTracker;
 import logisticspipes.utils.item.ItemStack;
 
@@ -157,7 +157,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 
 		for (Direction direction : Direction.values()) {
 			if (!MainProxy.checkPipesConnections(container, container.getTile(PipeFluidTransportLogistics.orientations[direction.ordinal()]), PipeFluidTransportLogistics.orientations[direction.ordinal()])) {
-				if (MainProxy.isServer(getWorld())) {
+				if (!getWorld().isClient()) {
 					FluidStack stack = sideTanks[direction.ordinal()].getFluid();
 					if (stack != null) {
 						sideTanks[direction.ordinal()].setFluid(null);
@@ -281,6 +281,6 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 
 	@Override
 	protected boolean isPipeCheck(BlockEntity tile) {
-		return SimpleServiceLocator.pipeInformationManager.isPipe(tile);
+		return PipeInformationManager.INSTANCE.isPipe(tile);
 	}
 }

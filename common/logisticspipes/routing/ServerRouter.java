@@ -32,11 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
-import net.minecraftforge.common.DimensionManager;
-
-import alexiil.mc.lib.attributes.fluid.volume.FluidKey;
 import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 import lombok.Getter;
 
@@ -54,11 +50,6 @@ import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.request.resources.FluidResource;
-import logisticspipes.request.resources.ItemResource;
-import logisticspipes.request.resources.Resource;
-import logisticspipes.request.resources.Resource.Dict;
 import logisticspipes.routing.pathfinder.PathFinder;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
@@ -71,7 +62,6 @@ import logisticspipes.utils.tuples.Tuple4;
 import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.routing.request.Resource;
 import network.rs485.logisticspipes.util.ItemVariant;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public final class ServerRouter implements Router, Comparable<ServerRouter> {
 
@@ -567,7 +557,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 					routedexits.add(pipe.getValue().exitOrientation);
 				}
 				if (!subpowerexits.containsKey(pipe.getValue().exitOrientation) && pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-					subpowerexits.put(pipe.getValue().exitOrientation, PathFinder.messureDistanceToNextRoutedPipe(getLPPosition(), pipe.getValue().exitOrientation, pipe.getKey().getWorld()));
+					subpowerexits.put(pipe.getValue().exitOrientation, PathFinder.measureDistanceToNextRoutedPipe(getPos(), pipe.getValue().exitOrientation, pipe.getKey().getWorld()));
 				}
 			}
 			this.adjacent = Collections.unmodifiableMap(adjacent);
@@ -667,7 +657,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 			return; // this update is already done.
 		}
 
-		//Dijkstra!
+		// Dijkstra!
 
 		debug.init();
 
@@ -682,7 +672,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 		 **/
 		List<ExitRoute> routeCosts = new ArrayList<>(routingTableSize);
 
-		//Add the current Router
+		// Add the current Router
 		routeCosts.add(new ExitRoute(this, this, null, null, 0, EnumSet.allOf(PipeRoutingConnectionType.class), 0));
 
 		ArrayList<Tuple2<ILogisticsPowerProvider, List<IFilter>>> powerTable;
@@ -698,7 +688,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 			subSystemPower = new ArrayList<>(5);
 		}
 
-		//space and time inefficient, a bitset with 3 bits per node would save a lot but makes the main iteration look like a complete mess
+		// space and time inefficient, a bitset with 3 bits per node would save a lot but makes the main iteration look like a complete mess
 		ArrayList<EnumSet<PipeRoutingConnectionType>> closedSet = new ArrayList<>(ServerRouter.getBiggestSimpleID());
 		for (int i = 0; i < ServerRouter.getBiggestSimpleID(); i++) {
 			closedSet.add(null);
@@ -713,7 +703,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 		/** The total cost for the candidate route **/
 		PriorityQueue<ExitRoute> candidatesCost = new PriorityQueue<>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
 
-		//Init candidates
+		// Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
 		for (Entry<Router, ExitRoute> pipe : adjacentRouter.entrySet()) {
 			ExitRoute currentE = pipe.getValue();
@@ -746,7 +736,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 				e.debug.isNewlyAddedCanidate = false;
 			}
 
-			//if the node does not have any flags not in the closed set, check it
+			// if the node does not have any flags not in the closed set, check it
 			EnumSet<PipeRoutingConnectionType> lowestCostClosedFlags = closedSet.get(lowestCostNode.destination.getSimpleId());
 			if (lowestCostClosedFlags == null) {
 				lowestCostClosedFlags = EnumSet.noneOf(PipeRoutingConnectionType.class);
@@ -794,7 +784,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 				}
 			}
 
-			//Add new candidates from the newly approved route
+			// Add new candidates from the newly approved route
 			LSA lsa = null;
 			if (lowestCostNode.destination.getSimpleId() < ServerRouter.sharedLsaDatabase.length) {
 				lsa = ServerRouter.sharedLsaDatabase[lowestCostNode.destination.getSimpleId()];
@@ -883,7 +873,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 
 		debug.stepOneDone();
 
-		//Build route table
+		// Build route table
 		ArrayList<List<ExitRoute>> routeTable = new ArrayList<>(ServerRouter.getBiggestSimpleID() + 1);
 		while (simpleID >= routeTable.size()) {
 			routeTable.add(null);
@@ -969,7 +959,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 
 		clearPipeCache();
 		destroyed = true;
-		SimpleServiceLocator.routerManager.removeRouter(simpleID);
+		RouterManager.getInstance().removeRouter(simpleID);
 		for (List<ITileEntityChangeListener> list : listenedPipes) {
 			list.remove(localChangeListener);
 		}
@@ -1001,12 +991,12 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 	@Override
 	public void flagForRoutingUpdate() {
 		lsaVersion++;
-		//if(LogisticsPipes.DEBUG)
-		//System.out.println("[LogisticsPipes] targeted for routing update to "+_LSAVersion+" for Node" +  simpleID);
+		// if(LogisticsPipes.DEBUG)
+		// System.out.println("[LogisticsPipes] targeted for routing update to "+_LSAVersion+" for Node" +  simpleID);
 	}
 
 	private void updateAdjacentAndLsa() {
-		//this already got a checkAdjacentUpdate, so start the recursion with neighbors
+		// this already got a checkAdjacentUpdate, so start the recursion with neighbors
 		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
 		IRAction flood = new FloodCheckAdjacent();
 		visited.set(simpleID);
@@ -1021,7 +1011,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 	}
 
 	private void updateLsa() {
-		//now increment LSA version in the network
+		// now increment LSA version in the network
 		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
 		for (Router r : prevAdjacentRouter.keySet()) {
 			r.act(visited, new FlagForLSAUpdate());
@@ -1054,7 +1044,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {
-				//updateAdjacentAndLsa();
+				// updateAdjacentAndLsa();
 				updateLsa();
 			}
 
@@ -1129,7 +1119,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 
 	@Override
 	public boolean hasRoute(UUID id, boolean active, ItemStack stack) {
-		if (!SimpleServiceLocator.routerManager.isRouterUnsafe(id, false)) {
+		if (!RouterManager.getInstance().isRouterUnsafe(id, false)) {
 			return false;
 		}
 		ensureRouteTableIsUpToDate(true);
@@ -1405,7 +1395,7 @@ public final class ServerRouter implements Router, Comparable<ServerRouter> {
 					run = false;
 					return;
 				}
-				//spinlock during the first tick, we can't touch the routing table, untill Update() has been called on every pipe.
+				// spinlock during the first tick, we can't touch the routing table, untill Update() has been called on every pipe.
 				for (int i = 0; i < 10 && p.stillNeedReplace(); i++) {
 					Thread.sleep(10);
 				}

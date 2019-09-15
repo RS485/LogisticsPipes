@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -43,7 +42,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 			return null;
 		}
 		if (_filterInventory.containsItem(item)) {
-			_service.spawnParticle(Particles.VioletParticle, 2);
+			service.spawnParticle(Particles.VioletParticle, 2);
 			return _sinkReply;
 		}
 		return null;
@@ -56,11 +55,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 
 	@Override
 	protected ModuleInHandGuiProvider getInHandGuiProvider() {
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 
@@ -107,7 +101,7 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

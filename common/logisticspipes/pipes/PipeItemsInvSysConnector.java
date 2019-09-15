@@ -28,8 +28,10 @@ import logisticspipes.gui.hud.HUDInvSysConnector;
 import logisticspipes.interfaces.IGuiOpenController;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.WrappedInventory;
+import logisticspipes.interfaces.routing.ChannelConnectionManager;
+import logisticspipes.interfaces.routing.ChannelManagerProvider;
 import logisticspipes.interfaces.routing.IChannelManager;
 import logisticspipes.interfaces.routing.IChannelRoutingConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -45,7 +47,6 @@ import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
@@ -53,8 +54,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.PlayerCollectionList;
+import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.transactor.ITransactor;
 import logisticspipes.utils.tuples.Tuple2;
 import logisticspipes.utils.tuples.Tuple3;
@@ -84,11 +85,11 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		super.enabledUpdateEntity();
 		if (!init) {
 			if (hasConnectionUUID()) {
-				if (!SimpleServiceLocator.connectionManager.addChannelConnection(getConnectionUUID(), getRouter())) {
+				if (!ChannelConnectionManager.getInstance().addChannelConnection(getConnectionUUID(), getRouter())) {
 					connectedChannel = null;
 					sendChannelInformationToPlayers();
 				}
-				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
+				List<CoreRoutedPipe> connectedPipes = ChannelConnectionManager.getInstance().getConnectedPipes(getRouter());
 				if (connectedPipes != null) {
 					connectedPipes.forEach(c -> {
 						c.getRouter().update(true, c);
@@ -103,8 +104,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		}
 		if (init && !hasConnectionUUID()) {
 			init = false;
-			List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
-			SimpleServiceLocator.connectionManager.removeChannelConnection(getRouter());
+			List<CoreRoutedPipe> connectedPipes = ChannelConnectionManager.getInstance().getConnectedPipes(getRouter());
+			ChannelConnectionManager.getInstance().removeChannelConnection(getRouter());
 			if (connectedPipes != null) {
 				connectedPipes.forEach(c -> {
 					c.getRouter().update(true, c);
@@ -114,8 +115,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		}
 		if (init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
 			init = false;
-			List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
-			SimpleServiceLocator.connectionManager.removeChannelConnection(getRouter());
+			List<CoreRoutedPipe> connectedPipes = ChannelConnectionManager.getInstance().getConnectedPipes(getRouter());
+			ChannelConnectionManager.getInstance().removeChannelConnection(getRouter());
 			if (connectedPipes != null) {
 				connectedPipes.forEach(c -> {
 					c.getRouter().update(true, c);
@@ -139,7 +140,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		}
 	}
 
-	private boolean checkOneConnectedInv(@Nonnull IInventoryUtil inv, Direction dir) {
+	private boolean checkOneConnectedInv(@Nonnull WrappedInventory inv, Direction dir) {
 		boolean contentchanged = false;
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 			List<ItemIdentifier> items = new ArrayList<>(itemsOnRoute.keySet());
@@ -156,15 +157,15 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 				List<ItemRoutingInformation> needs = itemsOnRoute.get(ident);
 				for (Iterator<ItemRoutingInformation> iterator = needs.iterator(); iterator.hasNext(); ) {
 					ItemRoutingInformation need = iterator.next();
-					if (need.getItem().getStackSize() <= itemAmount) {
+					if (need.getItem().getCount() <= itemAmount) {
 						if (!useEnergy(6)) {
 							return contentchanged;
 						}
-						ItemStack toSend = inv.getMultipleItems(ident, need.getItem().getStackSize());
+						ItemStack toSend = inv.getMultipleItems(ident, need.getItem().getCount());
 						if (toSend.isEmpty()) {
 							return contentchanged;
 						}
-						if (toSend.getCount() != need.getItem().getStackSize()) {
+						if (toSend.getCount() != need.getItem().getCount()) {
 							if (inv instanceof ITransactor) {
 								((ITransactor) inv).add(toSend, dir.getOpposite(), true);
 							} else {
@@ -181,7 +182,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 							itemsOnRoute.remove(ident);
 						}
 
-						//Refresh Available Items
+						// Refresh Available Items
 						amounts = inv.getItemsAndCount();
 						if (amounts.containsKey(ident)) {
 							itemAmount = amounts.get(ident);
@@ -196,7 +197,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	public void sendStack(ItemRoutingInformation info, Direction dir) {
-		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(info);
+		IRoutedItem itemToSend = RoutedItemHelper.INSTANCE.createNewTravelItem(info);
 		super.queueRoutedItem(itemToSend, dir);
 		spawnParticle(Particles.OrangeParticle, 4);
 	}
@@ -222,7 +223,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 			}
 			ItemStack currentStack = new ItemStack(entry.getKey(), 0);
 			for (ItemRoutingInformation e : entry.getValue()) {
-				currentStack.setStackSize(currentStack.getStackSize() + e.getItem().getStackSize());
+				currentStack.setStackSize(currentStack.getCount() + e.getItem().getCount());
 			}
 			list.add(currentStack);
 		}
@@ -241,8 +242,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	private void removePipeFromChannel() {
 		if (!stillNeedReplace) {
-			List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
-			SimpleServiceLocator.connectionManager.removeChannelConnection(getRouter());
+			List<CoreRoutedPipe> connectedPipes = ChannelConnectionManager.getInstance().getConnectedPipes(getRouter());
+			ChannelConnectionManager.getInstance().removeChannelConnection(getRouter());
 			if (connectedPipes != null) {
 				connectedPipes.forEach(c -> c.refreshRender(true));
 			}
@@ -284,7 +285,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	private boolean hasRemoteConnection() {
-		return hasConnectionUUID() && getWorld() != null && SimpleServiceLocator.connectionManager.hasChannelConnection(getRouter());
+		return hasConnectionUUID() && getWorld() != null && ChannelConnectionManager.getInstance().hasChannelConnection(getRouter());
 	}
 
 	private boolean isInventoryConnected(@Nullable BlockEntity tileEntityFilter) {
@@ -324,7 +325,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	@Override
 	public void addItem(ItemRoutingInformation info) {
-		if (info.getItem() != null && info.getItem().getStackSize() > 0 && info.destinationId >= 0) {
+		if (info.getItem() != null && info.getItem().getCount() > 0 && info.destinationId >= 0) {
 			ItemIdentifier insertedType = info.getItem().getItem();
 			List<ItemRoutingInformation> entry = itemsOnRoute.computeIfAbsent(insertedType, k -> new LinkedList<>());
 			// linked list as this is almost always very small, but experiences random removal
@@ -334,12 +335,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	public void handleItemEnterInv(ItemRoutingInformation info, BlockEntity tile) {
-		if (info.getItem().getStackSize() == 0) {
+		if (info.getItem().getCount() == 0) {
 			return; // system.throw("why you try to insert empty stack?");
 		}
 		if (isInventoryConnected(tile)) {
 			if (hasRemoteConnection()) {
-				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
+				List<CoreRoutedPipe> connectedPipes = ChannelConnectionManager.getInstance().getConnectedPipes(getRouter());
 				Optional<CoreRoutedPipe> bestConnection = connectedPipes.stream()
 						.map(con -> new Tuple3<>(
 								con,
@@ -424,7 +425,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		localGuiWatchers.add(player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(this.resistance).setBlockPos(this.getPos()), player);
 
-		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(this.getWorld());
+		IChannelManager manager = ChannelManagerProvider.getInstance().getChannelManager(this.getWorld());
 		Optional<ChannelInformation> channel = manager.getChannels().stream()
 				.filter(chan -> chan.getChannelIdentifier().equals(getConnectionUUID()))
 				.findFirst();
@@ -437,7 +438,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	private void sendChannelInformationToPlayers() {
-		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(this.getWorld());
+		IChannelManager manager = ChannelManagerProvider.getInstance().getChannelManager(this.getWorld());
 		Optional<ChannelInformation> channel = manager.getChannels().stream()
 				.filter(chan -> chan.getChannelIdentifier().equals(getConnectionUUID()))
 				.findFirst();

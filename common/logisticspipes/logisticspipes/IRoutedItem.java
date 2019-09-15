@@ -15,8 +15,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Direction;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.Router;
 import logisticspipes.routing.order.IDistanceTracker;
 
 /**
@@ -32,6 +32,7 @@ public interface IRoutedItem {
 		Active
 	}
 
+	@Deprecated
 	int getDestination();
 
 	UUID getDestinationUUID();

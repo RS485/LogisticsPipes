@@ -9,7 +9,7 @@ import java.util.stream.StreamSupport;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.Identifier;
 
@@ -30,7 +30,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.TextListDisplay;
 import logisticspipes.utils.string.StringUtils;
 
-//TODO: Config Option for disabling program compilation
+// TODO: Config Option for disabling program compilation
 public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 	private final LogisticsProgramCompilerTileEntity compiler;
@@ -60,7 +60,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				if (compiler.getInventory().getStackInSlot(0).isEmpty()) {
 					return 0;
 				}
-				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+				ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 				return (int) LogisticsProgramCompilerTileEntity.programByCategory.keySet().stream()
 						.filter(it -> StreamSupport.stream(list.spliterator(), false).noneMatch(nbtBase -> ((NBTTagString) nbtBase).getString().equals(it.toString()))).count();
 			}
@@ -70,7 +70,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				if (compiler.getInventory().getStackInSlot(0).isEmpty()) {
 					return "";
 				}
-				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+				ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 				return StringUtils.translate("gui.compiler." + LogisticsProgramCompilerTileEntity.programByCategory.keySet().stream()
 						.filter(it -> StreamSupport.stream(list.spliterator(), false).noneMatch(nbtBase -> ((NBTTagString) nbtBase).getString().equals(it.toString())))
 						.skip(index)
@@ -93,7 +93,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				if (compiler.getInventory().getStackInSlot(0).isEmpty()) {
 					return 0;
 				}
-				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+				ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 
 				return getProgramListForSelectionIndex(list).size();
 			}
@@ -103,7 +103,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				if (compiler.getInventory().getStackInSlot(0).isEmpty()) {
 					return "";
 				}
-				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+				ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 				Identifier sel = getProgramListForSelectionIndex(list).get(index);
 
 				Item selItem = Item.REGISTRY.getObject(sel);
@@ -118,10 +118,10 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				if (compiler.getInventory().getStackInSlot(0).isEmpty()) {
 					return 0xFFFFFF;
 				}
-				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+				ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 				Identifier sel = getProgramListForSelectionIndex(list).get(index);
 
-				NBTTagList listPrograms = compiler.getNBTTagListForKey("compilerPrograms");
+				ListTag listPrograms = compiler.getNBTTagListForKey("compilerPrograms");
 				return StreamSupport.stream(listPrograms.spliterator(), false).anyMatch(it -> new Identifier(((NBTTagString) it).getString()).equals(sel))
 						? 0xAAFFAA : 0xFFAAAA;
 			}
@@ -159,7 +159,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				break;
 			case 2:
 				if (categoryList.getSelected() != -1) {
-					NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+					ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 					LogisticsProgramCompilerTileEntity.programByCategory.keySet().stream()
 							.filter(it -> StreamSupport.stream(list.spliterator(), false).noneMatch(nbtBase -> ((NBTTagString) nbtBase).getString().equals(it.toString())))
 							.skip(categoryList.getSelected())
@@ -189,10 +189,10 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 					selIndex = programListLarge.getSelected();
 				}
 				if (selIndex != -1) {
-					NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+					ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 					Identifier sel = getProgramListForSelectionIndex(list).get(selIndex);
 
-					NBTTagList listPrograms = compiler.getNBTTagListForKey("compilerPrograms");
+					ListTag listPrograms = compiler.getNBTTagListForKey("compilerPrograms");
 					boolean flag = StreamSupport.stream(listPrograms.spliterator(), false)
 							.anyMatch(it -> new Identifier(((NBTTagString) it).getString()).equals(sel));
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(CompilerTriggerTaskPacket.class).setCategory(sel).setType(flag ? "flash" : "program").setTilePos(compiler));
@@ -249,10 +249,10 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			}
 
 			if (selIndex != -1) {
-				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
+				ListTag list = compiler.getNBTTagListForKey("compilerCategories");
 				Identifier sel = getProgramListForSelectionIndex(list).get(selIndex);
 
-				NBTTagList listProgramms = compiler.getNBTTagListForKey("compilerPrograms");
+				ListTag listProgramms = compiler.getNBTTagListForKey("compilerPrograms");
 				if (StreamSupport.stream(listProgramms.spliterator(), false).anyMatch(it -> new Identifier(((NBTTagString) it).getString()).equals(sel))) {
 					programmerButton.displayString = "Flash";
 					programmerButton.enabled = !compiler.getInventory().getStackInSlot(1).isEmpty();
@@ -264,7 +264,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		}
 	}
 
-	private List<Identifier> getProgramListForSelectionIndex(NBTTagList list) {
+	private List<Identifier> getProgramListForSelectionIndex(ListTag list) {
 		return StreamSupport.stream(list.spliterator(), false).flatMap(
 				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new Identifier(((NBTTagString) nbtBase).getString()))
 						.stream())

@@ -38,7 +38,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 	private final PipeLogisticsChassi _chassiPipe;
 	private final IInventory _moduleInventory;
-	//private final GuiScreen _previousGui;
+	// private final GuiScreen _previousGui;
 	private final List<SmallGuiButton> moduleConfigButtons = new LinkedList<>();
 
 	private final Slot[] upgradeslot = new Slot[16];
@@ -46,11 +46,11 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 	private boolean hasUpgradeModuleUpgarde;
 
-	public GuiChassiPipe(EntityPlayer player, PipeLogisticsChassi chassi, boolean hasUpgradeModuleUpgarde) { //, GuiScreen previousGui) {
+	public GuiChassiPipe(EntityPlayer player, PipeLogisticsChassi chassi, boolean hasUpgradeModuleUpgarde) { // , GuiScreen previousGui) {
 		super(null);
 		_chassiPipe = chassi;
 		_moduleInventory = chassi.getModuleInventory();
-		//_previousGui = previousGui;
+		// _previousGui = previousGui;
 		this.hasUpgradeModuleUpgarde = hasUpgradeModuleUpgarde;
 
 		DummyContainer dummy = new DummyContainer(player.inventory, _moduleInventory);

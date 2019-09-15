@@ -72,14 +72,14 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 	@Override
 	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRenderer.drawString(StringUtils.translate("misc.selectType"), guiLeft + 8, guiTop + 6, 0x404040, false); //TODO
+		fontRenderer.drawString(StringUtils.translate("misc.selectType"), guiLeft + 8, guiTop + 6, 0x404040, false); // TODO
 
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
-		//SearchInput
+		// SearchInput
 		search.renderSearchBar();
 
-		//itemDisplay.renderSortMode(xCenter, bottom - 52);
+		// itemDisplay.renderSortMode(xCenter, bottom - 52);
 		itemDisplay.renderItemArea(zLevel);
 	}
 
@@ -131,8 +131,8 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
 			return true;
 		}
-		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
-		//Enchantment? Enchantment!
+		// if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
+		// Enchantment? Enchantment!
 		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for (Map.Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
 			String enchantname = e.getKey().getName();

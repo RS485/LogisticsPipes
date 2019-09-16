@@ -57,6 +57,7 @@ archivesBaseName = "logisticspipes"
 minecraft {
     version = "$forge_version"
     mappings = "$mapping_version"
+    runDir = 'run'
     replace '%VERSION%', project.version
     replace '%MCVERSION%', project.minecraft.version
     replace '%DEBUG%', "false"

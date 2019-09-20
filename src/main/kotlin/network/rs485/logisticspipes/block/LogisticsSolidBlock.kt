@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.block
 
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.state.StateFactory
@@ -51,7 +50,7 @@ import net.minecraft.world.IWorld
 open class LogisticsSolidBlock(settings: Block.Settings) : Block(settings) {
 
     override fun getStateForNeighborUpdate(state: BlockState, direction: Direction, neighbor: BlockState, world: IWorld, pos: BlockPos, neighborPos: BlockPos): BlockState {
-        return state.with(CONNECTIONS.getValue(direction), world.getBlockEntity(neighborPos) is LogisticsTileGenericPipe)
+        return state.with(CONNECTIONS.getValue(direction), false)
     }
 
     override fun appendProperties(builder: StateFactory.Builder<Block, BlockState>) {

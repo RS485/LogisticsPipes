@@ -35,16 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.config
+package network.rs485.logisticspipes.pipe
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-class PlayerConfiguration {
-    var hasCraftedLPItem = false
-
-    fun merge(other: PlayerConfiguration) {
-        hasCraftedLPItem = hasCraftedLPItem || other.hasCraftedLPItem
-    }
-
+interface Pipe {
 }

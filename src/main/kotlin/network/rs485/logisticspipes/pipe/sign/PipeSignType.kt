@@ -37,21 +37,21 @@
 
 package network.rs485.logisticspipes.pipe.sign
 
-import logisticspipes.pipes.basic.CoreRoutedPipe
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil
 import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.init.Registries
+import network.rs485.logisticspipes.pipe.Pipe
 import kotlin.reflect.KClass
 
 abstract class PipeSignType<T : PipeSign> {
 
     private var translationKey: String? = null
 
-    abstract fun create(pipe: CoreRoutedPipe, side: Direction): T
+    abstract fun create(pipe: Pipe, side: Direction): T
 
-    abstract fun isAllowedFor(pipe: CoreRoutedPipe): Boolean
+    abstract fun isAllowedFor(pipe: Pipe): Boolean
 
     protected fun getOrCreateTranslationKey(): String {
         return translationKey ?: run {
@@ -69,9 +69,9 @@ abstract class PipeSignType<T : PipeSign> {
         return TranslatableText(getTranslationKey())
     }
 
-    class Builder<T : PipeSign>(private val constructor: (pipe: CoreRoutedPipe, side: Direction) -> T) {
+    class Builder<T : PipeSign>(private val constructor: (pipe: Pipe, side: Direction) -> T) {
 
-        private val list = mutableListOf<KClass<out CoreRoutedPipe>>()
+        private val list = mutableListOf<KClass<out Pipe>>()
         private var whitelist = false
 
         fun allowAll(): Builder<T> {
@@ -86,24 +86,24 @@ abstract class PipeSignType<T : PipeSign> {
             return this
         }
 
-        fun allow(cls: Class<out CoreRoutedPipe>) = allow(cls.kotlin)
+        fun allow(cls: Class<out Pipe>) = allow(cls.kotlin)
 
-        fun allow(cls: KClass<out CoreRoutedPipe>): Builder<T> {
+        fun allow(cls: KClass<out Pipe>): Builder<T> {
             if (whitelist) list += cls
             return this
         }
 
-        fun deny(cls: Class<out CoreRoutedPipe>) = deny(cls.kotlin)
+        fun deny(cls: Class<out Pipe>) = deny(cls.kotlin)
 
-        fun deny(cls: KClass<out CoreRoutedPipe>): Builder<T> {
+        fun deny(cls: KClass<out Pipe>): Builder<T> {
             if (!whitelist) list += cls
             return this
         }
 
         fun build(): PipeSignType<T> = object : PipeSignType<T>() {
-            override fun create(pipe: CoreRoutedPipe, side: Direction): T = constructor(pipe, side)
+            override fun create(pipe: Pipe, side: Direction): T = constructor(pipe, side)
 
-            override fun isAllowedFor(pipe: CoreRoutedPipe): Boolean {
+            override fun isAllowedFor(pipe: Pipe): Boolean {
                 return list.any { it.isInstance(pipe) } == whitelist
             }
         }

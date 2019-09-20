@@ -37,58 +37,54 @@
 
 package network.rs485.logisticspipes.item
 
-import logisticspipes.pipes.basic.CoreRoutedPipe
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.item.ItemUsageContext
 import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
-import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
 import net.minecraft.util.TypedActionResult
 import net.minecraft.world.World
-import network.rs485.logisticspipes.pipe.sign.PipeSignType
 import network.rs485.logisticspipes.init.Registries
+import network.rs485.logisticspipes.pipe.sign.PipeSignType
 
 class PipeSignCreatorItem(settings: Settings) : ItemWithInfo(settings) {
 
-    override fun useOnBlock(ctx: ItemUsageContext): ActionResult {
-        val player = ctx.player
-        val stack = ctx.stack
-        val side = ctx.side
-        val entity = ctx.world.getBlockEntity(ctx.blockPos)
-        if (entity !is LogisticsTileGenericPipe) return ActionResult.PASS
-        val pipe = entity.pipe
-        if (pipe !is CoreRoutedPipe) return ActionResult.FAIL
-
-        val result = if (player != null) {
-            if (!ctx.shouldCancelInteraction()) {
-                when {
-                    pipe.activatePipeSign(side, player) -> true
-                    pipe.addPipeSign(side, getSignType(stack).create(), player) -> {
-                        stack.damage++
-                        true
-                    }
-                    else -> false
-                }
-            } else {
-                if (pipe.removePipeSign(side, player)) {
-                    stack.damage--
-                    true
-                } else false
-            }
-        } else false
-
-        return if (result) ActionResult.SUCCESS else ActionResult.FAIL
-    }
+    // override fun useOnBlock(ctx: ItemUsageContext): ActionResult {
+    //     val player = ctx.player
+    //     val stack = ctx.stack
+    //     val side = ctx.side
+    //     val entity = ctx.world.getBlockEntity(ctx.blockPos)
+    //     if (entity !is LogisticsTileGenericPipe) return ActionResult.PASS
+    //     val pipe = entity.pipe
+    //     if (pipe !is CoreRoutedPipe) return ActionResult.FAIL
+    //
+    //     val result = if (player != null) {
+    //         if (!ctx.shouldCancelInteraction()) {
+    //             when {
+    //                 pipe.activatePipeSign(side, player) -> true
+    //                 pipe.addPipeSign(side, getSignType(stack).create(), player) -> {
+    //                     stack.damage++
+    //                     true
+    //                 }
+    //                 else -> false
+    //             }
+    //         } else {
+    //             if (pipe.removePipeSign(side, player)) {
+    //                 stack.damage--
+    //                 true
+    //             } else false
+    //         }
+    //     } else false
+    //
+    //     return if (result) ActionResult.SUCCESS else ActionResult.FAIL
+    // }
 
     override fun use(world: World, player: PlayerEntity, hand: Hand): TypedActionResult<ItemStack> {
         val stack = player.getStackInHand(hand)
         if (player.isSneaking) {
             cycleSignType(stack)
-            return TypedActionResult(ActionResult.SUCCESS, stack)
+            return TypedActionResult.method_22428(stack)
         }
         return super.use(world, player, hand)
     }

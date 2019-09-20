@@ -37,10 +37,10 @@
 
 package network.rs485.logisticspipes.init
 
-import logisticspipes.modules.*
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
+import network.rs485.logisticspipes.module.DummyModule
 import network.rs485.logisticspipes.module.ModuleType
 
 object ModuleTypes {
@@ -50,27 +50,21 @@ object ModuleTypes {
     var All: Set<ModuleType<*>> = emptySet()
         private set
 
-    val ItemSink = create("item_sink", ModuleType.Builder(::ModuleItemSink).build())
-    val GroupItemSink = create("group_item_sink", ModuleType.Builder(::ModuleCreativeTabBasedItemSink).build())
-    val ModBasedItemSink = create("mod_item_sink", ModuleType.Builder(::ModuleModBasedItemSink).build())
-    val PolymorphicItemSink = create("polymorphic_item_sink", ModuleType.Builder(::ModulePolymorphicItemSink).build())
-    // TODO implement tag based item sink
-    val TagItemSink = create("tag_item_sink", ModuleType.Builder(::ModuleItemSink).build())
-    val EnchantmentSink = create("enchantment_sink", ModuleType.Builder(::ModuleEnchantmentSink).build())
-    val EnchantmentSinkMk2 = create("enchantment_sink_mk2", ModuleType.Builder(::ModuleEnchantmentSinkMK2).build())
-    val Extractor = create("extractor", ModuleType.Builder(::ModuleExtractor).build())
-    val AdvancedExtractor = create("advanced_extractor", ModuleType.Builder(::ModuleAdvancedExtractor).build())
-    val QuickSort = create("quick_sort", ModuleType.Builder(::ModuleQuickSort).build())
-    val PassiveSupplier = create("passive_supplier", ModuleType.Builder(::ModulePassiveSupplier).build())
-    val ActiveSupplier = create("active_supplier", ModuleType.Builder(::ModuleActiveSupplier).build())
-    val Crafting = create("crafting", ModuleType.Builder(::ModuleCrafter).build())
-    val Provider = create("provider", ModuleType.Builder(::ModuleProvider).build())
-    val Terminus = create("terminus", ModuleType.Builder(::ModuleTerminus).build())
-
-    // these don't have an item, and are only used in pipes.
-    // TODO don't use modules as pipe logic, especially when they don't have a module form
-    val FluidSupplier = create("fluid_supplier", ModuleType.Builder { error("Can't construct") }.build())
-    val Satellite = create("satellite", ModuleType.Builder { error("Can't construct") }.build())
+    val ItemSink = create("item_sink", ModuleType.Builder(::DummyModule).build())
+    val GroupItemSink = create("group_item_sink", ModuleType.Builder(::DummyModule).build())
+    val ModBasedItemSink = create("mod_item_sink", ModuleType.Builder(::DummyModule).build())
+    val PolymorphicItemSink = create("polymorphic_item_sink", ModuleType.Builder(::DummyModule).build())
+    val TagItemSink = create("tag_item_sink", ModuleType.Builder(::DummyModule).build())
+    val EnchantmentSink = create("enchantment_sink", ModuleType.Builder(::DummyModule).build())
+    val EnchantmentSinkMk2 = create("enchantment_sink_mk2", ModuleType.Builder(::DummyModule).build())
+    val Extractor = create("extractor", ModuleType.Builder(::DummyModule).build())
+    val AdvancedExtractor = create("advanced_extractor", ModuleType.Builder(::DummyModule).build())
+    val QuickSort = create("quick_sort", ModuleType.Builder(::DummyModule).build())
+    val PassiveSupplier = create("passive_supplier", ModuleType.Builder(::DummyModule).build())
+    val ActiveSupplier = create("active_supplier", ModuleType.Builder(::DummyModule).build())
+    val Crafting = create("crafting", ModuleType.Builder(::DummyModule).build())
+    val Provider = create("provider", ModuleType.Builder(::DummyModule).build())
+    val Terminus = create("terminus", ModuleType.Builder(::DummyModule).build())
 
     private fun <T : ModuleType<*>> create(name: String, type: T): T {
         return Registry.register(Registries.ModuleType, Identifier(ModID, name), type).also { All += it }

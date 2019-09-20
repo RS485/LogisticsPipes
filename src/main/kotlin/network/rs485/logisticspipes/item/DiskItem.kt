@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.item
 
-import logisticspipes.items.LogisticsItem
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.ItemStack
 import net.minecraft.text.LiteralText

@@ -37,8 +37,6 @@
 
 package network.rs485.logisticspipes.pipe.sign
 
-import logisticspipes.pipes.basic.CoreRoutedPipe
-import net.fabricmc.fabric.api.server.PlayerStream
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
@@ -47,11 +45,10 @@ import net.minecraft.util.Hand
 import net.minecraft.util.Tickable
 import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.ext.makeStack
-import network.rs485.logisticspipes.init.Packets
 import network.rs485.logisticspipes.init.PipeSignTypes
-import network.rs485.logisticspipes.packet.ItemAmountSignUpdatePacket
+import network.rs485.logisticspipes.pipe.Pipe
 
-class ItemAmountPipeSign(pipe: CoreRoutedPipe, side: Direction) : PipeSign(PipeSignTypes.ItemAmount, pipe, side), Tickable {
+class ItemAmountPipeSign(pipe: Pipe, side: Direction) : PipeSign(PipeSignTypes.ItemAmount, pipe, side), Tickable {
 
     var stack = Items.AIR.makeStack()
 
@@ -70,16 +67,16 @@ class ItemAmountPipeSign(pipe: CoreRoutedPipe, side: Direction) : PipeSign(PipeS
     }
 
     override fun tick() {
-        if (pipe.world == null || pipe.world.isClient) return
-        if (!pipe.isNthTick(20)) return
-
-        TODO("not implemented")
+        // if (pipe.world == null || pipe.world.isClient) return
+        // if (!pipe.isNthTick(20)) return
+        //
+        // TODO("not implemented")
     }
 
-    override fun updateClient() {
-        super.updateClient()
-        Packets.S2C.ItemAmountSignUpdate.send(ItemAmountSignUpdatePacket(pipe.pos, side, stack), PlayerStream.watching(pipe.container))
-    }
+    // override fun updateClient() {
+    //     super.updateClient()
+    //     Packets.S2C.ItemAmountSignUpdate.send(ItemAmountSignUpdatePacket(pipe.pos, side, stack), PlayerStream.watching(pipe.container))
+    // }
 
     override fun fromTag(tag: CompoundTag) {
         super.fromTag(tag)

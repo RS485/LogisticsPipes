@@ -37,9 +37,6 @@
 
 package network.rs485.logisticspipes.item
 
-import logisticspipes.items.ItemLogisticsPipe
-import logisticspipes.items.ItemModule
-import logisticspipes.items.ItemUpgrade
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -63,15 +60,15 @@ class LogisticsProgrammerItem(settings: Settings) : ItemWithInfo(settings), Item
         val target = getRecipeTarget(stack)
 
         tooltip += when (target) {
-            is ItemModule -> listOf(
+            is ModuleItem<*> -> listOf(
                     TranslatableText("tooltip.$ModID.programmer.for_module"),
                     stack.item.getName(stack)
             )
-            is ItemUpgrade -> listOf(
+            is UpgradeItem<*> -> listOf(
                     TranslatableText("tooltip.$ModID.programmer.for_upgrade"),
                     stack.item.getName(stack)
             )
-            is ItemLogisticsPipe -> listOf(
+            is PipeItem<*> -> listOf(
                     TranslatableText("tooltip.$ModID.programmer.for_pipe"),
                     stack.item.getName(stack)
             )

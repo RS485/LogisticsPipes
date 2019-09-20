@@ -37,11 +37,11 @@
 
 package network.rs485.logisticspipes.config
 
-import com.google.gson.Gson
-import com.google.gson.JsonParseException
-import logisticspipes.LogisticsPipes
-import logisticspipes.utils.PlayerIdentifier
-import net.minecraftforge.fml.common.FMLCommonHandler
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import net.fabricmc.loader.api.FabricLoader
+import network.rs485.logisticspipes.LogisticsPipes
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Files
@@ -52,41 +52,41 @@ class ServerConfigurationManager {
     private val fileName = "logisticspipes.json"
 
     private val configFile: File
-    private val gson = Gson()
     private val internalRepresentation: ServerConfiguration
 
     init {
-        configFile = File(FMLCommonHandler.instance().savesDirectory, fileName)
+        configFile = File(File(FabricLoader.getInstance().gameDirectory, "saves"), fileName)
         internalRepresentation = try {
+
             configFile.bufferedReader(Charsets.UTF_8).use {
-                gson.fromJson(gson.newJsonReader(it), ServerConfiguration::class.java)
+                Json(JsonConfiguration.Stable).parse(ServerConfiguration.serializer(), it.readText())
             }
-        } catch (e: JsonParseException) {
-            LogisticsPipes.log.error("Cannot read LP configuration! Moving current configuration away and starting a new one!")
+        } catch (e: SerializationException) {
+            LogisticsPipes.logger.error("Cannot read LP configuration! Moving current configuration away and starting a new one!")
             Files.move(configFile.toPath(), getTimedFile(".bkp").toPath())
             ServerConfiguration()
         } catch (e: FileNotFoundException) {
-            LogisticsPipes.log.info("Starting a new LP configuration")
+            LogisticsPipes.logger.info("Starting a new LP configuration")
             ServerConfiguration()
         }
     }
 
-    fun getPlayers(): Set<PlayerIdentifier> {
+    fun getPlayers(): Set<UUID> {
         return internalRepresentation.playerConfigurations.keys
     }
 
-    fun getPlayerConfiguration(identifier: PlayerIdentifier): PlayerConfiguration {
+    fun getPlayerConfiguration(identifier: UUID): PlayerConfiguration {
         return internalRepresentation.playerConfigurations[identifier] ?: PlayerConfiguration()
     }
 
-    fun setClientConfiguration(identifier: PlayerIdentifier, configuration: ClientConfiguration) {
+    fun setClientConfiguration(identifier: UUID, configuration: PlayerConfiguration) {
         val newConfigurations = internalRepresentation.playerConfigurations.toMutableMap()
         newConfigurations.computeIfAbsent(identifier) { PlayerConfiguration() }.merge(configuration)
         internalRepresentation.playerConfigurations = newConfigurations
         writeChange()
     }
 
-    fun setPlayerConfiguration(identifier: PlayerIdentifier, configuration: PlayerConfiguration) {
+    fun setPlayerConfiguration(identifier: UUID, configuration: PlayerConfiguration) {
         val newConfigurations = HashMap(internalRepresentation.playerConfigurations)
         newConfigurations[identifier] = configuration
         internalRepresentation.playerConfigurations = newConfigurations
@@ -97,9 +97,9 @@ class ServerConfigurationManager {
         val tmpFile = getTimedFile(".tmp")
         try {
             tmpFile.bufferedWriter(Charsets.UTF_8).use {
-                val jsonElement = gson.toJsonTree(internalRepresentation, ServerConfiguration::class.java)
-                gson.toJson(jsonElement, gson.newJsonWriter(it))
+                it.write(Json(JsonConfiguration.Stable).stringify(ServerConfiguration.serializer(), internalRepresentation))
             }
+
             Files.move(tmpFile.toPath(), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         } finally {
             Files.deleteIfExists(tmpFile.toPath())

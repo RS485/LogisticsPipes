@@ -37,12 +37,6 @@
 
 package network.rs485.logisticspipes
 
-import logisticspipes.pipes.PipeFluidSatellite
-import logisticspipes.pipes.PipeItemsSatelliteLogistics
-import logisticspipes.routing.RouterManagerImpl
-import logisticspipes.routing.ServerRouter
-import logisticspipes.ticks.HudUpdateTick
-import logisticspipes.ticks.QueuedTasks
 import net.fabricmc.fabric.api.event.server.ServerStartCallback
 import net.fabricmc.fabric.api.event.server.ServerStopCallback
 import net.minecraft.server.MinecraftServer
@@ -57,10 +51,4 @@ fun onServerStart(server: MinecraftServer) {
 }
 
 fun onServerStop(server: MinecraftServer) {
-    RouterManagerImpl.INSTANCE.serverStopClean()
-    QueuedTasks.clearAllTasks()
-    HudUpdateTick.clearUpdateFlags()
-    PipeItemsSatelliteLogistics.cleanup()
-    PipeFluidSatellite.cleanup()
-    ServerRouter.cleanup()
 }

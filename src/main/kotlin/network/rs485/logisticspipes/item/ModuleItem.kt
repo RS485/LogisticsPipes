@@ -37,15 +37,15 @@
 
 package network.rs485.logisticspipes.item
 
-import logisticspipes.modules.abstractmodules.LogisticsModule
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import net.minecraft.world.World
+import network.rs485.logisticspipes.module.Module
 import network.rs485.logisticspipes.module.ModuleType
 
-class ModuleItem<T : LogisticsModule> @JvmOverloads constructor(settings: Settings, val type: ModuleType<T>, val enchantmentGlint: Boolean = false) : ItemWithInfo(settings) {
+class ModuleItem<T : Module> @JvmOverloads constructor(settings: Settings, val type: ModuleType<T>, val enchantmentGlint: Boolean = false) : ItemWithInfo(settings) {
 
     override fun use(world: World, player: PlayerEntity, hand: Hand): TypedActionResult<ItemStack> {
         // TODO open configuration screen

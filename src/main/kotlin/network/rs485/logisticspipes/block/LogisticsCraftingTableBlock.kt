@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.block
 
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
@@ -52,9 +51,9 @@ class LogisticsCraftingTableBlock(settings: Block.Settings, val fuzzy: Boolean):
     override fun onPlaced(world: World, pos: BlockPos, state: BlockState, placer: LivingEntity?, stack: ItemStack) {
         super.onPlaced(world, pos, state, placer, stack)
         val entity = world.getBlockEntity(pos)
-        if (entity is LogisticsCraftingTableTileEntity) {
-            entity.placedBy(placer)
-        }
+        // if (entity is LogisticsCraftingTableTileEntity) {
+        //     entity.placedBy(placer)
+        // }
     }
 
     override fun createBlockEntity(var1: BlockView?): BlockEntity? {

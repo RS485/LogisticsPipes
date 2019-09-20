@@ -61,7 +61,7 @@ object LPConfiguration {
     var threads = 4
     var threadPriority = Thread.NORM_PRIORITY
 
-    var powerUsageMultiplier = 1.0
+    var powerUsageMultiplier = 1.0f
     var logisticsCraftingTablePowerUsage = 250
 
     var checkForUpdates = true

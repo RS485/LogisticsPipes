@@ -43,8 +43,9 @@ import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import net.minecraft.world.World
 import network.rs485.logisticspipes.pipe.upgrade.Upgrade
+import network.rs485.logisticspipes.pipe.upgrade.UpgradeType
 
-class ConfigurableUpgradeItem<T : Upgrade>(settings: Settings, upgrade: T) : UpgradeItem<T>(settings, upgrade) {
+class ConfigurableUpgradeItem<T : Upgrade>(settings: Settings, type: UpgradeType<T>) : UpgradeItem<T>(settings, type) {
 
     // TODO open config gui
 

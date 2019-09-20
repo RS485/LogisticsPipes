@@ -46,7 +46,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.UseSerializers
 import kotlinx.serialization.modules.SerializersModule
-import logisticspipes.blocks.LogisticsProgramCompilerTileEntity
 import net.fabricmc.fabric.api.network.PacketContext
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -59,7 +58,6 @@ data class CompilerStatusPacket(
 ) : Packet {
     override fun handle(ctx: PacketContext) {
         ctx.taskQueue.execute {
-            val entity = ctx.player.world.getBlockEntity(pos) as? LogisticsProgramCompilerTileEntity ?: return@execute
             // TODO
         }
     }

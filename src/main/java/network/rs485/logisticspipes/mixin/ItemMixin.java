@@ -50,7 +50,7 @@ import network.rs485.logisticspipes.api.ItemAdvancedRecipeRemainder;
 @Mixin(Item.class)
 public abstract class ItemMixin {
 
-	@Inject(method = "getRecipeRemainder()Lnet/minecraft/item/Item;", at = @At("HEAD"))
+	@Inject(method = "getRecipeRemainder", at = @At("HEAD"))
 	private void getRecipeRemainder(CallbackInfoReturnable<Item> cir) {
 		if (this instanceof ItemAdvancedRecipeRemainder) {
 			cir.setReturnValue(((ItemAdvancedRecipeRemainder) this).getRecipeRemainder(ItemStack.EMPTY).getItem());

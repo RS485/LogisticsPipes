@@ -37,8 +37,6 @@
 
 package network.rs485.logisticspipes.block
 
-import logisticspipes.blocks.LogisticsSolidTileEntity
-import logisticspipes.interfaces.IGuiTileEntity
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.BlockWithEntity
@@ -58,18 +56,18 @@ abstract class LogisticsSolidBlockWithEntity(settings: Block.Settings) : BlockWi
 
     override fun neighborUpdate(state: BlockState, world: World, pos: BlockPos, neighbor: Block, neighborPos: BlockPos, flag: Boolean) {
         super.neighborUpdate(state, world, pos, neighbor, neighborPos, flag)
-        val entity = world.getBlockEntity(pos) as? LogisticsSolidTileEntity
-        entity?.notifyOfBlockChange()
+        // val entity = world.getBlockEntity(pos) as? LogisticsSolidTileEntity
+        // entity?.notifyOfBlockChange()
     }
 
     override fun activate(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hitResult: BlockHitResult): Boolean {
         if (player.isSneaking) return false
 
         val entity = world.getBlockEntity(pos)
-        if (entity is IGuiTileEntity) {
-            if (!world.isClient) entity.guiProvider.setTilePos(entity).open(player)
-            return true
-        }
+        // if (entity is IGuiTileEntity) {
+        //     if (!world.isClient) entity.guiProvider.setTilePos(entity).open(player)
+        //     return true
+        // }
         return false
     }
 
@@ -80,9 +78,9 @@ abstract class LogisticsSolidBlockWithEntity(settings: Block.Settings) : BlockWi
 
     override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
         val entity = world.getBlockEntity(pos)
-        if (entity is LogisticsSolidTileEntity) {
-            entity.onBlockBreak()
-        }
+        // if (entity is LogisticsSolidTileEntity) {
+        //     entity.onBlockBreak()
+        // }
         super.onBreak(world, pos, state, player)
     }
 

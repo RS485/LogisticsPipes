@@ -37,13 +37,12 @@
 
 package network.rs485.logisticspipes.module
 
-import logisticspipes.modules.abstractmodules.LogisticsModule
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil
 import network.rs485.logisticspipes.init.Registries
 
-abstract class ModuleType<T : LogisticsModule> {
+abstract class ModuleType<T : Module> {
 
     private var translationKey: String? = null
 
@@ -65,7 +64,7 @@ abstract class ModuleType<T : LogisticsModule> {
         return TranslatableText(getTranslationKey())
     }
 
-    class Builder<T : LogisticsModule>(private val constructor: () -> T) {
+    class Builder<T : Module>(private val constructor: () -> T) {
 
         fun build(): ModuleType<T> = object : ModuleType<T>() {
             override fun create(): T = constructor()

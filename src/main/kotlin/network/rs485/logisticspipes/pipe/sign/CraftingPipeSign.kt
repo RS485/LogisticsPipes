@@ -37,26 +37,19 @@
 
 package network.rs485.logisticspipes.pipe.sign
 
-import logisticspipes.pipes.PipeItemsCraftingLogistics
-import logisticspipes.pipes.basic.CoreRoutedPipe
-import net.fabricmc.fabric.api.server.PlayerStream
-import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
 import net.minecraft.util.math.Direction
-import network.rs485.logisticspipes.ext.makeStack
-import network.rs485.logisticspipes.init.Packets
 import network.rs485.logisticspipes.init.PipeSignTypes
-import network.rs485.logisticspipes.packet.CraftingPipeSignStackPacket
+import network.rs485.logisticspipes.pipe.Pipe
 
-class CraftingPipeSign(pipe: CoreRoutedPipe, side: Direction) : PipeSign(PipeSignTypes.Crafting, pipe, side) {
+class CraftingPipeSign(pipe: Pipe, side: Direction) : PipeSign(PipeSignTypes.Crafting, pipe, side) {
 
-    override fun updateClient() {
-        super.updateClient()
-        Packets.S2C.CraftingPipeSignStack.send(CraftingPipeSignStackPacket(pipe.pos, side, getDisplayedStack()), PlayerStream.watching(pipe.container))
-    }
+    // override fun updateClient() {
+    //     super.updateClient()
+    //     Packets.S2C.CraftingPipeSignStack.send(CraftingPipeSignStackPacket(pipe.pos, side, getDisplayedStack()), PlayerStream.watching(pipe.container))
+    // }
 
-    fun getDisplayedStack(): ItemStack =
-            (pipe as? PipeItemsCraftingLogistics)?.logisticsModule?.craftedItem
-                    ?: Items.AIR.makeStack()
+    // fun getDisplayedStack(): ItemStack =
+    //         (pipe as? PipeItemsCraftingLogistics)?.logisticsModule?.craftedItem
+    //                 ?: Items.AIR.makeStack()
 
 }

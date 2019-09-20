@@ -37,15 +37,15 @@
 
 package network.rs485.logisticspipes.pipe.sign
 
-import logisticspipes.pipes.basic.CoreRoutedPipe
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Hand
 import net.minecraft.util.math.Direction
+import network.rs485.logisticspipes.pipe.Pipe
 
 abstract class PipeSign(
         val type: PipeSignType<*>,
-        val pipe: CoreRoutedPipe,
+        val pipe: Pipe,
         val side: Direction
 ) {
     open fun activate(player: PlayerEntity, hand: Hand) {}

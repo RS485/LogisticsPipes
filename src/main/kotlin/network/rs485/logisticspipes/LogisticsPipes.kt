@@ -40,10 +40,13 @@ package network.rs485.logisticspipes
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.ModInitializer
 import network.rs485.logisticspipes.init.*
+import org.apache.logging.log4j.LogManager
 
 const val ModID = "logisticspipes"
 
 object LogisticsPipes : ModInitializer {
+
+    val logger = LogManager.getLogger(ModID)
 
     override fun onInitialize() {
         Registries

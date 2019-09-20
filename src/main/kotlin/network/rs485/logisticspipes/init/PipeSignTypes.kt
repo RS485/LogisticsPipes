@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.init
 
-import logisticspipes.pipes.PipeItemsCraftingLogistics
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
@@ -47,7 +46,7 @@ import network.rs485.logisticspipes.pipe.sign.PipeSignType
 
 object PipeSignTypes {
 
-    val Crafting = create("crafting", PipeSignType.Builder(::CraftingPipeSign).denyAll().allow(PipeItemsCraftingLogistics::class).build())
+    val Crafting = create("crafting", PipeSignType.Builder(::CraftingPipeSign).denyAll()/*.allow(PipeItemsCraftingLogistics::class)*/.build())
     val ItemAmount = create("item_amount", PipeSignType.Builder(::ItemAmountPipeSign).build())
 
     private fun <T : PipeSignType<*>> create(name: String, type: T): T {

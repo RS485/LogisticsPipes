@@ -34,49 +34,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+@file:UseSerializers(ForUuid::class)
 
 package network.rs485.logisticspipes.config
 
-import com.google.gson.*
-import com.google.gson.annotations.JsonAdapter
-import logisticspipes.utils.PlayerIdentifier
-import java.lang.reflect.Type
+import drawer.ForUuid
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import java.util.*
 
-private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, PlayerConfiguration>>, JsonDeserializer<Map<PlayerIdentifier, PlayerConfiguration>> {
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Map<PlayerIdentifier, PlayerConfiguration>? {
-        if (json.isJsonNull) {
-            return null
-        } else if (!json.isJsonObject) {
-            throw JsonParseException("Expected an object from a map")
-        }
-
-        return json.asJsonObject.entrySet().associate { (key, value) ->
-            if (value !is JsonObject) throw JsonParseException("Expected values in map object to be objects")
-            Pair(
-                    PlayerIdentifier.get(value["name"].asString, UUID.fromString(key)),
-                    context.deserialize<PlayerConfiguration>(value["config"], PlayerConfiguration::class.java)
-            )
-        }
-    }
-
-    override fun serialize(src: Map<PlayerIdentifier, PlayerConfiguration>?, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        if (src == null) {
-            return JsonNull.INSTANCE
-        }
-
-        return JsonObject().apply {
-            src.keys.forEach {
-                this.add(it.id.toString(), JsonObject().apply {
-                    this.add("name", JsonPrimitive(it.username))
-                    this.add("config", context.serialize(src[it], PlayerConfiguration::class.java))
-                })
-            }
-        }
-    }
-}
-
+@Serializable
 internal class ServerConfiguration {
-    @JsonAdapter(ServerConfigurationAdapter::class)
-    var playerConfigurations: Map<PlayerIdentifier, PlayerConfiguration> = emptyMap()
+    var playerConfigurations: Map<UUID, PlayerConfiguration> = emptyMap()
 }

@@ -37,6 +37,4 @@
 
 package network.rs485.logisticspipes.item
 
-import logisticspipes.api.ILPPipeConfigTool
-
-class PipeManagerItem(settings: Settings) : ItemWithInfo(settings), ILPPipeConfigTool
+class PipeManagerItem(settings: Settings) : ItemWithInfo(settings)

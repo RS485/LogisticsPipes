@@ -52,10 +52,10 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import network.rs485.logisticspipes.api.ItemAdvancedRecipeRemainder;
 
 @Mixin(Recipe.class)
-public abstract class RecipeMixin<C extends Inventory> {
+public interface RecipeMixin<C extends Inventory> {
 
 	@Inject(
-			method = "getRemainingStacks(Lnet/minecraft/inventory/Inventory;)Lnet/minecraft/util/DefaultedList;",
+			method = "getRemainingStacks",
 			at = @At(
 					value = "INVOKE",
 					target = "Lnet/minecraft/util/DefaultedList;set(ILjava/lang/Object;)Ljava/lang/Object;",
@@ -63,7 +63,7 @@ public abstract class RecipeMixin<C extends Inventory> {
 			),
 			locals = LocalCapture.CAPTURE_FAILHARD
 	)
-	private void getRemainingStacks(C inventory_1, CallbackInfoReturnable<DefaultedList<ItemStack>> cir, DefaultedList<ItemStack> defaultedList_1, int int_1, Item item_1) {
+	default void getRemainingStacks(C inventory_1, CallbackInfoReturnable<DefaultedList<ItemStack>> cir, DefaultedList<ItemStack> defaultedList_1, int int_1, Item item_1) {
 		if (item_1 instanceof ItemAdvancedRecipeRemainder) {
 			defaultedList_1.set(int_1, ((ItemAdvancedRecipeRemainder) item_1).getRecipeRemainder(inventory_1.getInvStack(int_1)));
 		}

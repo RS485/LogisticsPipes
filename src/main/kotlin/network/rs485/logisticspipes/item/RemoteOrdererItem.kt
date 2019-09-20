@@ -37,45 +37,38 @@
 
 package network.rs485.logisticspipes.item
 
-import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe
 import net.minecraft.client.item.TooltipContext
-import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.server.MinecraftServer
-import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
-import net.minecraft.util.*
+import net.minecraft.util.Formatting
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 import net.minecraft.world.dimension.DimensionType
 import network.rs485.logisticspipes.ModID
-import kotlin.Pair
-import kotlin.math.roundToInt
 
 class RemoteOrdererItem(settings: Settings) : ItemWithInfo(settings) {
 
-    override fun use(world: World, player: PlayerEntity, hand: Hand): TypedActionResult<ItemStack> {
-        val stack = player.getStackInHand(hand)
-        if (world is ServerWorld) {
-            val pipe = getLink(stack, world.server) ?: return TypedActionResult(ActionResult.FAIL, stack)
-            val energyUse =
-                    if (pipe.world.dimension != world.dimension) 2500.0
-                    else player.pos.distanceTo(Vec3d(pipe.pos).add(0.5, 0.5, 0.5))
-            if (pipe.useEnergy(energyUse.roundToInt())) {
-                // TODO player.openContainer()
-                return TypedActionResult(ActionResult.SUCCESS, stack)
-            }
-        } else {
-            // just assume opening the remote pipe succeeded if this item is linked
-            return if (hasLinkPos(stack)) TypedActionResult(ActionResult.SUCCESS, stack)
-            else TypedActionResult(ActionResult.FAIL, stack)
-        }
-        return super.use(world, player, hand)
-    }
+    // override fun use(world: World, player: PlayerEntity, hand: Hand): TypedActionResult<ItemStack> {
+    //     val stack = player.getStackInHand(hand)
+    //     if (world is ServerWorld) {
+    //         val pipe = getLink(stack, world.server) ?: return TypedActionResult(ActionResult.FAIL, stack)
+    //         val energyUse =
+    //                 if (pipe.world.dimension != world.dimension) 2500.0
+    //                 else player.pos.distanceTo(Vec3d(pipe.pos).add(0.5, 0.5, 0.5))
+    //         if (pipe.useEnergy(energyUse.roundToInt())) {
+    //             // TODO player.openContainer()
+    //             return TypedActionResult(ActionResult.SUCCESS, stack)
+    //         }
+    //     } else {
+    //         // just assume opening the remote pipe succeeded if this item is linked
+    //         return if (hasLinkPos(stack)) TypedActionResult(ActionResult.SUCCESS, stack)
+    //         else TypedActionResult(ActionResult.FAIL, stack)
+    //     }
+    //     return super.use(world, player, hand)
+    // }
 
     override fun appendTooltip(stack: ItemStack, world: World?, tooltip: MutableList<Text>, ctx: TooltipContext) {
         super.appendTooltip(stack, world, tooltip, ctx)
@@ -86,12 +79,12 @@ class RemoteOrdererItem(settings: Settings) : ItemWithInfo(settings) {
     }
 
     companion object {
-        fun getLink(stack: ItemStack, server: MinecraftServer): PipeItemsRemoteOrdererLogistics? {
-            val (pos, dim) = getLinkPos(stack) ?: return null
-            val world = server.getWorld(dim) ?: return null
-            val entity = world.getBlockEntity(pos) as? LogisticsTileGenericPipe ?: return null
-            return entity.pipe as? PipeItemsRemoteOrdererLogistics
-        }
+        // fun getLink(stack: ItemStack, server: MinecraftServer): PipeItemsRemoteOrdererLogistics? {
+        //     val (pos, dim) = getLinkPos(stack) ?: return null
+        //     val world = server.getWorld(dim) ?: return null
+        //     val entity = world.getBlockEntity(pos) as? LogisticsTileGenericPipe ?: return null
+        //     return entity.pipe as? PipeItemsRemoteOrdererLogistics
+        // }
 
         fun getLinkPos(stack: ItemStack): Pair<BlockPos, DimensionType>? {
             if (stack.item !is RemoteOrdererItem) error("Can't get link position from $stack")

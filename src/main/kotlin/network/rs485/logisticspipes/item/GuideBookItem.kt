@@ -37,10 +37,6 @@
 
 package network.rs485.logisticspipes.item
 
-import logisticspipes.gui.GuiGuideBook
-import logisticspipes.items.LogisticsItem
-import logisticspipes.utils.GuideBookContents
-import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.util.Hand
@@ -53,7 +49,7 @@ class GuideBookItem(settings: Settings) : ItemWithInfo(settings) {
         val stack = player.getStackInHand(hand)
 
         if (world.isClient) {
-            MinecraftClient.getInstance().openScreen(GuiGuideBook(hand, GuideBookContents.load()))
+            // MinecraftClient.getInstance().openScreen(GuiGuideBook(hand, GuideBookContents.load()))
         }
 
         return super.use(world, player, hand)

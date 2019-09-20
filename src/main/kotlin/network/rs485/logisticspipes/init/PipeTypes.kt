@@ -37,11 +37,10 @@
 
 package network.rs485.logisticspipes.init
 
-import logisticspipes.pipes.*
-import logisticspipes.pipes.unrouted.PipeItemsBasicTransport
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
+import network.rs485.logisticspipes.pipe.DummyPipe
 import network.rs485.logisticspipes.pipe.PipeType
 
 object PipeTypes {
@@ -51,33 +50,33 @@ object PipeTypes {
     var All: Set<PipeType<*>> = emptySet()
         private set
 
-    val Unrouted = create("unrouted", PipeType.Builder(::PipeItemsBasicTransport).build())
-    val Basic = create("basic", PipeType.Builder(::PipeItemsBasicLogistics).build())
+    val Unrouted = create("unrouted", PipeType.Builder(::DummyPipe).build())
+    val Basic = create("basic", PipeType.Builder(::DummyPipe).build())
 
-    val Supplier = create("supplier", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val Provider = create("provider", PipeType.Builder(::PipeItemsProviderLogistics).build())
-    val Crafting = create("crafting", PipeType.Builder(::PipeItemsCraftingLogistics).build())
-    val Satellite = create("satellite", PipeType.Builder(::PipeItemsSatelliteLogistics).build())
-    val Request = create("request", PipeType.Builder(::PipeItemsRequestLogistics).build())
-    val ChassisMk1 = create("chassis_mk1", PipeType.Builder(::PipeLogisticsChassi).build())
-    val ChassisMk2 = create("chassis_mk2", PipeType.Builder(::PipeLogisticsChassi).build())
-    val ChassisMk3 = create("chassis_mk3", PipeType.Builder(::PipeLogisticsChassi).build())
-    val ChassisMk4 = create("chassis_mk4", PipeType.Builder(::PipeLogisticsChassi).build())
-    val ChassisMk5 = create("chassis_mk5", PipeType.Builder(::PipeLogisticsChassi).build())
-    val RemoteOrderer = create("remote_orderer", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val Firewall = create("firewall", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val SystemEntrance = create("system_entrance", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val SystemDestination = create("system_destination", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val InventorySystemConnector = create("inventory_system_connector", PipeType.Builder(::PipeItemsBasicLogistics).build())
+    val Supplier = create("supplier", PipeType.Builder(::DummyPipe).build())
+    val Provider = create("provider", PipeType.Builder(::DummyPipe).build())
+    val Crafting = create("crafting", PipeType.Builder(::DummyPipe).build())
+    val Satellite = create("satellite", PipeType.Builder(::DummyPipe).build())
+    val Request = create("request", PipeType.Builder(::DummyPipe).build())
+    val ChassisMk1 = create("chassis_mk1", PipeType.Builder(::DummyPipe).build())
+    val ChassisMk2 = create("chassis_mk2", PipeType.Builder(::DummyPipe).build())
+    val ChassisMk3 = create("chassis_mk3", PipeType.Builder(::DummyPipe).build())
+    val ChassisMk4 = create("chassis_mk4", PipeType.Builder(::DummyPipe).build())
+    val ChassisMk5 = create("chassis_mk5", PipeType.Builder(::DummyPipe).build())
+    val RemoteOrderer = create("remote_orderer", PipeType.Builder(::DummyPipe).build())
+    val Firewall = create("firewall", PipeType.Builder(::DummyPipe).build())
+    val SystemEntrance = create("system_entrance", PipeType.Builder(::DummyPipe).build())
+    val SystemDestination = create("system_destination", PipeType.Builder(::DummyPipe).build())
+    val InventorySystemConnector = create("inventory_system_connector", PipeType.Builder(::DummyPipe).build())
 
-    val FluidBasic = create("fluid_basic", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val FluidSupplier = create("fluid_supplier", PipeType.Builder(::PipeItemsBasicLogistics).build())
+    val FluidBasic = create("fluid_basic", PipeType.Builder(::DummyPipe).build())
+    val FluidSupplier = create("fluid_supplier", PipeType.Builder(::DummyPipe).build())
 
-    val HighSpeedGain = create("high_speed_gain", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val HighSpeedLine = create("high_speed_line", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val HighSpeedSpeedup = create("high_speed_speedup", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val HighSpeedCurve = create("high_speed_curve", PipeType.Builder(::PipeItemsBasicLogistics).build())
-    val HighSpeedSCurve = create("high_speed_s_curve", PipeType.Builder(::PipeItemsBasicLogistics).build())
+    val HighSpeedGain = create("high_speed_gain", PipeType.Builder(::DummyPipe).build())
+    val HighSpeedLine = create("high_speed_line", PipeType.Builder(::DummyPipe).build())
+    val HighSpeedSpeedup = create("high_speed_speedup", PipeType.Builder(::DummyPipe).build())
+    val HighSpeedCurve = create("high_speed_curve", PipeType.Builder(::DummyPipe).build())
+    val HighSpeedSCurve = create("high_speed_s_curve", PipeType.Builder(::DummyPipe).build())
 
     private fun <T : PipeType<*>> create(name: String, type: T): T {
         return Registry.register(Registries.PipeType, Identifier(ModID, name), type).also { All += it }

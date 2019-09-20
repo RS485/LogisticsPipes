@@ -18,8 +18,12 @@
   "entrypoints": {
     "main": [{ "value": "network.rs485.logisticspipes.LogisticsPipes", "adapter": "kotlin" }],
     "client": [{ "value": "network.rs485.logisticspipes.LogisticsPipesClient", "adapter": "kotlin" }],
-    "commands": "network.rs485.logisticspipes.CommonConfigurationInit",
-    "commands_client": "network.rs485.logisticspipes.ClientConfigurationInit"
+    "commands": [
+      "network.rs485.logisticspipes.config.CommonConfigurationInit"
+    ],
+    "commands_client": [
+      "network.rs485.logisticspipes.config.ClientConfigurationInit"
+    ]
   },
   "mixins": [
     "logisticspipes.mixins.json"

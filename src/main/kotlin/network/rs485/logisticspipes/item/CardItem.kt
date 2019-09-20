@@ -38,7 +38,6 @@
 package network.rs485.logisticspipes.item
 
 import logisticspipes.interfaces.ItemAdvancedExistence
-import logisticspipes.interfaces.SecurityStationManager
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.ItemStack
 import net.minecraft.text.LiteralText
@@ -58,7 +57,7 @@ class CardItem(settings: Settings, val type: Type) : ItemWithInfo(settings), Ite
             tooltip.add(LiteralText(uuid.toString()).formatted(Formatting.GRAY))
             if (type == Type.SECURITY) {
                 tooltip.add(TranslatableText(
-                        if (SecurityStationManager.getInstance().isAuthorized(uuid)) "tooltip.$ModID.item_card_authorized"
+                        if (false /* SecurityStationManager.getInstance().isAuthorized(uuid) */) "tooltip.$ModID.item_card_authorized"
                         else "tooltip.$ModID.item_card_unauthorized"
                 ))
             }

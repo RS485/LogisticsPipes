@@ -61,7 +61,6 @@ object Packets {
         val CompilerStatus = create("compiler_status", CompilerStatusPacket.serializer(), CompilerStatusPacket.module)
         val CraftingPipeSignStack = create("crafting_pipe_sign_stack", CraftingPipeSignStackPacket.serializer())
         val ItemAmountSignUpdate = create("item_amount_sign_update", ItemAmountSignUpdatePacket.serializer())
-        val AuthorizedStations = create("authorized_stations", AuthorizedStationsPacket.serializer())
 
         private fun <T : Packet> create(name: String, serializer: KSerializer<T>, context: SerialModule = EmptyModule): PacketWrapper<T> {
             val id = Identifier(ModID, name)

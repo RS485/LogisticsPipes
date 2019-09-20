@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -117,8 +117,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements ItemR
 		itemList.clear();
 		WrappedInventory inv = this.getPointedInventory();
 		if (inv != null) {
-			for (int i = 0; i < inv.getSizeInventory(); i++) {
-				ItemStack stackInSlot = inv.getStackInSlot(i);
+			for (int i = 0; i < inv.getSlotCount(); i++) {
+				ItemStack stackInSlot = inv.getInvStack(i);
 				if (!stackInSlot.isEmpty()) {
 					addToList(ItemStack.getFromStack(stackInSlot));
 				}

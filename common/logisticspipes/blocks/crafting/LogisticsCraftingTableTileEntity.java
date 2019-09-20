@@ -25,7 +25,6 @@ import net.minecraft.util.ItemScatterer;
 
 import net.fabricmc.fabric.api.util.NbtType;
 
-import logisticspipes.LPBlocks;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.entity.FakePlayerLP;
@@ -39,12 +38,11 @@ import logisticspipes.network.packets.block.CraftingSetType;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.PlayerIdentifier;
 import network.rs485.logisticspipes.config.LPConfiguration;
 import network.rs485.logisticspipes.ext.InventoryKt;
 import network.rs485.logisticspipes.init.Blocks;
 import network.rs485.logisticspipes.inventory.InventoryWithStackSize;
-import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.transport.request.Resource;
 import network.rs485.logisticspipes.util.ItemVariant;
 
 public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements Inventory, IGuiTileEntity, InventoryListener, IGuiOpenController {

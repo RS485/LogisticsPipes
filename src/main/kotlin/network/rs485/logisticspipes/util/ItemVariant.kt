@@ -65,6 +65,8 @@ data class ItemVariant @JvmOverloads constructor(val item: Item, var tag: Compou
         return tag
     }
 
+    fun matches(stack: ItemStack) = stack.item == item && stack.tag == tag
+
     fun equalsForCrafting(other: ItemVariant) =
             item == other.item &&
                     (!item.isDamageable || makeStack().damage == other.makeStack().damage)

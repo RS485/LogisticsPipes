@@ -13,13 +13,13 @@ import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 @StaticResolve
-public class RoutingUpdateDebugCanidateList extends ModernPacket {
+public class RoutingUpdateDebugCandidateList extends ModernPacket {
 
 	@Getter
 	@Setter
 	private ExitRoute[] msg;
 
-	public RoutingUpdateDebugCanidateList(int id) {
+	public RoutingUpdateDebugCandidateList(int id) {
 		super(id);
 	}
 
@@ -46,7 +46,7 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 
 	@Override
 	public ModernPacket template() {
-		return new RoutingUpdateDebugCanidateList(getId());
+		return new RoutingUpdateDebugCandidateList(getId());
 	}
 
 	@Override

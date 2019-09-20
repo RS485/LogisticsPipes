@@ -69,6 +69,7 @@ class FluidContainerItem(settings: Settings) : Item(settings), ItemAdvancedExist
     override fun canExistInWorld(stack: ItemStack) = false
 
     companion object {
+        @JvmStatic
         fun getFluid(stack: ItemStack): FluidVolume {
             if (stack.item != Items.FluidContainer) error("Can't get fluid from $stack!")
             val tag = stack.getSubTag("fluid")
@@ -76,12 +77,14 @@ class FluidContainerItem(settings: Settings) : Item(settings), ItemAdvancedExist
             else FluidKeys.EMPTY.withAmount(0)
         }
 
+        @JvmStatic
         fun setFluid(stack: ItemStack, fluid: FluidVolume) {
             if (stack.item != Items.FluidContainer) error("Can't set fluid on $stack!")
             stack.putSubTag("fluid", fluid.toTag())
         }
 
         @Deprecated("Please don't, if you can avoid it.")
+        @JvmStatic
         fun getFluid(stack: ItemVariant): FluidVolume {
             if (stack.item != Items.FluidContainer) error("Can't get fluid from $stack!")
             val tag = stack.tag?.getCompound("fluid")
@@ -90,12 +93,14 @@ class FluidContainerItem(settings: Settings) : Item(settings), ItemAdvancedExist
         }
 
         @Deprecated("Please don't, if you can avoid it.")
+        @JvmStatic
         fun setFluid(stack: ItemVariant, fluid: FluidVolume) {
             if (stack.item != Items.FluidContainer) error("Can't set fluid on $stack!")
             val tag = stack.tag ?: CompoundTag().also { stack.tag = it }
             tag.put("fluid", fluid.toTag())
         }
 
+        @JvmStatic
         fun makeStack(fluid: FluidVolume): ItemStack {
             val stack = Items.FluidContainer.makeStack()
             setFluid(stack, fluid)

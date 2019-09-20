@@ -37,4 +37,6 @@
 
 package network.rs485.logisticspipes.util
 
-data class FluidReply(val id: Int, val amount: Int)
+import java.util.*
+
+data class FluidReply(val destinationRouter: UUID, val amount: Int)

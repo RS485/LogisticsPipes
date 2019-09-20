@@ -18,7 +18,7 @@ public interface IRoutingDebugAdapter {
 
 	void handledPipe();
 
-	void newCanidate(ExitRoute next);
+	void newCandidate(ExitRoute next);
 
 	void stepOneDone();
 

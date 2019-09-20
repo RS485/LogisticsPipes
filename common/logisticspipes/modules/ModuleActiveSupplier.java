@@ -199,7 +199,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 				.map(neighbor -> neighbor.sneakyInsertion().from(getUpgradeManager()))
 				.map(NeighborBlockEntity::getInventoryUtil)
 				.filter(Objects::nonNull)
-				.filter(invUtil -> invUtil.getSizeInventory() > 0)
+				.filter(invUtil -> invUtil.getSlotCount() > 0)
 				.forEach(invUtil -> {
 					if (getUpgradeManager().hasPatternUpgrade()) {
 						createPatternRequest(invUtil);
@@ -217,10 +217,10 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements ItemRequ
 			if (needed == null) {
 				continue;
 			}
-			if (invUtil.getSizeInventory() <= slotArray[i]) {
+			if (invUtil.getSlotCount() <= slotArray[i]) {
 				continue;
 			}
-			ItemStack stack = invUtil.getStackInSlot(slotArray[i]);
+			ItemStack stack = invUtil.getInvStack(slotArray[i]);
 			ItemStack have = null;
 			if (!stack.isEmpty()) {
 				have = ItemStack.getFromStack(stack);

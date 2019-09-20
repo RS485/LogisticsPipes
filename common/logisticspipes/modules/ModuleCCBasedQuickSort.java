@@ -122,24 +122,24 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			return;
 		}
 
-		if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !service.canUseEnergy(500)) {
+		if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSlotCount() == 0) || !service.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
 
 		// incremented at the end of the previous loop.
-		if (lastStackLookedAt >= invUtil.getSizeInventory()) {
+		if (lastStackLookedAt >= invUtil.getSlotCount()) {
 			lastStackLookedAt = 0;
 		}
 
-		ItemStack slot = invUtil.getStackInSlot(lastStackLookedAt);
+		ItemStack slot = invUtil.getInvStack(lastStackLookedAt);
 
 		while (slot.isEmpty()) {
 			lastStackLookedAt++;
-			if (lastStackLookedAt >= invUtil.getSizeInventory()) {
+			if (lastStackLookedAt >= invUtil.getSlotCount()) {
 				lastStackLookedAt = 0;
 			}
-			slot = invUtil.getStackInSlot(lastStackLookedAt);
+			slot = invUtil.getInvStack(lastStackLookedAt);
 			if (lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
 				send();
@@ -171,7 +171,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			}
 			if (canBeHandled || pair.getValue().getValue1() > timeout) {
 				// skip entry, if slot is not in the inventory (too high).
-				boolean slotInInventory = pair.getKey() < invUtil.getSizeInventory();
+				boolean slotInInventory = pair.getKey() < invUtil.getSlotCount();
 
 				if (slotInInventory && handle(invUtil, pair.getKey(), pair.getValue().getValue2())) {
 					stalled = false;
@@ -191,7 +191,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			return false;
 		}
 		ItemIdentifier ident = list.get(0).getStack().getItem();
-		ItemStack stack = invUtil.getStackInSlot(slot);
+		ItemStack stack = invUtil.getInvStack(slot);
 		if (stack.isEmpty() || !ItemIdentifier.get(stack).equals(ident)) {
 			return false;
 		}
@@ -245,12 +245,12 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			if (sink.getCanSink() < 0) {
 				continue;
 			}
-			stack = invUtil.getStackInSlot(slot);
+			stack = invUtil.getInvStack(slot);
 			if (stack.isEmpty()) {
 				continue;
 			}
 			int amount = Math.min(stack.getCount(), sink.getCanSink());
-			ItemStack extracted = invUtil.decrStackSize(slot, amount);
+			ItemStack extracted = invUtil.takeInvStack(slot, amount);
 			service.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast, null);
 			isSent = true;
 		}

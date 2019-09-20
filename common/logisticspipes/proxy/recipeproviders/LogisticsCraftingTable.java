@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.proxy.interfaces.FuzzyRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.transport.request.Resource;
 
 public class LogisticsCraftingTable implements FuzzyRecipeProvider {
 

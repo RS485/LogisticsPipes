@@ -16,16 +16,12 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FireWallFlag;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.Resource;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.tuples.Tuple2;
-import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.transport.request.Resource;
 import network.rs485.logisticspipes.util.ItemVariant;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 

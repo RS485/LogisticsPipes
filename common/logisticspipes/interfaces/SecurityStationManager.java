@@ -1,9 +1,10 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.routing.RouterManagerImpl;
@@ -26,12 +27,10 @@ public interface SecurityStationManager {
 
 	boolean isAuthorized(UUID id);
 
-	boolean isAuthorized(String id);
-
-	void sendClientAuthorizationList();
+	void sendClientAuthorizationList(MinecraftServer server);
 
 	void sendClientAuthorizationList(PlayerEntity player);
 
-	void setClientAuthorizationList(List<String> list);
+	void setClientAuthorizationList(Set<UUID> list);
 
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -511,13 +511,13 @@ public class PipeTransportLogistics {
 						if (util instanceof SpecialInsertion) {
 							int slot = information.getTargetSlot();
 							int amount = information.getAmount();
-							if (util.getSizeInventory() > slot) {
-								ItemStack content = util.getStackInSlot(slot);
+							if (util.getSlotCount() > slot) {
+								ItemStack content = util.getInvStack(slot);
 								ItemStack toAdd = arrivingItem.getItemStack().makeNormalStack();
 								final int amountLeft = Math.max(0, amount - content.getCount());
 								toAdd.setCount(Math.min(toAdd.getCount(), amountLeft));
 								if (toAdd.getCount() > 0) {
-									if (util.getSizeInventory() > slot) {
+									if (util.getSlotCount() > slot) {
 										int added = ((SpecialInsertion) util).addToSlot(toAdd, slot);
 										arrivingItem.getItemStack().lowerStackSize(added);
 										if (added > 0) {
@@ -648,7 +648,7 @@ public class PipeTransportLogistics {
 			}
 			WrappedInventory util = InventoryUtilFactory.INSTANCE.getInventoryUtil(tile, side.getOpposite());
 			if (util != null) {
-				return util.getSizeInventory() > 0;
+				return util.getSlotCount() > 0;
 			}
 			return isPipeCheck(tile);
 		} else {

@@ -13,13 +13,13 @@ import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 @StaticResolve
-public class RoutingUpdateCanidatePipe extends ModernPacket {
+public class RoutingUpdateCandidatePipe extends ModernPacket {
 
 	@Getter
 	@Setter
 	private ExitRoute exitRoute;
 
-	public RoutingUpdateCanidatePipe(int id) {
+	public RoutingUpdateCandidatePipe(int id) {
 		super(id);
 	}
 
@@ -30,7 +30,7 @@ public class RoutingUpdateCanidatePipe extends ModernPacket {
 
 	@Override
 	public ModernPacket template() {
-		return new RoutingUpdateCanidatePipe(getId());
+		return new RoutingUpdateCandidatePipe(getId());
 	}
 
 	@Override

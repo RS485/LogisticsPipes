@@ -61,8 +61,7 @@ import logisticspipes.utils.tuples.Tuple2;
 import logisticspipes.utils.tuples.Tuple3;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannelRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver,
-		IGuiOpenController {
+public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannelRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver, IGuiOpenController {
 
 	private boolean init = false;
 	private HashMap<ItemIdentifier, List<ItemRoutingInformation>> itemsOnRoute = new HashMap<>();
@@ -325,7 +324,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	@Override
 	public void addItem(ItemRoutingInformation info) {
-		if (info.getItem() != null && info.getItem().getCount() > 0 && info.destinationId >= 0) {
+		if (!info.getItem().isEmpty() && info.destinationId >= 0) {
 			ItemIdentifier insertedType = info.getItem().getItem();
 			List<ItemRoutingInformation> entry = itemsOnRoute.computeIfAbsent(insertedType, k -> new LinkedList<>());
 			// linked list as this is almost always very small, but experiences random removal
@@ -335,7 +334,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	public void handleItemEnterInv(ItemRoutingInformation info, BlockEntity tile) {
-		if (info.getItem().getCount() == 0) {
+		if (info.getItem().isEmpty()) {
 			return; // system.throw("why you try to insert empty stack?");
 		}
 		if (isInventoryConnected(tile)) {

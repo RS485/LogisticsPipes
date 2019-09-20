@@ -142,28 +142,28 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			}
 		} else {
 
-			if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !service.canUseEnergy(500)) {
+			if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSlotCount() == 0) || !service.canUseEnergy(500)) {
 				stalled = true;
 				return;
 			}
 
-			if (lastSuceededStack >= invUtil.getSizeInventory()) {
+			if (lastSuceededStack >= invUtil.getSlotCount()) {
 				lastSuceededStack = 0;
 			}
 
 			// incremented at the end of the previous loop.
-			if (lastStackLookedAt >= invUtil.getSizeInventory()) {
+			if (lastStackLookedAt >= invUtil.getSlotCount()) {
 				lastStackLookedAt = 0;
 			}
 
-			ItemStack slot = invUtil.getStackInSlot(lastStackLookedAt);
+			ItemStack slot = invUtil.getInvStack(lastStackLookedAt);
 
 			while (slot.isEmpty()) {
 				lastStackLookedAt++;
-				if (lastStackLookedAt >= invUtil.getSizeInventory()) {
+				if (lastStackLookedAt >= invUtil.getSlotCount()) {
 					lastStackLookedAt = 0;
 				}
-				slot = invUtil.getStackInSlot(lastStackLookedAt);
+				slot = invUtil.getInvStack(lastStackLookedAt);
 				if (lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
 					send();
@@ -218,7 +218,7 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 				partialSend = true;
 			}
 
-			ItemStack returned = invUtil.decrStackSize(lastStackLookedAt, amountToExtract);
+			ItemStack returned = invUtil.takeInvStack(lastStackLookedAt, amountToExtract);
 			if (returned.getCount() != amountToExtract) {
 				// item duplication prevention
 				throw new UnsupportedOperationException("Couldn't extract the items already sent from the inventory");
@@ -228,16 +228,16 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 			// end duplicate code
 			lastStackLookedAt++;
 			if (partialSend) {
-				if (lastStackLookedAt >= invUtil.getSizeInventory()) {
+				if (lastStackLookedAt >= invUtil.getSlotCount()) {
 					lastStackLookedAt = 0;
 				}
 				while (lastStackLookedAt != lastSuceededStack) {
-					ItemStack tstack = invUtil.getStackInSlot(lastStackLookedAt);
+					ItemStack tstack = invUtil.getInvStack(lastStackLookedAt);
 					if (!tstack.isEmpty() && !slot.isItemEqual(tstack)) {
 						break;
 					}
 					lastStackLookedAt++;
-					if (lastStackLookedAt >= invUtil.getSizeInventory()) {
+					if (lastStackLookedAt >= invUtil.getSlotCount()) {
 						lastStackLookedAt = 0;
 					}
 

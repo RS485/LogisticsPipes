@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -15,12 +15,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import net.minecraft.item.ItemStack;
 
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.ItemCrafter;
 import logisticspipes.interfaces.routing.ItemRequestProvider;
-import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -38,9 +41,9 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
-import logisticspipes.utils.tuples.Tuple2;
 import logisticspipes.utils.tuples.Tuple3;
+import network.rs485.logisticspipes.item.FluidContainerItem;
+import network.rs485.logisticspipes.util.FluidReply;
 
 public class LogisticsManagerImpl implements LogisticsManager {
 
@@ -51,22 +54,18 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	/**
 	 * Method used to check if a given stack has a destination.
 	 *
+	 * @param stack         The stack to check if it has destination.
+	 * @param allowDefault  Boolean, if true then a default route will be considered a
+	 *                      valid destination.
+	 * @param sourceRouter  The UUID of the router pipe that wants to send the stack.
+	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a
+	 *                      valid destination.
 	 * @return Triplet of destinationSimpleID, sinkreply, relays; null if
-	 *         nothing found
-	 * @param stack
-	 *            The stack to check if it has destination.
-	 * @param allowDefault
-	 *            Boolean, if true then a default route will be considered a
-	 *            valid destination.
-	 * @param sourceRouter
-	 *            The UUID of the router pipe that wants to send the stack.
-	 * @param excludeSource
-	 *            Boolean, true means it will not consider the pipe itself as a
-	 *            valid destination.
+	 * nothing found
 	 */
 	@Override
-	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
-		Router sourceRouter = RouterManager.getInstance().getRouter(sourceID);
+	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouterId, List<Integer> routerIDsToExclude) {
+		Router sourceRouter = RouterManager.getInstance().getRouter(sourceRouterId);
 		if (sourceRouter == null) {
 			return null;
 		}
@@ -99,24 +98,20 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	 * Method used to check if a given stack has a passive sink destination at a
 	 * priority.
 	 *
+	 * @param stack          The stack to check if it has destination.
+	 * @param sourceRouterId The UUID of the router pipe that wants to send the stack.
+	 * @param excludeSource  Boolean, true means it will not consider the pipe itself as a
+	 *                       valid destination.
+	 * @param priority       The priority that the stack must have.
 	 * @return Triplet of destinationSimpleID, sinkreply, relays; null if
-	 *         nothing found
-	 * @param stack
-	 *            The stack to check if it has destination.
-	 * @param sourceRouter
-	 *            The UUID of the router pipe that wants to send the stack.
-	 * @param excludeSource
-	 *            Boolean, true means it will not consider the pipe itself as a
-	 *            valid destination.
-	 * @param priority
-	 *            The priority that the stack must have.
+	 * nothing found
 	 */
 	@Override
-	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
-		if (!RouterManager.getInstance().isRouter(sourceRouter)) {
+	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemStack stack, UUID sourceRouterId, boolean excludeSource, FixedPriority priority) {
+		if (!RouterManager.getInstance().isRouter(sourceRouterId)) {
 			return null;
 		}
-		Tuple3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, RouterManager.getInstance().getRouter(sourceRouter), RouterManager.getInstance().getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<>(), null, true);
+		Tuple3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, RouterManager.getInstance().getRouter(sourceRouterId), RouterManager.getInstance().getRouter(sourceRouterId).getIRoutersByCost(), excludeSource, new ArrayList<>(), null, true);
 		if (search.getValue2() == null) {
 			return null;
 		}
@@ -126,7 +121,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 		return search;
 	}
 
-	private Tuple3<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, Router sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Tuple3<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
+	private Tuple3<Integer, SinkReply, List<IFilter>> getBestReply(ItemStack stack, Router sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Tuple3<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
 		if (result == null) {
 			result = new Tuple3<>(null, null, null);
 		}
@@ -189,7 +184,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 		return result;
 	}
 
-	public static SinkReply canSink(Router destination, Router sourceRouter, boolean excludeSource, ItemIdentifier stack, SinkReply result, boolean activeRequest, boolean allowDefault) {
+	public static SinkReply canSink(Router destination, Router sourceRouter, boolean excludeSource, ItemStack stack, SinkReply result, boolean activeRequest, boolean allowDefault) {
 
 		SinkReply reply;
 		LogisticsModule module = destination.getLogisticsModule();
@@ -223,24 +218,20 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	 * Will assign a destination for a IRoutedItem based on a best sink reply
 	 * recieved from other pipes.
 	 *
-	 * @param item
-	 *            The item that needs to be routed.
-	 * @param sourceRouterID
-	 *            The SimpleID of the pipe that is sending the item. (the
-	 *            routedItem will cache the UUID, and that the SimpleID belongs
-	 *            to the UUID will be checked when appropriate)
-	 * @param excludeSource
-	 *            Boolean, true means that it wont set the source as the
-	 *            destination.
+	 * @param item           The item that needs to be routed.
+	 * @param sourceRouterId The SimpleID of the pipe that is sending the item. (the
+	 *                       routedItem will cache the UUID, and that the SimpleID belongs
+	 *                       to the UUID will be checked when appropriate)
+	 * @param excludeSource  Boolean, true means that it wont set the source as the
+	 *                       destination.
 	 * @return IRoutedItem with a newly assigned destination
 	 */
 	@Override
-	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterID, boolean excludeSource) {
-
+	public IRoutedItem assignDestinationFor(IRoutedItem item, UUID sourceRouterId, boolean excludeSource) {
 		// Assert: only called server side.
 
 		// If we for some reason can't get the router we can't do anything either
-		Router sourceRouter = RouterManager.getInstance().getRouterUnsafe(sourceRouterID, false);
+		Router sourceRouter = RouterManager.getInstance().getRouter(sourceRouterId);
 		if (sourceRouter == null) {
 			return item;
 		}
@@ -248,10 +239,10 @@ public class LogisticsManagerImpl implements LogisticsManager {
 		// Wipe current destination
 		item.clearDestination();
 
-		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getItemStack().getItem());
+		Set<UUID> routersIndex = ServerRouter.getRoutersInterestedIn(item.getStack());
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
-		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			Router r = RouterManager.getInstance().getRouterUnsafe(i, false);
+		for (UUID id : routersIndex) {
+			Router r = RouterManager.getInstance().getRouter(id);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations
@@ -260,14 +251,14 @@ public class LogisticsManagerImpl implements LogisticsManager {
 			}
 		}
 		Collections.sort(validDestinations);
-		if (item.getItemStack() != null && item.getItemStack().makeNormalStack().getItem() instanceof LogisticsFluidContainer) {
-			Tuple2<Integer, Integer> bestReply = LogisticsFluidManager.getInstance().getBestReply(LogisticsFluidManager.getInstance().getFluidFromContainer(item.getItemStack()), sourceRouter, item.getJamList());
-			if (bestReply.getValue1() != null && bestReply.getValue1() != 0) {
-				item.setDestination(bestReply.getValue1());
+		if (item.getStack().getItem() instanceof FluidContainerItem) {
+			FluidReply bestReply = LogisticsFluidManager.getInstance().getBestReply(FluidContainerItem.getFluid(item.getStack()), sourceRouter, item.getJamList());
+			if (bestReply != null && bestReply.getAmount() != 0) {
+				item.setDestinationUuid(bestReply.getDestinationRouter());
 			}
 			return item;
 		} else {
-			Tuple3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), null, true);
+			Tuple3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getStack(), sourceRouter, validDestinations, excludeSource, item.getJamList(), null, true);
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0) {
 				item.setDestination(bestReply.getValue1());
 				if (bestReply.getValue2().isPassive) {
@@ -289,27 +280,25 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	 * If there is a better router name available, it will return it. Else, it
 	 * will return the UUID as a string.
 	 *
-	 * @param r
-	 *            The IRouter that you want the name for.
+	 * @param r The IRouter that you want the name for.
 	 * @return String with value of a better name if available, else just the
-	 *         UUID as a string.
+	 * UUID as a string.
 	 */
 	@Override
 	public String getBetterRouterName(Router r) {
-
 		if (r.getPipe() instanceof PipeItemsCraftingLogistics) {
 			PipeItemsCraftingLogistics pipe = (PipeItemsCraftingLogistics) r.getPipe();
 			if (pipe.getCraftedItems() != null) {
 				List<ItemStack> items = pipe.getCraftedItems();
 				if (items.size() == 1) {
-					return ("Crafter<" + items.get(0).getFriendlyName() + ">");
+					return (String.format("Crafter<%s>", items.get(0).getName().asString()));
 				}
-				return ("Crafter< MULTIPLE ITEMS >");
+				return "Crafter< MULTIPLE ITEMS >";
 			}
 		}
 
 		if (r.getPipe() instanceof PipeItemsProviderLogistics) {
-			return ("Provider");
+			return "Provider";
 		}
 
 		if (r.getPipe() instanceof PipeLogisticsChassi) {
@@ -320,17 +309,15 @@ public class LogisticsManagerImpl implements LogisticsManager {
 		}
 
 		return r.getId().toString();
-
 	}
 
 	/**
-	 * @param validDestinations
-	 *            a list of ExitRoute of valid destinations.
+	 * @param validDestinations a list of ExitRoute of valid destinations.
 	 * @return HashMap with ItemIdentifier and Integer item count of available
-	 *         items.
+	 * items.
 	 */
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<ExitRoute> validDestinations) {
+	public Set<ItemStack> getAvailableItems(List<ExitRoute> validDestinations) {
 		// TODO: Replace this entire function wiht a fetch from the pre-built arrays (path incoming later)
 		List<Map<ItemIdentifier, Integer>> items = new ArrayList<>(ServerRouter.getBiggestSimpleID());
 		for (int i = 0; i < ServerRouter.getBiggestSimpleID(); i++) {
@@ -373,8 +360,7 @@ public class LogisticsManagerImpl implements LogisticsManager {
 	}
 
 	/**
-	 * @param validDestinations
-	 *            a List of ExitRoute of valid destinations.
+	 * @param validDestinations a List of ExitRoute of valid destinations.
 	 * @return LinkedList with ItemIdentifier
 	 */
 	@Override

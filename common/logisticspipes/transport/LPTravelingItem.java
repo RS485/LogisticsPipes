@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
@@ -207,6 +208,7 @@ public abstract class LPTravelingItem {
 			readFromNBT(data);
 		}
 
+		@Nonnull
 		@Override
 		public ItemStack getStack() {
 			return info.getItem();

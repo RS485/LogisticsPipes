@@ -115,11 +115,11 @@ public class NewGuiHandler {
 		// 			if (!baseGUI.hasSubGui()) {
 		// 				baseGUI.setSubGui(newSub);
 		// 			} else {
-		// 				SubGuiScreen canidate = baseGUI.getSubGui();
-		// 				while (canidate.hasSubGui()) {
-		// 					canidate = canidate.getSubGui();
+		// 				SubGuiScreen candidate = baseGUI.getSubGui();
+		// 				while (candidate.hasSubGui()) {
+		// 					candidate = candidate.getSubGui();
 		// 				}
-		// 				canidate.setSubGui(newSub);
+		// 				candidate.setSubGui(newSub);
 		// 			}
 		// 		}
 		// 	}

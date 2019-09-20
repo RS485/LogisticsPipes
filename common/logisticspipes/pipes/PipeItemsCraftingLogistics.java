@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -16,6 +16,7 @@ import java.util.Set;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.gui.hud.HUDCrafting;
@@ -44,7 +45,6 @@ import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.Promise;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.request.resources.Resource;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
@@ -54,7 +54,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AbsolutePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemStack;
+import network.rs485.logisticspipes.transport.request.Resource;
 
 @CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ItemCrafter, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, AbsolutePriority {

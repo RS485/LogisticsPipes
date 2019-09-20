@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -13,8 +13,8 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.ItemRequester;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;

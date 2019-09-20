@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -9,6 +9,7 @@ package logisticspipes.logisticspipes;
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +38,10 @@ public interface IRoutedItem {
 
 	UUID getDestinationUUID();
 
+	@Deprecated
 	void setDestination(int destination);
+
+	void setDestinationUuid(UUID destination);
 
 	void clearDestination();
 
@@ -67,6 +71,7 @@ public interface IRoutedItem {
 
 	void checkIDFromUUID();
 
+	@Nonnull
 	ItemStack getStack();
 
 	void readFromNBT(CompoundTag data);

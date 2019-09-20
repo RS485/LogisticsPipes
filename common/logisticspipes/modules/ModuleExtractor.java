@@ -153,9 +153,9 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 		if (targetUtil == null) return;
 
 		int itemsleft = itemsToExtract();
-		for (int i = 0; i < targetUtil.getSizeInventory(); i++) {
+		for (int i = 0; i < targetUtil.getSlotCount(); i++) {
 
-			ItemStack slot = targetUtil.getStackInSlot(i);
+			ItemStack slot = targetUtil.getInvStack(i);
 			if (slot.isEmpty()) {
 				continue;
 			}
@@ -182,7 +182,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 					break;
 				}
 
-				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
+				ItemStack stackToSend = targetUtil.takeInvStack(i, count);
 				if (stackToSend.isEmpty()) {
 					break;
 				}
@@ -192,7 +192,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 				if (itemsleft <= 0) {
 					break;
 				}
-				slot = targetUtil.getStackInSlot(i);
+				slot = targetUtil.getInvStack(i);
 				if (slot.isEmpty()) {
 					break;
 				}

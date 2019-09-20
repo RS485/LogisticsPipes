@@ -9,7 +9,10 @@ import network.rs485.logisticspipes.util.ItemVariant;
 
 public interface WrappedInventory {
 
-	int itemCount(ItemVariant item);
+	default int itemCount(ItemVariant variant) {
+		final Set<ItemStack> stacks = getItemsAndCount();
+		return stacks.stream().filter(variant::matches).mapToInt(ItemStack::getCount).sum();
+	}
 
 	Set<ItemStack> getItemsAndCount();
 
@@ -42,11 +45,11 @@ public interface WrappedInventory {
 	Set<ItemVariant> getItems();
 
 	// IInventory adapter
-	int getSizeInventory();
+	int getSlotCount();
 
 	@Nonnull
-	ItemStack getStackInSlot(int slot);
+	ItemStack getInvStack(int slot);
 
 	@Nonnull
-	ItemStack decrStackSize(int slot, int amount);
+	ItemStack takeInvStack(int slot, int amount);
 }

@@ -9,7 +9,6 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.routing.Router;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Tuple2;
 
 public interface ISendRoutedItem {
@@ -18,7 +17,7 @@ public interface ISendRoutedItem {
 
 	Router getRouter();
 
-	Tuple2<Integer, SinkReply> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude);
+	Tuple2<Integer, SinkReply> hasDestination(ItemStack stack, boolean allowDefault, List<Integer> routerIDsToExclude);
 
 	IRoutedItem sendStack(ItemStack stack, Tuple2<Integer, SinkReply> reply, ItemSendMode mode);
 

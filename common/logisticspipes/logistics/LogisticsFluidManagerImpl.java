@@ -12,16 +12,12 @@ import net.minecraft.item.ItemStack;
 import alexiil.mc.lib.attributes.fluid.volume.FluidKey;
 import alexiil.mc.lib.attributes.fluid.volume.FluidVolume;
 
-import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.interfaces.routing.FluidRequestProvider;
-import logisticspipes.items.LogisticsFluidContainer;
+import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.item.ItemStack;
+import logisticspipes.routing.Router;
 import network.rs485.logisticspipes.item.FluidContainerItem;
 import network.rs485.logisticspipes.util.FluidReply;
 
@@ -35,7 +31,7 @@ public class LogisticsFluidManagerImpl implements LogisticsFluidManager {
 			if (!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
 				continue;
 			}
-			if (candidateRouter.destination.getSimpleId() == sourceRouter.getSimpleId()) {
+			if (candidateRouter.destination.getId().equals(sourceRouter.getId())) {
 				continue;
 			}
 			if (jamList.contains(candidateRouter.destination.getSimpleId())) {
@@ -53,10 +49,10 @@ public class LogisticsFluidManagerImpl implements LogisticsFluidManager {
 
 			int amount = ((IFluidSink) pipe).sinkAmount(stack);
 			if (amount > 0) {
-				return new FluidReply(candidateRouter.destination.getSimpleId(), amount);
+				return new FluidReply(candidateRouter.destination.getId(), amount);
 			}
 		}
-		return new FluidReply(0, 0);
+		return null;
 	}
 
 	@Override
@@ -65,12 +61,8 @@ public class LogisticsFluidManagerImpl implements LogisticsFluidManager {
 	}
 
 	@Override
-	public FluidIdentifierStack getFluidFromContainer(ItemStack stack) {
-		ItemStack itemStack = stack.makeNormalStack();
-		if (itemStack.getItem() instanceof LogisticsFluidContainer && stack.getItem().tag != null) {
-			return FluidIdentifierStack.getFromStack(FluidStack.loadFluidStackFromNBT(stack.getItem().tag));
-		}
-		return null;
+	public FluidVolume getFluidFromContainer(ItemStack stack) {
+		return FluidContainerItem.Companion.getFluid(stack);
 	}
 
 	@Override

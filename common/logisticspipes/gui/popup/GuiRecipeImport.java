@@ -20,14 +20,13 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.item.ItemStack;
 import logisticspipes.utils.string.StringUtils;
 
 public class GuiRecipeImport extends SubGuiScreen {
 
-	public static class Canidates {
+	public static class Candidates {
 
-		public Canidates(Set<ItemStack> set) {
+		public Candidates(Set<ItemStack> set) {
 			this.set = set;
 		}
 
@@ -37,8 +36,8 @@ public class GuiRecipeImport extends SubGuiScreen {
 	}
 
 	private final BlockEntity tile;
-	private final Canidates[] grid = new Canidates[9];
-	private final List<Canidates> list;
+	private final Candidates[] grid = new Candidates[9];
+	private final List<Candidates> list;
 	private Object[] tooltip = null;
 
 	public GuiRecipeImport(BlockEntity tile, ItemStack[][] stacks) {
@@ -56,22 +55,22 @@ public class GuiRecipeImport extends SubGuiScreen {
 				part.add(iStack);
 				order.add(iStack);
 			}
-			Canidates canidate = new Canidates(part);
+			Candidates candidate = new Candidates(part);
 			boolean found = false;
-			for (Canidates test : list) {
+			for (Candidates test : list) {
 				if (test.set.equals(part)) {
-					canidate = test;
+					candidate = test;
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				canidate.order = order;
+				candidate.order = order;
 				if (order.size() > 1) {
-					list.add(canidate);
+					list.add(candidate);
 				}
 			}
-			grid[i] = canidate;
+			grid[i] = candidate;
 		}
 	}
 
@@ -84,7 +83,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		buttonList.add(new SmallGuiButton(1, guiLeft + 10, guiTop + 180, 60, 10, "Most likely"));
 		int x = 0;
 		int y = 0;
-		for (Canidates canidate : list) {
+		for (Candidates candidate : list) {
 			buttonList.add(new SmallGuiButton(10 + x + y * 3, guiLeft + 38 + x * 40, guiTop + 88 + y * 40, 15, 10, "/\\"));
 			buttonList.add(new SmallGuiButton(20 + x + y * 3, guiLeft + 38 + x * 40, guiTop + 98 + y * 40, 15, 10, "\\/"));
 			x++;
@@ -129,8 +128,8 @@ public class GuiRecipeImport extends SubGuiScreen {
 		}
 		int x = 0;
 		int y = 0;
-		for (Canidates canidate : list) {
-			ItemStack stack = canidate.order.get(canidate.pos);
+		for (Candidates candidate : list) {
+			ItemStack stack = candidate.order.get(candidate.pos);
 			ItemStack itemStack = stack.makeNormalStack();
 			FontRenderer font = itemStack.getItem().getFontRenderer(itemStack);
 			if (font == null) {
@@ -165,7 +164,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 		}
 		int x = 0;
 		int y = 0;
-		for (Canidates canidate : list) {
+		for (Candidates candidate : list) {
 			GuiGraphics.drawSlotBackground(mc, guiLeft + 19 + x * 40, guiTop + 89 + y * 40);
 			x++;
 			if (x > 2) {
@@ -181,12 +180,12 @@ public class GuiRecipeImport extends SubGuiScreen {
 		if (id == 0) {
 			ItemStack[] stack = new ItemStack[9];
 			int i = 0;
-			for (Canidates canidate : grid) {
-				if (canidate == null) {
+			for (Candidates candidate : grid) {
+				if (candidate == null) {
 					i++;
 					continue;
 				}
-				stack[i++] = canidate.order.get(canidate.pos).makeNormalStack();
+				stack[i++] = candidate.order.get(candidate.pos).makeNormalStack();
 			}
 			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
 			MainProxy.sendPacketToServer(packet.setContent(stack).setBlockPos(tile.getPos()));
@@ -196,16 +195,16 @@ public class GuiRecipeImport extends SubGuiScreen {
 		} else if (id >= 10 && id < 30) {
 			int slot = id % 10;
 			boolean up = id < 20;
-			Canidates canidate = list.get(slot);
+			Candidates candidate = list.get(slot);
 			if (up) {
-				canidate.pos++;
-				if (canidate.pos >= canidate.order.size()) {
-					canidate.pos = 0;
+				candidate.pos++;
+				if (candidate.pos >= candidate.order.size()) {
+					candidate.pos = 0;
 				}
 			} else {
-				canidate.pos--;
-				if (canidate.pos < 0) {
-					canidate.pos = canidate.order.size() - 1;
+				candidate.pos--;
+				if (candidate.pos < 0) {
+					candidate.pos = candidate.order.size() - 1;
 				}
 			}
 		}
@@ -214,10 +213,10 @@ public class GuiRecipeImport extends SubGuiScreen {
 	public void handleProposePacket(List<Integer> response) {
 		if (list.size() != response.size()) return;
 		for (int slot = 0; slot < list.size(); slot++) {
-			Canidates canidate = list.get(slot);
+			Candidates candidate = list.get(slot);
 			int newPos = response.get(slot);
 			if (newPos != -1) {
-				canidate.pos = newPos;
+				candidate.pos = newPos;
 			}
 		}
 	}
@@ -226,10 +225,10 @@ public class GuiRecipeImport extends SubGuiScreen {
 	protected void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
 		int x = 0;
 		int y = 0;
-		for (final Canidates canidate : list) {
+		for (final Candidates candidate : list) {
 
 			if (guiLeft + 20 + x * 40 < mouseX && mouseX < guiLeft + 20 + x * 40 + 16 && guiTop + 90 + y * 40 < mouseY && mouseY < guiTop + 90 + y * 40 + 16) {
-				setSubGui(new SelectItemOutOfList(canidate.order, slot -> canidate.pos = slot));
+				setSubGui(new SelectItemOutOfList(candidate.order, slot -> candidate.pos = slot));
 			}
 
 			x++;

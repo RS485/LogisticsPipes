@@ -34,7 +34,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private List<GuiRecipeImport.Canidates> content;
+	private List<GuiRecipeImport.Candidates> content;
 
 	public FindMostLikelyRecipeComponents(int id) {
 		super(id);
@@ -66,11 +66,11 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 		if (pipe == null) return;
 		LinkedList<ItemIdentifier> craftable = null;
 		for (int j = 0; j < content.size(); j++) {
-			GuiRecipeImport.Canidates canidates = content.get(j);
+			GuiRecipeImport.Candidates candidates = content.get(j);
 			int maxItemPos = -1;
 			int max = 0;
-			for (int i = 0; i < canidates.order.size(); i++) {
-				ItemIdentifier ident = canidates.order.get(i).getItem();
+			for (int i = 0; i < candidates.order.size(); i++) {
+				ItemIdentifier ident = candidates.order.get(i).getItem();
 				int newAmount = LogisticsManager.getInstance().getAmountFor(ident, pipe.getRouter().getIRoutersByCost());
 				if (newAmount > max) {
 					max = newAmount;
@@ -82,8 +82,8 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 					craftable = LogisticsManager.getInstance().getCraftableItems(pipe.getRouter().getIRoutersByCost());
 				}
 				for (ItemIdentifier craft : craftable) {
-					for (int i = 0; i < canidates.order.size(); i++) {
-						ItemIdentifier ident = canidates.order.get(i).getItem();
+					for (int i = 0; i < candidates.order.size(); i++) {
+						ItemIdentifier ident = candidates.order.get(i).getItem();
 						if (craft == ident) {
 							maxItemPos = i;
 							break;
@@ -100,7 +100,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		content = input.readArrayList(input1 -> {
-			GuiRecipeImport.Canidates can = new GuiRecipeImport.Canidates(new TreeSet<>());
+			GuiRecipeImport.Candidates can = new GuiRecipeImport.Candidates(new TreeSet<>());
 			can.order = input1.readArrayList(LPDataInput::readItemStack);
 			return can;
 		});

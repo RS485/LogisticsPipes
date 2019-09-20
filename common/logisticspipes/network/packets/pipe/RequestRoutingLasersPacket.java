@@ -141,13 +141,13 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			for (ExitRoute routeTo : connectedRouters) {
 				ExitRoute result = null;
 				CoreRoutedPipe resultPipe = null;
-				for (Entry<CoreRoutedPipe, ExitRoute> routeCanidate : map.entrySet()) {
-					List<ExitRoute> distances = routeCanidate.getValue().destination.getDistanceTo(routeTo.destination);
+				for (Entry<CoreRoutedPipe, ExitRoute> routeCandidate : map.entrySet()) {
+					List<ExitRoute> distances = routeCandidate.getValue().destination.getDistanceTo(routeTo.destination);
 					for (ExitRoute distance : distances) {
 						if (distance.isSameWay(routeTo)) {
 							if (result == null || result.distanceToDestination > distance.distanceToDestination) {
 								result = distance;
-								resultPipe = routeCanidate.getKey();
+								resultPipe = routeCandidate.getKey();
 							}
 						}
 					}

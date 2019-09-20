@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.pipe.upgrade
 
-import logisticspipes.modules.abstractmodules.LogisticsModule
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil

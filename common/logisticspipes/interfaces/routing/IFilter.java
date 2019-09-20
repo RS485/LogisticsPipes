@@ -2,7 +2,7 @@ package logisticspipes.interfaces.routing;
 
 import net.minecraft.util.math.BlockPos;
 
-import network.rs485.logisticspipes.routing.request.Resource;
+import network.rs485.logisticspipes.transport.request.Resource;
 import network.rs485.logisticspipes.util.ItemVariant;
 
 public interface IFilter {

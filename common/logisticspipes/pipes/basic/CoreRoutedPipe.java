@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -38,6 +37,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -580,7 +580,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	public void checkTexturePowered() {
-		if (LPConfiguration.INSTANCE.getPowerUsageMultiplier()<=0) {
+		if (LPConfiguration.INSTANCE.getPowerUsageMultiplier() <= 0) {
 			return;
 		}
 		if (!isNthTick(10)) {
@@ -1318,25 +1318,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return count;
 	}
 
-	@Override
-	public final int getIconIndex(Direction connection) {
-		TextureType texture = getTextureType(connection);
-		if (_textureBufferPowered) {
-			return texture.powered;
-		} else if (LPConfiguration.INSTANCE.getPowerUsageMultiplier() <= 0) {
-			return texture.normal;
-		} else {
-			return texture.unpowered;
-		}
+	public void addCrashReport(CrashReportSection crashReportSection) {
+		addRouterCrashReport(crashReportSection);
+		crashReportSection.add("stillNeedReplace", stillNeedReplace);
 	}
 
-	public void addCrashReport(CrashReportCategory crashReportCategory) {
-		addRouterCrashReport(crashReportCategory);
-		crashReportCategory.addCrashSection("stillNeedReplace", stillNeedReplace);
-	}
-
-	protected void addRouterCrashReport(CrashReportCategory crashReportCategory) {
-		crashReportCategory.addCrashSection("Router", getRouter().toString());
+	protected void addRouterCrashReport(CrashReportSection crashReportSection) {
+		crashReportSection.add("Router", getRouter().toString());
 	}
 
 	public void onWrenchClicked(PlayerEntity entityplayer) {
@@ -1363,34 +1351,30 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return getInventoryForExtractionMode(mode, neighborItemHandler);
 	}
 
-	public static WrappedInventory getInventoryForExtractionMode(ExtractionMode mode, NeighborBlockEntity<BlockEntity> neighborItemHandler) {
+	public static WrappedInventory getInventoryForExtractionMode(ExtractionMode mode, World world, BlockPos pos, Direction side) {
 		switch (mode) {
 			case LeaveFirst:
 				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
-						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
-						false, false, 1, 0);
+						world, pos, side, false, false, 1, 0);
 			case LeaveLast:
 				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
-						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
-						false, false, 0, 1);
+						world, pos, side, false, false, 0, 1);
 			case LeaveFirstAndLast:
 				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
-						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
-						false, false, 1, 1);
+						world, pos, side, false, false, 1, 1);
 			case Leave1PerStack:
 				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
-						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
-						true, false, 0, 0);
+						world, pos, side, true, false, 0, 0);
 			case Leave1PerType:
 				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
-						neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
+						world, pos, side,
 						false, true, 0, 0);
+			case Normal:
+				return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
+						world, pos, side, false, false, 0, 0);
 			default:
-				break;
+				throw new IllegalArgumentException(String.format("Don't know how to handle extraction mode %s", mode));
 		}
-		return InventoryUtilFactory.INSTANCE.getHidingInventoryUtil(
-				neighborItemHandler.getBlockEntity(), neighborItemHandler.getOurDirection(),
-				false, false, 0, 0);
 	}
 
 	@Nullable
@@ -1425,14 +1409,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return neighbor;
 	}
 
-	/* ISendRoutedItem */
-
-	public int getSourceint() {
-		return getRouter().getSimpleId();
-	}
-
 	@Override
-	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude) {
+	public Tuple3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault, List<Integer> routerIDsToExclude) {
 		return LogisticsManager.getInstance().hasDestination(stack, allowDefault, getRouter().getSimpleId(), routerIDsToExclude);
 	}
 

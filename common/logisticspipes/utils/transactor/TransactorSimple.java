@@ -6,23 +6,26 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 
-import net.minecraftforge.items.IItemHandler;
+import alexiil.mc.lib.attributes.Simulation;
+import alexiil.mc.lib.attributes.item.FixedItemInv;
+import alexiil.mc.lib.attributes.item.SingleItemSlot;
 
 public class TransactorSimple extends Transactor {
 
-	protected IItemHandler inventory;
+	protected FixedItemInv inventory;
 
-	public TransactorSimple(IItemHandler inventory) {
+	public TransactorSimple(FixedItemInv inventory) {
 		this.inventory = inventory;
 	}
 
 	@Override
 	public int inject(ItemStack stack, Direction orientation, boolean doAdd) {
-		List<IInvSlot> filledSlots = new ArrayList<>(inventory.getSlots());
-		List<IInvSlot> emptySlots = new ArrayList<>(inventory.getSlots());
-		for (IInvSlot slot : InventoryIterator.getIterable(inventory, orientation)) {
-			if (slot.canPutStackInSlot(stack)) {
-				if (slot.getStackInSlot().isEmpty()) {
+		List<SingleItemSlot> filledSlots = new ArrayList<>(inventory.getSlotCount());
+		List<SingleItemSlot> emptySlots = new ArrayList<>(inventory.getSlotCount());
+		for (int i = 0; i < inventory.getSlotCount(); i++) {
+			SingleItemSlot slot = inventory.getSlot(i);
+			if (slot.getInsertionFilter().matches(stack)) {
+				if (slot.get().isEmpty()) {
 					emptySlots.add(slot);
 				} else {
 					filledSlots.add(slot);
@@ -37,15 +40,15 @@ public class TransactorSimple extends Transactor {
 		return injected;
 	}
 
-	private int tryPut(ItemStack stack, List<IInvSlot> slots, int injected, boolean doAdd) {
+	private int tryPut(ItemStack stack, List<SingleItemSlot> slots, int injected, boolean doAdd) {
 		int realInjected = injected;
 
 		if (realInjected >= stack.getCount()) {
 			return realInjected;
 		}
 
-		for (IInvSlot slot : slots) {
-			ItemStack stackInSlot = slot.getStackInSlot();
+		for (SingleItemSlot slot : slots) {
+			ItemStack stackInSlot = slot.get();
 			if (stackInSlot.isEmpty() || canStacksMerge(stackInSlot, stack)) {
 				int used = addToSlot(slot, stack, realInjected, doAdd);
 				if (used > 0) {
@@ -67,30 +70,20 @@ public class TransactorSimple extends Transactor {
 	 * @param doAdd
 	 * @return Return the number of items moved.
 	 */
-	protected int addToSlot(IInvSlot slot, ItemStack stack, int injected, boolean doAdd) {
+	protected int addToSlot(SingleItemSlot slot, ItemStack stack, int injected, boolean doAdd) {
 		int available = stack.getCount() - injected;
 
 		ItemStack newStack = stack.copy();
 		newStack.setCount(available);
 
-		ItemStack rest = slot.insertItem(newStack, !doAdd);
+		ItemStack rest = slot.attemptInsertion(newStack, doAdd ? Simulation.ACTION : Simulation.SIMULATE);
 		return available - rest.getCount();
 	}
 
 	private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {
-		if (stack1 == null || stack2 == null) {
-			return false;
-		}
-		if (stack1.isEmpty() || stack2.isEmpty()) {
-			return false;
-		}
-		if (!stack1.isItemEqual(stack2)) {
-			return false;
-		}
-		if (!ItemStack.areItemStackTagsEqual(stack1, stack2)) {
-			return false;
-		}
-		return true;
+		return !stack1.isEmpty() && !stack2.isEmpty() &&
+				stack1.isItemEqual(stack2) &&
+				ItemStack.areTagsEqual(stack1, stack2);
 
 	}
 }

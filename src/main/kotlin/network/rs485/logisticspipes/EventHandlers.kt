@@ -50,7 +50,6 @@ import net.minecraft.server.MinecraftServer
 fun initEvents() {
     ServerStartCallback.EVENT.register(ServerStartCallback(::onServerStart))
     ServerStopCallback.EVENT.register(ServerStopCallback(::onServerStop))
-
 }
 
 fun onServerStart(server: MinecraftServer) {

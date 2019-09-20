@@ -277,11 +277,11 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		String s = dateFormat.format(new Date());
 		int i = 1;
 		while (true) {
-			File canidate = new File(screenShotsFolder, s + (i == 1 ? "" : "_" + i) + ".png");
-			if (!canidate.exists()) {
+			File candidate = new File(screenShotsFolder, s + (i == 1 ? "" : "_" + i) + ".png");
+			if (!candidate.exists()) {
 				try {
-					ImageIO.write(bufferedimage, "png", canidate);
-					Minecraft.getMinecraft().player.sendChatMessage("Saved tree view as " + canidate.getName());
+					ImageIO.write(bufferedimage, "png", candidate);
+					Minecraft.getMinecraft().player.sendChatMessage("Saved tree view as " + candidate.getName());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

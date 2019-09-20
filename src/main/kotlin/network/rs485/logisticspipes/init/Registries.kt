@@ -44,9 +44,10 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.util.registry.SimpleRegistry
 import network.rs485.logisticspipes.ModID
 import network.rs485.logisticspipes.module.ModuleType
-import network.rs485.logisticspipes.pipe.sign.PipeSignType
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.pipe.sign.PipeSignType
 import network.rs485.logisticspipes.pipe.upgrade.UpgradeType
+import network.rs485.logisticspipes.transport.CellContentType
 
 object Registries {
 
@@ -54,6 +55,7 @@ object Registries {
     val PipeType = create("pipe_type", SimpleRegistry<PipeType<*>>())
     val ModuleType = create("module_type", SimpleRegistry<ModuleType<*>>())
     val UpgradeType = create("upgrade_type", SimpleRegistry<UpgradeType<*>>())
+    val CellContentType = create("cell_content_type", SimpleRegistry<CellContentType<*>>())
 
     private fun <T : MutableRegistry<*>> create(name: String, registry: T): T {
         return Registry.register(Registry.REGISTRIES, Identifier(ModID, name), registry)

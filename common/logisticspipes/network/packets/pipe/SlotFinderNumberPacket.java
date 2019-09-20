@@ -74,8 +74,8 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 		int resultIndex = -1;
 		ItemStack content = result.getStack();
 		if (!content.isEmpty()) {
-			for (int i = 0; i < util.getSizeInventory(); i++) {
-				if (content == util.getStackInSlot(i)) {
+			for (int i = 0; i < util.getSlotCount(); i++) {
+				if (content == util.getInvStack(i)) {
 					resultIndex = i;
 					break;
 				}
@@ -86,15 +86,15 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			nbt.setBoolean("LPStackFinderBoolean", true); // Make it unique
 			dummyStack.setTagCompound(nbt); // dummyStack: yay, I am unique
 			result.putStack(dummyStack);
-			for (int i = 0; i < util.getSizeInventory(); i++) {
-				if (dummyStack == util.getStackInSlot(i)) {
+			for (int i = 0; i < util.getSlotCount(); i++) {
+				if (dummyStack == util.getInvStack(i)) {
 					resultIndex = i;
 					break;
 				}
 			}
 			if (resultIndex == -1) {
-				for (int i = 0; i < util.getSizeInventory(); i++) {
-					ItemStack stack = util.getStackInSlot(i);
+				for (int i = 0; i < util.getSlotCount(); i++) {
+					ItemStack stack = util.getInvStack(i);
 					if (stack.isEmpty()) {
 						continue;
 					}

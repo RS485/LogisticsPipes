@@ -38,18 +38,22 @@
 package network.rs485.logisticspipes.init
 
 import net.minecraft.block.Block
+import net.minecraft.block.Block.Settings
 import net.minecraft.block.Material
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
 import network.rs485.logisticspipes.block.LogisticsCraftingTableBlock
+import network.rs485.logisticspipes.block.PipeBlock
 
 object Blocks {
 
-    private val SolidBlockSettings = Block.Settings.of(Material.METAL).strength(6f, 6f)
+    private val SolidBlockSettings = Settings.of(Material.METAL).strength(6f, 6f)
 
     val CraftingTable = create("crafting_table", LogisticsCraftingTableBlock(SolidBlockSettings, false))
     val FuzzyCraftingTable = create("fuzzy_crafting_table", LogisticsCraftingTableBlock(SolidBlockSettings, true))
+
+    val UnroutedPipe = create("unrouted_pipe", PipeBlock(Settings.of(Material.METAL).strength(0.5f, 0.5f), PipeTypes.Unrouted))
 
     private fun <T : Block> create(name: String, block: T): T {
         return Registry.register(Registry.BLOCK, Identifier(ModID, name), block)

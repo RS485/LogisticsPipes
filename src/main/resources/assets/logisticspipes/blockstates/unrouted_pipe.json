@@ -1,0 +1,64 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "logisticspipes:block/unrouted_pipe_center"
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/unrouted_pipe_side"
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/unrouted_pipe_side",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/unrouted_pipe_side",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/unrouted_pipe_side",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/unrouted_pipe_side",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/unrouted_pipe_side",
+        "x": 90,
+        "y": 270
+      }
+    }
+  ]
+}

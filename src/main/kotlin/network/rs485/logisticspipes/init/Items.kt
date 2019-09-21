@@ -49,6 +49,11 @@ import network.rs485.logisticspipes.item.*
 
 object Items {
 
+    val CraftingTable = create("crafting_table", Blocks.CraftingTable)
+    val FuzzyCraftingTable = create("fuzzy_crafting_table", Blocks.FuzzyCraftingTable)
+
+    val UnroutedPipe = create("unrouted_pipe", Blocks.UnroutedPipe)
+
     val SecurityCard = create("security_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.SECURITY))
     val FrequencyCard = create("frequency_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.FREQUENCY))
 

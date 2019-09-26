@@ -35,54 +35,24 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.transport.network
 
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.transport.Pipe
+import network.rs485.logisticspipes.transport.PipeNetwork
 
-/**
- * Describes the path of a cell in a pipe. Provided by the pipe itself when a cell enters it to make the cell's path match its shape.
- */
-interface CellPath {
+interface ConnectionContext<O> {
 
-    /**
-     * Returns the cell's position based on progress (in range 0..1) relative to the center of the pipe
-     */
-    fun getItemPosition(progress: Float): Vec3d
+    val network: PipeNetwork
+    val connected: Map<O, PipeAccess<*>>
 
     /**
-     * Returns the length of this path (the distance the cell travels between progress=0 and progress=1).
+     * Connects this pipe to the specified pipe
+     * @return true if the connection was successful
      */
-    fun getLength(): Float
+    fun <I> connect(port: O, pipe: Pipe<*, I>): Boolean
+
+    fun disconnect(port: O)
 
 }
 
-interface LinearCellPath : CellPath {
-
-    @JvmDefault
-    override fun getLength(): Float {
-        return getItemPosition(1f).distanceTo(getItemPosition(0f)).toFloat()
-    }
-
-}
-
-class StandardPipeCellPath(val side: Direction, val inwards: Boolean) : LinearCellPath {
-
-    override fun getItemPosition(progress: Float): Vec3d {
-        val actualProgress = if (inwards) 1 - progress else progress
-        return Vec3d(side.vector).multiply(progress.toDouble() * 0.5)
-    }
-
-}
-
-class SCurvePath() : CellPath {
-
-    override fun getItemPosition(progress: Float): Vec3d {
-        TODO("what the fuck do I know")
-    }
-
-    override fun getLength(): Float {
-        TODO("not implemented")
-    }
-
-}
+data class PipeAccess<X>(val pipe: Pipe<*, X>, val output: X)

@@ -50,7 +50,7 @@ class Cell<T : CellContent>(
         val id: UUID = UUID.randomUUID()
 ) {
 
-    fun getSpeedFactor() = 1f
+    fun getSpeedFactor() = 1.0f
 
     fun patch(tag: CompoundTag) {
         val newId = tag.getUuid("id")

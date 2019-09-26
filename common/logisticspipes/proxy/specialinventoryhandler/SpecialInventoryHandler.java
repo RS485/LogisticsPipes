@@ -27,4 +27,5 @@ public abstract class SpecialInventoryHandler implements WrappedInventory, ITran
 					return left;
 				}).orElse(ItemStack.EMPTY);
 	}
+
 }

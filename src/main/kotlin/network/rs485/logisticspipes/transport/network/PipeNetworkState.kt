@@ -35,54 +35,30 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.transport.network
 
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.world.ServerWorld
+import net.minecraft.world.PersistentState
+import net.minecraft.world.dimension.Dimension
+import java.util.*
 
-/**
- * Describes the path of a cell in a pipe. Provided by the pipe itself when a cell enters it to make the cell's path match its shape.
- */
-interface CellPath {
+class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimension(world.getDimension())) {
 
-    /**
-     * Returns the cell's position based on progress (in range 0..1) relative to the center of the pipe
-     */
-    fun getItemPosition(progress: Float): Vec3d
-
-    /**
-     * Returns the length of this path (the distance the cell travels between progress=0 and progress=1).
-     */
-    fun getLength(): Float
-
-}
-
-interface LinearCellPath : CellPath {
-
-    @JvmDefault
-    override fun getLength(): Float {
-        return getItemPosition(1f).distanceTo(getItemPosition(0f)).toFloat()
+    fun getNetworkById(id: UUID): PipeNetworkImpl? {
+        return null
     }
 
-}
-
-class StandardPipeCellPath(val side: Direction, val inwards: Boolean) : LinearCellPath {
-
-    override fun getItemPosition(progress: Float): Vec3d {
-        val actualProgress = if (inwards) 1 - progress else progress
-        return Vec3d(side.vector).multiply(progress.toDouble() * 0.5)
+    override fun toTag(tag: CompoundTag): CompoundTag {
+        return tag
     }
 
-}
+    override fun fromTag(tag: CompoundTag) {
 
-class SCurvePath() : CellPath {
-
-    override fun getItemPosition(progress: Float): Vec3d {
-        TODO("what the fuck do I know")
     }
 
-    override fun getLength(): Float {
-        TODO("not implemented")
+    companion object {
+        fun getNameForDimension(dimension: Dimension) = "pipenet${dimension.type.suffix}"
     }
 
 }

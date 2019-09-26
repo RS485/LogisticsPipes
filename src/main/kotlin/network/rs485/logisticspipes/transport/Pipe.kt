@@ -37,50 +37,54 @@
 
 package network.rs485.logisticspipes.transport
 
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.world.World
+import network.rs485.logisticspipes.transport.network.ConnectionContext
 
-interface Pipe<P : CellPath> {
+interface Pipe<P : CellPath, X> {
 
     /**
      * How fast cells flow through this pipe. 1.0 is normal speed
      */
+    @JvmDefault
     fun getSpeedFactor(): Float = 1.0f
 
     /**
      * Gets called when a cell is requested to enter this pipe.
      * Insert the cell into this pipe properly here, with the correct path.
      */
-    fun onEnterPipe(network: PipeNetwork, from: Direction, cell: Cell<*>)
+    fun onEnterPipe(network: PipeNetwork, from: X, cell: Cell<*>)
 
     /**
      * Gets called when a cell has reached the end of its path.
      */
     fun onFinishPath(network: PipeNetwork, path: P, cell: Cell<*>)
 
+    fun discoverNeighbors(ctx: ConnectionContext<X>)
+
+    /**
+     * Maps position + side to one of the pipe's ports.
+     */
+    fun getPort(pos: BlockPos, side: Direction): X?
+
 }
 
 // test/demo classes
 
-// Unrouted pipes (and routed pipes) have 12 different paths in them that items can go
-// (6 sides, either from center -> edge or edge -> center), as opposed to highspeed tubes, which only have 2 possible paths
-// (either "forwards" or "backwards"), since those don't have any intersections that items can branch off of.
-
-class UnroutedPipe(val connectedSides: Set<Direction>, val world: World) : Pipe<StandardPipeCellPath> {
-
-    override fun getSpeedFactor(): Float = 1.0f
+abstract class StandardPipe(val world: World) : Pipe<StandardPipeCellPath, Direction> {
 
     override fun onEnterPipe(network: PipeNetwork, from: Direction, cell: Cell<*>) {
         // Send the cell inwards, from the side it entered from.
         network.insert(cell, this, StandardPipeCellPath(from, true))
     }
 
+    abstract fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction?
+
     override fun onFinishPath(network: PipeNetwork, path: StandardPipeCellPath, cell: Cell<*>) {
         if (path.inwards) {
             // The cell has reached the center of the pipe
-            // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.
-            val possibleSides = connectedSides - path.side
-            val outputSide = if (possibleSides.isNotEmpty()) possibleSides.random() else null
+            val outputSide = routeCell(network, path.side, cell)
 
             if (outputSide == null) {
                 // If there's nowhere to go, drop the cell as an entity in the world, if possible.
@@ -105,6 +109,30 @@ class UnroutedPipe(val connectedSides: Set<Direction>, val world: World) : Pipe<
                 if (entity != null) world.spawnEntity(entity)
             }
         }
+    }
+
+    override fun discoverNeighbors(ctx: ConnectionContext<Direction>) {
+        TODO("not implemented")
+    }
+
+    override fun getPort(pos: BlockPos, side: Direction): Direction? {
+        // if pos == this.pos?
+        return side
+    }
+
+}
+
+// Unrouted pipes (and routed pipes) have 12 different paths in them that items can go
+// (6 sides, either from center -> edge or edge -> center), as opposed to highspeed tubes, which only have 2 possible paths
+// (either "forwards" or "backwards"), since those don't have any intersections that items can branch off of.
+
+class UnroutedPipe(val connectedSides: Set<Direction>, world: World) : StandardPipe(world) {
+
+    override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
+        // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.
+        val possibleSides = connectedSides - from
+        val outputSide = if (possibleSides.isNotEmpty()) possibleSides.random() else null
+        return outputSide
     }
 
 }

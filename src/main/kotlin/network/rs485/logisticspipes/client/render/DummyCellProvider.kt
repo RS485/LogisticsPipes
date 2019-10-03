@@ -35,37 +35,21 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.client.render
 
-import alexiil.mc.lib.attributes.fluid.volume.FluidKeys
-import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
-import net.minecraft.entity.Entity
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.World
-import network.rs485.logisticspipes.init.CellContentTypes
-import network.rs485.logisticspipes.item.FluidContainerItem
+import net.minecraft.item.Items
+import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.ext.makeStack
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.ItemCellContent
 
-class FluidCellContent @JvmOverloads constructor(var fluid: FluidVolume = FluidKeys.EMPTY.withAmount(0)) : CellContent {
+object DummyCellProvider : CellProvider {
 
-    override fun fromTag(tag: CompoundTag) {
-        fluid = FluidVolume.fromTag(tag)
-    }
+    val cell = Cell(ItemCellContent(Items.COBBLESTONE.makeStack()))
+    val pos = Vec3d(0.0, 0.0, 0.0)
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return fluid.toTag(tag)
-    }
-
-    override fun getDisplayStack(): ItemStack {
-        return FluidContainerItem.makeStack(fluid)
-    }
-
-    override fun createEntity(world: World): Entity? {
-        return null
-    }
-
-    override fun getType(): CellContentType<*> {
-        return CellContentTypes.Fluid
+    override fun getCells(delta: Float): Map<Cell<*>, Vec3d> {
+        return mapOf(cell to pos)
     }
 
 }

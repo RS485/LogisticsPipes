@@ -35,37 +35,19 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.client.render
 
-import alexiil.mc.lib.attributes.fluid.volume.FluidKeys
-import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
-import net.minecraft.entity.Entity
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.World
-import network.rs485.logisticspipes.init.CellContentTypes
-import network.rs485.logisticspipes.item.FluidContainerItem
+import net.minecraft.client.MinecraftClient
 
-class FluidCellContent @JvmOverloads constructor(var fluid: FluidVolume = FluidKeys.EMPTY.withAmount(0)) : CellContent {
+class CellRenderer(val client: MinecraftClient, val prov: CellProvider) {
 
-    override fun fromTag(tag: CompoundTag) {
-        fluid = FluidVolume.fromTag(tag)
-    }
-
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return fluid.toTag(tag)
-    }
-
-    override fun getDisplayStack(): ItemStack {
-        return FluidContainerItem.makeStack(fluid)
-    }
-
-    override fun createEntity(world: World): Entity? {
-        return null
-    }
-
-    override fun getType(): CellContentType<*> {
-        return CellContentTypes.Fluid
+    fun render(delta: Float) {
+        val itemRenderer = client.itemRenderer
+        for ((cell, pos) in prov.getCells(delta)) {
+            val stack = cell.content.getDisplayStack()
+            val model = itemRenderer.getModel(stack, client.world, null)
+            itemRenderer.renderItemAndGlow(stack, model)
+        }
     }
 
 }

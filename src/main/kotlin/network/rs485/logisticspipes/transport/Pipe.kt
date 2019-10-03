@@ -40,7 +40,6 @@ package network.rs485.logisticspipes.transport
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.world.World
-import network.rs485.logisticspipes.transport.network.ConnectionContext
 
 interface Pipe<P : CellPath, X> {
 
@@ -61,7 +60,16 @@ interface Pipe<P : CellPath, X> {
      */
     fun onFinishPath(network: PipeNetwork, path: P, cell: Cell<*>)
 
-    fun discoverNeighbors(ctx: ConnectionContext<X>)
+    @JvmDefault
+    fun canConnectTo(port: X, other: Pipe<*, *>) = true
+
+    @JvmDefault
+    fun onConnectTo(port: X, other: Pipe<*, *>) {
+    }
+
+    @JvmDefault
+    fun onDisconnect(other: Pipe<*, *>) {
+    }
 
     /**
      * Maps position + side to one of the pipe's ports.
@@ -101,7 +109,7 @@ abstract class StandardPipe(val world: World) : Pipe<StandardPipeCellPath, Direc
             val nextPipe = network.getConnectedPipe(this, path.side)
             if (nextPipe != null) {
                 // If there's a pipe connected to this one at the side the item is supposed to come out of (which it should), put it in there
-                network.insert(cell, nextPipe, path.side.opposite)
+                network.insertFrom(cell, this, path.side)
             } else {
                 // Otherwise, again, drop the item.
                 val content = network.untrack(cell)
@@ -109,10 +117,6 @@ abstract class StandardPipe(val world: World) : Pipe<StandardPipeCellPath, Direc
                 if (entity != null) world.spawnEntity(entity)
             }
         }
-    }
-
-    override fun discoverNeighbors(ctx: ConnectionContext<Direction>) {
-        TODO("not implemented")
     }
 
     override fun getPort(pos: BlockPos, side: Direction): Direction? {

@@ -40,9 +40,9 @@ package network.rs485.logisticspipes.transport.network
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
-import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.transport.*
 import java.util.*
+import kotlin.math.roundToLong
 
 class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwork {
 
@@ -51,12 +51,12 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
     private val cellPositions = mutableMapOf<UUID, AbsoluteCellPosition<*>>()
     private val cellMap = mutableMapOf<UUID, Cell<*>>()
 
-    override val pipes = mutableSetOf<Pipe<*>>()
+    override val pipes = mutableSetOf<Pipe<*, *>>()
 
     override val cells
         get() = cellMap.values.toSet()
 
-    override fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P>, path: P) {
+    override fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
         cellPositions[cell.id] = AbsoluteCellPosition(pipe, path)
         cellMap[cell.id] = cell
 
@@ -64,6 +64,10 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
         val length = path.getLength()
         val time = length / speed
         updateTimes[cell.id] = world.time + time.roundToLong()
+    }
+
+    override fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean {
+        return false // TODO
     }
 
     override fun <T : CellContent> untrack(cell: Cell<T>): T {
@@ -80,19 +84,23 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
 
     fun tick() {
         val iter = updateTimes.iterator()
-        for ((id, t) in iter) {
-            if (t < world.time) {
-                run {
-                    val cell = cellMap[id] ?: return@run
-                    val cp = cellPositions[id] ?: return@run
-                    cp.onFinish(this, cell)
-                }
+        val queued = mutableListOf<Map.Entry<UUID, Long>>()
+        for (entry in iter) {
+            if (entry.value < world.time) {
                 iter.remove()
+                queued += entry
             } else break
+        }
+        for ((id, _) in queued) {
+            run {
+                val cell = cellMap[id] ?: return@run
+                val cp = cellPositions[id] ?: return@run
+                cp.onFinish(this, cell)
+            }
         }
     }
 
-    override fun getConnectedPipe(self: Pipe<*>, side: Direction): Pipe<*>? {
+    override fun <X> getConnectedPipe(self: Pipe<*, X>, side: X): Pipe<*, *>? {
         TODO("not implemented")
     }
 
@@ -119,7 +127,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
 
 }
 
-private data class AbsoluteCellPosition<P : CellPath>(val pipe: Pipe<P>, val path: P) {
+private data class AbsoluteCellPosition<P : CellPath>(val pipe: Pipe<P, *>, val path: P) {
     // Helper method because of generics bs.
     fun onFinish(network: PipeNetwork, cell: Cell<*>) {
         pipe.onFinishPath(network, path, cell)

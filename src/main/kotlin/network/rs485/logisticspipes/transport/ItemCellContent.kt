@@ -44,9 +44,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.World
 import network.rs485.logisticspipes.init.CellContentTypes
 
-class ItemCellContent : CellContent {
-
-    var stack: ItemStack = ItemStack.EMPTY
+class ItemCellContent @JvmOverloads constructor(var stack: ItemStack = ItemStack.EMPTY) : CellContent {
 
     override fun fromTag(tag: CompoundTag) {
         stack = ItemStack.fromTag(tag)

@@ -336,6 +336,9 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		if (info.getItem().getStackSize() == 0) {
 			return; // system.throw("why you try to insert empty stack?");
 		}
+		if (info.destinationint < 0) {
+			return; // The item does not have a destination anymore, maybe the target pipe has been removed... We cannot do anything anymore so just let it be.
+		}
 		if (isInventoryConnected(tile)) {
 			if (hasRemoteConnection()) {
 				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());

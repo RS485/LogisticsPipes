@@ -31,8 +31,7 @@ public class GuiEditChannelPopup extends GuiAddChannelPopup {
 		buttonList.remove(buttonList.size() - 1);
 		buttonList.add(new SmallGuiButton(5, guiLeft + 58, guiTop + 140, 50, 10, StringUtils.translate(GUI_LANG_KEY + "save")));
 		if (toInit != null) {
-			this.textInput.input1 = toInit.getName();
-			this.textInput.input2 = "";
+			this.textInput.setText(toInit.getName());
 			((GuiCheckBox) buttonList.get(0)).setState(toInit.getRights() == ChannelInformation.AccessRights.PUBLIC);
 			((GuiCheckBox) buttonList.get(1)).setState(toInit.getRights() == ChannelInformation.AccessRights.SECURED);
 			((GuiCheckBox) buttonList.get(2)).setState(toInit.getRights() == ChannelInformation.AccessRights.PRIVATE);
@@ -67,7 +66,7 @@ public class GuiEditChannelPopup extends GuiAddChannelPopup {
 					rights = ChannelInformation.AccessRights.PRIVATE;
 				}
 				MainProxy.sendPacketToServer(
-						PacketHandler.getPacket(EditChannelPacket.class).setChannelIdentifier(channelIdentifier).setName(this.textInput.input1 + this.textInput.input2).setRights(rights).setSecurityStationID(security));
+						PacketHandler.getPacket(EditChannelPacket.class).setChannelIdentifier(channelIdentifier).setName(this.textInput.getText()).setRights(rights).setSecurityStationID(security));
 				exitGui();
 				break;
 		}

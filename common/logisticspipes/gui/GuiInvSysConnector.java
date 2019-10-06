@@ -57,6 +57,8 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
+
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 120, guiTop + 67, 10, 10, "<"));
@@ -69,12 +71,18 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 
 		if (this.resistanceCountBar == null) {
 			this.resistanceCountBar = new InputBar(this.fontRenderer, this, guiLeft + 90, guiTop + 55, 30, 12, false, true, InputBar.Align.CENTER);
-			this.resistanceCountBar.input1 = Integer.toString(pipe.resistance);
 			this.resistanceCountBar.minNumber = 0;
+			this.resistanceCountBar.setInteger(pipe.resistance);
 		}
 		this.resistanceCountBar.reposition(guiLeft + 90, guiTop + 55, 30, 12);
 
 		refreshPacket();
+	}
+
+	@Override
+	public void closeGui() throws IOException {
+		super.closeGui();
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	@Override
@@ -88,7 +96,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 68, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 69, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 55, 0x404040);
-		resistanceCountBar.renderSearchBar();
+		resistanceCountBar.drawTextBox();
 	}
 
 	@Override
@@ -167,31 +175,11 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		} else if (button.id == 2) {
 			refreshPacket();
 		} else if (button.id == 3) {
-			for (int i = 0; i < (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? 10 : 1); i++) {
-				int localresistance = 1;
-				try {
-					localresistance = Integer.valueOf(resistanceCountBar.input1 + resistanceCountBar.input2);
-				} catch (Exception ignored) {}
-				if (localresistance > 0) {
-					localresistance--;
-				}
-				resistanceCountBar.input1 = Integer.toString(localresistance);
-				resistanceCountBar.input2 = "";
-			}
+			resistanceCountBar.setInteger(resistanceCountBar.getInteger() - (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? 10 : 1));
 		} else if (button.id == 4) {
-			int localresistance = 1;
-			try {
-				localresistance = Integer.valueOf(resistanceCountBar.input1 + resistanceCountBar.input2);
-			} catch (Exception ignored) {}
-			localresistance++;
-			resistanceCountBar.input1 = Integer.toString(localresistance);
-			resistanceCountBar.input2 = "";
+			resistanceCountBar.setInteger(resistanceCountBar.getInteger() + 1);
 		} else if (button.id == 5) {
-			int localresistance = 1;
-			try {
-				localresistance = Integer.valueOf(resistanceCountBar.input1 + resistanceCountBar.input2);
-			} catch (Exception ignored) {}
-			pipe.resistance = localresistance;
+			pipe.resistance = resistanceCountBar.getInteger();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.resistance).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		} else if (button.id == 6) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConOpenSelectChannelPopupPacket.class).setTilePos(pipe.container));
@@ -218,8 +206,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 	}
 
 	public void handleResistanceAnswer(int resistance) {
-		resistanceCountBar.input1 = Integer.toString(resistance);
-		resistanceCountBar.input2 = "";
+		resistanceCountBar.setInteger(resistance);
 	}
 
 	@Override

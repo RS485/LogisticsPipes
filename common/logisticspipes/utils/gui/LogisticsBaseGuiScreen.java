@@ -32,18 +32,21 @@ import net.minecraft.util.text.TextFormatting;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
 import lombok.Getter;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.interfaces.IChainAddList;
 import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
+import logisticspipes.utils.ChainAddArrayList;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
@@ -385,6 +388,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		} else {
 			super.handleKeyboardInput();
 		}
+		for (EventListener el : onGuiEvents)
+			keyHandled |= el.onKeyboardInput();
 	}
 
 	public void addRenderSlot(IRenderSlot slot) {
@@ -608,4 +613,20 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		}
 		return false;
 	}
+
+	public IChainAddList<EventListener> onGuiEvents = new ChainAddArrayList<>();
+
+	public interface EventListener {
+
+		void onUpdateScreen();
+
+		boolean onKeyboardInput();
+
+	}
+
+	public void updateScreen() {
+		for (EventListener el : onGuiEvents)
+			el.onUpdateScreen();
+	}
+
 }

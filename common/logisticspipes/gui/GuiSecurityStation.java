@@ -33,6 +33,7 @@ import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
+import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
@@ -45,18 +46,13 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	private final List<String> players = new LinkedList<>();
 
 	//Player name:
-	protected String searchinput1 = "";
-	protected String searchinput2 = "";
-	protected boolean editsearch = false;
-	protected boolean editsearchb = false;
-	protected boolean displaycursor = true;
-	protected long oldSystemTime = 0;
 	protected static final int searchWidth = 250;
 	protected int lastClickedx = 0;
 	protected int lastClickedy = 0;
 	protected int lastClickedk = 0;
 	private int addition;
 	private boolean authorized;
+	private InputBar searchBar;
 
 	protected final String _title = "Request items";
 	protected boolean clickWasButton = false;
@@ -74,6 +70,8 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
+
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
@@ -93,7 +91,19 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, StringUtils.translate(GuiSecurityStation.PREFIX + "Deauthorize")));
 		buttonList.add(new GuiCheckBox(9, guiLeft + 160, guiTop + 74, 16, 16, _tile.allowAutoDestroy));
 		buttonList.add(new GuiButton(10, guiLeft + 177, guiTop + 230, 95, 20, StringUtils.translate(GuiSecurityStation.PREFIX + "ChannelManager")));
+		if (searchBar == null) {
+			searchBar = new InputBar(this.fontRenderer, this, guiLeft + 180, bottom - 120, right - 8 + addition - guiLeft - 180, 17);
+			lastClickedx = -10000000;
+			lastClickedy = -10000000;
+		}
+		searchBar.reposition(guiLeft + 180, bottom - 120, right - 8 + addition - guiLeft - 180, 17);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(PlayerListRequest.class));
+	}
+
+	@Override
+	public void closeGui() throws IOException {
+		super.closeGui();
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	@Override
@@ -101,8 +111,8 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		if (button.id < 4) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityCardPacket.class).setInteger(button.id).setBlockPos(_tile.getPos()));
 		} else if (button.id == 4) {
-			if (searchinput1 + searchinput2 != null && ((searchinput1 + searchinput2).length() != 0)) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationOpenPlayerRequest.class).setString(searchinput1 + searchinput2).setBlockPos(_tile.getPos()));
+			if (!searchBar.getText().isEmpty()) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationOpenPlayerRequest.class).setString(searchBar.getText()).setBlockPos(_tile.getPos()));
 			}
 		} else if (button.id == 5) {
 			_tile.allowCC = !_tile.allowCC;
@@ -145,51 +155,17 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "SecurityCards") + ":", guiLeft + 10, guiTop + 127, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "Inventory") + ":", guiLeft + 10, guiTop + 163, 0x404040);
 
-		addition = (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) - 82);
+		addition = (mc.fontRenderer.getStringWidth(searchBar.getText()) - 82);
 
 		if (addition < 0) {
 			addition = 0;
 		}
 
-		//SearchInput
-		if (editsearch) {
-			drawRect(guiLeft + 180, bottom - 120, right - 8 + addition, bottom - 103, Color.BLACK);
-			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Color.WHITE);
-		} else {
-			drawRect(guiLeft + 181, bottom - 119, right - 9 + addition, bottom - 104, Color.BLACK);
-		}
-		drawRect(guiLeft + 182, bottom - 118, right - 10 + addition, bottom - 105, Color.DARKER_GREY);
-
-		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 185, bottom - 115, 0xFFFFFF);
-		if (editsearch) {
-			int linex = guiLeft + 185 + mc.fontRenderer.getStringWidth(searchinput1);
-			if (System.currentTimeMillis() - oldSystemTime > 500) {
-				displaycursor = !displaycursor;
-				oldSystemTime = System.currentTimeMillis();
-			}
-			if (displaycursor) {
-				drawRect(linex, bottom - 117, linex + 1, bottom - 106, Color.WHITE);
-			}
-		}
-
-		//Click into search
-		if (lastClickedx != -10000000 && lastClickedy != -10000000) {
-			if (lastClickedx >= guiLeft + 182 && lastClickedx < right - 8 + addition && lastClickedy >= bottom - 120 && lastClickedy < bottom - 102) {
-				editsearch = true;
-				lastClickedx = -10000000;
-				lastClickedy = -10000000;
-				if (lastClickedk == 1) {
-					searchinput1 = "";
-					searchinput2 = "";
-				}
-			} else {
-				editsearch = false;
-			}
-		}
+		searchBar.drawTextBox();
 
 		int pos = bottom - 95;
 		for (String player : players) {
-			if (player.contains(searchinput1 + searchinput2)) {
+			if (player.contains(searchBar.getText())) {
 				mc.fontRenderer.drawString(player, guiLeft + 180, pos, 0x404040);
 				pos += 11;
 			}
@@ -197,8 +173,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 			if (guiLeft + 180 < lastClickedx && lastClickedx < guiLeft + 280 && pos - 11 < lastClickedy && lastClickedy < pos) {
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
-				searchinput1 = player;
-				searchinput2 = "";
+				searchBar.setText(player);
 			}
 			if (pos > bottom - 12) {
 				mc.fontRenderer.drawString("...", guiLeft + 180, pos - 5, 0x404040);
@@ -214,13 +189,11 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 
 	@Override
 	protected void mouseClicked(int i, int j, int k) throws IOException {
-		clickWasButton = false;
-		editsearchb = true;
+		if (searchBar.handleClick(i, j, k))
+			return;
 		super.mouseClicked(i, j, k);
-		if ((!clickWasButton && i >= guiLeft + 5 && i < right - 5 + addition && j >= guiTop + 5 && j < bottom - 5) || editsearch) {
-			if (!editsearchb) {
-				editsearch = false;
-			}
+
+		if ((i >= guiLeft + 5 && i < right - 5 + addition && j >= guiTop + 5 && j < bottom - 5) && !searchBar.isFocused()) {
 			lastClickedx = i;
 			lastClickedy = j;
 			lastClickedk = k;
@@ -229,50 +202,15 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
-		if (editsearch) {
-			if (c == 13) {
-				editsearch = false;
+		if (searchBar.isFocused()) {
+			if ((c == 13) || (i == 1) || (i == 28)) {
+				searchBar.setFocused(false);
 				return;
-			} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-				searchinput1 = searchinput1 + GuiScreen.getClipboardString();
-			} else if (c == 8) {
-				if (searchinput1.length() > 0) {
-					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
-				}
-				return;
-			} else if (Character.isLetterOrDigit(c) || c == ' ') {
-				if (mc.fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= GuiSecurityStation.searchWidth) {
-					searchinput1 += c;
-				}
-				return;
-			} else if (i == 203) { //Left
-				if (searchinput1.length() > 0) {
-					searchinput2 = searchinput1.substring(searchinput1.length() - 1) + searchinput2;
-					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
-				}
-			} else if (i == 205) { //Right
-				if (searchinput2.length() > 0) {
-					searchinput1 += searchinput2.substring(0, 1);
-					searchinput2 = searchinput2.substring(1);
-				}
-			} else if (i == 1) { //ESC
-				editsearch = false;
-			} else if (i == 28) { //Enter
-				editsearch = false;
-			} else if (i == 199) { //Pos
-				searchinput2 = searchinput1 + searchinput2;
-				searchinput1 = "";
-			} else if (i == 207) { //Ende
-				searchinput1 = searchinput1 + searchinput2;
-				searchinput2 = "";
-			} else if (i == 211) { //Entf
-				if (searchinput2.length() > 0) {
-					searchinput2 = searchinput2.substring(1);
-				}
 			}
-		} else {
-			super.keyTyped(c, i);
+			if (searchBar.handleKey(c, i))
+				return;
 		}
+		super.keyTyped(c, i);
 	}
 
 	@Override
@@ -282,8 +220,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	}
 
 	public void handlePlayerSecurityOpen(SecuritySettings setting) {
-		searchinput1 = "";
-		searchinput2 = "";
+		searchBar.setText("");
 		setSubGui(new GuiSecurityStationPopup(setting, _tile));
 	}
 

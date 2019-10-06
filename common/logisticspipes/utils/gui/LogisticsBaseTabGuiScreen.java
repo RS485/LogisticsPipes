@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Slot;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
@@ -27,6 +28,13 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		super.initGui();
 		buttonList.clear();
 		tabList.forEach(TabSubGui::initTab);
+	}
+
+	@Override
+	public void closeGui() throws IOException {
+		super.closeGui();
+		Keyboard.enableRepeatEvents(false);
+		initGui();
 	}
 
 	protected int getFreeButtonId() {

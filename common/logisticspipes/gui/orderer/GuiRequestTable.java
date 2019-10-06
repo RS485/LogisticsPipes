@@ -582,10 +582,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		//Enchantment? Enchantment!
 		Map<Enchantment, Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
 		for (Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
-			String enchantname = e.getKey().getName();
-			if (enchantname != null) {
-				if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
-					return true;
+			if (e.getKey() != null) {
+				String enchantname = e.getKey().getName();
+				if (enchantname != null) {
+					if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+						return true;
+					}
 				}
 			}
 		}

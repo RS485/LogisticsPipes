@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -46,15 +47,17 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void initTab() {
+			Keyboard.enableRepeatEvents(true);
+
 			ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 			if (renderDistance == null) {
 				renderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 75, 30, 15, false, true, InputBar.Align.RIGHT);
-				renderDistance.input1 = Integer.toString(config.getRenderPipeDistance());
+				renderDistance.setInteger(config.getRenderPipeDistance());
 			}
 			renderDistance.reposition(15, 80, 30, 15);
 			if (contentRenderDistance == null) {
 				contentRenderDistance = new InputBar(fontRenderer, getBaseScreen(), 15, 105, 30, 15, false, true, InputBar.Align.RIGHT);
-				contentRenderDistance.input1 = Integer.toString(config.getRenderPipeContentDistance());
+				contentRenderDistance.setInteger(config.getRenderPipeContentDistance());
 			}
 			contentRenderDistance.reposition(15, 110, 30, 15);
 			//useNewRendererButton = (GuiCheckBox) addButton(new GuiCheckBox(0, guiLeft + 15, guiTop + 30, 16, 16, config.isUseNewRenderer()));
@@ -90,8 +93,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void renderForgroundContent() {
-			renderDistance.renderSearchBar();
-			contentRenderDistance.renderSearchBar();
+			renderDistance.drawTextBox();
+			contentRenderDistance.drawTextBox();
 			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
 			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
 			fontRenderer.drawString(StringUtils.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
@@ -114,8 +117,8 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void guiClose() {
 			ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 			try {
-				config.setRenderPipeDistance(Integer.valueOf(renderDistance.getContent()));
-				config.setRenderPipeContentDistance(Integer.valueOf(contentRenderDistance.getContent()));
+				config.setRenderPipeDistance(renderDistance.getInteger());
+				config.setRenderPipeContentDistance(contentRenderDistance.getInteger());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

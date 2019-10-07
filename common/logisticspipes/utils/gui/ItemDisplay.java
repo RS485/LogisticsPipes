@@ -90,8 +90,8 @@ public class ItemDisplay {
 		this.amountChangeMode = amountChangeMode;
 		this.shiftPageChange = shiftPageChange;
 		this.requestCountBar = new InputBar(this.fontRenderer, screen, amountPosLeft - (amountWidth / 2), amountPosTop - 5, amountWidth, 12, false, true, InputBar.Align.CENTER);
-		this.requestCountBar.input1 = "1";
 		this.requestCountBar.minNumber = 1;
+		this.requestCountBar.setInteger(1);
 	}
 
 	public void reposition(int left, int top, int width, int height, int amountPosLeft, int amountPosTop) {
@@ -232,15 +232,12 @@ public class ItemDisplay {
 	}
 
 	public void renderAmount(int stackAmount) {
-		int requestCount = 0;
-		try {
-			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
-		} catch (Exception ignored) {}
+		int requestCount = requestCountBar.getInteger();
 		String StackrequestCount = "" + (requestCount / stackAmount) + "+" + (requestCount % stackAmount);
 		//fontRenderer.drawString(requestCount + "", x - fontRenderer.getStringWidth(requestCount + "") / 2, y, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", this.amountPosLeft - fontRenderer.getStringWidth(StackrequestCount + "") / 2, this.amountPosTop + 11, 0x404040);
 
-		requestCountBar.renderSearchBar();
+		requestCountBar.drawTextBox();
 	}
 
 	public void renderItemArea(double zLevel) {
@@ -371,10 +368,7 @@ public class ItemDisplay {
 				}
 			}
 		} else if (!requestCountBar.isFocused()) {
-			int requestCount = 1;
-			try {
-				requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
-			} catch (Exception ignored) {}
+			int requestCount = requestCountBar.getInteger();
 			if (isShift && !isControl && !isShiftPageChange()) {
 				if (wheel > 0) {
 					if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
@@ -450,8 +444,7 @@ public class ItemDisplay {
 					}
 				}
 			}
-			requestCountBar.input1 = Integer.toString(requestCount);
-			requestCountBar.input2 = "";
+			requestCountBar.setInteger(requestCount);
 		}
 	}
 
@@ -468,14 +461,12 @@ public class ItemDisplay {
 	}
 
 	public void resetAmount() {
-		requestCountBar.input1 = "1";
-		requestCountBar.input2 = "";
+		requestCountBar.setInteger(1);
 	}
 
 	public void setMaxAmount() {
 		if (selectedItem != null && selectedItem.getStackSize() != 0) {
-			requestCountBar.input1 = Integer.toString(selectedItem.getStackSize());
-			requestCountBar.input2 = "";
+			requestCountBar.setInteger(selectedItem.getStackSize());
 		}
 	}
 
@@ -496,26 +487,15 @@ public class ItemDisplay {
 	}
 
 	public void add(int i) {
-		int requestCount = 1;
-		try {
-			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
-		} catch (Exception ignored) {}
+		int requestCount = requestCountBar.getInteger();
 		if (i != 1 && requestCount == 1) {
 			requestCount -= 1;
 		}
-		requestCount += getAmountChangeMode(i);
-		requestCountBar.input1 = Integer.toString(requestCount);
-		requestCountBar.input2 = "";
+		requestCountBar.setInteger(requestCount + getAmountChangeMode(i));
 	}
 
 	public void sub(int i) {
-		int requestCount = 1;
-		try {
-			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
-		} catch (Exception ignored) {}
-		requestCount = Math.max(1, requestCount - getAmountChangeMode(i));
-		requestCountBar.input1 = Integer.toString(requestCount);
-		requestCountBar.input2 = "";
+		requestCountBar.setInteger(requestCountBar.getInteger() - getAmountChangeMode(i));
 	}
 
 	public ItemIdentifierStack getSelectedItem() {
@@ -523,11 +503,7 @@ public class ItemDisplay {
 	}
 
 	public int getRequestCount() {
-		int requestCount = 1;
-		try {
-			requestCount = Integer.valueOf(requestCountBar.input1 + requestCountBar.input2);
-		} catch (Exception ignored) {}
-		return requestCount;
+		return requestCountBar.getInteger();
 	}
 
 	public boolean handleClick(int x, int y, int k) {
@@ -567,5 +543,9 @@ public class ItemDisplay {
 			return false;
 		}
 		return true;
+	}
+
+	public void setFocused(boolean value) {
+		requestCountBar.setFocused(value);
 	}
 }

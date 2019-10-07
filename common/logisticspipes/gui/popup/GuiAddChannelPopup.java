@@ -6,6 +6,8 @@ import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.AddNewChannelPacket;
 import logisticspipes.proxy.MainProxy;
@@ -35,6 +37,8 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 
 	@Override
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
+
 		super.initGui();
 
 		buttonList.clear();
@@ -50,6 +54,13 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 		this.textInput.reposition(guiLeft + 10, guiTop + 34, right - guiLeft - 20, 15);
 
 		((GuiCheckBox) buttonList.get(1)).enabled = responsibleSecurityID != null;
+	}
+
+	@Override
+	public void exitGui() {
+		super.exitGui();
+		Keyboard.enableRepeatEvents(false);
+		getBaseScreen().initGui();
 	}
 
 	@Override
@@ -71,7 +82,7 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		textInput.renderSearchBar();
+		textInput.drawTextBox();
 	}
 
 	@Override
@@ -117,7 +128,7 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 				} else if (((GuiCheckBox) buttonList.get(2)).getState()) {
 					rights = ChannelInformation.AccessRights.PRIVATE;
 				}
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(AddNewChannelPacket.class).setName(this.textInput.input1 + this.textInput.input2).setRights(rights).setSecurityStationID(security));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(AddNewChannelPacket.class).setName(this.textInput.getText()).setRights(rights).setSecurityStationID(security));
 				exitGui();
 				break;
 		}

@@ -59,12 +59,20 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
+
 		super.initGui();
 		buttonList.clear();
 
 		tabs.forEach(StatisticsTab::init);
 
 		tabTracker.updateItemList();
+	}
+
+	@Override
+	public void closeGui() throws IOException {
+		super.closeGui();
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	@Override

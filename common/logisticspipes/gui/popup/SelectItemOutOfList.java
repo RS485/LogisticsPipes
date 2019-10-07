@@ -9,6 +9,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.InputBar;
@@ -40,6 +42,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 70, guiTop + 5, 10, 10, "<"));
@@ -56,7 +59,13 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 			itemDisplay.setItemList(candidate);
 		}
 		itemDisplay.reposition(guiLeft + 8, guiTop + 18, xSize - 16, ySize - 48, 0, 0);
+	}
 
+	@Override
+	public void exitGui() {
+		super.exitGui();
+		Keyboard.enableRepeatEvents(false);
+		getBaseScreen().initGui();
 	}
 
 	@Override
@@ -77,7 +86,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 
 		//SearchInput
-		search.renderSearchBar();
+		search.drawTextBox();
 
 		//itemDisplay.renderSortMode(xCenter, bottom - 52);
 		itemDisplay.renderItemArea(zLevel);
@@ -128,7 +137,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		if (search.isEmpty()) {
 			return true;
 		}
-		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getText().toLowerCase(Locale.US))) {
 			return true;
 		}
 		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
@@ -137,7 +146,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		for (Map.Entry<Enchantment, Integer> e : enchantIdLvlMap.entrySet()) {
 			String enchantname = e.getKey().getName();
 			if (enchantname != null) {
-				if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+				if (isSearched(enchantname.toLowerCase(Locale.US), search.getText().toLowerCase(Locale.US))) {
 					return true;
 				}
 			}

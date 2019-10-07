@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -19,7 +20,9 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatAllowedCharacters;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -117,6 +120,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
+
 		boolean reHide = false;
 		if (!showRequest) {
 			guiLeft = startLeft;
@@ -186,6 +191,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	@Override
+	public void closeGui() throws IOException {
+		super.closeGui();
+		Keyboard.enableRepeatEvents(false);
+	}
+
+	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		for (GuiButton sycleButton : sycleButtons) {
 			sycleButton.visible = _table.targetType != null;
@@ -207,7 +218,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 			itemDisplay.renderAmount(getStackAmount());
 			//SearchInput
-			search.renderSearchBar();
+			search.drawTextBox();
 
 			itemDisplay.renderSortMode(right - 103, bottom - 52);
 			itemDisplay.renderItemArea(zLevel);
@@ -575,7 +586,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		if (search.isEmpty()) {
 			return true;
 		}
-		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+		if (isSearched(item.getFriendlyName().toLowerCase(Locale.US), search.getText().toLowerCase(Locale.US))) {
 			return true;
 		}
 		//if(isSearched(String.valueOf(Item.getIdFromItem(item.item)), search.getContent())) return true;
@@ -585,7 +596,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			if (e.getKey() != null) {
 				String enchantname = e.getKey().getName();
 				if (enchantname != null) {
-					if (isSearched(enchantname.toLowerCase(Locale.US), search.getContent().toLowerCase(Locale.US))) {
+					if (isSearched(enchantname.toLowerCase(Locale.US), search.getText().toLowerCase(Locale.US))) {
 						return true;
 					}
 				}
@@ -642,6 +653,16 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 	@Override
 	protected void keyTyped(char c, int i) throws IOException {
+		if (search.isFocused()) {
+			if (!search.isEmpty() && search.handleKey(c, i))
+				return;
+		} else if (GuiScreen.isAltKeyDown() && ChatAllowedCharacters.isAllowedCharacter(c)) {
+			itemDisplay.setFocused(false);
+			search.setFocused(true);
+			search.setText("");
+			search.handleKey(c, i);
+			return;
+		}
 		if (!itemDisplay.keyTyped(c, i)) {
 			// Track everything except Escape when in search bar
 			if (i == 1 || !search.handleKey(c, i)) {

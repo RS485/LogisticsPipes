@@ -13,6 +13,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -135,6 +137,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 8, guiTop + 90, 15, 10, "/\\"));
@@ -145,6 +148,12 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		buttonList.add(programmerButton = new SmallGuiButton(5, guiLeft + 132, guiTop + 90, 40, 10, "Compile"));
 
 		search = new InputBar(fontRenderer, this, guiLeft + 30, guiTop + 11, 120, 16);
+	}
+
+	@Override
+	public void closeGui() throws IOException {
+		super.closeGui();
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	@Override
@@ -241,7 +250,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				programList.renderGuiBackground(var2, var3);
 			}
 
-			search.renderSearchBar();
+			search.drawTextBox();
 
 			int selIndex = programList.getSelected();
 			if (categoryTextList.getSize() == 0 && programTextList.getSize() != 0) {
@@ -268,7 +277,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		return StreamSupport.stream(list.spliterator(), false).flatMap(
 				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new ResourceLocation(((NBTTagString) nbtBase).getString()))
 						.stream())
-				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getUnlocalizedName() + ".name").toLowerCase().contains(search.getContent().toLowerCase()))
+				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getUnlocalizedName() + ".name").toLowerCase().contains(search.getText().toLowerCase()))
 				.sorted(Comparator.comparing(o -> getSortingClass(Item.REGISTRY.getObject((ResourceLocation) o)))
 						.thenComparing(o -> StringUtils.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName() + ".name").toLowerCase())
 				)

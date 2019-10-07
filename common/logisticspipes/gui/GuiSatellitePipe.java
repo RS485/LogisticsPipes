@@ -14,6 +14,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
+import org.lwjgl.input.Keyboard;
+
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.satpipe.SatelliteSetNamePacket;
 import logisticspipes.pipes.PipeFluidSatellite;
@@ -55,22 +57,30 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
+
 		super.initGui();
 		buttonList.add(new SmallGuiButton(0, (width / 2) - (30 / 2) + 35, (height / 2) + 20, 30, 10, "Save"));
 		input = new InputBar(fontRenderer, this, guiLeft + 8, guiTop + 40, 100, 16);
 	}
 
 	@Override
+	public void closeGui() throws IOException {
+		super.closeGui();
+		Keyboard.enableRepeatEvents(false);
+	}
+
+	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (_satellite != null) {
 			if (guibutton.id == 0) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.input1 + input.input2).setTilePos(_satellite.getContainer()));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.getText()).setTilePos(_satellite.getContainer()));
 			} else {
 				super.actionPerformed(guibutton);
 			}
 		} else if (_liquidSatellite != null) {
 			if (guibutton.id == 0) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.input1 + input.input2).setTilePos(_liquidSatellite.getContainer()));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.getText()).setTilePos(_liquidSatellite.getContainer()));
 			} else {
 				super.actionPerformed(guibutton);
 			}
@@ -95,7 +105,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		super.drawGuiContainerBackgroundLayer(f, x, y);
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		input.renderSearchBar();
+		input.drawTextBox();
 	}
 
 	@Override

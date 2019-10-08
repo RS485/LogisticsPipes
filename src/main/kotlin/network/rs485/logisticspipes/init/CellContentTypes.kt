@@ -46,8 +46,8 @@ import network.rs485.logisticspipes.transport.ItemCellContent
 
 object CellContentTypes {
 
-    val Item = create("item", CellContentType.Builder(::ItemCellContent).build())
-    val Fluid = create("fluid", CellContentType.Builder(::FluidCellContent).build())
+    val Item = create("item", CellContentType.Builder { ItemCellContent() }.build())
+    val Fluid = create("fluid", CellContentType.Builder { FluidCellContent() }.build())
 
     private fun <T : CellContentType<*>> create(name: String, type: T): T {
         return Registry.register(Registries.CellContentType, Identifier(ModID, name), type)

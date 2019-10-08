@@ -51,7 +51,7 @@ class DiskItem(settings: Settings) : ItemWithInfo(settings) {
         super.appendTooltip(stack, world, tooltip, ctx)
         val tag = stack.tag
         if (tag != null) {
-            if (tag.containsKey("name")) {
+            if ("name" in tag) {
                 val name = tag.getString("name")
                 tooltip.add(LiteralText(name).setStyle(Style().setColor(Formatting.DARK_GRAY)))
             }

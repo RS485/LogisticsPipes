@@ -42,7 +42,7 @@ import net.minecraft.block.BlockState
 import net.minecraft.block.BlockWithEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemPlacementContext
-import net.minecraft.state.StateFactory
+import net.minecraft.state.StateManager
 import net.minecraft.state.property.BooleanProperty
 import net.minecraft.state.property.DirectionProperty
 import net.minecraft.state.property.Properties
@@ -60,7 +60,7 @@ abstract class LogisticsSolidBlockWithEntity(settings: Block.Settings) : BlockWi
         // entity?.notifyOfBlockChange()
     }
 
-    override fun activate(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hitResult: BlockHitResult): Boolean {
+    override fun onUse(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hitResult: BlockHitResult): Boolean {
         if (player.isSneaking) return false
 
         val entity = world.getBlockEntity(pos)
@@ -84,7 +84,7 @@ abstract class LogisticsSolidBlockWithEntity(settings: Block.Settings) : BlockWi
         super.onBreak(world, pos, state, player)
     }
 
-    override fun appendProperties(builder: StateFactory.Builder<Block, BlockState>) {
+    override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {
         super.appendProperties(builder)
         builder.add(FACING)
         builder.add(ACTIVE)

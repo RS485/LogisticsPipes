@@ -37,17 +37,55 @@
 
 package network.rs485.logisticspipes.client.render
 
+import net.minecraft.block.BlockRenderLayer
+import net.minecraft.class_4587
+import net.minecraft.class_4597
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.render.VertexFormats
+import net.minecraft.client.render.item.ItemRenderer
+import net.minecraft.client.render.model.json.ModelTransformation
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.FluidCellContent
 
-class CellRenderer(val client: MinecraftClient, val prov: CellProvider) {
+class CellRenderer(val client: MinecraftClient) {
 
-    fun render(delta: Float) {
+    var prov: CellProvider = DummyCellProvider // EmptyCellProvider
+
+    fun render(x: Double, y: Double, z: Double, delta: Float, trStack: class_4587, buffer: class_4597) {
+        trStack.method_22903()
+        trStack.method_22904(-x, -y, -z)
         val itemRenderer = client.itemRenderer
         for ((cell, pos) in prov.getCells(delta)) {
-            val stack = cell.content.getDisplayStack()
-            val model = itemRenderer.getModel(stack, client.world, null)
-            itemRenderer.renderItemAndGlow(stack, model)
+            trStack.method_22903()
+            trStack.method_22904(pos.x, pos.y, pos.z)
+            val lightLevel = client.world?.let { world ->
+                val bp = BlockPos(pos)
+                if (world.isChunkLoaded(bp)) world.getLightmapIndex(bp) else null
+            } ?: 0
+            if (cell.content is FluidCellContent) {
+                @Suppress("UNCHECKED_CAST")
+                renderFluidCell(pos, cell as Cell<FluidCellContent>, lightLevel, trStack, buffer)
+            } else renderItemCell(pos, cell, itemRenderer, lightLevel, trStack, buffer)
+            trStack.method_22909()
         }
+        trStack.method_22909()
+    }
+
+    private fun renderItemCell(pos: Vec3d, cell: Cell<*>, itemRenderer: ItemRenderer, lightLevel: Int, trStack: class_4587, buffer: class_4597) {
+        trStack.method_22905(0.5f, 0.5f, 0.5f)
+
+        val stack = cell.content.getDisplayStack()
+        itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, trStack, buffer)
+    }
+
+    private fun renderFluidCell(pos: Vec3d, cell: Cell<FluidCellContent>, lightLevel: Int, trStack: class_4587, buffer: class_4597) {
+        val buf = buffer.getBuffer(BlockRenderLayer.TRANSLUCENT)
+        val sprite = client.spriteAtlas.getSprite(cell.content.fluid.sprite)
+
+        VertexFormats.POSITION_COLOR_UV_NORMAL
+        buf.vertex().color().texture().vertex().next()
     }
 
 }

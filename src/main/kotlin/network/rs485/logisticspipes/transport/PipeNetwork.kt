@@ -53,8 +53,6 @@ interface PipeNetwork {
      */
     fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P)
 
-    fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d
-
     /**
      * Insert a cell into the network into the specified pipe at the specified port. This should also be called to transfer a cell from a pipe to the next.
      */
@@ -72,6 +70,8 @@ interface PipeNetwork {
      * Untracks (removes) a cell from the pipe network and returns its content.
      */
     fun <T : CellContent> untrack(cell: Cell<T>): T
+
+    fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d
 
     fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): Pipe<*, *>?
 

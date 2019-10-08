@@ -102,7 +102,7 @@ class RemoteOrdererItem(settings: Settings) : ItemWithInfo(settings) {
         fun hasLinkPos(stack: ItemStack): Boolean {
             if (stack.item !is RemoteOrdererItem) error("Can't get link position from $stack")
             val tag = stack.tag ?: return false
-            return setOf("link_x", "link_y", "link_z", "link_dim").all(tag::containsKey)
+            return setOf("link_x", "link_y", "link_z", "link_dim").all(tag::contains)
         }
 
         fun setLinkPos(stack: ItemStack, pos: BlockPos, dim: DimensionType) {

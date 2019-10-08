@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.block
 
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
-import net.minecraft.state.StateFactory
+import net.minecraft.state.StateManager
 import net.minecraft.state.property.BooleanProperty
 import net.minecraft.state.property.DirectionProperty
 import net.minecraft.state.property.Properties
@@ -53,7 +53,7 @@ open class LogisticsSolidBlock(settings: Block.Settings) : Block(settings) {
         return state.with(CONNECTIONS.getValue(direction), false)
     }
 
-    override fun appendProperties(builder: StateFactory.Builder<Block, BlockState>) {
+    override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {
         super.appendProperties(builder)
         builder.add(FACING)
         builder.add(*CONNECTIONS.values.toTypedArray())

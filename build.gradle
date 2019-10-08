@@ -49,16 +49,19 @@ dependencies {
         exclude module: 'fabric-loader'
     }
 
-    modImplementation "alexiil.mc.lib:libblockattributes-all:0.4.9"
+    modImplementation "alexiil.mc.lib:libblockattributes-all:0.5.0"
+
     modImplementation('com.lettuce.fudge:fabric-drawer:1.1.0') {
         exclude module: 'fabric-language-kotlin'
     }
-    modImplementation "io.github.prospector.modmenu:ModMenu:${project.modmenu_version}"
-    modImplementation('therealfarfetchd.qcommon:cfg:1.0.0-6') {
+
+    modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+
+    modImplementation('therealfarfetchd.qcommon:cfg:1.0.0-8') {
         exclude module: 'fabric-language-kotlin'
     }
 
-    modRuntime('me.shedaniel:RoughlyEnoughItems:3.1.4+build.22') {
+    modRuntime('me.shedaniel:RoughlyEnoughItems:3.1.5-unstable.201909290807') {
         exclude group: 'net.fabricmc.fabric-api'
         exclude module: 'modmenu'
     }

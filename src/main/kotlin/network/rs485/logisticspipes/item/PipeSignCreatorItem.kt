@@ -84,7 +84,7 @@ class PipeSignCreatorItem(settings: Settings) : ItemWithInfo(settings) {
         val stack = player.getStackInHand(hand)
         if (player.isSneaking) {
             cycleSignType(stack)
-            return TypedActionResult.method_22428(stack)
+            return TypedActionResult.successWithoutSwing(stack)
         }
         return super.use(world, player, hand)
     }

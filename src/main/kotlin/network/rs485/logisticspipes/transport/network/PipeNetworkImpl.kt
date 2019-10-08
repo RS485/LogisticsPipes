@@ -40,12 +40,15 @@ package network.rs485.logisticspipes.transport.network
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.*
 import java.util.*
 import kotlin.math.roundToLong
 
 class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwork {
 
+    private val insertTimes = Object2LongOpenHashMap<UUID>()
     private val updateTimes = Object2LongOpenHashMap<UUID>()
 
     private val cellPositions = mutableMapOf<UUID, AbsoluteCellPosition<*>>()
@@ -63,6 +66,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
         val speed = BASE_SPEED * pipe.getSpeedFactor() * cell.getSpeedFactor()
         val length = path.getLength()
         val time = length / speed
+        insertTimes[cell.id] = world.time
         updateTimes[cell.id] = world.time + time.roundToLong()
     }
 
@@ -75,9 +79,20 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
         return cell.content
     }
 
+    override fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d {
+        val absPos = cellPositions[cell.id] ?: error("Cell $cell is not in network!")
+        val base = insertTimes.getLong(cell.id)
+        val duration = updateTimes.getLong(cell.id) - base
+        val progress = (world.time - base) + delta
+        val a = MathHelper.clamp(progress / duration, 0f, 1f)
+        val pipeBasePos = Vec3d(0.5, 0.5, 0.5) // TODO
+        return pipeBasePos.add(absPos.path.getItemPosition(a))
+    }
+
     private fun untrack0(cell: Cell<*>) {
         val cellId = cell.id
         updateTimes.removeLong(cellId)
+        insertTimes.removeLong(cellId)
         cellPositions.remove(cellId)
         cellMap.remove(cellId)
     }

@@ -87,7 +87,7 @@ data class ItemVariant @JvmOverloads constructor(val item: Item, var tag: Compou
         fun fromTag(tag: CompoundTag): ItemVariant {
             val id = Identifier(tag.getString("id"))
             val item = Registry.ITEM[id]
-            val data = if (tag.containsKey("tag", NbtType.COMPOUND)) tag.getCompound("tag") else null
+            val data = if (tag.contains("tag", NbtType.COMPOUND)) tag.getCompound("tag") else null
             return ItemVariant(item, data)
         }
 

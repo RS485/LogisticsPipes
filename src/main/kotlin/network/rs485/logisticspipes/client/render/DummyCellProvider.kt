@@ -37,19 +37,27 @@
 
 package network.rs485.logisticspipes.client.render
 
+import alexiil.mc.lib.attributes.fluid.volume.FluidKeys
 import net.minecraft.item.Items
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.ext.makeStack
 import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.FluidCellContent
 import network.rs485.logisticspipes.transport.ItemCellContent
 
 object DummyCellProvider : CellProvider {
 
     val cell = Cell(ItemCellContent(Items.COBBLESTONE.makeStack()))
-    val pos = Vec3d(0.0, 0.0, 0.0)
+    val pos = Vec3d(48.5, 69.5, 92.5)
+
+    val fluidCell = Cell(FluidCellContent(FluidKeys.WATER.withAmount(250)))
+    val pos2 = Vec3d(48.5, 69.5, 91.5)
 
     override fun getCells(delta: Float): Map<Cell<*>, Vec3d> {
-        return mapOf(cell to pos)
+        return mapOf(
+                cell to pos,
+                fluidCell to pos2
+        )
     }
 
 }

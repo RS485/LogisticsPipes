@@ -40,10 +40,9 @@ package network.rs485.logisticspipes.block
 import alexiil.mc.lib.attributes.AttributeList
 import alexiil.mc.lib.attributes.AttributeProvider
 import net.minecraft.block.Block
-import net.minecraft.block.BlockRenderLayer
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityContext
-import net.minecraft.state.StateFactory
+import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
@@ -69,7 +68,7 @@ open class PipeBlock<T : Pipe>(settings: Settings, val pipeType: PipeType<T>) : 
         // big thonk
     }
 
-    override fun appendProperties(builder: StateFactory.Builder<Block, BlockState>) {
+    override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {
         super.appendProperties(builder)
         builder.add(*SIDE_PROPERTIES.values.toTypedArray())
     }
@@ -77,8 +76,6 @@ open class PipeBlock<T : Pipe>(settings: Settings, val pipeType: PipeType<T>) : 
     override fun getOutlineShape(state: BlockState, view: BlockView, pos: BlockPos, ctx: EntityContext): VoxelShape {
         return (Direction.values().mapNotNull { BOX_SIDE[it].takeIf { _ -> state.get(SIDE_PROPERTIES[it]) } } + BOX_CENTER).reduce(VoxelShapes::union)
     }
-
-    override fun getRenderLayer() = BlockRenderLayer.CUTOUT
 
     companion object {
         val SIDE_PROPERTIES = mapOf(

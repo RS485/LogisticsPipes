@@ -35,27 +35,14 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.ext
+package network.rs485.logisticspipes.client.render
 
-import net.minecraft.inventory.Inventory
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
+import net.minecraft.class_4587
+import net.minecraft.class_4597
+import net.minecraft.client.MinecraftClient
 
-fun Inventory.toTag(): ListTag {
-    val list = ListTag()
-    for (i in 0 until invSize) {
-        list.add(getInvStack(i).toTag(CompoundTag()))
-    }
-    return list
-}
+private val cellRenderer by lazy { CellRenderer(MinecraftClient.getInstance()) }
 
-fun Inventory.fromTag(tag: ListTag) {
-    for (i in 0 until invSize) {
-        if (i < tag.size) {
-            setInvStack(i, ItemStack.fromTag(tag.getCompound(i)))
-        } else {
-            removeInvStack(i)
-        }
-    }
+fun render(x: Double, y: Double, z: Double, delta: Float, matStack: class_4587, buffer: class_4597) {
+    cellRenderer.render(x, y, z, delta, matStack, buffer)
 }

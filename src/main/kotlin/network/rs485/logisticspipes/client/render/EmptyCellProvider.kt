@@ -35,27 +35,15 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.ext
+package network.rs485.logisticspipes.client.render
 
-import net.minecraft.inventory.Inventory
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
+import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.transport.Cell
 
-fun Inventory.toTag(): ListTag {
-    val list = ListTag()
-    for (i in 0 until invSize) {
-        list.add(getInvStack(i).toTag(CompoundTag()))
+object EmptyCellProvider : CellProvider {
+
+    override fun getCells(delta: Float): Map<Cell<*>, Vec3d> {
+        return emptyMap()
     }
-    return list
-}
 
-fun Inventory.fromTag(tag: ListTag) {
-    for (i in 0 until invSize) {
-        if (i < tag.size) {
-            setInvStack(i, ItemStack.fromTag(tag.getCompound(i)))
-        } else {
-            removeInvStack(i)
-        }
-    }
 }

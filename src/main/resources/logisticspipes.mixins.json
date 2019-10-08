@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "ItemMixin",
-    "RecipeMixin"
+    "RecipeMixin",
+    "WorldRendererMixin"
   ],
   "client": [
   ],

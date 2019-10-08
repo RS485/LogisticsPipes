@@ -35,27 +35,50 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.ext
+package network.rs485.logisticspipes.mixin;
 
-import net.minecraft.inventory.Inventory
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
+import net.minecraft.class_4599;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.util.math.Vec3d;
 
-fun Inventory.toTag(): ListTag {
-    val list = ListTag()
-    for (i in 0 until invSize) {
-        list.add(getInvStack(i).toTag(CompoundTag()))
-    }
-    return list
-}
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-fun Inventory.fromTag(tag: ListTag) {
-    for (i in 0 until invSize) {
-        if (i < tag.size) {
-            setInvStack(i, ItemStack.fromTag(tag.getCompound(i)))
-        } else {
-            removeInvStack(i)
-        }
-    }
+import network.rs485.logisticspipes.client.render.TestKt;
+
+@Mixin(WorldRenderer.class)
+public class WorldRendererMixin {
+
+	@Shadow
+	@Final
+	private class_4599 field_20951;
+
+	@Shadow
+	@Final
+	private MinecraftClient client;
+
+	@Inject(
+			method = "render",
+			at = @At(
+					value = "INVOKE_STRING",
+					target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V",
+					args = "ldc=blockentities"
+			)
+	)
+	private void render(class_4587 matStack, float delta, long time, boolean renderOutline, Camera cam, GameRenderer gr, LightmapTextureManager ltm, CallbackInfo ci) {
+		class_4597 buffer = this.field_20951.method_23000();
+		Vec3d camPos = cam.getPos();
+		TestKt.render(camPos.x, camPos.y, camPos.z, delta, matStack, buffer);
+	}
+
 }

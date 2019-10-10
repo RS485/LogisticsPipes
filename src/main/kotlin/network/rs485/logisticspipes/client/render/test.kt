@@ -37,13 +37,13 @@
 
 package network.rs485.logisticspipes.client.render
 
-import net.minecraft.class_4587
-import net.minecraft.class_4597
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.render.LayeredVertexConsumerStorage
+import net.minecraft.util.math.MatrixStack
 
 private val cellRenderer by lazy { CellRenderer(MinecraftClient.getInstance()) }
 
-fun render(x: Double, y: Double, z: Double, delta: Float, matStack: class_4587, buffer: class_4597) {
+fun render(x: Double, y: Double, z: Double, delta: Float, matStack: MatrixStack, buffer: LayeredVertexConsumerStorage) {
     // cellRenderer.render(x, y, z, delta, matStack, buffer)
     cellRenderer.renderLegacy(x, y, z, delta)
 }

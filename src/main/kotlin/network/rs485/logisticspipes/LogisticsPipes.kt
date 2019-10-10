@@ -40,7 +40,7 @@ package network.rs485.logisticspipes
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.minecraft.block.BlockRenderLayer
+import net.minecraft.client.render.RenderLayer
 import network.rs485.logisticspipes.init.*
 import org.apache.logging.log4j.LogManager
 
@@ -70,7 +70,7 @@ object LogisticsPipes : ModInitializer {
 object LogisticsPipesClient : ClientModInitializer {
 
     override fun onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.UnroutedPipe, BlockRenderLayer.CUTOUT)
+        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.UnroutedPipe, RenderLayer.getCutout())
     }
 
 }

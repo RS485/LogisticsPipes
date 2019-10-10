@@ -38,13 +38,14 @@
 package network.rs485.logisticspipes.client.render
 
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.class_4587
-import net.minecraft.class_4597
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.BufferBuilder
+import net.minecraft.client.render.LayeredVertexConsumerStorage
+import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.client.render.model.json.ModelTransformation
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.MatrixStack
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.FluidCellContent
@@ -64,10 +65,10 @@ class CellRenderer(val client: MinecraftClient) {
             RenderSystem.translated(pos.x, pos.y, pos.z)
             val lightLevel = client.world?.let { world ->
                 val bp = BlockPos(pos)
-                if (world.isChunkLoaded(bp)) world.getLightmapIndex(bp) else null
+                if (world.isChunkLoaded(bp)) world.getLightmapCoordinates(bp) else null
             } ?: 0
-            val trStack = class_4587()
-            val buffer = class_4597.method_22991(bufferBuilder)
+            val trStack = MatrixStack()
+            val buffer = LayeredVertexConsumerStorage.method_22991(bufferBuilder)
             if (cell.content is FluidCellContent) {
                 @Suppress("UNCHECKED_CAST")
                 renderFluidCell(pos, cell as Cell<FluidCellContent>, lightLevel)
@@ -78,31 +79,31 @@ class CellRenderer(val client: MinecraftClient) {
         RenderSystem.popMatrix()
     }
 
-    fun render(x: Double, y: Double, z: Double, delta: Float, trStack: class_4587, buffer: class_4597) {
-        trStack.method_22903()
-        trStack.method_22904(-x, -y, -z)
+    fun render(x: Double, y: Double, z: Double, delta: Float, trStack: MatrixStack, buffer: LayeredVertexConsumerStorage) {
+        trStack.push()
+        trStack.translate(-x, -y, -z)
         val itemRenderer = client.itemRenderer
         for ((cell, pos) in prov.getCells(delta)) {
-            trStack.method_22903()
-            trStack.method_22904(pos.x, pos.y, pos.z)
+            trStack.push()
+            trStack.translate(pos.x, pos.y, pos.z)
             val lightLevel = client.world?.let { world ->
                 val bp = BlockPos(pos)
-                if (world.isChunkLoaded(bp)) world.getLightmapIndex(bp) else null
+                if (world.isChunkLoaded(bp)) world.getLightmapCoordinates(bp) else null
             } ?: 0
             if (cell.content is FluidCellContent) {
                 // @Suppress("UNCHECKED_CAST")
                 // renderFluidCell(pos, cell as Cell<FluidCellContent>, lightLevel, trStack, buffer)
             } else renderItemCell(pos, cell, itemRenderer, lightLevel, trStack, buffer)
-            trStack.method_22909()
+            trStack.pop()
         }
-        trStack.method_22909()
+        trStack.pop()
     }
 
-    private fun renderItemCell(pos: Vec3d, cell: Cell<*>, itemRenderer: ItemRenderer, lightLevel: Int, trStack: class_4587, buffer: class_4597) {
-        trStack.method_22905(0.5f, 0.5f, 0.5f)
+    private fun renderItemCell(pos: Vec3d, cell: Cell<*>, itemRenderer: ItemRenderer, lightLevel: Int, trStack: MatrixStack, buffer: LayeredVertexConsumerStorage) {
+        trStack.scale(0.5f, 0.5f, 0.5f)
 
         val stack = cell.content.getDisplayStack()
-        itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, trStack, buffer)
+        itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, OverlayTexture.field_21444, trStack, buffer)
     }
 
     private fun renderFluidCell(pos: Vec3d, cell: Cell<FluidCellContent>, lightLevel: Int) {

@@ -37,15 +37,16 @@
 
 package network.rs485.logisticspipes.mixin;
 
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
-import net.minecraft.class_4599;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LayeredBufferBuilderStorage;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,23 +62,25 @@ public class WorldRendererMixin {
 
 	@Shadow
 	@Final
-	private class_4599 field_20951;
+	private LayeredBufferBuilderStorage field_20951;
 
 	@Shadow
-	@Final
-	private MinecraftClient client;
+	private ClientWorld world;
 
 	@Inject(
 			method = "render",
 			at = @At(
 					value = "INVOKE_STRING",
 					target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V",
-					args = "ldc=blockentities"
+					args = "ldc=blockentities",
+					shift = At.Shift.BEFORE
 			)
 	)
-	private void render(class_4587 matStack, float delta, long time, boolean renderOutline, Camera cam, GameRenderer gr, LightmapTextureManager ltm, CallbackInfo ci) {
-		class_4597 buffer = this.field_20951.method_23000();
+	private void render(MatrixStack matStack, float delta, long time, boolean renderOutline, Camera cam, GameRenderer gr, LightmapTextureManager ltm, CallbackInfo ci) {
+		Profiler profiler = world.getProfiler();
+		LayeredVertexConsumerStorage buffer = this.field_20951.method_23000();
 		Vec3d camPos = cam.getPos();
+		profiler.swap("cells");
 		TestKt.render(camPos.x, camPos.y, camPos.z, delta, matStack, buffer);
 	}
 

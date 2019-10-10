@@ -44,5 +44,6 @@ import net.minecraft.client.MinecraftClient
 private val cellRenderer by lazy { CellRenderer(MinecraftClient.getInstance()) }
 
 fun render(x: Double, y: Double, z: Double, delta: Float, matStack: class_4587, buffer: class_4597) {
-    cellRenderer.render(x, y, z, delta, matStack, buffer)
+    // cellRenderer.render(x, y, z, delta, matStack, buffer)
+    cellRenderer.renderLegacy(x, y, z, delta)
 }

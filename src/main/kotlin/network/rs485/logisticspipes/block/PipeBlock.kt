@@ -42,6 +42,7 @@ import alexiil.mc.lib.attributes.AttributeProvider
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityContext
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
@@ -53,6 +54,7 @@ import net.minecraft.world.IWorld
 import net.minecraft.world.World
 import network.rs485.logisticspipes.pipe.Pipe
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
 open class PipeBlock<T : Pipe>(settings: Settings, val pipeType: PipeType<T>) : Block(settings), AttributeProvider {
 
@@ -62,6 +64,9 @@ open class PipeBlock<T : Pipe>(settings: Settings, val pipeType: PipeType<T>) : 
 
     override fun method_9517(state: BlockState, world: IWorld, pos: BlockPos, flags: Int) {
         super.method_9517(state, world, pos, flags)
+        if (world is ServerWorld) {
+            world.getPipeNetworkState().onBlockChanged(pos)
+        }
     }
 
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {

@@ -37,40 +37,29 @@
 
 package network.rs485.logisticspipes.transport.network
 
+import alexiil.mc.lib.attributes.Attributes
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.PersistentState
-import net.minecraft.world.dimension.Dimension
-import network.rs485.logisticspipes.transport.PipeNetwork
-import java.util.*
+import net.minecraft.util.Identifier
+import network.rs485.logisticspipes.init.Registries
+import network.rs485.logisticspipes.pipe.Pipe
+import network.rs485.logisticspipes.pipe.PipeType
 
-class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimension(world.getDimension())) {
+data class PipeAttribute<T : Pipe>(val type: PipeType<T>) {
 
-    val networks = mutableMapOf<UUID, PipeNetwork>()
-
-    fun getNetworkById(id: UUID): PipeNetwork? {
-        return networks[id]
-    }
-
-    override fun toTag(tag: CompoundTag): CompoundTag {
+    fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
+        val typeId = Registries.PipeType.getId(type) ?: error("Tried to serialize unregistered pipe type")
+        tag.putString("type", typeId.toString())
         return tag
     }
 
-    override fun fromTag(tag: CompoundTag) {
-
-    }
-
-    fun onBlockChanged(pos: BlockPos) {
-        val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos)
-    }
-
     companion object {
-        fun getNameForDimension(dimension: Dimension) = "pipenet${dimension.type.suffix}"
+        val ATTRIBUTE = Attributes.create(PipeAttribute::class.java)
+
+        fun fromTag(tag: CompoundTag): PipeAttribute<*>? {
+            val typeId = Identifier(tag.getString("type"))
+            val type = Registries.PipeType[typeId] ?: return null
+            return PipeAttribute(type)
+        }
     }
 
-}
-
-fun ServerWorld.getPipeNetworkState(): PipeNetworkState {
-    return this.persistentStateManager.getOrCreate({ PipeNetworkState(this) }, PipeNetworkState.getNameForDimension(dimension))
 }

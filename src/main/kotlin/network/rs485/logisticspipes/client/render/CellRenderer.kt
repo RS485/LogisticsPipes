@@ -37,11 +37,11 @@
 
 package network.rs485.logisticspipes.client.render
 
-import net.minecraft.block.BlockRenderLayer
+import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.class_4587
 import net.minecraft.class_4597
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.render.VertexFormats
+import net.minecraft.client.render.BufferBuilder
 import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.client.render.model.json.ModelTransformation
 import net.minecraft.util.math.BlockPos
@@ -49,9 +49,34 @@ import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.FluidCellContent
 
+private val bufferBuilder = BufferBuilder(1024)
+
 class CellRenderer(val client: MinecraftClient) {
 
     var prov: CellProvider = DummyCellProvider // EmptyCellProvider
+
+    fun renderLegacy(x: Double, y: Double, z: Double, delta: Float) {
+        RenderSystem.pushMatrix()
+        RenderSystem.translated(-x, -y, -z)
+        val itemRenderer = client.itemRenderer
+        for ((cell, pos) in prov.getCells(delta)) {
+            RenderSystem.pushMatrix()
+            RenderSystem.translated(pos.x, pos.y, pos.z)
+            val lightLevel = client.world?.let { world ->
+                val bp = BlockPos(pos)
+                if (world.isChunkLoaded(bp)) world.getLightmapIndex(bp) else null
+            } ?: 0
+            val trStack = class_4587()
+            val buffer = class_4597.method_22991(bufferBuilder)
+            if (cell.content is FluidCellContent) {
+                @Suppress("UNCHECKED_CAST")
+                renderFluidCell(pos, cell as Cell<FluidCellContent>, lightLevel)
+            } else renderItemCell(pos, cell, itemRenderer, lightLevel, trStack, buffer)
+            buffer.method_22993()
+            RenderSystem.popMatrix()
+        }
+        RenderSystem.popMatrix()
+    }
 
     fun render(x: Double, y: Double, z: Double, delta: Float, trStack: class_4587, buffer: class_4597) {
         trStack.method_22903()
@@ -65,8 +90,8 @@ class CellRenderer(val client: MinecraftClient) {
                 if (world.isChunkLoaded(bp)) world.getLightmapIndex(bp) else null
             } ?: 0
             if (cell.content is FluidCellContent) {
-                @Suppress("UNCHECKED_CAST")
-                renderFluidCell(pos, cell as Cell<FluidCellContent>, lightLevel, trStack, buffer)
+                // @Suppress("UNCHECKED_CAST")
+                // renderFluidCell(pos, cell as Cell<FluidCellContent>, lightLevel, trStack, buffer)
             } else renderItemCell(pos, cell, itemRenderer, lightLevel, trStack, buffer)
             trStack.method_22909()
         }
@@ -80,12 +105,9 @@ class CellRenderer(val client: MinecraftClient) {
         itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, trStack, buffer)
     }
 
-    private fun renderFluidCell(pos: Vec3d, cell: Cell<FluidCellContent>, lightLevel: Int, trStack: class_4587, buffer: class_4597) {
-        val buf = buffer.getBuffer(BlockRenderLayer.TRANSLUCENT)
+    private fun renderFluidCell(pos: Vec3d, cell: Cell<FluidCellContent>, lightLevel: Int) {
         val sprite = client.spriteAtlas.getSprite(cell.content.fluid.sprite)
 
-        VertexFormats.POSITION_COLOR_UV_NORMAL
-        buf.vertex().color().texture().vertex().next()
     }
 
 }

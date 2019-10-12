@@ -39,15 +39,28 @@ package network.rs485.logisticspipes.client.render
 
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.render.LayeredVertexConsumerStorage
-import net.minecraft.util.math.MatrixStack
+import net.minecraft.client.render.RenderLayer
+import org.lwjgl.opengl.GL11
 
-private val cellRenderer by lazy { CellRenderer(MinecraftClient.getInstance()) }
+object RenderLayers {
 
-fun render(x: Double, y: Double, z: Double, delta: Float, matStack: MatrixStack, buffer: LayeredVertexConsumerStorage) {
-    // cellRenderer.render(x, y, z, delta, matStack, buffer)
-    RenderSystem.pushMatrix()
-    RenderSystem.multMatrix(matStack.peek())
-    cellRenderer.render(x, y, z, delta, matStack, buffer)
-    RenderSystem.popMatrix()
+    val SOLID_COLOR = RenderLayer("solid_color", VertexFormats.POSITION_COLOR_LMAP2_NORMAL, GL11.GL_QUADS, 1024, true, false, {
+        RenderSystem.disableBlend()
+        RenderSystem.shadeModel(GL11.GL_SMOOTH)
+        RenderSystem.disableAlphaTest()
+        RenderSystem.enableDepthTest()
+        RenderSystem.depthFunc(GL11.GL_LEQUAL)
+        RenderSystem.enableCull()
+        MinecraftClient.getInstance().gameRenderer.lightmapTextureManager.enable()
+        RenderSystem.disableTexture()
+    }, {
+        RenderSystem.shadeModel(GL11.GL_FLAT)
+        RenderSystem.disableAlphaTest()
+        RenderSystem.defaultAlphaFunc()
+        RenderSystem.disableDepthTest()
+        RenderSystem.depthFunc(GL11.GL_LEQUAL)
+        RenderSystem.disableCull()
+        MinecraftClient.getInstance().gameRenderer.lightmapTextureManager.disable()
+    })
+
 }

@@ -37,17 +37,13 @@
 
 package network.rs485.logisticspipes.client.render
 
-import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.render.LayeredVertexConsumerStorage
-import net.minecraft.util.math.MatrixStack
+import com.google.common.collect.ImmutableList
+import net.minecraft.client.render.VertexFormat
+import net.minecraft.client.render.VertexFormatElement
+import net.minecraft.client.render.VertexFormats.*
 
-private val cellRenderer by lazy { CellRenderer(MinecraftClient.getInstance()) }
+object VertexFormats {
 
-fun render(x: Double, y: Double, z: Double, delta: Float, matStack: MatrixStack, buffer: LayeredVertexConsumerStorage) {
-    // cellRenderer.render(x, y, z, delta, matStack, buffer)
-    RenderSystem.pushMatrix()
-    RenderSystem.multMatrix(matStack.peek())
-    cellRenderer.render(x, y, z, delta, matStack, buffer)
-    RenderSystem.popMatrix()
+    val POSITION_COLOR_LMAP2_NORMAL = VertexFormat(ImmutableList.builder<VertexFormatElement>().add(POSITION_ELEMENT).add(COLOR_ELEMENT).add(field_20886).add(NORMAL_ELEMENT).add(PADDING_ELEMENT).build())
+
 }

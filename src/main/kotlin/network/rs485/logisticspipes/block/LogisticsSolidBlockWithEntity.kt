@@ -46,6 +46,7 @@ import net.minecraft.state.StateManager
 import net.minecraft.state.property.BooleanProperty
 import net.minecraft.state.property.DirectionProperty
 import net.minecraft.state.property.Properties
+import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
@@ -60,15 +61,15 @@ abstract class LogisticsSolidBlockWithEntity(settings: Block.Settings) : BlockWi
         // entity?.notifyOfBlockChange()
     }
 
-    override fun onUse(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hitResult: BlockHitResult): Boolean {
-        if (player.isSneaking) return false
+    override fun onUse(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hitResult: BlockHitResult): ActionResult {
+        if (player.isSneaking) return ActionResult.PASS
 
         val entity = world.getBlockEntity(pos)
         // if (entity is IGuiTileEntity) {
         //     if (!world.isClient) entity.guiProvider.setTilePos(entity).open(player)
         //     return true
         // }
-        return false
+        return ActionResult.FAIL
     }
 
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState {

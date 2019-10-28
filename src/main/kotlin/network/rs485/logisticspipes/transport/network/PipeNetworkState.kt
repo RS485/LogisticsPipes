@@ -63,6 +63,7 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 
     fun onBlockChanged(pos: BlockPos) {
         val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos)
+        println(attr)
     }
 
     companion object {

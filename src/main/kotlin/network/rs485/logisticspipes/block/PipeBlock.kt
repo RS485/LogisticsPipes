@@ -54,6 +54,7 @@ import net.minecraft.world.IWorld
 import net.minecraft.world.World
 import network.rs485.logisticspipes.pipe.Pipe
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
 open class PipeBlock<T : Pipe>(settings: Settings, val pipeType: PipeType<T>) : Block(settings), AttributeProvider {
@@ -70,7 +71,7 @@ open class PipeBlock<T : Pipe>(settings: Settings, val pipeType: PipeType<T>) : 
     }
 
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {
-        // big thonk
+        to.offer(PipeAttribute(pipeType))
     }
 
     override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {

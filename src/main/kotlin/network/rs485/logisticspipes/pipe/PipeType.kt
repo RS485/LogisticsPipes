@@ -64,6 +64,8 @@ abstract class PipeType<T : Pipe> {
         return TranslatableText(getTranslationKey())
     }
 
+    override fun toString(): String = getName().asString()
+
     class Builder<T : Pipe>(private val constructor: () -> T) {
         fun build(): PipeType<T> = object : PipeType<T>() {
             override fun create(): T = constructor()

@@ -39,8 +39,9 @@ package network.rs485.logisticspipes.pipe.sign
 
 import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.init.PipeSignTypes
+import network.rs485.logisticspipes.transport.Pipe
 
-class CraftingPipeSign(pipe: Pipe, side: Direction) : PipeSign(PipeSignTypes.Crafting, pipe, side) {
+class CraftingPipeSign(pipe: Pipe<*, *>, side: Direction) : PipeSign(PipeSignTypes.Crafting, pipe, side) {
 
     // override fun updateClient() {
     //     super.updateClient()

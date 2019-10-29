@@ -46,8 +46,9 @@ import net.minecraft.util.Tickable
 import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.ext.makeStack
 import network.rs485.logisticspipes.init.PipeSignTypes
+import network.rs485.logisticspipes.transport.Pipe
 
-class ItemAmountPipeSign(pipe: Pipe, side: Direction) : PipeSign(PipeSignTypes.ItemAmount, pipe, side), Tickable {
+class ItemAmountPipeSign(pipe: Pipe<*, *>, side: Direction) : PipeSign(PipeSignTypes.ItemAmount, pipe, side), Tickable {
 
     var stack = Items.AIR.makeStack()
 

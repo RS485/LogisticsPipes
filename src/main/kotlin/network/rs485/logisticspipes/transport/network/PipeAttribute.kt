@@ -42,8 +42,9 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Identifier
 import network.rs485.logisticspipes.init.Registries
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.transport.Pipe
 
-data class PipeAttribute<T : Pipe>(val type: PipeType<T>) {
+data class PipeAttribute<T : Pipe<*, *>>(val type: PipeType<T>) {
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
         val typeId = Registries.PipeType.getId(type) ?: error("Tried to serialize unregistered pipe type")

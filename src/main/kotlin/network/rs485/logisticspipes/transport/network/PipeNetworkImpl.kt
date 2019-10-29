@@ -43,18 +43,28 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.*
+import therealfarfetchd.hctm.common.graph.Graph
+import therealfarfetchd.hctm.common.graph.Link
+import therealfarfetchd.hctm.common.graph.Node
 import java.util.*
 import kotlin.math.roundToLong
 
-class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwork {
+private typealias PipeGraph = Graph<Pipe<*, *>, Any?>
+private typealias PipeNode = Node<Pipe<*, *>, Any?>
+private typealias PipeLink = Link<Pipe<*, *>, Any?>
+
+class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : PipeNetwork {
 
     private val insertTimes = Object2LongOpenHashMap<UUID>()
     private val updateTimes = Object2LongOpenHashMap<UUID>()
 
+    private val graph = PipeGraph()
+
+    override val pipes: Iterable<Pipe<*, *>>
+        get() = graph.nodes.asSequence().map { it.data }.asIterable()
+
     private val cellPositions = mutableMapOf<UUID, AbsoluteCellPosition<*>>()
     private val cellMap = mutableMapOf<UUID, Cell<*>>()
-
-    override val pipes = mutableSetOf<Pipe<*, *>>()
 
     override val cells
         get() = cellMap.values.toSet()
@@ -72,6 +82,10 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
 
     override fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean {
         return false // TODO
+    }
+
+    override fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean {
+        return graph.
     }
 
     override fun <T : CellContent> untrack(cell: Cell<T>): T {
@@ -115,7 +129,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID) : PipeNetwo
         }
     }
 
-    override fun <X> getConnectedPipe(self: Pipe<*, X>, side: X): Pipe<*, *>? {
+    override fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): Pipe<*, *>? {
         TODO("not implemented")
     }
 
@@ -148,3 +162,5 @@ private data class AbsoluteCellPosition<P : CellPath>(val pipe: Pipe<P, *>, val 
         pipe.onFinishPath(network, path, cell)
     }
 }
+
+private data class PortLink<X>(val pipe: Pipe<*, X>, val port: X)

@@ -47,7 +47,7 @@ interface PipeNetwork {
 
     val id: UUID
 
-    val pipes: Set<Pipe<*, *>>
+    val pipes: Iterable<Pipe<*, *>>
 
     val cells: Set<Cell<*>>
 
@@ -69,14 +69,14 @@ interface PipeNetwork {
      */
     fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean
 
-    fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean
-
     /**
      * Untracks (removes) a cell from the pipe network and returns its content.
      */
     fun <T : CellContent> untrack(cell: Cell<T>): T
 
     fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d
+
+    fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean
 
     fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): Pipe<*, *>?
 

@@ -38,9 +38,12 @@
 package network.rs485.logisticspipes.transport
 
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 import java.util.*
 
 interface PipeNetwork {
+
+    val world: World
 
     val id: UUID
 
@@ -65,6 +68,8 @@ interface PipeNetwork {
      * Returns false if this pipe isn't connected to anything on the specified port
      */
     fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean
+
+    fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean
 
     /**
      * Untracks (removes) a cell from the pipe network and returns its content.

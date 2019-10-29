@@ -41,8 +41,9 @@ import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil
 import network.rs485.logisticspipes.init.Registries
+import network.rs485.logisticspipes.transport.Pipe
 
-abstract class PipeType<T : Pipe> {
+abstract class PipeType<T : Pipe<*, *>> {
 
     private var translationKey: String? = null
 
@@ -66,7 +67,7 @@ abstract class PipeType<T : Pipe> {
 
     override fun toString(): String = getName().asString()
 
-    class Builder<T : Pipe>(private val constructor: () -> T) {
+    class Builder<T : Pipe<*, *>>(private val constructor: () -> T) {
         fun build(): PipeType<T> = object : PipeType<T>() {
             override fun create(): T = constructor()
         }

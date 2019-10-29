@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.transport.network
 
+import com.google.common.collect.HashMultimap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
@@ -48,6 +49,7 @@ import java.util.*
 class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimension(world.getDimension())) {
 
     val networks = mutableMapOf<UUID, PipeNetwork>()
+    val networksToPos = HashMultimap.create<UUID, BlockPos>()
 
     fun getNetworkById(id: UUID): PipeNetwork? {
         return networks[id]
@@ -63,7 +65,12 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 
     fun onBlockChanged(pos: BlockPos) {
         val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos)
-        println(attr)
+        if (attr == null) {
+            // TODO delete node
+            return
+        }
+
+        val pipe = attr.type.create()
     }
 
     companion object {

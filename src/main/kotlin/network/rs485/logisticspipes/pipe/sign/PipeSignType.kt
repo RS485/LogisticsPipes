@@ -42,7 +42,6 @@ import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil
 import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.init.Registries
-import network.rs485.logisticspipes.pipe.Pipe
 import kotlin.reflect.KClass
 
 abstract class PipeSignType<T : PipeSign> {

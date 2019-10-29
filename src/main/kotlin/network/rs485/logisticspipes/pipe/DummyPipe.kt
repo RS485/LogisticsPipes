@@ -37,4 +37,18 @@
 
 package network.rs485.logisticspipes.pipe
 
-class DummyPipe : Pipe
+import net.minecraft.util.math.Direction
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.PipeNetwork
+import network.rs485.logisticspipes.transport.StandardPipe
+
+class DummyPipe : StandardPipe() {
+
+    override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
+        // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.
+        val possibleSides = Direction.values().filter { network.isPortConnected(this, it) } - from
+        val outputSide = if (possibleSides.isNotEmpty()) possibleSides.random() else null
+        return outputSide
+    }
+
+}

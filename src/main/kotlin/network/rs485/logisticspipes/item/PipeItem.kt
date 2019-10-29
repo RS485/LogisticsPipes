@@ -39,8 +39,8 @@ package network.rs485.logisticspipes.item
 
 import net.minecraft.block.Blocks
 import net.minecraft.item.BlockItem
-import network.rs485.logisticspipes.pipe.Pipe
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.transport.Pipe
 
 class PipeItem<T : Pipe>(settings: Settings, val type: PipeType<T>) : BlockItem(/* Blocks.Pipe */ Blocks.BONE_BLOCK, settings) {
 }

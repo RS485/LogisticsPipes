@@ -41,7 +41,6 @@ import alexiil.mc.lib.attributes.Attributes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Identifier
 import network.rs485.logisticspipes.init.Registries
-import network.rs485.logisticspipes.pipe.Pipe
 import network.rs485.logisticspipes.pipe.PipeType
 
 data class PipeAttribute<T : Pipe>(val type: PipeType<T>) {

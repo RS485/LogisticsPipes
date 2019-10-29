@@ -52,12 +52,12 @@ import net.minecraft.util.shape.VoxelShapes
 import net.minecraft.world.BlockView
 import net.minecraft.world.IWorld
 import net.minecraft.world.World
-import network.rs485.logisticspipes.pipe.Pipe
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-open class PipeBlock<T : Pipe>(settings: Settings, val pipeType: PipeType<T>) : Block(settings), AttributeProvider {
+open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<T>) : Block(settings), AttributeProvider {
 
     init {
         defaultState = SIDE_PROPERTIES.values.fold(defaultState) { acc, prop -> acc.with(prop, false) }

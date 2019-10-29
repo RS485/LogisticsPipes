@@ -39,7 +39,6 @@ package network.rs485.logisticspipes.transport
 
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
-import net.minecraft.world.World
 
 interface Pipe<P : CellPath, X> {
 
@@ -80,7 +79,7 @@ interface Pipe<P : CellPath, X> {
 
 // test/demo classes
 
-abstract class StandardPipe(val world: World) : Pipe<StandardPipeCellPath, Direction> {
+abstract class StandardPipe() : Pipe<StandardPipeCellPath, Direction> {
 
     override fun onEnterPipe(network: PipeNetwork, from: Direction, cell: Cell<*>) {
         // Send the cell inwards, from the side it entered from.
@@ -98,8 +97,8 @@ abstract class StandardPipe(val world: World) : Pipe<StandardPipeCellPath, Direc
                 // If there's nowhere to go, drop the cell as an entity in the world, if possible.
                 // And remove it from the network, of course
                 val content = network.untrack(cell)
-                val entity = content.createEntity(world) // TODO: set position of entity?
-                if (entity != null) world.spawnEntity(entity)
+                val entity = content.createEntity(network.world) // TODO: set position of entity?
+                if (entity != null) network.world.spawnEntity(entity)
             } else {
                 // Continue on, to infinity and beyond! Uhh, I mean, in the random direction we picked.
                 network.insert(cell, this, StandardPipeCellPath(outputSide, false))
@@ -113,8 +112,8 @@ abstract class StandardPipe(val world: World) : Pipe<StandardPipeCellPath, Direc
             } else {
                 // Otherwise, again, drop the item.
                 val content = network.untrack(cell)
-                val entity = content.createEntity(world)
-                if (entity != null) world.spawnEntity(entity)
+                val entity = content.createEntity(network.world)
+                if (entity != null) network.world.spawnEntity(entity)
             }
         }
     }
@@ -130,7 +129,7 @@ abstract class StandardPipe(val world: World) : Pipe<StandardPipeCellPath, Direc
 // (6 sides, either from center -> edge or edge -> center), as opposed to highspeed tubes, which only have 2 possible paths
 // (either "forwards" or "backwards"), since those don't have any intersections that items can branch off of.
 
-class UnroutedPipe(val connectedSides: Set<Direction>, world: World) : StandardPipe(world) {
+class UnroutedPipe(val connectedSides: Set<Direction>) : StandardPipe() {
 
     override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
         // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.

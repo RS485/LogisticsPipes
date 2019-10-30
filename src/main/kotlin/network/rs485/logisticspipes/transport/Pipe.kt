@@ -37,8 +37,13 @@
 
 package network.rs485.logisticspipes.transport
 
+import net.minecraft.nbt.AbstractNumberTag
+import net.minecraft.nbt.ByteTag
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
+import kotlin.experimental.or
 
 interface Pipe<P : CellPath, X> {
 
@@ -75,11 +80,31 @@ interface Pipe<P : CellPath, X> {
      */
     fun getPort(pos: BlockPos, side: Direction): X?
 
+    @JvmDefault
+    fun onJoinNetwork(network: PipeNetwork) {
+    }
+
+    @JvmDefault
+    fun onLeaveNetwork() {
+    }
+
+    fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag
+
+    fun fromTag(tag: CompoundTag)
+
+    fun getTagFromPort(port: X): Tag
+
+    fun getPortFromTag(tag: Tag): X
+
+    fun getTagFromPath(path: P): Tag
+
+    fun getPathFromTag(tag: Tag): P
+
 }
 
 // test/demo classes
 
-abstract class StandardPipe() : Pipe<StandardPipeCellPath, Direction> {
+abstract class StandardPipe : Pipe<StandardPipeCellPath, Direction> {
 
     override fun onEnterPipe(network: PipeNetwork, from: Direction, cell: Cell<*>) {
         // Send the cell inwards, from the side it entered from.
@@ -121,6 +146,32 @@ abstract class StandardPipe() : Pipe<StandardPipeCellPath, Direction> {
     override fun getPort(pos: BlockPos, side: Direction): Direction? {
         // if pos == this.pos?
         return side
+    }
+
+    override fun toTag(tag: CompoundTag): CompoundTag {
+        return tag
+    }
+
+    override fun fromTag(tag: CompoundTag) {
+    }
+
+    override fun getTagFromPort(port: Direction): Tag {
+        return ByteTag.of(port.id.toByte())
+    }
+
+    override fun getPortFromTag(tag: Tag): Direction {
+        return Direction.byId((tag as AbstractNumberTag).int)
+    }
+
+    override fun getTagFromPath(path: StandardPipeCellPath): Tag {
+        return ByteTag.of(path.side.id.toByte() or if (path.inwards) 0b1000 else 0)
+    }
+
+    override fun getPathFromTag(tag: Tag): StandardPipeCellPath {
+        val data = (tag as ByteTag).int
+        val inwards = data and 0b1000 != 0
+        val side = Direction.byId(data and 0b0111)
+        return StandardPipeCellPath(side, inwards)
     }
 
 }

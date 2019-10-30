@@ -35,51 +35,23 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.pipe.shape
 
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
-import java.util.*
+import net.minecraft.util.math.BlockPos
 
-interface PipeNetwork {
+data class TranslatedPipeShape<X>(
+        val wrapped: PipeShape<X>,
+        val offset: BlockPos
+) : PipeShape<X> {
 
-    val world: World
+    override fun getBlocks(): Set<BlockPos> {
+        if (offset == BlockPos.ORIGIN) return wrapped.getBlocks()
+        return wrapped.getBlocks().map { it.add(offset) }.toSet()
+    }
 
-    val id: UUID
-
-    val pipes: Iterable<Pipe<*, *>>
-
-    val cells: Set<Cell<*>>
-
-    /**
-     * Insert a cell into the network.
-     */
-    fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P)
-
-    /**
-     * Insert a cell into the network into the specified pipe at the specified port. This should also be called to transfer a cell from a pipe to the next.
-     */
-    fun <X> insert(cell: Cell<*>, pipe: Pipe<*, X>, port: X) =
-            pipe.onEnterPipe(this, port, cell)
-
-    /**
-     * Inserts a cell into the network into the next pipe connected to the specified pipe's port.
-     * Helper method for Pipe::onFinishPipe to continue transferring item
-     * Returns false if this pipe isn't connected to anything on the specified port
-     */
-    fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean
-
-    /**
-     * Untracks (removes) a cell from the pipe network and returns its content.
-     */
-    fun <T : CellContent> untrack(cell: Cell<T>): T
-
-    fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d
-
-    fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean
-
-    fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): PipePortAssoc<*>?
-
-    data class PipePortAssoc<X>(val pipe: Pipe<*, X>, val port: X)
+    override fun getPorts(): Map<X, BlockFace> {
+        if (offset == BlockPos.ORIGIN) return wrapped.getPorts()
+        return wrapped.getPorts().mapValues { (_, v) -> v.copy(pos = v.pos.add(offset)) }
+    }
 
 }

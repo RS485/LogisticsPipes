@@ -58,8 +58,8 @@ class Graph<N, L> {
         other.nodes = emptySet()
     }
 
-    fun link(node1: Node<N, L>, node2: Node<N, L>, data: L): Link<N, L> {
-        val link = Link(node1, node2, data)
+    fun link(node1: Node<N, L>, node2: Node<N, L>, data1: L, data2: L): Link<N, L> {
+        val link = Link(node1, node2, data1, data2)
         node1.onLink(link)
         node2.onLink(link)
         return link
@@ -83,8 +83,14 @@ data class Node<N, L>(val data: N) {
     }
 }
 
-data class Link<N, L>(val first: Node<N, L>, val second: Node<N, L>, val data: L) {
+data class Link<N, L>(val first: Node<N, L>, val second: Node<N, L>, val data1: L, val data2: L) {
     operator fun contains(node: Node<N, L>) = node == first || node == second
 
+    fun containsPort(data: L) = data == data1 || data == data2
+
     fun other(node: Node<N, L>) = if (node == second) first else second
+
+    fun data(node: Node<N, L>) = if (node == first) data1 else data2
+
+    fun otherData(node: Node<N, L>) = if (node == second) data1 else data2
 }

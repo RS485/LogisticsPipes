@@ -81,11 +81,14 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
     }
 
     override fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean {
-        return false // TODO
-    }
+        val a = getConnectedPipe(pipe, port) ?: return false
 
-    override fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean {
-        return graph.
+        // Needed because generics are implemented horribly
+        // Might want to actually make this publicly accessible if needed more often
+        fun <X> insert(cell: Cell<*>, a: PipeNetwork.PipePortAssoc<X>) = insert(cell, a.pipe, a.port)
+
+        insert(cell, a)
+        return true
     }
 
     override fun <T : CellContent> untrack(cell: Cell<T>): T {
@@ -121,16 +124,22 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
             } else break
         }
         for ((id, _) in queued) {
-            run {
-                val cell = cellMap[id] ?: return@run
-                val cp = cellPositions[id] ?: return@run
-                cp.onFinish(this, cell)
-            }
+            val cell = cellMap[id] ?: continue
+            val cp = cellPositions[id] ?: continue
+            cp.onFinish(this, cell)
         }
     }
 
-    override fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): Pipe<*, *>? {
-        TODO("not implemented")
+    override fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean {
+        // TODO optimize
+        return graph.nodes.single { it.data == pipe }.connections.any { it.containsPort(port) }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): PipeNetwork.PipePortAssoc<*>? {
+        // TODO optimize
+        val node = graph.nodes.single { it.data == self }
+        return node.connections.singleOrNull { it.data(node) == output }?.let { PipeNetwork.PipePortAssoc(it.other(node).data as Pipe<*, Any?>, it.otherData(node)) }
     }
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
@@ -162,5 +171,3 @@ private data class AbsoluteCellPosition<P : CellPath>(val pipe: Pipe<P, *>, val 
         pipe.onFinishPath(network, path, cell)
     }
 }
-
-private data class PortLink<X>(val pipe: Pipe<*, X>, val port: X)

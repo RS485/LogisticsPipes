@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.transport.network
 
-import com.google.common.collect.HashMultimap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
@@ -48,19 +47,11 @@ import java.util.*
 
 class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimension(world.getDimension())) {
 
-    val networks = mutableMapOf<UUID, PipeNetwork>()
-    val networksToPos = HashMultimap.create<UUID, BlockPos>()
+    private val networks = mutableMapOf<UUID, PipeNetworkImpl>()
+    private val networksToPos = mutableMapOf<BlockPos, UUID>()
 
     fun getNetworkById(id: UUID): PipeNetwork? {
         return networks[id]
-    }
-
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return tag
-    }
-
-    override fun fromTag(tag: CompoundTag) {
-
     }
 
     fun onBlockChanged(pos: BlockPos) {
@@ -70,7 +61,46 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
             return
         }
 
-        val pipe = attr.type.create()
+        val net = createNetwork()
+        val node = net.createNode(pos, attr.type.create())
+    }
+
+    fun createNetwork(): PipeNetworkImpl {
+        markDirty()
+        val net = PipeNetworkImpl(world, UUID.randomUUID())
+        networks[net.id] = net
+        return net
+    }
+
+    fun destroyNetwork(id: UUID) {
+        val net = networks.remove(id) ?: return
+
+        for ((k, v) in networksToPos.entries.toSet()) {
+            if (v == id) networksToPos.remove(k)
+        }
+
+        markDirty()
+        // TODO drop cells
+    }
+
+    fun cleanup() {
+        for (net in networks.values.toSet()) {
+            if (net.pipes.none()) {
+                destroyNetwork(net.id)
+            }
+        }
+    }
+
+    fun tick() {
+        networks.values.forEach(PipeNetworkImpl::tick)
+    }
+
+    override fun toTag(tag: CompoundTag): CompoundTag {
+        return tag
+    }
+
+    override fun fromTag(tag: CompoundTag) {
+
     }
 
     companion object {

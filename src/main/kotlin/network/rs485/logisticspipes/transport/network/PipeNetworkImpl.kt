@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.transport.network
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.*
@@ -96,6 +97,14 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
         return cell.content
     }
 
+    private fun untrack0(cell: Cell<*>) {
+        val cellId = cell.id
+        updateTimes.removeLong(cellId)
+        insertTimes.removeLong(cellId)
+        cellPositions.remove(cellId)
+        cellMap.remove(cellId)
+    }
+
     override fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d {
         val absPos = cellPositions[cell.id] ?: error("Cell $cell is not in network!")
         val base = insertTimes.getLong(cell.id)
@@ -104,14 +113,6 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
         val a = MathHelper.clamp(progress / duration, 0f, 1f)
         val pipeBasePos = Vec3d(0.5, 0.5, 0.5) // TODO
         return pipeBasePos.add(absPos.path.getItemPosition(a))
-    }
-
-    private fun untrack0(cell: Cell<*>) {
-        val cellId = cell.id
-        updateTimes.removeLong(cellId)
-        insertTimes.removeLong(cellId)
-        cellPositions.remove(cellId)
-        cellMap.remove(cellId)
     }
 
     fun tick() {
@@ -132,14 +133,19 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
 
     override fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean {
         // TODO optimize
-        return graph.nodes.single { it.data == pipe }.connections.any { it.containsPort(port) }
+        return graph.nodes.first { it.data == pipe }.connections.any { it.containsPort(port) }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): PipeNetwork.PipePortAssoc<*>? {
         // TODO optimize
-        val node = graph.nodes.single { it.data == self }
+        val node = graph.nodes.first { it.data == self }
         return node.connections.singleOrNull { it.data(node) == output }?.let { PipeNetwork.PipePortAssoc(it.other(node).data as Pipe<*, Any?>, it.otherData(node)) }
+    }
+
+    fun createNode(pos: BlockPos, pipe: Pipe<*, *>): PipeNode {
+        // TODO
+        return graph.add(pipe)
     }
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {

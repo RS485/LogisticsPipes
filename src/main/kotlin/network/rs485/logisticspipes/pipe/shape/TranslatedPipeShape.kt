@@ -38,20 +38,23 @@
 package network.rs485.logisticspipes.pipe.shape
 
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3i
 
 data class TranslatedPipeShape<X>(
         val wrapped: PipeShape<X>,
-        val offset: BlockPos
+        val offset: Vec3i
 ) : PipeShape<X> {
 
-    override fun getBlocks(): Set<BlockPos> {
-        if (offset == BlockPos.ORIGIN) return wrapped.getBlocks()
-        return wrapped.getBlocks().map { it.add(offset) }.toSet()
-    }
+    override val blocks: Set<BlockPos>
+        get() {
+            if (offset == BlockPos.ORIGIN) return wrapped.blocks
+            return wrapped.blocks.map { it.add(offset) }.toSet()
+        }
 
-    override fun getPorts(): Map<X, BlockFace> {
-        if (offset == BlockPos.ORIGIN) return wrapped.getPorts()
-        return wrapped.getPorts().mapValues { (_, v) -> v.copy(pos = v.pos.add(offset)) }
-    }
+    override val ports: Map<X, BlockFace>
+        get() {
+            if (offset == BlockPos.ORIGIN) return wrapped.ports
+            return wrapped.ports.mapValues { (_, v) -> v.copy(pos = v.pos.add(offset)) }
+        }
 
 }

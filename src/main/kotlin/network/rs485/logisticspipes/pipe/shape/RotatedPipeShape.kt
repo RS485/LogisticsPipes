@@ -41,6 +41,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Direction.*
 import net.minecraft.util.math.Direction.Axis.*
+import network.rs485.logisticspipes.pipe.shape.AxisFixedAngle.*
 import kotlin.math.roundToInt
 
 data class RotatedPipeShape<X>(
@@ -49,40 +50,49 @@ data class RotatedPipeShape<X>(
         val angle: AxisFixedAngle
 ) : PipeShape<X> {
 
-    override fun getBlocks(): Set<BlockPos> {
-        return wrapped.getBlocks().map(::rotatePos).toSet()
-    }
+    override val blocks: Set<BlockPos>
+        get() = wrapped.blocks.map(::rotatePos).toSet()
 
-    override fun getPorts(): Map<X, BlockFace> {
-        return wrapped.getPorts().mapValues { (_, v) -> BlockFace(rotatePos(v.pos), rotateDirection(v.side)) }
-    }
+    override val ports: Map<X, BlockFace>
+        get() = wrapped.ports.mapValues { (_, v) -> BlockFace(rotatePos(v.pos), rotateDirection(v.side)) }
 
     private fun rotatePos(pos: BlockPos): BlockPos {
-        TODO("not implemented")
-    }
+        if (angle == _0) return pos
 
-    private fun rotateDirection(dir: Direction): Direction {
-        return lookupTable[dir.id or (axis.ordinal shl 3) or (angle.ordinal shl 5)]
-    }
-
-    companion object {
-        private val lookupTable = Array(0b10000000) { data ->
-            val d = byId(data and 0b0000111)
-            val axis = Axis.values()[data shr 3 and 0b0011 % 3]
-            val angle = data shr 5 and 0b11
-
-            val list = when (axis) {
-                X -> listOf(DOWN, SOUTH, UP, NORTH)
-                Y -> listOf(WEST, SOUTH, EAST, NORTH)
-                Z -> listOf(DOWN, EAST, UP, WEST)
+        return when (axis) {
+            X -> when (angle) {
+                _0 -> pos
+                _90 -> BlockPos(pos.x, pos.y, -pos.z)
+                _180 -> BlockPos(pos.x, -pos.y, -pos.z)
+                _270 -> BlockPos(pos.x, -pos.y, pos.z)
             }
-
-            if (d in list) list[angle + list.indexOf(d) % 4] else d
+            Y -> when (angle) {
+                _0 -> pos
+                _90 -> BlockPos(-pos.x, pos.y, pos.z)
+                _180 -> BlockPos(-pos.x, pos.y, -pos.z)
+                _270 -> BlockPos(pos.x, pos.y, -pos.z)
+            }
+            Z -> when (angle) {
+                _0 -> pos
+                _90 -> BlockPos(-pos.x, pos.y, pos.z)
+                _180 -> BlockPos(-pos.x, -pos.y, pos.z)
+                _270 -> BlockPos(pos.x, -pos.y, -pos.z)
+            }
         }
     }
 
+    private fun rotateDirection(dir: Direction): Direction {
+        val list = when (axis) {
+            X -> listOf(DOWN, SOUTH, UP, NORTH)
+            Y -> listOf(WEST, SOUTH, EAST, NORTH)
+            Z -> listOf(DOWN, EAST, UP, WEST)
+        }
+
+        return if (dir in list) list[angle.ordinal + list.indexOf(dir) % 4] else dir
+    }
 }
 
+@Suppress("EnumEntryName")
 enum class AxisFixedAngle {
     _0,
     _90,
@@ -91,8 +101,7 @@ enum class AxisFixedAngle {
 
     companion object {
         fun from(angle: Int): AxisFixedAngle {
-            val a = (((angle / 90f).roundToInt() % 4) + 4) % 4
-            return when (a) {
+            return when (((angle / 90f).roundToInt() % 4 + 4) % 4) {
                 0 -> _0
                 1 -> _90
                 2 -> _180
@@ -101,9 +110,4 @@ enum class AxisFixedAngle {
             }
         }
     }
-}
-
-data class BlockFace(val pos: BlockPos, val side: Direction) {
-    val opposite
-        get() = BlockFace(pos.offset(side), side.opposite)
 }

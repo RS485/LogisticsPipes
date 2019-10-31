@@ -35,39 +35,25 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.pipe.shape
+package network.rs485.logisticspipes.block
 
+import net.minecraft.block.Block
+import net.minecraft.block.BlockState
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3i
+import net.minecraft.world.IWorld
+import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-interface PipeShape<X> {
+/**
+ * Extension block that gets automatically placed to fill space for multiblock pipes.
+ */
+class PipeExtensionBlock(settings: Block.Settings) : Block(settings) {
 
-    val blocks: Set<BlockPos>
-
-    val ports: Map<X, BlockFace>
-
-    @JvmDefault
-    operator fun plus(other: PipeShape<X>): PipeShape<X> = PipeShapeImpl(blocks + other.blocks, ports + other.ports)
-
-    @JvmDefault
-    fun withBlock(b: BlockPos): PipeShape<X> = PipeShapeImpl(blocks + b, ports)
-
-    @JvmDefault
-    fun withBlocks(b: Iterable<BlockPos>): PipeShape<X> = PipeShapeImpl(blocks + b, ports)
-
-    @JvmDefault
-    fun withPort(port: X, pos: BlockPos, side: Direction): PipeShape<X> = PipeShapeImpl(blocks, ports + Pair(port, BlockFace(pos, side)))
-
-    @JvmDefault
-    fun rotate(axis: Direction.Axis, angle: AxisFixedAngle): PipeShape<X> = RotatedPipeShape(this, axis, angle)
-
-    @JvmDefault
-    fun translate(offset: Vec3i): PipeShape<X> = TranslatedPipeShape(this, offset)
-
-    companion object {
-        @JvmStatic
-        fun <X> empty(): PipeShape<X> = PipeShapeImpl(emptySet(), emptyMap())
+    override fun method_9517(state: BlockState, world: IWorld, pos: BlockPos, flags: Int) {
+        super.method_9517(state, world, pos, flags)
+        if (world is ServerWorld) {
+            world.getPipeNetworkState().onBlockChanged(pos)
+        }
     }
 
 }

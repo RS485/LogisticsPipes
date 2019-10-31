@@ -39,35 +39,8 @@ package network.rs485.logisticspipes.pipe.shape
 
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3i
 
-interface PipeShape<X> {
-
-    val blocks: Set<BlockPos>
-
-    val ports: Map<X, BlockFace>
-
-    @JvmDefault
-    operator fun plus(other: PipeShape<X>): PipeShape<X> = PipeShapeImpl(blocks + other.blocks, ports + other.ports)
-
-    @JvmDefault
-    fun withBlock(b: BlockPos): PipeShape<X> = PipeShapeImpl(blocks + b, ports)
-
-    @JvmDefault
-    fun withBlocks(b: Iterable<BlockPos>): PipeShape<X> = PipeShapeImpl(blocks + b, ports)
-
-    @JvmDefault
-    fun withPort(port: X, pos: BlockPos, side: Direction): PipeShape<X> = PipeShapeImpl(blocks, ports + Pair(port, BlockFace(pos, side)))
-
-    @JvmDefault
-    fun rotate(axis: Direction.Axis, angle: AxisFixedAngle): PipeShape<X> = RotatedPipeShape(this, axis, angle)
-
-    @JvmDefault
-    fun translate(offset: Vec3i): PipeShape<X> = TranslatedPipeShape(this, offset)
-
-    companion object {
-        @JvmStatic
-        fun <X> empty(): PipeShape<X> = PipeShapeImpl(emptySet(), emptyMap())
-    }
-
+data class BlockFace(val pos: BlockPos, val side: Direction) {
+    val opposite
+        get() = BlockFace(pos.offset(side), side.opposite)
 }

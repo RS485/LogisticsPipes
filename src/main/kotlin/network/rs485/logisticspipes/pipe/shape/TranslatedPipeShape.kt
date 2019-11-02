@@ -40,7 +40,8 @@ package network.rs485.logisticspipes.pipe.shape
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3i
 
-data class TranslatedPipeShape<X>(
+data class
+TranslatedPipeShape<X>(
         val wrapped: PipeShape<X>,
         val offset: Vec3i
 ) : PipeShape<X> {

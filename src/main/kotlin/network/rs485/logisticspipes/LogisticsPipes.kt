@@ -63,6 +63,7 @@ object LogisticsPipes : ModInitializer {
         Packets
 
         initUpgradeSlots()
+        initEvents()
     }
 
 }

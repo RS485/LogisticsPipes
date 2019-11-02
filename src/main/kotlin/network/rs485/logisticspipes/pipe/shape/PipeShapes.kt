@@ -35,32 +35,15 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes
+package network.rs485.logisticspipes.pipe.shape
 
-import net.fabricmc.fabric.api.event.server.ServerStartCallback
-import net.fabricmc.fabric.api.event.server.ServerStopCallback
-import net.fabricmc.fabric.api.event.world.WorldTickCallback
-import net.minecraft.server.MinecraftServer
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.world.World
-import network.rs485.logisticspipes.transport.network.getPipeNetworkState
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Direction
 
-internal fun initEvents() {
-    ServerStartCallback.EVENT.register(ServerStartCallback(::onServerStart))
-    ServerStopCallback.EVENT.register(ServerStopCallback(::onServerStop))
-    WorldTickCallback.EVENT.register(WorldTickCallback(::onWorldTick))
-}
+object PipeShapes {
 
-private fun onServerStart(server: MinecraftServer) {
+    val Default = PipeShape.empty<Direction>()
+            .withBlock(BlockPos.ORIGIN)
+            .let { Direction.values().fold(it) { acc, a -> acc.withPort(a, BlockPos.ORIGIN, a) } }
 
-}
-
-private fun onServerStop(server: MinecraftServer) {
-
-}
-
-private fun onWorldTick(world: World) {
-    if (world is ServerWorld) {
-        world.getPipeNetworkState().tick()
-    }
 }

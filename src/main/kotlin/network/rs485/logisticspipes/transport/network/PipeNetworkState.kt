@@ -42,6 +42,8 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.PersistentState
 import net.minecraft.world.dimension.Dimension
+import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import java.util.*
 
@@ -55,6 +57,13 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     }
 
     fun onBlockChanged(pos: BlockPos) {
+        // TODO rotation & correct multiblock handling
+
+        networksToPos.remove(pos)?.also {
+            val network = networks.getValue(it)
+            network.removeNodeAt(pos)
+        }
+
         val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos)
         if (attr == null) {
             // TODO delete node
@@ -62,7 +71,15 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
         }
 
         val net = createNetwork()
-        val node = net.createNode(pos, attr.type.create())
+
+        fun <X, T : Pipe<*, X>> PipeNetworkImpl.createNode(type: PipeType<X, T>): PipeNode {
+            val shape = type.getBaseShape().translate(pos)
+            return createNode(shape, type.create())
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        val node = net.createNode(attr.type as PipeType<Any?, Pipe<*, Any?>>)
+
     }
 
     fun createNetwork(): PipeNetworkImpl {

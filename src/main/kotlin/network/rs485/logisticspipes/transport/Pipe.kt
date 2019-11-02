@@ -43,7 +43,6 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
-import network.rs485.logisticspipes.pipe.shape.PipeShape
 import kotlin.experimental.or
 
 interface Pipe<P : CellPath, X> {
@@ -173,10 +172,6 @@ abstract class StandardPipe : Pipe<StandardPipeCellPath, Direction> {
         val inwards = data and 0b1000 != 0
         val side = Direction.byId(data and 0b0111)
         return StandardPipeCellPath(side, inwards)
-    }
-
-    companion object {
-        val Shape = Direction.values().fold(PipeShape.empty<Direction>().withBlock(BlockPos.ORIGIN), { acc, a -> acc.withPort(a, BlockPos.ORIGIN, a) })
     }
 
 }

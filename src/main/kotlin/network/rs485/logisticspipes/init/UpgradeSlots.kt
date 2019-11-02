@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.init
 
 import network.rs485.logisticspipes.pipe.upgrade.UpgradeSlots
 
-fun initUpgradeSlots() {
+internal fun initUpgradeSlots() {
     UpgradeSlots.addForModule(UpgradeTypes.ActionSpeed, ModuleTypes.Extractor)
     UpgradeSlots.addForModule(UpgradeTypes.ActionSpeed, ModuleTypes.AdvancedExtractor)
 

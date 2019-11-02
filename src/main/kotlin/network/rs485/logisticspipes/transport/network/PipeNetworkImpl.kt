@@ -43,6 +43,7 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.*
 import therealfarfetchd.hctm.common.graph.Graph
 import therealfarfetchd.hctm.common.graph.Link
@@ -50,9 +51,9 @@ import therealfarfetchd.hctm.common.graph.Node
 import java.util.*
 import kotlin.math.roundToLong
 
-private typealias PipeGraph = Graph<Pipe<*, *>, Any?>
-private typealias PipeNode = Node<Pipe<*, *>, Any?>
-private typealias PipeLink = Link<Pipe<*, *>, Any?>
+internal typealias PipeGraph = Graph<PipeHolder<*>, Any?>
+internal typealias PipeNode = Node<PipeHolder<*>, Any?>
+internal typealias PipeLink = Link<PipeHolder<*>, Any?>
 
 class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : PipeNetwork {
 
@@ -62,7 +63,7 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
     private val graph = PipeGraph()
 
     override val pipes: Iterable<Pipe<*, *>>
-        get() = graph.nodes.asSequence().map { it.data }.asIterable()
+        get() = graph.nodes.asSequence().map { it.data.pipe }.asIterable()
 
     private val cellPositions = mutableMapOf<UUID, AbsoluteCellPosition<*>>()
     private val cellMap = mutableMapOf<UUID, Cell<*>>()
@@ -143,9 +144,18 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
         return node.connections.singleOrNull { it.data(node) == output }?.let { PipeNetwork.PipePortAssoc(it.other(node).data as Pipe<*, Any?>, it.otherData(node)) }
     }
 
-    fun createNode(pos: BlockPos, pipe: Pipe<*, *>): PipeNode {
-        // TODO
-        return graph.add(pipe)
+    fun <X> createNode(shape: PipeShape<X>, pipe: Pipe<*, X>): PipeNode {
+        return graph.add(PipeHolder(pipe, shape))
+    }
+
+    fun removeNodeAt(pos: BlockPos): Boolean {
+        return graph.nodes.filter { pos in it.data.shape.blocks }.onEach { removeNode(it) }.isNotEmpty()
+    }
+
+    fun removeNode(node: PipeNode) {
+        graph.remove(node)
+
+        // TODO split
     }
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
@@ -177,3 +187,5 @@ private data class AbsoluteCellPosition<P : CellPath>(val pipe: Pipe<P, *>, val 
         pipe.onFinishPath(network, path, cell)
     }
 }
+
+data class PipeHolder<X>(val pipe: Pipe<*, X>, val shape: PipeShape<X>)

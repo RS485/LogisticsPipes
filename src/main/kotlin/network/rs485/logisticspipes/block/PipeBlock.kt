@@ -57,7 +57,7 @@ import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<T>) : Block(settings), AttributeProvider {
+open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<*, T>) : Block(settings), AttributeProvider {
 
     init {
         defaultState = SIDE_PROPERTIES.values.fold(defaultState) { acc, prop -> acc.with(prop, false) }

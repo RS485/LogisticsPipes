@@ -80,7 +80,8 @@ object PipeTypes {
     val HighSpeedSCurve = create("high_speed_s_curve", PipeType.Builder(PipeShapes.Default, ::DummyPipe).build())
 
     private fun <T : PipeType<*, *>> create(name: String, type: T): T {
-        return Registry.register(Registries.PipeType, Identifier(ModID, name), type).also { All += it }
+        return Registry.register(Registries.PipeType, Identifier(ModID, name), type)
+                .also { All += it }
     }
 
 }

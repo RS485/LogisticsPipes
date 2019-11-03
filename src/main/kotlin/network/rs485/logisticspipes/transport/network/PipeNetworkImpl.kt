@@ -55,25 +55,25 @@ internal typealias PipeGraph = Graph<PipeHolder<*>, Any?>
 internal typealias PipeNode = Node<PipeHolder<*>, Any?>
 internal typealias PipeLink = Link<PipeHolder<*>, Any?>
 
-class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : PipeNetwork {
+class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, val controller: PipeNetworkState) : PipeNetwork {
 
     private val insertTimes = Object2LongOpenHashMap<UUID>()
     private val updateTimes = Object2LongOpenHashMap<UUID>()
 
-    private val graph = PipeGraph()
+    internal val graph = PipeGraph()
+
+    private val cellMap = mutableMapOf<UUID, CellHolder<*>>()
+
+    private val nodesInPos = mutableMapOf<BlockPos, PipeNode>()
 
     override val pipes: Iterable<Pipe<*, *>>
         get() = graph.nodes.asSequence().map { it.data.pipe }.asIterable()
 
-    private val cellPositions = mutableMapOf<UUID, AbsoluteCellPosition<*>>()
-    private val cellMap = mutableMapOf<UUID, Cell<*>>()
-
     override val cells
-        get() = cellMap.values.toSet()
+        get() = cellMap.values.asSequence().map { it.cell }.asIterable()
 
     override fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
-        cellPositions[cell.id] = AbsoluteCellPosition(pipe, path)
-        cellMap[cell.id] = cell
+        cellMap[cell.id] = CellHolder(cell, pipe, path)
 
         val speed = BASE_SPEED * pipe.getSpeedFactor() * cell.getSpeedFactor()
         val length = path.getLength()
@@ -102,12 +102,11 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
         val cellId = cell.id
         updateTimes.removeLong(cellId)
         insertTimes.removeLong(cellId)
-        cellPositions.remove(cellId)
         cellMap.remove(cellId)
     }
 
     override fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d {
-        val absPos = cellPositions[cell.id] ?: error("Cell $cell is not in network!")
+        val absPos = cellMap[cell.id] ?: error("Cell $cell is not in network!")
         val base = insertTimes.getLong(cell.id)
         val duration = updateTimes.getLong(cell.id) - base
         val progress = (world.time - base) + delta
@@ -126,9 +125,8 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
             } else break
         }
         for ((id, _) in queued) {
-            val cell = cellMap[id] ?: continue
-            val cp = cellPositions[id] ?: continue
-            cp.onFinish(this, cell)
+            val cp = cellMap[id] ?: continue
+            cp.onFinish(this)
         }
     }
 
@@ -144,8 +142,8 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
         return node.connections.singleOrNull { it.data(node) == output }?.let { PipeNetwork.PipePortAssoc(it.other(node).data as Pipe<*, Any?>, it.otherData(node)) }
     }
 
-    fun <X> createNode(shape: PipeShape<X>, pipe: Pipe<*, X>): PipeNode {
-        return graph.add(PipeHolder(pipe, shape))
+    fun <X> createNode(pos: BlockPos, shape: PipeShape<X>, pipe: Pipe<*, X>): PipeNode {
+        return graph.add(PipeHolder(pos, pipe, shape))
     }
 
     fun removeNodeAt(pos: BlockPos): Boolean {
@@ -156,6 +154,46 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
         graph.remove(node)
 
         // TODO split
+    }
+
+    fun merge(other: PipeNetworkImpl) {
+        if (other.id != id) {
+            graph.join(other.graph)
+            insertTimes.putAll(other.insertTimes)
+            updateTimes.putAll(other.updateTimes)
+            cellMap.putAll(other.cellMap)
+            controller.networksToPos += controller.networksToPos.filterValues { it == other.id }.mapValues { this.id }
+            controller.destroyNetwork(other.id)
+        }
+    }
+
+    fun split(): Set<PipeNetworkImpl> {
+        val newGraphs = graph.split()
+
+        if (newGraphs.isNotEmpty()) {
+            controller.markDirty()
+
+            val networks = newGraphs.map {
+                val net = controller.createNetwork()
+                net.graph.join(it)
+                net
+            }
+
+            networks.forEach { controller.rebuildRefs(it.id) }
+            controller.rebuildRefs(this.id)
+
+            return networks.toSet()
+        }
+
+        return emptySet()
+    }
+
+    fun rebuildRefs() {
+        controller.markDirty()
+        nodesInPos.clear()
+        for (node in graph.nodes) {
+            nodesInPos[node.data.pos] = node
+        }
     }
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
@@ -171,9 +209,9 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
     companion object {
         const val BASE_SPEED = 0.1f
 
-        fun fromTag(world: ServerWorld, tag: CompoundTag): PipeNetworkImpl {
+        fun fromTag(world: ServerWorld, controller: PipeNetworkState, tag: CompoundTag): PipeNetworkImpl {
             val id = tag.getUuid("id")
-            val obj = PipeNetworkImpl(world, id)
+            val obj = PipeNetworkImpl(world, id, controller)
             obj.fromTag(tag)
             return obj
         }
@@ -181,11 +219,11 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID) : 
 
 }
 
-private data class AbsoluteCellPosition<P : CellPath>(val pipe: Pipe<P, *>, val path: P) {
+private data class CellHolder<P : CellPath>(val cell: Cell<*>, val pipe: Pipe<P, *>, val path: P) {
     // Helper method because of generics bs.
-    fun onFinish(network: PipeNetwork, cell: Cell<*>) {
+    fun onFinish(network: PipeNetwork) {
         pipe.onFinishPath(network, path, cell)
     }
 }
 
-data class PipeHolder<X>(val pipe: Pipe<*, X>, val shape: PipeShape<X>)
+data class PipeHolder<X>(val pos: BlockPos, val pipe: Pipe<*, X>, val shape: PipeShape<X>)

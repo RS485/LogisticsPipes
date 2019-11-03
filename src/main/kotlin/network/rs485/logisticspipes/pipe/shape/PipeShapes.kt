@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.pipe.shape
 
+import net.minecraft.block.BlockState
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 
@@ -45,5 +46,6 @@ object PipeShapes {
     val Default = PipeShape.empty<Direction>()
             .withBlock(BlockPos.ORIGIN)
             .let { Direction.values().fold(it) { acc, a -> acc.withPort(a, BlockPos.ORIGIN, a) } }
+            .let { { _: BlockState -> it } }
 
 }

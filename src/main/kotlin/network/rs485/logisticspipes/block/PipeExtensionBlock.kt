@@ -38,22 +38,17 @@
 package network.rs485.logisticspipes.block
 
 import net.minecraft.block.Block
-import net.minecraft.block.BlockState
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.IWorld
-import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
 /**
  * Extension block that gets automatically placed to fill space for multiblock pipes.
  */
 class PipeExtensionBlock(settings: Block.Settings) : Block(settings) {
 
-    override fun method_9517(state: BlockState, world: IWorld, pos: BlockPos, flags: Int) {
-        super.method_9517(state, world, pos, flags)
-        if (world is ServerWorld) {
-            world.getPipeNetworkState().onBlockChanged(pos)
-        }
-    }
+    // override fun method_9517(state: BlockState, world: IWorld, pos: BlockPos, flags: Int) {
+    //     super.method_9517(state, world, pos, flags)
+    //     if (world is ServerWorld) {
+    //         world.getPipeNetworkState().onBlockChanged(pos)
+    //     }
+    // }
 
 }

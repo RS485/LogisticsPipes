@@ -50,7 +50,9 @@ import java.util.*
 class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimension(world.getDimension())) {
 
     private val networks = mutableMapOf<UUID, PipeNetworkImpl>()
-    private val networksToPos = mutableMapOf<BlockPos, UUID>()
+
+    @JvmSynthetic
+    internal val networksToPos = mutableMapOf<BlockPos, UUID>()
 
     fun getNetworkById(id: UUID): PipeNetwork? {
         return networks[id]
@@ -70,11 +72,12 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
             return
         }
 
+        val state = world.getBlockState(pos)
         val net = createNetwork()
 
         fun <X, T : Pipe<*, X>> PipeNetworkImpl.createNode(type: PipeType<X, T>): PipeNode {
-            val shape = type.getBaseShape().translate(pos)
-            return createNode(shape, type.create())
+            val shape = type.getBaseShape(state).translate(pos)
+            return createNode(pos, shape, type.create())
         }
 
         @Suppress("UNCHECKED_CAST")
@@ -84,7 +87,7 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 
     fun createNetwork(): PipeNetworkImpl {
         markDirty()
-        val net = PipeNetworkImpl(world, UUID.randomUUID())
+        val net = PipeNetworkImpl(world, UUID.randomUUID(), this)
         networks[net.id] = net
         return net
     }
@@ -99,6 +102,20 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
         markDirty()
         // TODO drop cells
     }
+
+    fun rebuildRefs(network: UUID) {
+        markDirty()
+        networksToPos -= networksToPos.filterValues { it == network }.keys
+
+        networks[network]?.also { net ->
+            net.rebuildRefs()
+            net.graph.nodes
+                    .map { it.data.pos }
+                    .forEach { networksToPos[it] = net.id }
+        }
+    }
+
+    fun rebuildRefs() = networks.keys.forEach(::rebuildRefs)
 
     fun cleanup() {
         for (net in networks.values.toSet()) {
@@ -129,3 +146,4 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 fun ServerWorld.getPipeNetworkState(): PipeNetworkState {
     return this.persistentStateManager.getOrCreate({ PipeNetworkState(this) }, PipeNetworkState.getNameForDimension(dimension))
 }
+

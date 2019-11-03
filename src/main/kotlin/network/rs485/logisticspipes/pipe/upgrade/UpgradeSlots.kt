@@ -43,7 +43,7 @@ import network.rs485.logisticspipes.pipe.PipeType
 
 object UpgradeSlots {
 
-    private val upgradeToPipe = HashMultimap.create<UpgradeType<*>, PipeType<*>>()
+    private val upgradeToPipe = HashMultimap.create<UpgradeType<*>, PipeType<*, *>>()
     private val upgradeToModule = HashMultimap.create<UpgradeType<*>, ModuleType<*>>()
 
     fun addForModule(upgrade: UpgradeType<*>, module: ModuleType<*>) {
@@ -54,15 +54,15 @@ object UpgradeSlots {
         upgradeToModule.putAll(upgrade, modules)
     }
 
-    fun addForPipe(upgrade: UpgradeType<*>, pipe: PipeType<*>) {
+    fun addForPipe(upgrade: UpgradeType<*>, pipe: PipeType<*, *>) {
         upgradeToPipe.put(upgrade, pipe)
     }
 
-    fun addForPipes(upgrade: UpgradeType<*>, pipes: Iterable<PipeType<*>>) {
+    fun addForPipes(upgrade: UpgradeType<*>, pipes: Iterable<PipeType<*, *>>) {
         upgradeToPipe.putAll(upgrade, pipes)
     }
 
-    fun getUpgradePipeTargets(upgrade: UpgradeType<*>): Set<PipeType<*>> {
+    fun getUpgradePipeTargets(upgrade: UpgradeType<*>): Set<PipeType<*, *>> {
         return upgradeToPipe.get(upgrade).toSet()
     }
 
@@ -74,7 +74,7 @@ object UpgradeSlots {
         return upgradeToModule.containsEntry(upgrade, module)
     }
 
-    fun canApplyTo(upgrade: UpgradeType<*>, pipe: PipeType<*>): Boolean {
+    fun canApplyTo(upgrade: UpgradeType<*>, pipe: PipeType<*, *>): Boolean {
         return upgradeToPipe.containsEntry(upgrade, pipe)
     }
 

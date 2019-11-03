@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.pipe
 
+import net.minecraft.block.BlockState
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil
@@ -50,7 +51,7 @@ abstract class PipeType<X, T : Pipe<*, X>> {
 
     abstract fun create(): T
 
-    abstract fun getBaseShape(): PipeShape<X>
+    abstract fun getBaseShape(state: BlockState): PipeShape<X>
 
     protected fun getOrCreateTranslationKey(): String {
         return translationKey ?: run {
@@ -70,11 +71,11 @@ abstract class PipeType<X, T : Pipe<*, X>> {
 
     override fun toString(): String = getName().asString()
 
-    class Builder<X, T : Pipe<*, X>>(private val shape: PipeShape<X>, private val constructor: () -> T) {
+    class Builder<X, T : Pipe<*, X>>(private val shape: (BlockState) -> PipeShape<X>, private val constructor: () -> T) {
         fun build(): PipeType<X, T> = object : PipeType<X, T>() {
             override fun create(): T = constructor()
 
-            override fun getBaseShape(): PipeShape<X> = shape
+            override fun getBaseShape(state: BlockState): PipeShape<X> = shape(state)
         }
     }
 

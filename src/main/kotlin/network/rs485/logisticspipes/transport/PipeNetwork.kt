@@ -49,7 +49,7 @@ interface PipeNetwork {
 
     val pipes: Iterable<Pipe<*, *>>
 
-    val cells: Set<Cell<*>>
+    val cells: Iterable<Cell<*>>
 
     /**
      * Insert a cell into the network.

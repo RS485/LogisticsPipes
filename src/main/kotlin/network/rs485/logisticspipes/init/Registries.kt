@@ -52,7 +52,7 @@ import network.rs485.logisticspipes.transport.CellContentType
 object Registries {
 
     val SignType = create("sign_type", DefaultedRegistry<PipeSignType<*>>("$ModID:crafting"))
-    val PipeType = create("pipe_type", SimpleRegistry<PipeType<*, *>>())
+    val PipeType = create("pipe_type", SimpleRegistry<PipeType<*, *, *>>())
     val ModuleType = create("module_type", SimpleRegistry<ModuleType<*>>())
     val UpgradeType = create("upgrade_type", SimpleRegistry<UpgradeType<*>>())
     val CellContentType = create("cell_content_type", SimpleRegistry<CellContentType<*>>())

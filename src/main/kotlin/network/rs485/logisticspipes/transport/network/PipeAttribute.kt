@@ -38,28 +38,13 @@
 package network.rs485.logisticspipes.transport.network
 
 import alexiil.mc.lib.attributes.Attributes
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.util.Identifier
-import network.rs485.logisticspipes.init.Registries
 import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.transport.Pipe
 
-data class PipeAttribute<T : Pipe<*, *>>(val type: PipeType<*, T>) {
-
-    fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
-        val typeId = Registries.PipeType.getId(type) ?: error("Tried to serialize unregistered pipe type")
-        tag.putString("type", typeId.toString())
-        return tag
-    }
+data class PipeAttribute<T : Pipe<*, *>, I>(val type: PipeType<*, T, I>, val itf: I) {
 
     companion object {
         val ATTRIBUTE = Attributes.create(PipeAttribute::class.java)
-
-        fun fromTag(tag: CompoundTag): PipeAttribute<*>? {
-            val typeId = Identifier(tag.getString("type"))
-            val type = Registries.PipeType[typeId] ?: return null
-            return PipeAttribute(type)
-        }
     }
 
 }

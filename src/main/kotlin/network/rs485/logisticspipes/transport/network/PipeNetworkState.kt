@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.transport.network
 
-import net.minecraft.client.MinecraftClient
+import net.minecraft.block.Block
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.server.world.ServerWorld
@@ -60,36 +60,46 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     @JvmSynthetic
     internal val portLocationToNetwork = mutableMapOf<BlockFace, UUID>()
 
+    private val cachedBlocks = mutableMapOf<BlockPos, Block>()
+
     fun getNetworkById(id: UUID): PipeNetwork? {
         return networks[id]
     }
 
     @Suppress("UNCHECKED_CAST")
     fun onBlockChanged(pos: BlockPos) {
-        // TODO rotation & correct multiblock handling
-        val mc = MinecraftClient.getInstance()
-
-        posToNetworks.remove(pos)?.also {
-            val network = networks.getValue(it)
-            network.removeNodeAt(pos)
-        }
+        val oldBlock = cachedBlocks[pos]
+        val state = world.getBlockState(pos)
+        val newBlock = state.block
 
         val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos)
-        if (attr == null) {
-            // TODO delete node
-            return
+
+        if (oldBlock != null && oldBlock != newBlock || attr == null) {
+            posToNetworks.remove(pos)?.also {
+                val network = networks.getValue(it)
+                val node = network.getNodeAt(pos)
+                if (node != null) {
+                    node.data.pipe.onLeaveNetwork()
+                    network.removeNode(node)
+                    rebuildRefs(network.id)
+                }
+            }
+            cachedBlocks -= pos
         }
 
-        val state = world.getBlockState(pos)
+        if (attr == null || (oldBlock != null && oldBlock == newBlock)) return
+
+        cachedBlocks[pos] = newBlock
+
         var net = createNetwork()
 
-        fun <X, T : Pipe<*, X>> PipeNetworkImpl.createNode(type: PipeType<X, T>): PipeNode {
+        fun <X, T : Pipe<*, X>, I> PipeNetworkImpl.createNode(type: PipeType<X, T, I>, itf: I): PipeNode {
             val shape = type.getBaseShape(state).translate(pos)
-            return createNode(pos, shape, type.create(world))
+            return createNode(pos, shape, type.create(itf))
         }
 
         @Suppress("UNCHECKED_CAST")
-        var node = net.createNode(attr.type as PipeType<Any?, Pipe<*, Any?>>)
+        var node = net.createNode(attr.type as PipeType<Any?, Pipe<*, Any?>, Any?>, attr.itf)
 
         for ((port, face) in node.data.shape.ports) {
             val other = face.opposite
@@ -131,6 +141,7 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     fun rebuildRefs(network: UUID) {
         markDirty()
         posToNetworks -= posToNetworks.filterValues { it == network }.keys
+        portLocationToNetwork -= portLocationToNetwork.filterValues { it == network }.keys
 
         networks[network]?.also { net ->
             net.rebuildRefs()

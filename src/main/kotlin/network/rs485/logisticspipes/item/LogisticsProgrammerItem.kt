@@ -68,10 +68,11 @@ class LogisticsProgrammerItem(settings: Settings) : ItemWithInfo(settings), Item
                     TranslatableText("tooltip.$ModID.programmer.for_upgrade"),
                     stack.item.getName(stack)
             )
-            is PipeItem<*> -> listOf(
-                    TranslatableText("tooltip.$ModID.programmer.for_pipe"),
-                    stack.item.getName(stack)
-            )
+            // TODO
+            // is PipeItem<*> -> listOf(
+            //         TranslatableText("tooltip.$ModID.programmer.for_pipe"),
+            //         stack.item.getName(stack)
+            // )
             else -> listOf(
                     TranslatableText("tooltip.$ModID.programmer.for_unknown.1"),
                     TranslatableText("tooltip.$ModID.programmer.for_unknown.2"),

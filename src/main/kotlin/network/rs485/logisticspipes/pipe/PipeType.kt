@@ -41,20 +41,19 @@ import net.minecraft.block.BlockState
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil
-import net.minecraft.world.World
 import network.rs485.logisticspipes.init.Registries
 import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.Pipe
 
-abstract class PipeType<X, T : Pipe<*, X>> {
+abstract class PipeType<X, T : Pipe<*, X>, I> {
 
     private var translationKey: String? = null
 
-    abstract fun create(): T
+    abstract fun create(itf: I): T
 
     abstract fun getBaseShape(state: BlockState): PipeShape<X>
 
-    protected fun getOrCreateTranslationKey(): String {world: World
+    protected fun getOrCreateTranslationKey(): String {
         return translationKey ?: run {
             val key = SystemUtil.createTranslationKey("pipe", Registries.PipeType.getId(this));
             translationKey = key
@@ -72,9 +71,9 @@ abstract class PipeType<X, T : Pipe<*, X>> {
 
     override fun toString(): String = getName().asString()
 
-    class Builder<X, T : Pipe<*, X>>(private val shape: (BlockState) -> PipeShape<X>, private val constructor: () -> T) {
-        fun build(): PipeType<X, T> = object : PipeType<X, T>() {
-            override fun create(): T = constructor()
+    class Builder<X, T : Pipe<*, X>, I>(private val shape: (BlockState) -> PipeShape<X>, private val constructor: (I) -> T) {
+        fun build(): PipeType<X, T, I> = object : PipeType<X, T, I>() {
+            override fun create(itf: I): T = constructor(itf)
 
             override fun getBaseShape(state: BlockState): PipeShape<X> = shape(state)
         }

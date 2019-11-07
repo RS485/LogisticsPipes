@@ -38,13 +38,13 @@
 package network.rs485.logisticspipes.pipe
 
 import net.minecraft.util.math.Direction
-import net.minecraft.world.World
+import network.rs485.logisticspipes.block.PipeBlockInterface
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import network.rs485.logisticspipes.transport.StandardPipe
 
-class DummyPipe : StandardPipe() {
+class DummyPipe(val itf: PipeBlockInterface) : StandardPipe() {
 
     override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
         // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.
@@ -55,10 +55,12 @@ class DummyPipe : StandardPipe() {
 
     override fun onConnectTo(port: Direction, other: Pipe<*, *>) {
         super.onConnectTo(port, other)
+        itf.setConnection(port, true)
     }
 
-    override fun onDisconnect(other: Pipe<*, *>) {
-        super.onDisconnect(other)
+    override fun onDisconnect(port: Direction, other: Pipe<*, *>) {
+        super.onDisconnect(port, other)
+        itf.setConnection(port, false)
     }
 
 }

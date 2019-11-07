@@ -151,15 +151,31 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
         return result
     }
 
-    fun removeNodeAt(pos: BlockPos): Boolean {
-        val result = graph.nodes.filter { pos in it.data.shape.blocks }.onEach { removeNode(it) }.isNotEmpty()
-        if (graph.nodes.isEmpty()) controller.destroyNetwork(this.id)
-        return result
-    }
-
+    @Suppress("UNCHECKED_CAST")
     fun removeNode(node: PipeNode) {
+        for (link in node.connections.toSet()) {
+            (link.first.data.pipe as Pipe<*, Any?>).onDisconnect(link.data1, link.second.data.pipe)
+            (link.second.data.pipe as Pipe<*, Any?>).onDisconnect(link.data2, link.first.data.pipe)
+        }
+        node.data.pipe.onLeaveNetwork()
         graph.remove(node)
         split()
+        if (graph.nodes.isEmpty()) controller.destroyNetwork(this.id)
+        else controller.rebuildRefs(this.id)
+    }
+
+    fun getNodeById(id: UUID): PipeNode? {
+        // TODO optimize
+        return graph.nodes.find { it.data.id == id }
+    }
+
+    fun getNodeByFace(face: BlockFace): PipeNode? {
+        // TODO optimize
+        return graph.nodes.find { face in it.data.shape.ports.values }
+    }
+
+    fun getNodeAt(pos: BlockPos): PipeNode? {
+        return graph.nodes.find { pos in it.data.shape.blocks }
     }
 
     fun merge(other: PipeNetworkImpl) {
@@ -174,7 +190,7 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
             controller.destroyNetwork(other.id)
             graph.nodes.filter { it.data.id in newNodes }.forEach { it.data.pipe.onJoinNetwork(this) }
         }
-        rebuildRefs()
+        controller.rebuildRefs(this.id)
     }
 
     fun split(): Set<PipeNetworkImpl> {
@@ -220,16 +236,6 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
         val newId = tag.getUuid("id")
         if (newId != id) error("Tried to load data for $newId into network $id")
 
-    }
-
-    fun getNodeById(id: UUID): PipeNode? {
-        // TODO optimize
-        return graph.nodes.find { it.data.id == id }
-    }
-
-    fun getNodeByFace(face: BlockFace): PipeNode? {
-        // TODO optimize
-        return graph.nodes.find { face in it.data.shape.ports.values }
     }
 
     companion object {

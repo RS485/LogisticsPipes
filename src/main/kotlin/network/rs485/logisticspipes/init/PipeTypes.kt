@@ -48,7 +48,7 @@ object PipeTypes {
 
     // Note this isn't all registered pipes, but all pipes added by LogisticsPipes.
     // If you want all registered pipes, get them from Registries.PipeType
-    var All: Set<PipeType<*, *>> = emptySet()
+    var All: Set<PipeType<*, *, *>> = emptySet()
         private set
 
     val Unrouted = create("unrouted", PipeType.Builder(PipeShapes.Default, ::DummyPipe).build())
@@ -79,7 +79,7 @@ object PipeTypes {
     val HighSpeedCurve = create("high_speed_curve", PipeType.Builder(PipeShapes.Default, ::DummyPipe).build())
     val HighSpeedSCurve = create("high_speed_s_curve", PipeType.Builder(PipeShapes.Default, ::DummyPipe).build())
 
-    private fun <T : PipeType<*, *>> create(name: String, type: T): T {
+    private fun <T : PipeType<*, *, *>> create(name: String, type: T): T {
         return Registry.register(Registries.PipeType, Identifier(ModID, name), type)
                 .also { All += it }
     }

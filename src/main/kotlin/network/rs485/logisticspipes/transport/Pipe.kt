@@ -43,7 +43,6 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
-import net.minecraft.world.World
 import kotlin.experimental.or
 
 interface Pipe<P : CellPath, X> {
@@ -73,7 +72,7 @@ interface Pipe<P : CellPath, X> {
     }
 
     @JvmDefault
-    fun onDisconnect(other: Pipe<*, *>) {
+    fun onDisconnect(port: X, other: Pipe<*, *>) {
     }
 
     /**

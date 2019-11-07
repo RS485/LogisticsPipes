@@ -57,7 +57,7 @@ import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<*, T>) : Block(settings), AttributeProvider {
+open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<*, T, PipeBlockInterface>) : Block(settings), AttributeProvider {
 
     init {
         defaultState = SIDE_PROPERTIES.values.fold(defaultState) { acc, prop -> acc.with(prop, false) }
@@ -71,7 +71,7 @@ open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<
     }
 
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {
-        to.offer(PipeAttribute(pipeType))
+        to.offer(PipeAttribute(pipeType, PipeBlockInterface(world, pos)))
     }
 
     override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {
@@ -104,4 +104,13 @@ open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<
         )
     }
 
+}
+
+class PipeBlockInterface(val world: World, val pos: BlockPos) {
+    fun setConnection(side: Direction, connected: Boolean) {
+        val state = world.getBlockState(pos)
+        if (state.block is PipeBlock<*>) {
+            world.setBlockState(pos, state.with(PipeBlock.SIDE_PROPERTIES.getValue(side), connected))
+        }
+    }
 }

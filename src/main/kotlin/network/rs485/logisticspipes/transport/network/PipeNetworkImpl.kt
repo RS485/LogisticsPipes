@@ -43,6 +43,7 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.pipe.shape.BlockFace
 import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.*
 import therealfarfetchd.hctm.common.graph.Graph
@@ -65,6 +66,8 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
     private val cellMap = mutableMapOf<UUID, CellHolder<*>>()
 
     private val nodesInPos = mutableMapOf<BlockPos, PipeNode>()
+
+    private val portMap = mutableMapOf<BlockFace, PipeNetwork.PipePortAssoc<*>>()
 
     override val pipes: Iterable<Pipe<*, *>>
         get() = graph.nodes.asSequence().map { it.data.pipe }.asIterable()
@@ -162,7 +165,7 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
             insertTimes.putAll(other.insertTimes)
             updateTimes.putAll(other.updateTimes)
             cellMap.putAll(other.cellMap)
-            controller.networksToPos += controller.networksToPos.filterValues { it == other.id }.mapValues { this.id }
+            controller.posToNetworks += controller.posToNetworks.filterValues { it == other.id }.mapValues { this.id }
             controller.destroyNetwork(other.id)
         }
     }
@@ -191,12 +194,18 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
     fun rebuildRefs() {
         controller.markDirty()
         nodesInPos.clear()
+        portMap.clear()
         for (node in graph.nodes) {
             nodesInPos[node.data.pos] = node
+            for ((port, face) in node.data.shape.ports) {
+                @Suppress("UNCHECKED_CAST")
+                portMap[face] = PipeNetwork.PipePortAssoc(node.data.pipe as Pipe<*, Any?>, port)
+            }
         }
     }
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
+
         return tag
     }
 

@@ -43,8 +43,9 @@ import net.minecraft.client.render.LayeredBufferBuilderStorage;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 
@@ -58,11 +59,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import network.rs485.logisticspipes.client.render.TestKt;
 
 @Mixin(WorldRenderer.class)
-public class WorldRendererMixin {
+public abstract class WorldRendererMixin {
 
 	@Shadow
 	@Final
-	private LayeredBufferBuilderStorage field_20951;
+	private LayeredBufferBuilderStorage layeredBufferBuilderStorage;
 
 	@Shadow
 	private ClientWorld world;
@@ -76,9 +77,9 @@ public class WorldRendererMixin {
 					shift = At.Shift.BEFORE
 			)
 	)
-	private void render(MatrixStack matStack, float delta, long time, boolean renderOutline, Camera cam, GameRenderer gr, LightmapTextureManager ltm, CallbackInfo ci) {
+	private void render(MatrixStack matStack, float delta, long time, boolean renderBlockOutlines, Camera cam, GameRenderer gr, LightmapTextureManager ltm, Matrix4f mat, CallbackInfo ci) {
 		Profiler profiler = world.getProfiler();
-		LayeredVertexConsumerStorage buffer = this.field_20951.method_23000();
+		LayeredVertexConsumerStorage buffer = this.layeredBufferBuilderStorage.getGeneralDrawer();
 		Vec3d camPos = cam.getPos();
 		profiler.swap("cells");
 		TestKt.render(camPos.x, camPos.y, camPos.z, delta, matStack, buffer);

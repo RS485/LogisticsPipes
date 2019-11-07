@@ -45,10 +45,10 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.client.render.model.json.ModelTransformation
 import net.minecraft.client.util.math.Matrix4f
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.client.util.math.Vector4f
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.MatrixStack
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.FluidCellContent
@@ -83,7 +83,7 @@ class CellRenderer(val client: MinecraftClient) {
         trStack.scale(0.5f, 0.5f, 0.5f)
 
         val stack = cell.content.getDisplayStack()
-        itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, OverlayTexture.field_21444, trStack, buffer)
+        itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, OverlayTexture.DEFAULT_UV, trStack, buffer)
     }
 
     // TODO don't hardcode this
@@ -107,67 +107,67 @@ class CellRenderer(val client: MinecraftClient) {
         val mat = trStack.peek()
 
         buffer.getBuffer(RenderLayer.getTranslucent()).run {
-            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
-            vertex(mat, -extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
-            vertex(mat, -extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
-            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
+            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
+            vertex(mat, -extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
+            vertex(mat, -extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
+            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
 
-            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
-            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
-            vertex(mat, extent, maxY, -extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
-            vertex(mat, extent, -extent, -extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
+            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
+            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
+            vertex(mat, extent, maxY, -extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
+            vertex(mat, extent, -extent, -extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
 
-            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
-            vertex(mat, extent, -extent, -extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
-            vertex(mat, extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
-            vertex(mat, -extent, -extent, extent).color(r, g, b, a).texture(sprite.minU, sprite.maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
+            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
+            vertex(mat, extent, -extent, -extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
+            vertex(mat, extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
+            vertex(mat, -extent, -extent, extent).color(r, g, b, a).texture(sprite.minU, sprite.maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
 
-            vertex(mat, extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
-            vertex(mat, extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
-            vertex(mat, extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
-            vertex(mat, extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
+            vertex(mat, extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
+            vertex(mat, extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
+            vertex(mat, extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
+            vertex(mat, extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
 
-            vertex(mat, extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
-            vertex(mat, extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
-            vertex(mat, -extent, maxY, extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
-            vertex(mat, -extent, -extent, extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
+            vertex(mat, extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
+            vertex(mat, extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
+            vertex(mat, -extent, maxY, extent).color(r, g, b, a).texture(sprite.minU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
+            vertex(mat, -extent, -extent, extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
 
-            vertex(mat, -extent, maxY, extent).color(r, g, b, a).texture(sprite.minU, sprite.maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
-            vertex(mat, extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, sprite.maxV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
-            vertex(mat, extent, maxY, -extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
-            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
+            vertex(mat, -extent, maxY, extent).color(r, g, b, a).texture(sprite.minU, sprite.maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
+            vertex(mat, extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, sprite.maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
+            vertex(mat, extent, maxY, -extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
+            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
         }
 
 //        buffer.getBuffer(RenderLayers.SOLID_COLOR).run {
-//            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
-//            vertex(mat, -extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
-//            vertex(mat, -extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
-//            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, -1f, 0f, 0f).next()
+//            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
+//            vertex(mat, -extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
+//            vertex(mat, -extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
+//            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, -1f, 0f, 0f).next()
 //
-//            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
-//            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
-//            vertex(mat, extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
-//            vertex(mat, extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, -1f).next()
+//            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
+//            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
+//            vertex(mat, extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
+//            vertex(mat, extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, -1f).next()
 //
-//            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
-//            vertex(mat, extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
-//            vertex(mat, extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
-//            vertex(mat, -extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, -1f, 0f).next()
+//            vertex(mat, -extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
+//            vertex(mat, extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
+//            vertex(mat, extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
+//            vertex(mat, -extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, -1f, 0f).next()
 //
-//            vertex(mat, extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
-//            vertex(mat, extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
-//            vertex(mat, extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
-//            vertex(mat, extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 1f, 0f, 0f).next()
+//            vertex(mat, extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
+//            vertex(mat, extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
+//            vertex(mat, extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
+//            vertex(mat, extent, -extent, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 1f, 0f, 0f).next()
 //
-//            vertex(mat, extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
-//            vertex(mat, extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
-//            vertex(mat, -extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
-//            vertex(mat, -extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 0f, 1f).next()
+//            vertex(mat, extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
+//            vertex(mat, extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
+//            vertex(mat, -extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
+//            vertex(mat, -extent, -extent, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 0f, 1f).next()
 //
-//            vertex(mat, -extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
-//            vertex(mat, extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
-//            vertex(mat, extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
-//            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.field_21444).normal(mat, 0f, 1f, 0f).next()
+//            vertex(mat, -extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
+//            vertex(mat, extent, maxY, extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
+//            vertex(mat, extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
+//            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(mat, 0f, 1f, 0f).next()
 //        }
     }
 

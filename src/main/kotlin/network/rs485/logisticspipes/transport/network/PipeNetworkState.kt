@@ -38,11 +38,13 @@
 package network.rs485.logisticspipes.transport.network
 
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.PersistentState
 import net.minecraft.world.dimension.Dimension
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.pipe.shape.BlockFace
 import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import java.util.*
@@ -52,7 +54,10 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     private val networks = mutableMapOf<UUID, PipeNetworkImpl>()
 
     @JvmSynthetic
-    internal val networksToPos = mutableMapOf<BlockPos, UUID>()
+    internal val posToNetworks = mutableMapOf<BlockPos, UUID>()
+
+    @JvmSynthetic
+    internal val portLocationToNetwork = mutableMapOf<BlockFace, UUID>()
 
     fun getNetworkById(id: UUID): PipeNetwork? {
         return networks[id]
@@ -61,7 +66,7 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     fun onBlockChanged(pos: BlockPos) {
         // TODO rotation & correct multiblock handling
 
-        networksToPos.remove(pos)?.also {
+        posToNetworks.remove(pos)?.also {
             val network = networks.getValue(it)
             network.removeNodeAt(pos)
         }
@@ -95,8 +100,8 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     fun destroyNetwork(id: UUID) {
         val net = networks.remove(id) ?: return
 
-        for ((k, v) in networksToPos.entries.toSet()) {
-            if (v == id) networksToPos.remove(k)
+        for ((k, v) in posToNetworks.entries.toSet()) {
+            if (v == id) posToNetworks.remove(k)
         }
 
         markDirty()
@@ -105,13 +110,16 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 
     fun rebuildRefs(network: UUID) {
         markDirty()
-        networksToPos -= networksToPos.filterValues { it == network }.keys
+        posToNetworks -= posToNetworks.filterValues { it == network }.keys
 
         networks[network]?.also { net ->
             net.rebuildRefs()
             net.graph.nodes
                     .map { it.data.pos }
-                    .forEach { networksToPos[it] = net.id }
+                    .forEach { posToNetworks[it] = net.id }
+            net.graph.nodes
+                    .flatMap { it.data.shape.ports.values }
+                    .forEach { portLocationToNetwork[it] = net.id }
         }
     }
 
@@ -130,11 +138,23 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     }
 
     override fun toTag(tag: CompoundTag): CompoundTag {
+        tag.put("networks", ListTag().apply {
+            for (net in networks.values) {
+                add(CompoundTag().apply {
+                    putUuid("id", net.id)
+                    net.toTag(this)
+                })
+            }
+        })
         return tag
     }
 
     override fun fromTag(tag: CompoundTag) {
+        networks.clear()
+        posToNetworks.clear()
+        portLocationToNetwork.clear()
 
+        rebuildRefs()
     }
 
     companion object {
@@ -146,4 +166,3 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 fun ServerWorld.getPipeNetworkState(): PipeNetworkState {
     return this.persistentStateManager.getOrCreate({ PipeNetworkState(this) }, PipeNetworkState.getNameForDimension(dimension))
 }
-

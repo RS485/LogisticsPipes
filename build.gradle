@@ -61,7 +61,7 @@ dependencies {
         exclude module: 'fabric-language-kotlin'
     }
 
-    modRuntime('me.shedaniel:RoughlyEnoughItems:3.1.5-unstable.201910101247') {
+    modRuntime('me.shedaniel:RoughlyEnoughItems:3.2.6-unstable.201911061350') {
         exclude group: 'net.fabricmc.fabric-api'
         exclude module: 'modmenu'
     }

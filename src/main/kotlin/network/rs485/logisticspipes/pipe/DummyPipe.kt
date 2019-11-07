@@ -38,7 +38,9 @@
 package network.rs485.logisticspipes.pipe
 
 import net.minecraft.util.math.Direction
+import net.minecraft.world.World
 import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import network.rs485.logisticspipes.transport.StandardPipe
 
@@ -49,6 +51,14 @@ class DummyPipe : StandardPipe() {
         val possibleSides = Direction.values().filter { network.isPortConnected(this, it) } - from
         val outputSide = if (possibleSides.isNotEmpty()) possibleSides.random() else null
         return outputSide
+    }
+
+    override fun onConnectTo(port: Direction, other: Pipe<*, *>) {
+        super.onConnectTo(port, other)
+    }
+
+    override fun onDisconnect(other: Pipe<*, *>) {
+        super.onDisconnect(other)
     }
 
 }

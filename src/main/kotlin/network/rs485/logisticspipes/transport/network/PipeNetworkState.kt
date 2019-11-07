@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.transport.network
 
+import net.minecraft.client.MinecraftClient
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.server.world.ServerWorld
@@ -63,8 +64,10 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
         return networks[id]
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun onBlockChanged(pos: BlockPos) {
         // TODO rotation & correct multiblock handling
+        val mc = MinecraftClient.getInstance()
 
         posToNetworks.remove(pos)?.also {
             val network = networks.getValue(it)
@@ -78,16 +81,33 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
         }
 
         val state = world.getBlockState(pos)
-        val net = createNetwork()
+        var net = createNetwork()
 
         fun <X, T : Pipe<*, X>> PipeNetworkImpl.createNode(type: PipeType<X, T>): PipeNode {
             val shape = type.getBaseShape(state).translate(pos)
-            return createNode(pos, shape, type.create())
+            return createNode(pos, shape, type.create(world))
         }
 
         @Suppress("UNCHECKED_CAST")
-        val node = net.createNode(attr.type as PipeType<Any?, Pipe<*, Any?>>)
+        var node = net.createNode(attr.type as PipeType<Any?, Pipe<*, Any?>>)
 
+        for ((port, face) in node.data.shape.ports) {
+            val other = face.opposite
+            val netId = portLocationToNetwork[other] ?: continue
+            if (netId != net.id) {
+                val otherNet = networks.getValue(netId)
+                otherNet.merge(net)
+                net = otherNet
+            }
+            val otherNode = net.getNodeByFace(other)!!
+            node = net.getNodeById(node.data.id)!!
+            val otherPort = otherNode.data.shape.ports.entries.first { it.value == other }.key
+            net.graph.link(node, otherNode, port, otherPort)
+            (node.data.pipe as Pipe<*, Any?>).onConnectTo(port, otherNode.data.pipe)
+            (otherNode.data.pipe as Pipe<*, Any?>).onConnectTo(otherPort, node.data.pipe)
+        }
+
+        rebuildRefs(net.id)
     }
 
     fun createNetwork(): PipeNetworkImpl {

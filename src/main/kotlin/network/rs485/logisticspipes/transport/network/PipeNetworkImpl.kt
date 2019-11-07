@@ -146,28 +146,35 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
     }
 
     fun <X> createNode(pos: BlockPos, shape: PipeShape<X>, pipe: Pipe<*, X>): PipeNode {
-        return graph.add(PipeHolder(pos, pipe, shape))
+        val result = graph.add(PipeHolder(UUID.randomUUID(), pos, pipe, shape))
+        result.data.pipe.onJoinNetwork(this)
+        return result
     }
 
     fun removeNodeAt(pos: BlockPos): Boolean {
-        return graph.nodes.filter { pos in it.data.shape.blocks }.onEach { removeNode(it) }.isNotEmpty()
+        val result = graph.nodes.filter { pos in it.data.shape.blocks }.onEach { removeNode(it) }.isNotEmpty()
+        if (graph.nodes.isEmpty()) controller.destroyNetwork(this.id)
+        return result
     }
 
     fun removeNode(node: PipeNode) {
         graph.remove(node)
-
-        // TODO split
+        split()
     }
 
     fun merge(other: PipeNetworkImpl) {
         if (other.id != id) {
+            other.graph.nodes.forEach { it.data.pipe.onLeaveNetwork() }
+            val newNodes = other.graph.nodes.map { it.data.id }
             graph.join(other.graph)
             insertTimes.putAll(other.insertTimes)
             updateTimes.putAll(other.updateTimes)
             cellMap.putAll(other.cellMap)
             controller.posToNetworks += controller.posToNetworks.filterValues { it == other.id }.mapValues { this.id }
             controller.destroyNetwork(other.id)
+            graph.nodes.filter { it.data.id in newNodes }.forEach { it.data.pipe.onJoinNetwork(this) }
         }
+        rebuildRefs()
     }
 
     fun split(): Set<PipeNetworkImpl> {
@@ -215,6 +222,16 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
 
     }
 
+    fun getNodeById(id: UUID): PipeNode? {
+        // TODO optimize
+        return graph.nodes.find { it.data.id == id }
+    }
+
+    fun getNodeByFace(face: BlockFace): PipeNode? {
+        // TODO optimize
+        return graph.nodes.find { face in it.data.shape.ports.values }
+    }
+
     companion object {
         const val BASE_SPEED = 0.1f
 
@@ -235,4 +252,4 @@ private data class CellHolder<P : CellPath>(val cell: Cell<*>, val pipe: Pipe<P,
     }
 }
 
-data class PipeHolder<X>(val pos: BlockPos, val pipe: Pipe<*, X>, val shape: PipeShape<X>)
+data class PipeHolder<X>(val id: UUID, val pos: BlockPos, val pipe: Pipe<*, X>, val shape: PipeShape<X>)

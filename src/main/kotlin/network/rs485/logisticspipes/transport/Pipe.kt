@@ -43,6 +43,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
+import net.minecraft.world.World
 import kotlin.experimental.or
 
 interface Pipe<P : CellPath, X> {
@@ -104,7 +105,7 @@ interface Pipe<P : CellPath, X> {
 
 // test/demo classes
 
-abstract class StandardPipe : Pipe<StandardPipeCellPath, Direction> {
+abstract class StandardPipe() : Pipe<StandardPipeCellPath, Direction> {
 
     override fun onEnterPipe(network: PipeNetwork, from: Direction, cell: Cell<*>) {
         // Send the cell inwards, from the side it entered from.

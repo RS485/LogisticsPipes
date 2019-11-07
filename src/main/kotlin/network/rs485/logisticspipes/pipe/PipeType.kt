@@ -41,6 +41,7 @@ import net.minecraft.block.BlockState
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
 import net.minecraft.util.SystemUtil
+import net.minecraft.world.World
 import network.rs485.logisticspipes.init.Registries
 import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.Pipe
@@ -53,7 +54,7 @@ abstract class PipeType<X, T : Pipe<*, X>> {
 
     abstract fun getBaseShape(state: BlockState): PipeShape<X>
 
-    protected fun getOrCreateTranslationKey(): String {
+    protected fun getOrCreateTranslationKey(): String {world: World
         return translationKey ?: run {
             val key = SystemUtil.createTranslationKey("pipe", Registries.PipeType.getId(this));
             translationKey = key

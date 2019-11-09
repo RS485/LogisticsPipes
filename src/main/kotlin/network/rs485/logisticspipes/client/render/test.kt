@@ -39,15 +39,15 @@ package network.rs485.logisticspipes.client.render
 
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.render.LayeredVertexConsumerStorage
+import net.minecraft.client.render.BufferBuilderStorage
 import net.minecraft.client.util.math.MatrixStack
 
 private val cellRenderer by lazy { CellRenderer(MinecraftClient.getInstance()) }
 
-fun render(x: Double, y: Double, z: Double, delta: Float, matStack: MatrixStack, buffer: LayeredVertexConsumerStorage) {
+fun render(x: Double, y: Double, z: Double, delta: Float, matStack: MatrixStack, buffer: BufferBuilderStorage) {
     // cellRenderer.render(x, y, z, delta, matStack, buffer)
     RenderSystem.pushMatrix()
-    RenderSystem.multMatrix(matStack.peek())
+    RenderSystem.multMatrix(matStack.peek().model)
     cellRenderer.render(x, y, z, delta, matStack, buffer)
     RenderSystem.popMatrix()
 }

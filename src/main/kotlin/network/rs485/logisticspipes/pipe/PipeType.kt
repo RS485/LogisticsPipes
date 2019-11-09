@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.pipe
 import net.minecraft.block.BlockState
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
-import net.minecraft.util.SystemUtil
+import net.minecraft.util.Util
 import network.rs485.logisticspipes.init.Registries
 import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.Pipe
@@ -55,7 +55,7 @@ abstract class PipeType<X, T : Pipe<*, X>, I> {
 
     protected fun getOrCreateTranslationKey(): String {
         return translationKey ?: run {
-            val key = SystemUtil.createTranslationKey("pipe", Registries.PipeType.getId(this));
+            val key = Util.createTranslationKey("pipe", Registries.PipeType.getId(this));
             translationKey = key
             key
         }

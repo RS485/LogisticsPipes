@@ -44,6 +44,6 @@ import net.minecraft.client.render.VertexFormats.*
 
 object VertexFormats {
 
-    val POSITION_COLOR_LMAP2_NORMAL = VertexFormat(ImmutableList.builder<VertexFormatElement>().add(POSITION_ELEMENT).add(COLOR_ELEMENT).add(field_20886).add(NORMAL_ELEMENT).add(PADDING_ELEMENT).build())
+    val POSITION_COLOR_LIGHT_NORMAL = VertexFormat(ImmutableList.builder<VertexFormatElement>().add(POSITION_ELEMENT).add(COLOR_ELEMENT).add(LIGHT_ELEMENT).add(NORMAL_ELEMENT).build())
 
 }

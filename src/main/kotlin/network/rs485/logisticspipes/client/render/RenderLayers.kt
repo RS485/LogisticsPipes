@@ -44,7 +44,7 @@ import org.lwjgl.opengl.GL11
 
 object RenderLayers {
 
-    val SOLID_COLOR = RenderLayer("solid_color", VertexFormats.POSITION_COLOR_LMAP2_NORMAL, GL11.GL_QUADS, 1024, true, false, {
+    val SOLID_COLOR = RenderLayer("solid_color", VertexFormats.POSITION_COLOR_LIGHT_NORMAL, GL11.GL_QUADS, 1024, true, false, {
         RenderSystem.disableBlend()
         RenderSystem.shadeModel(GL11.GL_SMOOTH)
         RenderSystem.disableAlphaTest()

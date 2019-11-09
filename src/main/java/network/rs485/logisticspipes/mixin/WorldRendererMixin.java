@@ -37,10 +37,9 @@
 
 package network.rs485.logisticspipes.mixin;
 
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LayeredBufferBuilderStorage;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.Matrix4f;
@@ -63,7 +62,7 @@ public abstract class WorldRendererMixin {
 
 	@Shadow
 	@Final
-	private LayeredBufferBuilderStorage layeredBufferBuilderStorage;
+	private BufferBuilderStorage bufferBuilders;
 
 	@Shadow
 	private ClientWorld world;
@@ -79,10 +78,9 @@ public abstract class WorldRendererMixin {
 	)
 	private void render(MatrixStack matStack, float delta, long time, boolean renderBlockOutlines, Camera cam, GameRenderer gr, LightmapTextureManager ltm, Matrix4f mat, CallbackInfo ci) {
 		Profiler profiler = world.getProfiler();
-		LayeredVertexConsumerStorage buffer = this.layeredBufferBuilderStorage.getGeneralDrawer();
 		Vec3d camPos = cam.getPos();
 		profiler.swap("cells");
-		TestKt.render(camPos.x, camPos.y, camPos.z, delta, matStack, buffer);
+		TestKt.render(camPos.x, camPos.y, camPos.z, delta, matStack, bufferBuilders);
 	}
 
 }

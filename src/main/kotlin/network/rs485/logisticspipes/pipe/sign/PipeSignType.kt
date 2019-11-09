@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.pipe.sign
 
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
-import net.minecraft.util.SystemUtil
+import net.minecraft.util.Util
 import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.init.Registries
 import network.rs485.logisticspipes.transport.Pipe
@@ -55,7 +55,7 @@ abstract class PipeSignType<T : PipeSign> {
 
     protected fun getOrCreateTranslationKey(): String {
         return translationKey ?: run {
-            val key = SystemUtil.createTranslationKey("pipe_sign_type", Registries.SignType.getId(this));
+            val key = Util.createTranslationKey("pipe_sign_type", Registries.SignType.getId(this));
             translationKey = key
             key
         }

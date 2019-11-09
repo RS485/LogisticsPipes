@@ -2,7 +2,8 @@
   <configuration default="false" name="Minecraft Server" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="net.fabricmc.loader.launch.knot.KnotServer" />
     <module name="LogisticsPipes.main" />
-    <option name="VM_PARAMETERS" value="-Dfabric.development=true" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="VM_PARAMETERS" value="-Dfabric.development=true -Djava.library.path=&quot;/home/farfetchd/.gradle/caches/fabric-loom/natives/19w45b&quot;" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/" />
     <method v="2">
       <option name="Make" enabled="true" />

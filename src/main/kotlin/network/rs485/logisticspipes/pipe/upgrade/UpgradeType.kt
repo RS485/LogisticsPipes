@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.pipe.upgrade
 
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
-import net.minecraft.util.SystemUtil
+import net.minecraft.util.Util
 import network.rs485.logisticspipes.init.Registries
 
 abstract class UpgradeType<T : Upgrade> {
@@ -50,7 +50,7 @@ abstract class UpgradeType<T : Upgrade> {
 
     protected fun getOrCreateTranslationKey(): String {
         return translationKey ?: run {
-            val key = SystemUtil.createTranslationKey("upgrade", Registries.UpgradeType.getId(this));
+            val key = Util.createTranslationKey("upgrade", Registries.UpgradeType.getId(this));
             translationKey = key
             key
         }

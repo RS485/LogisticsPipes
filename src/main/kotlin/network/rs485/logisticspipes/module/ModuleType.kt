@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.module
 
 import net.minecraft.text.Text
 import net.minecraft.text.TranslatableText
-import net.minecraft.util.SystemUtil
+import net.minecraft.util.Util
 import network.rs485.logisticspipes.init.Registries
 
 abstract class ModuleType<T : Module> {
@@ -50,7 +50,7 @@ abstract class ModuleType<T : Module> {
 
     protected fun getOrCreateTranslationKey(): String {
         return translationKey ?: run {
-            val key = SystemUtil.createTranslationKey("module", Registries.ModuleType.getId(this));
+            val key = Util.createTranslationKey("module", Registries.ModuleType.getId(this));
             translationKey = key
             key
         }

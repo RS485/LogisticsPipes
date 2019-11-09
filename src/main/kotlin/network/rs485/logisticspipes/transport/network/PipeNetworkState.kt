@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.transport.network
 
+import net.fabricmc.fabric.api.util.NbtType
 import net.minecraft.block.Block
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
@@ -44,8 +45,8 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.PersistentState
 import net.minecraft.world.dimension.Dimension
-import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.pipe.shape.BlockFace
+import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import java.util.*
@@ -93,13 +94,7 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 
         var net = createNetwork()
 
-        fun <X, T : Pipe<*, X>, I> PipeNetworkImpl.createNode(type: PipeType<X, T, I>, itf: I): PipeNode {
-            val shape = type.getBaseShape(state).translate(pos)
-            return createNode(pos, shape, type.create(itf))
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        var node = net.createNode(attr.type as PipeType<Any?, Pipe<*, Any?>, Any?>, attr.itf)
+        var node = net.createNode(pos, attr.type.getBaseShape(state).translate(pos) as PipeShape<Any?>, attr.create() as Pipe<*, Any?>)
 
         for ((port, face) in node.data.shape.ports) {
             val other = face.opposite
@@ -128,7 +123,7 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     }
 
     fun destroyNetwork(id: UUID) {
-        val net = networks.remove(id) ?: return
+        networks.remove(id) ?: return
 
         for ((k, v) in posToNetworks.entries.toSet()) {
             if (v == id) posToNetworks.remove(k)
@@ -155,6 +150,15 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     }
 
     fun rebuildRefs() = networks.keys.forEach(::rebuildRefs)
+
+    fun rebuildCachedBlocks() {
+        cachedBlocks.clear()
+        cachedBlocks += networks.values
+                .flatMap { it.graph.nodes }
+                .map { it.data.pos }
+                .associateWith { world.getBlockState(it).block }
+        markDirty()
+    }
 
     fun cleanup() {
         for (net in networks.values.toSet()) {
@@ -185,7 +189,20 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
         posToNetworks.clear()
         portLocationToNetwork.clear()
 
+        networks += tag.getList("networks", NbtType.COMPOUND).let { (0 until it.size).map(it::getCompound) }
+                .associate { it.getUuid("id") to PipeNetworkImpl.fromTag(world, this, it) }
+
         rebuildRefs()
+        cleanup()
+        rebuildCachedBlocks()
+    }
+
+    fun getPipeAt(pos: BlockPos): Pipe<*, *>? {
+        return getNetworkAt(pos)?.getPipeAt(pos)
+    }
+
+    fun getNetworkAt(pos: BlockPos): PipeNetwork? {
+        return posToNetworks[pos]?.let(::getNetworkById)
     }
 
     companion object {

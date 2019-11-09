@@ -42,22 +42,30 @@ import alexiil.mc.lib.attributes.AttributeProvider
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityContext
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
+import net.minecraft.util.ActionResult
+import net.minecraft.util.Hand
+import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
+import net.minecraft.util.math.Vec3d
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.util.shape.VoxelShapes
 import net.minecraft.world.BlockView
 import net.minecraft.world.IWorld
 import net.minecraft.world.World
+import network.rs485.logisticspipes.pipe.DummyPipe
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.transport.CellContent
+import network.rs485.logisticspipes.transport.Cells
 import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<*, T, PipeBlockInterface>) : Block(settings), AttributeProvider {
+open class PipeBlock<T : Pipe<*, Direction>>(settings: Settings, val pipeType: PipeType<Direction, T, PipeBlockInterface>) : Block(settings), AttributeProvider {
 
     init {
         defaultState = SIDE_PROPERTIES.values.fold(defaultState) { acc, prop -> acc.with(prop, false) }
@@ -68,6 +76,17 @@ open class PipeBlock<T : Pipe<*, *>>(settings: Settings, val pipeType: PipeType<
         if (world is ServerWorld) {
             world.getPipeNetworkState().onBlockChanged(pos)
         }
+    }
+
+    override fun onUse(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult {
+        if (world is ServerWorld) {
+            val stack = player.getStackInHand(hand).split(64)
+            val ns = world.getPipeNetworkState()
+            val net = ns.getNetworkAt(pos) ?: return ActionResult.FAIL
+            val pipe = net.getPipeAt(pos) as? DummyPipe ?: return ActionResult.FAIL
+            net.insert(Cells.ofItem(stack), pipe, hit.side)
+        }
+        return ActionResult.SUCCESS
     }
 
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {
@@ -112,5 +131,14 @@ class PipeBlockInterface(val world: World, val pos: BlockPos) {
         if (state.block is PipeBlock<*>) {
             world.setBlockState(pos, state.with(PipeBlock.SIDE_PROPERTIES.getValue(side), connected))
         }
+    }
+
+    fun dropItem(content: CellContent, port: Direction) {
+        val entity = content.createEntity(world) ?: return
+        val dir = Vec3d(port.vector)
+        val vec = Vec3d(pos).add(0.5, 0.5, 0.50).add(dir.multiply(0.75))
+        entity.setPosition(vec.x, vec.y, vec.z)
+        entity.velocity = dir.multiply(0.2)
+        world.spawnEntity(entity)
     }
 }

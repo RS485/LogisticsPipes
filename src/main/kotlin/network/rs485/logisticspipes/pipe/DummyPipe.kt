@@ -44,12 +44,16 @@ import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import network.rs485.logisticspipes.transport.StandardPipe
 
-class DummyPipe(val itf: PipeBlockInterface) : StandardPipe() {
+// Unrouted pipes (and routed pipes) have 12 different paths in them that items can go
+// (6 sides, either from center -> edge or edge -> center), as opposed to highspeed tubes, which only have 2 possible paths
+// (either "forwards" or "backwards"), since those don't have any intersections that items can branch off of.
+
+class DummyPipe(itf: PipeBlockInterface) : StandardPipe(itf) {
 
     override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
         // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.
         val possibleSides = Direction.values().filter { network.isPortConnected(this, it) } - from
-        val outputSide = if (possibleSides.isNotEmpty()) possibleSides.random() else null
+        val outputSide = if (possibleSides.isNotEmpty()) possibleSides[network.random.nextInt(possibleSides.size)] else null
         return outputSide
     }
 

@@ -37,51 +37,15 @@
 
 package network.rs485.logisticspipes.transport
 
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import java.util.*
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
+import net.minecraft.item.ItemStack
 
-interface PipeNetwork {
+object Cells {
 
-    val id: UUID
+    fun ofItem(stack: ItemStack): Cell<ItemCellContent> =
+            Cell(ItemCellContent(stack))
 
-    val random: Random
-
-    val pipes: Iterable<Pipe<*, *>>
-
-    val cells: Iterable<Cell<*>>
-
-    /**
-     * Insert a cell into the network.
-     */
-    fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P)
-
-    /**
-     * Insert a cell into the network into the specified pipe at the specified port. This should also be called to transfer a cell from a pipe to the next.
-     */
-    fun <X> insert(cell: Cell<*>, pipe: Pipe<*, X>, port: X) =
-            pipe.onEnterPipe(this, port, cell)
-
-    /**
-     * Inserts a cell into the network into the next pipe connected to the specified pipe's port.
-     * Helper method for Pipe::onFinishPipe to continue transferring item
-     * Returns false if this pipe isn't connected to anything on the specified port
-     */
-    fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean
-
-    /**
-     * Untracks (removes) a cell from the pipe network and returns its content.
-     */
-    fun <T : CellContent> untrack(cell: Cell<T>): T
-
-    fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d
-
-    fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean
-
-    fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): PipePortAssoc<*>?
-
-    fun getPipeAt(pos: BlockPos): Pipe<*, *>?
-
-    data class PipePortAssoc<X>(val pipe: Pipe<*, X>, val port: X)
+    fun ofFluid(volume: FluidVolume): Cell<FluidCellContent> =
+            Cell(FluidCellContent(volume))
 
 }

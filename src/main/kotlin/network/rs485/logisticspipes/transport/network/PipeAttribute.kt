@@ -43,6 +43,8 @@ import network.rs485.logisticspipes.transport.Pipe
 
 data class PipeAttribute<T : Pipe<*, *>, I>(val type: PipeType<*, T, I>, val itf: I) {
 
+    fun create() = type.create(itf)
+
     companion object {
         val ATTRIBUTE = Attributes.create(PipeAttribute::class.java)
     }

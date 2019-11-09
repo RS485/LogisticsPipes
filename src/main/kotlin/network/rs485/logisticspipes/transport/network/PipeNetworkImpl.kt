@@ -38,11 +38,14 @@
 package network.rs485.logisticspipes.transport.network
 
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap
+import net.fabricmc.fabric.api.util.NbtType
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 import network.rs485.logisticspipes.pipe.shape.BlockFace
 import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.*
@@ -50,13 +53,14 @@ import therealfarfetchd.hctm.common.graph.Graph
 import therealfarfetchd.hctm.common.graph.Link
 import therealfarfetchd.hctm.common.graph.Node
 import java.util.*
+import kotlin.collections.LinkedHashMap
 import kotlin.math.roundToLong
 
 internal typealias PipeGraph = Graph<PipeHolder<*>, Any?>
 internal typealias PipeNode = Node<PipeHolder<*>, Any?>
 internal typealias PipeLink = Link<PipeHolder<*>, Any?>
 
-class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, val controller: PipeNetworkState) : PipeNetwork {
+class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val controller: PipeNetworkState) : PipeNetwork {
 
     private val insertTimes = Object2LongOpenHashMap<UUID>()
     private val updateTimes = Object2LongOpenHashMap<UUID>()
@@ -74,6 +78,9 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
 
     override val cells
         get() = cellMap.values.asSequence().map { it.cell }.asIterable()
+
+    override val random: Random
+        get() = world.random
 
     override fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
         cellMap[cell.id] = CellHolder(cell, pipe, path)
@@ -120,11 +127,11 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
 
     fun tick() {
         val iter = updateTimes.iterator()
-        val queued = mutableListOf<Map.Entry<UUID, Long>>()
-        for (entry in iter) {
-            if (entry.value < world.time) {
+        val queued = LinkedHashMap<UUID, Long>()
+        for ((id, time) in iter) {
+            if (time < world.time) {
                 iter.remove()
-                queued += entry
+                queued[id] = time
             } else break
         }
         for ((id, _) in queued) {
@@ -135,18 +142,22 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
 
     override fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean {
         // TODO optimize
-        return graph.nodes.first { it.data == pipe }.connections.any { it.containsPort(port) }
+        return graph.nodes.first { it.data.pipe == pipe }.let { node -> node.connections.any { it.data(node) == port } }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): PipeNetwork.PipePortAssoc<*>? {
         // TODO optimize
-        val node = graph.nodes.first { it.data == self }
-        return node.connections.singleOrNull { it.data(node) == output }?.let { PipeNetwork.PipePortAssoc(it.other(node).data as Pipe<*, Any?>, it.otherData(node)) }
+        val node = graph.nodes.first { it.data.pipe == self }
+        return node.connections.singleOrNull { it.data(node) == output }?.let { PipeNetwork.PipePortAssoc(it.other(node).data.pipe as Pipe<*, Any?>, it.otherData(node)) }
     }
 
     fun <X> createNode(pos: BlockPos, shape: PipeShape<X>, pipe: Pipe<*, X>): PipeNode {
-        val result = graph.add(PipeHolder(UUID.randomUUID(), pos, pipe, shape))
+        return addNode(PipeHolder(UUID.randomUUID(), pos, pipe, shape))
+    }
+
+    private fun addNode(holder: PipeHolder<*>): PipeNode {
+        val result = graph.add(holder)
         result.data.pipe.onJoinNetwork(this)
         return result
     }
@@ -176,6 +187,10 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
 
     fun getNodeAt(pos: BlockPos): PipeNode? {
         return graph.nodes.find { pos in it.data.shape.blocks }
+    }
+
+    override fun getPipeAt(pos: BlockPos): Pipe<*, *>? {
+        return getNodeAt(pos)?.data?.pipe
     }
 
     fun merge(other: PipeNetworkImpl) {
@@ -227,8 +242,26 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
-
+        val serializedNodes = mutableListOf<CompoundTag>()
+        val serializedLinks = mutableListOf<CompoundTag>()
+        val nodes = graph.nodes.toList()
+        val n1 = nodes.withIndex().associate { it.value to it.index }
+        for (node in nodes) {
+            serializedNodes += node.data.toTag()
+        }
+        for (link in nodes.flatMap { it.connections }.distinct()) {
+            val sLink = CompoundTag()
+            sLink.putInt("first", n1.getValue(link.first))
+            sLink.putInt("second", n1.getValue(link.second))
+            sLink.put("data1", (link.first.data.pipe as Pipe<*, Any?>).getTagFromPort(link.data1))
+            sLink.put("data2", (link.second.data.pipe as Pipe<*, Any?>).getTagFromPort(link.data2))
+            serializedLinks += sLink
+        }
+        tag.put("nodes", ListTag().also { t -> serializedNodes.forEach { t.add(it) } })
+        tag.put("links", ListTag().also { t -> serializedLinks.forEach { t.add(it) } })
+        tag.putUuid("id", id)
         return tag
     }
 
@@ -236,6 +269,31 @@ class PipeNetworkImpl(override val world: ServerWorld, override val id: UUID, va
         val newId = tag.getUuid("id")
         if (newId != id) error("Tried to load data for $newId into network $id")
 
+        val sNodes = tag.getList("nodes", NbtType.COMPOUND)
+        val sLinks = tag.getList("links", NbtType.COMPOUND)
+
+        val nodes = mutableListOf<PipeNode?>()
+
+        for (node in sNodes.map { it as CompoundTag }) {
+            val part = PipeHolder.fromTag(node, world)
+            if (part == null) {
+                nodes += null as PipeNode?
+                continue
+            }
+            nodes += addNode(part)
+        }
+
+        for (link in sLinks.map { it as CompoundTag }) {
+            val first = nodes[link.getInt("first")]
+            val second = nodes[link.getInt("second")]
+            val data1 = link.get("data1")?.let { first?.data?.pipe?.getPortFromTag(it) }
+            val data2 = link.get("data2")?.let { second?.data?.pipe?.getPortFromTag(it) }
+            if (first != null && second != null && data1 != null && data2 != null) {
+                graph.link(first, second, data1, data2)
+            }
+        }
+
+        rebuildRefs()
     }
 
     companion object {
@@ -258,4 +316,28 @@ private data class CellHolder<P : CellPath>(val cell: Cell<*>, val pipe: Pipe<P,
     }
 }
 
-data class PipeHolder<X>(val id: UUID, val pos: BlockPos, val pipe: Pipe<*, X>, val shape: PipeShape<X>)
+data class PipeHolder<X>(val id: UUID, val pos: BlockPos, val pipe: Pipe<*, X>, val shape: PipeShape<X>) {
+
+    fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
+        tag.putUuid("id", id)
+        tag.putInt("x", pos.x)
+        tag.putInt("y", pos.y)
+        tag.putInt("z", pos.z)
+        tag.put("pipe", pipe.toTag())
+        return tag
+    }
+
+    companion object {
+        @Suppress("UNCHECKED_CAST")
+        fun fromTag(tag: CompoundTag, world: World): PipeHolder<*>? {
+            val id = tag.getUuid("id")
+            val pos = BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"))
+            val state = world.getBlockState(pos)
+            val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos) ?: return null
+            val pipe = attr.create().also { it.fromTag(tag.getCompound("pipe")) }
+            val shape = attr.type.getBaseShape(state).translate(pos)
+            return PipeHolder(id, pos, pipe as Pipe<*, Any?>, shape as PipeShape<Any?>)
+        }
+    }
+
+}

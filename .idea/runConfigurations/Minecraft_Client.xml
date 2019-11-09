@@ -3,7 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="net.fabricmc.loader.launch.knot.KnotClient" />
     <module name="LogisticsPipes.main" />
     <option name="PROGRAM_PARAMETERS" value=" --assetIndex &quot;19w45b-1.15&quot; --assetsDir &quot;$USER_HOME$/.gradle/caches/fabric-loom/assets&quot; --username AbnormalChizax --uuid 6cb83256-d460-4185-8987-b192bd267c5d" />
-    <option name="VM_PARAMETERS" value="-Dfabric.development=true -Djava.library.path=&quot;$USER_HOME$/.gradle/caches/fabric-loom/natives/19w45b&quot;" />
+    <option name="VM_PARAMETERS" value="-Dfabric.development=true" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/" />
     <method v="2">
       <option name="Make" enabled="true" />

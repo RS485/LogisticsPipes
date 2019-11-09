@@ -57,8 +57,9 @@ dependencies {
 
     modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 
-    modImplementation('therealfarfetchd.qcommon:cfg:1.0.0-8') {
+    modImplementation('therealfarfetchd.qcommon:cfg:1.0.0-10') {
         exclude module: 'fabric-language-kotlin'
+        exclude module: 'fabric-loader'
     }
 
     modRuntime('me.shedaniel:RoughlyEnoughItems:3.2.6-unstable.201911061350') {

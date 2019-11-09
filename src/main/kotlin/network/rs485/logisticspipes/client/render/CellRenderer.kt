@@ -57,7 +57,6 @@ class CellRenderer(val client: MinecraftClient) {
     var prov: CellProvider = DummyCellProvider // EmptyCellProvider
 
     fun render(x: Double, y: Double, z: Double, delta: Float, trStack: MatrixStack, buffers: BufferBuilderStorage) {
-        return // TODO
         trStack.push()
         trStack.translate(-x, -y, -z)
         val itemRenderer = client.itemRenderer
@@ -105,7 +104,7 @@ class CellRenderer(val client: MinecraftClient) {
         val mat = trStack.peek().model
         val nmat = trStack.peek().normal
 
-        buffers.blockBufferBuilders[RenderLayer.getTranslucent()].run {
+        buffers.entityVertexConsumers.getBuffer(RenderLayer.getTranslucent()).run {
             vertex(mat, -extent, -extent, -extent).color(r, g, b, a).texture(sprite.minU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(nmat, -1f, 0f, 0f).next()
             vertex(mat, -extent, -extent, extent).color(r, g, b, a).texture(sprite.maxU, sprite.minV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(nmat, -1f, 0f, 0f).next()
             vertex(mat, -extent, maxY, extent).color(r, g, b, a).texture(sprite.maxU, maxV).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(nmat, -1f, 0f, 0f).next()

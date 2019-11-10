@@ -49,25 +49,25 @@ dependencies {
         exclude module: 'fabric-loader'
     }
 
-    modImplementation "alexiil.mc.lib:libblockattributes-all:0.5.0"
+    modImplementation "alexiil.mc.lib:libblockattributes-all:${project.lba_version}"
 
-    modImplementation('com.lettuce.fudge:fabric-drawer:1.1.0') {
+    modImplementation("com.lettuce.fudge:fabric-drawer:${project.drawer_version}") {
         exclude module: 'fabric-language-kotlin'
     }
 
     modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 
-    modImplementation('therealfarfetchd.qcommon:cfg:1.0.0-10') {
+    modImplementation("therealfarfetchd.qcommon:cfg:${project.cfg_version}") {
         exclude module: 'fabric-language-kotlin'
         exclude module: 'fabric-loader'
     }
 
-    modRuntime('me.shedaniel:RoughlyEnoughItems:3.2.6-unstable.201911061350') {
+    modRuntime("me.shedaniel:RoughlyEnoughItems:${rei_version}") {
         exclude group: 'net.fabricmc.fabric-api'
         exclude module: 'modmenu'
     }
 
-    compileOnly 'org.projectlombok:lombok:1.16.8'
+    compileOnly "org.projectlombok:lombok:${lombok_version}"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.+'

@@ -51,7 +51,6 @@ import therealfarfetchd.hctm.common.graph.Graph
 import therealfarfetchd.hctm.common.graph.Link
 import therealfarfetchd.hctm.common.graph.Node
 import java.util.*
-import kotlin.collections.LinkedHashMap
 import kotlin.math.roundToLong
 
 internal typealias PipeGraph = Graph<PipeHolder<*>, Any?>
@@ -84,6 +83,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
         val time = length / speed
 
         cellMap[cell.id] = CellHolder(cell, pipe, path, world.time, world.time + time.roundToLong())
+        controller.markDirty()
     }
 
     override fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean {
@@ -105,6 +105,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
     private fun untrack0(cell: Cell<*>) {
         val cellId = cell.id
         cellMap.remove(cellId)
+        controller.markDirty()
     }
 
     override fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d {
@@ -118,16 +119,14 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
     }
 
     fun tick() {
-        val iter = cellMap.iterator()
-        val queued = LinkedHashMap<UUID, Long>()
-        for ((id, cell) in iter) {
+        val iter = cellMap.values.iterator()
+        val queued = HashSet<CellHolder<*>>()
+        for (cell in iter) {
             if (cell.updateTime < world.time) {
-                iter.remove()
-                queued[id] = cell.updateTime
-            } else break
+                queued += cell
+            }
         }
-        for ((id, _) in queued) {
-            val cp = cellMap[id] ?: continue
+        for (cp in queued) {
             cp.onFinish(this)
         }
     }
@@ -151,6 +150,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
     private fun addNode(holder: PipeHolder<*>): PipeNode {
         val result = graph.add(holder)
         result.data.pipe.onJoinNetwork(this)
+        controller.markDirty()
         return result
     }
 
@@ -165,6 +165,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
         split()
         if (graph.nodes.isEmpty()) controller.destroyNetwork(this.id)
         else controller.rebuildRefs(this.id)
+        controller.markDirty()
     }
 
     fun getNodeById(id: UUID): PipeNode? {

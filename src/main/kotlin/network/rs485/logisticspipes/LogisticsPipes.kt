@@ -52,6 +52,7 @@ object LogisticsPipes : ModInitializer {
 
     override fun onInitialize() {
         Registries
+        CellContentTypes
         PipeTypes
         PipeSignTypes
         ModuleTypes

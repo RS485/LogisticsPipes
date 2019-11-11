@@ -52,14 +52,14 @@ object BlockEntityTypes {
     val FuzzyCraftingTable = create("fuzzy_crafting_table", { -> LogisticsCraftingTableBlockEntity(true) }, Blocks.FuzzyCraftingTable)
 
     private fun <T : BlockEntity> create(name: String, builder: () -> T, vararg blocks: Block): BlockEntityType<T> {
-        return Registry.register(Registry.BLOCK_ENTITY, Identifier(ModID, name), BlockEntityType.Builder.create(Supplier(builder), *blocks).build(null))
+        return Registry.register(Registry.BLOCK_ENTITY_TYPE, Identifier(ModID, name), BlockEntityType.Builder.create(Supplier(builder), *blocks).build(null))
     }
 
     private fun <T : BlockEntity> create(name: String, builder: (BlockEntityType<T>) -> T, vararg blocks: Block): BlockEntityType<T> {
         var type: BlockEntityType<T>? = null
         val s = Supplier { builder(type!!) }
         type = BlockEntityType.Builder.create(s, *blocks).build(null)
-        return Registry.register(Registry.BLOCK_ENTITY, Identifier(ModID, name), type)
+        return Registry.register(Registry.BLOCK_ENTITY_TYPE, Identifier(ModID, name), type)
     }
 
 }

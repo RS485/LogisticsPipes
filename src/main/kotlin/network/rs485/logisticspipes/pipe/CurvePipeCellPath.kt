@@ -35,20 +35,24 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.pipe.shape
+package network.rs485.logisticspipes.pipe
 
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3i
+import net.minecraft.util.math.Vec3d
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
-data class TranslatedPipeShape<X>(
-        val wrapped: PipeShape<X>,
-        val offset: Vec3i
-) : PipeShape<X> {
+class CurvePipeCellPath(override val from: BiPort) : HighSpeedPath {
 
-    override val ports: Map<X, BlockFace>
-        get() {
-            if (offset == BlockPos.ORIGIN) return wrapped.ports
-            return wrapped.ports.mapValues { (_, v) -> v.copy(pos = v.pos.add(offset)) }
-        }
+    override fun getItemPosition(progress: Float): Vec3d {
+        var angle = ((if (from == BiPort.SIDE_2) progress else 1 - progress).toDouble() - 1) * PI / 2
+        val x = -sin(angle) - 1
+        val y = cos(angle) - 1
+        return Vec3d(2 * x, 0.0, 2 * y)
+    }
+
+    override fun getLength(): Float {
+        return PI.toFloat()
+    }
 
 }

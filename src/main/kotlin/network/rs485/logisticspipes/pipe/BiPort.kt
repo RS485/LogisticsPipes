@@ -35,20 +35,12 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.pipe.shape
+package network.rs485.logisticspipes.pipe
 
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3i
+enum class BiPort {
+    SIDE_1,
+    SIDE_2;
 
-data class TranslatedPipeShape<X>(
-        val wrapped: PipeShape<X>,
-        val offset: Vec3i
-) : PipeShape<X> {
-
-    override val ports: Map<X, BlockFace>
-        get() {
-            if (offset == BlockPos.ORIGIN) return wrapped.ports
-            return wrapped.ports.mapValues { (_, v) -> v.copy(pos = v.pos.add(offset)) }
-        }
-
+    val opposite
+        get() = values()[ordinal xor 1]
 }

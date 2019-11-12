@@ -43,21 +43,13 @@ import net.minecraft.util.math.Vec3i
 
 interface PipeShape<X> {
 
-    val blocks: Set<BlockPos>
-
     val ports: Map<X, BlockFace>
 
     @JvmDefault
-    operator fun plus(other: PipeShape<X>): PipeShape<X> = PipeShapeImpl(blocks + other.blocks, ports + other.ports)
+    operator fun plus(other: PipeShape<X>): PipeShape<X> = PipeShapeImpl(ports + other.ports)
 
     @JvmDefault
-    fun withBlock(b: BlockPos): PipeShape<X> = PipeShapeImpl(blocks + b, ports)
-
-    @JvmDefault
-    fun withBlocks(b: Iterable<BlockPos>): PipeShape<X> = PipeShapeImpl(blocks + b, ports)
-
-    @JvmDefault
-    fun withPort(port: X, pos: BlockPos, side: Direction): PipeShape<X> = PipeShapeImpl(blocks, ports + Pair(port, BlockFace(pos, side)))
+    fun withPort(port: X, pos: BlockPos, side: Direction): PipeShape<X> = PipeShapeImpl(ports + Pair(port, BlockFace(pos, side)))
 
     @JvmDefault
     fun rotate(axis: Direction.Axis, angle: AxisFixedAngle): PipeShape<X> = RotatedPipeShape(this, axis, angle)
@@ -67,7 +59,7 @@ interface PipeShape<X> {
 
     companion object {
         @JvmStatic
-        fun <X> empty(): PipeShape<X> = PipeShapeImpl(emptySet(), emptyMap())
+        fun <X> empty(): PipeShape<X> = PipeShapeImpl(emptyMap())
     }
 
 }

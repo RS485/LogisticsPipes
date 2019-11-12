@@ -50,9 +50,6 @@ data class RotatedPipeShape<X>(
         val angle: AxisFixedAngle
 ) : PipeShape<X> {
 
-    override val blocks: Set<BlockPos>
-        get() = wrapped.blocks.map(::rotatePos).toSet()
-
     override val ports: Map<X, BlockFace>
         get() = wrapped.ports.mapValues { (_, v) -> BlockFace(rotatePos(v.pos), rotateDirection(v.side)) }
 
@@ -88,7 +85,7 @@ data class RotatedPipeShape<X>(
             Z -> listOf(DOWN, EAST, UP, WEST)
         }
 
-        return if (dir in list) list[angle.ordinal + list.indexOf(dir) % 4] else dir
+        return if (dir in list) list[(angle.ordinal + list.indexOf(dir)) % 4] else dir
     }
 }
 

@@ -53,6 +53,7 @@ object Items {
     val FuzzyCraftingTable = create("fuzzy_crafting_table", Blocks.FuzzyCraftingTable)
 
     val UnroutedPipe = create("unrouted_pipe", Blocks.UnroutedPipe)
+    val CurvePipe = create("curve_pipe", Blocks.CurvePipe)
 
     val SecurityCard = create("security_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.SECURITY))
     val FrequencyCard = create("frequency_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.FREQUENCY))

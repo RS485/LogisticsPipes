@@ -190,7 +190,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
     }
 
     fun getNodeAt(pos: BlockPos): PipeNode? {
-        return graph.nodes.find { pos in it.data.shape.blocks }
+        return graph.nodes.find { it.data.pos == pos }
     }
 
     fun getNodeByPipe(pipe: Pipe<*, *>): PipeNode? {

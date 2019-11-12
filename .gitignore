@@ -22,6 +22,7 @@ run-server/*
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/runConfigurations
 
 # Generated files
 .idea/**/contentModel.xml

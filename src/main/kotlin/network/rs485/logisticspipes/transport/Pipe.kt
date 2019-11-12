@@ -37,14 +37,8 @@
 
 package network.rs485.logisticspipes.transport
 
-import net.minecraft.nbt.AbstractNumberTag
-import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Direction
-import network.rs485.logisticspipes.block.PipeBlockInterface
-import kotlin.experimental.or
 
 interface Pipe<P : CellPath, X> {
 
@@ -76,11 +70,6 @@ interface Pipe<P : CellPath, X> {
     fun onDisconnect(port: X, other: Pipe<*, *>) {
     }
 
-    /**
-     * Maps position + side to one of the pipe's ports.
-     */
-    fun getPort(pos: BlockPos, side: Direction): X?
-
     @JvmDefault
     fun onJoinNetwork(network: PipeNetwork) {
     }
@@ -100,77 +89,5 @@ interface Pipe<P : CellPath, X> {
     fun getTagFromPath(path: P): Tag
 
     fun getPathFromTag(tag: Tag): P
-
-}
-
-// test/demo classes
-
-abstract class StandardPipe(protected val itf: PipeBlockInterface) : Pipe<StandardPipeCellPath, Direction> {
-
-    override fun onEnterPipe(network: PipeNetwork, from: Direction, cell: Cell<*>) {
-        // Send the cell inwards, from the side it entered from.
-        network.insert(cell, this, StandardPipeCellPath(from, true))
-    }
-
-    abstract fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction?
-
-    override fun onFinishPath(network: PipeNetwork, path: StandardPipeCellPath, cell: Cell<*>) {
-        if (path.inwards) {
-            // The cell has reached the center of the pipe
-            val outputSide = routeCell(network, path.side, cell)
-
-            if (outputSide == null) {
-                // If there's nowhere to go, drop the cell as an entity in the world, if possible.
-                // And remove it from the network, of course
-                val content = network.untrack(cell)
-                itf.dropItem(content, path.side.opposite)
-            } else {
-                // Continue on, to infinity and beyond! Uhh, I mean, in the random direction we picked.
-                network.insert(cell, this, StandardPipeCellPath(outputSide, false))
-            }
-        } else {
-            // The cell has reached the end of the pipe.
-            val nextPipe = network.getConnectedPipe(this, path.side)
-            if (nextPipe != null) {
-                // If there's a pipe connected to this one at the side the item is supposed to come out of (which it should), put it in there
-                network.insertFrom(cell, this, path.side)
-            } else {
-                // Otherwise, again, drop the item.
-                val content = network.untrack(cell)
-                itf.dropItem(content, path.side)
-            }
-        }
-    }
-
-    override fun getPort(pos: BlockPos, side: Direction): Direction? {
-        // if pos == this.pos?
-        return side
-    }
-
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return tag
-    }
-
-    override fun fromTag(tag: CompoundTag) {
-    }
-
-    override fun getTagFromPort(port: Direction): Tag {
-        return ByteTag.of(port.id.toByte())
-    }
-
-    override fun getPortFromTag(tag: Tag): Direction {
-        return Direction.byId((tag as AbstractNumberTag).int)
-    }
-
-    override fun getTagFromPath(path: StandardPipeCellPath): Tag {
-        return ByteTag.of(path.side.id.toByte() or if (path.inwards) 0b1000 else 0)
-    }
-
-    override fun getPathFromTag(tag: Tag): StandardPipeCellPath {
-        val data = (tag as ByteTag).int
-        val inwards = data and 0b1000 != 0
-        val side = Direction.byId(data and 0b0111)
-        return StandardPipeCellPath(side, inwards)
-    }
 
 }

@@ -35,20 +35,17 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.pipe.shape
+package network.rs485.logisticspipes.pipe
 
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3i
+import net.minecraft.util.math.Direction
+import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.transport.LinearCellPath
 
-data class TranslatedPipeShape<X>(
-        val wrapped: PipeShape<X>,
-        val offset: Vec3i
-) : PipeShape<X> {
+class StandardPipeCellPath(val side: Direction, val inwards: Boolean) : LinearCellPath {
 
-    override val ports: Map<X, BlockFace>
-        get() {
-            if (offset == BlockPos.ORIGIN) return wrapped.ports
-            return wrapped.ports.mapValues { (_, v) -> v.copy(pos = v.pos.add(offset)) }
-        }
+    override fun getItemPosition(progress: Float): Vec3d {
+        val actualProgress = if (inwards) 1 - progress else progress
+        return Vec3d(side.vector).multiply(actualProgress.toDouble() * 0.5)
+    }
 
 }

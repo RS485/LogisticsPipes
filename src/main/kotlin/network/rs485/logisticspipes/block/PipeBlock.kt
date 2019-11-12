@@ -60,15 +60,16 @@ import net.minecraft.util.shape.VoxelShapes
 import net.minecraft.world.BlockView
 import net.minecraft.world.IWorld
 import net.minecraft.world.World
-import network.rs485.logisticspipes.pipe.DummyPipe
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.pipe.StandardPipe
+import network.rs485.logisticspipes.pipe.UnroutedPipe
 import network.rs485.logisticspipes.transport.CellContent
 import network.rs485.logisticspipes.transport.Cells
 import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-open class PipeBlock<T : Pipe<*, Direction>>(settings: Settings, val pipeType: PipeType<Direction, T, PipeBlockInterface>) : Block(settings), AttributeProvider {
+class PipeBlock<T : Pipe<*, Direction>>(settings: Settings, val pipeType: PipeType<Direction, T, StandardPipe.WorldInterface>) : Block(settings), AttributeProvider {
 
     init {
         defaultState = SIDE_PROPERTIES.values.fold(defaultState) { acc, prop -> acc.with(prop, false) }
@@ -86,20 +87,18 @@ open class PipeBlock<T : Pipe<*, Direction>>(settings: Settings, val pipeType: P
             val stack = player.getStackInHand(hand)
             val ns = world.getPipeNetworkState()
             val net = ns.getNetworkAt(pos) ?: return ActionResult.FAIL
-            val pipe = net.getPipeAt(pos) as? DummyPipe ?: return ActionResult.FAIL
-            if (stack.item == Items.WATER_BUCKET) {
-                net.insert(Cells.ofFluid(FluidVolume.create(FluidKeys.WATER, FluidVolume.BUCKET)), pipe, hit.side)
-            } else if (stack.item == Items.LAVA_BUCKET) {
-                net.insert(Cells.ofFluid(FluidVolume.create(FluidKeys.LAVA, FluidVolume.BUCKET)), pipe, hit.side)
-            } else {
-                net.insert(Cells.ofItem(stack.split(1)), pipe, hit.side)
+            val pipe = net.getPipeAt(pos) as? UnroutedPipe ?: return ActionResult.FAIL
+            when (stack.item) {
+                Items.WATER_BUCKET -> net.insert(Cells.ofFluid(FluidVolume.create(FluidKeys.WATER, FluidVolume.BUCKET)), pipe, hit.side)
+                Items.LAVA_BUCKET -> net.insert(Cells.ofFluid(FluidVolume.create(FluidKeys.LAVA, FluidVolume.BUCKET)), pipe, hit.side)
+                else -> net.insert(Cells.ofItem(stack.split(1)), pipe, hit.side)
             }
         }
         return ActionResult.SUCCESS
     }
 
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {
-        to.offer(PipeAttribute(pipeType, PipeBlockInterface(world, pos)))
+        to.offer(PipeAttribute(pipeType, WorldInterfaceImpl(world, pos)))
     }
 
     override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {
@@ -109,6 +108,23 @@ open class PipeBlock<T : Pipe<*, Direction>>(settings: Settings, val pipeType: P
 
     override fun getOutlineShape(state: BlockState, view: BlockView, pos: BlockPos, ctx: EntityContext): VoxelShape {
         return (Direction.values().mapNotNull { BOX_SIDE[it].takeIf { _ -> state.get(SIDE_PROPERTIES[it]) } } + BOX_CENTER).reduce(VoxelShapes::union)
+    }
+
+
+    class WorldInterfaceImpl(val world: World, val pos: BlockPos) : StandardPipe.WorldInterface {
+        override fun setConnection(side: Direction, connected: Boolean) {
+            val state = world.getBlockState(pos)
+            if (state.block is PipeBlock<*>) {
+                world.setBlockState(pos, state.with(SIDE_PROPERTIES.getValue(side), connected))
+            }
+        }
+
+        override fun dropItem(content: CellContent, port: Direction) {
+            val dir = Vec3d(port.vector)
+            val vec = Vec3d(pos).add(0.5, 0.5, 0.50).add(dir.multiply(0.75))
+            val entity = content.createEntity(world, vec, dir.multiply(0.2)) ?: return
+            world.spawnEntity(entity)
+        }
     }
 
     companion object {
@@ -132,20 +148,4 @@ open class PipeBlock<T : Pipe<*, Direction>>(settings: Settings, val pipeType: P
         )
     }
 
-}
-
-class PipeBlockInterface(val world: World, val pos: BlockPos) {
-    fun setConnection(side: Direction, connected: Boolean) {
-        val state = world.getBlockState(pos)
-        if (state.block is PipeBlock<*>) {
-            world.setBlockState(pos, state.with(PipeBlock.SIDE_PROPERTIES.getValue(side), connected))
-        }
-    }
-
-    fun dropItem(content: CellContent, port: Direction) {
-        val dir = Vec3d(port.vector)
-        val vec = Vec3d(pos).add(0.5, 0.5, 0.50).add(dir.multiply(0.75))
-        val entity = content.createEntity(world, vec, dir.multiply(0.2)) ?: return
-        world.spawnEntity(entity)
-    }
 }

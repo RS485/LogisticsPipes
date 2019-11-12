@@ -38,14 +38,20 @@
 package network.rs485.logisticspipes.pipe.shape
 
 import net.minecraft.block.BlockState
+import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
+import network.rs485.logisticspipes.pipe.BiPort
 
 object PipeShapes {
 
     val Default = PipeShape.empty<Direction>()
-            .withBlock(BlockPos.ORIGIN)
             .let { Direction.values().fold(it) { acc, a -> acc.withPort(a, BlockPos.ORIGIN, a) } }
             .let { { _: BlockState -> it } }
+
+    val Curve = PipeShape.empty<BiPort>()
+            .withPort(BiPort.SIDE_1, BlockPos(2, 0, 0), Direction.EAST)
+            .withPort(BiPort.SIDE_2, BlockPos(0, 0, 2), Direction.SOUTH)
+            .let { { state: BlockState -> it.rotate(Direction.Axis.Y, AxisFixedAngle.from(state[Properties.HORIZONTAL_FACING].asRotation().toInt())) } }
 
 }

@@ -37,6 +37,4 @@
 
 package network.rs485.logisticspipes.pipe.shape
 
-import net.minecraft.util.math.BlockPos
-
-data class PipeShapeImpl<X>(override val blocks: Set<BlockPos>, override val ports: Map<X, BlockFace>) : PipeShape<X>
+data class PipeShapeImpl<X>(override val ports: Map<X, BlockFace>) : PipeShape<X>

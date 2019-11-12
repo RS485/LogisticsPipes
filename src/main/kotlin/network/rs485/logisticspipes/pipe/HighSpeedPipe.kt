@@ -37,46 +37,63 @@
 
 package network.rs485.logisticspipes.pipe
 
-import net.minecraft.block.BlockState
-import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
-import net.minecraft.util.Util
-import network.rs485.logisticspipes.init.Registries
-import network.rs485.logisticspipes.pipe.shape.PipeShape
+import net.minecraft.nbt.ByteTag
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.CellContent
 import network.rs485.logisticspipes.transport.Pipe
+import network.rs485.logisticspipes.transport.PipeNetwork
 
-abstract class PipeType<X, T : Pipe<*, X>, in I> {
+class HighSpeedPipe(val pathConstructor: (BiPort) -> HighSpeedPath, val itf: WorldInterface) : Pipe<HighSpeedPath, BiPort> {
 
-    private var translationKey: String? = null
+    override fun onEnterPipe(network: PipeNetwork, from: BiPort, cell: Cell<*>) {
+        network.insert(cell, this, pathConstructor(from))
+    }
 
-    abstract fun create(itf: I): T
-
-    abstract fun getBaseShape(state: BlockState): PipeShape<X>
-
-    protected fun getOrCreateTranslationKey(): String {
-        return translationKey ?: run {
-            val key = Util.createTranslationKey("pipe", Registries.PipeType.getId(this));
-            translationKey = key
-            key
+    override fun onFinishPath(network: PipeNetwork, path: HighSpeedPath, cell: Cell<*>) {
+        // The cell has reached the end of the pipe.
+        val nextPipe = network.getConnectedPipe(this, path.from.opposite)
+        if (nextPipe != null) {
+            // If there's a pipe connected to this one at the side the item is supposed to come out of (which it should), put it in there
+            network.insertFrom(cell, this, path.from.opposite)
+        } else {
+            // Otherwise, again, drop the item.
+            val content = network.untrack(cell)
+            itf.dropItem(content, path.from.opposite)
         }
     }
 
-    open fun getTranslationKey(): String {
-        return getOrCreateTranslationKey()
+    override fun toTag(tag: CompoundTag): CompoundTag {
+        return tag
     }
 
-    open fun getName(): Text {
-        return TranslatableText(getTranslationKey())
+    override fun fromTag(tag: CompoundTag) {
     }
 
-    override fun toString(): String = getName().asString()
-
-    class Builder<X, T : Pipe<*, X>, I>(private val shape: (BlockState) -> PipeShape<X>, private val constructor: (I) -> T) {
-        fun build(): PipeType<X, T, I> = object : PipeType<X, T, I>() {
-            override fun create(itf: I): T = constructor(itf)
-
-            override fun getBaseShape(state: BlockState): PipeShape<X> = shape(state)
+    override fun getTagFromPort(port: BiPort): Tag {
+        return when (port) {
+            BiPort.SIDE_1 -> ByteTag.of(0)
+            BiPort.SIDE_2 -> ByteTag.of(1)
         }
     }
 
+    override fun getPortFromTag(tag: Tag): BiPort {
+        return if (tag is ByteTag && tag.int == 0) BiPort.SIDE_1
+        else BiPort.SIDE_2
+    }
+
+    override fun getTagFromPath(path: HighSpeedPath): Tag {
+        return getTagFromPort(path.from)
+    }
+
+    override fun getPathFromTag(tag: Tag): HighSpeedPath {
+        return pathConstructor(getPortFromTag(tag))
+    }
+
+    interface WorldInterface {
+
+        fun dropItem(content: CellContent, port: BiPort)
+
+    }
 }

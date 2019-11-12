@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.transport
 
-import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 
 /**
@@ -57,32 +56,3 @@ interface CellPath {
 
 }
 
-interface LinearCellPath : CellPath {
-
-    @JvmDefault
-    override fun getLength(): Float {
-        return getItemPosition(1f).distanceTo(getItemPosition(0f)).toFloat()
-    }
-
-}
-
-class StandardPipeCellPath(val side: Direction, val inwards: Boolean) : LinearCellPath {
-
-    override fun getItemPosition(progress: Float): Vec3d {
-        val actualProgress = if (inwards) 1 - progress else progress
-        return Vec3d(side.vector).multiply(actualProgress.toDouble() * 0.5)
-    }
-
-}
-
-class SCurvePath() : CellPath {
-
-    override fun getItemPosition(progress: Float): Vec3d {
-        TODO("what the fuck do I know")
-    }
-
-    override fun getLength(): Float {
-        TODO("not implemented")
-    }
-
-}

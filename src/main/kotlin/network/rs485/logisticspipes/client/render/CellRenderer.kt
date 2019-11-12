@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.client.render
 
 import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
+import alexiil.mc.lib.attributes.fluid.volume.NormalFluidVolume
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.*
 import net.minecraft.client.render.item.ItemRenderer
@@ -99,7 +100,15 @@ class CellRenderer(val client: MinecraftClient) {
     // TODO don't hardcode this
     private fun renderFluidCell(pos: Vec3d, cell: Cell<FluidCellContent>, lightLevel: Int, trStack: MatrixStack, buffers: BufferBuilderStorage) {
         val fluid = cell.content.fluid
-        val sprite = client.spriteAtlas.getSprite(fluid.sprite)
+
+        val sprite = if (fluid is NormalFluidVolume) {
+            val fl = fluid.rawFluid
+            val state = fl.defaultState.blockState
+            client.blockRenderManager.getModel(state).sprite
+        } else {
+            client.spriteAtlas.getSprite(fluid.sprite)
+        }
+
         val color = fluid.renderColor
         val a = 255
         val r = color shr 16 and 0xFF

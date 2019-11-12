@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.client.render
 
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.*
 import net.minecraft.client.render.item.ItemRenderer
@@ -49,18 +50,16 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.FluidCellContent
-import kotlin.math.PI
-import kotlin.math.sin
+import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
+import kotlin.math.max
 
 class CellRenderer(val client: MinecraftClient) {
-
-    var prov: CellProvider = DummyCellProvider // EmptyCellProvider
 
     fun render(x: Double, y: Double, z: Double, delta: Float, trStack: MatrixStack, buffers: BufferBuilderStorage) {
         trStack.push()
         trStack.translate(-x, -y, -z)
         val itemRenderer = client.itemRenderer
-        for ((cell, pos) in prov.getCells(delta)) {
+        for ((cell, pos) in getCells(delta)) {
             trStack.push()
             trStack.translate(pos.x, pos.y, pos.z)
             val lightLevel = client.world?.let { world ->
@@ -74,6 +73,20 @@ class CellRenderer(val client: MinecraftClient) {
             trStack.pop()
         }
         trStack.pop()
+    }
+
+    private fun getCells(delta: Float): Map<Cell<*>, Vec3d> {
+        return ClientTrackedCells.cells.values.associate { it.cell to getCellWorldPos(it, delta) }
+    }
+
+    private fun getCellWorldPos(e: ClientTrackedCells.Entry, delta: Float): Vec3d {
+        val world = MinecraftClient.getInstance().world!!
+        val base = e.insertTime
+        val duration = e.updateTime - base
+        val progress = (world.time - base) + delta
+        val a = MathHelper.clamp(progress / duration, 0f, 1f)
+        val pipeBasePos = Vec3d(e.pos).add(Vec3d(0.5, 0.5, 0.5))
+        return pipeBasePos.add(e.path.getItemPosition(a))
     }
 
     private fun renderItemCell(pos: Vec3d, cell: Cell<*>, itemRenderer: ItemRenderer, lightLevel: Int, trStack: MatrixStack, buffers: BufferBuilderStorage) {
@@ -94,12 +107,17 @@ class CellRenderer(val client: MinecraftClient) {
         val b = color and 0xFF
 
         val width = 0.25f
-        val heightPct = (sin((System.nanoTime() % 2000000000L).toDouble() / 1000000000.0 * PI).toFloat() + 1.0f) / 2.0f
+        //val heightPct = (sin((System.nanoTime() % 2000000000L).toDouble() / 1000000000.0 * PI).toFloat() + 1.0f) / 2.0f
+        val heightPct = (cell.content.fluid.amount / FluidVolume.BUCKET.toFloat()).coerceIn(0f, 1f)
         val extent = width / 2.0f
         val maxY = -extent + width * heightPct
         val maxV = MathHelper.lerp(heightPct, sprite.minV, sprite.maxV)
 
-        val lightLevel = 0x0F00F0 // FIXME drawn texture looks fucked otherwise
+        val sky = lightLevel shr 20 and 0xF
+        val block = lightLevel shr 4 and 0xF
+        val total = max(sky, block)
+
+        val lightLevel = total shl 4
 
         val mat = trStack.peek().model
         val nmat = trStack.peek().normal

@@ -36,17 +36,20 @@
  */
 package network.rs485.logisticspipes.transport.network
 
+import net.fabricmc.fabric.api.server.PlayerStream
 import net.fabricmc.fabric.api.util.NbtType
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import network.rs485.logisticspipes.init.Packets
+import network.rs485.logisticspipes.packet.CellInsertPacket
+import network.rs485.logisticspipes.packet.CellUntrackPacket
 import network.rs485.logisticspipes.pipe.shape.BlockFace
 import network.rs485.logisticspipes.pipe.shape.PipeShape
 import network.rs485.logisticspipes.transport.*
+import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
 import therealfarfetchd.hctm.common.graph.Graph
 import therealfarfetchd.hctm.common.graph.Link
 import therealfarfetchd.hctm.common.graph.Node
@@ -77,13 +80,25 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
         get() = world.random
 
     override fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
-        requireNotNull(getNodeByPipe(pipe))
+        val node = getNodeByPipe(pipe)!!
         val speed = BASE_SPEED * pipe.getSpeedFactor() * cell.getSpeedFactor()
         val length = path.getLength()
         val time = length / speed
 
-        cellMap[cell.id] = CellHolder(cell, pipe, path, world.time, world.time + time.roundToLong())
+        val insertTime = world.time
+        val updateTime = insertTime + time.roundToLong()
+        cellMap[cell.id] = CellHolder(cell, pipe, path, insertTime, updateTime)
         controller.markDirty()
+
+        val pos = node.data.pos
+        Packets.S2C.CellInsert.send(CellInsertPacket(cell, pos, pipe.getTagFromPath(path), insertTime, updateTime), PlayerStream.watching(world, pos))
+
+        // TODO this is temporary because packets don't work! REMOVE
+        run {
+            val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos) ?: return@run
+            val dh = attr.displayHandler ?: return@run
+            dh.onUpdatePath(cell, pos, path, insertTime, updateTime)
+        }
     }
 
     override fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean {
@@ -106,16 +121,12 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
         val cellId = cell.id
         cellMap.remove(cellId)
         controller.markDirty()
-    }
+        Packets.S2C.CellUntrack.send(CellUntrackPacket(cell.id), PlayerStream.all(world.server))
 
-    override fun getCellWorldPos(cell: Cell<*>, delta: Float): Vec3d {
-        val ch = cellMap[cell.id] ?: error("Cell $cell is not in network!")
-        val base = ch.insertTime
-        val duration = ch.updateTime - base
-        val progress = (world.time - base) + delta
-        val a = MathHelper.clamp(progress / duration, 0f, 1f)
-        val pipeBasePos = Vec3d(0.5, 0.5, 0.5) // TODO
-        return pipeBasePos.add(ch.path.getItemPosition(a))
+        // TODO this is temporary because packets don't work! REMOVE
+        run {
+            ClientTrackedCells.cells -= cell.id
+        }
     }
 
     fun tick() {

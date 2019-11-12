@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.transport.network
 
 import net.fabricmc.fabric.api.util.NbtType
 import net.minecraft.block.Block
+import net.minecraft.block.BlockState
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.server.world.ServerWorld
@@ -67,7 +68,6 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
         return networks[id]
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun onBlockChanged(pos: BlockPos) {
         val oldBlock = cachedBlocks[pos]
         val state = world.getBlockState(pos)
@@ -75,22 +75,40 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
 
         val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos)
 
-        if (oldBlock != null && oldBlock != newBlock || attr == null) {
-            posToNetworks.remove(pos)?.also {
-                val network = networks.getValue(it)
-                val node = network.getNodeAt(pos)
-                if (node != null) {
-                    node.data.pipe.onLeaveNetwork()
-                    network.removeNode(node)
-                    rebuildRefs(network.id)
-                }
-            }
-            cachedBlocks -= pos
+        if (attr == null) {
+            updateRemove(pos)
         }
 
-        if (attr == null || (oldBlock != null && oldBlock == newBlock)) return
+        if (attr != null && (oldBlock == null || oldBlock != newBlock)) {
+            updateAdd0(pos, state, attr)
+        }
+    }
 
-        cachedBlocks[pos] = newBlock
+    fun updateRemove(pos: BlockPos) {
+        posToNetworks.remove(pos)?.also {
+            val network = networks.getValue(it)
+            val node = network.getNodeAt(pos)
+            if (node != null) {
+                node.data.pipe.onLeaveNetwork()
+                network.removeNode(node)
+                rebuildRefs(network.id)
+            }
+        }
+        cachedBlocks -= pos
+    }
+
+    fun updateAdd(pos: BlockPos) {
+        val state = world.getBlockState(pos)
+        val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos) ?: return
+
+        updateAdd0(pos, state, attr)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun updateAdd0(pos: BlockPos, state: BlockState, attr: PipeAttribute<*, *>) {
+        updateRemove(pos)
+
+        cachedBlocks[pos] = state.block
 
         var net = createNetwork()
 

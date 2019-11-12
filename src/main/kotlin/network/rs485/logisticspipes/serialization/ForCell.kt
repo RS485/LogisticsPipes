@@ -35,21 +35,30 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.serialization
 
-import java.util.*
+import drawer.ForCompoundTag
+import kotlinx.serialization.*
+import kotlinx.serialization.internal.SerialClassDescImpl
+import network.rs485.logisticspipes.transport.Cell
 
-class RoutingList(var steps: List<UUID>) {
+@Serializer(Cell::class)
+object ForCell : KSerializer<Cell<*>> {
 
-    fun onArriveAt(network: PipeNetwork, router: UUID): UUID? {
-        val index = steps.indexOf(router)
-        if (index == -1) {
-            // reroute, we arrived at some unplanned destination
-            TODO("not implemented")
-        } else {
-            steps = steps.drop(index + 1)
-            return steps.firstOrNull()
+    override val descriptor: SerialDescriptor = object : SerialClassDescImpl("FluidVolume") {
+        init {
+            addElement("Amount")
+            addElement("Registry")
+            addElement("ObjName")
         }
+    }
+
+    override fun serialize(encoder: Encoder, obj: Cell<*>) {
+        ForCompoundTag.serialize(encoder, obj.toTag())
+    }
+
+    override fun deserialize(decoder: Decoder): Cell<*> {
+        return Cell.fromTag(ForCompoundTag.deserialize(decoder))!!
     }
 
 }

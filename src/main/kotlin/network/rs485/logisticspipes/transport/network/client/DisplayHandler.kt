@@ -35,16 +35,14 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.client.render
+package network.rs485.logisticspipes.transport.network.client
 
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.BlockPos
 import network.rs485.logisticspipes.transport.Cell
-import network.rs485.logisticspipes.transport.PipeNetwork
+import network.rs485.logisticspipes.transport.CellPath
 
-class CellProviderImpl(val net: PipeNetwork) : CellProvider {
+interface DisplayHandler {
 
-    override fun getCells(delta: Float): Map<Cell<*>, Vec3d> {
-        return net.cells.associateWith { net.getCellWorldPos(it, delta) }
-    }
+    fun onUpdatePath(cell: Cell<*>, pos: BlockPos, path: CellPath, insertTime: Long, updateTime: Long)
 
 }

@@ -34,51 +34,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+@file:UseSerializers(ForUuid::class)
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.packet
 
-import net.minecraft.util.math.BlockPos
+import drawer.ForUuid
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
+import net.fabricmc.fabric.api.network.PacketContext
+import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
 import java.util.*
 
-interface PipeNetwork {
+@Serializable
+data class CellUntrackPacket(val cell: UUID) : Packet {
 
-    val id: UUID
-
-    val random: Random
-
-    val pipes: Iterable<Pipe<*, *>>
-
-    val cells: Iterable<Cell<*>>
-
-    /**
-     * Insert a cell into the network.
-     */
-    fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P)
-
-    /**
-     * Insert a cell into the network into the specified pipe at the specified port. This should also be called to transfer a cell from a pipe to the next.
-     */
-    fun <X> insert(cell: Cell<*>, pipe: Pipe<*, X>, port: X) =
-            pipe.onEnterPipe(this, port, cell)
-
-    /**
-     * Inserts a cell into the network into the next pipe connected to the specified pipe's port.
-     * Helper method for Pipe::onFinishPipe to continue transferring item
-     * Returns false if this pipe isn't connected to anything on the specified port
-     */
-    fun <X> insertFrom(cell: Cell<*>, pipe: Pipe<*, X>, port: X): Boolean
-
-    /**
-     * Untracks (removes) a cell from the pipe network and returns its content.
-     */
-    fun <T : CellContent> untrack(cell: Cell<T>): T
-
-    fun <X> isPortConnected(pipe: Pipe<*, X>, port: X): Boolean
-
-    fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): PipePortAssoc<*>?
-
-    fun getPipeAt(pos: BlockPos): Pipe<*, *>?
-
-    data class PipePortAssoc<X>(val pipe: Pipe<*, X>, val port: X)
+    override fun handle(ctx: PacketContext) {
+        ClientTrackedCells.cells -= cell
+    }
 
 }

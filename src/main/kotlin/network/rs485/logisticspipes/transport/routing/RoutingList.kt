@@ -35,15 +35,22 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.client.render
+package network.rs485.logisticspipes.transport.routing
 
-import net.minecraft.util.math.Vec3d
-import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.PipeNetwork
+import java.util.*
 
-object EmptyCellProvider : CellProvider {
+class RoutingList(var steps: List<UUID>) {
 
-    override fun getCells(delta: Float): Map<Cell<*>, Vec3d> {
-        return emptyMap()
+    fun onArriveAt(network: PipeNetwork, router: UUID): UUID? {
+        val index = steps.indexOf(router)
+        if (index == -1) {
+            // reroute, we arrived at some unplanned destination
+            TODO("not implemented")
+        } else {
+            steps = steps.drop(index + 1)
+            return steps.firstOrNull()
+        }
     }
 
 }

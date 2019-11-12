@@ -42,6 +42,7 @@ import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
 import net.minecraft.entity.Entity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import network.rs485.logisticspipes.init.CellContentTypes
 import network.rs485.logisticspipes.item.FluidContainerItem
@@ -60,7 +61,7 @@ class FluidCellContent @JvmOverloads constructor(var fluid: FluidVolume = FluidK
         return FluidContainerItem.makeStack(fluid)
     }
 
-    override fun createEntity(world: World): Entity? {
+    override fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity? {
         return null
     }
 

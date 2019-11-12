@@ -48,19 +48,22 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.PacketByteBuf
+import network.rs485.logisticspipes.LogisticsPipes
 import network.rs485.logisticspipes.ModID
 import network.rs485.logisticspipes.packet.*
 import java.util.stream.Stream
-import kotlin.streams.toList
+import kotlin.streams.asSequence
 
 object Packets {
 
     // Server → Client
     object S2C {
 
-        val CompilerStatus = create("compiler_status", CompilerStatusPacket.serializer(), CompilerStatusPacket.module)
+        // val CompilerStatus = create("compiler_status", CompilerStatusPacket.serializer(), CompilerStatusPacket.module)
         val CraftingPipeSignStack = create("crafting_pipe_sign_stack", CraftingPipeSignStackPacket.serializer())
         val ItemAmountSignUpdate = create("item_amount_sign_update", ItemAmountSignUpdatePacket.serializer())
+        val CellInsert = create("cell_insert", CellInsertPacket.serializer())
+        val CellUntrack = create("cell_untrack", CellUntrackPacket.serializer())
 
         private fun <T : Packet> create(name: String, serializer: KSerializer<T>, context: SerialModule = EmptyModule): PacketWrapper<T> {
             val id = Identifier(ModID, name)
@@ -73,10 +76,11 @@ object Packets {
             fun send(packet: T, player: PlayerEntity)
 
             // For use with PlayerStream.*
-            fun send(packet: T, players: Stream<out PlayerEntity>) = send(packet, players.toList())
+            fun send(packet: T, players: Stream<out PlayerEntity>) = send(packet, players.asSequence().asIterable())
 
             fun send(packet: T, players: Iterable<PlayerEntity>) {
-                players.forEach { send(packet, it) }
+                LogisticsPipes.logger.fatal("packet sending is BROKEN! Not sending $packet")
+                //players.forEach { send(packet, it) }
             }
         }
 
@@ -114,6 +118,11 @@ object Packets {
                 ClientSidePacketRegistry.INSTANCE.sendToServer(id, buf)
             }
         }
+    }
+
+    init {
+        S2C
+        C2S
     }
 
 }

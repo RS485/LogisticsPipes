@@ -35,29 +35,25 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.client.render
+package network.rs485.logisticspipes.transport.network.client
 
-import alexiil.mc.lib.attributes.fluid.volume.FluidKeys
-import net.minecraft.item.Items
-import net.minecraft.util.math.Vec3d
-import network.rs485.logisticspipes.ext.makeStack
+import net.minecraft.util.math.BlockPos
 import network.rs485.logisticspipes.transport.Cell
-import network.rs485.logisticspipes.transport.FluidCellContent
-import network.rs485.logisticspipes.transport.ItemCellContent
+import network.rs485.logisticspipes.transport.CellPath
+import java.util.*
 
-object DummyCellProvider : CellProvider {
+object DefaultDisplayHandler : DisplayHandler {
 
-    val cell = Cell(ItemCellContent(Items.COBBLESTONE.makeStack()))
-    val pos = Vec3d(48.5, 69.5, 92.5)
-
-    val fluidCell = Cell(FluidCellContent(FluidKeys.WATER.withAmount(250)))
-    val pos2 = Vec3d(48.5, 69.5, 91.5)
-
-    override fun getCells(delta: Float): Map<Cell<*>, Vec3d> {
-        return mapOf(
-                cell to pos,
-                fluidCell to pos2
-        )
+    override fun onUpdatePath(cell: Cell<*>, pos: BlockPos, path: CellPath, insertTime: Long, updateTime: Long) {
+        ClientTrackedCells.cells[cell.id] = ClientTrackedCells.Entry(cell, insertTime, updateTime, pos, path)
     }
+
+}
+
+object ClientTrackedCells {
+
+    val cells = mutableMapOf<UUID, Entry>()
+
+    data class Entry(val cell: Cell<*>, val insertTime: Long, val updateTime: Long, val pos: BlockPos, val path: CellPath)
 
 }

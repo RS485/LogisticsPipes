@@ -70,7 +70,7 @@ class StandardPipeCellPath(val side: Direction, val inwards: Boolean) : LinearCe
 
     override fun getItemPosition(progress: Float): Vec3d {
         val actualProgress = if (inwards) 1 - progress else progress
-        return Vec3d(side.vector).multiply(progress.toDouble() * 0.5)
+        return Vec3d(side.vector).multiply(actualProgress.toDouble() * 0.5)
     }
 
 }

@@ -39,10 +39,13 @@ package network.rs485.logisticspipes.block
 
 import alexiil.mc.lib.attributes.AttributeList
 import alexiil.mc.lib.attributes.AttributeProvider
+import alexiil.mc.lib.attributes.fluid.volume.FluidKeys
+import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityContext
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Items
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
@@ -80,11 +83,17 @@ open class PipeBlock<T : Pipe<*, Direction>>(settings: Settings, val pipeType: P
 
     override fun onUse(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult {
         if (world is ServerWorld) {
-            val stack = player.getStackInHand(hand).split(64)
+            val stack = player.getStackInHand(hand)
             val ns = world.getPipeNetworkState()
             val net = ns.getNetworkAt(pos) ?: return ActionResult.FAIL
             val pipe = net.getPipeAt(pos) as? DummyPipe ?: return ActionResult.FAIL
-            net.insert(Cells.ofItem(stack), pipe, hit.side)
+            if (stack.item == Items.WATER_BUCKET) {
+                net.insert(Cells.ofFluid(FluidVolume.create(FluidKeys.WATER, FluidVolume.BUCKET)), pipe, hit.side)
+            } else if (stack.item == Items.LAVA_BUCKET) {
+                net.insert(Cells.ofFluid(FluidVolume.create(FluidKeys.LAVA, FluidVolume.BUCKET)), pipe, hit.side)
+            } else {
+                net.insert(Cells.ofItem(stack.split(1)), pipe, hit.side)
+            }
         }
         return ActionResult.SUCCESS
     }
@@ -134,11 +143,9 @@ class PipeBlockInterface(val world: World, val pos: BlockPos) {
     }
 
     fun dropItem(content: CellContent, port: Direction) {
-        val entity = content.createEntity(world) ?: return
         val dir = Vec3d(port.vector)
         val vec = Vec3d(pos).add(0.5, 0.5, 0.50).add(dir.multiply(0.75))
-        entity.setPosition(vec.x, vec.y, vec.z)
-        entity.velocity = dir.multiply(0.2)
+        val entity = content.createEntity(world, vec, dir.multiply(0.2)) ?: return
         world.spawnEntity(entity)
     }
 }

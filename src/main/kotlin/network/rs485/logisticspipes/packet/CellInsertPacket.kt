@@ -34,14 +34,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+@file:UseSerializers(ForCell::class, ForBlockPos::class, ForTag::class)
 
-package network.rs485.logisticspipes.client.render
+package network.rs485.logisticspipes.packet
 
-import net.minecraft.util.math.Vec3d
+import drawer.ForBlockPos
+import drawer.ForTag
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
+import net.fabricmc.fabric.api.network.PacketContext
+import net.minecraft.nbt.Tag
+import net.minecraft.util.math.BlockPos
+import network.rs485.logisticspipes.serialization.ForCell
 import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.network.PipeAttribute
 
-interface CellProvider {
+@Serializable
+data class CellInsertPacket(val cell: Cell<*>, val pipe: BlockPos, val path: Tag, val insertTime: Long, val updateTime: Long) : Packet {
 
-    fun getCells(delta: Float): Map<Cell<*>, Vec3d>
+    override fun handle(ctx: PacketContext) {
+        val world = ctx.player.world
+        ctx.taskQueue.execute {
+            val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pipe) ?: return@execute
+            val dh = attr.displayHandler ?: return@execute
+            dh.onUpdatePath(cell, pipe, attr.create().getPathFromTag(path), insertTime, updateTime)
+        }
+    }
 
 }

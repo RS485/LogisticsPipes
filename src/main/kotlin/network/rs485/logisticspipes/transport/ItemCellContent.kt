@@ -41,6 +41,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.ItemEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import network.rs485.logisticspipes.init.CellContentTypes
 
@@ -58,8 +59,10 @@ class ItemCellContent @JvmOverloads constructor(var stack: ItemStack = ItemStack
         return stack
     }
 
-    override fun createEntity(world: World): Entity? {
-        return ItemEntity(world, 0.0, 0.0, 0.0, stack.copy())
+    override fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity? {
+        val entity = ItemEntity(world, pos.x, pos.y, pos.z, stack.copy())
+        if (velocity != null) entity.velocity = velocity
+        return entity
     }
 
     override fun getType(): CellContentType<*> {

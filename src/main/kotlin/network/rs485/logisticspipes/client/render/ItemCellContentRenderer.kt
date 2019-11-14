@@ -35,46 +35,26 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes
+package network.rs485.logisticspipes.client.render
 
-import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.minecraft.client.render.RenderLayer
-import network.rs485.logisticspipes.init.*
-import org.apache.logging.log4j.LogManager
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.render.BufferBuilderStorage
+import net.minecraft.client.render.OverlayTexture
+import net.minecraft.client.render.model.json.ModelTransformation
+import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.ItemCellContent
 
-const val ModID = "logisticspipes"
+object ItemCellContentRenderer : CellContentRenderer<ItemCellContent> {
 
-object LogisticsPipes : ModInitializer {
+    val client = MinecraftClient.getInstance()
 
-    val logger = LogManager.getLogger(ModID)
+    override fun render(pos: Vec3d, cell: Cell<ItemCellContent>, lightLevel: Int, trStack: MatrixStack, buffers: BufferBuilderStorage) {
+        trStack.scale(0.5f, 0.5f, 0.5f)
 
-    override fun onInitialize() {
-        Registries
-        CellContentTypes
-        PipeTypes
-        PipeSignTypes
-        ModuleTypes
-        UpgradeTypes
-        Blocks
-        BlockEntityTypes
-        ItemGroups
-        Items
-        Packets
-
-        initUpgradeSlots()
-        initEvents()
-    }
-
-}
-
-object LogisticsPipesClient : ClientModInitializer {
-
-    override fun onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.UnroutedPipe, RenderLayer.getCutout())
-
-        initCellRenderers()
+        val stack = cell.content.getDisplayStack()
+        client.itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, OverlayTexture.DEFAULT_UV, trStack, buffers.entityVertexConsumers)
     }
 
 }

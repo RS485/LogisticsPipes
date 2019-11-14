@@ -45,7 +45,7 @@ import java.util.*
 /**
  * A container flowing through a pipe.
  */
-class Cell<T : CellContent>(
+class Cell<out T : CellContent>(
         val content: T,
         val id: UUID = UUID.randomUUID()
 ) {

@@ -35,46 +35,25 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes
+package network.rs485.logisticspipes.client.render
 
-import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.minecraft.client.render.RenderLayer
-import network.rs485.logisticspipes.init.*
-import org.apache.logging.log4j.LogManager
+import network.rs485.logisticspipes.transport.CellContent
+import network.rs485.logisticspipes.transport.CellContentType
 
-const val ModID = "logisticspipes"
+object CellRendererRegistry {
 
-object LogisticsPipes : ModInitializer {
+    private val renderers = mutableMapOf<CellContentType<*>, CellContentRenderer<*>>()
 
-    val logger = LogManager.getLogger(ModID)
-
-    override fun onInitialize() {
-        Registries
-        CellContentTypes
-        PipeTypes
-        PipeSignTypes
-        ModuleTypes
-        UpgradeTypes
-        Blocks
-        BlockEntityTypes
-        ItemGroups
-        Items
-        Packets
-
-        initUpgradeSlots()
-        initEvents()
+    fun <T : CellContent> register(type: CellContentType<T>, renderer: CellContentRenderer<T>) {
+        if (type in renderers) {
+            error("$type already has a registered renderer!")
+        }
+        renderers[type] = renderer
     }
 
-}
-
-object LogisticsPipesClient : ClientModInitializer {
-
-    override fun onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.UnroutedPipe, RenderLayer.getCutout())
-
-        initCellRenderers()
+    @Suppress("UNCHECKED_CAST")
+    fun <T : CellContent> getRenderer(type: CellContentType<T>): CellContentRenderer<T>? {
+        return renderers[type] as CellContentRenderer<T>?
     }
 
 }

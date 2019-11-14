@@ -35,46 +35,16 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes
+package network.rs485.logisticspipes.client.render
 
-import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.minecraft.client.render.RenderLayer
-import network.rs485.logisticspipes.init.*
-import org.apache.logging.log4j.LogManager
+import net.minecraft.client.render.BufferBuilderStorage
+import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.CellContent
 
-const val ModID = "logisticspipes"
+interface CellContentRenderer<in T : CellContent> {
 
-object LogisticsPipes : ModInitializer {
-
-    val logger = LogManager.getLogger(ModID)
-
-    override fun onInitialize() {
-        Registries
-        CellContentTypes
-        PipeTypes
-        PipeSignTypes
-        ModuleTypes
-        UpgradeTypes
-        Blocks
-        BlockEntityTypes
-        ItemGroups
-        Items
-        Packets
-
-        initUpgradeSlots()
-        initEvents()
-    }
-
-}
-
-object LogisticsPipesClient : ClientModInitializer {
-
-    override fun onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.UnroutedPipe, RenderLayer.getCutout())
-
-        initCellRenderers()
-    }
+    fun render(pos: Vec3d, cell: Cell<T>, lightLevel: Int, trStack: MatrixStack, buffers: BufferBuilderStorage)
 
 }

@@ -35,46 +35,13 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes
+package network.rs485.logisticspipes.init
 
-import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.api.ModInitializer
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.minecraft.client.render.RenderLayer
-import network.rs485.logisticspipes.init.*
-import org.apache.logging.log4j.LogManager
+import network.rs485.logisticspipes.client.render.CellRendererRegistry
+import network.rs485.logisticspipes.client.render.FluidCellContentRenderer
+import network.rs485.logisticspipes.client.render.ItemCellContentRenderer
 
-const val ModID = "logisticspipes"
-
-object LogisticsPipes : ModInitializer {
-
-    val logger = LogManager.getLogger(ModID)
-
-    override fun onInitialize() {
-        Registries
-        CellContentTypes
-        PipeTypes
-        PipeSignTypes
-        ModuleTypes
-        UpgradeTypes
-        Blocks
-        BlockEntityTypes
-        ItemGroups
-        Items
-        Packets
-
-        initUpgradeSlots()
-        initEvents()
-    }
-
-}
-
-object LogisticsPipesClient : ClientModInitializer {
-
-    override fun onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.UnroutedPipe, RenderLayer.getCutout())
-
-        initCellRenderers()
-    }
-
+internal fun initCellRenderers() {
+    CellRendererRegistry.register(CellContentTypes.Item, ItemCellContentRenderer)
+    CellRendererRegistry.register(CellContentTypes.Fluid, FluidCellContentRenderer)
 }

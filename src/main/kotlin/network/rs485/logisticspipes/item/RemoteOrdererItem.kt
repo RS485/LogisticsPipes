@@ -95,7 +95,7 @@ class RemoteOrdererItem(settings: Settings) : ItemWithInfo(settings) {
             val z = tag.getInt("link_z")
             val dimId = tag.getString("link_dim")
             val pos = BlockPos(x, y, z)
-            val dim = Registry.DIMENSION_TYPE[Identifier(dimId)] ?: return null
+            val dim = Registry.DIMENSION[Identifier(dimId)] ?: return null
             return Pair(pos, dim)
         }
 
@@ -107,7 +107,7 @@ class RemoteOrdererItem(settings: Settings) : ItemWithInfo(settings) {
 
         fun setLinkPos(stack: ItemStack, pos: BlockPos, dim: DimensionType) {
             if (stack.item !is RemoteOrdererItem) error("Can't set link position on $stack")
-            val dimId = Registry.DIMENSION_TYPE.getId(dim) ?: error("Tried to set link position to unregistered dimension?!")
+            val dimId = Registry.DIMENSION.getId(dim) ?: error("Tried to set link position to unregistered dimension?!")
             val tag = stack.orCreateTag
             tag.putInt("link_x", pos.x)
             tag.putInt("link_y", pos.y)

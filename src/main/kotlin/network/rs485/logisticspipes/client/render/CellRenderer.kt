@@ -48,9 +48,11 @@ import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.client.util.math.Vector3f
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.Quaternion
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.FluidCellContent
+import network.rs485.logisticspipes.transport.network.CellRenderAttribute
 import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
 import kotlin.math.max
 
@@ -87,7 +89,14 @@ class CellRenderer(val client: MinecraftClient) {
         val progress = (world.time - base) + delta
         val a = MathHelper.clamp(progress / duration, 0f, 1f)
         val pipeBasePos = Vec3d(e.pos).add(Vec3d(0.5, 0.5, 0.5))
-        return pipeBasePos.add(e.path.getItemPosition(a))
+        val cPos = e.path.getItemPosition(a)
+        val cra = CellRenderAttribute.ATTRIBUTE.getFirstOrNull(world, e.pos)
+        return if (cra != null) {
+            val mat = Matrix3f(Quaternion(cra.rotX, cra.rotY, cra.rotZ, true))
+            pipeBasePos.add(Vec3d(Vector3f(cPos).apply { multiply(mat) }))
+        } else {
+            pipeBasePos.add(cPos)
+        }
     }
 
     private fun renderItemCell(pos: Vec3d, cell: Cell<*>, itemRenderer: ItemRenderer, lightLevel: Int, trStack: MatrixStack, buffers: BufferBuilderStorage) {

@@ -35,24 +35,14 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.pipe
+package network.rs485.logisticspipes.transport.network
 
-import net.minecraft.util.math.Vec3d
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
+import alexiil.mc.lib.attributes.Attributes
 
-data class CurvePipeCellPath(override val from: BiPort) : HighSpeedPath {
+class CellRenderAttribute(val rotX: Float, val rotY: Float, val rotZ: Float) {
 
-    override fun getItemPosition(progress: Float): Vec3d {
-        val angle = ((if (from == BiPort.SIDE_2) progress else 1 - progress).toDouble() - 1) * PI / 2
-        val x = -sin(angle) - 1
-        val y = cos(angle) - 1
-        return Vec3d(2 * x, 0.0, 2 * y)
-    }
-
-    override fun getLength(): Float {
-        return PI.toFloat()
+    companion object {
+        val ATTRIBUTE = Attributes.create(CellRenderAttribute::class.java)
     }
 
 }

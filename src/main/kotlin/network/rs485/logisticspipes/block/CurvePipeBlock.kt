@@ -55,6 +55,7 @@ import network.rs485.logisticspipes.pipe.HighSpeedPipe
 import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.transport.CellContent
 import network.rs485.logisticspipes.transport.Pipe
+import network.rs485.logisticspipes.transport.network.CellRenderAttribute
 import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
@@ -69,6 +70,7 @@ class CurvePipeBlock<T : Pipe<*, BiPort>>(settings: Block.Settings, val pipeType
 
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {
         to.offer(PipeAttribute(pipeType, WorldInterfaceImpl(world, pos)))
+        to.offer(CellRenderAttribute(0f, 180 + state[DIRECTION].horizontal * 90f, 0f))
     }
 
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {

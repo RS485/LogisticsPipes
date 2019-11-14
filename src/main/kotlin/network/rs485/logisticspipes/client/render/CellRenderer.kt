@@ -40,16 +40,14 @@ package network.rs485.logisticspipes.client.render
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.BufferBuilderStorage
 import net.minecraft.client.render.WorldRenderer
-import net.minecraft.client.util.math.Matrix3f
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Quaternion
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.CellContent
-import network.rs485.logisticspipes.transport.network.CellRenderAttribute
+import network.rs485.logisticspipes.transport.network.CellPathHandler
+import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
 
 class CellRenderer(val client: MinecraftClient) {
@@ -77,6 +75,7 @@ class CellRenderer(val client: MinecraftClient) {
         return ClientTrackedCells.cells.values.associate { it.cell to getCellWorldPos(it, delta) }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun getCellWorldPos(e: ClientTrackedCells.Entry, delta: Float): Vec3d {
         val world = MinecraftClient.getInstance().world!!
         val base = e.insertTime
@@ -84,14 +83,8 @@ class CellRenderer(val client: MinecraftClient) {
         val progress = (world.time - base) + delta
         val a = MathHelper.clamp(progress / duration, 0f, 1f)
         val pipeBasePos = Vec3d(e.pos).add(Vec3d(0.5, 0.5, 0.5))
-        val cPos = e.path.getItemPosition(a)
-        val cra = CellRenderAttribute.ATTRIBUTE.getFirstOrNull(world, e.pos)
-        return if (cra != null) {
-            val mat = Matrix3f(Quaternion(cra.rotX, cra.rotY, cra.rotZ, true))
-            pipeBasePos.add(Vec3d(Vector3f(cPos).apply { multiply(mat) }))
-        } else {
-            pipeBasePos.add(cPos)
-        }
+        val cra = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, e.pos) ?: error("Pipe at ${e.pos} doesn't have pipe attribute")
+        return pipeBasePos.add((cra.pathHandler as CellPathHandler<Any?>).getCellPosition(e.path, a))
     }
 
 }

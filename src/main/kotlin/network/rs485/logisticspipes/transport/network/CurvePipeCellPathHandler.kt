@@ -35,23 +35,26 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.pipe
+package network.rs485.logisticspipes.transport.network
 
+import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.pipe.BiPort
+import network.rs485.logisticspipes.pipe.HighSpeedPath
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-data class CurvePipeCellPath(override val from: BiPort) : HighSpeedPath {
+class CurvePipeCellPathHandler(val rotation: Direction) : CellPathHandler<HighSpeedPath> {
 
-    override fun getItemPosition(progress: Float): Vec3d {
-        val angle = ((if (from == BiPort.SIDE_2) progress else 1 - progress).toDouble() - 1) * PI / 2
+    override fun getCellPosition(path: HighSpeedPath, progress: Float): Vec3d {
+        val angle = ((if (path.from == BiPort.SIDE_2) progress else 1 - progress).toDouble() - 1) * PI / 2
         val x = -sin(angle) - 1
         val y = cos(angle) - 1
         return Vec3d(2 * x, 0.0, 2 * y)
     }
 
-    override fun getLength(): Float {
+    override fun getLength(path: HighSpeedPath): Float {
         return PI.toFloat()
     }
 

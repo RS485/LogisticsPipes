@@ -39,12 +39,11 @@ package network.rs485.logisticspipes.transport.network.client
 
 import net.minecraft.util.math.BlockPos
 import network.rs485.logisticspipes.transport.Cell
-import network.rs485.logisticspipes.transport.CellPath
 import java.util.*
 
 object DefaultDisplayHandler : DisplayHandler {
 
-    override fun onUpdatePath(cell: Cell<*>, pos: BlockPos, path: CellPath, insertTime: Long, updateTime: Long) {
+    override fun onUpdatePath(cell: Cell<*>, pos: BlockPos, path: Any?, insertTime: Long, updateTime: Long) {
         ClientTrackedCells.cells[cell.id] = ClientTrackedCells.Entry(cell, insertTime, updateTime, pos, path)
     }
 
@@ -54,6 +53,6 @@ object ClientTrackedCells {
 
     val cells = mutableMapOf<UUID, Entry>()
 
-    data class Entry(val cell: Cell<*>, val insertTime: Long, val updateTime: Long, val pos: BlockPos, val path: CellPath)
+    data class Entry(val cell: Cell<*>, val insertTime: Long, val updateTime: Long, val pos: BlockPos, val path: Any?)
 
 }

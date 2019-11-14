@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.transport
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 
-interface Pipe<P : CellPath, X> {
+interface Pipe<P, X> {
 
     /**
      * How fast cells flow through this pipe. 1.0 is normal speed
@@ -58,6 +58,11 @@ interface Pipe<P : CellPath, X> {
      * Gets called when a cell has reached the end of its path.
      */
     fun onFinishPath(network: PipeNetwork, path: P, cell: Cell<*>)
+
+    /**
+     * Gets called when a cell gets forcefully ejected (e.g. the pipe is getting destroyed) without having reached the end of the path.
+     */
+    fun onEject(path: P, cc: CellContent)
 
     @JvmDefault
     fun canConnectTo(port: X, other: Pipe<*, *>) = true

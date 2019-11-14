@@ -85,6 +85,10 @@ abstract class StandardPipe(protected val itf: WorldInterface) : Pipe<StandardPi
         }
     }
 
+    override fun onEject(path: StandardPipeCellPath, cc: CellContent) {
+        itf.dropItem(cc, null)
+    }
+
     override fun toTag(tag: CompoundTag): CompoundTag {
         return tag
     }
@@ -113,7 +117,7 @@ abstract class StandardPipe(protected val itf: WorldInterface) : Pipe<StandardPi
 
     interface WorldInterface {
         fun setConnection(side: Direction, connected: Boolean)
-        fun dropItem(content: CellContent, port: Direction)
+        fun dropItem(content: CellContent, port: Direction?)
     }
 
 }

@@ -35,13 +35,20 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.transport.network
 
-interface LinearCellPath : CellPath {
+import net.minecraft.util.math.Vec3d
 
-    @JvmDefault
-    override fun getLength(): Float {
-        return getItemPosition(1f).distanceTo(getItemPosition(0f)).toFloat()
-    }
+interface CellPathHandler<in P> {
+
+    /**
+     * Returns the cell's position based on progress (in range 0..1) relative to the center of the pipe
+     */
+    fun getCellPosition(path: P, progress: Float): Vec3d
+
+    /**
+     * Returns the length of this path (the distance the cell travels between progress=0 and progress=1).
+     */
+    fun getLength(path: P): Float
 
 }

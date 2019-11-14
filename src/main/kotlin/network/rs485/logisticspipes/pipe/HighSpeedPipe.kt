@@ -45,10 +45,10 @@ import network.rs485.logisticspipes.transport.CellContent
 import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 
-class HighSpeedPipe(val pathConstructor: (BiPort) -> HighSpeedPath, val itf: WorldInterface) : Pipe<HighSpeedPath, BiPort> {
+class HighSpeedPipe(val itf: WorldInterface) : Pipe<HighSpeedPath, BiPort> {
 
     override fun onEnterPipe(network: PipeNetwork, from: BiPort, cell: Cell<*>) {
-        network.insert(cell, this, pathConstructor(from))
+        network.insert(cell, this, HighSpeedPath.byPort(from))
     }
 
     override fun onFinishPath(network: PipeNetwork, path: HighSpeedPath, cell: Cell<*>) {
@@ -62,6 +62,10 @@ class HighSpeedPipe(val pathConstructor: (BiPort) -> HighSpeedPath, val itf: Wor
             val content = network.untrack(cell)
             itf.dropItem(content, path.from.opposite)
         }
+    }
+
+    override fun onEject(path: HighSpeedPath, cc: CellContent) {
+        itf.dropItem(cc, null)
     }
 
     override fun toTag(tag: CompoundTag): CompoundTag {
@@ -88,12 +92,12 @@ class HighSpeedPipe(val pathConstructor: (BiPort) -> HighSpeedPath, val itf: Wor
     }
 
     override fun getPathFromTag(tag: Tag): HighSpeedPath {
-        return pathConstructor(getPortFromTag(tag))
+        return HighSpeedPath.byPort(getPortFromTag(tag))
     }
 
     interface WorldInterface {
 
-        fun dropItem(content: CellContent, port: BiPort)
+        fun dropItem(content: CellContent, port: BiPort?)
 
     }
 }

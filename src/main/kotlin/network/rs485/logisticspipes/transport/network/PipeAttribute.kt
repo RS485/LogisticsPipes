@@ -40,10 +40,12 @@ package network.rs485.logisticspipes.transport.network
 import alexiil.mc.lib.attributes.Attributes
 import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.transport.Pipe
-import network.rs485.logisticspipes.transport.network.client.DefaultDisplayHandler
-import network.rs485.logisticspipes.transport.network.client.DisplayHandler
 
-class PipeAttribute<T : Pipe<*, *>, I> @JvmOverloads constructor(val type: PipeType<*, T, I>, val itf: I, val displayHandler: DisplayHandler? = DefaultDisplayHandler) {
+class PipeAttribute<T : Pipe<P, *>, I, P>(
+        val type: PipeType<*, T, I>,
+        val pathHandler: CellPathHandler<P>,
+        val itf: I
+) {
 
     fun create() = type.create(itf)
 

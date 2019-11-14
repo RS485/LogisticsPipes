@@ -105,14 +105,14 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun updateAdd0(pos: BlockPos, state: BlockState, attr: PipeAttribute<*, *>) {
+    private fun updateAdd0(pos: BlockPos, state: BlockState, attr: PipeAttribute<*, *, *>) {
         updateRemove(pos)
 
         cachedBlocks[pos] = state.block
 
         var net = createNetwork()
 
-        var node = net.createNode(pos, attr.type.getBaseShape(state).translate(pos) as PipeShape<Any?>, attr.create() as Pipe<*, Any?>)
+        var node = net.createNode(pos, attr.create() as Pipe<*, Any?>, attr.type.getBaseShape(state).translate(pos) as PipeShape<Any?>, attr.pathHandler as CellPathHandler<Any?>)
 
         for ((port, face) in node.data.shape.ports) {
             val other = face.opposite

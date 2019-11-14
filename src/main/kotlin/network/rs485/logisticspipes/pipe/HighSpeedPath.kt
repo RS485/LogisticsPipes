@@ -37,10 +37,17 @@
 
 package network.rs485.logisticspipes.pipe
 
-import network.rs485.logisticspipes.transport.CellPath
+enum class HighSpeedPath(val from: BiPort) {
+    PATH_1(BiPort.SIDE_1),
+    PATH_2(BiPort.SIDE_2);
 
-interface HighSpeedPath : CellPath {
-
-    val from: BiPort
-
+    companion object {
+        @JvmStatic
+        fun byPort(from: BiPort): HighSpeedPath {
+            return when (from) {
+                BiPort.SIDE_1 -> PATH_1
+                BiPort.SIDE_2 -> PATH_2
+            }
+        }
+    }
 }

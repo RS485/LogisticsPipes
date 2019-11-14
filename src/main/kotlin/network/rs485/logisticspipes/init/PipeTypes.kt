@@ -40,7 +40,6 @@ package network.rs485.logisticspipes.init
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
-import network.rs485.logisticspipes.pipe.CurvePipeCellPath
 import network.rs485.logisticspipes.pipe.HighSpeedPipe
 import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.pipe.UnroutedPipe
@@ -78,7 +77,7 @@ object PipeTypes {
     val HighSpeedGain = create("high_speed_gain", PipeType.Builder(PipeShapes.Default, ::UnroutedPipe).build())
     val HighSpeedLine = create("high_speed_line", PipeType.Builder(PipeShapes.Default, ::UnroutedPipe).build())
     val HighSpeedSpeedup = create("high_speed_speedup", PipeType.Builder(PipeShapes.Default, ::UnroutedPipe).build())
-    val HighSpeedCurve = create("high_speed_curve", PipeType.Builder(PipeShapes.Curve, { itf: HighSpeedPipe.WorldInterface -> HighSpeedPipe(::CurvePipeCellPath, itf) }).build())
+    val HighSpeedCurve = create("high_speed_curve", PipeType.Builder(PipeShapes.Curve, ::HighSpeedPipe).build())
     val HighSpeedSCurve = create("high_speed_s_curve", PipeType.Builder(PipeShapes.Default, ::UnroutedPipe).build())
 
     private fun <T : PipeType<*, *, *>> create(name: String, type: T): T {

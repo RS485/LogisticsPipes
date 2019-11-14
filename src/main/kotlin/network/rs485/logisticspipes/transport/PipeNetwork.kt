@@ -53,12 +53,12 @@ interface PipeNetwork {
     /**
      * Insert a cell into the network.
      */
-    fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P)
+    fun <P> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P)
 
     /**
      * Insert a cell into the network into the specified pipe at the specified port. This should also be called to transfer a cell from a pipe to the next.
      */
-    fun <X> insert(cell: Cell<*>, pipe: Pipe<*, X>, port: X) =
+    fun <X> insertInto(cell: Cell<*>, pipe: Pipe<*, X>, port: X) =
             pipe.onEnterPipe(this, port, cell)
 
     /**

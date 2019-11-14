@@ -37,12 +37,10 @@
 
 package network.rs485.logisticspipes.transport.network
 
-import alexiil.mc.lib.attributes.Attributes
+interface LinearCellPathHandler<P> : CellPathHandler<P> {
 
-class CellRenderAttribute(val rotX: Float, val rotY: Float, val rotZ: Float) {
-
-    companion object {
-        val ATTRIBUTE = Attributes.create(CellRenderAttribute::class.java)
+    override fun getLength(path: P): Float {
+        return getCellPosition(path, 1f).distanceTo(getCellPosition(path, 0f)).toFloat()
     }
 
 }

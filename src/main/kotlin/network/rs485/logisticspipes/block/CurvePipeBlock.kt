@@ -51,15 +51,16 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.IWorld
 import net.minecraft.world.World
 import network.rs485.logisticspipes.pipe.BiPort
+import network.rs485.logisticspipes.pipe.HighSpeedPath
 import network.rs485.logisticspipes.pipe.HighSpeedPipe
 import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.transport.CellContent
 import network.rs485.logisticspipes.transport.Pipe
-import network.rs485.logisticspipes.transport.network.CellRenderAttribute
+import network.rs485.logisticspipes.transport.network.CurvePipeCellPathHandler
 import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-class CurvePipeBlock<T : Pipe<*, BiPort>>(settings: Block.Settings, val pipeType: PipeType<BiPort, T, HighSpeedPipe.WorldInterface>) : Block(settings), AttributeProvider {
+class CurvePipeBlock<T : Pipe<HighSpeedPath, BiPort>>(settings: Block.Settings, val pipeType: PipeType<BiPort, T, HighSpeedPipe.WorldInterface>) : Block(settings), AttributeProvider {
 
     override fun method_9517(state: BlockState, world: IWorld, pos: BlockPos, flags: Int) {
         super.method_9517(state, world, pos, flags)
@@ -69,8 +70,7 @@ class CurvePipeBlock<T : Pipe<*, BiPort>>(settings: Block.Settings, val pipeType
     }
 
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {
-        to.offer(PipeAttribute(pipeType, WorldInterfaceImpl(world, pos)))
-        to.offer(CellRenderAttribute(0f, 180 + state[DIRECTION].horizontal * 90f, 0f))
+        to.offer(PipeAttribute(pipeType, CurvePipeCellPathHandler(state[DIRECTION]), WorldInterfaceImpl(world, pos)))
     }
 
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
@@ -84,17 +84,26 @@ class CurvePipeBlock<T : Pipe<*, BiPort>>(settings: Block.Settings, val pipeType
 
     inner class WorldInterfaceImpl(val world: World, val pos: BlockPos) : HighSpeedPipe.WorldInterface {
 
-        override fun dropItem(content: CellContent, port: BiPort) {
-            val shape = pipeType.getBaseShape(world.getBlockState(pos)).translate(pos)
-            val (pos, side) = shape.ports.getValue(port)
-            dropItem(content, pos, side)
+        override fun dropItem(content: CellContent, port: BiPort?) {
+            if (port == null) {
+                dropItem(content, pos, null)
+            } else {
+                val shape = pipeType.getBaseShape(world.getBlockState(pos)).translate(pos)
+                val (pos, side) = shape.ports.getValue(port)
+                dropItem(content, pos, side)
+            }
         }
 
-        private fun dropItem(content: CellContent, pos: BlockPos, side: Direction) {
-            val dir = Vec3d(side.vector)
-            val vec = Vec3d(pos).add(0.5, 0.5, 0.5).add(dir.multiply(0.75))
-            val entity = content.createEntity(world, vec, dir.multiply(0.2)) ?: return
-            world.spawnEntity(entity)
+        private fun dropItem(content: CellContent, pos: BlockPos, side: Direction?) {
+            if (side != null) {
+                val dir = Vec3d(side.vector)
+                val vec = Vec3d(pos).add(0.5, 0.5, 0.5).add(dir.multiply(0.75))
+                val entity = content.createEntity(world, vec, dir.multiply(0.2)) ?: return
+                world.spawnEntity(entity)
+            } else {
+                val entity = content.createEntity(world, Vec3d(pos).add(0.5, 0.5, 0.5), null)
+                world.spawnEntity(entity)
+            }
         }
 
     }

@@ -48,20 +48,25 @@ import network.rs485.logisticspipes.packet.CellInsertPacket
 import network.rs485.logisticspipes.packet.CellUntrackPacket
 import network.rs485.logisticspipes.pipe.shape.BlockFace
 import network.rs485.logisticspipes.pipe.shape.PipeShape
-import network.rs485.logisticspipes.transport.*
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.CellContent
+import network.rs485.logisticspipes.transport.Pipe
+import network.rs485.logisticspipes.transport.PipeNetwork
 import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
+import network.rs485.logisticspipes.transport.network.client.DefaultDisplayHandler
 import therealfarfetchd.hctm.common.graph.Graph
 import therealfarfetchd.hctm.common.graph.Link
 import therealfarfetchd.hctm.common.graph.Node
 import java.util.*
 import kotlin.math.roundToLong
 
-internal typealias PipeGraph = Graph<PipeHolder<*>, Any?>
-internal typealias PipeNode = Node<PipeHolder<*>, Any?>
-internal typealias PipeLink = Link<PipeHolder<*>, Any?>
+internal typealias PipeGraph = Graph<PipeHolder, Any?>
+internal typealias PipeNode = Node<PipeHolder, Any?>
+internal typealias PipeLink = Link<PipeHolder, Any?>
 
 class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val controller: PipeNetworkState) : PipeNetwork {
 
+    @JvmSynthetic
     internal val graph = PipeGraph()
 
     private val cellMap = mutableMapOf<UUID, CellHolder<*>>()
@@ -79,10 +84,10 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
     override val random: Random
         get() = world.random
 
-    override fun <P : CellPath> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
+    override fun <P> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
         val node = getNodeByPipe(pipe)!!
         val speed = BASE_SPEED * pipe.getSpeedFactor() * cell.getSpeedFactor()
-        val length = path.getLength()
+        val length = node.data.pathHandler.getLength(path)
         val time = length / speed
 
         val insertTime = world.time
@@ -96,8 +101,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
         // TODO this is temporary because packets don't work! REMOVE
         run {
             val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos) ?: return@run
-            val dh = attr.displayHandler ?: return@run
-            dh.onUpdatePath(cell, pos, path, insertTime, updateTime)
+            DefaultDisplayHandler.onUpdatePath(cell, pos, path, insertTime, updateTime)
         }
     }
 
@@ -106,9 +110,9 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
 
         // Needed because generics are implemented horribly
         // Might want to actually make this publicly accessible if needed more often
-        fun <X> insert(cell: Cell<*>, a: PipeNetwork.PipePortAssoc<X>) = insert(cell, a.pipe, a.port)
+        fun <X> insertInto(cell: Cell<*>, a: PipeNetwork.PipePortAssoc<X>) = insertInto(cell, a.pipe, a.port)
 
-        insert(cell, a)
+        insertInto(cell, a)
         return true
     }
 
@@ -150,15 +154,16 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
     @Suppress("UNCHECKED_CAST")
     override fun <X> getConnectedPipe(self: Pipe<*, X>, output: X): PipeNetwork.PipePortAssoc<*>? {
         // TODO optimize
-        val node = graph.nodes.first { it.data.pipe == self }
+        val node = graph.nodes.first { it.data.pipe === self }
         return node.connections.singleOrNull { it.data(node) == output }?.let { PipeNetwork.PipePortAssoc(it.other(node).data.pipe as Pipe<*, Any?>, it.otherData(node)) }
     }
 
-    fun <X> createNode(pos: BlockPos, shape: PipeShape<X>, pipe: Pipe<*, X>): PipeNode {
-        return addNode(PipeHolder(UUID.randomUUID(), pos, pipe, shape))
+    @Suppress("UNCHECKED_CAST")
+    fun <P, X> createNode(pos: BlockPos, pipe: Pipe<P, X>, shape: PipeShape<X>, pathHandler: CellPathHandler<P>): PipeNode {
+        return addNode(PipeHolder(UUID.randomUUID(), pos, pipe as Pipe<Any?, Any?>, shape as PipeShape<Any?>, pathHandler as CellPathHandler<Any?>))
     }
 
-    private fun addNode(holder: PipeHolder<*>): PipeNode {
+    private fun addNode(holder: PipeHolder): PipeNode {
         val result = graph.add(holder)
         result.data.pipe.onJoinNetwork(this)
         controller.markDirty()
@@ -170,6 +175,10 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
         for (link in node.connections.toSet()) {
             (link.first.data.pipe as Pipe<*, Any?>).onDisconnect(link.data1, link.second.data.pipe)
             (link.second.data.pipe as Pipe<*, Any?>).onDisconnect(link.data2, link.first.data.pipe)
+        }
+        for (a in cellMap.values.filter { it.pipe === node.data.pipe }) {
+            val content = untrack(a.cell)
+            (node.data.pipe as Pipe<Any?, *>).onEject(a.path, content)
         }
         node.data.pipe.onLeaveNetwork()
         graph.remove(node)
@@ -273,7 +282,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
             CompoundTag().apply {
                 put("cell", cell.cell.toTag())
                 putInt("node", nodeToIndex.getValue(getNodeByPipe(cell.pipe)!!))
-                put("path", (cell.pipe as Pipe<CellPath, *>).getTagFromPath(cell.path))
+                put("path", (cell.pipe as Pipe<Any?, *>).getTagFromPath(cell.path))
                 putLong("itime", cell.insertTime)
                 putLong("utime", cell.updateTime)
             }
@@ -320,7 +329,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
                     val path = node.data.pipe.getPathFromTag(it.get("path") ?: return@mapNotNull null)
                     val itime = it.getLong("itime")
                     val utime = it.getLong("utime")
-                    CellHolder(cell, node.data.pipe as Pipe<CellPath, *>, path, itime, utime)
+                    CellHolder(cell, node.data.pipe as Pipe<Any?, *>, path, itime, utime)
                 }
                 .associateBy { it.cell.id }
 
@@ -340,7 +349,14 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
 
 }
 
-private data class CellHolder<P : CellPath>(val cell: Cell<*>, val pipe: Pipe<P, *>, val path: P, val insertTime: Long, val updateTime: Long) {
+private data class CellHolder<P>(
+        val cell: Cell<*>,
+        val pipe: Pipe<P, *>,
+        val path: P,
+        val insertTime: Long,
+        val updateTime: Long
+) {
+
     // Helper method because of generics bs.
     fun onFinish(network: PipeNetwork) {
         pipe.onFinishPath(network, path, cell)
@@ -348,7 +364,13 @@ private data class CellHolder<P : CellPath>(val cell: Cell<*>, val pipe: Pipe<P,
 
 }
 
-data class PipeHolder<X>(val id: UUID, val pos: BlockPos, val pipe: Pipe<*, X>, val shape: PipeShape<X>) {
+data class PipeHolder(
+        val id: UUID,
+        val pos: BlockPos,
+        val pipe: Pipe<Any?, Any?>,
+        val shape: PipeShape<Any?>,
+        val pathHandler: CellPathHandler<Any?>
+) {
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
         tag.putUuid("id", id)
@@ -361,14 +383,15 @@ data class PipeHolder<X>(val id: UUID, val pos: BlockPos, val pipe: Pipe<*, X>, 
 
     companion object {
         @Suppress("UNCHECKED_CAST")
-        fun fromTag(tag: CompoundTag, world: World): PipeHolder<*>? {
+        fun fromTag(tag: CompoundTag, world: World): PipeHolder? {
             val id = tag.getUuid("id")
             val pos = BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"))
             val state = world.getBlockState(pos)
             val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pos) ?: return null
             val pipe = attr.create().also { it.fromTag(tag.getCompound("pipe")) }
             val shape = attr.type.getBaseShape(state).translate(pos)
-            return PipeHolder(id, pos, pipe as Pipe<*, Any?>, shape as PipeShape<Any?>)
+            val pathHandler = attr.pathHandler
+            return PipeHolder(id, pos, pipe as Pipe<Any?, Any?>, shape as PipeShape<Any?>, pathHandler as CellPathHandler<Any?>)
         }
     }
 

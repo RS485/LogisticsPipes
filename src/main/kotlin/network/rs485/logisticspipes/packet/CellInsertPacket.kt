@@ -48,6 +48,7 @@ import net.minecraft.util.math.BlockPos
 import network.rs485.logisticspipes.serialization.ForCell
 import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.network.PipeAttribute
+import network.rs485.logisticspipes.transport.network.client.DefaultDisplayHandler
 
 @Serializable
 data class CellInsertPacket(val cell: Cell<*>, val pipe: BlockPos, val path: Tag, val insertTime: Long, val updateTime: Long) : Packet {
@@ -56,8 +57,7 @@ data class CellInsertPacket(val cell: Cell<*>, val pipe: BlockPos, val path: Tag
         val world = ctx.player.world
         ctx.taskQueue.execute {
             val attr = PipeAttribute.ATTRIBUTE.getFirstOrNull(world, pipe) ?: return@execute
-            val dh = attr.displayHandler ?: return@execute
-            dh.onUpdatePath(cell, pipe, attr.create().getPathFromTag(path), insertTime, updateTime)
+            DefaultDisplayHandler.onUpdatePath(cell, pipe, attr.create().getPathFromTag(path), insertTime, updateTime)
         }
     }
 

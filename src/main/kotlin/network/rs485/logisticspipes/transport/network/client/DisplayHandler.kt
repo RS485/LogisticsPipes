@@ -39,10 +39,9 @@ package network.rs485.logisticspipes.transport.network.client
 
 import net.minecraft.util.math.BlockPos
 import network.rs485.logisticspipes.transport.Cell
-import network.rs485.logisticspipes.transport.CellPath
 
 interface DisplayHandler {
 
-    fun onUpdatePath(cell: Cell<*>, pos: BlockPos, path: CellPath, insertTime: Long, updateTime: Long)
+    fun onUpdatePath(cell: Cell<*>, pos: BlockPos, path: Any?, insertTime: Long, updateTime: Long)
 
 }

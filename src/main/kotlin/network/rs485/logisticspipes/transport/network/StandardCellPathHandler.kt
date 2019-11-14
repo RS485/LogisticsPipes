@@ -35,24 +35,16 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.transport.network
 
 import net.minecraft.util.math.Vec3d
+import network.rs485.logisticspipes.pipe.StandardPipeCellPath
 
-/**
- * Describes the path of a cell in a pipe. Provided by the pipe itself when a cell enters it to make the cell's path match its shape.
- */
-interface CellPath {
+object StandardCellPathHandler : LinearCellPathHandler<StandardPipeCellPath> {
 
-    /**
-     * Returns the cell's position based on progress (in range 0..1) relative to the center of the pipe
-     */
-    fun getItemPosition(progress: Float): Vec3d
-
-    /**
-     * Returns the length of this path (the distance the cell travels between progress=0 and progress=1).
-     */
-    fun getLength(): Float
+    override fun getCellPosition(path: StandardPipeCellPath, progress: Float): Vec3d {
+        val actualProgress = if (path.inwards) 1 - progress else progress
+        return Vec3d(path.side.vector).multiply(actualProgress.toDouble() * 0.5)
+    }
 
 }
-

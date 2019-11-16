@@ -232,6 +232,9 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
             val networks = newGraphs.map {
                 val net = controller.createNetwork()
                 net.graph.join(it)
+                val cells = cellMap.filterValues { (_, pipe) -> net.getNodeByPipe(pipe) != null }
+                cellMap -= cells.keys
+                net.cellMap += cells
                 net
             }
 

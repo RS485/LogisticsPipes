@@ -48,6 +48,7 @@ import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.pipe.sign.PipeSignType
 import network.rs485.logisticspipes.pipe.upgrade.UpgradeType
 import network.rs485.logisticspipes.transport.CellContentType
+import network.rs485.logisticspipes.util.SerializableKey
 
 object Registries {
 
@@ -56,6 +57,7 @@ object Registries {
     val ModuleType = create("module_type", SimpleRegistry<ModuleType<*>>())
     val UpgradeType = create("upgrade_type", SimpleRegistry<UpgradeType<*>>())
     val CellContentType = create("cell_content_type", SimpleRegistry<CellContentType<*>>())
+    val SerializableKey = create("serializable_key", SimpleRegistry<SerializableKey<*>>())
 
     private fun <T : MutableRegistry<*>> create(name: String, registry: T): T {
         return Registry.register(Registry.REGISTRIES, Identifier(ModID, name), registry)

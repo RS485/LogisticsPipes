@@ -42,7 +42,7 @@ import network.rs485.logisticspipes.transport.Cell
 import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 
-class UnroutedPipe(itf: WorldInterface) : StandardPipe(itf) {
+class UnroutedPipe(private val itf: WorldInterface) : StandardPipe(itf) {
 
     override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
         // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.

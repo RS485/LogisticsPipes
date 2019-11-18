@@ -53,7 +53,7 @@ object ItemCellContentRenderer : CellContentRenderer<ItemCellContent> {
     override fun render(pos: Vec3d, cell: Cell<ItemCellContent>, lightLevel: Int, trStack: MatrixStack, buffers: BufferBuilderStorage) {
         trStack.scale(0.5f, 0.5f, 0.5f)
 
-        val stack = cell.content.getDisplayStack()
+        val stack = cell.content.stack
         client.itemRenderer.method_23178(stack, ModelTransformation.Type.FIXED, lightLevel, OverlayTexture.DEFAULT_UV, trStack, buffers.entityVertexConsumers)
     }
 

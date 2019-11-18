@@ -35,34 +35,16 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.pipe
 
-import net.minecraft.entity.Entity
-import net.minecraft.entity.ItemEntity
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
-import network.rs485.logisticspipes.init.CellContentTypes
+import net.minecraft.util.math.Direction
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.PipeNetwork
 
-class ItemCellContent @JvmOverloads constructor(var stack: ItemStack = ItemStack.EMPTY) : CellContent {
+class TestInsertingPipe(private val itf: WorldInterface) : InventoryConnectedPipe(itf) {
 
-    override fun fromTag(tag: CompoundTag) {
-        stack = ItemStack.fromTag(tag)
-    }
-
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return stack.toTag(tag)
-    }
-
-    override fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity? {
-        val entity = ItemEntity(world, pos.x, pos.y, pos.z, stack.copy())
-        if (velocity != null) entity.velocity = velocity
-        return entity
-    }
-
-    override fun getType(): CellContentType<*> {
-        return CellContentTypes.Item
+    override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
+        return from
     }
 
 }

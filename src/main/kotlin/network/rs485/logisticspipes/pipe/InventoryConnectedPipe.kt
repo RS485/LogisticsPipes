@@ -35,34 +35,32 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.pipe
 
-import net.minecraft.entity.Entity
-import net.minecraft.entity.ItemEntity
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
-import network.rs485.logisticspipes.init.CellContentTypes
+import alexiil.mc.lib.attributes.item.FixedItemInv
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.ItemCellContent
+import network.rs485.logisticspipes.transport.PipeNetwork
 
-class ItemCellContent @JvmOverloads constructor(var stack: ItemStack = ItemStack.EMPTY) : CellContent {
+abstract class InventoryConnectedPipe(private val itf: WorldInterface) : StandardPipe(itf) {
 
-    override fun fromTag(tag: CompoundTag) {
-        stack = ItemStack.fromTag(tag)
+    override fun onFinishPath(network: PipeNetwork, path: StandardPipeCellPath, cell: Cell<*>) {
+        super.onFinishPath(network, path, cell)
     }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return stack.toTag(tag)
+    fun insertIntoInventory(network: PipeNetwork, cell: Cell<ItemCellContent>): Cell<ItemCellContent> {
+        val inv = itf.getAttachedInventory() ?: return cell
+
+        val stack = network.untrack(cell).stack
+
+        val remaining = inv.insertable.insert(stack)
+        return Cell(ItemCellContent(remaining), cell.id, cell.extraData)
     }
 
-    override fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity? {
-        val entity = ItemEntity(world, pos.x, pos.y, pos.z, stack.copy())
-        if (velocity != null) entity.velocity = velocity
-        return entity
-    }
+    interface WorldInterface : StandardPipe.WorldInterface {
 
-    override fun getType(): CellContentType<*> {
-        return CellContentTypes.Item
+        fun getAttachedInventory(): FixedItemInv?
+
     }
 
 }

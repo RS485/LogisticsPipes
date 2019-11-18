@@ -35,34 +35,18 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.init
 
-import net.minecraft.entity.Entity
-import net.minecraft.entity.ItemEntity
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
-import network.rs485.logisticspipes.init.CellContentTypes
+import net.minecraft.util.Identifier
+import net.minecraft.util.registry.Registry
+import network.rs485.logisticspipes.ModID
+import network.rs485.logisticspipes.util.SerializableKey
 
-class ItemCellContent @JvmOverloads constructor(var stack: ItemStack = ItemStack.EMPTY) : CellContent {
+object SerializableKeys {
 
-    override fun fromTag(tag: CompoundTag) {
-        stack = ItemStack.fromTag(tag)
-    }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return stack.toTag(tag)
-    }
-
-    override fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity? {
-        val entity = ItemEntity(world, pos.x, pos.y, pos.z, stack.copy())
-        if (velocity != null) entity.velocity = velocity
-        return entity
-    }
-
-    override fun getType(): CellContentType<*> {
-        return CellContentTypes.Item
+    private fun <T : SerializableKey<*>> create(name: String, type: T): T {
+        return Registry.register(Registries.SerializableKey, Identifier(ModID, name), type)
     }
 
 }

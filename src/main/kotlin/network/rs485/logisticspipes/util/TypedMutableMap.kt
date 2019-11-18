@@ -35,34 +35,53 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport
+package network.rs485.logisticspipes.util
 
-import net.minecraft.entity.Entity
-import net.minecraft.entity.ItemEntity
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
-import network.rs485.logisticspipes.init.CellContentTypes
+import net.minecraft.util.Identifier
+import network.rs485.logisticspipes.LogisticsPipes
+import network.rs485.logisticspipes.init.Registries
 
-class ItemCellContent @JvmOverloads constructor(var stack: ItemStack = ItemStack.EMPTY) : CellContent {
+class TypedMutableMap(val wrapped: MutableMap<SerializableKey<*>, Any?> = mutableMapOf()) {
 
-    override fun fromTag(tag: CompoundTag) {
-        stack = ItemStack.fromTag(tag)
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T> get(key: SerializableKey<T>): T? {
+        return wrapped[key] as T?
     }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        return stack.toTag(tag)
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getValue(key: SerializableKey<T>): T {
+        return wrapped.getValue(key) as T
     }
 
-    override fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity? {
-        val entity = ItemEntity(world, pos.x, pos.y, pos.z, stack.copy())
-        if (velocity != null) entity.velocity = velocity
-        return entity
+    operator fun <T> set(key: SerializableKey<T>, value: T) {
+        wrapped[key] = value
     }
 
-    override fun getType(): CellContentType<*> {
-        return CellContentTypes.Item
+    operator fun contains(key: SerializableKey<*>) = key in wrapped
+
+    @Suppress("UNCHECKED_CAST")
+    fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
+        return wrapped.entries.fold(tag) { acc, (k, v) -> acc.apply { put(Registries.SerializableKey.getId(k)!!.toString(), (k as SerializableKey<Any?>).toTag(v)) } }
+    }
+
+    companion object {
+        fun fromTag(tag: CompoundTag): TypedMutableMap {
+            val wrapped = mutableMapOf<SerializableKey<*>, Any?>()
+
+            wrapped += tag.keys.mapNotNull {
+                val id = Identifier(it)
+                val sk = Registries.SerializableKey[id]
+                if (sk == null) {
+                    LogisticsPipes.logger.warn("Ignoring unknown key '$id' in map")
+                    null
+                } else {
+                    Pair(sk, sk.fromTag(tag[it]!!))
+                }
+            }
+
+            return TypedMutableMap(wrapped)
+        }
     }
 
 }

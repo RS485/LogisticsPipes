@@ -141,18 +141,16 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
     }
 
     fun destroyNetwork(id: UUID) {
-        networks.remove(id) ?: return
+        val net = networks.remove(id) ?: return
 
         for ((k, v) in posToNetworks.entries.toSet()) {
             if (v == id) posToNetworks.remove(k)
         }
 
         markDirty()
-        // TODO drop cells
     }
 
     fun rebuildRefs(network: UUID) {
-        markDirty()
         posToNetworks -= posToNetworks.filterValues { it == network }.keys
         portLocationToNetwork -= portLocationToNetwork.filterValues { it == network }.keys
 

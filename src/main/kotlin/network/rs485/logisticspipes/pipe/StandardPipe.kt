@@ -48,7 +48,7 @@ import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import kotlin.experimental.or
 
-abstract class StandardPipe(protected val itf: WorldInterface) : Pipe<StandardPipeCellPath, Direction> {
+abstract class StandardPipe(private val itf: WorldInterface) : Pipe<StandardPipeCellPath, Direction> {
 
     override fun onEnterPipe(network: PipeNetwork, from: Direction, cell: Cell<*>) {
         // Send the cell inwards, from the side it entered from.

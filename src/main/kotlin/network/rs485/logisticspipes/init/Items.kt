@@ -84,8 +84,6 @@ object Items {
     val RemoteOrderer = create("remote_orderer", RemoteOrdererItem(Settings().group(ItemGroups.All).maxCount(1)))
     val ColoredRemoteOrderers = DyeColor.values().associate { it to create("${it.getName()}_remote_orderer", RemoteOrdererItem(Settings().group(ItemGroups.All).maxCount(1))) }
 
-    val FluidContainer = create("fluid_container", FluidContainerItem(Settings().maxCount(1)))
-
     val ActionSpeedUpgrade = create("action_speed_upgrade", UpgradeItem(Settings().group(ItemGroups.All), UpgradeTypes.ActionSpeed))
     val AdvancedSatelliteUpgrade = create("advanced_satellite_upgrade", UpgradeItem(Settings().group(ItemGroups.All), UpgradeTypes.AdvancedSatellite))
     val CraftingByproductUpgrade = create("crafting_byproduct_upgrade", UpgradeItem(Settings().group(ItemGroups.All), UpgradeTypes.CraftingByproduct))

@@ -40,12 +40,10 @@ package network.rs485.logisticspipes.transport
 import alexiil.mc.lib.attributes.fluid.volume.FluidKeys
 import alexiil.mc.lib.attributes.fluid.volume.FluidVolume
 import net.minecraft.entity.Entity
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import network.rs485.logisticspipes.init.CellContentTypes
-import network.rs485.logisticspipes.item.FluidContainerItem
 
 class FluidCellContent @JvmOverloads constructor(var fluid: FluidVolume = FluidKeys.EMPTY.withAmount(0)) : CellContent {
 
@@ -55,10 +53,6 @@ class FluidCellContent @JvmOverloads constructor(var fluid: FluidVolume = FluidK
 
     override fun toTag(tag: CompoundTag): CompoundTag {
         return fluid.toTag(tag)
-    }
-
-    override fun getDisplayStack(): ItemStack {
-        return FluidContainerItem.makeStack(fluid)
     }
 
     override fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity? {

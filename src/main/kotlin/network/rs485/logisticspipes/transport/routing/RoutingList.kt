@@ -37,7 +37,10 @@
 
 package network.rs485.logisticspipes.transport.routing
 
+import net.minecraft.nbt.LongArrayTag
+import net.minecraft.nbt.Tag
 import network.rs485.logisticspipes.transport.PipeNetwork
+import network.rs485.logisticspipes.util.SerializableKey
 import java.util.*
 
 class RoutingList(var steps: List<UUID>) {
@@ -51,6 +54,18 @@ class RoutingList(var steps: List<UUID>) {
             steps = steps.drop(index + 1)
             return steps.firstOrNull()
         }
+    }
+
+    companion object Key : SerializableKey<RoutingList> {
+
+        override fun toTag(t: RoutingList): Tag {
+            return LongArrayTag(t.steps.flatMap { listOf(it.leastSignificantBits, it.mostSignificantBits) })
+        }
+
+        override fun fromTag(tag: Tag): RoutingList {
+            return RoutingList((tag as? LongArrayTag)?.longArray?.toList().orEmpty().chunked(2).map { UUID(it[1], it[0]) })
+        }
+
     }
 
 }

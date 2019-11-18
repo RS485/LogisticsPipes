@@ -38,7 +38,6 @@
 package network.rs485.logisticspipes.transport
 
 import net.minecraft.entity.Entity
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -50,11 +49,6 @@ interface CellContent {
      * (or null, if no entity should be spawned)
      */
     fun createEntity(world: World, pos: Vec3d, velocity: Vec3d?): Entity?
-
-    /**
-     * For now, used for rendering of cells.
-     */
-    fun getDisplayStack(): ItemStack
 
     fun fromTag(tag: CompoundTag)
 

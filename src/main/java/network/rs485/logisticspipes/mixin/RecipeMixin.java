@@ -38,35 +38,27 @@
 package network.rs485.logisticspipes.mixin;
 
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.util.DefaultedList;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import network.rs485.logisticspipes.api.ItemAdvancedRecipeRemainder;
 
 @Mixin(Recipe.class)
 public interface RecipeMixin<C extends Inventory> {
 
-	@Inject(
-			method = "getRemainingStacks",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/util/DefaultedList;set(ILjava/lang/Object;)Ljava/lang/Object;",
-					shift = At.Shift.AFTER
-			),
-			locals = LocalCapture.CAPTURE_FAILHARD
-	)
-	default void getRemainingStacks(C inventory_1, CallbackInfoReturnable<DefaultedList<ItemStack>> cir, DefaultedList<ItemStack> defaultedList_1, int int_1, Item item_1) {
-		if (item_1 instanceof ItemAdvancedRecipeRemainder) {
-			defaultedList_1.set(int_1, ((ItemAdvancedRecipeRemainder) item_1).getRecipeRemainder(inventory_1.getInvStack(int_1)));
-		}
-	}
+	// TODO mixin machine broke
+	//	@Inject(
+	//			method = "getRemainingStacks",
+	//			at = @At(
+	//					value = "INVOKE",
+	//					target = "Lnet/minecraft/util/DefaultedList;set(ILjava/lang/Object;)Ljava/lang/Object;",
+	//					shift = At.Shift.AFTER
+	//			),
+	//			locals = LocalCapture.CAPTURE_FAILHARD
+	//	)
+	//	default void getRemainingStacks(C inventory_1, CallbackInfoReturnable<DefaultedList<ItemStack>> cir, DefaultedList<ItemStack> defaultedList_1, int int_1, Item item_1) {
+	//		if (item_1 instanceof ItemAdvancedRecipeRemainder) {
+	//			defaultedList_1.set(int_1, ((ItemAdvancedRecipeRemainder) item_1).getRecipeRemainder(inventory_1.getInvStack(int_1)));
+	//		}
+	//	}
 
 }

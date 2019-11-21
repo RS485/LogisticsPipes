@@ -44,6 +44,7 @@ import net.minecraft.client.render.BufferBuilderStorage
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
+import net.minecraft.client.texture.SpriteAtlasTexture
 import net.minecraft.client.util.math.Matrix3f
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.client.util.math.Vector3f
@@ -65,7 +66,7 @@ object FluidCellContentRenderer : CellContentRenderer<FluidCellContent> {
             val state = fl.defaultState.blockState
             client.blockRenderManager.getModel(state).sprite
         } else {
-            client.spriteAtlas.getSprite(fluid.sprite)
+            client.getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX).apply(fluid.sprite)
         }
 
         val color = fluid.renderColor

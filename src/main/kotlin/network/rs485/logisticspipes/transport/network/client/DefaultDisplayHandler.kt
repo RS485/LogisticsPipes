@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.transport.network.client
 import net.minecraft.util.math.BlockPos
 import network.rs485.logisticspipes.transport.Cell
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 object DefaultDisplayHandler : DisplayHandler {
 
@@ -51,7 +52,7 @@ object DefaultDisplayHandler : DisplayHandler {
 
 object ClientTrackedCells {
 
-    val cells = mutableMapOf<UUID, Entry>()
+    val cells = ConcurrentHashMap<UUID, Entry>()
 
     data class Entry(val cell: Cell<*>, val insertTime: Long, val updateTime: Long, val pos: BlockPos, val path: Any?)
 

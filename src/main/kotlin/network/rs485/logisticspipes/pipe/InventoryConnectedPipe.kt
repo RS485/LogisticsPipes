@@ -38,28 +38,30 @@
 package network.rs485.logisticspipes.pipe
 
 import alexiil.mc.lib.attributes.item.FixedItemInv
+import net.minecraft.util.math.Direction
 import network.rs485.logisticspipes.transport.Cell
-import network.rs485.logisticspipes.transport.ItemCellContent
 import network.rs485.logisticspipes.transport.PipeNetwork
 
 abstract class InventoryConnectedPipe(private val itf: WorldInterface) : StandardPipe(itf) {
 
-    override fun onFinishPath(network: PipeNetwork, path: StandardPipeCellPath, cell: Cell<*>) {
-        super.onFinishPath(network, path, cell)
+    override fun onCellLeave(network: PipeNetwork, cell: Cell<*>, side: Direction) {
+        if (side == itf.getInventorySide()) {
+            val inv = itf.getAttachedInventory()
+            if (inv != null) {
+                tryInsert(network, cell, side, inv)
+                return
+            }
+        }
+        super.onCellLeave(network, cell, side)
     }
 
-    fun insertIntoInventory(network: PipeNetwork, cell: Cell<ItemCellContent>): Cell<ItemCellContent> {
-        val inv = itf.getAttachedInventory() ?: return cell
-
-        val stack = network.untrack(cell).stack
-
-        val remaining = inv.insertable.insert(stack)
-        return Cell(ItemCellContent(remaining), cell.id, cell.extraData)
-    }
+    abstract fun tryInsert(network: PipeNetwork, cell: Cell<*>, side: Direction, inv: FixedItemInv)
 
     interface WorldInterface : StandardPipe.WorldInterface {
 
         fun getAttachedInventory(): FixedItemInv?
+
+        fun getInventorySide(): Direction?
 
     }
 

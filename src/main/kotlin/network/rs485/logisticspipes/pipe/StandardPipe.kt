@@ -79,14 +79,28 @@ abstract class StandardPipe(private val itf: WorldInterface) : Pipe<StandardPipe
                 network.insertFrom(cell, this, path.side)
             } else {
                 // Otherwise, again, drop the item.
-                val content = network.untrack(cell)
-                itf.dropItem(content, path.side)
+                onCellLeave(network, cell, path.side)
             }
         }
     }
 
+    protected open fun onCellLeave(network: PipeNetwork, cell: Cell<*>, side: Direction) {
+        val content = network.untrack(cell)
+        itf.dropItem(content, side)
+    }
+
     override fun onEject(path: StandardPipeCellPath, cc: CellContent) {
         itf.dropItem(cc, null)
+    }
+
+    override fun onConnectTo(port: Direction, other: Pipe<*, *>) {
+        super.onConnectTo(port, other)
+        itf.setConnection(port, true)
+    }
+
+    override fun onDisconnect(port: Direction, other: Pipe<*, *>) {
+        super.onDisconnect(port, other)
+        itf.setConnection(port, false)
     }
 
     override fun toTag(tag: CompoundTag): CompoundTag {

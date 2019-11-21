@@ -42,6 +42,7 @@ import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
 import network.rs485.logisticspipes.pipe.HighSpeedPipe
 import network.rs485.logisticspipes.pipe.PipeType
+import network.rs485.logisticspipes.pipe.TestInsertingPipe
 import network.rs485.logisticspipes.pipe.UnroutedPipe
 import network.rs485.logisticspipes.pipe.shape.PipeShapes
 
@@ -79,6 +80,8 @@ object PipeTypes {
     val HighSpeedSpeedup = create("high_speed_speedup", PipeType.Builder(PipeShapes.Default, ::UnroutedPipe).build())
     val HighSpeedCurve = create("high_speed_curve", PipeType.Builder(PipeShapes.Curve, ::HighSpeedPipe).build())
     val HighSpeedSCurve = create("high_speed_s_curve", PipeType.Builder(PipeShapes.Default, ::UnroutedPipe).build())
+
+    val TestInserting = create("test_inserting", PipeType.Builder(PipeShapes.Default, ::TestInsertingPipe).build())
 
     private fun <T : PipeType<*, *, *>> create(name: String, type: T): T {
         return Registry.register(Registries.PipeType, Identifier(ModID, name), type)

@@ -43,10 +43,7 @@ import net.minecraft.block.Material
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import network.rs485.logisticspipes.ModID
-import network.rs485.logisticspipes.block.CurvePipeBlock
-import network.rs485.logisticspipes.block.LogisticsCraftingTableBlock
-import network.rs485.logisticspipes.block.PipeBlock
-import network.rs485.logisticspipes.block.PipeExtensionBlock
+import network.rs485.logisticspipes.block.*
 
 object Blocks {
 
@@ -56,7 +53,8 @@ object Blocks {
     val CraftingTable = create("crafting_table", LogisticsCraftingTableBlock(SolidBlockSettings, false))
     val FuzzyCraftingTable = create("fuzzy_crafting_table", LogisticsCraftingTableBlock(SolidBlockSettings, true))
 
-    val UnroutedPipe = create("unrouted_pipe", PipeBlock(PipeSettings, PipeTypes.Unrouted))
+    val UnroutedPipe = create("unrouted_pipe", StandardPipeBlock.create(PipeSettings, PipeTypes.Unrouted))
+    val TestInsertingPipe = create("test_inserting_pipe", InventoryConnectedPipeBlock.create(PipeSettings, PipeTypes.TestInserting))
     val CurvePipe = create("curve_pipe", CurvePipeBlock(PipeSettings, PipeTypes.HighSpeedCurve))
 
     val PipeExtension = create("pipe_extension", PipeExtensionBlock(PipeSettings))

@@ -35,47 +35,33 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.pipe
+package network.rs485.logisticspipes.util
 
-import net.minecraft.block.BlockState
-import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
-import net.minecraft.util.Util
-import network.rs485.logisticspipes.init.Registries
-import network.rs485.logisticspipes.pipe.shape.PipeShape
-import network.rs485.logisticspipes.transport.Pipe
+import net.minecraft.util.StringIdentifiable
+import net.minecraft.util.math.Direction
 
-abstract class PipeType<X, out T : Pipe<*, X>, in I> {
+enum class OptionalDirection(val direction: Direction?) : StringIdentifiable {
+    NONE(null),
+    DOWN(Direction.DOWN),
+    UP(Direction.UP),
+    NORTH(Direction.NORTH),
+    SOUTH(Direction.SOUTH),
+    WEST(Direction.WEST),
+    EAST(Direction.EAST);
 
-    private var translationKey: String? = null
-
-    abstract fun create(itf: I): T
-
-    abstract fun getBaseShape(state: BlockState): PipeShape<X>
-
-    protected fun getOrCreateTranslationKey(): String {
-        return translationKey ?: run {
-            val key = Util.createTranslationKey("pipe", Registries.PipeType.getId(this));
-            translationKey = key
-            key
-        }
+    override fun asString(): String {
+        return direction?.asString() ?: "none"
     }
 
-    open fun getTranslationKey(): String {
-        return getOrCreateTranslationKey()
-    }
-
-    open fun getName(): Text {
-        return TranslatableText(getTranslationKey())
-    }
-
-    override fun toString(): String = getName().asString()
-
-    class Builder<X, T : Pipe<*, X>, I>(private val shape: (BlockState) -> PipeShape<X>, private val constructor: (I) -> T) {
-        fun build(): PipeType<X, T, I> = object : PipeType<X, T, I>() {
-            override fun create(itf: I): T = constructor(itf)
-
-            override fun getBaseShape(state: BlockState): PipeShape<X> = shape(state)
+    companion object {
+        fun fromDirection(dir: Direction?) = when (dir) {
+            Direction.DOWN -> DOWN
+            Direction.UP -> UP
+            Direction.NORTH -> NORTH
+            Direction.SOUTH -> SOUTH
+            Direction.WEST -> WEST
+            Direction.EAST -> EAST
+            null -> NONE
         }
     }
 

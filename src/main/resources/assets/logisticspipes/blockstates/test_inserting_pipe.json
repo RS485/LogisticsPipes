@@ -1,0 +1,119 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "logisticspipes:block/test_inserting_pipe_center"
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/test_inserting_pipe_side"
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/test_inserting_pipe_side",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/test_inserting_pipe_side",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/test_inserting_pipe_side",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/test_inserting_pipe_side",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "logisticspipes:block/test_inserting_pipe_side",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "inventory": "down"
+      },
+      "apply": {
+        "model": "logisticspipes:block/inventory_target"
+      }
+    },
+    {
+      "when": {
+        "inventory": "up"
+      },
+      "apply": {
+        "model": "logisticspipes:block/inventory_target",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "inventory": "north"
+      },
+      "apply": {
+        "model": "logisticspipes:block/inventory_target",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "inventory": "south"
+      },
+      "apply": {
+        "model": "logisticspipes:block/inventory_target",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "inventory": "west"
+      },
+      "apply": {
+        "model": "logisticspipes:block/inventory_target",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "inventory": "east"
+      },
+      "apply": {
+        "model": "logisticspipes:block/inventory_target",
+        "x": 90,
+        "y": 270
+      }
+    }
+  ]
+}

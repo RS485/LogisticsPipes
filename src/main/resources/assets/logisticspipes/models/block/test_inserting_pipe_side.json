@@ -1,0 +1,6 @@
+{
+  "parent": "logisticspipes:block/pipe_side",
+  "textures": {
+    "texture": "logisticspipes:block/test_inserting_pipe"
+  }
+}

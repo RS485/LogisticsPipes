@@ -54,6 +54,7 @@ object Items {
 
     val UnroutedPipe = create("unrouted_pipe", Blocks.UnroutedPipe)
     val CurvePipe = create("curve_pipe", Blocks.CurvePipe)
+    val TestInsertingPipe = create("test_inserting_pipe", Blocks.TestInsertingPipe)
 
     val SecurityCard = create("security_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.SECURITY))
     val FrequencyCard = create("frequency_card", CardItem(Settings().group(ItemGroups.All), CardItem.Type.FREQUENCY))

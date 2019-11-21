@@ -41,7 +41,7 @@ import alexiil.mc.lib.attributes.Attributes
 import network.rs485.logisticspipes.pipe.PipeType
 import network.rs485.logisticspipes.transport.Pipe
 
-class PipeAttribute<T : Pipe<P, *>, I, P>(
+class PipeAttribute<out T : Pipe<P, *>, I, P>(
         val type: PipeType<*, T, I>,
         val pathHandler: CellPathHandler<P>,
         val itf: I

@@ -73,6 +73,7 @@ object LogisticsPipesClient : ClientModInitializer {
 
     override fun onInitializeClient() {
         BlockRenderLayerMap.INSTANCE.putBlock(Blocks.UnroutedPipe, RenderLayer.getCutout())
+        BlockRenderLayerMap.INSTANCE.putBlock(Blocks.TestInsertingPipe, RenderLayer.getCutout())
 
         initCellRenderers()
     }

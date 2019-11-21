@@ -71,7 +71,7 @@ import network.rs485.logisticspipes.transport.network.PipeAttribute
 import network.rs485.logisticspipes.transport.network.StandardCellPathHandler
 import network.rs485.logisticspipes.transport.network.getPipeNetworkState
 
-class PipeBlock<T : Pipe<StandardPipeCellPath, Direction>>(settings: Settings, val pipeType: PipeType<Direction, T, StandardPipe.WorldInterface>) : Block(settings), AttributeProvider {
+abstract class StandardPipeBlock(settings: Settings) : Block(settings), AttributeProvider {
 
     init {
         defaultState = SIDE_PROPERTIES.values.fold(defaultState) { acc, prop -> acc.with(prop, false) }
@@ -99,8 +99,10 @@ class PipeBlock<T : Pipe<StandardPipeCellPath, Direction>>(settings: Settings, v
         return ActionResult.SUCCESS
     }
 
+    abstract fun createPipeAttribute(world: World, pos: BlockPos, state: BlockState): PipeAttribute<Pipe<StandardPipeCellPath, Direction>, *, StandardPipeCellPath>
+
     override fun addAllAttributes(world: World, pos: BlockPos, state: BlockState, to: AttributeList<*>) {
-        to.offer(PipeAttribute(pipeType, StandardCellPathHandler, WorldInterfaceImpl(world, pos)))
+        to.offer(createPipeAttribute(world, pos, state))
     }
 
     override fun appendProperties(builder: StateManager.Builder<Block, BlockState>) {
@@ -112,11 +114,10 @@ class PipeBlock<T : Pipe<StandardPipeCellPath, Direction>>(settings: Settings, v
         return (Direction.values().mapNotNull { BOX_SIDE[it].takeIf { _ -> state.get(SIDE_PROPERTIES[it]) } } + BOX_CENTER).reduce(VoxelShapes::union)
     }
 
-
-    class WorldInterfaceImpl(val world: World, val pos: BlockPos) : StandardPipe.WorldInterface {
+    open class WorldInterfaceImpl(val world: World, val pos: BlockPos) : StandardPipe.WorldInterface {
         override fun setConnection(side: Direction, connected: Boolean) {
             val state = world.getBlockState(pos)
-            if (state.block is PipeBlock<*>) {
+            if (state.block is StandardPipeBlock) {
                 world.setBlockState(pos, state.with(SIDE_PROPERTIES.getValue(side), connected))
             }
         }
@@ -153,6 +154,16 @@ class PipeBlock<T : Pipe<StandardPipeCellPath, Direction>>(settings: Settings, v
                 Direction.WEST to VoxelShapes.cuboid(0.0, 0.25, 0.25, 0.25, 0.75, 0.75),
                 Direction.EAST to VoxelShapes.cuboid(0.75, 0.25, 0.25, 1.0, 0.75, 0.75)
         )
+
+        @JvmStatic
+        fun <T : Pipe<StandardPipeCellPath, Direction>> create(
+                settings: Settings,
+                pipeType: PipeType<Direction, T, StandardPipe.WorldInterface>
+        ) = object : StandardPipeBlock(settings) {
+            override fun createPipeAttribute(world: World, pos: BlockPos, state: BlockState): PipeAttribute<Pipe<StandardPipeCellPath, Direction>, *, StandardPipeCellPath> {
+                return PipeAttribute(pipeType, StandardCellPathHandler, WorldInterfaceImpl(world, pos))
+            }
+        }
     }
 
 }

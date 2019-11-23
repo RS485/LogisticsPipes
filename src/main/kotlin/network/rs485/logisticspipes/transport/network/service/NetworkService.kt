@@ -35,14 +35,10 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.util
+package network.rs485.logisticspipes.transport.network.service
 
-import net.minecraft.nbt.Tag
+interface NetworkService {
 
-interface SerializableKey<T : Any> {
-
-    fun toTag(t: T): Tag
-
-    fun fromTag(tag: Tag): T
+    fun initialize(ctx: InitializationContext)
 
 }

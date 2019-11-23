@@ -35,14 +35,19 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.util
+package network.rs485.logisticspipes.transport.network.service
 
-import net.minecraft.nbt.Tag
+import network.rs485.logisticspipes.transport.PipeNetwork
+import network.rs485.logisticspipes.transport.network.PipeHolder
 
-interface SerializableKey<T : Any> {
+interface InitializationContext {
 
-    fun toTag(t: T): Tag
+    val network: PipeNetwork
 
-    fun fromTag(tag: Tag): T
+    fun registerTickHandler(frequency: Int, op: () -> Unit)
+
+    fun registerPipeChangeHandler(op: (PipeNetwork, PipeHolder) -> Unit) {
+
+    }
 
 }

@@ -35,14 +35,37 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.util
+package network.rs485.logisticspipes.transport.routing
 
 import net.minecraft.nbt.Tag
+import network.rs485.logisticspipes.transport.PipeNetwork
+import network.rs485.logisticspipes.transport.network.PipeHolder
+import network.rs485.logisticspipes.transport.network.service.InitializationContext
+import network.rs485.logisticspipes.transport.network.service.NetworkService
+import network.rs485.logisticspipes.util.SerializableKey
 
-interface SerializableKey<T : Any> {
+object RoutingService : NetworkService {
 
-    fun toTag(t: T): Tag
+    override fun initialize(ctx: InitializationContext) {
+        ctx.registerPipeChangeHandler(::onPipeChanged)
+    }
 
-    fun fromTag(tag: Tag): T
+    fun onPipeChanged(net: PipeNetwork, pipe: PipeHolder) {
+
+    }
+
+    class Data {
+
+        companion object Key : SerializableKey<Data> {
+            override fun toTag(t: Data): Tag {
+                TODO("not implemented")
+            }
+
+            override fun fromTag(tag: Tag): Data {
+                TODO("not implemented")
+            }
+
+        }
+    }
 
 }

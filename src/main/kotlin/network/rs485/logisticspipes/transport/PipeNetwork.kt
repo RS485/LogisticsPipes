@@ -38,9 +38,10 @@
 package network.rs485.logisticspipes.transport
 
 import net.minecraft.util.math.BlockPos
+import network.rs485.logisticspipes.util.TypedMutableMapAccess
 import java.util.*
 
-interface PipeNetwork {
+interface PipeNetwork : TypedMutableMapAccess {
 
     val id: UUID
 

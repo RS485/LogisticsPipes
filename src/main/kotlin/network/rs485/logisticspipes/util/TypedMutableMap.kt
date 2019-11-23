@@ -42,32 +42,45 @@ import net.minecraft.util.Identifier
 import network.rs485.logisticspipes.LogisticsPipes
 import network.rs485.logisticspipes.init.Registries
 
-class TypedMutableMap(val wrapped: MutableMap<SerializableKey<*>, Any?> = mutableMapOf()) {
+class TypedMutableMap(val wrapped: MutableMap<SerializableKey<*>, Any> = mutableMapOf()) {
 
     @Suppress("UNCHECKED_CAST")
-    operator fun <T> get(key: SerializableKey<T>): T? {
+    operator fun <T : Any> get(key: SerializableKey<T>): T? {
         return wrapped[key] as T?
     }
 
+    fun <T : Any> get(key: SerializableKey<T>, ctor: () -> T): T {
+        return this[key] ?: ctor().also { this[key] = it }
+    }
+
     @Suppress("UNCHECKED_CAST")
-    fun <T> getValue(key: SerializableKey<T>): T {
+    fun <T : Any> getValue(key: SerializableKey<T>): T {
         return wrapped.getValue(key) as T
     }
 
-    operator fun <T> set(key: SerializableKey<T>, value: T) {
-        wrapped[key] = value
+    operator fun <T : Any> set(key: SerializableKey<T>, value: T?) {
+        if (value == null) {
+            wrapped -= key
+        } else {
+            wrapped[key] = value
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Any> remove(key: SerializableKey<T>): T? {
+        return wrapped.remove(key) as T?
     }
 
     operator fun contains(key: SerializableKey<*>) = key in wrapped
 
     @Suppress("UNCHECKED_CAST")
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
-        return wrapped.entries.fold(tag) { acc, (k, v) -> acc.apply { put(Registries.SerializableKey.getId(k)!!.toString(), (k as SerializableKey<Any?>).toTag(v)) } }
+        return wrapped.entries.fold(tag) { acc, (k, v) -> acc.apply { put(Registries.SerializableKey.getId(k)!!.toString(), (k as SerializableKey<Any>).toTag(v)) } }
     }
 
     companion object {
         fun fromTag(tag: CompoundTag): TypedMutableMap {
-            val wrapped = mutableMapOf<SerializableKey<*>, Any?>()
+            val wrapped = mutableMapOf<SerializableKey<*>, Any>()
 
             wrapped += tag.keys.mapNotNull {
                 val id = Identifier(it)

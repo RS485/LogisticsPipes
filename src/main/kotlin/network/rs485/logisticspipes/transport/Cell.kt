@@ -42,6 +42,7 @@ import net.minecraft.util.Identifier
 import network.rs485.logisticspipes.init.Registries
 import network.rs485.logisticspipes.util.SerializableKey
 import network.rs485.logisticspipes.util.TypedMutableMap
+import network.rs485.logisticspipes.util.TypedMutableMapAccess
 import java.util.*
 
 /**
@@ -50,8 +51,8 @@ import java.util.*
 class Cell<out T : CellContent>(
         val content: T,
         val id: UUID = UUID.randomUUID(),
-        val extraData: TypedMutableMap = TypedMutableMap()
-) {
+        val data: TypedMutableMap = TypedMutableMap()
+) : TypedMutableMapAccess {
 
     fun getSpeedFactor() = 1.0f
 
@@ -66,10 +67,10 @@ class Cell<out T : CellContent>(
         content.fromTag(tag.getCompound("content"))
     }
 
-    operator fun <T> get(key: SerializableKey<T>) = extraData[key]
+    override operator fun <T : Any> get(key: SerializableKey<T>) = data[key]
 
-    operator fun <T> set(key: SerializableKey<T>, t: T) {
-        extraData[key] = t
+    override operator fun <T : Any> set(key: SerializableKey<T>, t: T?) {
+        data[key] = t
     }
 
     fun toTag(tag: CompoundTag = CompoundTag()): CompoundTag {
@@ -78,7 +79,7 @@ class Cell<out T : CellContent>(
                 ?: error("Unregistered pipe content type ${content.getType()}!")
         tag.putString("type", typeId.toString())
         tag.put("content", content.toTag())
-        tag.put("extra_data", extraData.toTag())
+        tag.put("data", data.toTag())
         return tag
     }
 
@@ -89,7 +90,7 @@ class Cell<out T : CellContent>(
             val type = Registries.CellContentType[Identifier(typeId)] ?: return null
             val content = type.create()
             content.fromTag(tag.getCompound("content"))
-            val extraData = TypedMutableMap.fromTag(tag.getCompound("extra_data"))
+            val extraData = TypedMutableMap.fromTag(tag.getCompound("data"))
             return Cell(content, id, extraData)
         }
     }

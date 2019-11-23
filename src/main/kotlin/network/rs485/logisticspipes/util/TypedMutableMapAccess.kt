@@ -35,13 +35,22 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport.routing
+package network.rs485.logisticspipes.util
 
-import java.util.*
+interface TypedMutableMapAccess {
 
-interface Router {
+    operator fun <T : Any> get(key: SerializableKey<T>): T?
 
-    val id: UUID
+    operator fun <T : Any> set(key: SerializableKey<T>, t: T?)
 
+    fun <T : Any> remove(key: SerializableKey<T>): T? {
+        val r = this[key]
+        this[key] = null
+        return r
+    }
+
+    fun <T : Any> get(key: SerializableKey<T>, ctor: () -> T): T {
+        return this[key] ?: ctor().also { this[key] = it }
+    }
 
 }

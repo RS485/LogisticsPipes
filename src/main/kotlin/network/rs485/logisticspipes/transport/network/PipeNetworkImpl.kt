@@ -54,6 +54,8 @@ import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
 import network.rs485.logisticspipes.transport.network.client.DefaultDisplayHandler
+import network.rs485.logisticspipes.util.SerializableKey
+import network.rs485.logisticspipes.util.TypedMutableMap
 import therealfarfetchd.hctm.common.graph.Graph
 import therealfarfetchd.hctm.common.graph.Link
 import therealfarfetchd.hctm.common.graph.Node
@@ -75,6 +77,8 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
 
     private val portMap = mutableMapOf<BlockFace, PipeNetwork.PipePortAssoc<*>>()
 
+    private val data = TypedMutableMap()
+
     override val pipes: Iterable<Pipe<*, *>>
         get() = graph.nodes.asSequence().map { it.data.pipe }.asIterable()
 
@@ -83,6 +87,14 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
 
     override val random: Random
         get() = world.random
+
+    override fun <T : Any> get(key: SerializableKey<T>): T? {
+        return data[key]
+    }
+
+    override fun <T : Any> set(key: SerializableKey<T>, t: T?) {
+        data[key] = t
+    }
 
     override fun <P> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
         val node = getNodeByPipe(pipe)!!

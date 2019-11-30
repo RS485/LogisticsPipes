@@ -54,7 +54,7 @@ import net.minecraft.util.registry.Registry
 data class ItemVariant @JvmOverloads constructor(val item: Item, var tag: CompoundTag? = null) : ItemConvertible, Comparable<ItemVariant> {
 
     @JvmOverloads
-    fun makeStack(count: Int = 1) = ItemStack(item, count).also { it.tag = tag?.method_10553() }
+    fun makeStack(count: Int = 1) = ItemStack(item, count).also { it.tag = tag?.copy() }
 
     fun isEmpty() = item == Items.AIR
 
@@ -73,7 +73,7 @@ data class ItemVariant @JvmOverloads constructor(val item: Item, var tag: Compou
 
     override fun asItem(): Item = item
 
-    fun copy() = ItemVariant(item, tag?.method_10553())
+    fun copy() = ItemVariant(item, tag?.copy())
 
     override fun compareTo(other: ItemVariant): Int {
         return ItemComparator.compare(item, other.item)

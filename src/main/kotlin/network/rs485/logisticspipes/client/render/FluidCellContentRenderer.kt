@@ -43,11 +43,8 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.BufferBuilderStorage
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.texture.SpriteAtlasTexture
-import net.minecraft.client.util.math.Matrix3f
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 import network.rs485.logisticspipes.transport.Cell
@@ -76,7 +73,6 @@ object FluidCellContentRenderer : CellContentRenderer<FluidCellContent> {
         val b = color and 0xFF
 
         val width = 0.25f
-        //val heightPct = (sin((System.nanoTime() % 2000000000L).toDouble() / 1000000000.0 * PI).toFloat() + 1.0f) / 2.0f
         val heightPct = (cell.content.fluid.amount / FluidVolume.BUCKET.toFloat()).coerceIn(0f, 1f)
         val extent = width / 2.0f
         val maxY = -extent + width * heightPct
@@ -154,11 +150,6 @@ object FluidCellContentRenderer : CellContentRenderer<FluidCellContent> {
 //            vertex(mat, extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(nmat, 0f, 1f, 0f).next()
 //            vertex(mat, -extent, maxY, -extent).color(r, g, b, a).light(lightLevel, OverlayTexture.DEFAULT_UV).normal(nmat, 0f, 1f, 0f).next()
 //        }
-    }
-
-    fun VertexConsumer.normal(mat: Matrix3f, x: Float, y: Float, z: Float): VertexConsumer {
-        val vec = Vector3f(x, y, z).apply { multiply(mat) }
-        return normal(vec.x, vec.y, vec.z)
     }
 
 }

@@ -62,7 +62,7 @@ class CellRenderer(val client: MinecraftClient) {
             trStack.translate(pos.x, pos.y, pos.z)
             val lightLevel = client.world?.let { world ->
                 val bp = BlockPos(pos)
-                if (world.isChunkLoaded(bp)) WorldRenderer.method_23794(world, bp) else null
+                if (world.isChunkLoaded(bp)) WorldRenderer.getLightmapCoordinates(world, bp) else null
             } ?: 0
             (CellRendererRegistry.getRenderer(cell.content.getType()) as CellContentRenderer<CellContent>?)
                     ?.render(pos, cell, lightLevel, trStack, buffers)

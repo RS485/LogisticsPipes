@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -1523,33 +1524,40 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Nullable
 	@Override
 	public IInventoryUtil getSneakyInventory(ModulePositionType slot, int positionInt) {
-		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
+		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandlerCustom(
+				(tile, pointed) -> new NeighborTileEntity<>(tile, pointed).sneakyInsertion().from(getUpgradeManager(slot, positionInt)));
 		if (pointedItemHandler == null) {
 			return null;
 		}
-		return pointedItemHandler.sneakyInsertion().from(getUpgradeManager(slot, positionInt)).getUtilForItemHandler();
+		return pointedItemHandler.getUtilForItemHandler();
 	}
 
 	@Nullable
 	@Override
 	public IInventoryUtil getSneakyInventory(@Nonnull EnumFacing direction) {
-		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
+		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandlerCustom(
+				(tile, pointed) -> new NeighborTileEntity<>(tile, pointed).sneakyInsertion().from(direction));
 		if (pointedItemHandler == null) {
 			return null;
 		}
-		return pointedItemHandler.sneakyInsertion().from(direction).getUtilForItemHandler();
+		return pointedItemHandler.getUtilForItemHandler();
+	}
+
+	@Nullable
+	public NeighborTileEntity<TileEntity> getPointedItemHandlerCustom(@Nonnull BiFunction<TileEntity, EnumFacing, NeighborTileEntity<TileEntity>> neighbourFactory) {
+		final EnumFacing pointedOrientation = getPointedOrientation();
+		if (pointedOrientation == null) return null;
+		final TileEntity tile = getContainer().getTile(pointedOrientation);
+		if (tile == null) return null;
+		final NeighborTileEntity<TileEntity> neighbor = neighbourFactory.apply(tile, pointedOrientation);
+		if (!neighbor.isItemHandler()) return null;
+		return neighbor;
 	}
 
 	@Nullable
 	@Override
 	public NeighborTileEntity<TileEntity> getPointedItemHandler() {
-		final EnumFacing pointedOrientation = getPointedOrientation();
-		if (pointedOrientation == null) return null;
-		final TileEntity tile = getContainer().getTile(pointedOrientation);
-		if (tile == null) return null;
-		final NeighborTileEntity<TileEntity> neighbor = new NeighborTileEntity<>(tile, pointedOrientation);
-		if (!neighbor.isItemHandler()) return null;
-		return neighbor;
+		return getPointedItemHandlerCustom(NeighborTileEntity::new);
 	}
 
 	/* ISendRoutedItem */

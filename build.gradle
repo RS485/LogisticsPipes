@@ -119,10 +119,6 @@ repositories {
         url = "https://rs485.network/maven-cache/"
     }
     maven {
-        name = 'CB Repo'
-        url = "http://chickenbones.net/maven/"
-    }
-    maven {
         name = "JEI Maven."
         url = "http://dvs1.progwml6.com/files/maven"
     }
@@ -161,9 +157,9 @@ dependencies {
     deobfProvided 'mezz.jei:jei_1.12.2:4.15.0.268:api'
     // already in environment because of NEI
 //    runtime 'mezz.jei:jei_1.12.2:4.15.0.268'
-    compile 'codechicken:CodeChickenLib:1.12.2-3.2.+:deobf'
-    compile 'codechicken:NotEnoughItems:1.12.2-2.4.+:deobf'
-    compile 'codechicken:EnderStorage:1.12.2-2.4.+:deobf'
+    compile 'codechicken:CodeChickenLib:1.12.2-3.2.3.358:deobf'
+    compile 'codechicken:NotEnoughItems:1.12.2-2.4.3.245:deobf'
+    compile 'codechicken:EnderStorage:1.12.2-2.4.6.137:deobf'
     compile 'net.industrial-craft:industrialcraft-2:2.8.97-ex112:api'
     compile 'li.cil.oc:OpenComputers:MC1.12.2-1.7.+:api'
     compile 'appeng:appliedenergistics2:rv6-stable-6:api'

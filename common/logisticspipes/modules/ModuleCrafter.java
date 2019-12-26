@@ -92,6 +92,7 @@ import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.FluidResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsDictPromise;
 import logisticspipes.routing.LogisticsExtraDictPromise;
@@ -594,7 +595,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 			int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(satelliteUUID);
 			if (satelliteRouterId != -1) {
-				return !getRouter().getRouteTable().get(satelliteRouterId).isEmpty();
+				List<ExitRoute> rt = getRouter().getRouteTable().get(satelliteRouterId);
+				return rt != null && !rt.isEmpty();
 			}
 		} else {
 			boolean foundAll = true;
@@ -606,7 +608,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 				int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(advancedSatelliteUUIDArray[i]);
 				if (satelliteRouterId != -1) {
-					if (!getRouter().getRouteTable().get(satelliteRouterId).isEmpty()) {
+					List<ExitRoute> rt = getRouter().getRouteTable().get(satelliteRouterId);
+					if (rt != null && !rt.isEmpty()) {
 						foundOne = true;
 					}
 				}

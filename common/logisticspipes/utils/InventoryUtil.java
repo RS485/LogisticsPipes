@@ -185,7 +185,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public int addToSlot(ItemStack stack, int slot) {
 		int wanted = stack.getCount();
-		ItemStack rest = _inventory.insertItem(slot, stack, true);
+		ItemStack rest = _inventory.insertItem(slot, stack, false);
 		return wanted - rest.getCount();
 	}
 }

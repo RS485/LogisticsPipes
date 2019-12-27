@@ -201,12 +201,13 @@ public class PipeTransportLogistics {
 
 		if (MainProxy.isServer(container.getWorld())) {
 			readjustSpeed((LPTravelingItemServer) item);
+			ItemRoutingInformation info1 = ((LPTravelingItemServer) item).getInfo().clone();
 			RoutingResult result = resolveDestination((LPTravelingItemServer) item);
 			item.output = result.getFace();
 			if (!result.hasRoute) {
 				return 0;
 			}
-			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + ((LPTravelingItemServer) item).getInfo());
+			getPipe().debug.log("Injected Item: [" + item.input + ", " + item.output + "] (" + info1);
 		} else {
 			item.output = null;
 		}
@@ -216,7 +217,7 @@ public class PipeTransportLogistics {
 		} else {
 			items.add(item);
 
-			if (MainProxy.isServer(container.getWorld()) && !getPipe().isOpaque()) {
+			if (MainProxy.isServer(container.getWorld()) && !getPipe().isOpaque() && item.getItemIdentifierStack().getStackSize() > 0) {
 				sendItemPacket((LPTravelingItemServer) item);
 			}
 		}

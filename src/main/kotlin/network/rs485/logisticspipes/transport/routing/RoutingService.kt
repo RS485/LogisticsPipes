@@ -37,12 +37,16 @@
 
 package network.rs485.logisticspipes.transport.routing
 
+import net.minecraft.nbt.ByteTag
 import net.minecraft.nbt.Tag
-import network.rs485.logisticspipes.transport.PipeNetwork
 import network.rs485.logisticspipes.transport.network.PipeHolder
+import network.rs485.logisticspipes.transport.network.PipeNetworkImpl
 import network.rs485.logisticspipes.transport.network.service.InitializationContext
 import network.rs485.logisticspipes.transport.network.service.NetworkService
-import network.rs485.logisticspipes.util.SerializableKey
+import network.rs485.logisticspipes.util.DefaultedSerializableKey
+import therealfarfetchd.hctm.common.graph.Graph
+import therealfarfetchd.hctm.common.graph.Node
+import java.util.*
 
 object RoutingService : NetworkService {
 
@@ -50,19 +54,45 @@ object RoutingService : NetworkService {
         ctx.registerPipeChangeHandler(::onPipeChanged)
     }
 
-    fun onPipeChanged(net: PipeNetwork, pipe: PipeHolder) {
+    private fun onPipeChanged(net: PipeNetworkImpl, pipe: PipeHolder) {
+        updateRoutingTree(net)
+    }
 
+    private fun updateRoutingTree(net: PipeNetworkImpl) {
+        val data = net[Data]
+        val tree = Graph<UUID, Float>()
+        for (node in net.graph.nodes) {
+            val self = tree.add(node.data.id)
+            for (connection in node.connections) {
+                val otherPipe = connection.other(node)
+                val other = tree.nodes.find { it.data == otherPipe.data.id }
+                if (other != null) {
+                    val length = node.data.pathHandler.getLength(connection.data(node)) +
+                            otherPipe.data.pathHandler.getLength(connection.data(otherPipe))
+                    tree.link(self, other, length, length)
+                }
+            }
+        }
+        if (tree.split().isNotEmpty()) error("Disconnected nodes found")
+        val stack = mutableListOf<Node<UUID, Float>>()
+
+        data.tree = tree
     }
 
     class Data {
 
-        companion object Key : SerializableKey<Data> {
+        var tree = Graph<UUID, Float>()
+
+        companion object Key : DefaultedSerializableKey<Data> {
+
+            override fun create() = Data()
+
             override fun toTag(t: Data): Tag {
-                TODO("not implemented")
+                return ByteTag.ZERO
             }
 
             override fun fromTag(tag: Tag): Data {
-                TODO("not implemented")
+                return create()
             }
 
         }

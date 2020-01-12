@@ -35,17 +35,37 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport.network.service
+package network.rs485.logisticspipes.pipe
 
-import network.rs485.logisticspipes.transport.network.PipeHolder
-import network.rs485.logisticspipes.transport.network.PipeNetworkImpl
+import alexiil.mc.lib.attributes.item.FixedItemInv
+import net.minecraft.util.math.Direction
+import network.rs485.logisticspipes.transport.Cell
+import network.rs485.logisticspipes.transport.Cells
+import network.rs485.logisticspipes.transport.ItemCellContent
+import network.rs485.logisticspipes.transport.PipeNetwork
 
-interface InitializationContext {
+abstract class RoutedBasePipe(private val itf: WorldInterface) : InventoryConnectedPipe(itf) {
 
-    val network: PipeNetworkImpl
+    override fun routeCell(network: PipeNetwork, from: Direction, cell: Cell<*>): Direction? {
+        val inv = itf.getInventorySide()
+        return if (inv != null && from != inv) {
+            inv
+        } else {
+            // Take a random side out of the sides that the cell does not come from (so that it doesn't go backwards), and send it in that direction.
+            val possibleSides = Direction.values().filter { network.isPortConnected(this, it) } - from
+            val outputSide = if (possibleSides.isNotEmpty()) possibleSides[network.random.nextInt(possibleSides.size)] else null
+            outputSide
+        }
+    }
 
-    fun registerTickHandler(frequency: Int, op: () -> Unit)
-
-    fun registerPipeChangeHandler(op: (PipeNetworkImpl, PipeHolder) -> Unit)
+    override fun tryInsert(network: PipeNetwork, cell: Cell<*>, side: Direction, inv: FixedItemInv) {
+        if (cell.content is ItemCellContent) {
+            val stack = (network.untrack(cell) as ItemCellContent).stack
+            val leftover = inv.insertable.insert(stack)
+            network.insertInto(Cells.ofItem(leftover), this, side)
+        } else {
+            network.insertInto(cell, this, side)
+        }
+    }
 
 }

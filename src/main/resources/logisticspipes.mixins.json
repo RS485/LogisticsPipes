@@ -5,8 +5,7 @@
   "mixins": [
     "ItemMixin",
     "RecipeMixin",
-    "WorldRendererMixin",
-    "ItemAttributesMixin"
+    "WorldRendererMixin"
   ],
   "client": [
   ],

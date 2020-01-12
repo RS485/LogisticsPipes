@@ -137,6 +137,7 @@ class PipeNetworkState(val world: ServerWorld) : PersistentState(getNameForDimen
         markDirty()
         val net = PipeNetworkImpl(world, UUID.randomUUID(), this)
         networks[net.id] = net
+        net.init()
         return net
     }
 

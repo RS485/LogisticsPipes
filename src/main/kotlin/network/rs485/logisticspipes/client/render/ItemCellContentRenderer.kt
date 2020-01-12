@@ -54,7 +54,7 @@ object ItemCellContentRenderer : CellContentRenderer<ItemCellContent> {
         trStack.scale(0.5f, 0.5f, 0.5f)
 
         val stack = cell.content.stack
-        client.itemRenderer.renderItem(stack, ModelTransformation.Type.FIXED, lightLevel, OverlayTexture.DEFAULT_UV, trStack, buffers.entityVertexConsumers)
+        client.itemRenderer.renderItem(stack, ModelTransformation.Mode.FIXED, lightLevel, OverlayTexture.DEFAULT_UV, trStack, buffers.entityVertexConsumers)
     }
 
 }

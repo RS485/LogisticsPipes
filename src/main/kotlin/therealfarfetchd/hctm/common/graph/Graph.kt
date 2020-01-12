@@ -65,6 +65,10 @@ class Graph<N, L> {
         return link
     }
 
+    fun clear() {
+        nodes = emptySet()
+    }
+
     operator fun contains(node: Node<N, L>) = node in nodes
 }
 

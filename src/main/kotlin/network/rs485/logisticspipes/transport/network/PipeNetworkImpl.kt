@@ -54,6 +54,7 @@ import network.rs485.logisticspipes.transport.Pipe
 import network.rs485.logisticspipes.transport.PipeNetwork
 import network.rs485.logisticspipes.transport.network.client.ClientTrackedCells
 import network.rs485.logisticspipes.transport.network.client.DefaultDisplayHandler
+import network.rs485.logisticspipes.transport.network.service.NetworkServiceRegistry
 import network.rs485.logisticspipes.util.SerializableKey
 import network.rs485.logisticspipes.util.TypedMutableMap
 import therealfarfetchd.hctm.common.graph.Graph
@@ -94,6 +95,10 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
 
     override fun <T : Any> set(key: SerializableKey<T>, t: T?) {
         data[key] = t
+    }
+
+    fun init() {
+        NetworkServiceRegistry.attachServices(this)
     }
 
     override fun <P> insert(cell: Cell<*>, pipe: Pipe<P, *>, path: P) {
@@ -358,6 +363,7 @@ class PipeNetworkImpl(val world: ServerWorld, override val id: UUID, val control
             val id = tag.getUuid("id")
             val obj = PipeNetworkImpl(world, id, controller)
             obj.fromTag(tag)
+            obj.init()
             return obj
         }
     }

@@ -35,17 +35,10 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.transport.network.service
+package network.rs485.logisticspipes.util
 
-import network.rs485.logisticspipes.transport.network.PipeHolder
-import network.rs485.logisticspipes.transport.network.PipeNetworkImpl
+interface DefaultedSerializableKey<T : Any> : SerializableKey<T> {
 
-interface InitializationContext {
-
-    val network: PipeNetworkImpl
-
-    fun registerTickHandler(frequency: Int, op: () -> Unit)
-
-    fun registerPipeChangeHandler(op: (PipeNetworkImpl, PipeHolder) -> Unit)
+    fun create(): T
 
 }

@@ -37,15 +37,31 @@
 
 package network.rs485.logisticspipes.transport.network.service
 
-import network.rs485.logisticspipes.transport.network.PipeHolder
 import network.rs485.logisticspipes.transport.network.PipeNetworkImpl
 
-interface InitializationContext {
+object NetworkServiceRegistry {
 
-    val network: PipeNetworkImpl
+    private val services = mutableSetOf<NetworkService>()
 
-    fun registerTickHandler(frequency: Int, op: () -> Unit)
+    fun register(svc: NetworkService) {
+        services += svc
+    }
 
-    fun registerPipeChangeHandler(op: (PipeNetworkImpl, PipeHolder) -> Unit)
+    fun attachServices(network: PipeNetworkImpl) {
+//        val ctx = object : InitializationContext {
+//            override val network: PipeNetwork
+//                get() = network
+//
+//            override fun registerTickHandler(frequency: Int, op: () -> Unit) {
+//
+//            }
+//
+//            override fun registerPipeChangeHandler(op: (PipeNetwork, PipeHolder) -> Unit) {
+//
+//            }
+//        }
+//
+//        services.forEach { it.initialize(ctx) }
+    }
 
 }

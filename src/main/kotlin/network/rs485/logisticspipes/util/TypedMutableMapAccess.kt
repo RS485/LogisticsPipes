@@ -53,4 +53,8 @@ interface TypedMutableMapAccess {
         return this[key] ?: ctor().also { this[key] = it }
     }
 
+    operator fun <T : Any> get(key: DefaultedSerializableKey<T>): T {
+        return get(key, key::create)
+    }
+
 }

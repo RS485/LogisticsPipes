@@ -1,6 +1,5 @@
 language: java
-install: ./gradlew clean setupCiWorkspace
-script: ./gradlew build install
+script: ./gradlew clean build install
 jdk:
   - openjdk8
 before_cache:

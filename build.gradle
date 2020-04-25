@@ -1,15 +1,18 @@
 buildscript {
     repositories {
         maven {
-            url "https://plugins.gradle.org/m2/"
+            name = "gradle plugins"
+            url = "https://plugins.gradle.org/m2/"
         }
         maven {
             name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://files.minecraftforge.net/maven"
         }
+        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.3.0'
         classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "$kotlin_version"
     }
@@ -18,7 +21,8 @@ buildscript {
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'kotlin'
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin: 'com.matthewprenger.cursegradle'
 
@@ -26,7 +30,7 @@ def ENV = System.getenv()
 
 allprojects {
     group = "network.rs485"
-    version = "0.10.2"
+    version = "0.10.3"
     ext.builtby = "unknown"
 
     if (ENV.BUILD_NUMBER) {
@@ -54,37 +58,81 @@ subprojects {
 
 archivesBaseName = "logisticspipes"
 
-minecraft {
-    version = "$forge_version"
-    mappings = "$mapping_version"
-    runDir = 'run'
-    replace '%VERSION%', project.version
-    replace '%MCVERSION%', project.minecraft.version
-    replace '%DEBUG%', "false"
-    replaceIn "LPConstants.java"
-}
-
 sourceSets {
     main.java.srcDirs += 'common'
     main.resources.srcDirs += 'resources'
+    api.java.srcDirs = ['src/api/java']
+    main.compileClasspath += api.output
+    main.runtimeClasspath += api.output
+}
+
+minecraft {
+    mappings channel: 'snapshot', version: "$mappings_version"
+
+//    replace '%VERSION%', project.version
+//    replace '%MCVERSION%', project.minecraft.version
+//    replace '%DEBUG%', "false"
+//    replaceIn "LPConstants.java"
+
+    accessTransformer = file('resources/META-INF/lp_at.cfg')
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                logisticspipes {
+                    sources = [sourceSets.api, sourceSets.main]
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run-server')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                logisticspipes {
+                    sources = [sourceSets.api, sourceSets.main]
+                }
+            }
+        }
+    }
 }
 
 jar {
-    from sourceSets.api.output
     manifest {
         attributes(
                 'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
                 'FMLCorePluginContainsFMLMod': 'true',
                 'FMLAT': 'lp_at.cfg',
+                'Specification-Title': 'LogisticsPipes',
+                'Specification-Vendor': 'RS485',
+                'Specification-Version': '1',
                 'Implementation-Vendor': 'RS485',
-                'Implementation-Title': 'LogisticsPipes',
-                'Implementation-Version': version,
-                'Built-By': builtby)
+                'Implementation-Title': "${project.name}",
+                'Implementation-Version': "$version",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Built-By': "$builtby")
     }
 }
 
-sourceJar {
+task sourcesJar(type: Jar) {
     from sourceSets.api.allSource
+    from sourceSets.main.allSource
 }
 
 test {
@@ -93,24 +141,24 @@ test {
     }
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
+//processResources {
+//    // this will ensure that this task is redone when the versions change.
+//    inputs.property "version", project.version
+//    inputs.property "mcversion", project.minecraft.version
+//
+//    // replace stuff in mcmod.info, nothing else
+//    from(sourceSets.main.resources.srcDirs) {
+//        include 'mcmod.info'
+//
+//        // replace version and mcversion
+//        expand 'version':project.version, 'mcversion':project.minecraft.version
+//    }
+//
+//    // copy everything else, thats not the mcmod.info
+//    from(sourceSets.main.resources.srcDirs) {
+//        exclude 'mcmod.info'
+//    }
+//}
 
 repositories {
     jcenter()
@@ -151,10 +199,13 @@ repositories {
 dependencies {
     compileOnly project(':dummy')
     compileOnly 'org.projectlombok:lombok:1.16.8'
-    deobfCompile 'com.mod-buildcraft:buildcraft:7.99.+'
+
+    minecraft "net.minecraftforge:forge:$forge_version"
+
+    compile 'com.mod-buildcraft:buildcraft:7.99.+'
     implementation 'net.shadowfacts:Forgelin:1.8.+'
     implementation 'MCMultiPart2:MCMultiPart:2.5.+:deobf'
-    deobfProvided 'mezz.jei:jei_1.12.2:4.15.0.268:api'
+    runtimeOnly 'mezz.jei:jei_1.12.2:4.15.0.268:api'
     // already in environment because of NEI
 //    runtime 'mezz.jei:jei_1.12.2:4.15.0.268'
     compile 'codechicken:CodeChickenLib:1.12.2-3.2.3.358:deobf'
@@ -170,7 +221,7 @@ dependencies {
     compile 'cofh:ThermalFoundation:1.12.2-2.6.+:deobf'
     compile 'cofh:ThermalExpansion:1.12.2-5.+:deobf'
     compileOnly 'dan200.computercraft:ComputerCraft:1.80pr1-build5'
-    deobfCompile 'thaumcraft:Thaumcraft:1.12.2:6.1.BETA26'
+    runtimeOnly 'thaumcraft:Thaumcraft:1.12.2:6.1.BETA26'
     runtimeOnly 'baubles:Baubles:1.12:1.5.2'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.+'
 }
@@ -202,7 +253,7 @@ task apiJar(type: Jar, dependsOn: apiClasses) {
     from sourceSets.api.output
     from sourceSets.api.allSource
     classifier = "api"
-    jar.dependsOn += "apiJar"
+//    jar.dependsOn += "apiJar"
 }
 
 curseforge {
@@ -226,7 +277,7 @@ artifacts {
     archives apiJar
     archives jar
     archives deobfJar
-    archives sourceJar
+    archives sourcesJar
 }
 
 task enableSigningTasks {
@@ -242,7 +293,7 @@ signing {
     sign apiJar
     sign jar
     sign deobfJar
-    sign sourceJar
+    sign sourcesJar
 }
 
 task sign {
@@ -254,7 +305,7 @@ tasks.withType(Sign) {
     // disable signing by default
     enabled = false
     mustRunAfter enableSigningTasks
-    ext.useJarsigner = (name != "signSourceJar") // dont sign source jar, it doesn't have classes
+    ext.useJarsigner = (name != "signSourcesJar") // dont sign source jar, it doesn't have classes
 }
 
 gradle.taskGraph.whenReady { taskGraph ->
@@ -280,32 +331,32 @@ gradle.taskGraph.whenReady { taskGraph ->
     }
 }
 
-task downloadLanguage(type: Download) {
-    url "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
-    output new File(temporaryDir, "language.zip")
-}
+//task downloadLanguage(type: Download) {
+//    url "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
+//    output new File(temporaryDir, "language.zip")
+//}
 
-task languageMain(dependsOn: downloadLanguage, type: Copy) {
-    from zipTree(downloadLanguage.output)
-    into "$buildDir/resources/main/assets/logisticspipes/lang/"
-    include "*/*.lang"
+//task languageMain(dependsOn: downloadLanguage, type: Copy) {
+//    from zipTree(downloadLanguage.output)
+//    into "$buildDir/resources/main/assets/logisticspipes/lang/"
+//    include "*/*.lang"
+//
+//    includeEmptyDirs false
+//    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1)) }
+//}
 
-    includeEmptyDirs false
-    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1)) }
-}
+//task languageBook(dependsOn: downloadLanguage, type: Copy) {
+//    from zipTree(downloadLanguage.output)
+//    into "$buildDir/resources/main/assets/logisticspipes/book/"
+//    include "*/book/"
+//
+//    includeEmptyDirs false
+//    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2)) }
+//}
 
-task languageBook(dependsOn: downloadLanguage, type: Copy) {
-    from zipTree(downloadLanguage.output)
-    into "$buildDir/resources/main/assets/logisticspipes/book/"
-    include "*/book/"
-
-    includeEmptyDirs false
-    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2)) }
-}
-
-task language(dependsOn: [languageMain, languageBook], type: Copy) {
-    processResources.dependsOn language
-}
+//task language(dependsOn: [languageMain, languageBook], type: Copy) {
+//    processResources.dependsOn language
+//}
 
 install.repositories.mavenInstaller.pom.whenConfigured { pom ->
     pom.dependencies.clear()

@@ -5,20 +5,24 @@ buildscript {
         }
         maven {
             name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://files.minecraftforge.net/maven"
         }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '2.3-SNAPSHOT', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "$kotlin_version"
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 
 minecraft {
-    version = "$forge_version"
-    mappings = "$mapping_version"
+    mappings channel: 'snapshot', version: "$mappings_version"
+
+    accessTransformer = file('../resources/META-INF/lp_at.cfg')
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:$forge_version"
 }

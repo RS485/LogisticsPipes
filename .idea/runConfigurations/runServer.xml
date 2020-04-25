@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="runServer" type="Application" factoryName="Application" singleton="false">
+    <envs>
+      <env name="MCP_TO_SRG" value="$PROJECT_DIR$/build/createSrgToMcp/output.srg" />
+      <env name="MOD_CLASSES" value="logisticspipes%%$PROJECT_DIR$/build/resources/api:logisticspipes%%$PROJECT_DIR$/build/classes/java/api:logisticspipes%%$PROJECT_DIR$/build/classes/kotlin/api:logisticspipes%%$PROJECT_DIR$/build/resources/main:logisticspipes%%$PROJECT_DIR$/build/classes/java/main:logisticspipes%%$PROJECT_DIR$/build/classes/kotlin/main" />
+      <env name="mainClass" value="net.minecraft.launchwrapper.Launch" />
+      <env name="MCP_MAPPINGS" value="snapshot_20171120-1.12" />
+      <env name="FORGE_VERSION" value="14.23.5.2854" />
+      <env name="FORGE_GROUP" value="net.minecraftforge" />
+      <env name="tweakClass" value="net.minecraftforge.fml.common.launcher.FMLServerTweaker" />
+      <env name="MC_VERSION" value="${MC_VERSION}" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="net.minecraftforge.legacydev.MainServer" />
+    <module name="LogisticsPipes.main" />
+    <option name="VM_PARAMETERS" value="-Dforge.logging.console.level=debug -Dforge.logging.markers=SCAN,REGISTRIES,REGISTRYDUMP -Dfml.coreMods.load=logisticspipes.asm.LogisticsPipesCoreLoader" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run-server" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks=":prepareRunServer" externalProjectPath="$PROJECT_DIR$" />
+    </method>
+  </configuration>
+</component>

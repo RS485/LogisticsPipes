@@ -26,7 +26,6 @@ import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -55,7 +54,7 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	public static ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false);
 	private ModelSign modelSign;
-	private final PerformanceMeter renderItemStackOnSignPerfMeter = new PerformanceMeter("renderItemStackOnSign", 60, LPConstants.DEBUG);
+	private final PerformanceMeter renderItemStackOnSignPerfMeter = new PerformanceMeter("renderItemStackOnSign", 60, LogisticsPipes.isDEBUG());
 
 	public LogisticsRenderPipe() {
 		super();

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -76,7 +75,7 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 			return null;
 		}
 		if (world.isAirBlock(new BlockPos(getPosX(), getPosY(), getPosZ()))) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}
@@ -86,14 +85,14 @@ public abstract class CoordinatesPopupGuiProvider extends PopupGuiProvider {
 		final TileEntity tile = world.getTileEntity(new BlockPos(getPosX(), getPosY(), getPosZ()));
 		if (tile != null) {
 			if (!(clazz.isAssignableFrom(tile.getClass()))) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					LogisticsPipes.log.fatal(toString());
 					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + tile.getClass()).printStackTrace();
 				}
 				return null;
 			}
 		} else {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}

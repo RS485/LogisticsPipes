@@ -63,7 +63,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.MultiANewArrayInsnNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.DevEnvHelper.MappingLoader_MCP.CantLoadMCPMappingException;
 import logisticspipes.asm.DevEnvHelper.MinecraftNameSet.Side;
 
@@ -72,7 +72,7 @@ public class DevEnvHelper {
 	private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
 
 	public static boolean isDevelopmentEnvironment() {
-		if (!LPConstants.DEBUG) {
+		if (!LogisticsPipes.isDEBUG()) {
 			return false;
 		} else {
 			boolean eclipseCheck = (new File(".classpath")).exists();

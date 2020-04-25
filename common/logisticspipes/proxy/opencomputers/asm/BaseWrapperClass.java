@@ -18,7 +18,6 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.prefab.AbstractValue;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -229,7 +228,7 @@ public abstract class BaseWrapperClass extends AbstractValue {
 					}
 				}
 			} catch (NoSuchMethodException | SecurityException e) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					e.printStackTrace();
 				}
 			}

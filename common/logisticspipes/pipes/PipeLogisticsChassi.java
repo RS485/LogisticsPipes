@@ -31,7 +31,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 
 import lombok.Getter;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HudChassisPipe;
@@ -297,7 +297,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					((IRequireReliableTransport) module).itemArrived(item, info);
 				}
 			} else {
-				if (LPConstants.DEBUG && info != null) {
+				if (LogisticsPipes.isDEBUG() && info != null) {
 					System.out.println(item);
 					new RuntimeException("[ItemArrived] Information weren't ment for a chassi pipe").printStackTrace();
 				}
@@ -315,7 +315,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					((IRequireReliableTransport) module).itemLost(item, info);
 				}
 			} else {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					System.out.println(item);
 					new RuntimeException("[ItemLost] Information weren't ment for a chassi pipe").printStackTrace();
 				}
@@ -333,7 +333,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					return ((IBufferItems) module).addToBuffer(item, info);
 				}
 			} else {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					System.out.println(item);
 					new RuntimeException("[AddToBuffer] Information weren't ment for a chassi pipe").printStackTrace();
 				}
@@ -732,7 +732,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
 		if (slot != ModulePositionType.SLOT || positionInt >= _upgradeManagers.length) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				new UnsupportedOperationException("Position info arn't for a chassi pipe. (" + slot + "/" + positionInt + ")").printStackTrace();
 			}
 			return super.getUpgradeManager(slot, positionInt);

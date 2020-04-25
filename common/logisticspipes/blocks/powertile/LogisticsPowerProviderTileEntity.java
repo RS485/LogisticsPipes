@@ -14,7 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagFloat;
 import net.minecraft.util.EnumFacing;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.gui.hud.HUDPowerLevel;
 import logisticspipes.interfaces.IBlockWatchingHandler;
@@ -320,7 +320,7 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 	@Override
 	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
 		super.addInfoToCrashReport(par1CrashReportCategory);
-		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.getVersionString());
 	}
 
 	public void handlePowerPacket(double d) {

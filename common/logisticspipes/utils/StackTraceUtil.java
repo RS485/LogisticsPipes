@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import scala.actors.threadpool.Arrays;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.utils.tuples.Pair;
 
 public class StackTraceUtil {
@@ -31,7 +31,7 @@ public class StackTraceUtil {
 	}
 
 	public static Info addTraceInformation(final Supplier<String> informationSupplier, Info... infos) {
-		if (!LPConstants.DEBUG) {
+		if (!LogisticsPipes.isDEBUG()) {
 			return new DummyInfo();
 		}
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
@@ -40,7 +40,7 @@ public class StackTraceUtil {
 	}
 
 	public static Info addSuperTraceInformation(final Supplier<String> informationSupplier, Info... infos) {
-		if (!LPConstants.DEBUG) {
+		if (!LogisticsPipes.isDEBUG()) {
 			return new DummyInfo();
 		}
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();

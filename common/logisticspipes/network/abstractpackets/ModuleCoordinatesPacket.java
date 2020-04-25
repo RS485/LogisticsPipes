@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -124,7 +124,7 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 
 	@Override
 	public <T> T getTile(World world, Class<T> clazz) {
-		if (LPConstants.DEBUG && !moduleBased && type != null) {
+		if (LogisticsPipes.isDEBUG() && !moduleBased && type != null) {
 			new Exception("ModulePacket was asked for a pipe").printStackTrace();
 		}
 		return super.getTile(world, clazz);

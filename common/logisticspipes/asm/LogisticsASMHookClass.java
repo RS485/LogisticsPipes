@@ -4,7 +4,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import lombok.SneakyThrows;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.routing.pathfinder.changedetection.TEControl;
 
 public class LogisticsASMHookClass {
@@ -18,7 +18,7 @@ public class LogisticsASMHookClass {
 		try {
 			TEControl.validate(tile);
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				throw e;
 			}
 			e.printStackTrace();
@@ -30,7 +30,7 @@ public class LogisticsASMHookClass {
 		try {
 			TEControl.invalidate(tile);
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				throw e;
 			}
 			e.printStackTrace();

@@ -31,7 +31,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.mcmp.ClassBlockMultipartContainerHandler;
 import logisticspipes.asm.td.ClassRenderDuctItemsHandler;
 import logisticspipes.asm.td.ClassTravelingItemHandler;
@@ -72,7 +72,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		if (bytes == null) {
 			return null;
 		}
-		if (transformedName.startsWith("logisticspipes.") || transformedName.startsWith("net.minecraft") || LPConstants.DEBUG) {
+		if (transformedName.startsWith("logisticspipes.") || transformedName.startsWith("net.minecraft")) {
 			return ParamProfiler.handleClass(applyLPTransforms(transformedName, bytes));
 		}
 		byte[] tmp = bytes.clone();
@@ -123,7 +123,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			return handleLPTransformation(bytes);
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) { //For better Debugging
+			if (LogisticsPipes.isDEBUG()) { //For better Debugging
 				e.printStackTrace();
 				return bytes;
 			}
@@ -159,7 +159,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				}
 			}
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) { //For better Debugging
+			if (LogisticsPipes.isDEBUG()) { //For better Debugging
 				e.printStackTrace();
 			}
 		}

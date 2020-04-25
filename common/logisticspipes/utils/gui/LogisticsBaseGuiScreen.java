@@ -32,11 +32,11 @@ import net.minecraft.util.text.TextFormatting;
 import codechicken.nei.api.INEIGuiHandler;
 import codechicken.nei.api.TaggedInventoryArea;
 import lombok.Getter;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentInterface;
 import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.interfaces.IChainAddList;
@@ -173,7 +173,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				fX.set(null, 0);
 				fY.set(null, 0);
 			} catch (Exception e) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					e.printStackTrace();
 				}
 			}
@@ -188,7 +188,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				fX.set(null, x);
 				fY.set(null, y);
 			} catch (Exception e) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					e.printStackTrace();
 				}
 			}

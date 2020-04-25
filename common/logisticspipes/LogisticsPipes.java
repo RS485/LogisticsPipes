@@ -7,8 +7,11 @@
 
 package logisticspipes;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -16,6 +19,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -59,6 +66,7 @@ import lombok.SneakyThrows;
 import org.apache.logging.log4j.Logger;
 
 import logisticspipes.asm.LogisticsPipesClassInjector;
+import logisticspipes.asm.LogisticsPipesCoreLoader;
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.BlockDummy;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
@@ -189,19 +197,34 @@ import network.rs485.logisticspipes.config.ServerConfigurationManager;
 		certificateFingerprint = "e0c86912b2f7cc0cc646ad57799574aea43dbd45",
 		useMetadata = true)
 public class LogisticsPipes {
-
 	//@formatter:on
 	//CHECKSTYLE:ON
 
+	public static final String UNKNOWN = "unknown";
+	private static boolean DEBUG = true;
+	public static boolean isDEBUG() {
+		return DEBUG;
+	}
+
+	@Getter
+	private static String VERSION = UNKNOWN;
+	@Getter
+	private static String VENDOR = UNKNOWN;
+	@Getter
+	private static String TARGET = UNKNOWN;
+
 	public LogisticsPipes() { //TODO: remove throws
-		LaunchClassLoader loader = Launch.classLoader;
-		if (!LPConstants.COREMOD_LOADED) {
-			if (LPConstants.DEBUG) {
+		final LaunchClassLoader loader = Launch.classLoader;
+		loadManifestValues(loader);
+
+		if (!LogisticsPipesCoreLoader.isCoremodLoaded()) {
+			if (LogisticsPipes.DEBUG) {
 				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. If you are running MC from an IDE make sure to add '-Dfml.coreMods.load=logisticspipes.asm.LogisticsPipesCoreLoader' to the VM arguments. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 			} else {
 				throw new RuntimeException("LogisticsPipes FMLLoadingPlugin wasn't loaded. Your download seems to be corrupt/modified. Please redownload LP from our Jenkins [http://ci.rs485.network] and move it into your mods folder.");
 			}
 		}
+
 		try {
 			Field fTransformers = LaunchClassLoader.class.getDeclaredField("transformers");
 			fTransformers.setAccessible(true);
@@ -222,13 +245,43 @@ public class LogisticsPipes {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
+	private static void loadManifestValues(ClassLoader loader) {
+		try {
+			final Enumeration<URL> resources = loader.getResources(JarFile.MANIFEST_NAME);
+			boolean foundLp;
+			do {
+				final Manifest manifest = new Manifest(resources.nextElement().openStream());
+				foundLp = "LogisticsPipes".equals(manifest.getMainAttributes().getValue("Specification-Title"));
+				if (foundLp) {
+					LogisticsPipes.DEBUG = false;
+					LogisticsPipes.VERSION = manifest.getMainAttributes().getValue("Implementation-Version");
+					LogisticsPipes.VENDOR = manifest.getMainAttributes().getValue("Implementation-Vendor");
+					LogisticsPipes.TARGET = manifest.getMainAttributes().getValue("Implementation-Target");
+				}
+			} while (resources.hasMoreElements() && !foundLp);
+		} catch (IOException e) {
+			LogisticsPipes.log.error("There was a problem loading our MANIFEST file, Logistics Pipes will not know about its origin");
+		}
+	}
+
 	@Mod.Instance("logisticspipes")
 	public static LogisticsPipes instance;
 
 	@Getter
 	private static TickExecutor globalTickExecutor;
 
-	private boolean certificateError = false;
+	private static boolean certificateError = false;
+
+	public static String getVersionString() {
+		return Stream.of(
+				"Logistics Pipes " + LogisticsPipes.VERSION,
+				LogisticsPipes.certificateError ? "certificate error" : "",
+				LogisticsPipes.DEBUG ? "debug mode" : "",
+				"target " + LogisticsPipes.TARGET,
+				"vendor " + LogisticsPipes.VENDOR)
+				.filter(str -> !str.isEmpty())
+				.collect(Collectors.joining(", "));
+	}
 
 	// other statics
 	public static Textures textures = new Textures();
@@ -315,15 +368,15 @@ public class LogisticsPipes {
 		loadClasses();
 		ProxyManager.load();
 		Configs.load();
-		if (certificateError) {
+		if (LogisticsPipes.certificateError) {
 			LogisticsPipes.log.fatal("Certificate not correct");
 			LogisticsPipes.log.fatal("This in not a LogisticsPipes version from RS485.");
 		}
-		if (LPConstants.DEV_BUILD) {
-			LogisticsPipes.log.debug("You are using a dev version.");
-			LogisticsPipes.log.debug("While the dev versions contain cutting edge features, they may also contain more bugs.");
-			LogisticsPipes.log.debug("Please report any you find to https://github.com/RS485/LogisticsPipes/issues");
+
+		if (LogisticsPipes.UNKNOWN.equals(LogisticsPipes.VERSION)) {
+			LogisticsPipes.log.warn("Could not determine Logistics Pipes version, we do need that " + JarFile.MANIFEST_NAME + ", don't you know?");
 		}
+		LogisticsPipes.log.info("Running " + getVersionString());
 
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
@@ -543,12 +596,12 @@ public class LogisticsPipes {
 
 	@Mod.EventHandler
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
-		if (!LPConstants.DEBUG) {
+		LogisticsPipes.certificateError = true;
+		if (!LogisticsPipes.isDEBUG()) {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
 			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.getExpectedFingerprint());
 			System.out.println("[LogisticsPipes|Certificate] File: " + warning.getSource().getAbsolutePath());
 			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
-			certificateError = true;
 		}
 	}
 

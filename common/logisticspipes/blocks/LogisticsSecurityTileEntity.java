@@ -19,8 +19,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
@@ -345,7 +345,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 	@Override
 	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
 		super.addInfoToCrashReport(par1CrashReportCategory);
-		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.getVersionString());
 	}
 
 	@Override

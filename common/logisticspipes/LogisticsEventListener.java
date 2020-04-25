@@ -323,7 +323,7 @@ public class LogisticsEventListener {
 			if (event.crafting.getItem().getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID)) {
 				PlayerIdentifier identifier = PlayerIdentifier.get(event.player);
 				PlayerConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
-				if (!config.getHasCraftedLPItem() && !LPConstants.DEBUG) {
+				if (!config.getHasCraftedLPItem() && !LogisticsPipes.isDEBUG()) {
 					ItemStack book = new ItemStack(LPItems.itemGuideBook, 1);
 					event.player.addItemStackToInventory(book);
 

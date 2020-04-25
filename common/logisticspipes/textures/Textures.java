@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.IIconProvider;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
@@ -253,7 +253,7 @@ public class Textures {
 			Textures.LOGISTICS_SIDE_SELECTION = ((TextureMap) par1IIconRegister).registerSprite(new ResourceLocation("logisticspipes:blocks/sideSelection"));
 		}
 
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			System.out.println("LP: pipetextures " + index);
 		}
 	}

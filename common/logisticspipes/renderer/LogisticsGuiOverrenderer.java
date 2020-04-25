@@ -12,7 +12,7 @@ import lombok.Setter;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.SlotFinderNumberPacket;
@@ -58,7 +58,7 @@ public class LogisticsGuiOverrenderer {
 			fX.setAccessible(true);
 			fY.setAccessible(true);
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				e.printStackTrace();
 			}
 		}
@@ -88,7 +88,7 @@ public class LogisticsGuiOverrenderer {
 				fY.set(null, 0);
 				hasBeenSaved = true;
 			} catch (Exception e) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					e.printStackTrace();
 				}
 			}
@@ -109,7 +109,7 @@ public class LogisticsGuiOverrenderer {
 				fX.set(null, oldX);
 				fY.set(null, oldY);
 			} catch (Exception e) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					e.printStackTrace();
 				}
 			}

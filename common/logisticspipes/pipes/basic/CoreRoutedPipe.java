@@ -379,7 +379,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		// remove old items _inTransit -- these should have arrived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.
 		while (_inTransitToMe.peek() != null && _inTransitToMe.peek().getTickToTimeOut() <= 0) {
 			final ItemRoutingInformation p = _inTransitToMe.poll();
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				LogisticsPipes.log.info("Timed Out: " + p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
 			}
 			debug.log("Timed Out: " + p.getItem().getFriendlyName() + " (" + p.hashCode() + ")");
@@ -880,7 +880,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				}
 			}
 			*/
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				doDebugStuff(entityplayer);
 			}
 			return true;

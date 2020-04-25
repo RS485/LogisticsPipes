@@ -19,7 +19,6 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import lombok.Data;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.DevEnvHelper;
 
@@ -91,12 +90,12 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 
 	@Override
 	public VersionInfo call() throws Exception {
-		if (LPConstants.VERSION.equals("%" + "VERSION%:%DEBUG" + "%")) {
+		if (LogisticsPipes.UNKNOWN.equals(LogisticsPipes.getVERSION())) {
 			return null;
 		}
 
 		VersionInfo versionInfo = new VersionInfo();
-		URL url = new URL("http://rs485.network/version?VERSION=" + LPConstants.VERSION);
+		URL url = new URL(String.format("http://rs485.network/version?VERSION=%s:%b", LogisticsPipes.getVERSION(), LogisticsPipes.isDEBUG()));
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		InputStream inputStream = (InputStream) conn.getContent();
 		String jsonString;
@@ -165,7 +164,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 	private void sendIMCOutdatedMessage(VersionInfo versionInfo) {
 		if (Loader.isModLoaded("VersionChecker")) {
 			NBTTagCompound tag = new NBTTagCompound();
-			tag.setString("oldVersion", LPConstants.VERSION);
+			tag.setString("oldVersion", LogisticsPipes.getVERSION());
 			tag.setString("newVersion", versionInfo.getNewestBuild());
 			tag.setString("updateUrl", "http://ci.rs485.network/view/Logistics%20Pipes/");
 			tag.setBoolean("isDirectLink", false);

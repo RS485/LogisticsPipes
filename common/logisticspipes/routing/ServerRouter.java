@@ -38,7 +38,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.asm.te.ITileEntityChangeListener;
@@ -422,7 +422,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			if (connectionNeedsChecking == 0) {
 				connectionNeedsChecking = 1;
 			}
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				causedBy.add(pos);
 			}
 		}
@@ -432,7 +432,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			if (connectionNeedsChecking == 0) {
 				connectionNeedsChecking = 1;
 			}
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				causedBy.add(pos);
 			}
 		}
@@ -442,7 +442,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			if (connectionNeedsChecking == 0) {
 				connectionNeedsChecking = 1;
 			}
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				causedBy.add(pos);
 			}
 		}
@@ -457,7 +457,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	 */
 	private boolean recheckAdjacent() {
 		connectionNeedsChecking = 0;
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			causedBy.clear();
 		}
 		if (getPipe() != null) {

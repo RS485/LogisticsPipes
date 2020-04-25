@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.connection
 
-import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
 import logisticspipes.interfaces.IInventoryUtil
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe
@@ -77,7 +76,7 @@ open class NeighborTileEntity<T : TileEntity>(val tileEntity: T, val direction: 
 
     @Nonnull
     fun getUtilForItemHandler(): IInventoryUtil {
-        if (LPConstants.DEBUG) {
+        if (LogisticsPipes.isDEBUG()) {
             if (!hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY)) {
                 error("Constraint broken: getUtilForItemHandler was called, but adjacent tile entity is not an item handler")
             }

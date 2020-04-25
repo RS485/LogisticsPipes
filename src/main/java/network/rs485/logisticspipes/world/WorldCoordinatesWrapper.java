@@ -50,7 +50,6 @@ import net.minecraft.world.World;
 
 import lombok.Data;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -118,7 +117,7 @@ public class WorldCoordinatesWrapper {
 	public Stream<NeighborTileEntity<TileEntity>> connectedTileEntities(ConnectionPipeType pipeType) {
 		TileEntity pipe = getTileEntity();
 		if (!SimpleServiceLocator.pipeInformationManager.isPipe(pipe, true, pipeType)) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				LogisticsPipes.log.warn("The coordinates didn't hold the pipe type " + pipeType, new Throwable("Stack trace"));
 			}
 			return Stream.empty();

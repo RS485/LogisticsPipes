@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -15,7 +15,7 @@ public class TargetNotFoundException extends DelayPacketException {
 
 	public TargetNotFoundException(String message, ModernPacket packet) {
 		super(message);
-		if (!LPConstants.DEBUG) {
+		if (!LogisticsPipes.isDEBUG()) {
 			return;
 		}
 		StackTraceElement[] astacktraceelement = PacketHandler.debugMap.get(packet.getDebugId());
@@ -43,7 +43,7 @@ public class TargetNotFoundException extends DelayPacketException {
 	public TargetNotFoundException(String message, GuiProvider packet) {
 		super(message);
 		/*
-		if (!LPConstants.DEBUG) {
+		if (!LogisticsPipes.isDEBUG()) {
 			return;
 		}
 		StackTraceElement[] astacktraceelement = PacketHandler.debugMap.get(packet.getDebugId());

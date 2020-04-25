@@ -921,7 +921,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				}
 			}
 
-			if (LPConstants.DEBUG && mountCanidates.size() > 2) {
+			if (LogisticsPipes.isDEBUG() && mountCanidates.size() > 2) {
 				new RuntimeException("Trying to render " + mountCanidates.size() + " Mounts").printStackTrace();
 			}
 

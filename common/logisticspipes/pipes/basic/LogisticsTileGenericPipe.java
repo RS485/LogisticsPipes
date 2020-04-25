@@ -324,11 +324,11 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		try {
 			super.addInfoToCrashReport(par1CrashReportCategory);
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				e.printStackTrace();
 			}
 		}
-		par1CrashReportCategory.addCrashSection("LP-Version", LPConstants.VERSION);
+		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.getVersionString());
 		if (pipe != null) {
 			par1CrashReportCategory.addCrashSection("Pipe", pipe.getClass().getCanonicalName());
 			if (pipe.transport != null) {

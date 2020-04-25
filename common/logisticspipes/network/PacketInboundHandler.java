@@ -11,7 +11,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.Level;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.PacketHandler.InboundModernPacketWrapper;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -34,13 +33,13 @@ public class PacketInboundHandler extends SimpleChannelInboundHandler<InboundMod
 	private void inThreadProcessPacket(ModernPacket packet, EntityPlayer player) {
 		try {
 			packet.processPacket(player);
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				PacketHandler.debugMap.remove(packet.getDebugId());
 			}
 		} catch (TargetNotFoundException e) {
 			if (packet.retry() && MainProxy.isClient(player.getEntityWorld())) {
 				SimpleServiceLocator.clientBufferHandler.queuePacket(packet, player);
-			} else if (LPConstants.DEBUG) {
+			} else if (LogisticsPipes.isDEBUG()) {
 				LogisticsPipes.log.error(packet.getClass().getName());
 				LogisticsPipes.log.error(packet.toString());
 				e.printStackTrace();

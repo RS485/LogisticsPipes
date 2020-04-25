@@ -12,7 +12,7 @@ import net.minecraft.server.MinecraftServer;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.commands.exception.CommandNotFoundException;
 import logisticspipes.commands.exception.LPCommandException;
@@ -52,7 +52,7 @@ public class LogisticsPipesCommand extends CommandBase {
 		}
 		try {
 			boolean managed = false;
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				//Check for unlisted Debug commands
 			}
 			if (!managed) {

@@ -32,7 +32,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
@@ -134,7 +133,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			_contents[i] = null;
 		} else {
 			if (!isValidStack(itemstack)) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					new UnsupportedOperationException("Not valid for this Inventory: (" + itemstack + ")").printStackTrace();
 				}
 				return;
@@ -149,7 +148,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			_contents[i] = null;
 		} else {
 			if (!isValidStack(itemstack)) {
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					new UnsupportedOperationException("Not valid for this Inventory: (" + itemstack + ")").printStackTrace();
 				}
 				return;
@@ -296,7 +295,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 
 	private int tryAddToSlot(int i, ItemStack stack, int realstacklimit) {
 		if (!isValidStack(stack)) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
 			return 0;
@@ -331,7 +330,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		if (stack == null) return 0;
 
 		if (!isValidStack(stack)) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
 			return stack.getCount();

@@ -6,7 +6,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 
 //@formatter:off
 //CHECKSTYLE:OFF
@@ -35,7 +35,7 @@ public class Configs {
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
 	public static boolean ENABLE_RESEARCH_SYSTEM = false;
 
-	public static boolean TOOLTIP_INFO = LPConstants.DEBUG;
+	public static boolean TOOLTIP_INFO = LogisticsPipes.isDEBUG();
 	public static boolean ENABLE_PARTICLE_FX = true;
 
 	// GuiOrderer Popup setting

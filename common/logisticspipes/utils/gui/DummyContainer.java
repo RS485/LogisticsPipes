@@ -26,7 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IFuzzySlot;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
@@ -562,7 +562,7 @@ public class DummyContainer extends Container {
 		}
 		Slot slot = inventorySlots.get(slotId);
 		//debug dump
-		if (LPConstants.DEBUG && slot != null) {
+		if (LogisticsPipes.isDEBUG() && slot != null) {
 			ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {
 				ItemIdentifier.get(stack).debugDumpData(entityplayer.world.isRemote);

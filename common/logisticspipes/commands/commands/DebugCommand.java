@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import net.minecraft.command.ICommandSender;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.SubCommandHandler;
 import logisticspipes.commands.commands.debug.HandCommand;
 import logisticspipes.commands.commands.debug.MeCommand;
@@ -23,7 +23,7 @@ public class DebugCommand extends SubCommandHandler {
 
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
-		return LPConstants.DEBUG || Arrays.asList(DebugCommand.allowedPlayers).contains(sender.getName());
+		return LogisticsPipes.isDEBUG() || Arrays.asList(DebugCommand.allowedPlayers).contains(sender.getName());
 	}
 
 	@Override

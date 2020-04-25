@@ -27,7 +27,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.IgnoreDisabledProxy;
 import logisticspipes.proxy.DontLoadProxy;
@@ -233,7 +232,7 @@ public class LogisticsWrapperHandler {
 
 				byte[] bytes = cw.toByteArray();
 
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					if (LogisticsWrapperHandler.DUMP) {
 						LogisticsWrapperHandler.saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
 					}
@@ -378,7 +377,7 @@ public class LogisticsWrapperHandler {
 
 				byte[] bytes = cw.toByteArray();
 
-				if (LPConstants.DEBUG) {
+				if (LogisticsPipes.isDEBUG()) {
 					if (LogisticsWrapperHandler.DUMP) {
 						LogisticsWrapperHandler.saveGeneratedClass(bytes, lookfor, "LP_WRAPPER_CLASSES");
 					}

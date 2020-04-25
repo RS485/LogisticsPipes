@@ -16,7 +16,7 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.OpenChatGui;
@@ -98,7 +98,7 @@ public class LPChatListener {
 					addSendMessages(realMessage.substring(20));
 					event.setCanceled(true);
 				}
-				if (realMessage.contains("LPDISPLAYMISSING") && LPConstants.DEBUG) {
+				if (realMessage.contains("LPDISPLAYMISSING") && LogisticsPipes.isDEBUG()) {
 					System.out.println("LIST:");
 					StringUtils.UNTRANSLATED_STRINGS.forEach(System.out::println);
 				}

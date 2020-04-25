@@ -14,7 +14,7 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -186,7 +186,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				}
 				FluidStack drain = internalTank.drain(filled, true);
 				if (drain == null || filled != drain.amount) {
-					if (LPConstants.DEBUG) {
+					if (LogisticsPipes.isDEBUG()) {
 						throw new UnsupportedOperationException("Fluid Multiplication");
 					}
 				}
@@ -217,7 +217,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 				}
 				FluidStack drain = tank.drain(filled, true);
 				if (drain == null || filled != drain.amount) {
-					if (LPConstants.DEBUG) {
+					if (LogisticsPipes.isDEBUG()) {
 						throw new UnsupportedOperationException("Fluid Multiplication");
 					}
 				}

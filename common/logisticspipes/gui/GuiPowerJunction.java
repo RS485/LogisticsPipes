@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.PowerJunctionCheatPacket;
@@ -62,7 +62,7 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			buttonList.add(new GuiButton(0, guiLeft + 140, guiTop + 20, 20, 20, "+"));
 		}
 	}

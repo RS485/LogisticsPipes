@@ -18,8 +18,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
-import logisticspipes.LPConstants;
 import logisticspipes.LPItems;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.PacketHandler;
@@ -65,7 +65,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		Tasks tasks = new Tasks();
 
 		//Here order doesn't matter/can be changed to reorganise tabs
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			addTab(upgrades);
 			addTab(security);
 			addTab(statistics);

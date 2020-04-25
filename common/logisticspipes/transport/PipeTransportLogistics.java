@@ -28,6 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.interfaces.IBufferItems;
@@ -505,7 +506,7 @@ public class PipeTransportLogistics {
 						if (arrivingItem.getInfo().targetInfo instanceof ChassiTargetInformation) {
 							positionInt = ((ChassiTargetInformation) arrivingItem.getInfo().targetInfo).getModuleSlot();
 							slot = ModulePositionType.SLOT;
-						} else if (LPConstants.DEBUG && container.pipe instanceof PipeLogisticsChassi) {
+						} else if (LogisticsPipes.isDEBUG() && container.pipe instanceof PipeLogisticsChassi) {
 							System.out.println(arrivingItem);
 							new RuntimeException("[ItemInsertion] Information weren't ment for a chassi pipe").printStackTrace();
 						}

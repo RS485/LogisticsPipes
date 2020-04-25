@@ -6,13 +6,12 @@ import java.util.List;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
 import org.lwjgl.input.Keyboard;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.gui.popup.GuiSecurityStationPopup;
@@ -83,7 +82,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 217, 30, 10, StringUtils.translate(GuiSecurityStation.PREFIX + "Open")));
 		buttonList.add(new GuiCheckBox(5, guiLeft + 160, guiTop + 42, 16, 16, _tile.allowCC));
 		buttonList.add(new SmallGuiButton(6, guiLeft + 162, guiTop + 60, 60, 10, StringUtils.translate(GuiSecurityStation.PREFIX + "EditTable")));
-		if (!SimpleServiceLocator.ccProxy.isCC() && !LPConstants.DEBUG) {
+		if (!SimpleServiceLocator.ccProxy.isCC() && !LogisticsPipes.isDEBUG()) {
 			buttonList.get(5).visible = false;
 			buttonList.get(6).visible = false;
 		}
@@ -145,7 +144,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 81, guiTop + 140);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "SecurityStation"), guiLeft + 105, guiTop + 10, 0x404040);
 		mc.fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
-		if (SimpleServiceLocator.ccProxy.isCC() || LPConstants.DEBUG) {
+		if (SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.isDEBUG()) {
 			mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "allowCCAccess") + ":", guiLeft + 10, guiTop + 46, 0x404040);
 			mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStation.PREFIX + "excludeIDs") + ":", guiLeft + 10, guiTop + 61, 0x404040);
 		}

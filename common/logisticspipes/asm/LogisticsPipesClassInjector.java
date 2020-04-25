@@ -14,7 +14,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.computers.wrapper.CCObjectWrapper;
 import logisticspipes.proxy.opencomputers.asm.ClassCreator;
 import logisticspipes.utils.ModStatusHelper;
@@ -77,7 +77,7 @@ public class LogisticsPipesClassInjector implements IClassTransformer {
 				return bytes;
 			}
 		} catch (Exception e) {
-			if (LPConstants.DEBUG) { // For better Debugging
+			if (LogisticsPipes.isDEBUG()) { // For better Debugging
 				e.printStackTrace();
 				return bytes;
 			}

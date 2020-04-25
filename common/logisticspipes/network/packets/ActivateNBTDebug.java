@@ -2,7 +2,7 @@ package logisticspipes.network.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.modplugins.nei.LoadingHelper;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -29,7 +29,7 @@ public class ActivateNBTDebug extends ModernPacket {
 		} catch (ClassNotFoundException ignored) {
 
 		} catch (Exception e1) {
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				e1.printStackTrace();
 			}
 		}

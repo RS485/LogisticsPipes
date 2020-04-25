@@ -11,7 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ISubSystemPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
@@ -50,7 +50,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public boolean isRoutedExit(EnumFacing connection) {
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return false;
@@ -58,7 +58,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public boolean hasRoute(int id, boolean flag, ItemIdentifier item) {
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return false;
@@ -66,7 +66,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ExitRoute getExitFor(int id, boolean flag, ItemIdentifier item) {
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return null;
@@ -74,7 +74,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ArrayList<List<ExitRoute>> getRouteTable() {
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return new ArrayList<>();
@@ -82,7 +82,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public List<ExitRoute> getIRoutersByCost() {
-		if (LPConstants.DEBUG) {
+		if (LogisticsPipes.isDEBUG()) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return new LinkedList<>();

@@ -15,7 +15,7 @@ import net.minecraft.util.EnumFacing;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import logisticspipes.LPConstants;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
@@ -95,7 +95,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 
 					@Override
 					void log(String log) {
-						if (LPConstants.DEBUG) {
+						if (LogisticsPipes.isDEBUG()) {
 							System.out.println(dir.name() + ": " + log);
 						}
 					}
@@ -117,7 +117,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			final List<LaserData> lasers = entry.lasers;
 			final EnumSet<PipeRoutingConnectionType> connectionType = entry.connectionType;
 			final Log log = entry.log;
-			if (LPConstants.DEBUG) {
+			if (LogisticsPipes.isDEBUG()) {
 				log.log("Size: " + connectedRouters.size());
 			}
 			lasers.add(new LaserData(pipe.getX(), pipe.getY(), pipe.getZ(), dir, connectionType).setStartPipe(firstPipe));
@@ -181,7 +181,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 
 						@Override
 						void log(String logString) {
-							if (LPConstants.DEBUG) {
+							if (LogisticsPipes.isDEBUG()) {
 								log.log(exitDir.name() + ": " + logString);
 							}
 						}

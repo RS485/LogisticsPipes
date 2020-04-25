@@ -31,7 +31,8 @@ def ENV = System.getenv()
 allprojects {
     group = "network.rs485"
     version = "0.10.3"
-    ext.builtby = "unknown"
+    ext.vendor = "unknown"
+    ext.target = "Forge $forge_version"
 
     if (ENV.BUILD_NUMBER) {
         version = "$version.${ENV.BUILD_NUMBER}"
@@ -42,9 +43,9 @@ allprojects {
     }
 
     if (ENV.JENKINS_URL) {
-        ext.builtby = ENV.JENKINS_URL
+        ext.vendor = ENV.JENKINS_URL
     } else if (ENV.JITPACK) {
-        ext.builtby = "JitPack.io"
+        ext.vendor = "JitPack.io"
         group = ENV.GROUP
     }
 
@@ -69,15 +70,8 @@ sourceSets {
 minecraft {
     mappings channel: 'snapshot', version: "$mappings_version"
 
-//    replace '%VERSION%', project.version
-//    replace '%MCVERSION%', project.minecraft.version
-//    replace '%DEBUG%', "false"
-//    replaceIn "LPConstants.java"
-
     accessTransformer = file('resources/META-INF/lp_at.cfg')
 
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
             workingDirectory project.file('run')
@@ -114,6 +108,8 @@ minecraft {
 }
 
 jar {
+    from sourceSets.api.output
+
     manifest {
         attributes(
                 'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
@@ -122,11 +118,11 @@ jar {
                 'Specification-Title': 'LogisticsPipes',
                 'Specification-Vendor': 'RS485',
                 'Specification-Version': '1',
-                'Implementation-Vendor': 'RS485',
+                'Implementation-Vendor': "$vendor",
                 'Implementation-Title': "${project.name}",
                 'Implementation-Version': "$version",
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'Built-By': "$builtby")
+                'Implementation-Target': "$target",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
     }
 }
 
@@ -151,7 +147,7 @@ processResources {
         include 'mcmod.info'
 
         // replace version and mcversion
-        expand 'version':project.version
+        expand 'version': project.version
     }
 
     // copy everything else, thats not the mcmod.info
@@ -246,10 +242,14 @@ task deobfJar(type: Jar) {
                 'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
                 'FMLCorePluginContainsFMLMod': 'true',
                 'FMLAT': 'lp_at.cfg',
-                'Implementation-Vendor': 'RS485',
-                'Implementation-Title': 'LogisticsPipes',
-                'Implementation-Version': version,
-                'Built-By': builtby)
+                'Specification-Title': 'LogisticsPipes',
+                'Specification-Vendor': 'RS485',
+                'Specification-Version': '1',
+                'Implementation-Vendor': "$vendor",
+                'Implementation-Title': "${project.name}",
+                'Implementation-Version': "$version",
+                'Implementation-Target': "$target",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
     }
 }
 

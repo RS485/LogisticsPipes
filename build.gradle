@@ -334,32 +334,44 @@ gradle.taskGraph.whenReady { taskGraph ->
     }
 }
 
-//task downloadLanguage(type: Download) {
-//    url "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
-//    output new File(temporaryDir, "language.zip")
-//}
+class DownloadTask extends DefaultTask {
+    String url
 
-//task languageMain(dependsOn: downloadLanguage, type: Copy) {
-//    from zipTree(downloadLanguage.output)
-//    into "$buildDir/resources/main/assets/logisticspipes/lang/"
-//    include "*/*.lang"
-//
-//    includeEmptyDirs false
-//    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1)) }
-//}
+    @OutputFile
+    RegularFileProperty outputFile = newOutputFile()
 
-//task languageBook(dependsOn: downloadLanguage, type: Copy) {
-//    from zipTree(downloadLanguage.output)
-//    into "$buildDir/resources/main/assets/logisticspipes/book/"
-//    include "*/book/"
-//
-//    includeEmptyDirs false
-//    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2)) }
-//}
+    @TaskAction
+    void download() {
+        ant.get(src: url, dest: outputFile.get().asFile)
+    }
+}
 
-//task language(dependsOn: [languageMain, languageBook], type: Copy) {
-//    processResources.dependsOn language
-//}
+task downloadLanguage(type: DownloadTask) {
+    url = "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
+    outputFile = layout.buildDirectory.file("language.zip")
+}
+
+task languageMain(dependsOn: downloadLanguage, type: Copy) {
+    from zipTree(downloadLanguage.outputFile)
+    into "$buildDir/resources/main/assets/logisticspipes/lang/"
+    include "*/*.lang"
+
+    includeEmptyDirs false
+    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1)) }
+}
+
+task languageBook(dependsOn: downloadLanguage, type: Copy) {
+    from zipTree(downloadLanguage.outputFile)
+    into "$buildDir/resources/main/assets/logisticspipes/book/"
+    include "*/book/"
+
+    includeEmptyDirs false
+    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2)) }
+}
+
+task language(dependsOn: [languageMain, languageBook], type: Copy) {
+    processResources.dependsOn language
+}
 
 install.repositories.mavenInstaller.pom.whenConfigured { pom ->
     pom.dependencies.clear()

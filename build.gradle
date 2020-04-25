@@ -130,9 +130,10 @@ jar {
     }
 }
 
-task sourcesJar(type: Jar) {
+task sourceJar(type: Jar) {
     from sourceSets.api.allSource
     from sourceSets.main.allSource
+    classifier "sources"
 }
 
 test {
@@ -253,7 +254,6 @@ task apiJar(type: Jar, dependsOn: apiClasses) {
     from sourceSets.api.output
     from sourceSets.api.allSource
     classifier = "api"
-//    jar.dependsOn += "apiJar"
 }
 
 curseforge {
@@ -277,7 +277,7 @@ artifacts {
     archives apiJar
     archives jar
     archives deobfJar
-    archives sourcesJar
+    archives sourceJar
 }
 
 task enableSigningTasks {
@@ -293,7 +293,7 @@ signing {
     sign apiJar
     sign jar
     sign deobfJar
-    sign sourcesJar
+    sign sourceJar
 }
 
 task sign {
@@ -305,7 +305,7 @@ tasks.withType(Sign) {
     // disable signing by default
     enabled = false
     mustRunAfter enableSigningTasks
-    ext.useJarsigner = (name != "signSourcesJar") // dont sign source jar, it doesn't have classes
+    ext.useJarsigner = (name != "signSourceJar") // dont sign source jar, it doesn't have classes
 }
 
 gradle.taskGraph.whenReady { taskGraph ->

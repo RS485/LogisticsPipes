@@ -109,6 +109,7 @@ minecraft {
 
 jar {
     from sourceSets.api.output
+    finalizedBy 'reobfJar'
 
     manifest {
         attributes(

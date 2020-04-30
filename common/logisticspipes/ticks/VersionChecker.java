@@ -20,7 +20,6 @@ import com.google.gson.internal.LinkedTreeMap;
 import lombok.Data;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.DevEnvHelper;
 
 public final class VersionChecker implements Callable<VersionChecker.VersionInfo> {
 
@@ -65,7 +64,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 			try {
 				versionInfo = versionCheckFuture.get();
 				if (versionInfo == null) {
-					if (DevEnvHelper.isDevelopmentEnvironment()) {
+					if (LogisticsPipes.isDevelopmentEnvironment()) {
 						return "You are running Logistics Pipes from a development environment.";
 					} else {
 						return "It seems you are missing the current version information on Logistics Pipes. There is no version checking available.";

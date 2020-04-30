@@ -164,6 +164,10 @@ repositories {
         url = "https://rs485.network/maven-cache/"
     }
     maven {
+        name = 'JitPack.io'
+        url = 'https://jitpack.io'
+    }
+    maven {
         name = "JEI Maven."
         url = "http://dvs1.progwml6.com/files/maven"
     }
@@ -200,29 +204,23 @@ dependencies {
     minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
 
     implementation group: 'net.shadowfacts', name: 'Forgelin', version: '1.8.+'
+    implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '1.12.x-SNAPSHOT', classifier: 'deobf'
 
-    compileOnly group: 'codechicken', name: 'CodeChickenLib', version: '1.12.2-3.2.3.358', classifier: 'deobf', transitive: false
+    compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.+'
     compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.+', classifier: 'deobf'
     compileOnly group: 'com.mod-buildcraft', name: 'buildcraft', version: '7.+', transitive: false
     compileOnly group: 'net.industrial-craft', name: 'industrialcraft-2', version: '2.8.170-ex112', classifier: 'api'
-    compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.+', classifier: 'api'
     compileOnly group: 'codechicken', name: 'NotEnoughItems', version: '1.12.2-2.4.3.245', classifier: 'deobf', transitive: false
     compileOnly group: 'codechicken', name: 'EnderStorage', version: '1.12.2-2.4.6.137', classifier: 'deobf', transitive: false
     compileOnly group: 'li.cil.oc', name: 'OpenComputers', version: 'MC1.12.2-1.7.+', classifier: 'api'
-    compileOnly group: 'appeng', name: 'appliedenergistics2', version: 'rv6-stable-7', classifier: 'api'
+    compileOnly group: 'appeng', name: 'appliedenergistics2', version: 'rv6-stable-7', classifier: 'api', transitive: false
     compileOnly group: 'cofh', name: 'CoFHCore', version: '1.12.2-4.+', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'RedstoneFlux', version: '1.12-2.1.+', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'CoFHWorld', version: '1.12.2-1.2+', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'ThermalDynamics', version: '1.12.2-2.+', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'ThermalFoundation', version: '1.12.2-2.6.+', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'ThermalExpansion', version: '1.12.2-5.+', classifier: 'deobf', transitive: false
-    compileOnly('dan200.computercraft:ComputerCraft:1.80pr1-build5') {
-        transitive = false
-
-        exclude group: 'dan200.computercraft.client'
-        exclude group: 'dan200.computercraft.server'
-        exclude group: 'dan200.computercraft.shared'
-    }
+    compileOnly group: 'dan200.computercraft', name: 'ComputerCraft', version: '1.80pr1-build5', transitive: false
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.+'
 }

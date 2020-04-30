@@ -17,12 +17,6 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	public LogisticsPipesCoreLoader() throws Exception {
 		Launch.classLoader.addTransformerExclusion("logisticspipes.asm.");
 		coremodLoaded = true;
-//		Launch.classLoader.findClass("logisticspipes.LPConstants").getMethod("loadedCoremod").invoke(null);
-//		byte[] bs = Launch.classLoader.getClassBytes("net.minecraft.world.World");
-//		if (bs != null) {
-			//Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("detectCoreModInDevEnv").invoke(null);
-			//Launch.classLoader.findClass("logisticspipes.asm.DevEnvHelper").getMethod("handleSpecialClassTransformer").invoke(null);
-//		}
 	}
 
 	@Override

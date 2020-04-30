@@ -7,6 +7,7 @@
 
 package logisticspipes;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -311,6 +312,17 @@ public class LogisticsPipes {
 
 	@CapabilityInject(IFluidHandler.class)
 	public static Capability<IFluidHandler> FLUID_HANDLER_CAPABILITY = null;
+
+	public static boolean isDevelopmentEnvironment() {
+		if (!isDEBUG()) {
+			return false;
+		} else {
+			boolean eclipseCheck = (new File(".classpath")).exists();
+			boolean ideaCheck = System.getProperty("java.class.path").contains("idea_rt.jar");
+
+			return eclipseCheck || ideaCheck;
+		}
+	}
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {

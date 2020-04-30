@@ -76,5 +76,10 @@
       <option name="name" value="CoFH Maven" />
       <option name="url" value="https://maven.covers1624.net" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="JitPack.io" />
+      <option name="name" value="JitPack.io" />
+      <option name="url" value="https://jitpack.io" />
+    </remote-repository>
   </component>
 </project>

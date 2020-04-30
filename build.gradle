@@ -168,8 +168,8 @@ repositories {
         url = 'https://jitpack.io'
     }
     maven {
-        name = "JEI Maven."
-        url = "http://dvs1.progwml6.com/files/maven"
+        name = "forge"
+        url = "https://files.minecraftforge.net/maven"
     }
     maven {
         url "http://maven.shadowfacts.net/"
@@ -206,7 +206,7 @@ dependencies {
     implementation group: 'net.shadowfacts', name: 'Forgelin', version: '1.8.+'
     implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '1.12.x-SNAPSHOT', classifier: 'deobf'
 
-    compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.+'
+    compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.293'
     compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.+', classifier: 'deobf'
     compileOnly group: 'com.mod-buildcraft', name: 'buildcraft', version: '7.+', transitive: false
     compileOnly group: 'net.industrial-craft', name: 'industrialcraft-2', version: '2.8.170-ex112', classifier: 'api'

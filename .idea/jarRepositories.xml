@@ -81,5 +81,10 @@
       <option name="name" value="JitPack.io" />
       <option name="url" value="https://jitpack.io" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="forge" />
+      <option name="name" value="forge" />
+      <option name="url" value="https://files.minecraftforge.net/maven" />
+    </remote-repository>
   </component>
 </project>

@@ -60,11 +60,21 @@ subprojects {
 archivesBaseName = "logisticspipes"
 
 sourceSets {
-    main.java.srcDirs += 'common'
-    main.resources.srcDirs += 'resources'
-    api.java.srcDirs = ['src/api/java']
-    main.compileClasspath += api.output
-    main.runtimeClasspath += api.output
+    api {
+        java {
+            srcDirs = ['src/api/java']
+        }
+    }
+    main {
+        compileClasspath += api.output
+        runtimeClasspath += api.output
+        java {
+            srcDirs += 'common'
+        }
+        resources {
+            srcDirs += 'resources'
+        }
+    }
 }
 
 minecraft {
@@ -352,7 +362,7 @@ task downloadLanguage(type: DownloadTask) {
 
 task languageMain(dependsOn: downloadLanguage, type: Copy) {
     from zipTree(downloadLanguage.outputFile)
-    into "$buildDir/resources/main/assets/logisticspipes/lang/"
+    into "${sourceSets.main.getOutput().resourcesDir}/assets/logisticspipes/lang/"
     include "*/*.lang"
 
     includeEmptyDirs false
@@ -361,7 +371,7 @@ task languageMain(dependsOn: downloadLanguage, type: Copy) {
 
 task languageBook(dependsOn: downloadLanguage, type: Copy) {
     from zipTree(downloadLanguage.outputFile)
-    into "$buildDir/resources/main/assets/logisticspipes/book/"
+    into "${sourceSets.main.getOutput().resourcesDir}/assets/logisticspipes/book/"
     include "*/book/"
 
     includeEmptyDirs false

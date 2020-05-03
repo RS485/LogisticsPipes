@@ -182,7 +182,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
-		if (diskInv.getStackInSlot(0) == null) {
+		if (!diskInv.getStackInSlot(0).isEmpty()) {
 			if (!entityplayer.getHeldItemMainhand().isEmpty() && entityplayer.getHeldItemMainhand().getItem().equals(LPItems.disk)) {
 				diskInv.setInventorySlotContents(0, entityplayer.getHeldItemMainhand());
 				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, ItemStack.EMPTY);

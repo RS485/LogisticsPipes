@@ -1,6 +1,7 @@
 package logisticspipes.interfaces;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 
@@ -16,6 +17,7 @@ public interface ISendRoutedItem {
 
 	int getSourceID();
 
+	@Nonnull
 	IRouter getRouter();
 
 	Pair<Integer, SinkReply> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude);

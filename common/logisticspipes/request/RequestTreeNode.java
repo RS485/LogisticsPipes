@@ -348,7 +348,7 @@ public class RequestTreeNode {
 			if (isDone()) {
 				break;
 			}
-			if (provider.getValue1() == null || provider.getValue1().getRouter() == null || provider.getValue1().getRouter().getPipe() == null) {
+			if (provider.getValue1() == null || provider.getValue1().getRouter().getPipe() == null) {
 				continue;
 			}
 			if (!thisPipe.sharesInterestWith(provider.getValue1().getRouter().getPipe())) {

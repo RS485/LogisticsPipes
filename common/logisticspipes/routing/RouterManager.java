@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -44,6 +45,7 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 	private final ArrayList<ChannelConnection> channelConnectedPipes = new ArrayList<>();
 
 	@Override
+	@Nullable
 	public IRouter getRouter(int id) {
 		//TODO: isClient without a world is expensive
 		if (id <= 0 || MainProxy.isClient()) {
@@ -54,6 +56,7 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 	}
 
 	@Override
+	@Nullable
 	public IRouter getRouterUnsafe(Integer id, boolean side) {
 		if (side || id <= 0) {
 			return null;
@@ -196,8 +199,8 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 				map(channelConnection ->
 						channelConnection.routers.stream()
 								.filter(r -> r != router.getSimpleID())
-								.map(r -> getRouter(r).getPipe())
-								.filter(Objects::nonNull)
+								.map(this::getRouter).filter(Objects::nonNull)
+								.map(IRouter::getPipe).filter(Objects::nonNull)
 								.collect(Collectors.toList())
 				)
 				.orElse(Collections.emptyList());

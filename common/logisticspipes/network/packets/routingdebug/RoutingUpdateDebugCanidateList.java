@@ -1,10 +1,17 @@
 package logisticspipes.network.packets.routingdebug;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.debug.ClientViewController;
@@ -17,7 +24,7 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 
 	@Getter
 	@Setter
-	private ExitRoute[] msg;
+	private List<ExitRoute> exitRoutes;
 
 	public RoutingUpdateDebugCanidateList(int id) {
 		super(id);
@@ -25,10 +32,20 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInput input) {
-		msg = new ExitRoute[input.readInt()];
-		for (int i = 0; i < msg.length; i++) {
-			msg[i] = new ExitRoute(input);
+		final LinkedList<ExitRoute> readExitRoutes = input.readLinkedList(objInput -> {
+			try {
+				return new ExitRoute(objInput);
+			} catch (RuntimeException e) {
+				LogisticsPipes.log.error("Could not read ExitRoute in RoutingUpdateDebugCanidateList", e);
+			}
+			return null;
+		});
+		if (readExitRoutes == null) {
+			LogisticsPipes.log.error("Read a non-existent ExitRoute collection in RoutingUpdateDebugCanidateList");
+			exitRoutes = Collections.emptyList();
+			return;
 		}
+		exitRoutes = readExitRoutes.stream().filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
 	@Override
@@ -38,10 +55,7 @@ public class RoutingUpdateDebugCanidateList extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutput output) {
-		output.writeInt(msg.length);
-		for (ExitRoute element : msg) {
-			element.write(output);
-		}
+		output.writeCollection(exitRoutes);
 	}
 
 	@Override

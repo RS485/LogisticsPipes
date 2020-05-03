@@ -9,8 +9,8 @@ package logisticspipes.routing;
 
 import java.util.List;
 import java.util.UUID;
-
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.world.World;
 
@@ -18,8 +18,10 @@ public interface IRouterManager {
 
 	int getIDforUUID(UUID id);
 
-	@Nonnull IRouter getOrCreateRouter(UUID routerUUid, World world, int xCoord, int yCoord, int zCoord);
+	@Nonnull
+	IRouter getOrCreateRouter(UUID routerUUid, World world, int xCoord, int yCoord, int zCoord);
 
+	@Nullable
 	IRouter getRouter(int id);
 
 	boolean isRouter(int id);
@@ -36,6 +38,7 @@ public interface IRouterManager {
 
 	boolean isRouterUnsafe(int id, boolean isClientSide);
 
+	@Nullable
 	IRouter getRouterUnsafe(Integer value1, boolean isClientSide);
 
 	void printAllRouters();

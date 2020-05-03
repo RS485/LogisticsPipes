@@ -1,6 +1,7 @@
 package logisticspipes.request.resources;
 
 import java.util.BitSet;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 
@@ -98,6 +99,7 @@ public class DictResource implements IResource {
 	}
 
 	@Override
+	@Nonnull
 	public IRouter getRouter() {
 		return requester.getRouter();
 	}

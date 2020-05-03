@@ -327,8 +327,8 @@ public abstract class LPTravelingItem {
 					return;
 				}
 			}
-			if (info.destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(info.destinationint)) {
-				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationint);
+			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(info.destinationint);
+			if (destinationRouter != null) {
 				if (destinationRouter.getPipe() != null) {
 					destinationRouter.getPipe().notifyOfReroute(info);
 					if (destinationRouter.getPipe() instanceof IRequireReliableTransport) {

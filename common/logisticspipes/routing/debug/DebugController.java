@@ -2,7 +2,6 @@ package logisticspipes.routing.debug;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -145,8 +144,7 @@ public class DebugController implements IRoutingDebugAdapter {
 		this.candidatesCost = candidatesCost;
 		this.closedSet = closedSet;
 		this.filterList = filterList;
-		ExitRoute[] e = candidatesCost.toArray(new ExitRoute[] {});
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setMsg(e), (EntityPlayer) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setExitRoutes(new ArrayList<>(candidatesCost)), (EntityPlayer) sender);
 		wait("Start?", true);
 	}
 
@@ -187,14 +185,11 @@ public class DebugController implements IRoutingDebugAdapter {
 			}
 		}
 
-		ExitRoute[] e = candidatesCost.toArray(new ExitRoute[] {});
+		LinkedList<ExitRoute> exitRoutes = new LinkedList<>(candidatesCost);
 		if (flag) {
-			LinkedList<ExitRoute> list = new LinkedList<>();
-			list.add(nextNode);
-			list.addAll(Arrays.asList(e));
-			e = list.toArray(new ExitRoute[] {});
+			exitRoutes.addFirst(nextNode);
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setMsg(e), (EntityPlayer) sender);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RoutingUpdateDebugCanidateList.class).setExitRoutes(exitRoutes), (EntityPlayer) sender);
 		if (prevNode == null || prevNode.debug.isTraced) {
 			//Display Information On Client Side
 

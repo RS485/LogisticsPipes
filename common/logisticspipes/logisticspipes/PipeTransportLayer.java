@@ -3,6 +3,7 @@ package logisticspipes.logisticspipes;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -23,9 +24,9 @@ public class PipeTransportLayer extends TransportLayer {
 
 	private final CoreRoutedPipe routedPipe;
 	private final ITrackStatistics _trackStatistics;
-	private final IRouter _router;
+	private final @Nonnull IRouter _router;
 
-	public PipeTransportLayer(CoreRoutedPipe routedPipe, ITrackStatistics trackStatistics, IRouter router) {
+	public PipeTransportLayer(CoreRoutedPipe routedPipe, ITrackStatistics trackStatistics, @Nonnull IRouter router) {
 		this.routedPipe = routedPipe;
 		_trackStatistics = trackStatistics;
 		_router = router;

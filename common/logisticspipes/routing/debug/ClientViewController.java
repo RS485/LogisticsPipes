@@ -122,9 +122,8 @@ public class ClientViewController implements IDebugHUDProvider {
 
 	public void updateList(RoutingUpdateDebugCanidateList routingUpdateDebugCanidateList) {
 		debugWindow.clear();
-		ExitRoute[] e = routingUpdateDebugCanidateList.getMsg();
 		int i = 0;
-		for (ExitRoute exit : e) {
+		for (ExitRoute exit : routingUpdateDebugCanidateList.getExitRoutes()) {
 			i++;
 			Color color = Color.BLACK;
 			if (exit.debug.isNewlyAddedCanidate) {

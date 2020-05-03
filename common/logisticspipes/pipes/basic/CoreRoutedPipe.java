@@ -196,6 +196,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		_delayOffset = CoreRoutedPipe.pipecount % Configs.LOGISTICS_DETECTION_FREQUENCY;
 	}
 
+	@Nonnull
 	public RouteLayer getRouteLayer() {
 		if (_routeLayer == null) {
 			_routeLayer = new RouteLayer(getRouter(), getTransportLayer(), this);
@@ -203,6 +204,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return _routeLayer;
 	}
 
+	@Nonnull
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {
 			_transportLayer = new PipeTransportLayer(this, this, getRouter());
@@ -795,6 +797,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
+	@Nonnull
 	public IRouter getRouter() {
 		if (stillNeedReplace) {
 			System.out.format("Hey, don't get routers for pipes that aren't ready (%d, %d, %d, '%s')", this.getX(), this.getY(), this.getZ(),
@@ -1023,19 +1026,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (getUpgradeManager().isSideDisconnected(side)) {
 			return true;
 		}
-		if (!stillNeedReplace) {
-			if (getRouter().isSideDisconnected(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
-				return true;
-			}
-		}
-		return false;
+		return !stillNeedReplace && getRouter().isSideDisconnected(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection;
 	}
 
 	public void connectionUpdate() {
 		if (container != null && !stillNeedReplace) {
 			container.scheduleNeighborChange();
 			IBlockState state = getWorld().getBlockState(getPos());
-			getWorld().notifyNeighborsOfStateChange(getPos(), state == null ? null : state.getBlock(), true);
+			getWorld().notifyNeighborsOfStateChange(getPos(), state.getBlock(), true);
 		}
 	}
 
@@ -1393,7 +1391,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		final int fSourceId = sourceId;
 		BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
 		getRouter().getIRoutersByCost().stream()
-				.filter(exit -> exit.destination != null && !set.get(exit.destination.getSimpleID()))
+				.filter(exit -> !set.get(exit.destination.getSimpleID()))
 				.forEach(exit -> {
 					exit.destination.queueTask(10, (pipe, router1) -> pipe.handleMesssage(computerId.intValue(), message, fSourceId));
 					set.set(exit.destination.getSimpleID());
@@ -1410,7 +1408,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		final int fSourceId = sourceId;
 		BitSet set = new BitSet(ServerRouter.getBiggestSimpleID());
 		getRouter().getIRoutersByCost().stream()
-				.filter(exit -> exit.destination != null && !set.get(exit.destination.getSimpleID()))
+				.filter(exit -> !set.get(exit.destination.getSimpleID()))
 				.forEach(exit -> {
 					exit.destination.queueTask(10, (pipe, router1) -> pipe.handleBroadcast(message, fSourceId));
 					set.set(exit.destination.getSimpleID());

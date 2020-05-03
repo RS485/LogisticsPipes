@@ -1,5 +1,7 @@
 package logisticspipes.request.resources;
 
+import javax.annotation.Nonnull;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -19,6 +21,7 @@ public interface IResource extends ILPCCTypeHolder, LPFinalSerializable {
 
 	int getRequestedAmount();
 
+	@Nonnull
 	IRouter getRouter();
 
 	boolean matches(ItemIdentifier itemType, MatchSettings settings);

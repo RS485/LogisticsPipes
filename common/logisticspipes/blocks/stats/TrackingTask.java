@@ -4,7 +4,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -21,11 +20,7 @@ public class TrackingTask {
 		if (tickCount % everyNthTick != 0) {
 			return;
 		}
-		IRouter router = pipe.getRouter();
-		if (router == null) {
-			return;
-		}
-		amountRecorded[arrayPos++] = SimpleServiceLocator.logisticsManager.getAmountFor(item, router.getIRoutersByCost());
+		amountRecorded[arrayPos++] = SimpleServiceLocator.logisticsManager.getAmountFor(item, pipe.getRouter().getIRoutersByCost());
 		if (arrayPos >= amountRecorded.length) {
 			arrayPos = 0;
 		}

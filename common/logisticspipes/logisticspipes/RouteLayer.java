@@ -6,6 +6,8 @@
 
 package logisticspipes.logisticspipes;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.util.EnumFacing;
 
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -20,11 +22,11 @@ import logisticspipes.routing.IRouter;
  */
 public class RouteLayer {
 
-	protected final IRouter _router;
+	protected final @Nonnull IRouter _router;
 	private final TransportLayer _transport;
 	private final CoreRoutedPipe _pipe;
 
-	public RouteLayer(IRouter router, TransportLayer transportLayer, CoreRoutedPipe pipe) {
+	public RouteLayer(@Nonnull IRouter router, TransportLayer transportLayer, CoreRoutedPipe pipe) {
 		_router = router;
 		_transport = transportLayer;
 		_pipe = pipe;

@@ -447,6 +447,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	@Override
+	@Nonnull
 	public IRouter getRouter() {
 		return _service.getRouter();
 	}
@@ -652,13 +653,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	private IRouter getSatelliteRouter(int x) {
-		if (x == -1) {
-			int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(satelliteUUID);
-			return SimpleServiceLocator.routerManager.getRouter(satelliteRouterId);
-		} else {
-			int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(advancedSatelliteUUIDArray[x]);
-			return SimpleServiceLocator.routerManager.getRouter(satelliteRouterId);
-		}
+		final UUID satelliteUUID = x == -1 ? this.satelliteUUID : advancedSatelliteUUIDArray[x];
+		final int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(satelliteUUID);
+		return SimpleServiceLocator.routerManager.getRouter(satelliteRouterId);
 	}
 
 	@Override
@@ -960,13 +957,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	private IRouter getFluidSatelliteRouter(int x) {
-		if (x == -1) {
-			int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(liquidSatelliteUUID);
-			return SimpleServiceLocator.routerManager.getRouter(satelliteRouterId);
-		} else {
-			int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(liquidSatelliteUUIDArray[x]);
-			return SimpleServiceLocator.routerManager.getRouter(satelliteRouterId);
-		}
+		final UUID liquidSatelliteUUID = x == -1 ? this.liquidSatelliteUUID : liquidSatelliteUUIDArray[x];
+		final int satelliteRouterId = SimpleServiceLocator.routerManager.getIDforUUID(liquidSatelliteUUID);
+		return SimpleServiceLocator.routerManager.getRouter(satelliteRouterId);
 	}
 
 	public void openAttachedGui(EntityPlayer player) {

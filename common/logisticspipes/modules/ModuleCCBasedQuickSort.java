@@ -65,9 +65,6 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	private void createSinkMessage(int slot, ItemIdentifierStack stack) {
 		List<CCSinkResponder> respones = new ArrayList<>();
 		IRouter sourceRouter = _service.getRouter();
-		if (sourceRouter == null) {
-			return;
-		}
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn((ItemIdentifier) null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
@@ -92,7 +89,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 					continue outer;
 				}
 			}
-			if (candidateRouter.destination != null && candidateRouter.destination.getLogisticsModule() != null) {
+			if (candidateRouter.destination.getLogisticsModule() != null) {
 				respones.addAll(candidateRouter.destination.getLogisticsModule().queueCCSinkEvent(stack));
 			}
 		}

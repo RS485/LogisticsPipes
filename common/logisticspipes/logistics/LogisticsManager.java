@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
@@ -109,10 +110,11 @@ public class LogisticsManager implements ILogisticsManager {
 	 */
 	@Override
 	public Triplet<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) {
+		IRouter router = SimpleServiceLocator.routerManager.getRouter(sourceRouter);
+		if (router == null) {
 			return null;
 		}
-		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<>(), null, true);
+		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, router, router.getIRoutersByCost(), excludeSource, new ArrayList<>(), null, true);
 		if (search.getValue2() == null) {
 			return null;
 		}
@@ -122,7 +124,7 @@ public class LogisticsManager implements ILogisticsManager {
 		return search;
 	}
 
-	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
+	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, @Nonnull IRouter sourceRouter, @Nonnull List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
 		if (result == null) {
 			result = new Triplet<>(null, null, null);
 		}
@@ -185,7 +187,7 @@ public class LogisticsManager implements ILogisticsManager {
 		return result;
 	}
 
-	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource, ItemIdentifier stack, SinkReply result, boolean activeRequest, boolean allowDefault) {
+	public static SinkReply canSink(@Nonnull IRouter destination, IRouter sourceRouter, boolean excludeSource, ItemIdentifier stack, SinkReply result, boolean activeRequest, boolean allowDefault) {
 
 		SinkReply reply;
 		LogisticsModule module = destination.getLogisticsModule();

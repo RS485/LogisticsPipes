@@ -1,5 +1,7 @@
 package logisticspipes.routing.order;
 
+import javax.annotation.Nonnull;
+
 import lombok.Getter;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
@@ -32,6 +34,7 @@ public class LogisticsFluidOrder extends LogisticsOrder {
 	}
 
 	@Override
+	@Nonnull
 	public IRouter getRouter() {
 		return destination.getRouter();
 	}

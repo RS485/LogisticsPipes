@@ -378,6 +378,16 @@ public class LogisticsPipes {
 		NewGuiHandler.initialize();
 
 		LogisticsPipes.log = evt.getModLog();
+		log.info("====================================================");
+		log.info(" LogisticsPipes Logger initialized, enabled levels: ");
+		log.info("----------------------------------------------------");
+		log.info("    Fatal: " + log.isFatalEnabled());
+		log.info("    Error: " + log.isErrorEnabled());
+		log.info("    Warn:  " + log.isWarnEnabled());
+		log.info("    Info:  " + log.isInfoEnabled());
+		log.info("    Trace: " + log.isTraceEnabled());
+		log.info("    Debug: " + log.isDebugEnabled());
+		log.info("====================================================");
 		loadClasses();
 		ProxyManager.load();
 		Configs.load();

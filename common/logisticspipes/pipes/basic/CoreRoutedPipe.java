@@ -156,7 +156,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	protected boolean stillNeedReplace = true;
 	protected IRouter router;
 	protected String routerId;
-	protected Object routerIdLock = new Object();
+	protected final Object routerIdLock = new Object();
 	protected int _delayOffset;
 	protected boolean _initialInit = true;
 	protected RouteLayer _routeLayer;
@@ -808,8 +808,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				if (routerId != null && !routerId.isEmpty()) {
 					routerIntId = UUID.fromString(routerId);
 				}
-				router = SimpleServiceLocator.routerManager
-						.getOrCreateRouter(routerIntId, getWorld().provider.getDimension(), getX(), getY(), getZ(), false);
+				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, getWorld(), getX(), getY(), getZ());
 			}
 		}
 		return router;

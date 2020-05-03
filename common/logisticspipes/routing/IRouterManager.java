@@ -10,11 +10,15 @@ package logisticspipes.routing;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.world.World;
+
 public interface IRouterManager {
 
 	int getIDforUUID(UUID id);
 
-	IRouter getOrCreateRouter(UUID routerUUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
+	@Nonnull IRouter getOrCreateRouter(UUID routerUUid, World world, int xCoord, int yCoord, int zCoord);
 
 	IRouter getRouter(int id);
 

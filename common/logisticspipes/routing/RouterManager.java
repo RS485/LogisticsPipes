@@ -18,8 +18,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityStationManager;
@@ -81,46 +83,43 @@ public class RouterManager implements IRouterManager, IChannelConnectionManager,
 	}
 
 	@Override
-	public IRouter getOrCreateRouter(UUID UUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicate) {
-		IRouter r = null;
+	@Nonnull
+	public IRouter getOrCreateRouter(UUID UUid, World world, int xCoord, int yCoord, int zCoord) {
+		IRouter r;
 		int id = getIDforUUID(UUid);
 		if (id > 0) {
 			getRouter(id);
 		}
-		if (r == null || !r.isAt(dimension, xCoord, yCoord, zCoord)) {
-			if (MainProxy.isClient()) {
-				synchronized (_routersClient) {
-					for (IRouter r2 : _routersClient) {
-						if (r2.isAt(dimension, xCoord, yCoord, zCoord)) {
-							return r2;
-						}
+		if (MainProxy.isClient(world)) {
+			synchronized (_routersClient) {
+				for (IRouter r2 : _routersClient) {
+					if (r2.isAt(world.provider.getDimension(), xCoord, yCoord, zCoord)) {
+						return r2;
 					}
-					r = new ClientRouter(UUid, dimension, xCoord, yCoord, zCoord);
-					_routersClient.add(r);
 				}
-			} else {
-				synchronized (_routersServer) {
-					if (!forceCreateDuplicate) {
-						for (IRouter r2 : _routersServer) {
-							if (r2 != null && r2.isAt(dimension, xCoord, yCoord, zCoord)) {
-								return r2;
-							}
-						}
+				r = new ClientRouter(UUid, world.provider.getDimension(), xCoord, yCoord, zCoord);
+				_routersClient.add(r);
+			}
+		} else {
+			synchronized (_routersServer) {
+				for (IRouter r2 : _routersServer) {
+					if (r2 != null && r2.isAt(world.provider.getDimension(), xCoord, yCoord, zCoord)) {
+						return r2;
 					}
-					r = new ServerRouter(UUid, dimension, xCoord, yCoord, zCoord);
+				}
+				r = new ServerRouter(UUid, world.provider.getDimension(), xCoord, yCoord, zCoord);
 
-					int rId = r.getSimpleID();
-					if (_routersServer.size() > rId) {
-						_routersServer.set(rId, r);
-					} else {
-						_routersServer.ensureCapacity(rId + 1);
-						while (_routersServer.size() <= rId) {
-							_routersServer.add(null);
-						}
-						_routersServer.set(rId, r);
+				int rId = r.getSimpleID();
+				if (_routersServer.size() > rId) {
+					_routersServer.set(rId, r);
+				} else {
+					_routersServer.ensureCapacity(rId + 1);
+					while (_routersServer.size() <= rId) {
+						_routersServer.add(null);
 					}
-					_uuidMap.put(r.getId(), r.getSimpleID());
+					_routersServer.set(rId, r);
 				}
+				_uuidMap.put(r.getId(), r.getSimpleID());
 			}
 		}
 		return r;

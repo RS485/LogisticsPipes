@@ -2,6 +2,7 @@ package logisticspipes.gui.modules;
 
 import java.io.IOException;
 
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
@@ -115,12 +116,12 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 				buttonList.get(1).enabled = false;
 			}
 		}
-		SimpleGraphics.drawRectNoBlend(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY, 0.0);
+		Gui.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY.getValue());
 		for (int i = 0; i < _itemSink.getStringList().size() && i < 9; i++) {
 			int pointerX = var2 - guiLeft;
 			int pointerY = var3 - guiTop;
 			if (6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
-				SimpleGraphics.drawRectNoBlend(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), Color.LIGHT_GREY, 0.0);
+				Gui.drawRect(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), Color.LIGHT_GREY.getValue());
 			}
 			mc.fontRenderer.drawString(_itemSink.getStringList().get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
 			if (6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {

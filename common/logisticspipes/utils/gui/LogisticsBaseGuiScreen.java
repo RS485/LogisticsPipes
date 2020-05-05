@@ -302,13 +302,13 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				renderAtTheEnd.add(() -> {
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glDisable(GL11.GL_LIGHTING);
-					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
+					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 61, posY + 47, zLevel, true, true, true, true, true);
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 					final String PREFIX = "gui.crafting.";
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 8, (!resource.use_od ? 0x404040 : 0xFF4040));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 18, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 28, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 5, posY + 5, (!resource.use_od ? 0x404040 : 0xFF4040));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 5, posY + 15, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 5, posY + 25, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 5, posY + 35, (!resource.use_category ? 0x404040 : 0x7F7F40));
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				});
@@ -442,9 +442,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			final int posX = fuzzySlot.getX() + guiLeft;
 			final int posY = fuzzySlot.getY() + 17 + guiTop;
 			int sel = -1;
-			if (par1 >= posX + 4 && par1 <= posX + 60 - 4) {
-				if (par2 >= posY + 4 && par2 <= posY + 52 - 4) {
-					sel = (par2 - posY - 4) / 11;
+			if (par1 >= posX + 5 && par1 <= posX + 56) {
+				if (par2 >= posY + 5 && par2 <= posY + 45) {
+					sel = (par2 - posY - 4) / 10;
 				}
 			}
 			DictResource resource = fuzzySlot.getFuzzyFlags();

@@ -105,4 +105,7 @@ gradle-app.setting
 ### Gradle Patch ###
 **/build/
 
+# Forge Gradle 3 Run Configuration is auto-generated
+.idea/runConfigurations/*
+
 # End of https://www.gitignore.io/api/java,gradle,kotlin,forgegradle,intellij+iml

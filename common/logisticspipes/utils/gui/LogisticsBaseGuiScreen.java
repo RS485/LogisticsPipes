@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
@@ -271,6 +272,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 				Gui.drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
 				Gui.drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
 			}
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glEnable(GL11.GL_LIGHTING);
 			final boolean mouseOver = this.isMouseOverSlot(slot, currentDrawScreenMouseX, currentDrawScreenMouseY);
 			if (mouseOver) {
@@ -301,10 +303,11 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 60, posY + 52, zLevel, true, true, true, true, true);
+					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 					final String PREFIX = "gui.crafting.";
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 4, (!resource.use_od ? 0x404040 : 0xFF4040));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 14, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 26, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 4, posY + 8, (!resource.use_od ? 0x404040 : 0xFF4040));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 4, posY + 18, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 4, posY + 28, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
 					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 4, posY + 38, (!resource.use_category ? 0x404040 : 0x7F7F40));
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);

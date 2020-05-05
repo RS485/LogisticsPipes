@@ -307,6 +307,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GlStateManager.color(1.0F,1.0F,1.0F,1.0F);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Inputs"), 18, 7, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
 
@@ -340,6 +342,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 95, 0x404040);
 			mc.fontRenderer.drawString("" + _pipe.priority, 143 - (mc.fontRenderer.getStringWidth("" + _pipe.priority) / 2), 107, 0x404040);
 		}
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	@Override

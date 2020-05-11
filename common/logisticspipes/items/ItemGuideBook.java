@@ -1,5 +1,9 @@
 package logisticspipes.items;
 
+import java.util.ArrayList;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -8,6 +12,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
+import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.SetCurrentPagePacket;
 import logisticspipes.proxy.MainProxy;

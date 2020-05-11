@@ -68,7 +68,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn((ItemIdentifier) null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations.addAll(exits.stream()

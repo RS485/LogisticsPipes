@@ -304,7 +304,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 		int wanted = Math.min(available, stack.getStackSize());
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
-		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination, false);
+		IRouter dRtr = SimpleServiceLocator.routerManager.getServerRouter(destination);
 		if (dRtr == null) {
 			_service.getItemOrderManager().sendFailed();
 			return 0;

@@ -92,7 +92,7 @@ public class RequestTreeNode {
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item);
 		List<ExitRoute> validSources = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 
 			if (!r.isValidCache()) {
 				continue; //Skip Routers without a valid pipe
@@ -396,7 +396,7 @@ public class RequestTreeNode {
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(getRequestType());
 		List<ExitRoute> validSources = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 
 			if (!r.isValidCache()) {
 				continue; //Skip Routers without a valid pipe

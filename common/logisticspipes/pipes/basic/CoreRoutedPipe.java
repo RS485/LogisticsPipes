@@ -259,7 +259,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 		transport.injectItem(routedItem, from.getOpposite());
 
-		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(), false);
+		IRouter r = SimpleServiceLocator.routerManager.getServerRouter(routedItem.getDestination());
 		if (r != null) {
 			CoreRoutedPipe pipe = r.getCachedPipe();
 			if (pipe != null) {
@@ -466,10 +466,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	private void doDebugStuff(EntityPlayer entityplayer) {
 		//entityplayer.world.setWorldTime(4951);
-		IRouter r = getRouter();
-		if (!(r instanceof ServerRouter)) {
+		if (!MainProxy.isServer(entityplayer.world)) {
 			return;
 		}
+		ServerRouter router = (ServerRouter) getRouter();
+
 		System.out.println("***");
 		System.out.println("---------Interests---------------");
 		for (Entry<ItemIdentifier, Set<IRouter>> i : ServerRouter.getInterestedInSpecifics().entrySet()) {
@@ -486,22 +487,20 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 		System.out.println();
 
-		ServerRouter sr = (ServerRouter) r;
-
-		System.out.println(r.toString());
+		System.out.println(router.toString());
 		System.out.println("---------CONNECTED TO---------------");
-		for (CoreRoutedPipe adj : sr._adjacent.keySet()) {
+		for (CoreRoutedPipe adj : router._adjacent.keySet()) {
 			System.out.println(adj.getRouter().getSimpleID());
 		}
 		System.out.println();
 		System.out.println("========DISTANCE TABLE==============");
-		for (ExitRoute n : r.getIRoutersByCost()) {
+		for (ExitRoute n : router.getIRoutersByCost()) {
 			System.out
 					.println(n.destination.getSimpleID() + " @ " + n.distanceToDestination + " -> " + n.connectionDetails + "(" + n.destination.getId() + ")");
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		List<List<ExitRoute>> table = r.getRouteTable();
+		List<List<ExitRoute>> table = router.getRouteTable();
 		for (int i = 0; i < table.size(); i++) {
 			if (table.get(i) != null) {
 				if (table.get(i).size() > 0) {
@@ -515,14 +514,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		System.out.println();
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
 		System.out.println(Arrays.toString(EnumFacing.VALUES));
-		System.out.println(Arrays.toString(sr.sideDisconnected));
+		System.out.println(Arrays.toString(router.sideDisconnected));
 		System.out.println(Arrays.toString(container.pipeConnectionsBuffer));
 		System.out.println();
 		System.out.println("~~~~~~~~~~~~~~~POWER~~~~~~~~~~~~~~~~");
-		System.out.println(r.getPowerProvider());
+		System.out.println(router.getPowerProvider());
 		System.out.println();
 		System.out.println("~~~~~~~~~~~SUBSYSTEMPOWER~~~~~~~~~~~");
-		System.out.println(r.getSubSystemPowerProvider());
+		System.out.println(router.getSubSystemPowerProvider());
 		System.out.println();
 		if (_orderItemManager != null) {
 			System.out.println("################ORDERDUMP#################");
@@ -531,7 +530,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		System.out.println("################END#################");
 		refreshConnectionAndRender(true);
 		System.out.print("");
-		sr.CreateRouteTable(Integer.MAX_VALUE);
+		router.CreateRouteTable(Integer.MAX_VALUE);
 	}
 
 	// end FromBaseRoutingLogic

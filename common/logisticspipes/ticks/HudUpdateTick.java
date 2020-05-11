@@ -5,7 +5,6 @@ import java.util.BitSet;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.IRouterManager;
 
 public class HudUpdateTick {
 
@@ -34,13 +33,12 @@ public class HudUpdateTick {
 		if (HudUpdateTick.firstRouter == -1) {
 			return;
 		}
-		IRouterManager rm = SimpleServiceLocator.routerManager;
 		int slotSentCount = 0;
 		//cork the compressor
 		SimpleServiceLocator.serverBufferHandler.setPause(true);
 		while (HudUpdateTick.firstRouter != -1 && slotSentCount < HudUpdateTick.inventorySlotsToUpdatePerTick) {
 			HudUpdateTick.routersNeedingUpdate.clear(HudUpdateTick.firstRouter);
-			IRouter currentRouter = rm.getRouterUnsafe(HudUpdateTick.firstRouter, false);
+			IRouter currentRouter = SimpleServiceLocator.routerManager.getServerRouter(HudUpdateTick.firstRouter);
 			if (currentRouter != null) {
 				CoreRoutedPipe pipe = currentRouter.getCachedPipe();
 				if (pipe != null) {

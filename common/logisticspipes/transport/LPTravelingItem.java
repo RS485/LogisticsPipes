@@ -27,7 +27,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.IRouterManager;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
 import logisticspipes.utils.EnumFacingUtil;
@@ -441,10 +440,9 @@ public abstract class LPTravelingItem {
 
 		@Override
 		public void checkIDFromUUID() {
-			IRouterManager rm = SimpleServiceLocator.routerManager;
-			IRouter router = rm.getRouter(info.destinationint);
+			IRouter router = SimpleServiceLocator.routerManager.getRouter(info.destinationint);
 			if (router == null || info.destinationUUID != router.getId()) {
-				info.destinationint = rm.getIDforUUID(info.destinationUUID);
+				info.destinationint = SimpleServiceLocator.routerManager.getIDforUUID(info.destinationUUID);
 			}
 		}
 

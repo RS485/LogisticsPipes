@@ -70,7 +70,7 @@ public class LogisticsManager implements ILogisticsManager {
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(stack);
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations
@@ -180,7 +180,7 @@ public class LogisticsManager implements ILogisticsManager {
 			}
 		}
 		if (result.getValue1() != null) {
-			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(), false).getPipe();
+			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getServerRouter(result.getValue1()).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
 			pipe.spawnParticle(Particles.BlueParticle, 10);
 		}
@@ -238,7 +238,7 @@ public class LogisticsManager implements ILogisticsManager {
 		//Assert: only called server side.
 
 		//If we for some reason can't get the router we can't do anything either
-		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouterUnsafe(sourceRouterID, false);
+		IRouter sourceRouter = SimpleServiceLocator.routerManager.getServerRouter(sourceRouterID);
 		if (sourceRouter == null) {
 			return item;
 		}
@@ -249,7 +249,7 @@ public class LogisticsManager implements ILogisticsManager {
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getItemIdentifierStack().getItem());
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
+			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
 				validDestinations

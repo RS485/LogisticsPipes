@@ -34,7 +34,7 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.renderer.newpipe.GLRenderListHandler;
-import logisticspipes.routing.IRouterManager;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.pathfinder.PipeInformationManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
@@ -77,9 +77,9 @@ public final class SimpleServiceLocator {
 		SimpleServiceLocator.securityStationManager = secStationMngr;
 	}
 
-	public static IRouterManager routerManager;
+	public static RouterManager routerManager;
 
-	public static void setRouterManager(final IRouterManager routerMngr) {
+	public static void setRouterManager(final RouterManager routerMngr) {
 		SimpleServiceLocator.routerManager = routerMngr;
 	}
 

@@ -26,6 +26,9 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -218,51 +221,25 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return ServerRouter.simpleIdUsedSet.size();
 	}
 
+	private static void setBitsForItemInterests(@Nonnull final BitSet bitset, @Nonnull final ItemIdentifier itemid) {
+		TreeSet<ServerRouter> specifics = ServerRouter._globalSpecificInterests.get(itemid);
+		if (specifics != null) {
+			for (IRouter r : specifics) {
+				bitset.set(r.getSimpleID());
+			}
+		}
+	}
+
 	public static BitSet getRoutersInterestedIn(ItemIdentifier item) {
-		BitSet s = new BitSet(ServerRouter.getBiggestSimpleID() + 1);
+		final BitSet s = new BitSet(ServerRouter.getBiggestSimpleID() + 1);
 		if (ServerRouter._genericInterests != null) {
 			for (IRouter r : ServerRouter._genericInterests) {
 				s.set(r.getSimpleID());
 			}
 		}
-		if (item == null) {
-			return s;
-		}
-		TreeSet<ServerRouter> specifics = ServerRouter._globalSpecificInterests.get(item);
-		if (specifics != null) {
-			for (IRouter r : specifics) {
-				s.set(r.getSimpleID());
-			}
-		}
-		specifics = ServerRouter._globalSpecificInterests.get(item.getUndamaged());
-		if (specifics != null) {
-			for (IRouter r : specifics) {
-				s.set(r.getSimpleID());
-			}
-		}
-		specifics = ServerRouter._globalSpecificInterests.get(item.getIgnoringNBT());
-		if (specifics != null) {
-			for (IRouter r : specifics) {
-				s.set(r.getSimpleID());
-			}
-		}
-		specifics = ServerRouter._globalSpecificInterests.get(item.getUndamaged().getIgnoringNBT());
-		if (specifics != null) {
-			for (IRouter r : specifics) {
-				s.set(r.getSimpleID());
-			}
-		}
-		specifics = ServerRouter._globalSpecificInterests.get(item.getIgnoringData());
-		if (specifics != null) {
-			for (IRouter r : specifics) {
-				s.set(r.getSimpleID());
-			}
-		}
-		specifics = ServerRouter._globalSpecificInterests.get(item.getIgnoringData().getIgnoringNBT());
-		if (specifics != null) {
-			for (IRouter r : specifics) {
-				s.set(r.getSimpleID());
-			}
+		if (item != null) {
+			Stream.of(item, item.getUndamaged(), item.getIgnoringNBT(), item.getUndamaged().getIgnoringNBT(), item.getIgnoringData(), item.getIgnoringData().getIgnoringNBT())
+					.forEach(itemid -> setBitsForItemInterests(s, itemid));
 		}
 		return s;
 	}

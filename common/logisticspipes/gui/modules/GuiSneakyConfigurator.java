@@ -17,19 +17,21 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.module.ExtractorModuleDirectionPacket;
+import logisticspipes.network.packets.modules.SneakyModuleDirectionUpdate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.module.SneakyDirection;
 
-public class GuiExtractor extends ModuleBaseGui {
+public class GuiSneakyConfigurator extends ModuleBaseGui {
 
-	private final LogisticsSneakyDirectionModule _directionReceiver;
+	private final SneakyDirection directionReceiver;
 
-	public GuiExtractor(IInventory playerInventory, LogisticsSneakyDirectionModule directionReceiver) {
-		super(new DummyContainer(playerInventory, null), directionReceiver);
-		_directionReceiver = directionReceiver;
+	public GuiSneakyConfigurator(IInventory playerInventory, LogisticsGuiModule module) {
+		super(new DummyContainer(playerInventory, null), module);
+		if (!(module instanceof SneakyDirection)) throw new IllegalArgumentException("Module is not sneaky");
+		directionReceiver = (SneakyDirection) module;
 		xSize = 160;
 		ySize = 200;
 	}
@@ -56,15 +58,15 @@ public class GuiExtractor extends ModuleBaseGui {
 	private void refreshButtons() {
 		for (Object p : buttonList) {
 			GuiButton button = (GuiButton) p;
-			button.displayString = isExtract(button.id == 6 ? null : EnumFacing.getFront(button.id));
+			button.displayString = getButtonOrientationString(button.id == 6 ? null : EnumFacing.getFront(button.id));
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
-		_directionReceiver.setSneakyDirection(guibutton.id == 6 ? null : EnumFacing.getFront(guibutton.id));
+		directionReceiver.setSneakyDirection(guibutton.id == 6 ? null : EnumFacing.getFront(guibutton.id));
 
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setDirection(_directionReceiver.getSneakyDirection()).setModulePos(_directionReceiver));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(SneakyModuleDirectionUpdate.class).setDirection(directionReceiver.getSneakyDirection()).setModulePos(module));
 
 		refreshButtons();
 		super.actionPerformed(guibutton);
@@ -77,31 +79,31 @@ public class GuiExtractor extends ModuleBaseGui {
 
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
-		mc.fontRenderer.drawString("Extract orientation", xSize / 2 - mc.fontRenderer.getStringWidth("Extract orientation") / 2, 10, 0x404040);
+		mc.fontRenderer.drawString("Sneaky orientation", xSize / 2 - mc.fontRenderer.getStringWidth("Sneaky orientation") / 2, 10, 0x404040);
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/extractor.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/sneaky.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(GuiExtractor.TEXTURE);
+		mc.renderEngine.bindTexture(GuiSneakyConfigurator.TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		//drawRect(width/2 - xSize / 2, height / 2 - ySize /2, width/2 + xSize / 2, height / 2 + ySize /2, 0xFF404040);
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
-	private String isExtract(EnumFacing o) {
-		String s = (o == null ? "DEFAULT" : o.name());
-		if (o == _directionReceiver.getSneakyDirection()) {
+	private String getButtonOrientationString(EnumFacing orientation) {
+		String s = (orientation == null ? "DEFAULT" : orientation.name());
+		if (orientation == directionReceiver.getSneakyDirection()) {
 			return "\u00a7a>" + s + "<";
 		}
 		return s.toLowerCase(Locale.US);
 	}
 
 	public void setMode(EnumFacing o) {
-		_directionReceiver.setSneakyDirection(o);
+		directionReceiver.setSneakyDirection(o);
 		refreshButtons();
 	}
 }

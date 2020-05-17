@@ -7,8 +7,8 @@ import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
-import logisticspipes.network.guis.module.inhand.ExtractorModuleInHand;
-import logisticspipes.network.guis.module.inpipe.ExtractorModuleSlot;
+import logisticspipes.network.guis.module.inhand.SneakyModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inpipe.SneakyModuleInSlotGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.StaticResolve;
@@ -33,7 +33,7 @@ public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if (dummy.getModule() instanceof ModuleAdvancedExtractor) {
 					player.closeScreen();
-					NewGuiHandler.getGui(ExtractorModuleInHand.class).setInvSlot(getPositionInt()).open(player);
+					NewGuiHandler.getGui(SneakyModuleInHandGuiProvider.class).setInvSlot(getPositionInt()).open(player);
 				}
 			}
 			return;
@@ -51,7 +51,7 @@ public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {
 		}
 		if (piperouted.getLogisticsModule().getSubModule(getPositionInt()) instanceof ModuleAdvancedExtractor) {
 			final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule().getSubModule(getPositionInt());
-			NewGuiHandler.getGui(ExtractorModuleSlot.class).setSneakyOrientation(module.getSneakyDirection()).setSlot(getType()).setPositionInt(getPositionInt()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
+			NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class).setSneakyOrientation(module.getSneakyDirection()).setSlot(getType()).setPositionInt(getPositionInt()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 			return;
 		}
 	}

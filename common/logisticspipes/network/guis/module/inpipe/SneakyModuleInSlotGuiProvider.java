@@ -6,23 +6,24 @@ import net.minecraft.util.EnumFacing;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
+import logisticspipes.gui.modules.GuiSneakyConfigurator;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.module.SneakyDirection;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 @StaticResolve
-public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
+public class SneakyModuleInSlotGuiProvider extends ModuleCoordinatesGuiProvider {
 
 	@Getter
 	@Setter
 	private EnumFacing sneakyOrientation;
 
-	public ExtractorModuleSlot(int id) {
+	public SneakyModuleInSlotGuiProvider(int id) {
 		super(id);
 	}
 
@@ -40,18 +41,18 @@ public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsSneakyDirectionModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsSneakyDirectionModule.class);
-		if (module == null) {
+		LogisticsGuiModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsGuiModule.class);
+		if (!(module instanceof SneakyDirection)) {
 			return null;
 		}
-		module.setSneakyDirection(sneakyOrientation);
-		return new GuiExtractor(player.inventory, module);
+		((SneakyDirection) module).setSneakyDirection(sneakyOrientation);
+		return new GuiSneakyConfigurator(player.inventory, module);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		LogisticsSneakyDirectionModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsSneakyDirectionModule.class);
-		if (module == null) {
+		LogisticsGuiModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsGuiModule.class);
+		if (!(module instanceof SneakyDirection)) {
 			return null;
 		}
 		return new DummyContainer(player.inventory, null);
@@ -59,6 +60,6 @@ public class ExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 
 	@Override
 	public GuiProvider template() {
-		return new ExtractorModuleSlot(getId());
+		return new SneakyModuleInSlotGuiProvider(getId());
 	}
 }

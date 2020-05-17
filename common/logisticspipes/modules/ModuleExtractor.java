@@ -16,17 +16,17 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
-import logisticspipes.network.guis.module.inhand.ExtractorModuleInHand;
-import logisticspipes.network.guis.module.inpipe.ExtractorModuleSlot;
+import logisticspipes.network.guis.module.inhand.SneakyModuleInHandGuiProvider;
+import logisticspipes.network.guis.module.inpipe.SneakyModuleInSlotGuiProvider;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
-import logisticspipes.network.packets.modules.ExtractorModuleMode;
+import logisticspipes.network.packets.modules.SneakyModuleDirectionUpdate;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
@@ -35,8 +35,9 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.module.SneakyDirection;
 
-public class ModuleExtractor extends LogisticsSneakyDirectionModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleExtractor extends LogisticsGuiModule implements SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
@@ -75,7 +76,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	@Override
 	public void setSneakyDirection(EnumFacing sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SneakyModuleDirectionUpdate.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
 	}
 
 	@Override
@@ -86,12 +87,12 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ExtractorModuleSlot.class).setSneakyOrientation(getSneakyDirection());
+		return NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class).setSneakyOrientation(getSneakyDirection());
 	}
 
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(ExtractorModuleInHand.class);
+		return NewGuiHandler.getGui(SneakyModuleInHandGuiProvider.class);
 	}
 
 	@Override
@@ -231,7 +232,7 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SneakyModuleDirectionUpdate.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
 	}
 
 	@Override

@@ -2,29 +2,29 @@ package logisticspipes.network.packets.modules;
 
 import net.minecraft.entity.player.EntityPlayer;
 
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.abstractpackets.DirectionModuleCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.module.SneakyDirection;
 
 @StaticResolve
-public class ExtractorModuleMode extends DirectionModuleCoordinatesPacket {
+public class SneakyModuleDirectionUpdate extends DirectionModuleCoordinatesPacket {
 
-	public ExtractorModuleMode(int id) {
+	public SneakyModuleDirectionUpdate(int id) {
 		super(id);
 	}
 
 	@Override
 	public ModernPacket template() {
-		return new ExtractorModuleMode(getId());
+		return new SneakyModuleDirectionUpdate(getId());
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsSneakyDirectionModule recieiver = this.getLogisticsModule(player, LogisticsSneakyDirectionModule.class);
-		if (recieiver == null) {
+		SneakyDirection sneakyModule = this.getLogisticsModule(player, SneakyDirection.class);
+		if (sneakyModule == null) {
 			return;
 		}
-		recieiver.setSneakyDirection(getDirection());
+		sneakyModule.setSneakyDirection(getDirection());
 	}
 }

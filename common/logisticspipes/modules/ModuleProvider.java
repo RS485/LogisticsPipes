@@ -30,8 +30,8 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsSneakyDirectionModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -41,7 +41,7 @@ import logisticspipes.network.guis.module.inpipe.ProviderModuleGuiProvider;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
-import logisticspipes.network.packets.modules.ExtractorModuleMode;
+import logisticspipes.network.packets.modules.SneakyModuleDirectionUpdate;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
@@ -63,9 +63,10 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.module.SneakyDirection;
 
 @CCType(name = "Provider Module")
-public class ModuleProvider extends LogisticsSneakyDirectionModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
+public class ModuleProvider extends LogisticsGuiModule implements SneakyDirection, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
 	private EnumFacing _sneakyDirection = null;
@@ -136,7 +137,7 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	public void setSneakyDirection(EnumFacing sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 		if (MainProxy.isServer(this._world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(SneakyModuleDirectionUpdate.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
 		}
 	}
 

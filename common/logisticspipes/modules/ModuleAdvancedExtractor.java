@@ -83,14 +83,14 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements Simpl
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
 		_sneakyDirection = SneakyDirection.readSneakyDirection(nbttagcompound);
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("itemsIncluded", areItemsIncluded());
 		SneakyDirection.writeSneakyDirection(_sneakyDirection, nbttagcompound);

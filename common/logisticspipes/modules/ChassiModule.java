@@ -3,6 +3,8 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IInventoryUtil;
@@ -106,7 +108,7 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < modules.length; i++) {
 			if (modules[i] != null) {
 				NBTTagCompound slot = nbttagcompound.getCompoundTag("slot" + i);
@@ -118,7 +120,7 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < modules.length; i++) {
 			if (modules[i] != null) {
 				NBTTagCompound slot = new NBTTagCompound();

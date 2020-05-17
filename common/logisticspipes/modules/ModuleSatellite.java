@@ -77,10 +77,10 @@ public class ModuleSatellite extends LogisticsModule {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
 	public void tick() {}

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -261,7 +263,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		timeout = nbttagcompound.getInteger("Timeout");
 		if (timeout == 0) {
@@ -270,7 +272,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		nbttagcompound.setInteger("Timeout", timeout);
 	}

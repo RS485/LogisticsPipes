@@ -168,7 +168,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, 
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		_isDefaultRoute = nbttagcompound.getBoolean("defaultdestination");
 		if (nbttagcompound.hasKey("ignoreData")) {
@@ -178,7 +178,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("defaultdestination", isDefaultRoute());
 		nbttagcompound.setByteArray("ignoreData", ignoreData.toByteArray());

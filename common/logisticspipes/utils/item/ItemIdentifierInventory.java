@@ -183,7 +183,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	public void closeInventory(@Nonnull EntityPlayer player) {}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		readFromNBT(nbttagcompound, "");
 	}
 
@@ -207,7 +207,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		writeToNBT(nbttagcompound, "");
 	}
 

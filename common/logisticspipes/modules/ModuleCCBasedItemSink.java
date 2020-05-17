@@ -2,6 +2,8 @@ package logisticspipes.modules;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IQueueCCEvent;
@@ -18,10 +20,10 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	private IQueueCCEvent eventQueuer;
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {

@@ -392,7 +392,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		if (nbttagcompound.hasKey("requestmode")) {
 			_requestMode = SupplyMode.values()[nbttagcompound.getShort("requestmode")];
@@ -417,7 +417,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		dummyInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setShort("requestmode", (short) _requestMode.ordinal());
 		nbttagcompound.setShort("patternmode", (short) _patternMode.ordinal());

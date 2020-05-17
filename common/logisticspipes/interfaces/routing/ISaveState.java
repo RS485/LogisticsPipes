@@ -7,6 +7,8 @@
 
 package logisticspipes.interfaces.routing;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 public interface ISaveState {
@@ -18,7 +20,7 @@ public interface ISaveState {
 	 * @param nbttagcompound
 	 *            to read from
 	 */
-	void readFromNBT(NBTTagCompound nbttagcompound);
+	void readFromNBT(@Nonnull NBTTagCompound nbttagcompound);
 
 	/**
 	 * Called to save all information of the given class into an NBTTagCompount
@@ -26,5 +28,5 @@ public interface ISaveState {
 	 * @param nbttagcompound
 	 *            to save the information in
 	 */
-	void writeToNBT(NBTTagCompound nbttagcompound);
+	void writeToNBT(@Nonnull NBTTagCompound nbttagcompound);
 }

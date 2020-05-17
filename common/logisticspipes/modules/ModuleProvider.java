@@ -88,7 +88,7 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 	public ModuleProvider() {}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		isActive = nbttagcompound.getBoolean("isActive");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
@@ -97,7 +97,7 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("isActive", isActive);
 		nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);

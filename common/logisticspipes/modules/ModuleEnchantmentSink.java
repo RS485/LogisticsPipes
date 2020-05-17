@@ -1,5 +1,7 @@
 package logisticspipes.modules;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -11,10 +13,10 @@ import logisticspipes.utils.item.ItemIdentifier;
 public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {}
+	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {}
+	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
 	public int getX() {

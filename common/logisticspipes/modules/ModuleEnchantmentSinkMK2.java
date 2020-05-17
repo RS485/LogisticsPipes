@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -151,15 +152,13 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsSimpleFilterModule implem
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li = new ArrayList<>(mapIC.size());
-		li.addAll(mapIC.keySet());
+		itemidCollection.addAll(mapIC.keySet());
 		for (ItemIdentifier id : mapIC.keySet()) {
-			li.add(id.getUndamaged());
-			li.add(id.getUndamaged().getIgnoringNBT());
+			itemidCollection.add(id.getUndamaged());
+			itemidCollection.add(id.getUndamaged().getIgnoringNBT());
 		}
-		return li;
 	}
 
 	@Override

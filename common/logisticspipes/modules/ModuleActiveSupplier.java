@@ -131,11 +131,6 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		return new ArrayList<>(0);
-	}
-
-	@Override
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}

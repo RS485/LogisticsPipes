@@ -5,7 +5,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -240,32 +240,30 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		if (_isDefaultRoute) {
-			return null;
+			return;
 		}
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li = new ArrayList<>(mapIC.size());
-		li.addAll(mapIC.keySet());
-		li.addAll(mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
-		if (getUpgradeManager().isFuzzyUpgrade()) {
+		itemidCollection.addAll(mapIC.keySet());
+		mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
+		if (getUpgradeManager() != null && getUpgradeManager().isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
 				if (stack.getValue1() == null) {
 					continue;
 				}
 				ItemIdentifier ident = stack.getValue1().getItem();
 				if (ignoreData.get(stack.getValue2())) {
-					li.add(ident.getIgnoringData());
+					itemidCollection.add(ident.getIgnoringData());
 				}
 				if (ignoreNBT.get(stack.getValue2())) {
-					li.add(ident.getIgnoringNBT());
+					itemidCollection.add(ident.getIgnoringNBT());
 				}
 				if (ignoreData.get(stack.getValue2()) && ignoreNBT.get(stack.getValue2())) {
-					li.add(ident.getIgnoringData().getIgnoringNBT());
+					itemidCollection.add(ident.getIgnoringData().getIgnoringNBT());
 				}
 			}
 		}
-		return li;
 	}
 
 	@Override

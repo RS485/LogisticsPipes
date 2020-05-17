@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -450,14 +450,11 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 
 	@Override
-	//ToDo: work in progress, currently not active code.
-	public Set<ItemIdentifier> getSpecificInterests() {
-		return new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+		new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity()))
-				.map(this::getAdaptedInventoryUtil)
-				.filter(Objects::nonNull)
-				.flatMap(inv -> inv.getItems().stream())
-				.collect(Collectors.toSet());
+				.flatMap(adjacent -> getAdaptedInventoryUtil(adjacent).getItems().stream())
+				.forEach(itemidCollection::add);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -465,16 +466,14 @@ public class ModuleProvider extends LogisticsSneakyDirectionModule implements IL
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		//when filter is empty or in exclude mode, this is interested in attached inventory already
 		if (isExcludeFilter || _filterInventory.isEmpty()) {
-			return null;
+			return;
 		}
+
 		// when items included this is only interested in items in the filter
-		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li = new ArrayList<>(mapIC.size());
-		li.addAll(mapIC.keySet());
-		return li;
+		itemidCollection.addAll(_filterInventory.getItemsAndCount().keySet());
 	}
 
 	@Override

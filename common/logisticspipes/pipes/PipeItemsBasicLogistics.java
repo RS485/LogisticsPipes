@@ -7,8 +7,7 @@
 package logisticspipes.pipes;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
@@ -141,17 +140,10 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public Set<ItemIdentifier> getSpecificInterests() {
-		if (itemSinkModule.isDefaultRoute()) {
-			return null;
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+		if (!itemSinkModule.isDefaultRoute()) {
+			itemSinkModule.collectSpecificInterests(itemidCollection);
 		}
-
-		Set<ItemIdentifier> l1 = new TreeSet<>();
-		Collection<ItemIdentifier> current = itemSinkModule.getSpecificInterests();
-		if (current != null) {
-			l1.addAll(current);
-		}
-		return l1;
 	}
 
 	@Override

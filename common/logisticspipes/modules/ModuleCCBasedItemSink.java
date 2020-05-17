@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -61,11 +60,6 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
-	}
-
-	@Override
-	public Collection<ItemIdentifier> getSpecificInterests() {
-		return null;
 	}
 
 	@Override

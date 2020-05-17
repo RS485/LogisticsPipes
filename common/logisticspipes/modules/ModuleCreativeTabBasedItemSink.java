@@ -165,11 +165,6 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsGuiModule implement
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		return null;
-	}
-
-	@Override
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}

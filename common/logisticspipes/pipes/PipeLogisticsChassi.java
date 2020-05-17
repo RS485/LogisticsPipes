@@ -13,8 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -600,12 +599,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	}
 
 	@Override
-	public Set<ItemIdentifier> getSpecificInterests() {
-		Set<ItemIdentifier> l1 = new TreeSet<>();
-		//if we don't have a pointed inventory we can't be interested in anything
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+		// if we don't have a pointed inventory we can't be interested in anything
 		if (getPointedItemHandler() == null) {
-			return l1;
+			return;
 		}
+
 		for (int moduleIndex = 0; moduleIndex < getChassiSize(); moduleIndex++) {
 			LogisticsModule module = _module.getSubModule(moduleIndex);
 			if (module != null && module.interestedInAttachedInventory()) {
@@ -614,10 +613,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					continue;
 				}
 				Set<ItemIdentifier> items = inv.getItems();
-				l1.addAll(items);
+				itemidCollection.addAll(items);
 
 				//also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
-				l1.addAll(items.stream().map(ItemIdentifier::getIgnoringNBT).collect(Collectors.toList()));
+				items.stream().map(ItemIdentifier::getIgnoringNBT).forEach(itemidCollection::add);
 
 				boolean modulesInterestedInUndamged = false;
 				for (int i = 0; i < getChassiSize(); i++) {
@@ -627,7 +626,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 					}
 				}
 				if (modulesInterestedInUndamged) {
-					l1.addAll(items.stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
+					items.stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
 				}
 				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.
 			}
@@ -635,13 +634,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		for (int i = 0; i < getChassiSize(); i++) {
 			LogisticsModule module = _module.getSubModule(i);
 			if (module != null) {
-				Collection<ItemIdentifier> current = module.getSpecificInterests();
-				if (current != null) {
-					l1.addAll(current);
-				}
+				module.collectSpecificInterests(itemidCollection);
 			}
 		}
-		return l1;
 	}
 
 	@Override

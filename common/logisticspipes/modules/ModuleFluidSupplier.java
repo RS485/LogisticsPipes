@@ -92,11 +92,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		return null;
-	}
-
-	@Override
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}

@@ -165,11 +165,6 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		return null;
-	}
-
-	@Override
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}

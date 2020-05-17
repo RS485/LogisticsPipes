@@ -3,11 +3,10 @@ package logisticspipes.modules;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.DelayQueue;
 import java.util.stream.Collectors;
@@ -347,23 +346,21 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	@Override
-	public Set<ItemIdentifier> getSpecificInterests() {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		List<ItemIdentifierStack> result = getCraftedItems();
 		if (result == null) {
-			return null;
+			return;
 		}
-		Set<ItemIdentifier> l1 = result.stream()
-				.map(ItemIdentifierStack::getItem)
-				.collect(Collectors.toCollection(TreeSet::new));
+
+		result.stream().map(ItemIdentifierStack::getItem).forEach(itemidCollection::add);
 		/*
 		for(int i=0; i<9;i++) {
 			ItemIdentifierStack stack = getMaterials(i);
 			if(stack != null) {
-				l1.add(stack.getItem()); // needed to be interested in things for a chassi to report reliableDelivery failure.
+				itemidCollection.add(stack.getItem()); // needed to be interested in things for a chassi to report reliableDelivery failure.
 			}
 		}
 		 */
-		return l1;
 	}
 
 	@Override

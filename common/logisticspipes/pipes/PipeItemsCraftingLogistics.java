@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -230,8 +230,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public Set<ItemIdentifier> getSpecificInterests() {
-		return craftingModule.getSpecificInterests();
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+		craftingModule.collectSpecificInterests(itemidCollection);
 	}
 
 	@Override

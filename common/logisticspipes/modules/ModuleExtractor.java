@@ -250,11 +250,6 @@ public class ModuleExtractor extends LogisticsSneakyDirectionModule implements I
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		return null;
-	}
-
-	@Override
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}

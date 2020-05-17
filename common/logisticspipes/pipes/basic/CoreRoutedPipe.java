@@ -10,6 +10,7 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,8 +19,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.function.BiFunction;
@@ -473,9 +474,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 		System.out.println("***");
 		System.out.println("---------Interests---------------");
-		for (Entry<ItemIdentifier, Set<IRouter>> i : ServerRouter.getInterestedInSpecifics().entrySet()) {
-			System.out.print(i.getKey().getFriendlyName() + ":");
-			for (IRouter j : i.getValue()) {
+		for (Entry<ItemIdentifier, TreeSet<ServerRouter>> entry : ServerRouter.getInterestedInSpecifics().entrySet()) {
+			System.out.print(entry.getKey().getFriendlyName() + ":");
+			for (IRouter j : entry.getValue()) {
 				System.out.print(j.getSimpleID() + ",");
 			}
 			System.out.println();
@@ -1176,9 +1177,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return getRouter().getSimpleID();
 	}
 
-	public Set<ItemIdentifier> getSpecificInterests() {
-		return null;
-	}
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {}
 
 	public boolean hasGenericInterests() {
 		return false;

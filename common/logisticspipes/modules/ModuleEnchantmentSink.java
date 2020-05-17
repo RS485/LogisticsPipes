@@ -1,7 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.Collection;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -84,15 +82,6 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	 */
 	public boolean hasGenericInterests() {
 		return true;
-	}
-
-	@Override
-	/*
-	 * Null return as checking all items
-	 * @see logisticspipes.modules.LogisticsModule#getSpecificInterests()
-	 */
-	public Collection<ItemIdentifier> getSpecificInterests() {
-		return null;
 	}
 
 	@Override

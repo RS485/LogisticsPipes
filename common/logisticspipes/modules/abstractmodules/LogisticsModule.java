@@ -3,6 +3,7 @@ package logisticspipes.modules.abstractmodules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import lombok.Getter;
@@ -113,19 +114,16 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * Is this module interested in all items, or just some specific ones?
 	 *
 	 * @return true: this module will be checked against every item request
-	 * false: only requests involving items returned by
-	 * getSpecificInterestes() will be checked
+	 * false: only requests involving items collected by {@link #collectSpecificInterests(Collection)} will be checked
 	 */
 	public abstract boolean hasGenericInterests();
 
 	/**
-	 * the list of items which this module is capable of providing or supplying
-	 * (or is otherwise interested in) the size of the list here does not
-	 * influence the ongoing computational cost.
-	 *
-	 * @return
+	 * Collects the items which this module is capable of providing or supplying
+	 * (or is otherwise interested in)
+	 * @param itemidCollection the collection to add the interests to
 	 */
-	public abstract Collection<ItemIdentifier> getSpecificInterests();
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {}
 
 	public abstract boolean interestedInAttachedInventory();
 

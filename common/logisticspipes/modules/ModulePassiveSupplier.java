@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -156,11 +156,8 @@ public class ModulePassiveSupplier extends LogisticsSimpleFilterModule implement
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li = new ArrayList<>(mapIC.size());
-		li.addAll(mapIC.keySet());
-		return li;
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+		itemidCollection.addAll(_filterInventory.getItemsAndCount().keySet());
 	}
 
 	@Override

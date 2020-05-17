@@ -78,9 +78,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected static int[] _lastLSAVersion = new int[0];
 	protected static LSA[] SharedLSADatabase = new LSA[0];
 	// things with specific interests -- providers (including crafters)
-	static HashMap<ItemIdentifier, Set<IRouter>> _globalSpecificInterests = new HashMap<>();
+	static HashMap<ItemIdentifier, TreeSet<ServerRouter>> _globalSpecificInterests = new HashMap<>();
 	// things potentially interested in every item (chassi with generic sinks)
-	static Set<IRouter> _genericInterests = new TreeSet<>();
+	static TreeSet<ServerRouter> _genericInterests = new TreeSet<>();
 	static int iterated = 0;// used pseudp-random to spread items over the tick range
 	private static int maxLSAUpdateIndex = 0;
 	private static int firstFreeId = 1;
@@ -114,7 +114,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected int _LSAVersion = 0;
 	// things this pipe is interested in (either providing or sinking)
 	Set<ItemIdentifier> _hasInterestIn = new TreeSet<>();
-	boolean _hasGenericInterest;
 	int ticksUntillNextInventoryCheck = 0;
 	private EnumSet<EnumFacing> _routedExits = EnumSet.noneOf(EnumFacing.class);
 	private EnumMap<EnumFacing, Integer> _subPowerExits = new EnumMap<>(EnumFacing.class);
@@ -229,7 +228,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (item == null) {
 			return s;
 		}
-		Set<IRouter> specifics = ServerRouter._globalSpecificInterests.get(item);
+		TreeSet<ServerRouter> specifics = ServerRouter._globalSpecificInterests.get(item);
 		if (specifics != null) {
 			for (IRouter r : specifics) {
 				s.set(r.getSimpleID());
@@ -292,11 +291,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return new BitSet(ServerRouter.getBiggestSimpleID() + 1);
 	}
 
-	public static Map<ItemIdentifier, Set<IRouter>> getInterestedInSpecifics() {
+	public static Map<ItemIdentifier, TreeSet<ServerRouter>> getInterestedInSpecifics() {
 		return ServerRouter._globalSpecificInterests;
 	}
 
-	public static Set<IRouter> getInterestedInGeneral() {
+	public static TreeSet<ServerRouter> getInterestedInGeneral() {
 		return ServerRouter._genericInterests;
 	}
 
@@ -1207,42 +1206,32 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		} else {
 			removeGenericInterest();
 		}
-		Set<ItemIdentifier> newInterests = pipe.getSpecificInterests();
-		if (newInterests == null) {
-			newInterests = new TreeSet<>();
+		TreeSet<ItemIdentifier> newInterests = new TreeSet<>();
+		pipe.collectSpecificInterests(newInterests);
+		if (newInterests.size() == _hasInterestIn.size() && newInterests.containsAll(_hasInterestIn)) {
+			// interests are up-to-date
+			return;
 		}
-		if (!newInterests.equals(_hasInterestIn)) {
-			for (ItemIdentifier i : _hasInterestIn) {
-				if (!newInterests.contains(i)) {
-					removeInterest(i);
-				}
-			}
-			newInterests.stream().filter(i -> !_hasInterestIn.contains(i)).forEach(this::addInterest);
-			_hasInterestIn = newInterests;
-		}
+
+		_hasInterestIn.stream().filter(itemid -> !newInterests.contains(itemid)).forEach(this::removeInterest);
+		newInterests.stream().filter(itemid -> !_hasInterestIn.contains(itemid)).forEach(this::addInterest);
+		_hasInterestIn = newInterests;
 	}
 
 	private void removeGenericInterest() {
-		_hasGenericInterest = false;
 		ServerRouter._genericInterests.remove(this);
 	}
 
 	private void declareGenericInterest() {
-		_hasGenericInterest = true;
 		ServerRouter._genericInterests.add(this);
 	}
 
-	private void addInterest(ItemIdentifier items) {
-		Set<IRouter> interests = ServerRouter._globalSpecificInterests.get(items);
-		if (interests == null) {
-			interests = new TreeSet<>();
-			ServerRouter._globalSpecificInterests.put(items, interests);
-		}
-		interests.add(this);
+	private void addInterest(ItemIdentifier itemid) {
+		ServerRouter._globalSpecificInterests.computeIfAbsent(itemid, _itemid -> new TreeSet<>()).add(this);
 	}
 
 	private void removeInterest(ItemIdentifier p2) {
-		Set<IRouter> interests = ServerRouter._globalSpecificInterests.get(p2);
+		TreeSet<ServerRouter> interests = ServerRouter._globalSpecificInterests.get(p2);
 		if (interests == null) {
 			return;
 		}
@@ -1250,15 +1239,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (interests.isEmpty()) {
 			ServerRouter._globalSpecificInterests.remove(p2);
 		}
-
-	}
-
-	public boolean hasGenericInterest() {
-		return _hasGenericInterest;
-	}
-
-	public boolean hasInterestIn(ItemIdentifier item) {
-		return _hasInterestIn.contains(item);
 	}
 
 	@Override

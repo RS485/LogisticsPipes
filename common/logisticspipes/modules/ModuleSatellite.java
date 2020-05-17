@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.util.Collection;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -90,8 +91,9 @@ public class ModuleSatellite extends LogisticsModule {
 	}
 
 	@Override
-	public Collection<ItemIdentifier> getSpecificInterests() {
-		return pipe.getSpecificInterests();
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+		// always a satellite pipe
+		pipe.collectSpecificInterests(itemidCollection);
 	}
 
 	@Override

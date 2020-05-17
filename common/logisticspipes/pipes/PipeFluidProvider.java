@@ -1,13 +1,12 @@
 package logisticspipes.pipes;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -250,8 +249,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 
 	@Override
 	//work in progress, currently not active code.
-	public Set<ItemIdentifier> getSpecificInterests() {
-		Set<ItemIdentifier> l1 = new TreeSet<>();
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : getAdjacentTanksAdvanced(false)) {
 			ITankUtil util = pair.getValue1();
 			boolean fallback = true;
@@ -259,10 +257,9 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				fallback = false;
 				ISpecialTankAccessHandler handler = ((ISpecialTankUtil) util).getSpecialHandler();
 				TileEntity tile = ((ISpecialTankUtil) util).getTileEntity();
-				Map<FluidIdentifier, Long> map = handler.getAvailableLiquid(tile);
-				l1.addAll(map.keySet().stream()
+				handler.getAvailableLiquid(tile).keySet().stream()
 						.map(FluidIdentifier::getItemIdentifier)
-						.collect(Collectors.toList()));
+						.forEach(itemidCollection::add);
 			}
 			if (fallback) {
 				if (util.containsTanks()) {
@@ -271,7 +268,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							if (util.canDrain(liquid.getFluid())) {
 								if (util.drain(1, false) != null) {
 									FluidIdentifier ident = liquid.getFluid();
-									l1.add(ident.getItemIdentifier());
+									itemidCollection.add(ident.getItemIdentifier());
 								}
 							}
 						}
@@ -279,7 +276,6 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				}
 			}
 		}
-		return l1;
 	}
 
 	@Override

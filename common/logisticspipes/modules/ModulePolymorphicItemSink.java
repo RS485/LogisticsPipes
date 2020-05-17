@@ -1,7 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IInventoryUtil;
@@ -76,13 +74,6 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	@Override
 	public boolean hasGenericInterests() {
 		return false;
-	}
-
-	//TODO: SINK UNDAMAGED MATCH CORRECTLY!
-
-	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		return null;
 	}
 
 	@Override

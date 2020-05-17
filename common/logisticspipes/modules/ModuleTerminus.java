@@ -3,8 +3,8 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -147,12 +147,10 @@ public class ModuleTerminus extends LogisticsSimpleFilterModule implements IClie
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li = new ArrayList<>(mapIC.size());
-		li.addAll(mapIC.keySet());
-		li.addAll(mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).collect(Collectors.toList()));
-		return li;
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+		Set<ItemIdentifier> filterItemids = _filterInventory.getItemsAndCount().keySet();
+		itemidCollection.addAll(filterItemids);
+		filterItemids.stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
 	}
 
 	@Override

@@ -215,11 +215,6 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		return null;
-	}
-
-	@Override
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}

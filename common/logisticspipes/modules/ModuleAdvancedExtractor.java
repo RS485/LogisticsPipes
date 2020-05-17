@@ -86,39 +86,14 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements Simpl
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
-		if (nbttagcompound.hasKey("sneakydirection")) {
-			int sneak = nbttagcompound.getInteger("sneakydirection");
-			if (sneak == 6) {
-				_sneakyDirection = null;
-			} else {
-				_sneakyDirection = EnumFacing.values()[sneak];
-			}
-		} else if (nbttagcompound.hasKey("sneakyorientation")) {
-			//convert sneakyorientation to sneakydirection
-			int t = nbttagcompound.getInteger("sneakyorientation");
-			switch (t) {
-				default:
-				case 0:
-					_sneakyDirection = null;
-					break;
-				case 1:
-					_sneakyDirection = EnumFacing.UP;
-					break;
-				case 2:
-					_sneakyDirection = EnumFacing.SOUTH;
-					break;
-				case 3:
-					_sneakyDirection = EnumFacing.DOWN;
-					break;
-			}
-		}
+		_sneakyDirection = SneakyDirection.readSneakyDirection(nbttagcompound);
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("itemsIncluded", areItemsIncluded());
-		nbttagcompound.setInteger("sneakydirection", _sneakyDirection == null ? 6 : _sneakyDirection.ordinal());
+		SneakyDirection.writeSneakyDirection(_sneakyDirection, nbttagcompound);
 	}
 
 	@Override

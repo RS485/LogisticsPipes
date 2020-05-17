@@ -93,28 +93,7 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 		isActive = nbttagcompound.getBoolean("isActive");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
-		if (nbttagcompound.hasKey("sneakydirection")) {
-			_sneakyDirection = EnumFacing.values()[nbttagcompound.getInteger("sneakydirection")];
-		} else if (nbttagcompound.hasKey("sneakyorientation")) {
-			//convert sneakyorientation to sneakydirection
-			int t = nbttagcompound.getInteger("sneakyorientation");
-			switch (t) {
-				default:
-				case 0:
-					_sneakyDirection = null;
-					break;
-				case 1:
-					_sneakyDirection = EnumFacing.UP;
-					break;
-				case 2:
-					_sneakyDirection = EnumFacing.SOUTH;
-					break;
-				case 3:
-					_sneakyDirection = EnumFacing.DOWN;
-					break;
-			}
-		}
-
+		_sneakyDirection = SneakyDirection.readSneakyDirection(nbttagcompound);
 	}
 
 	@Override
@@ -123,9 +102,7 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 		nbttagcompound.setBoolean("isActive", isActive);
 		nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
 		nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
-		if (_sneakyDirection != null) {
-			nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
-		}
+		SneakyDirection.writeSneakyDirection(_sneakyDirection, nbttagcompound);
 	}
 
 	@Override

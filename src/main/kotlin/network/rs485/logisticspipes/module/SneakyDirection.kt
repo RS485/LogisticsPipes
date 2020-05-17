@@ -37,8 +37,27 @@
 
 package network.rs485.logisticspipes.module
 
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
+
+const val SNEAKY_DIRECTION_NBT: String = "sneakydirection"
 
 interface SneakyDirection {
     var sneakyDirection: EnumFacing?
+
+    companion object {
+        @JvmStatic
+        fun readSneakyDirection(nbt: NBTTagCompound): EnumFacing? {
+            return if (nbt.hasKey(SNEAKY_DIRECTION_NBT)) {
+                EnumFacing.values()[nbt.getInteger(SNEAKY_DIRECTION_NBT)]
+            } else {
+                null
+            }
+        }
+
+        @JvmStatic
+        fun writeSneakyDirection(direction: EnumFacing?, nbt: NBTTagCompound) {
+            direction?.let { nbt.setInteger(SNEAKY_DIRECTION_NBT, it.ordinal) }
+        }
+    }
 }

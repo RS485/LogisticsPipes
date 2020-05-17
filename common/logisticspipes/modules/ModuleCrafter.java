@@ -827,14 +827,14 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	@Override
-	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(CraftingModuleSlot.class).setAdvancedSat(getUpgradeManager().isAdvancedSatelliteCrafter()).setLiquidCrafter(getUpgradeManager().getFluidCrafter()).setAmount(amount).setHasByproductExtractor(getUpgradeManager().hasByproductExtractor()).setFuzzy(
 				getUpgradeManager().isFuzzyUpgrade())
 				.setCleanupSize(getUpgradeManager().getCrafterCleanup()).setCleanupExclude(cleanupModeIsExclude);
 	}
 
 	@Override
-	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(CraftingModuleInHand.class).setAmount(amount).setCleanupExclude(cleanupModeIsExclude);
 	}
 

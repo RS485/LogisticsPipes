@@ -37,17 +37,7 @@ public class AdvancedExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		ModuleAdvancedExtractor module = this.getLogisticsModule(player.getEntityWorld(), ModuleAdvancedExtractor.class);
-		if (module == null) {
-			return null;
-		}
-		DummyContainer dummy = new DummyContainer(player.inventory, module.getFilterInventory());
-		dummy.addNormalSlotsForPlayerInventory(8, 60);
-		//Pipe slots
-		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-		}
-		return dummy;
+		return SimpleFilterInventorySlot.getContainerFromFilterModule(this, player);
 	}
 
 	@Override

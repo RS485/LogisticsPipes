@@ -531,7 +531,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		final boolean hasPatternUpgrade = hasPatternUpgrade();
 		return NewGuiHandler.getGui(ActiveSupplierSlot.class)
 				.setPatternUpgarde(hasPatternUpgrade)
@@ -541,7 +541,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	}
 
 	@Override
-	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ActiveSupplierInHand.class);
 	}
 

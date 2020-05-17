@@ -180,12 +180,12 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}
 
 	@Override
-	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return null;
 	}
 }

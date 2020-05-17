@@ -79,14 +79,14 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
 		return NewGuiHandler.getGui(OreDictItemSinkModuleSlot.class).setNbt(nbt);
 	}
 
 	@Override
-	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(OreDictItemSinkModuleInHand.class);
 	}
 

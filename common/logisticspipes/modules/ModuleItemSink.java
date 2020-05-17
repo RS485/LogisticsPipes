@@ -45,9 +45,10 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.module.SimpleFilter;
 
 @CCType(name = "ItemSink Module")
-public class ModuleItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
+public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 1);
 	private boolean _isDefaultRoute;
@@ -63,7 +64,9 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		_filterInventory.addListener(this);
 	}
 
+	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
+	@Nonnull
 	public ItemIdentifierInventory getFilterInventory() {
 		return _filterInventory;
 	}

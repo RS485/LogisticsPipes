@@ -330,12 +330,12 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	}
 
 	@Override
-	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(CCBasedQuickSortSlot.class).setTimeOut(timeout);
 	}
 
 	@Override
-	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(CCBasedQuickSortInHand.class);
 	}
 }

@@ -5,9 +5,9 @@ import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 
 public abstract class LogisticsGuiModule extends LogisticsModule {
 
-	protected abstract ModuleCoordinatesGuiProvider getPipeGuiProvider();
+	public abstract ModuleCoordinatesGuiProvider getPipeGuiProvider();
 
-	protected abstract ModuleInHandGuiProvider getInHandGuiProvider();
+	public abstract ModuleInHandGuiProvider getInHandGuiProvider();
 
 	public final ModuleCoordinatesGuiProvider getPipeGuiProviderForModule() {
 		return getPipeGuiProvider().setSlot(slot).setPositionInt(positionInt);

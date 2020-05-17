@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -45,27 +46,28 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.module.SneakyDirection;
 
 @CCType(name = "Advanced Extractor Module")
-public class ModuleAdvancedExtractor extends LogisticsGuiModule implements SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
-
-	protected int currentTick = 0;
+public class ModuleAdvancedExtractor extends LogisticsGuiModule implements SimpleFilter, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Item list", 1);
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	protected int currentTick = 0;
 	private boolean _itemsIncluded = true;
 
 	private EnumFacing _sneakyDirection = null;
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 
-	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-
 	public ModuleAdvancedExtractor() {
 		_filterInventory.addListener(this);
 	}
 
+	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
+	@Nonnull
 	public ItemIdentifierInventory getFilterInventory() {
 		return _filterInventory;
 	}
@@ -117,16 +119,6 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements Sneak
 		_filterInventory.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("itemsIncluded", areItemsIncluded());
 		nbttagcompound.setInteger("sneakydirection", _sneakyDirection == null ? 6 : _sneakyDirection.ordinal());
-	}
-
-	@Override
-	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(AdvancedExtractorModuleSlot.class).setAreItemsIncluded(_itemsIncluded);
-	}
-
-	@Override
-	protected ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(AdvancedExtractorModuleInHand.class);
 	}
 
 	@Override
@@ -329,4 +321,13 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements Sneak
 		return false;
 	}
 
+	@Override
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(AdvancedExtractorModuleSlot.class).setAreItemsIncluded(_itemsIncluded);
+	}
+
+	@Override
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(AdvancedExtractorModuleInHand.class);
+	}
 }

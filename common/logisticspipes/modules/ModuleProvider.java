@@ -142,14 +142,14 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 	}
 
 	@Override
-	protected ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class).setExtractorMode(getExtractionMode().ordinal()).setExclude(isExcludeFilter);
 		//.setIsActive(isActive)
 		//.setSneakyDirection(_sneakyDirection);
 	}
 
 	@Override
-	protected ModuleInHandGuiProvider getInHandGuiProvider() {
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ProviderModuleInHand.class);
 	}
 

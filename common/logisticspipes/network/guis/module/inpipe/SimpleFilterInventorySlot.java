@@ -1,8 +1,8 @@
 package logisticspipes.network.guis.module.inpipe;
 
-import net.minecraft.entity.player.EntityPlayer;
+import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.gui.modules.GuiSimpleFilter;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;

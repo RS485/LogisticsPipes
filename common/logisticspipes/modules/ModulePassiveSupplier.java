@@ -18,12 +18,9 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
-import logisticspipes.network.guis.module.inhand.SimpleFilterInventoryInHand;
-import logisticspipes.network.guis.module.inpipe.SimpleFilterInventorySlot;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
@@ -184,11 +181,11 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements SimpleF
 
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(SimpleFilterInventorySlot.class);
+		return SimpleFilter.getPipeGuiProvider();
 	}
 
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(SimpleFilterInventoryInHand.class);
+		return SimpleFilter.getInHandGuiProvider();
 	}
 }

@@ -47,11 +47,15 @@ import net.minecraft.inventory.IInventory
 interface SimpleFilter {
     fun getFilterInventory(): IInventory
 
-    fun getPipeGuiProvider(): ModuleCoordinatesGuiProvider? {
-        return NewGuiHandler.getGui(SimpleFilterInventorySlot::class.java)
-    }
+    companion object {
+        @JvmStatic
+        fun getPipeGuiProvider(): ModuleCoordinatesGuiProvider? {
+            return NewGuiHandler.getGui(SimpleFilterInventorySlot::class.java)
+        }
 
-    fun getInHandGuiProvider(): ModuleInHandGuiProvider? {
-        return NewGuiHandler.getGui(SimpleFilterInventoryInHand::class.java)
+        @JvmStatic
+        fun getInHandGuiProvider(): ModuleInHandGuiProvider? {
+            return NewGuiHandler.getGui(SimpleFilterInventoryInHand::class.java)
+        }
     }
 }

@@ -107,10 +107,12 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		boolean needUpdate = false;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
-			if (item != null) {
+			if (item.isEmpty()) {
+				if (upgrades[i] != null) {
+					needUpdate |= removeUpgrade(i, upgrades);
+				}
+			} else {
 				needUpdate |= updateModule(i, upgrades, inv);
-			} else if (item == null && upgrades[i] != null) {
-				needUpdate |= removeUpgrade(i, upgrades);
 			}
 		}
 		//update sneaky direction, speed upgrade count and disconnection

@@ -23,6 +23,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.pipe.ChassiGuiProvider;
 import logisticspipes.network.packets.chassis.ChassisGUI;
+import logisticspipes.network.packets.gui.GuiClosePacket;
 import logisticspipes.network.packets.gui.OpenUpgradePacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
@@ -107,6 +108,12 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				upgradeConfig[i * 2 + 1].visible = _chassiPipe.getModuleUpgradeManager(i).hasGuiUpgrade(1);
 			}
 		}
+	}
+
+	@Override
+	public void onGuiClosed() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(_chassiPipe.container));
+		super.onGuiClosed();
 	}
 
 	@Override

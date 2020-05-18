@@ -100,14 +100,6 @@ public class ChassiModule extends LogisticsGuiModule {
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {
-		if (slot < 0 || slot >= modules.length) {
-			return null;
-		}
-		return modules[slot];
-	}
-
-	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < modules.length; i++) {
 			if (modules[i] != null) {

@@ -3,12 +3,14 @@ package logisticspipes.network.packets.module;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.modules.ModuleAdvancedExtractor;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.network.guis.module.inhand.SneakyModuleInHandGuiProvider;
 import logisticspipes.network.guis.module.inpipe.SneakyModuleInSlotGuiProvider;
+import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.StaticResolve;
@@ -38,21 +40,18 @@ public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {
 			}
 			return;
 		}
-		final LogisticsTileGenericPipe pipe = this.getPipe(player.world);
-		if (pipe == null) {
-			return;
-		}
-		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
-			return;
-		}
-		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
-		if (piperouted.getLogisticsModule() == null) {
-			return;
-		}
-		if (piperouted.getLogisticsModule().getSubModule(getPositionInt()) instanceof ModuleAdvancedExtractor) {
-			final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule().getSubModule(getPositionInt());
-			NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class).setSneakyOrientation(module.getSneakyDirection()).setSlot(getType()).setPositionInt(getPositionInt()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
-			return;
+
+		PipeLogisticsChassi pipe = getTileOrPipe(player.world, PipeLogisticsChassi.class);
+		LogisticsModule subModule = pipe.getSubModule(getPositionInt());
+		if (subModule instanceof ModuleAdvancedExtractor) {
+			NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class)
+					.setSneakyOrientation(((ModuleAdvancedExtractor) subModule).getSneakyDirection())
+					.setSlot(getType())
+					.setPositionInt(getPositionInt())
+					.setPosX(getPosX())
+					.setPosY(getPosY())
+					.setPosZ(getPosZ())
+					.open(player);
 		}
 	}
 }

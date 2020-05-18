@@ -64,7 +64,7 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 				}
 				return null;
 			}
-			module = ((PipeLogisticsChassi) pipe.pipe).getLogisticsModule().getSubModule(positionInt);
+			module = ((PipeLogisticsChassi) pipe.pipe).getSubModule(positionInt);
 		}
 		if (module != null) {
 			if (!(clazz.isAssignableFrom(module.getClass()))) {

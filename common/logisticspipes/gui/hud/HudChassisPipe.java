@@ -22,7 +22,6 @@ import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 public class HudChassisPipe extends BasicHUDGui {
 
 	private final PipeLogisticsChassi pipe;
-	private final ChassiModule module;
 	private final ItemIdentifierInventory moduleInventory;
 
 	private int selected = -1;
@@ -31,9 +30,8 @@ public class HudChassisPipe extends BasicHUDGui {
 	private int xCursor;
 	private int yCursor;
 
-	public HudChassisPipe(PipeLogisticsChassi pipeLogisticsChassi, ChassiModule _module, ItemIdentifierInventory _moduleInventory) {
+	public HudChassisPipe(PipeLogisticsChassi pipeLogisticsChassi, ItemIdentifierInventory _moduleInventory) {
 		pipe = pipeLogisticsChassi;
-		module = _module;
 		moduleInventory = _moduleInventory;
 		for (int i = 0; i < pipe.getChassiSize(); i++) {
 			addButton(new ItemButton(moduleInventory, i, -45, -35 + ((i % 3) * 27), 20, 25));
@@ -108,7 +106,7 @@ public class HudChassisPipe extends BasicHUDGui {
 		GL11.glTranslatef(0.0F, 0.0F, (float) (-0.00005F * distance));
 		super.renderHeadUpDisplay(distance, day, shifted, mc, config);
 		if (selected != -1) {
-			LogisticsModule selectedmodule = module.getSubModule(selected);
+			LogisticsModule selectedmodule = pipe.getSubModule(selected);
 			if (selectedmodule == null) {
 				return;
 			}
@@ -187,7 +185,7 @@ public class HudChassisPipe extends BasicHUDGui {
 	private void moduleClicked(int number) {
 		selected = number;
 		if (selected != -1) {
-			LogisticsModule selectedmodule = module.getSubModule(selected);
+			LogisticsModule selectedmodule = pipe.getSubModule(selected);
 			if (selectedmodule instanceof IHUDModuleHandler) {
 				((IHUDModuleHandler) selectedmodule).startHUDWatching();
 			}
@@ -196,7 +194,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 	private void resetSelection() {
 		if (selected != -1) {
-			LogisticsModule selectedmodule = module.getSubModule(selected);
+			LogisticsModule selectedmodule = pipe.getSubModule(selected);
 			if (selectedmodule instanceof IHUDModuleHandler) {
 				((IHUDModuleHandler) selectedmodule).stopHUDWatching();
 			}

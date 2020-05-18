@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -46,12 +47,12 @@ public class ChassisGUI extends CoordinatesPacket {
 
 		final PipeLogisticsChassi chassisPipe = (PipeLogisticsChassi) pipe.pipe;
 
-		if (!(chassisPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof LogisticsGuiModule)) {
+		LogisticsModule subModule = chassisPipe.getSubModule(getButtonID());
+		if (!(subModule instanceof LogisticsGuiModule)) {
 			return;
 		}
 
-		((LogisticsGuiModule) chassisPipe.getLogisticsModule().getSubModule(getButtonID())).getPipeGuiProviderForModule().setPosX(getPosX()).setPosY(getPosY())
-				.setPosZ(getPosZ()).open(player);
+		((LogisticsGuiModule) subModule).getPipeGuiProviderForModule().setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 	}
 
 	@Override

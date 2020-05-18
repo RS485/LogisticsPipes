@@ -105,7 +105,7 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 			if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
 				throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", pipe wasn't a chassi pipe", this);
 			}
-			module = ((PipeLogisticsChassi) pipe.pipe).getLogisticsModule().getSubModule(positionInt);
+			module = ((PipeLogisticsChassi) pipe.pipe).getSubModule(positionInt);
 		}
 		if (module != null) {
 			if (!(clazz.isAssignableFrom(module.getClass()))) {

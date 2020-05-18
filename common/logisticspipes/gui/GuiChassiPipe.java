@@ -9,6 +9,7 @@ package logisticspipes.gui;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -95,10 +96,11 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				continue;
 			}
 			ItemStack module = _moduleInventory.getStackInSlot(i);
-			if (module.isEmpty() || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
+			LogisticsModule subModule = _chassiPipe.getSubModule(i);
+			if (module.isEmpty() || subModule == null) {
 				moduleConfigButtons.get(i).visible = false;
 			} else {
-				moduleConfigButtons.get(i).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
+				moduleConfigButtons.get(i).visible = subModule.hasGui();
 			}
 
 			if (hasUpgradeModuleUpgarde) {
@@ -120,7 +122,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) {
 
 		if (guibutton.id >= 0 && guibutton.id <= _chassiPipe.getChassiSize()) {
-			LogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
+			LogisticsModule module = _chassiPipe.getSubModule(guibutton.id);
 			if (module != null) {
 				final ModernPacket packet = PacketHandler.getPacket(ChassisGUI.class).setButtonID(guibutton.id).setPosX(_chassiPipe.getX()).setPosY(_chassiPipe.getY()).setPosZ(_chassiPipe.getZ());
 				MainProxy.sendPacketToServer(packet);
@@ -138,10 +140,11 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			ItemStack module = _moduleInventory.getStackInSlot(i);
-			if (module.isEmpty() || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
+			LogisticsModule subModule = _chassiPipe.getSubModule(i);
+			if (module.isEmpty() || subModule == null) {
 				moduleConfigButtons.get(i).visible = false;
 			} else {
-				moduleConfigButtons.get(i).visible = _chassiPipe.getLogisticsModule().getSubModule(i).hasGui();
+				moduleConfigButtons.get(i).visible = subModule.hasGui();
 			}
 		}
 		if (hasUpgradeModuleUpgarde) {

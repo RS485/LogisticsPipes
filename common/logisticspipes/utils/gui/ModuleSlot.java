@@ -28,7 +28,7 @@ public class ModuleSlot extends RestrictedSlot {
 	@Nonnull
 	@Override
 	public ItemStack onTake(EntityPlayer pl, @Nonnull ItemStack itemStack) {
-		ItemModuleInformationManager.saveInformation(itemStack, _pipe.getLogisticsModule().getSubModule(_moduleIndex));
+		ItemModuleInformationManager.saveInformation(itemStack, _pipe.getSubModule(_moduleIndex));
 		return super.onTake(pl, itemStack);
 	}
 }

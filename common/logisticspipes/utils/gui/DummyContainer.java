@@ -532,12 +532,12 @@ public class DummyContainer extends Container {
 
 	private void handleSwitch(Slot slot2, ItemStack out, ItemStack in, EntityPlayer player) {
 		if (slot2 instanceof ModuleSlot) {
-			ChassiModule logisticsModule = (ChassiModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
+			ChassiModule chassis = (ChassiModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
 			int moduleIndex = ((ModuleSlot) slot2).get_moduleIndex();
 			if (out.getItem() instanceof ItemModule) {
-				ItemModuleInformationManager.saveInformation(out, logisticsModule.getSubModule(moduleIndex));
-				if (logisticsModule.hasModule(moduleIndex)) {
-					logisticsModule.removeModule(moduleIndex);
+				if (chassis.hasModule(moduleIndex)) {
+					ItemModuleInformationManager.saveInformation(out, chassis.getModule(moduleIndex));
+					chassis.removeModule(moduleIndex);
 				}
 			}
 		}

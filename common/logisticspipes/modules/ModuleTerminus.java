@@ -17,7 +17,6 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -87,11 +86,6 @@ public class ModuleTerminus extends LogisticsGuiModule implements SimpleFilter, 
 			}
 		}
 
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

@@ -1,7 +1,6 @@
 package logisticspipes.modules;
 
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,11 +47,6 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
 			boolean forcePassive) {
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

@@ -51,11 +51,6 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
-	}
-
-	@Override
 	public void tick() {}
 
 	@Override

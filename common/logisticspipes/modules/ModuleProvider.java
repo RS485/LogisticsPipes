@@ -31,7 +31,6 @@ import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -149,11 +148,6 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
 			boolean forcePassive) {
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

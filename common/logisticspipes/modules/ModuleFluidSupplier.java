@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.inventory.IInventory;
@@ -10,7 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -58,11 +56,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return null;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

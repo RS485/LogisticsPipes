@@ -70,11 +70,6 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
-	}
-
-	@Override
 	public void tick() {}
 
 	@Override

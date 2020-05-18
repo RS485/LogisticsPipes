@@ -20,7 +20,6 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -160,11 +159,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, 
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ItemSinkInHand.class);
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
 	}
 
 	@Override

@@ -50,7 +50,6 @@ import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -220,11 +219,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public void setPriority(int amount) {
 		priority = amount;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
 	}
 
 	public void onAllowedRemoval() {}

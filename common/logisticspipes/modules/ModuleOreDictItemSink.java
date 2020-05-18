@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +23,6 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -97,11 +95,6 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 			buildOreItemIdMap();
 		}
 		return oreHudList;
-	}
-
-	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
 	}
 
 	private void buildOreItemIdMap() {

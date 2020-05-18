@@ -72,11 +72,6 @@ public class ModuleSatellite extends LogisticsModule {
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {
-		return null;
-	}
-
-	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override

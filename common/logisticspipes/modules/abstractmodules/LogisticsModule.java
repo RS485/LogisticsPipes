@@ -103,7 +103,9 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * @param slot of the requested module
 	 * @return
 	 */
-	public abstract LogisticsModule getSubModule(int slot);
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	/**
 	 * A tick for the Module

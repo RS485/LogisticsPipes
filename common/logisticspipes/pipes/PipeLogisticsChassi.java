@@ -374,7 +374,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				}
 			}
 		}
-		if (MainProxy.isServer()) {
+		if (MainProxy.isServer(getWorld())) {
 			if (!localModeWatchers.isEmpty()) {
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 			}

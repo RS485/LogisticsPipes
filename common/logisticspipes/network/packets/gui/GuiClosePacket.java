@@ -17,7 +17,7 @@ public class GuiClosePacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		// always mark the GUI origin's chunk dirty - something may have changed in the GUI
-		getTile(player.world, TileEntity.class).markDirty();
+		getTileAs(player.world, TileEntity.class).markDirty();
 	}
 
 	@Override

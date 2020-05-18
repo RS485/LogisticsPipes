@@ -19,8 +19,8 @@ public class InvSysConGuiProvider extends CoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = getPipe(player.getEntityWorld());
-		if (pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) {
+		LogisticsTileGenericPipe pipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(pipe.pipe instanceof PipeItemsInvSysConnector)) {
 			return null;
 		}
 		return new GuiInvSysConnector(player, (PipeItemsInvSysConnector) pipe.pipe);
@@ -28,8 +28,8 @@ public class InvSysConGuiProvider extends CoordinatesGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = getPipe(player.getEntityWorld());
-		if (pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) {
+		LogisticsTileGenericPipe pipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(pipe.pipe instanceof PipeItemsInvSysConnector)) {
 			return null;
 		}
 		DummyContainer dummy = new DummyContainer(player, null, (PipeItemsInvSysConnector) pipe.pipe);

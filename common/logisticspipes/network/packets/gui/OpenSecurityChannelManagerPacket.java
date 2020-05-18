@@ -20,7 +20,7 @@ public class OpenSecurityChannelManagerPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsSecurityTileEntity securityTile = this.getTile(player.getEntityWorld(), LogisticsSecurityTileEntity.class);
+		LogisticsSecurityTileEntity securityTile = this.getTileAs(player.getEntityWorld(), LogisticsSecurityTileEntity.class);
 		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(player.getEntityWorld());
 		NewGuiHandler.getGui(SecurityChannelManagerGui.class).setChannelInformations(manager.getAllowedChannels(player)).setTilePos(securityTile).open(player);
 	}

@@ -27,7 +27,7 @@ public class RequestAmountTaskSubGui extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsStatisticsTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
+		LogisticsStatisticsTileEntity tile = this.getTileAs(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
 		CoreRoutedPipe pipe = tile.getConnectedPipe();
 		if (pipe == null) {
 			return;

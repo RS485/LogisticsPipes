@@ -42,7 +42,7 @@ public class FindMostLikelyRecipeComponents extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileEntity tile = this.getTile(player.getEntityWorld(), TileEntity.class);
+		TileEntity tile = this.getTileAs(player.getEntityWorld(), TileEntity.class);
 		CoreRoutedPipe pipe = null;
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
 			for (EnumFacing dir : EnumFacing.VALUES) {

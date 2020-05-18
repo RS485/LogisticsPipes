@@ -21,16 +21,16 @@ public class InvSysConSelectChannelPopupGUIProvider extends ChannelInformationLi
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsTileGenericPipe bPipe = getPipe(player.getEntityWorld());
-		if (bPipe != null && bPipe.pipe instanceof PipeItemsInvSysConnector) {
-
-			return new GuiSelectChannelPopup(getChannelInformations(), bPipe.getBlockPos(), sel -> {
-				if (sel != null) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConSetChannelOnPipePacket.class).setString(sel.getChannelIdentifier().toString()).setTilePos(bPipe));
-				}
-			});
+		LogisticsTileGenericPipe bPipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(bPipe.pipe instanceof PipeItemsInvSysConnector)) {
+			return null;
 		}
-		return null;
+
+		return new GuiSelectChannelPopup(getChannelInformations(), bPipe.getBlockPos(), sel -> {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConSetChannelOnPipePacket.class)
+					.setString(sel.getChannelIdentifier().toString())
+					.setTilePos(bPipe));
+		});
 	}
 
 	@Override

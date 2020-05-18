@@ -118,10 +118,10 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 	}
 
 	@Override
-	public <T> T getTile(World world, Class<T> clazz) {
+	public <T> T getTileAs(World world, Class<T> clazz) {
 		if (LogisticsPipes.isDEBUG() && !moduleBased && type != null) {
 			new Exception("ModulePacket was asked for a pipe").printStackTrace();
 		}
-		return super.getTile(world, clazz);
+		return super.getTileAs(world, clazz);
 	}
 }

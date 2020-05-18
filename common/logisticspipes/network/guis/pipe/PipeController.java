@@ -28,8 +28,8 @@ public class PipeController extends CoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = getPipe(player.getEntityWorld());
-		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
+		LogisticsTileGenericPipe pipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return null;
 		}
 		return new GuiPipeController(player, (CoreRoutedPipe) pipe.pipe);
@@ -37,8 +37,8 @@ public class PipeController extends CoordinatesGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		LogisticsTileGenericPipe tile = getPipe(player.getEntityWorld());
-		if (tile == null || !(tile.pipe instanceof CoreRoutedPipe)) {
+		LogisticsTileGenericPipe tile = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(tile.pipe instanceof CoreRoutedPipe)) {
 			return null;
 		}
 		final CoreRoutedPipe pipe = (CoreRoutedPipe) tile.pipe;

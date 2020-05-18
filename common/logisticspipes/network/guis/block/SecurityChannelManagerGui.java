@@ -17,8 +17,7 @@ public class SecurityChannelManagerGui extends ChannelInformationListCoordinates
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsSecurityTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsSecurityTileEntity.class);
-		return new GuiManageChannelPopup(getChannelInformations(), tile.getPos());
+		return new GuiManageChannelPopup(getChannelInformations(), getTileAs(player.world, LogisticsSecurityTileEntity.class).getPos());
 	}
 
 	@Override

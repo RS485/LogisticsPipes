@@ -30,7 +30,7 @@ public class CompilerTriggerTaskPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsProgramCompilerTileEntity tile = this.getTile(player.world, LogisticsProgramCompilerTileEntity.class);
+		LogisticsProgramCompilerTileEntity tile = this.getTileAs(player.world, LogisticsProgramCompilerTileEntity.class);
 		tile.triggerNewTask(getCategory(), getType());
 	}
 

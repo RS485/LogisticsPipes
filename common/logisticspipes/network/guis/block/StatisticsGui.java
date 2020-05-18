@@ -31,25 +31,17 @@ public class StatisticsGui extends CoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsStatisticsTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
-		if (tile == null) {
-			return null;
-		}
-		tile.tasks = trackingList;
-		GuiStatistics gui = new GuiStatistics(tile);
-
+		LogisticsStatisticsTileEntity statisticsTable = getTileAs(player.world, LogisticsStatisticsTileEntity.class);
+		statisticsTable.tasks = trackingList;
+		GuiStatistics gui = new GuiStatistics(statisticsTable);
 		gui.inventorySlots = new DummyContainer(player.inventory, null);
-
 		return gui;
 	}
 
 	@Override
 	public Container getContainer(EntityPlayer player) {
-		LogisticsStatisticsTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
-		if (tile == null) {
-			return null;
-		}
-
+		// ensures tile at position is a statistics table
+		getTileAs(player.world, LogisticsStatisticsTileEntity.class);
 		return new DummyContainer(player, null);
 	}
 

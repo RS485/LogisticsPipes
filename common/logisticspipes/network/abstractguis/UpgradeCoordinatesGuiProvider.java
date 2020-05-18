@@ -42,13 +42,13 @@ public abstract class UpgradeCoordinatesGuiProvider extends CoordinatesPopupGuiP
 	public <T extends Slot> T getSlot(EntityPlayer player, Class<T> clazz) {
 		if (player.openContainer instanceof DummyContainer) {
 			if (positionInt >= player.openContainer.inventorySlots.size()) {
-				targetNotFound("The requested Slot was out of range");
+				throw new TargetNotFoundException("The requested Slot was out of range", this);
 			} else {
 				Slot slot = player.openContainer.getSlot(positionInt);
 				if (slot == null) {
-					targetNotFound("The requested Slot was null");
+					throw new TargetNotFoundException("The requested Slot was null", this);
 				} else if (!clazz.isAssignableFrom(slot.getClass())) {
-					targetNotFound("Couldn't find " + clazz.getName() + ", found slot with " + slot.getClass());
+					throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", found slot with " + slot.getClass(), this);
 				} else {
 					return (T) slot;
 				}
@@ -57,7 +57,4 @@ public abstract class UpgradeCoordinatesGuiProvider extends CoordinatesPopupGuiP
 		return null;
 	}
 
-	protected void targetNotFound(String message) {
-		throw new TargetNotFoundException(message, this);
-	}
 }

@@ -25,22 +25,23 @@ public class SneakyUpgradeConfigGuiProvider extends UpgradeCoordinatesGuiProvide
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsTileGenericPipe bPipe = getPipe(player.getEntityWorld());
-		if (bPipe != null && bPipe.pipe instanceof CoreRoutedPipe) {
-			List<DoubleCoordinates> list = new WorldCoordinatesWrapper(bPipe).connectedTileEntities()
-					.filter(in -> SimpleServiceLocator.pipeInformationManager.isNotAPipe(in.getTileEntity()))
+		LogisticsTileGenericPipe bPipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(bPipe.pipe instanceof CoreRoutedPipe)) {
+			return null;
+		}
+
+		List<DoubleCoordinates> list = new WorldCoordinatesWrapper(bPipe).connectedTileEntities()
+				.filter(in -> SimpleServiceLocator.pipeInformationManager.isNotAPipe(in.getTileEntity()))
+				.map(in -> new DoubleCoordinates(in.getTileEntity()))
+				.collect(Collectors.toList());
+
+		if (list.isEmpty()) {
+			list = new WorldCoordinatesWrapper(bPipe).connectedTileEntities()
 					.map(in -> new DoubleCoordinates(in.getTileEntity()))
 					.collect(Collectors.toList());
-
-			if (list.isEmpty()) {
-				list = new WorldCoordinatesWrapper(bPipe).connectedTileEntities()
-						.map(in -> new DoubleCoordinates(in.getTileEntity()))
-						.collect(Collectors.toList());
-			}
-
-			return new SneakyConfigurationPopup(list, getSlot(player, UpgradeSlot.class));
 		}
-		return null;
+
+		return new SneakyConfigurationPopup(list, getSlot(player, UpgradeSlot.class));
 	}
 
 	@Override

@@ -40,7 +40,10 @@ public class GuiSelectChannelPopup extends GuiManageChannelPopup {
 		if (guibutton.id == 0) { // Select
 			int selected = textList.getSelected();
 			if (selected >= 0) {
-				handleResult.accept(channelList.get(selected));
+				ChannelInformation info = channelList.get(selected);
+				if (info != null) {
+					handleResult.accept(info);
+				}
 				exitGui();
 			}
 		} else {

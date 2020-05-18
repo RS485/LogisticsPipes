@@ -19,7 +19,7 @@ public class ClearCraftingGridPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileEntity table = this.getTile(player.getEntityWorld(), TileEntity.class);
+		TileEntity table = this.getTileAs(player.getEntityWorld(), TileEntity.class);
 		if (table instanceof LogisticsCraftingTableTileEntity) {
 		} else if (table instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) table).pipe instanceof PipeBlockRequestTable) {
 			((PipeBlockRequestTable) ((LogisticsTileGenericPipe) table).pipe).matrix.clearGrid();

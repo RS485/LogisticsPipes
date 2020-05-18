@@ -19,11 +19,12 @@ public class DisconnectionUpgradeConfigGuiProvider extends UpgradeCoordinatesGui
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsTileGenericPipe bPipe = getPipe(player.getEntityWorld());
-		if (bPipe != null && bPipe.pipe instanceof CoreRoutedPipe) {
-			return new DisconnectionConfigurationPopup((CoreRoutedPipe) bPipe.pipe, getSlot(player, UpgradeSlot.class));
+		LogisticsTileGenericPipe bPipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(bPipe.pipe instanceof CoreRoutedPipe)) {
+			return null;
 		}
-		return null;
+
+		return new DisconnectionConfigurationPopup((CoreRoutedPipe) bPipe.pipe, getSlot(player, UpgradeSlot.class));
 	}
 
 	@Override

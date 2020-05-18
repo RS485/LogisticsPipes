@@ -27,7 +27,7 @@ public class AddItemToTrackPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsStatisticsTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
+		LogisticsStatisticsTileEntity tile = this.getTileAs(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
 		boolean found = false;
 		for (TrackingTask task : tile.tasks) {
 			if (task.item.equals(item)) {

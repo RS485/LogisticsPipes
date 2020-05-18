@@ -29,7 +29,7 @@ public class RemoveAmoundTask extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsStatisticsTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
+		LogisticsStatisticsTileEntity tile = this.getTileAs(player.getEntityWorld(), LogisticsStatisticsTileEntity.class);
 		Iterator<TrackingTask> iter = tile.tasks.iterator();
 		while (iter.hasNext()) {
 			TrackingTask task = iter.next();

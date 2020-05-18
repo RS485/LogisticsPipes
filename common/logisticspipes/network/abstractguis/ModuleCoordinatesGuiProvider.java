@@ -43,9 +43,9 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 
 	@SuppressWarnings("unchecked")
 	public <T> T getLogisticsModule(World world, Class<T> clazz) {
-		LogisticsTileGenericPipe pipe = getPipe(world);
-		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
-			if (LogisticsPipes.isDEBUG() && (pipe == null || pipe.isInitialized())) {
+		LogisticsTileGenericPipe pipe = getTileAs(world, LogisticsTileGenericPipe.class);
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			if (LogisticsPipes.isDEBUG() && pipe.isInitialized()) {
 				LogisticsPipes.log.fatal(toString());
 				new RuntimeException("Couldn't find " + clazz.getName() + ", pipe didn't exsist").printStackTrace();
 			}

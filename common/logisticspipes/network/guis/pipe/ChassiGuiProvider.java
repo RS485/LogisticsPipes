@@ -24,8 +24,8 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = getPipe(player.getEntityWorld());
-		if (pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) {
+		LogisticsTileGenericPipe pipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
 			return null;
 		}
 		return new GuiChassiPipe(player, (PipeLogisticsChassi) pipe.pipe, isFlag());
@@ -33,8 +33,8 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = getPipe(player.getEntityWorld());
-		if (pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) {
+		LogisticsTileGenericPipe pipe = getTileAs(player.world, LogisticsTileGenericPipe.class);
+		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
 			return null;
 		}
 		final PipeLogisticsChassi _chassiPipe = (PipeLogisticsChassi) pipe.pipe;

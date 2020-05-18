@@ -27,7 +27,7 @@ public class SecurityStationCC extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsSecurityTileEntity tile = this.getTile(player.world, LogisticsSecurityTileEntity.class);
+		LogisticsSecurityTileEntity tile = this.getTileAs(player.world, LogisticsSecurityTileEntity.class);
 		if (tile instanceof LogisticsSecurityTileEntity) {
 			if (MainProxy.isClient(player.world)) {
 				tile.setClientCC(getInteger() == 1);

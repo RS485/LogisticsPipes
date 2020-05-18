@@ -18,20 +18,12 @@ public class PowerProviderGui extends CoordinatesGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsPowerProviderTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsPowerProviderTileEntity.class);
-		if (tile == null) {
-			return null;
-		}
-		return new GuiPowerProvider(player, tile);
+		return new GuiPowerProvider(player, getTileAs(player.world, LogisticsPowerProviderTileEntity.class));
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		LogisticsPowerProviderTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsPowerProviderTileEntity.class);
-		if (tile == null) {
-			return null;
-		}
-		DummyContainer dummy = new DummyContainer(player, null, tile);
+		DummyContainer dummy = new DummyContainer(player, null, getTileAs(player.world, LogisticsPowerProviderTileEntity.class));
 		dummy.addNormalSlotsForPlayerInventory(8, 80);
 		return dummy;
 	}

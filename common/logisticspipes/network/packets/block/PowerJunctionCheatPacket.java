@@ -25,7 +25,7 @@ public class PowerJunctionCheatPacket extends CoordinatesPacket {
 		if (!LogisticsPipes.isDEBUG()) {
 			return;
 		}
-		final LogisticsPowerJunctionTileEntity tile = this.getTile(player.world, LogisticsPowerJunctionTileEntity.class);
+		final LogisticsPowerJunctionTileEntity tile = this.getTileAs(player.world, LogisticsPowerJunctionTileEntity.class);
 		if (tile != null) {
 			tile.addEnergy(100000);
 		}

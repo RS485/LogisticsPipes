@@ -46,7 +46,7 @@ public class PowerProviderLevel extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsPowerProviderTileEntity tile = this.getTile(player.world, LogisticsPowerProviderTileEntity.class);
+		LogisticsPowerProviderTileEntity tile = this.getTileAs(player.world, LogisticsPowerProviderTileEntity.class);
 		if (tile != null) {
 			tile.handlePowerPacket(getDouble());
 		}

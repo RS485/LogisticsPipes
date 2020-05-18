@@ -53,7 +53,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
-		TileEntity inv = this.getTile(player.world, tile -> tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
+		TileEntity inv = this.getTileAs(player.world, tile -> tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
 		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, null);
 		Slot result = null;
 		if (player.openContainer.inventorySlots.get(inventorySlot).slotNumber == inventorySlot) {

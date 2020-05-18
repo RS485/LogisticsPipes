@@ -21,7 +21,7 @@ public class SecurityStationOpenPlayerRequest extends StringCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsSecurityTileEntity tile = this.getTile(player.world, LogisticsSecurityTileEntity.class);
+		LogisticsSecurityTileEntity tile = this.getTileAs(player.world, LogisticsSecurityTileEntity.class);
 		if (tile != null) {
 			if (getString() != null && !getString().isEmpty()) {
 				tile.handleOpenSecurityPlayer(player, getString());

@@ -19,7 +19,7 @@ public class LogicControllerPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		ILogicControllerTile tile = this.getTile(player.getEntityWorld(), ILogicControllerTile.class);
+		ILogicControllerTile tile = this.getTileAs(player.getEntityWorld(), ILogicControllerTile.class);
 		if (tile == null) {
 			return;
 		}

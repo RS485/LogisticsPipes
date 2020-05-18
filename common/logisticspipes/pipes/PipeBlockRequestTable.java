@@ -531,6 +531,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		return false;
 	}
 
+	@Nonnull
 	@Override
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {

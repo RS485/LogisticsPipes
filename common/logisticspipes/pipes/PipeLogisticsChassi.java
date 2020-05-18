@@ -404,6 +404,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		return _module;
 	}
 
+	@Nonnull
 	@Override
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {

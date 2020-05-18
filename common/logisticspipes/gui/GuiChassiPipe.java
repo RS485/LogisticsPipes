@@ -40,7 +40,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	//private final GuiScreen _previousGui;
 	private final List<SmallGuiButton> moduleConfigButtons = new LinkedList<>();
 
-	private final Slot[] upgradeslot = new Slot[2*Configs.CHASSI_SLOTS_ARRAY[4]];
+	private final Slot[] upgradeslot = new Slot[2 * Configs.CHASSIS_SLOTS_ARRAY[4]];
 	private GuiButton[] upgradeConfig;
 
 	private boolean hasUpgradeModuleUpgarde;

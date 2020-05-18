@@ -1,6 +1,7 @@
 package logisticspipes.config;
 
 import java.io.File;
+import java.util.Arrays;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -38,7 +39,7 @@ public class Configs {
 	public static boolean TOOLTIP_INFO = LogisticsPipes.isDEBUG();
 	public static boolean ENABLE_PARTICLE_FX = true;
 
-	public static int [] CHASSI_SLOTS_ARRAY = {1,2,3,4,8};
+	public static int[] CHASSIS_SLOTS_ARRAY = {1,2,3,4,8};
 
 	// GuiOrderer Popup setting
 	public static boolean DISPLAY_POPUP = true;
@@ -203,31 +204,25 @@ public class Configs {
 						"Do you fancy easter eggs?")
 						.getBoolean(false);
 
-		Configs.CHASSI_SLOTS_ARRAY = Configs.CONFIGURATION
-				.get(Configuration.CATEGORY_GENERAL, "chassiSlots",
-						Configs.CHASSI_SLOTS_ARRAY,
-						"The number of slots in a chassi pipe starting from MK1 to MK5, because there are 5 tiers there need to be 5 values(positive integers, zero is allowed) in ascending order.")
+		Configs.CHASSIS_SLOTS_ARRAY = Configs.CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL, "chassisSlots",
+						Configs.CHASSIS_SLOTS_ARRAY,
+						"The number of slots in a chassis pipe starting from MK1 to MK5. Because there are 5 tiers, there need to be 5 values (positive integers, zero is allowed).")
 						.getIntList();
 
-		if (Configs.CHASSI_SLOTS_ARRAY.length != 5) {
+		if (Configs.CHASSIS_SLOTS_ARRAY.length != 5) {
 			throw new RuntimeException(
-					"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
-							+ Configs.CHASSI_SLOTS_ARRAY.length + " values.");
+					"The config file of Logistics Pipes needs to have 5 values (positive integers, zero is allowed) in ascending order in chassisSlots. \nThe configuration contains "
+							+ Configs.CHASSIS_SLOTS_ARRAY.length + " values.");
 		}
 
-		for (int i = 0; i < Configs.CHASSI_SLOTS_ARRAY.length; i++) {
-			if (Configs.CHASSI_SLOTS_ARRAY[i] < 0)
+		for (int i = 0; i < Configs.CHASSIS_SLOTS_ARRAY.length; i++) {
+			if (Configs.CHASSIS_SLOTS_ARRAY[i] < 0)
 				throw new RuntimeException(
-						"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
-								+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i);
+						"The config file of Logistics Pipes needs to have 5 values (positive integers, zero is allowed) in ascending order in chassisSlots. \nThe configuration contains "
+								+ Configs.CHASSIS_SLOTS_ARRAY[i] + " as one of the values.");
 		}
-
-		for (int i = 0; i < Configs.CHASSI_SLOTS_ARRAY.length - 1; i++) {
-			if (Configs.CHASSI_SLOTS_ARRAY[i] > Configs.CHASSI_SLOTS_ARRAY[i + 1])
-				throw new RuntimeException(
-						"The config file of Logistics Pipes needs to have 5 values(positive integers, zero is allowed) in ascending order in chassiSlots. \nYou have given us: "
-								+ Configs.CHASSI_SLOTS_ARRAY[i] + " at index: " + i + " which is larger than " + Configs.CHASSI_SLOTS_ARRAY[i + 1] + " at index " + (i + 1));
-		}
+		Arrays.sort(Configs.CHASSIS_SLOTS_ARRAY);
 
 		Configs.CONFIGURATION.save();
 	}

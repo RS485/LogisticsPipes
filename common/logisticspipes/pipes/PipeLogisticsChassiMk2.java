@@ -19,7 +19,7 @@ public class PipeLogisticsChassiMk2 extends PipeLogisticsChassi {
 
 	@Override
 	public int getChassiSize() {
-		return Configs.CHASSI_SLOTS_ARRAY[1];
+		return Configs.CHASSIS_SLOTS_ARRAY[1];
 	}
 
 }

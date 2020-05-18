@@ -1,5 +1,7 @@
 package logisticspipes.utils.gui;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -13,8 +15,8 @@ import logisticspipes.utils.DummyWorldProvider;
 
 public class DummyModuleContainer extends DummyContainer {
 
-	private LogisticsModule module;
-	private int slot;
+	private final LogisticsModule module;
+	private final int slot;
 
 	public DummyModuleContainer(EntityPlayer player, int slot) {
 		super(player.inventory, null);
@@ -34,11 +36,12 @@ public class DummyModuleContainer extends DummyContainer {
 	}
 
 	@Override
-	protected Slot addSlotToContainer(Slot par1Slot) {
-		if (par1Slot != null && par1Slot.getSlotIndex() == slot && par1Slot.inventory == _playerInventory) {
-			return super.addSlotToContainer(new UnmodifiableSlot(par1Slot));
+	@Nonnull
+	protected Slot addSlotToContainer(@Nonnull Slot slotIn) {
+		if (slotIn.getSlotIndex() == slot && slotIn.inventory == _playerInventory) {
+			return super.addSlotToContainer(new UnmodifiableSlot(slotIn));
 		}
-		return super.addSlotToContainer(par1Slot);
+		return super.addSlotToContainer(slotIn);
 	}
 
 	@Override

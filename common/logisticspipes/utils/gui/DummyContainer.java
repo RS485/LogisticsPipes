@@ -862,8 +862,8 @@ public class DummyContainer extends Container {
 
 	@Nonnull
 	@Override
-	protected Slot addSlotToContainer(Slot p_75146_1_) {
+	protected Slot addSlotToContainer(@Nonnull Slot slotIn) {
 		this.inventoryFuzzySlotsContent.add(null);
-		return super.addSlotToContainer(p_75146_1_);
+		return super.addSlotToContainer(slotIn);
 	}
 }

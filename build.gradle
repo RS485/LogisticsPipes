@@ -19,12 +19,15 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: forgegradleVersion
         classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.3.0'
         classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "$kotlin_version"
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-serialization', version: "$kotlin_version"
     }
 }
 
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin: 'com.matthewprenger.cursegradle'
@@ -241,6 +244,8 @@ dependencies {
 
     implementation group: 'net.shadowfacts', name: 'Forgelin', version: '1.8.4'
     implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '5901b4c6f4af70e6ef2dbe194bf7e0e097bb375c', classifier: 'deobf'
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-runtime', version: '0.20.0'
+    implementation group: 'com.charleskorn.kaml', name: 'kaml', version: '0.17.0'
 
     compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.293'
     compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.3', classifier: 'deobf'

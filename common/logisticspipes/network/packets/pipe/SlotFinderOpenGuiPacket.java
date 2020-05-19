@@ -69,7 +69,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(player.world, getPosX(), getPosY(), getPosZ());
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(player.world, new BlockPos(getPosX(), getPosY(), getPosZ()));
 		Iterator<NeighborTileEntity<TileEntity>> adjacentIter = worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).iterator();
 
 		boolean found = false;

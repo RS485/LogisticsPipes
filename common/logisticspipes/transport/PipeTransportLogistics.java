@@ -643,10 +643,7 @@ public class PipeTransportLogistics {
 			if (tile instanceof ILogisticsPowerProvider || tile instanceof ISubSystemPowerProvider) {
 				EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
 				if (ori != null) {
-					if ((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && !OrientationsUtil.isSide(ori)) {
-						return false;
-					}
-					return true;
+					return !((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && ori.getAxis() == EnumFacing.Axis.Y);
 				}
 			}
 			if (SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile) || SimpleServiceLocator.factorizationProxy.isBarral(tile)

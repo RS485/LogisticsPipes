@@ -39,7 +39,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
-import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
@@ -325,7 +324,7 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 
 	private boolean useEnergy(int amount) {
 		for (int i = 0; i < 4; i++) {
-			TileEntity tile = OrientationsUtil.getTileNextToThis(this, EnumFacing.VALUES[i + 2]);
+			TileEntity tile = getWorld().getTileEntity(getPos().offset(EnumFacing.VALUES[i + 2]));
 			if (tile instanceof IRoutedPowerProvider) {
 				if (((IRoutedPowerProvider) tile).useEnergy(amount)) {
 					return true;

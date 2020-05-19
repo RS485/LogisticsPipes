@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,8 +30,6 @@ import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.PathFinder;
 import logisticspipes.utils.StaticResolve;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.IntegerCoordinates;
 
 @StaticResolve
 public class RequestRoutingLasersPacket extends CoordinatesPacket {
@@ -197,18 +196,17 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		while (iLasers.hasNext()) {
 			boolean compressed = false;
 			LaserData data = iLasers.next();
-			IntegerCoordinates next = new IntegerCoordinates(data.getPosX(), data.getPosY(), data.getPosZ());
-			CoordinateUtils.add(next, data.getDir(), data.getLength());
+			BlockPos next = new BlockPos(data.getPosX(), data.getPosY(), data.getPosZ()).offset(data.getDir(), data.getLength());
 			boolean found;
 			do {
 				found = false;
 				Iterator<LaserData> iOptions = options.iterator();
 				while (iOptions.hasNext()) {
 					LaserData d = iOptions.next();
-					if (d.getPosX() == next.getXCoord() && d.getPosY() == next.getYCoord() && d.getPosZ() == next.getZCoord()) {
+					if (d.getPosX() == next.getX() && d.getPosY() == next.getY() && d.getPosZ() == next.getZ()) {
 						if (data.getDir().equals(d.getDir()) && data.getConnectionType().equals(d.getConnectionType())) {
 							data.setLength(data.getLength() + d.getLength());
-							CoordinateUtils.add(next, data.getDir(), d.getLength());
+							next = next.offset(data.getDir(), data.getLength());
 							found = true;
 							iOptions.remove();
 							lasers.remove(d);

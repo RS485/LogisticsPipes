@@ -59,46 +59,20 @@ import network.rs485.logisticspipes.connection.NeighborTileEntity;
 @Data
 public class WorldCoordinatesWrapper {
 
-	private World world;
-	private IntegerCoordinates coords;
+	@Nonnull
+	private final World world;
+	@Nonnull
+	private final BlockPos pos;
 
-	public WorldCoordinatesWrapper(World world) {
-		setWorld(world);
-		setCoords(new IntegerCoordinates());
-	}
-
-	public WorldCoordinatesWrapper(World world, IntegerCoordinates coords) {
-		setWorld(world);
-		setCoords(coords);
-	}
-
-	public WorldCoordinatesWrapper(World world, BlockPos coords) {
-		setWorld(world);
-		setCoords(new IntegerCoordinates(coords));
-	}
-
-	public WorldCoordinatesWrapper(World world, int xCoord, int yCoord, int zCoord) {
-		setWorld(world);
-		setCoords(new IntegerCoordinates(xCoord, yCoord, zCoord));
+	public WorldCoordinatesWrapper(@Nonnull World world, @Nonnull BlockPos pos) {
+		Objects.requireNonNull(world, "World must not be null");
+		Objects.requireNonNull(pos, "Position must not be null");
+		this.world = world;
+		this.pos = pos;
 	}
 
 	public WorldCoordinatesWrapper(TileEntity tileEntity) {
 		this(tileEntity.getWorld(), tileEntity.getPos());
-	}
-
-	@Nullable
-	private static TileEntity getTileEntity(World world, IntegerCoordinates coords) {
-		return world.getTileEntity(new BlockPos(coords.getXCoord(), coords.getYCoord(), coords.getZCoord()));
-	}
-
-	public void setWorld(World world) {
-		if (world == null) throw new NullPointerException("World must not be null");
-		this.world = world;
-	}
-
-	public void setCoords(IntegerCoordinates coords) {
-		if (coords == null) throw new NullPointerException("Coordinates must not be null");
-		this.coords = coords;
 	}
 
 	public Stream<NeighborTileEntity<TileEntity>> allNeighborTileEntities() {
@@ -127,13 +101,12 @@ public class WorldCoordinatesWrapper {
 
 	@Nullable
 	public TileEntity getTileEntity() {
-		return WorldCoordinatesWrapper.getTileEntity(world, coords);
+		return world.getTileEntity(pos);
 	}
 
 	@Nullable
 	public NeighborTileEntity<TileEntity> getNeighbor(@Nonnull EnumFacing direction) {
-		IntegerCoordinates newCoords = CoordinateUtils.add(new IntegerCoordinates(coords), direction);
-		TileEntity tileEntity = WorldCoordinatesWrapper.getTileEntity(world, newCoords);
+		TileEntity tileEntity = world.getTileEntity(pos.offset(direction));
 		if (tileEntity == null) return null;
 		return new NeighborTileEntity<>(tileEntity, direction);
 	}

@@ -26,42 +26,11 @@ public final class CoordinateUtils {
 
 	private CoordinateUtils() {}
 
-	public static DoubleCoordinates add(DoubleCoordinates coords, DoubleCoordinates toAdd) {
-		coords.setXCoord(coords.getXCoord() + toAdd.getXCoord());
-		coords.setYCoord(coords.getYCoord() + toAdd.getYCoord());
-		coords.setZCoord(coords.getZCoord() + toAdd.getZCoord());
-		return coords;
-	}
-
-	public static IntegerCoordinates add(IntegerCoordinates coords, IntegerCoordinates toAdd) {
-		coords.setXCoord(coords.getXCoord() + toAdd.getXCoord());
-		coords.setYCoord(coords.getYCoord() + toAdd.getYCoord());
-		coords.setZCoord(coords.getZCoord() + toAdd.getZCoord());
-		return coords;
-	}
-
-	public static DoubleCoordinates sum(DoubleCoordinates first, DoubleCoordinates second) {
-		DoubleCoordinates ret = new DoubleCoordinates();
-		ret.setXCoord(first.getXCoord() + second.getXCoord());
-		ret.setYCoord(first.getYCoord() + second.getYCoord());
-		ret.setZCoord(first.getZCoord() + second.getZCoord());
-		return ret;
-	}
-
-	public static IntegerCoordinates sum(IntegerCoordinates first, IntegerCoordinates second) {
-		IntegerCoordinates ret = new IntegerCoordinates();
-		ret.setXCoord(first.getXCoord() + second.getXCoord());
-		ret.setYCoord(first.getYCoord() + second.getYCoord());
-		ret.setZCoord(first.getZCoord() + second.getZCoord());
-		return ret;
-	}
-
 	public static DoubleCoordinates add(DoubleCoordinates coords, EnumFacing direction) {
-		return CoordinateUtils.add(coords, direction, 1);
-	}
-
-	public static IntegerCoordinates add(IntegerCoordinates coords, EnumFacing direction) {
-		return CoordinateUtils.add(coords, direction, 1);
+		coords.setXCoord(coords.getXCoord() + direction.getDirectionVec().getX());
+		coords.setYCoord(coords.getYCoord() + direction.getDirectionVec().getY());
+		coords.setZCoord(coords.getZCoord() + direction.getDirectionVec().getZ());
+		return coords;
 	}
 
 	public static DoubleCoordinates add(DoubleCoordinates coords, EnumFacing direction, double times) {
@@ -71,55 +40,9 @@ public final class CoordinateUtils {
 		return coords;
 	}
 
-	public static IntegerCoordinates add(IntegerCoordinates coords, EnumFacing direction, int times) {
-		coords.setXCoord(coords.getXCoord() + direction.getDirectionVec().getX() * times);
-		coords.setYCoord(coords.getYCoord() + direction.getDirectionVec().getY() * times);
-		coords.setZCoord(coords.getZCoord() + direction.getDirectionVec().getZ() * times);
-		return coords;
-	}
-
 	public static DoubleCoordinates sum(DoubleCoordinates coords, EnumFacing direction) {
-		return CoordinateUtils.sum(coords, direction, 1);
-	}
-
-	public static IntegerCoordinates sum(IntegerCoordinates coords, EnumFacing direction) {
-		return CoordinateUtils.sum(coords, direction, 1);
-	}
-
-	public static DoubleCoordinates sum(DoubleCoordinates coords, EnumFacing direction, double times) {
 		DoubleCoordinates ret = new DoubleCoordinates(coords);
-		return CoordinateUtils.add(ret, direction, times);
+		return CoordinateUtils.add(ret, direction);
 	}
 
-	public static IntegerCoordinates sum(IntegerCoordinates coords, EnumFacing direction, int times) {
-		IntegerCoordinates ret = new IntegerCoordinates(coords);
-		return CoordinateUtils.add(ret, direction, times);
-	}
-
-	public static EnumFacing getDirectionFromTo(DoubleCoordinates source, DoubleCoordinates target) {
-		double xDiff = target.getXCoord() - source.getXCoord();
-		double yDiff = target.getYCoord() - source.getYCoord();
-		double zDiff = target.getZCoord() - source.getZCoord();
-		if (xDiff != 0 && yDiff == 0 && zDiff == 0) {
-			if (xDiff > 0) {
-				return EnumFacing.EAST;
-			} else {
-				return EnumFacing.WEST;
-			}
-		} else if (xDiff == 0 && yDiff != 0 && zDiff == 0) {
-			if (yDiff > 0) {
-				return EnumFacing.UP;
-			} else {
-				return EnumFacing.DOWN;
-			}
-		} else if (xDiff == 0 && yDiff == 0 && zDiff != 0) {
-			if (zDiff > 0) {
-				return EnumFacing.SOUTH;
-			} else {
-				return EnumFacing.NORTH;
-			}
-		} else {
-			return null;
-		}
-	}
 }

@@ -41,7 +41,6 @@ import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.pathfinder.IRouteProvider.RouteInfo;
 import logisticspipes.utils.OneList;
-import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 import network.rs485.logisticspipes.world.CoordinateUtils;
@@ -215,8 +214,8 @@ public class PathFinder {
 			if (tile == null) {
 				continue;
 			}
-			if (OrientationsUtil.isSide(direction)) {
-				if (root && tile instanceof ILogisticsPowerProvider) {
+			if (root && (direction.getAxis() == EnumFacing.Axis.X || direction.getAxis() == EnumFacing.Axis.Z)) {
+				if (tile instanceof ILogisticsPowerProvider) {
 					if (powerNodes == null) {
 						powerNodes = new ArrayList<>();
 					}
@@ -226,8 +225,7 @@ public class PathFinder {
 					} else {
 						powerNodes.add(new Pair<>((ILogisticsPowerProvider) tile, Collections.unmodifiableList(new ArrayList<>(0))));
 					}
-				}
-				if (root && tile instanceof ISubSystemPowerProvider) {
+				} else if (tile instanceof ISubSystemPowerProvider) {
 					if (subPowerProvider == null) {
 						subPowerProvider = new ArrayList<>();
 					}

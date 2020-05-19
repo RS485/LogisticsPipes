@@ -25,7 +25,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.Constants;
 
@@ -196,7 +195,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			}
 			return count;
 		}
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(getWorld(), _service.getX(), _service.getY(), _service.getZ());
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
 		int count = worldCoordinates
 				.connectedTileEntities(ConnectionPipeType.ITEM)
@@ -808,7 +807,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
-		if (MainProxy.isClient(getWorld())) {
+		if (MainProxy.isClient(_world.getWorld())) {
 			amount = packet.getAmount();
 			clientSideSatelliteNames.liquidSatelliteNameArray = packet.getLiquidSatelliteNameArray();
 			clientSideSatelliteNames.liquidSatelliteName = packet.getLiquidSatelliteName();
@@ -854,12 +853,12 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void importFromCraftingTable(EntityPlayer player) {
-		if (MainProxy.isClient(getWorld())) {
+		if (MainProxy.isClient(_world.getWorld())) {
 			// Send packet asking for import
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
-			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ());
+			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
 			for (NeighborTileEntity adjacent : worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).collect(Collectors.toList())) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
@@ -877,12 +876,8 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			if (player != null) {
 				MainProxy.sendPacketToPlayer(packet, player);
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
+			MainProxy.sendPacketToAllWatchingChunk(this, packet);
 		}
-	}
-
-	protected World getWorld() {
-		return _world.getWorld();
 	}
 
 	public void priorityUp(EntityPlayer player) {
@@ -932,7 +927,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void defineFluidAmount(int integer, int slot) {
-		if (MainProxy.isClient(getWorld())) {
+		if (MainProxy.isClient(_world.getWorld())) {
 			amount[slot] = integer;
 		}
 	}
@@ -942,7 +937,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	}
 
 	public void setFluidAmount(int[] amount) {
-		if (MainProxy.isClient(getWorld())) {
+		if (MainProxy.isClient(_world.getWorld())) {
 			this.amount = amount;
 		}
 	}
@@ -991,7 +986,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ());
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
 		worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).anyMatch(adjacent -> {
 			boolean found = SimpleServiceLocator.craftingRecipeProviders.stream()
@@ -1003,9 +998,9 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 			if (found) {
 				final BlockPos pos = adjacent.getTileEntity().getPos();
-				IBlockState blockState = getWorld().getBlockState(pos);
-				return !blockState.getBlock().isAir(blockState, getWorld(), pos) && blockState.getBlock()
-						.onBlockActivated(getWorld(), pos, adjacent.getTileEntity().getWorld().getBlockState(pos),
+				IBlockState blockState = _world.getWorld().getBlockState(pos);
+				return !blockState.getBlock().isAir(blockState, _world.getWorld(), pos) && blockState.getBlock()
+						.onBlockActivated(_world.getWorld(), pos, adjacent.getTileEntity().getWorld().getBlockState(pos),
 								player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0);
 			}
 			return false;
@@ -1326,7 +1321,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 
 	public List<NeighborTileEntity<TileEntity>> locateCraftersForExtraction() {
 		if (cachedCrafters == null) {
-			cachedCrafters = new WorldCoordinatesWrapper(getWorld(), getX(), getY(), getZ())
+			cachedCrafters = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos())
 					.connectedTileEntities(ConnectionPipeType.ITEM)
 					.filter(neighbor -> neighbor.isItemHandler() || neighbor.getInventoryUtil() != null)
 					.collect(Collectors.toList());

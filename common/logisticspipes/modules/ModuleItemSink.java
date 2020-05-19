@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -304,12 +305,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, 
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(false).setModulePos(this));
 			}
 		} else {
-			ignoreData.set(slot, !ignoreData.get(slot));
-			ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setModulePos(this);
-			if (player != null) {
-				MainProxy.sendPacketToPlayer(pak, player);
-			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
+			sendIgnoreUpdate(slot, player, ignoreData);
 		}
 	}
 
@@ -322,13 +318,17 @@ public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, 
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(true).setModulePos(this));
 			}
 		} else {
-			ignoreNBT.set(slot, !ignoreNBT.get(slot));
-			ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setModulePos(this);
-			if (player != null) {
-				MainProxy.sendPacketToPlayer(pak, player);
-			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), _world.getWorld().provider.getDimension(), pak);
+			sendIgnoreUpdate(slot, player, ignoreNBT);
 		}
+	}
+
+	public void sendIgnoreUpdate(int slot, @Nullable EntityPlayer player, @Nonnull BitSet ignoreNBT) {
+		ignoreNBT.set(slot, !ignoreNBT.get(slot));
+		ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setModulePos(this);
+		if (player != null) {
+			MainProxy.sendPacketToPlayer(pak, player);
+		}
+		MainProxy.sendPacketToAllWatchingChunk(this, pak);
 	}
 
 	public void importFromInventory() {

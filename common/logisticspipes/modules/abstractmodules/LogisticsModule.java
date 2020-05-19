@@ -6,8 +6,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
 import lombok.Getter;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISlotUpgradeManager;
@@ -54,6 +58,22 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		this.positionInt = positionInt;
 	}
 
+	@Nonnull
+	public BlockPos getBlockPos() {
+		if (slot.isInWorld()) {
+			return _service.getPos();
+		} else {
+			if (LogisticsPipes.isDEBUG()) {
+				throw new IllegalStateException("Module is not in world, but getBlockPos was called");
+			}
+			return BlockPos.ORIGIN;
+		}
+	}
+
+	public World getWorld() {
+		return _world.getWorld();
+	}
+
 	public enum ModulePositionType {
 		SLOT(true),
 		IN_HAND(false),
@@ -66,21 +86,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 			this.inWorld = inWorld;
 		}
 	}
-
-	/**
-	 * typically returns the coord of the pipe that holds it.
-	 */
-	public abstract int getX();
-
-	/**
-	 * typically returns the coord of the pipe that holds it.
-	 */
-	public abstract int getY();
-
-	/**
-	 * typically returns the coord of the pipe that holds it.
-	 */
-	public abstract int getZ();
 
 	/**
 	 * Gives an sink answer on the given itemstack
@@ -149,11 +154,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	@CCCommand(description = "Returns if the Pipe has a gui")
 	public boolean hasGui() {
 		return false;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%s@(%d, %d, %d)", getClass().getSimpleName(), getX(), getY(), getZ());
 	}
 
 	@Nullable

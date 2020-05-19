@@ -166,7 +166,7 @@ public class LogisticsTileRenderController {
 				if (data.timeout < 0 || data.isDeadEntity()) {
 					data.setDead();
 					if (data.sendPacket()) {
-						MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), pipe.getWorld().provider.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setRenderBall(false).setDir(key.dir).setRemove(true).setTilePos(pipe));
+						MainProxy.sendPacketToAllWatchingChunk(pipe, PacketHandler.getPacket(PowerPacketLaser.class).setColor(key.color).setRenderBall(false).setDir(key.dir).setRemove(true).setTilePos(pipe));
 					}
 					iter.remove();
 				}
@@ -181,7 +181,7 @@ public class LogisticsTileRenderController {
 				if (data.timeout < 0 || data.isDeadEntity()) {
 					data.setDead();
 					if (data.sendPacket()) {
-						MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), pipe.getWorld().provider.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(key).setRenderBall(true).setDir(null).setRemove(true).setTilePos(pipe));
+						MainProxy.sendPacketToAllWatchingChunk(pipe, PacketHandler.getPacket(PowerPacketLaser.class).setColor(key).setRenderBall(true).setDir(null).setRemove(true).setTilePos(pipe));
 					}
 					iter.remove();
 				}
@@ -217,7 +217,7 @@ public class LogisticsTileRenderController {
 			}
 		}
 		if (sendPacket) {
-			MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), pipe.getWorld().provider.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(color).setRenderBall(renderBall).setDir(dir).setLength(length).setReverse(reverse).setTilePos(pipe));
+			MainProxy.sendPacketToAllWatchingChunk(pipe, PacketHandler.getPacket(PowerPacketLaser.class).setColor(color).setRenderBall(renderBall).setDir(dir).setLength(length).setReverse(reverse).setTilePos(pipe));
 		}
 	}
 
@@ -251,9 +251,8 @@ public class LogisticsTileRenderController {
 		for (LaserKey key : powerLasersBeam.keySet()) {
 			LaserBeamData data = powerLasersBeam.get(key);
 			boolean isBall = powerLasersBall.containsKey(key.color);
-			MainProxy.sendPacketToAllWatchingChunk(pipe.getX(), pipe.getZ(), pipe.getWorld().provider.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class)
-					.setColor(key.color).setRenderBall(isBall).setDir(key.dir).setLength(data.length)
-					.setReverse(data.reverse).setTilePos(pipe));
+			MainProxy.sendPacketToAllWatchingChunk(pipe, PacketHandler.getPacket(PowerPacketLaser.class)
+					.setColor(key.color).setRenderBall(isBall).setDir(key.dir).setLength(data.length).setReverse(data.reverse).setTilePos(pipe));
 		}
 	}
 }

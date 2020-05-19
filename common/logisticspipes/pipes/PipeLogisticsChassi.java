@@ -149,7 +149,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 		if (pointedDirection != oldOrientation) {
 			clearCache();
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(pointedDirection).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToAllWatchingChunk(_module, PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(pointedDirection).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			refreshRender(true);
 		}
 	}
@@ -361,7 +361,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				next.registerCCEventQueuer(this);
 				if (current != next) {
 					_module.installModule(i, next);
-					if (!MainProxy.isClient()) {
+					if (!MainProxy.isClient(getWorld())) {
 						ItemModuleInformationManager.readInformation(stack, next);
 					}
 				}

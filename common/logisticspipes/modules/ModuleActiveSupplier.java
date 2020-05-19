@@ -188,7 +188,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 
 		_requestedItems.values().stream().filter(amount -> amount > 0).forEach(amount -> _service.spawnParticle(Particles.VioletParticle, 2));
 
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getX(), getY(), getZ());
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
 		worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
 				.filter(adjacent -> !adjacent.isLogisticsPipe())

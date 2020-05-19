@@ -29,21 +29,6 @@ public class ModuleSatellite extends LogisticsModule {
 	@Override
 	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {}
 
-	@Override
-	public final int getX() {
-		return pipe.getX();
-	}
-
-	@Override
-	public final int getY() {
-		return pipe.getY();
-	}
-
-	@Override
-	public final int getZ() {
-		return pipe.getZ();
-	}
-
 	private SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
 
 	@Override

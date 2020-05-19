@@ -22,30 +22,4 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 		return true;
 	}
 
-	@Override
-	public final int getX() {
-		if (slot.isInWorld()) {
-			return _service.getX();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public final int getY() {
-		if (slot.isInWorld()) {
-			return _service.getY();
-		} else {
-			return -1;
-		}
-	}
-
-	@Override
-	public final int getZ() {
-		if (slot.isInWorld()) {
-			return _service.getZ();
-		} else {
-			return -1 - positionInt;
-		}
-	}
 }

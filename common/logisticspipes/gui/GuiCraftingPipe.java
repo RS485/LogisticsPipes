@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 
 import lombok.Getter;
 import org.lwjgl.opengl.GL11;
@@ -46,7 +45,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	private static final String PREFIX = "gui.crafting.";
 
 	@Getter
-	private final ModuleCrafter _pipe;
+	private final ModuleCrafter craftingModule;
 	private final EntityPlayer _player;
 	private final GuiButton[] normalButtonArray;
 	private final GuiButton[][] advancedSatButtonArray;
@@ -130,8 +129,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 
 		inventorySlots = dummy;
-		_pipe = module;
-		_pipe.setFluidAmount(amount);
+		craftingModule = module;
+		craftingModule.setFluidAmount(amount);
 		normalButtonArray = new GuiButton[7];
 		advancedSatButtonArray = new GuiButton[9][2];
 		for (int i = 0; i < 9; i++) {
@@ -201,7 +200,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 		if (cleanupSize > 0) {
 			CleanupExtention cleanupExtention = new CleanupExtention();
-			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + (_pipe.cleanupModeIsExclude ? "Exclude" : "Include"))))));
+			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + (craftingModule.cleanupModeIsExclude ? "Exclude" : "Include"))))));
 			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")))));
 			for (int i = 0; i < cleanupSize * 3; i++) {
 				cleanupExtention.registerSlot(cleanupSlotIDs[i]);
@@ -255,7 +254,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 					default:
 						break;
 				}
-				_pipe.changeFluidAmount(amount, i, _player);
+				craftingModule.changeFluidAmount(amount, i, _player);
 			} else if (action == 8) {
 				openSubGuiForSatelliteSelection(110 + i, true);
 			}
@@ -265,26 +264,26 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				openSubGuiForSatelliteSelection(0, false);
 				break;
 			case 3:
-				_pipe.importFromCraftingTable(_player);
+				craftingModule.importFromCraftingTable(_player);
 				break;
 			case 4:
-				_pipe.openAttachedGui(_player);
+				craftingModule.openAttachedGui(_player);
 				//LogisticsEventListener.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), 0); //TODO reactivate this
 				break;
 			case 20:
-				_pipe.priorityUp(_player);
+				craftingModule.priorityUp(_player);
 				break;
 			case 21:
-				_pipe.priorityDown(_player);
+				craftingModule.priorityDown(_player);
 				break;
 			case 22:
 				openSubGuiForSatelliteSelection(100, true);
 				break;
 			case 24:
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupToggle.class).setModulePos(_pipe));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupToggle.class).setModulePos(craftingModule));
 				break;
 			case 25:
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupImport.class).setModulePos(_pipe));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupImport.class).setModulePos(craftingModule));
 				break;
 			default:
 				super.actionPerformed(guibutton);
@@ -292,10 +291,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	}
 
 	private void openSubGuiForSatelliteSelection(int id, boolean fluidSatellite) {
-		this.setSubGui(new GuiSelectSatellitePopup(new BlockPos(this._pipe.getX(), this._pipe.getY(), this._pipe.getZ()), fluidSatellite, uuid ->
-				MainProxy.sendPacketToServer(
-						PacketHandler.getPacket(CraftingPipeSetSatellitePacket.class).setPipeID(uuid).setInteger(id).setModulePos(this.module)))
-		);
+		this.setSubGui(new GuiSelectSatellitePopup(module.getBlockPos(), fluidSatellite,
+				uuid -> MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeSetSatellitePacket.class).setPipeID(uuid).setInteger(id).setModulePos(module))));
 	}
 
 	@Override
@@ -315,21 +312,21 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		if (!isAdvancedSat) {
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 40, 0x404040);
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Satellite"), 123, 7, 0x404040);
-			if (_pipe.clientSideSatelliteNames.satelliteName.isEmpty()) {
+			if (craftingModule.clientSideSatelliteNames.satelliteName.isEmpty()) {
 				mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 135, 43, 0x404040);
 			} else {
-				String name = _pipe.clientSideSatelliteNames.satelliteName;
+				String name = craftingModule.clientSideSatelliteNames.satelliteName;
 				name = StringUtils.getCuttedString(name, 55, mc.fontRenderer);
 				mc.fontRenderer.drawString(name, 143 - (mc.fontRenderer.getStringWidth(name) / 2), 43, 0x404040);
 			}
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 75, 0x404040);
-			mc.fontRenderer.drawString("" + _pipe.priority, 143 - (mc.fontRenderer.getStringWidth("" + _pipe.priority) / 2), 87, 0x404040);
+			mc.fontRenderer.drawString("" + craftingModule.priority, 143 - (mc.fontRenderer.getStringWidth("" + craftingModule.priority) / 2), 87, 0x404040);
 		} else {
 			for (int i = 0; i < 9; i++) {
-				if (_pipe.clientSideSatelliteNames.advancedSatelliteNameArray[i].isEmpty()) {
+				if (craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i].isEmpty()) {
 					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 9 + (i * 18), 57, 0x404040);
 				} else {
-					String name = _pipe.clientSideSatelliteNames.advancedSatelliteNameArray[i];
+					String name = craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i];
 					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
 					GlStateManager.pushMatrix();
 					GlStateManager.translate(20 + (i * 18), 39, 0);
@@ -340,7 +337,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			}
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 90, 0x404040);
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 95, 0x404040);
-			mc.fontRenderer.drawString("" + _pipe.priority, 143 - (mc.fontRenderer.getStringWidth("" + _pipe.priority) / 2), 107, 0x404040);
+			mc.fontRenderer.drawString("" + craftingModule.priority, 143 - (mc.fontRenderer.getStringWidth("" + craftingModule.priority) / 2), 107, 0x404040);
 		}
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
@@ -367,7 +364,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	}
 
 	public void onCleanupModeChange() {
-		cleanupModeButton.displayString = StringUtils.translate(GuiCraftingPipe.PREFIX + (_pipe.cleanupModeIsExclude ? "Exclude" : "Include"));
+		cleanupModeButton.displayString = StringUtils.translate(GuiCraftingPipe.PREFIX + (craftingModule.cleanupModeIsExclude ? "Exclude" : "Include"));
 	}
 
 	private final class FluidCraftingExtention extends GuiExtention {
@@ -427,7 +424,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 						int liquidLeft = left + i * 40;
 						renderFluidText(liquidLeft, top, i);
 					}
-					if (_pipe.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) {
+					if (craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) {
 						Gui.drawRect(left + 3, top + 3, left + 3 + (liquidCrafter * 40), top + 138, 0xAA8B8B8B);
 						mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
 						for (int i = 0; i < liquidCrafter; i++) {
@@ -436,7 +433,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 							}
 						}
 					} else {
-						mc.fontRenderer.drawString(_pipe.clientSideSatelliteNames.liquidSatelliteName, left + (liquidCrafter * 40) / 2 + 3 - (fontRenderer.getStringWidth(_pipe.clientSideSatelliteNames.liquidSatelliteName) / 2), top + 145, 0x404040);
+						mc.fontRenderer.drawString(craftingModule.clientSideSatelliteNames.liquidSatelliteName, left + (liquidCrafter * 40) / 2 + 3 - (fontRenderer.getStringWidth(craftingModule.clientSideSatelliteNames.liquidSatelliteName) / 2), top + 145, 0x404040);
 						for (int i = 0; i < liquidCrafter; i++) {
 							for (int j = 0; j < 8; j++) {
 								liquidGuiParts[i][j].enabled = true;
@@ -451,20 +448,20 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 
 		private void renderFluidText(int left, int top, int i) {
 			GuiGraphics.drawSlotBackground(mc, left + 12, top + 19);
-			mc.fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), top + 40, 0x404040);
+			mc.fontRenderer.drawString(Integer.toString(craftingModule.getFluidAmount()[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(craftingModule.getFluidAmount()[i])) / 2), top + 40, 0x404040);
 			mc.fontRenderer.drawString("1", left + 19, top + 53, 0x404040);
 			mc.fontRenderer.drawString("10", left + 16, top + 73, 0x404040);
 			mc.fontRenderer.drawString("100", left + 13, top + 93, 0x404040);
 			mc.fontRenderer.drawString("1000", left + 10, top + 113, 0x404040);
 			if (isAdvancedSat) {
-				if (_pipe.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()) {
+				if (craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()) {
 					Gui.drawRect(left + 3, top + 3, left + 42, top + 138, 0xAA8B8B8B);
 					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), left + 15, top + 146, 0x404040);
 					for (int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
 				} else {
-					String name = _pipe.clientSideSatelliteNames.liquidSatelliteNameArray[i];
+					String name = craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[i];
 					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
 					mc.fontRenderer.drawString(name, left + 22 - (fontRenderer.getStringWidth(name) / 2), top + 146, 0x404040);
 					for (int j = 0; j < 8; j++) {
@@ -473,7 +470,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				}
 				Gui.drawRect(left + 3, top + 138, left + 42, top + 139, 0xff8B8B8B);
 			}
-			if (_pipe.getFluidInventory().getStackInSlot(i).isEmpty() && !((!isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) || (isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()))) {
+			if (craftingModule.getFluidInventory().getStackInSlot(i).isEmpty() && !((!isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) || (isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()))) {
 				Gui.drawRect(left + 3, top + 50, left + 42, top + 138, 0xAA8B8B8B);
 				for (int j = 0; j < 8; j++) {
 					liquidGuiParts[i][j].enabled = false;
@@ -483,7 +480,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 
 		@Override
 		public boolean renderSelectSlot(int slotId) {
-			if ((isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteNameArray[id].isEmpty()) || (!isAdvancedSat && _pipe.clientSideSatelliteNames.liquidSatelliteName.isEmpty())) {
+			if ((isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[id].isEmpty()) || (!isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty())) {
 				return false;
 			}
 			return super.renderSelectSlot(slotId);

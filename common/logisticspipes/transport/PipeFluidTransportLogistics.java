@@ -202,7 +202,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 			}
 			ModernPacket packet = computeFluidUpdate(init, true);
 			if (packet != null) {
-				MainProxy.sendPacketToAllWatchingChunk(container.getPos().getX(), container.getPos().getZ(), getWorld().provider.getDimension(), packet);
+				MainProxy.sendPacketToAllWatchingChunk(container, packet);
 			}
 		}
 	}

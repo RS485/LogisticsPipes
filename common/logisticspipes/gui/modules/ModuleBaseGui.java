@@ -32,7 +32,7 @@ public abstract class ModuleBaseGui extends LogisticsBaseGuiScreen {
 		if (i == 1 || c == 'e') {
 			super.keyTyped(c, i);
 			if (module.getSlot() == ModulePositionType.SLOT) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiOpenChassie.class).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiOpenChassie.class).setBlockPos(module.getBlockPos()));
 			}
 		}
 	}

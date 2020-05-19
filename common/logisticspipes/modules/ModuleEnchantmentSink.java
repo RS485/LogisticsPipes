@@ -18,33 +18,6 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
-	@Override
-	public int getX() {
-		if (slot.isInWorld()) {
-			return _service.getX();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public int getY() {
-		if (slot.isInWorld()) {
-			return _service.getY();
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public int getZ() {
-		if (slot.isInWorld()) {
-			return _service.getZ();
-		} else {
-			return 0;
-		}
-	}
-
 	private SinkReply _sinkReply;
 
 	@Override

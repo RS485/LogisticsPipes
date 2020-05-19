@@ -30,21 +30,6 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public int getX() {
-		return _service.getX();
-	}
-
-	@Override
-	public int getY() {
-		return _service.getY();
-	}
-
-	@Override
-	public int getZ() {
-		return _service.getZ();
-	}
-
-	@Override
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
 			boolean forcePassive) {
 		return null;

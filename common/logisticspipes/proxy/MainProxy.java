@@ -36,6 +36,7 @@ import logisticspipes.LPItems;
 import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.entity.FakePlayerLP;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.PacketInboundHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -185,6 +186,17 @@ public class MainProxy {
 		return !players.isEmptyWithoutCheck();
 	}
 
+	public static void sendPacketToAllWatchingChunk(LogisticsModule module, ModernPacket packet) {
+		if (module.getSlot().isInWorld()) {
+			final BlockPos pos = module.getBlockPos();
+			sendPacketToAllWatchingChunk(pos.getX(), pos.getZ(), module.getWorld().provider.getDimension(), packet);
+		} else {
+			if (LogisticsPipes.isDEBUG()) {
+				throw new IllegalStateException("sendPacketToAllWatchingChunk for module in hand was called");
+			}
+		}
+	}
+
 	public static void sendPacketToAllWatchingChunk(TileEntity tile, ModernPacket packet) {
 		sendPacketToAllWatchingChunk(tile.getPos().getX(), tile.getPos().getZ(), tile.getWorld().provider.getDimension(), packet);
 	}
@@ -203,7 +215,6 @@ public class MainProxy {
 					MainProxy.sendPacketToPlayer(packet, player);
 				}
 			}
-			return;
 		}
 	}
 

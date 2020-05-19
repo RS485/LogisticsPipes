@@ -2,6 +2,7 @@ package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -243,6 +244,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return getPos().getZ();
 	}
 
+	@Nonnull
 	public final BlockPos getPos() {
 		return container.getPos();
 	}

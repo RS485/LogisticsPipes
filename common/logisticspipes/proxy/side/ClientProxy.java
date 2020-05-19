@@ -213,7 +213,7 @@ public class ClientProxy implements IProxy {
 			return ((ModuleBaseGui) FMLClientHandler.instance().getClient().currentScreen).getModule();
 		}
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCraftingPipe) {
-			return ((GuiCraftingPipe) FMLClientHandler.instance().getClient().currentScreen).get_pipe();
+			return ((GuiCraftingPipe) FMLClientHandler.instance().getClient().currentScreen).getCraftingModule();
 		}
 		return null;
 	}

@@ -667,8 +667,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 					tosend.add(new ParticleCount(Particles.values()[i], queuedParticles[i]));
 				}
 			}
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(),
-					PacketHandler.getPacket(ParticleFX.class).setParticles(tosend).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToAllWatchingChunk(container, PacketHandler.getPacket(ParticleFX.class).setParticles(tosend).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			if (Minecraft.isFancyGraphicsEnabled()) {
 				for (int i = 0; i < queuedParticles.length; i++) {
@@ -1646,14 +1645,14 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 		ModernPacket packet = PacketHandler.getPacket(PipeSignTypes.class).setTypes(types).setTilePos(container);
 		if (sendToAll) {
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
+			MainProxy.sendPacketToAllWatchingChunk(container, packet);
 		}
 		MainProxy.sendPacketToPlayer(packet, player);
 		for (int i = 0; i < 6; i++) {
 			if (signItem[i] != null) {
 				packet = signItem[i].getPacket();
 				if (packet != null) {
-					MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), getWorld().provider.getDimension(), packet);
+					MainProxy.sendPacketToAllWatchingChunk(container, packet);
 					MainProxy.sendPacketToPlayer(packet, player);
 				}
 			}

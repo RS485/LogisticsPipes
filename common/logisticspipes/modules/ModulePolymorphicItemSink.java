@@ -54,21 +54,6 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	public void tick() {}
 
 	@Override
-	public final int getX() {
-		return _service.getX();
-	}
-
-	@Override
-	public final int getY() {
-		return _service.getY();
-	}
-
-	@Override
-	public final int getZ() {
-		return _service.getZ();
-	}
-
-	@Override
 	public boolean hasGenericInterests() {
 		return false;
 	}

@@ -20,7 +20,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISlotUpgradeManager;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -45,10 +45,11 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
 @CCType(name = "ItemSink Module")
-public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
+public class ModuleItemSink extends LogisticsModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 1);
 	private boolean _isDefaultRoute;
@@ -146,20 +147,6 @@ public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, 
 			return null;
 		}
 		return null;
-	}
-
-	@Override
-	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ItemSinkSlot.class)
-				.setDefaultRoute(_isDefaultRoute)
-				.setIgnoreData(ignoreData)
-				.setIgnoreNBT(ignoreNBT)
-				.setHasFuzzyUpgrade(getUpgradeManager().isFuzzyUpgrade());
-	}
-
-	@Override
-	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(ItemSinkInHand.class);
 	}
 
 	@Override
@@ -348,4 +335,17 @@ public class ModuleItemSink extends LogisticsGuiModule implements SimpleFilter, 
 			}
 		}
 	}
+
+	@Nonnull
+	@Override
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(ItemSinkSlot.class).setDefaultRoute(_isDefaultRoute).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setHasFuzzyUpgrade(getUpgradeManager().isFuzzyUpgrade());
+	}
+
+	@Nonnull
+	@Override
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(ItemSinkInHand.class);
+	}
+
 }

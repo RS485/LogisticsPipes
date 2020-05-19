@@ -76,7 +76,6 @@ import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.GuiIDs;
@@ -128,6 +127,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -901,8 +901,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (SimpleServiceLocator.configToolHandler.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
 			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openGui) {
-					if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
-						((LogisticsGuiModule) getLogisticsModule()).getPipeGuiProviderForModule().setTilePos(container).open(entityplayer);
+					if (getLogisticsModule() != null && getLogisticsModule() instanceof Gui) {
+						Gui.getPipeGuiProvider((Gui) getLogisticsModule()).setTilePos(container).open(entityplayer);
 					} else {
 						onWrenchClicked(entityplayer);
 					}

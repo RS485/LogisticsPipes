@@ -30,7 +30,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -62,10 +62,11 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SneakyDirection;
 
 @CCType(name = "Provider Module")
-public class ModuleProvider extends LogisticsGuiModule implements SneakyDirection, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
+public class ModuleProvider extends LogisticsModule implements SneakyDirection, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, Gui {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
 	private EnumFacing _sneakyDirection = null;
@@ -115,18 +116,6 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 		if (MainProxy.isServer(this._world.getWorld())) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(SneakyModuleDirectionUpdate.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
 		}
-	}
-
-	@Override
-	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class).setExtractorMode(getExtractionMode().ordinal()).setExclude(isExcludeFilter);
-		//.setIsActive(isActive)
-		//.setSneakyDirection(_sneakyDirection);
-	}
-
-	@Override
-	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(ProviderModuleInHand.class);
 	}
 
 	protected int neededEnergy() {
@@ -462,6 +451,18 @@ public class ModuleProvider extends LogisticsGuiModule implements SneakyDirectio
 	@Override
 	public boolean recievePassive() {
 		return false;
+	}
+
+	@Nonnull
+	@Override
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class).setExtractorMode(getExtractionMode().ordinal()).setExclude(isExcludeFilter);
+	}
+
+	@Nonnull
+	@Override
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(ProviderModuleInHand.class);
 	}
 
 }

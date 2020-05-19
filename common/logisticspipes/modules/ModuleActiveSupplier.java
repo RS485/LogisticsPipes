@@ -29,7 +29,7 @@ import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.interfaces.routing.ITargetSlotInformation;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -53,13 +53,21 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
+public class ModuleActiveSupplier extends LogisticsModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-
+	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
+	public int[] slotArray = new int[9];
 	private boolean _lastRequestFailed = false;
+	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "", 127);
+	private SupplyMode _requestMode = SupplyMode.Bulk50;
+	private PatternMode _patternMode = PatternMode.Bulk50;
+	@Getter
+	@Setter
+	private boolean isLimited = true;
 
 	public ModuleActiveSupplier() {
 		dummyInventory.addListener(this);
@@ -147,33 +155,6 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 	public void setRequestFailed(boolean value) {
 		_lastRequestFailed = value;
 	}
-
-	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "", 127);
-
-	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
-
-	public enum SupplyMode {
-		Partial,
-		Full,
-		Bulk50,
-		Bulk100,
-		Infinite
-	}
-
-	public enum PatternMode {
-		Partial,
-		Full,
-		Bulk50,
-		Bulk100
-	}
-
-	private SupplyMode _requestMode = SupplyMode.Bulk50;
-	private PatternMode _patternMode = PatternMode.Bulk50;
-	@Getter
-	@Setter
-	private boolean isLimited = true;
-
-	public int[] slotArray = new int[9];
 
 	/*** GUI ***/
 	public ItemIdentifierInventory getDummyInventory() {
@@ -524,6 +505,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 		status.add(entry);
 	}
 
+	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		final boolean hasPatternUpgrade = hasPatternUpgrade();
@@ -534,6 +516,7 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 				.setLimit(isLimited);
 	}
 
+	@Nonnull
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(ActiveSupplierInHand.class);
@@ -566,6 +549,21 @@ public class ModuleActiveSupplier extends LogisticsGuiModule implements IRequest
 			return upgradeManager.hasPatternUpgrade();
 		}
 		return false;
+	}
+
+	public enum SupplyMode {
+		Partial,
+		Full,
+		Bulk50,
+		Bulk100,
+		Infinite
+	}
+
+	public enum PatternMode {
+		Partial,
+		Full,
+		Bulk50,
+		Bulk100
 	}
 
 	public class PatternSupplierTargetInformation extends SupplierTargetInformation implements ITargetSlotInformation {

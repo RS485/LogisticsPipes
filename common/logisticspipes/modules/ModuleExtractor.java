@@ -17,7 +17,7 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -35,9 +35,10 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SneakyDirection;
 
-public class ModuleExtractor extends LogisticsGuiModule implements SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleExtractor extends LogisticsModule implements SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, Gui {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
@@ -48,9 +49,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements SneakyDirecti
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	public ModuleExtractor() {
-
-	}
+	public ModuleExtractor() {}
 
 	protected int ticksToAction() {
 		return 80 / (int) (Math.pow(2, getUpgradeManager().getActionSpeedUpgrade()));
@@ -83,16 +82,6 @@ public class ModuleExtractor extends LogisticsGuiModule implements SneakyDirecti
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
 			boolean forcePassive) {
 		return null;
-	}
-
-	@Override
-	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class).setSneakyOrientation(getSneakyDirection());
-	}
-
-	@Override
-	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(SneakyModuleInHandGuiProvider.class);
 	}
 
 	@Override
@@ -233,6 +222,18 @@ public class ModuleExtractor extends LogisticsGuiModule implements SneakyDirecti
 	@Override
 	public boolean recievePassive() {
 		return false;
+	}
+
+	@Nonnull
+	@Override
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class).setSneakyOrientation(getSneakyDirection());
+	}
+
+	@Nonnull
+	@Override
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(SneakyModuleInHandGuiProvider.class);
 	}
 
 }

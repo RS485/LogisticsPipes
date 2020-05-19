@@ -48,7 +48,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	@Override
 	/*
 	 * We will check every item return true
-	 * @see logisticspipes.modules.LogisticsModule#hasGenericInterests()
+	 * @see logisticspipes.modules.abstractmodules.LogisticsModule#hasGenericInterests()
 	 */
 	public boolean hasGenericInterests() {
 		return true;

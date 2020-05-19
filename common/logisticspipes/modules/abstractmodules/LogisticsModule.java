@@ -24,6 +24,7 @@ import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.module.Gui;
 
 @CCType(name = "LogisticsModule")
 public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
@@ -45,9 +46,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		_service = service;
 	}
 
-	@Getter
 	protected ModulePositionType slot;
-	@Getter
 	protected int positionInt;
 
 	/**
@@ -72,6 +71,14 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
 	public World getWorld() {
 		return _world.getWorld();
+	}
+
+	public ModulePositionType getSlot() {
+		return this.slot;
+	}
+
+	public int getPositionInt() {
+		return this.positionInt;
 	}
 
 	public enum ModulePositionType {
@@ -151,9 +158,14 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {}
 
-	@CCCommand(description = "Returns if the Pipe has a gui")
+	@CCCommand(description = "Returns true if the Pipe has a gui")
 	public boolean hasGui() {
-		return false;
+		return this instanceof Gui;
+	}
+
+	@Nonnull
+	public LogisticsModule getModule() {
+		return this;
 	}
 
 	@Nullable

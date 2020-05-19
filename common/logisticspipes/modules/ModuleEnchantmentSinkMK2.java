@@ -16,7 +16,7 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -34,10 +34,11 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
 @CCType(name = "EnchantmentSink Module MK2")
-public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
+public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested Enchanted items", 1);
 
@@ -142,7 +143,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements Simp
 	@Override
 	/*
 	 * (non-Javadoc)
-	 * @see logisticspipes.modules.LogisticsModule#hasGenericInterests()
+	 * @see logisticspipes.modules.abstractmodules.LogisticsModule#hasGenericInterests()
 	 * Only looking for items in filter
 	 */
 	public boolean hasGenericInterests() {
@@ -179,13 +180,16 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsGuiModule implements Simp
 		return true;
 	}
 
+	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return SimpleFilter.getPipeGuiProvider();
 	}
 
+	@Nonnull
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return SimpleFilter.getInHandGuiProvider();
 	}
+
 }

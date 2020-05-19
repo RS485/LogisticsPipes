@@ -11,10 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
-import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.packets.modules.QuickSortState;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
@@ -25,7 +23,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 
-public class ModuleQuickSort extends LogisticsGuiModule {
+public class ModuleQuickSort extends LogisticsModule {
 
 	protected final int stalledDelay = 24;
 	protected final int normalDelay = 6;
@@ -289,18 +287,4 @@ public class ModuleQuickSort extends LogisticsGuiModule {
 		_watchingPlayer.remove(player);
 	}
 
-	@Override
-	public boolean hasGui() {
-		return false;
-	}
-
-	@Override
-	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return null;
-	}
-
-	@Override
-	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return null;
-	}
 }

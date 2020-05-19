@@ -9,7 +9,6 @@ package logisticspipes.gui;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,6 +33,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.module.Gui;
 
 public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
@@ -100,7 +100,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			if (module.isEmpty() || subModule == null) {
 				moduleConfigButtons.get(i).visible = false;
 			} else {
-				moduleConfigButtons.get(i).visible = subModule.hasGui();
+				moduleConfigButtons.get(i).visible = subModule instanceof Gui;
 			}
 
 			if (hasUpgradeModuleUpgarde) {
@@ -144,7 +144,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			if (module.isEmpty() || subModule == null) {
 				moduleConfigButtons.get(i).visible = false;
 			} else {
-				moduleConfigButtons.get(i).visible = subModule.hasGui();
+				moduleConfigButtons.get(i).visible = subModule instanceof Gui;
 			}
 		}
 		if (hasUpgradeModuleUpgarde) {

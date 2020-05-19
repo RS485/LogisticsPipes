@@ -16,7 +16,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -32,15 +32,15 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
-public class ModulePassiveSupplier extends LogisticsGuiModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
+public class ModulePassiveSupplier extends LogisticsModule implements Gui, SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
-
-	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
-
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private SinkReply _sinkReply;
 
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);
@@ -51,8 +51,6 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements SimpleF
 	public IInventory getFilterInventory() {
 		return _filterInventory;
 	}
-
-	private SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
@@ -173,13 +171,16 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements SimpleF
 		return true;
 	}
 
+	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return SimpleFilter.getPipeGuiProvider();
 	}
 
+	@Nonnull
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return SimpleFilter.getInHandGuiProvider();
 	}
+
 }

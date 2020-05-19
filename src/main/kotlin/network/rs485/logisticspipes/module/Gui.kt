@@ -37,25 +37,24 @@
 
 package network.rs485.logisticspipes.module
 
-import logisticspipes.network.NewGuiHandler
+import logisticspipes.modules.abstractmodules.LogisticsModule
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider
-import logisticspipes.network.guis.module.inhand.SimpleFilterInventoryInHand
-import logisticspipes.network.guis.module.inpipe.SimpleFilterInventorySlot
-import net.minecraft.inventory.IInventory
 
-interface SimpleFilter {
-    fun getFilterInventory(): IInventory
+interface Gui {
+    val module: LogisticsModule
+    val pipeGuiProvider: ModuleCoordinatesGuiProvider
+    val inHandGuiProvider: ModuleInHandGuiProvider
 
     companion object {
         @JvmStatic
-        fun getPipeGuiProvider(): ModuleCoordinatesGuiProvider {
-            return NewGuiHandler.getGui(SimpleFilterInventorySlot::class.java)
+        fun getPipeGuiProvider(gui: Gui): ModuleCoordinatesGuiProvider {
+            return gui.pipeGuiProvider.setSlot(gui.module.slot).setPositionInt(gui.module.positionInt)
         }
 
         @JvmStatic
-        fun getInHandGuiProvider(): ModuleInHandGuiProvider {
-            return NewGuiHandler.getGui(SimpleFilterInventoryInHand::class.java)
+        fun getInHandGuiProvider(gui: Gui): ModuleInHandGuiProvider {
+            return gui.inHandGuiProvider.setInvSlot(gui.module.positionInt)
         }
     }
 }

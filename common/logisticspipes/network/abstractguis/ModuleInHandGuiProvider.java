@@ -3,9 +3,6 @@ package logisticspipes.network.abstractguis;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
@@ -16,8 +13,6 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModuleInHandGuiProvider extends GuiProvider {
 
-	@Getter
-	@Setter
 	private int invSlot;
 
 	public ModuleInHandGuiProvider(int id) {
@@ -45,5 +40,14 @@ public abstract class ModuleInHandGuiProvider extends GuiProvider {
 		module.registerPosition(ModulePositionType.IN_HAND, invSlot);
 		ItemModuleInformationManager.readInformation(item, module);
 		return module;
+	}
+
+	public int getInvSlot() {
+		return this.invSlot;
+	}
+
+	public ModuleInHandGuiProvider setInvSlot(int invSlot) {
+		this.invSlot = invSlot;
+		return this;
 	}
 }

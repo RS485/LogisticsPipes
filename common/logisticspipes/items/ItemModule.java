@@ -45,7 +45,6 @@ import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -55,6 +54,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.module.Gui;
 
 public class ItemModule extends LogisticsItem {
 
@@ -122,12 +122,10 @@ public class ItemModule extends LogisticsItem {
 
 	private void openConfigGui(ItemStack stack, EntityPlayer player, World world) {
 		LogisticsModule module = getModuleForItem(stack, null, null, null);
-		if (module != null && module.hasGui()) {
-			if (stack != null && stack.getCount() > 0) {
-				ItemModuleInformationManager.readInformation(stack, module);
-				module.registerPosition(ModulePositionType.IN_HAND, player.inventory.currentItem);
-				((LogisticsGuiModule) module).getInHandGuiProviderForModule().open(player);
-			}
+		if (module instanceof Gui && stack != null && stack.getCount() > 0) {
+			ItemModuleInformationManager.readInformation(stack, module);
+			module.registerPosition(ModulePositionType.IN_HAND, player.inventory.currentItem);
+			Gui.getInHandGuiProvider((Gui) module).open(player);
 		}
 	}
 

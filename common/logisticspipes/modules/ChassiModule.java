@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,7 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -22,8 +20,9 @@ import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.module.Gui;
 
-public class ChassiModule extends LogisticsGuiModule {
+public class ChassiModule extends LogisticsModule implements Gui {
 
 	private final LogisticsModule[] modules;
 	private final PipeLogisticsChassi parentChassis;
@@ -173,13 +172,15 @@ public class ChassiModule extends LogisticsGuiModule {
 		return list;
 	}
 
+	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}
 
+	@Nonnull
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return null;
+		throw new UnsupportedOperationException("Chassis GUI can never be opened in hand");
 	}
 }

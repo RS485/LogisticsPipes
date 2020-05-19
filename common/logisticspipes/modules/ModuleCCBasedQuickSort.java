@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,9 +48,11 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.module.Gui;
 
-public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleCCBasedQuickSort extends ModuleQuickSort implements Gui, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private Map<Integer, Pair<Integer, List<CCSinkResponder>>> sinkResponses = new HashMap<>();
 
 	@Getter
@@ -59,8 +60,6 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	@Getter
 	private int sinkSize = 0;
-
-	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	private IHUDModuleRenderer HUD = new HUDCCBasedQuickSort(this);
 
@@ -73,9 +72,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
 			if (exits != null) {
-				validDestinations.addAll(exits.stream()
-						.filter(e -> e.containsFlag(PipeRoutingConnectionType.canRouteTo))
-						.collect(Collectors.toList()));
+				validDestinations.addAll(exits.stream().filter(e -> e.containsFlag(PipeRoutingConnectionType.canRouteTo)).collect(Collectors.toList()));
 			}
 		}
 		Collections.sort(validDestinations);
@@ -258,11 +255,6 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 	}
 
 	@Override
-	public boolean hasGui() {
-		return true;
-	}
-
-	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		timeout = nbttagcompound.getInteger("Timeout");
@@ -331,13 +323,16 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 		}
 	}
 
+	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(CCBasedQuickSortSlot.class).setTimeOut(timeout);
 	}
 
+	@Nonnull
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return NewGuiHandler.getGui(CCBasedQuickSortInHand.class);
 	}
+
 }

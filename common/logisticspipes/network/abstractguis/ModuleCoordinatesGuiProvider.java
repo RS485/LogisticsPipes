@@ -2,9 +2,6 @@ package logisticspipes.network.abstractguis;
 
 import net.minecraft.world.World;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
@@ -16,11 +13,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvider {
 
-	@Getter
-	@Setter
 	private ModulePositionType slot;
-	@Getter
-	@Setter
 	private int positionInt;
 
 	public ModuleCoordinatesGuiProvider(int id) {
@@ -81,5 +74,23 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 			}
 		}
 		return (T) module;
+	}
+
+	public ModulePositionType getSlot() {
+		return this.slot;
+	}
+
+	public ModuleCoordinatesGuiProvider setSlot(ModulePositionType slot) {
+		this.slot = slot;
+		return this;
+	}
+
+	public int getPositionInt() {
+		return this.positionInt;
+	}
+
+	public ModuleCoordinatesGuiProvider setPositionInt(int positionInt) {
+		this.positionInt = positionInt;
+		return this;
 	}
 }

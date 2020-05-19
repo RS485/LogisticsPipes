@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.utils.gui.DummyContainer;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
@@ -20,7 +20,7 @@ public class GuiSimpleFilter extends ModuleBaseGui {
 
 	private final SimpleFilter filter;
 
-	public GuiSimpleFilter(IInventory playerInventory, LogisticsGuiModule filterModule) {
+	public GuiSimpleFilter(IInventory playerInventory, LogisticsModule filterModule) {
 		super(null, filterModule);
 		if (!(filterModule instanceof SimpleFilter)) throw new IllegalArgumentException("Module is not a filter module");
 		filter = (SimpleFilter) filterModule;

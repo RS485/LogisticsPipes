@@ -7,11 +7,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.gui.modules.GuiSneakyConfigurator;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SneakyDirection;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -41,8 +42,8 @@ public class SneakyModuleInSlotGuiProvider extends ModuleCoordinatesGuiProvider 
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsGuiModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsGuiModule.class);
-		if (!(module instanceof SneakyDirection)) {
+		LogisticsModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsModule.class);
+		if (!(module instanceof SneakyDirection && module instanceof Gui)) {
 			return null;
 		}
 		((SneakyDirection) module).setSneakyDirection(sneakyOrientation);
@@ -51,8 +52,8 @@ public class SneakyModuleInSlotGuiProvider extends ModuleCoordinatesGuiProvider 
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		LogisticsGuiModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsGuiModule.class);
-		if (!(module instanceof SneakyDirection)) {
+		LogisticsModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsModule.class);
+		if (!(module instanceof SneakyDirection && module instanceof Gui)) {
 			return null;
 		}
 		return new DummyContainer(player.inventory, null);

@@ -16,7 +16,7 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IStringBasedModule;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -32,8 +32,9 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.module.Gui;
 
-public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStringBasedModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleModBasedItemSink extends LogisticsModule implements IStringBasedModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, Gui {
 
 	public final List<String> modList = new LinkedList<>();
 	private final Set<String> modIdSet = new HashSet<>();
@@ -65,18 +66,6 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		NBTTagCompound nbt = new NBTTagCompound();
-		writeToNBT(nbt);
-		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiSlot.class).setNbt(nbt);
-	}
-
-	@Override
-	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiInHand.class);
 	}
 
 	private void buildModIdSet() {
@@ -183,4 +172,19 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IStrin
 	public String getStringForItem(ItemIdentifier ident) {
 		return ident.getModName();
 	}
+
+	@Nonnull
+	@Override
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		writeToNBT(nbt);
+		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiSlot.class).setNbt(nbt);
+	}
+
+	@Nonnull
+	@Override
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
+		return NewGuiHandler.getGui(StringBasedItemSinkModuleGuiInHand.class);
+	}
+
 }

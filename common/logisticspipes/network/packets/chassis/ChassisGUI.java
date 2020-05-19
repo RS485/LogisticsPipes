@@ -5,13 +5,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -48,11 +48,11 @@ public class ChassisGUI extends CoordinatesPacket {
 		final PipeLogisticsChassi chassisPipe = (PipeLogisticsChassi) pipe.pipe;
 
 		LogisticsModule subModule = chassisPipe.getSubModule(getButtonID());
-		if (!(subModule instanceof LogisticsGuiModule)) {
+		if (!(subModule instanceof Gui)) {
 			return;
 		}
 
-		((LogisticsGuiModule) subModule).getPipeGuiProviderForModule().setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
+		Gui.getPipeGuiProvider((Gui) subModule).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 	}
 
 	@Override

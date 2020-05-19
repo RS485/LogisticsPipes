@@ -6,7 +6,7 @@ import net.minecraft.inventory.Container;
 
 import lombok.Getter;
 
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiOpenChassie;
@@ -16,9 +16,9 @@ import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 public abstract class ModuleBaseGui extends LogisticsBaseGuiScreen {
 
 	@Getter
-	protected LogisticsGuiModule module;
+	protected LogisticsModule module;
 
-	public ModuleBaseGui(Container par1Container, LogisticsGuiModule module) {
+	public ModuleBaseGui(Container par1Container, LogisticsModule module) {
 		super(par1Container);
 		this.module = module;
 	}

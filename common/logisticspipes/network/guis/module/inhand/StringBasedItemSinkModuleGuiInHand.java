@@ -25,7 +25,7 @@ public class StringBasedItemSinkModuleGuiInHand extends ModuleInHandGuiProvider 
 		if (!(module instanceof IStringBasedModule)) {
 			return null;
 		}
-		return new GuiStringBasedItemSink(player.inventory, (IStringBasedModule) module);
+		return new GuiStringBasedItemSink(player.inventory, module);
 	}
 
 	@Override

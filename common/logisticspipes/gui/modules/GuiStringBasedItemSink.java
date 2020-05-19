@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
 import logisticspipes.interfaces.IStringBasedModule;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -24,10 +24,10 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 	private int mouseX = 0;
 	private int mouseY = 0;
 
-	public GuiStringBasedItemSink(IInventory playerInventory, IStringBasedModule itemSink) {
-		super(null, (LogisticsGuiModule) itemSink);
-
-		_itemSink = itemSink;
+	public GuiStringBasedItemSink(IInventory playerInventory, LogisticsModule module) {
+		super(null, module);
+		if (!(module instanceof IStringBasedModule)) throw new IllegalArgumentException("Module must be string based");
+		_itemSink = (IStringBasedModule) module;
 
 		tmpInv = new ItemIdentifierInventory(1, "Analyse Slot", 1);
 

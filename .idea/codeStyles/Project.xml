@@ -31,6 +31,7 @@
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
     <codeStyleSettings language="JAVA">
+      <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
       <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="1" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
@@ -52,8 +53,6 @@
       <option name="BINARY_OPERATION_WRAP" value="1" />
       <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
       <option name="TERNARY_OPERATION_WRAP" value="5" />
-      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
-      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
       <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
       <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
       <option name="ARRAY_INITIALIZER_WRAP" value="1" />

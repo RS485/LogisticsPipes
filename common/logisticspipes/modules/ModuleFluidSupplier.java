@@ -8,7 +8,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -19,8 +19,9 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import network.rs485.logisticspipes.module.Gui;
 
-public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientInformationProvider {
+public class ModuleFluidSupplier extends LogisticsModule implements IClientInformationProvider, Gui {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested liquids", 1);
 
@@ -46,16 +47,6 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 			_service.spawnParticle(Particles.VioletParticle, 2);
 			return _sinkReply;
 		}
-		return null;
-	}
-
-	@Override
-	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(FluidSupplierSlot.class);
-	}
-
-	@Override
-	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return null;
 	}
 
@@ -99,6 +90,18 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	@Override
 	public boolean recievePassive() {
 		return true;
+	}
+
+	@Nonnull
+	@Override
+	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
+		return NewGuiHandler.getGui(FluidSupplierSlot.class);
+	}
+
+	@Nonnull
+	@Override
+	public ModuleInHandGuiProvider getInHandGuiProvider() {
+		throw new UnsupportedOperationException("Fluid Supplier GUI cannot be opened in hand");
 	}
 
 }

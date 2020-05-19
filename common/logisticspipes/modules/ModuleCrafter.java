@@ -48,7 +48,7 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -110,9 +110,10 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
-public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver, IGuiOpenControler {
+public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver, IGuiOpenControler, Gui {
 
 	// for reliable transport
 	protected final DelayQueue<DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>>> _lostItems = new DelayQueue<>();
@@ -131,6 +132,7 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	public boolean[] craftingSigns = new boolean[6];
 	public boolean waitingForCraft = false;
 	public boolean cleanupModeIsExclude = true;
+	public ClientSideSatelliteNames clientSideSatelliteNames = new ClientSideSatelliteNames();
 	// from PipeItemsCraftingLogistics
 	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
 	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
@@ -141,8 +143,6 @@ public class ModuleCrafter extends LogisticsGuiModule implements ICraftItems, IH
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
 	private boolean cachedAreAllOrderesToBuffer;
 	private List<NeighborTileEntity<TileEntity>> cachedCrafters = null;
-
-	public ClientSideSatelliteNames clientSideSatelliteNames = new ClientSideSatelliteNames();
 	private UpgradeSatelliteFromIDs updateSatelliteFromIDs = null;
 
 	public ModuleCrafter() {

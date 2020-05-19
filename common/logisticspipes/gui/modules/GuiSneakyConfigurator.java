@@ -17,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.modules.abstractmodules.LogisticsGuiModule;
+import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.modules.SneakyModuleDirectionUpdate;
 import logisticspipes.proxy.MainProxy;
@@ -28,7 +28,7 @@ public class GuiSneakyConfigurator extends ModuleBaseGui {
 
 	private final SneakyDirection directionReceiver;
 
-	public GuiSneakyConfigurator(IInventory playerInventory, LogisticsGuiModule module) {
+	public GuiSneakyConfigurator(IInventory playerInventory, LogisticsModule module) {
 		super(new DummyContainer(playerInventory, null), module);
 		if (!(module instanceof SneakyDirection)) throw new IllegalArgumentException("Module is not sneaky");
 		directionReceiver = (SneakyDirection) module;

@@ -1,20 +1,59 @@
-package logisticspipes.gui.guidebook.book;
+/*
+ * Copyright (c) 2020  RS485
+ *
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
+ * License 1.0.1, or MMPL. Please check the contents of the license located in
+ * https://github.com/RS485/LogisticsPipes/blob/dev/LICENSE.md
+ *
+ * This file can instead be distributed under the license terms of the
+ * MIT license:
+ *
+ * Copyright (c) 2020  RS485
+ *
+ * This MIT license was reworded to only match this file. If you use the regular
+ * MIT license in your project, replace this copyright notice (this line and any
+ * lines below and NOT the copyright line above) with the lines from the original
+ * MIT license located here: http://opensource.org/licenses/MIT
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this file and associated documentation files (the "Source Code"), to deal in
+ * the Source Code without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Source Code, and to permit persons to whom the Source Code is furnished
+ * to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Source Code, which also can be
+ * distributed under the MIT.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package network.rs485.logisticspipes.gui.guidebook.book;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import static logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 import lombok.Getter;
+import static network.rs485.logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
 
-import logisticspipes.gui.guidebook.GuiGuideBook;
-import logisticspipes.utils.GuideBookContents;
+import logisticspipes.LogisticsPipes;
+import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook;
+import network.rs485.logisticspipes.guidebook.YamlPageMetadata;
 
 public class MenuItem {
 
@@ -22,8 +61,9 @@ public class MenuItem {
 	private final int zText = 5;
 
 	// Information storage
+	private final YamlPageMetadata metadata;
 	@Getter
-	private GuideBookContents.Chapter chapter;
+	private final String target;
 
 	// Drawing variables
 	public boolean visible, hovering, enabled;
@@ -34,8 +74,9 @@ public class MenuItem {
 	private final int btnBgAtlasU0 = 64, btnBgAtlasV0 = 32, btnBgAtlasU1 = 96, btnBgAtlasV1 = 64;
 	private final int btnAtlasU0 = 0, btnAtlasV0 = 64, btnAtlasU1 = 2, btnAtlasV1 = 66, btnAtlasU2 = 14, btnAtlasV2 = 78, btnAtlasU3 = 16, btnAtlasV3 = 80;
 
-	public MenuItem(GuideBookContents.Chapter chapter) {
-		this.chapter = chapter;
+	public MenuItem(YamlPageMetadata metadata, String target) {
+		this.metadata = metadata;
+		this.target = target;
 		this.visible = true;
 		this.hovering = false;
 		this.enabled = true;
@@ -56,7 +97,9 @@ public class MenuItem {
 		GlStateManager.translate(x + icon$offSetX, y + icon$offSetY, zText);
 		GlStateManager.scale(icon$scaleX, icon$scaleY, 0);
 		RenderHelper.enableGUIStandardItemLighting();
-		mc.getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(Item.REGISTRY.getObject(new ResourceLocation(chapter.getItem()))), 0, 0);
+		Item item = Item.REGISTRY.getObject(new ResourceLocation(metadata.getIcon()));
+		if (LogisticsPipes.isDEBUG() && item == null) LogisticsPipes.log.error("Something is wrong with the item: " + metadata.getIcon());
+		mc.getRenderItem().renderItemAndEffectIntoGUI(new ItemStack(item != null ? item : Items.STICK), 0, 0);
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.scale(1 / icon$scaleX, 1 / icon$scaleY, 0);
 		GlStateManager.popMatrix();
@@ -104,7 +147,7 @@ public class MenuItem {
 
 	public void drawTitle(Minecraft mc, int mouseX, int mouseY, boolean above) {
 		if (hovering) {
-			GuiGuideBook.drawBoxedCenteredString(mc, chapter.getTitle(), mouseX, above ? btnY0 - 19 : btnY3 + 1, 20);
+			GuiGuideBook.drawBoxedCenteredString(mc, metadata.getTitle(), mouseX, above ? btnY0 - 19 : btnY3 + 1, 20);
 		}
 	}
 

@@ -31,7 +31,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCraftingPipe;
-import logisticspipes.gui.guidebook.GuiGuideBook;
 import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.interfaces.ILogisticsItem;
@@ -63,11 +62,11 @@ import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.GuideBookContents;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy implements IProxy {
@@ -255,10 +254,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void openGuideBookGui(EnumHand hand) {
 		Minecraft mc = Minecraft.getMinecraft();
-		GuideBookContents gbc = GuideBookContents.load();
-		if (gbc != null) {
-			mc.displayGuiScreen(new GuiGuideBook(hand, gbc));
-		}
+		mc.displayGuiScreen(new GuiGuideBook(hand));
 	}
 
 	@Override

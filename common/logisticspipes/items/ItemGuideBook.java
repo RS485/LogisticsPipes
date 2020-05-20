@@ -1,21 +1,19 @@
 package logisticspipes.items;
 
 import java.util.ArrayList;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
-import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.SetCurrentPagePacket;
 import logisticspipes.proxy.MainProxy;
+import network.rs485.logisticspipes.gui.guidebook.SavedTab;
+import network.rs485.logisticspipes.network.packets.SetCurrentPagePacket;
 
 public class ItemGuideBook extends LogisticsItem {
 
@@ -26,10 +24,7 @@ public class ItemGuideBook extends LogisticsItem {
 	public static void setCurrentPage(SavedTab page, ArrayList<SavedTab> tabs, EnumHand hand) {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
 				.setHand(hand)
-				.setSliderProgress(page.getProgress())
-				.setPage(page.getPage())
-				.setChapter(page.getChapter())
-				.setDivision(page.getDivision())
+				.setPage(page)
 				.setSavedTabs(tabs));
 	}
 

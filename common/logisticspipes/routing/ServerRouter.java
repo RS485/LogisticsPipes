@@ -27,7 +27,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.tileentity.TileEntity;
@@ -123,7 +122,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private final int _dimension;
 	private WeakReference<CoreRoutedPipe> _myPipeCache = null;
 	private final LinkedList<Pair<Integer, IRouterQueuedTask>> queue = new LinkedList<>();
-	private int connectionNeedsChecking = 0;
+	int connectionNeedsChecking = 0;
 	private final List<DoubleCoordinates> causedBy = new LinkedList<>();
 	private boolean isDestroyed = false;
 	private final ITileEntityChangeListener localChangeListener = new ITileEntityChangeListener() {
@@ -353,7 +352,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 	}
 
-	private void ensureLatestRoutingTable() {
+	void ensureLatestRoutingTable() {
 		if (connectionNeedsChecking != 0) {
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {
@@ -998,7 +997,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		updateLsa();
 	}
 
-	private void updateLsa() {
+	void updateLsa() {
 		//now increment LSA version in the network
 		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
 		for (IRouter r : _adjacentRouter_Old.keySet()) {

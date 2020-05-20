@@ -2,20 +2,23 @@ package logisticspipes.network.abstractpackets;
 
 import net.minecraft.util.EnumFacing;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class DirectionModuleCoordinatesPacket extends ModuleCoordinatesPacket {
-
-	@Getter
-	@Setter
 	private EnumFacing direction;
 
 	public DirectionModuleCoordinatesPacket(int id) {
 		super(id);
+	}
+
+	public DirectionModuleCoordinatesPacket setDirection(EnumFacing newDirection) {
+		direction = newDirection;
+		return this;
+	}
+
+	public EnumFacing getDirection() {
+		return direction;
 	}
 
 	@Override

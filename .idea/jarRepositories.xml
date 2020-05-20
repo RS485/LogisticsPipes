@@ -29,7 +29,7 @@
     <remote-repository>
       <option name="id" value="RS485 Cache" />
       <option name="name" value="RS485 Cache" />
-      <option name="url" value="https://rs485.network/maven-cache/" />
+      <option name="url" value="https://www.rs485.network/maven-cache/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven5" />

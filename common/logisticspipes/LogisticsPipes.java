@@ -269,7 +269,10 @@ public class LogisticsPipes {
 	@Mod.Instance("logisticspipes")
 	public static LogisticsPipes instance;
 
-	@Getter
+	public static TickExecutor getGlobalTickExecutor() {
+		return globalTickExecutor;
+	}
+
 	private static TickExecutor globalTickExecutor;
 
 	private static boolean certificateError = false;

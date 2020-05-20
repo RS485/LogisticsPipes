@@ -3,9 +3,6 @@ package logisticspipes.network.guis.module.inpipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import logisticspipes.gui.modules.GuiSneakyConfigurator;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -20,12 +17,15 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 @StaticResolve
 public class SneakyModuleInSlotGuiProvider extends ModuleCoordinatesGuiProvider {
 
-	@Getter
-	@Setter
 	private EnumFacing sneakyOrientation;
 
 	public SneakyModuleInSlotGuiProvider(int id) {
 		super(id);
+	}
+
+	public SneakyModuleInSlotGuiProvider setSneakyOrientation(EnumFacing sneakyOrientation) {
+		this.sneakyOrientation = sneakyOrientation;
+		return this;
 	}
 
 	@Override

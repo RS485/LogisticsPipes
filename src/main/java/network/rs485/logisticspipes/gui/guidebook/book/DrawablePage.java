@@ -76,40 +76,42 @@ public class DrawablePage {
 
 		// Drawing the text after the menu
 		String unformattedText = GuiGuideBook.currentPage.getText();
-		ArrayList<String> text = StringUtils.splitLines(unformattedText, mc.fontRenderer, gui.getAreaAcrossX());
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(0, 0, gui.getZText());
-		int lastFormatIndex = 0;
-		TextFormatting previousFormat = TextFormatting.RESET;
-		for (String line : text) {
-			if (line.contains("=====") || line.contains("-----")) {
-				GuiGuideBook.drawStretchingSquare(gui.getAreaX0(), gui.getAreaY0() + areaCurrentY + yOffset + 1, gui.getAreaX1() - 2, gui.getAreaY0() + areaCurrentY + yOffset + 2, 15, 3, 3, 4, 4);
-				areaCurrentY += 6;
-			} else if (line.contains("##")) {
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(gui.getAreaX0(), gui.getAreaY0() + areaCurrentY + yOffset, 0);
-				GlStateManager.scale(HEADER_SCALING - 0.01F, HEADER_SCALING - 0.01F, 1.0F);
-				line = line.replace("##", "");
-				mc.fontRenderer.drawString(previousFormat + line + TextFormatting.RESET, 0, 0, 0xFFFFFF);
-				GlStateManager.popMatrix();
-				areaCurrentY += (int) (10 * HEADER_SCALING);
-			} else {
-				mc.fontRenderer.drawString(previousFormat + line + TextFormatting.RESET, gui.getAreaX0(), gui.getAreaY0() + areaCurrentY + yOffset, 0xFFFFFF);
-				lastFormatIndex = 0;
-				for (TextFormatting format : TextFormatting.values()) {
-					if (line.lastIndexOf(format.toString()) > lastFormatIndex) {
-						previousFormat = format;
-						lastFormatIndex = line.lastIndexOf(format.toString());
+		if(!unformattedText.isEmpty()) {
+			ArrayList<String> text = StringUtils.splitLines(unformattedText, mc.fontRenderer, gui.getAreaAcrossX());
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0, 0, gui.getZText());
+			int lastFormatIndex = 0;
+			TextFormatting previousFormat = TextFormatting.RESET;
+			for (String line : text) {
+				if (line.contains("=====") || line.contains("-----")) {
+					GuiGuideBook.drawStretchingSquare(gui.getAreaX0(), gui.getAreaY0() + areaCurrentY + yOffset + 1, gui.getAreaX1() - 2, gui.getAreaY0() + areaCurrentY + yOffset + 2, 15, 3, 3, 4, 4);
+					areaCurrentY += 6;
+				} else if (line.contains("##")) {
+					GlStateManager.pushMatrix();
+					GlStateManager.translate(gui.getAreaX0(), gui.getAreaY0() + areaCurrentY + yOffset, 0);
+					GlStateManager.scale(HEADER_SCALING - 0.01F, HEADER_SCALING - 0.01F, 1.0F);
+					line = line.replace("##", "");
+					mc.fontRenderer.drawString(previousFormat + line + TextFormatting.RESET, 0, 0, 0xFFFFFF);
+					GlStateManager.popMatrix();
+					areaCurrentY += (int) (10 * HEADER_SCALING);
+				} else {
+					mc.fontRenderer.drawString(previousFormat + line + TextFormatting.RESET, gui.getAreaX0(), gui.getAreaY0() + areaCurrentY + yOffset, 0xFFFFFF);
+					lastFormatIndex = 0;
+					for (TextFormatting format : TextFormatting.values()) {
+						if (line.lastIndexOf(format.toString()) > lastFormatIndex) {
+							previousFormat = format;
+							lastFormatIndex = line.lastIndexOf(format.toString());
+						}
 					}
+					areaCurrentY += 10;
 				}
-				areaCurrentY += 10;
 			}
-		}
 
-		GlStateManager.popMatrix();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(0.0F, 0.0F, gui.getZTitleButtons());
-		GlStateManager.popMatrix();
+			GlStateManager.popMatrix();
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0.0F, 0.0F, gui.getZTitleButtons());
+			GlStateManager.popMatrix();
+		}
 		return areaCurrentY;
 	}
 }

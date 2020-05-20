@@ -1,4 +1,41 @@
-package logisticspipes.gui.guidebook;
+/*
+ * Copyright (c) 2020  RS485
+ *
+ * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
+ * License 1.0.1, or MMPL. Please check the contents of the license located in
+ * https://github.com/RS485/LogisticsPipes/blob/dev/LICENSE.md
+ *
+ * This file can instead be distributed under the license terms of the
+ * MIT license:
+ *
+ * Copyright (c) 2020  RS485
+ *
+ * This MIT license was reworded to only match this file. If you use the regular
+ * MIT license in your project, replace this copyright notice (this line and any
+ * lines below and NOT the copyright line above) with the lines from the original
+ * MIT license located here: http://opensource.org/licenses/MIT
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this file and associated documentation files (the "Source Code"), to deal in
+ * the Source Code without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Source Code, and to permit persons to whom the Source Code is furnished
+ * to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Source Code, which also can be
+ * distributed under the MIT.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package network.rs485.logisticspipes.gui.guidebook;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,13 +60,9 @@ import lombok.Getter;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
-import logisticspipes.gui.guidebook.book.DrawableMenu;
-import logisticspipes.gui.guidebook.book.DrawablePage;
-import logisticspipes.gui.guidebook.book.IDrawable;
-import logisticspipes.gui.guidebook.book.MenuItem;
-import logisticspipes.gui.guidebook.book.SavedTab;
 import logisticspipes.items.ItemGuideBook;
-import logisticspipes.utils.GuideBookContents;
+import network.rs485.logisticspipes.gui.guidebook.book.DrawablePage;
+import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
 
 public class GuiGuideBook extends GuiScreen {
 
@@ -55,24 +88,20 @@ public class GuiGuideBook extends GuiScreen {
 	private final int zText = 5;          // Text/Information Z
 	@Getter
 	private final int zBackground = 0;    // Background Z
-	public static GuideBookContents gbc;
 
 	public static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	// Buttons
 	private GuiGuideBookSlider slider;
-	private GuiGuideBookTexturedButton home, prevPage, nextPage;
+	private GuiGuideBookTexturedButton home;
 	private int maxTabs = 10;
 	private ArrayList<GuiGuideBookTabButton> tabList;
 	private GuiButton button;
 	private int tabID = 50;
 
 	private int mouseX, mouseY;
-	public ArrayList<MenuItemsDivision> divisionsList;
 	public static SavedTab currentPage;
 	private SavedTab menuPage;
-	public static DrawablePage page;
-	public static DrawableMenu menu;
 	private static String title;
 
 	// Book Experimental variables
@@ -87,13 +116,14 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiBorderWithShadowThickness = guiBorderThickness + guiShadowThickness;
 	private final int guiSliderWidth = 12, guiSliderHeight = 15, guiSepExtra = 1;
 	private final int guiTabWidth = 24, guiTabHeight = 24, guiFullTabHeight = 32;
-	private final int guiArrowWidth = 22, guiArrowHeight = 16;
 	// Usable area
 	@Getter
 	private int areaX0, areaY0, areaX1, areaY1, areaAcrossX, areaCenterX, areaAcrossY, areaCurrentlyDrawnY, areaOffsetCenterX;
 	// Menu Tiles and Text sizes
 	@Getter
-	private int tileSpacing, tileMax;
+	private final int tileSpacing = 5;
+	@Getter
+	private int tileMax;
 	@Getter
 	private final int tileSize = 40;
 
@@ -109,22 +139,12 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiAtlasV0 = 0, guiAtlasV1 = guiBorderWithShadowThickness, guiAtlasV2 = guiAtlasWidth - guiBorderWithShadowThickness, guiAtlasV3 = guiAtlasWidth;
 	private final int guiAtlasSepU0 = 96, guiAtlasSepV0 = 32, guiAtlasSepV1 = 33, guiAtlasSepU1 = 112, guiAtlasSepV2 = 63, guiAtlasSepV3 = 64;
 
-	public GuiGuideBook(EnumHand hand, GuideBookContents gbc) {
+	public GuiGuideBook(EnumHand hand) {
 		super();
 		this.hand = hand;
-		this.gbc = gbc;
-		this.page = new DrawablePage();
-		this.menu = new DrawableMenu();
-		this.currentPage = new SavedTab(gbc.getDivision(0).getChapter(0).getPage(0), page);
+		currentPage = new SavedTab();
 		this.menuPage = new SavedTab();
-		this.divisionsList = new ArrayList<>();
 		this.tabList = new ArrayList<>();
-		for (GuideBookContents.Division div : gbc.getDivisions()) {
-			divisionsList.add(new MenuItemsDivision());
-			for (GuideBookContents.Chapter chapter : div.getChapters()) {
-				divisionsList.get(div.getDindex()).getList().add(new MenuItem(chapter));
-			}
-		}
 	}
 
 	/*
@@ -132,7 +152,7 @@ public class GuiGuideBook extends GuiScreen {
 	 */
 	protected void drawCurrentEvent() {
 		int yOffset = slider.enabled ? -(int) (MathHelper.clamp(slider.getProgress() * (areaCurrentlyDrawnY - areaAcrossY), 0, areaCurrentlyDrawnY - areaAcrossY)) : 0;
-		areaCurrentlyDrawnY = currentPage.drawable.draw(mc, this, mouseX, mouseY, yOffset);
+		areaCurrentlyDrawnY = DrawablePage.draw(mc, currentPage, this, mouseX, mouseY, yOffset);
 	}
 
 	/*
@@ -177,13 +197,7 @@ public class GuiGuideBook extends GuiScreen {
 		areaOffsetCenterX = (int) (1.0 / 4 * areaAcrossX);
 		// End usable area
 		// Menu tiles and text
-		tileMax = areaAcrossX / tileSize;
-		tileSpacing = 5;
-		while ((tileMax * (tileSize + tileSpacing)) - tileSpacing > areaAcrossX) {
-			tileMax--;
-			tileSpacing = (int) ((areaAcrossX % (tileSize * tileMax)) / (float) (tileMax - 1));
-		}
-		tileSpacing = (int) ((areaAcrossX % (tileSize * tileMax)) / (float) (tileMax - 1));
+		tileMax = (int) ((areaAcrossX) / (float) (tileSize + tileSpacing));
 		// End menu
 	}
 
@@ -194,29 +208,9 @@ public class GuiGuideBook extends GuiScreen {
 		ItemStack bookItemStack = mc.player.getHeldItem(hand);
 		if (bookItemStack.hasTagCompound()) {
 			NBTTagCompound nbt = bookItemStack.getTagCompound();
-			int divisionIndex = nbt.getInteger("division");
-			int chapterIndex = nbt.getInteger("chapter");
-			int pageIndex = nbt.getInteger("page");
-			IDrawable temporaryDrawable = this.page;
-			if (!(0 <= divisionIndex && divisionIndex < gbc.getDivisions().size())) { // If division doesn't exist sets back to menu.
-				divisionIndex = 0;
-				chapterIndex = 0;
-				pageIndex = 0;
-				temporaryDrawable = this.menu;
-			} else if (!(0 <= chapterIndex && chapterIndex < gbc.getDivision(divisionIndex).getChapters().size())) {
-				chapterIndex = 0;
-				pageIndex = 0;
-			} else if (!(0 <= pageIndex && pageIndex < gbc.getDivision(divisionIndex).getChapter(chapterIndex).getNPages())) {
-				pageIndex = 0;
-			}
-			currentPage = new SavedTab(
-					gbc.getDivision(divisionIndex)
-							.getChapter(chapterIndex)
-							.getPage(pageIndex),
-					this.page, 0, nbt.getFloat("sliderProgress"));
+			currentPage = new SavedTab().fromTag(nbt.getCompoundTag("page"));
 			NBTTagList tagList = nbt.getTagList("bookmarks", 10);
 			for (NBTBase tag : tagList) tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, new SavedTab().fromTag((NBTTagCompound) tag)));
-			currentPage.drawable = temporaryDrawable;
 			return true;
 		} else {
 			SavedTab defaultPage = new SavedTab();
@@ -235,7 +229,6 @@ public class GuiGuideBook extends GuiScreen {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		for (GuiGuideBookTabButton tab : tabList) tab.drawButton(mc, mouseX, mouseY, partialTicks);
 		this.drawGuiScroll();
-		if (prevPage.visible && nextPage.visible) this.drawCenteredArrowUnderlay(areaOffsetCenterX * 2);
 		this.drawTitle();
 	}
 
@@ -243,12 +236,10 @@ public class GuiGuideBook extends GuiScreen {
 	public void initGui() {
 		if (!loadedNBT) loadedNBT = this.getDataFromNBT();
 		this.calculateConstraints();
-		this.title = this.updateTitle();
+		title = updateTitle();
 		this.slider = this.addButton(new GuiGuideBookSlider(0, guiSliderX, guiSliderY0, guiSliderY1, zTitleButtons, currentPage.getProgress(), guiSliderWidth, guiSliderHeight));
 		this.slider.enabled = false;
 		this.home = this.addButton(new GuiGuideBookTexturedButton(1, guiX3 - guiTabWidth, guiY0 - guiTabHeight, guiTabWidth, guiFullTabHeight, 16, 64, zTitleButtons, 128, 0, 16, 16, false, GuiGuideBookTexturedButton.EnumButtonType.TAB));
-		this.prevPage = this.addButton(new GuiGuideBookTexturedButton(2, areaCenterX - areaOffsetCenterX, guiY3 - 12, guiArrowWidth, guiArrowHeight, 0, 0, zTitleButtons, 144, 0, 24, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
-		this.nextPage = this.addButton(new GuiGuideBookTexturedButton(3, areaCenterX + areaOffsetCenterX - guiArrowWidth, guiY3 - 12, guiArrowWidth, guiArrowHeight, 0, 0, zTitleButtons, 168, 0, 24, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
 		this.button = this.addButton(new GuiGuideBookTexturedButton(4, guiX3 - 18 - guiTabWidth + 4, guiY0 - 18, 16, 16, 0, 0, zTitleButtons, 192, 0, 16, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
 		this.updateButtonVisibility();
 	}
@@ -275,14 +266,8 @@ public class GuiGuideBook extends GuiScreen {
 				slider.reset();
 				break;
 			case 2:
-				prevPage();
-				break;
-			case 3:
-				nextPage();
-				break;
-			case 4:
-				if (currentPage.drawable != menu) {
-					if (!tabExists(currentPage)) tryAddTab(currentPage);
+				if (!currentPage.isEqual(menuPage)) {
+					if (tabNotFound(currentPage)) tryAddTab(currentPage);
 				}
 			default:
 				break;
@@ -302,8 +287,8 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		if (currentPage.drawable == menu && mouseButton == 0) {
-			for (MenuItemsDivision div : divisionsList) {
+		if (!currentPage.getMenuItems().isEmpty()) {
+			for (MenuItemsDivision div : currentPage.getMenuItems()) {
 				for (MenuItem item : div.getList()) {
 					if (item.mousePressed()) {
 						item.playPressSound(this.mc.getSoundHandler());
@@ -314,15 +299,17 @@ public class GuiGuideBook extends GuiScreen {
 				}
 			}
 		}
-		for (GuiGuideBookTabButton tab : tabList) {
-			if (tab.mousePressed(mc, mouseX, mouseY)) {
-				if (mouseButton == 0) {
-					currentPage = new SavedTab(tab.getTab());
-					tab.playPressSound(this.mc.getSoundHandler());
-				} else if (mouseButton == 1) {
-					tryRemoveTab(tab);
-				} else if (mouseButton == 2) {
-					tab.cycleColor();
+		if(tabList != null && tabList.size() > 0) {
+			for (GuiGuideBookTabButton tab : tabList) {
+				if (tab.mousePressed(mc, mouseX, mouseY)) {
+					if (mouseButton == 0) {
+						currentPage = new SavedTab(tab.getTab());
+						tab.playPressSound(this.mc.getSoundHandler());
+					} else if (mouseButton == 1) {
+						tryRemoveTab(tab);
+					} else if (mouseButton == 2) {
+						tab.cycleColor();
+					}
 				}
 			}
 		}
@@ -331,63 +318,37 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	private void pressedItem(MenuItem item) {
-		selectChapter(item);
+		selectPage(item);
 	}
 
-	protected void selectChapter(MenuItem item) {
-		currentPage.setPage(item);
-		currentPage.drawable = page;
+	protected void selectPage(MenuItem item) {
+		currentPage = new SavedTab(item.getTarget(), 0, 0.0F);
 		title = updateTitle();
 		updateButtonVisibility();
 	}
 
 	protected static String updateTitle() {
-		String title = "";
-		title += gbc.getTitle();
-		if (currentPage.drawable == menu) {
-			title += ": Menu";
-		} else {
-			title += ": " + gbc.getDivision(currentPage.getDivision()).getTitle();
-			if (currentPage.getChapter() != -1) {
-				title += " - " + gbc.getDivision(currentPage.getDivision()).getChapter(currentPage.getChapter()).getTitle();
-			}
-		}
-		return title;
+		return currentPage.getMetadata().getTitle();
 	}
 
 	protected void updateButtonVisibility() {
-		this.prevPage.enabled = currentPage.getPage() != 0;
-		this.prevPage.visible = currentPage.drawable == page;
-		this.nextPage.enabled = currentPage.getPage() < currentPage.getPageCount() - 1;
-		this.nextPage.visible = currentPage.drawable == page;
-		this.home.visible = currentPage.drawable != menu;
+		this.home.visible = !currentPage.isEqual(menuPage);
 		int offset = 0;
 		for (GuiGuideBookTabButton tab : tabList) {
 			tab.y = guiY0;
 			tab.x = guiX3 - 2 - 2 * guiTabWidth - offset;
 			offset += guiTabWidth;
-			if (equals(tab.getTab(), currentPage)) tab.isActive = true;
-			else tab.isActive = false;
+			tab.isActive = tab.getTab().isEqual(currentPage);
 		}
-		this.button.visible = currentPage.drawable != menu && tabList.size() < maxTabs;
-		this.button.enabled = !tabExists(currentPage);
+		this.button.visible = !currentPage.isEqual(menuPage) && tabList.size() < maxTabs;
+		this.button.enabled = tabNotFound(currentPage);
 		this.button.x = guiX3 - 20 - guiTabWidth - offset;
-		this.title = updateTitle();
+		title = updateTitle();
 	}
 
-	protected boolean tabExists(SavedTab checkTab) {
-		for (GuiGuideBookTabButton tab : tabList) if (equals(tab.getTab(), checkTab)) return true;
-		return false;
-	}
-
-	protected void nextPage() {
-		if (nextPage.enabled) currentPage.nextPage();
-		updateButtonVisibility();
-	}
-
-	protected void prevPage() {
-		if (prevPage.enabled) currentPage.prevPage();
-		updateButtonVisibility();
+	protected boolean tabNotFound(SavedTab checkTab) {
+		for (GuiGuideBookTabButton tab : tabList) if (tab.getTab().isEqual(checkTab)) return false;
+		return true;
 	}
 
 	/**
@@ -397,16 +358,6 @@ public class GuiGuideBook extends GuiScreen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0.0F, 0.0F, 200);
 		this.drawCenteredString(this.fontRenderer, title, this.width / 2, guiY0 + 4, 0xFFFFFF);
-		GlStateManager.popMatrix();
-	}
-
-	/**
-	 * Draws the page count in between the page arrows
-	 */
-	public static void drawPageCount(GuiGuideBook gui) {
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(0.0F, 0.0F, gui.zTitleButtons);
-		gui.drawCenteredString(gui.mc.fontRenderer, currentPage.getPage() + 1 + "/" + currentPage.getPageCount(), gui.width / 2, gui.getGuiY2() + 13, 0xFFFFFF);
 		GlStateManager.popMatrix();
 	}
 
@@ -628,25 +579,20 @@ public class GuiGuideBook extends GuiScreen {
 		super.drawHorizontalLine(startX, endX, y, color);
 	}
 
-	boolean equals(SavedTab a, SavedTab b) {
-		return a.getPage() == b.getPage() && a.getChapter() == b.getChapter() && a.getDivision() == b.getDivision() && a.drawable == b.drawable;
-	}
+	public static class MenuItemsDivision {
 
-	public class MenuItemsDivision {
+		public String name;
 
 		@Getter
-		private ArrayList<MenuItem> list;
+		private final ArrayList<MenuItem> list;
 
-		public MenuItemsDivision() {
-			this.list = new ArrayList<>();
+		public MenuItemsDivision(String name, ArrayList<MenuItem> list) {
+			this.list = list;
+			this.name = name;
 		}
 
 		public void add(MenuItem item) {
 			list.add(item);
 		}
-	}
-
-	public class MenuItemsChapter {
-
 	}
 }

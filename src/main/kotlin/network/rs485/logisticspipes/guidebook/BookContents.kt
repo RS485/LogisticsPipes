@@ -44,19 +44,23 @@ import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import java.io.*
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.nio.file.Paths
 
 
 val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon = "logisticspipes:unrouted_pipe")
 
 object BookContents {
-    val pageMetadataMap = hashMapOf<String, YamlPageMetadata>()
+
+    const val MAIN_MENU_FILE = "/main_menu.md"
+    val pageMetadataMap = hashMapOf<String, LoadedPage>()
 
     fun get(markdownFile: String): LoadedPage {
-        // TODO add hashmap cache
-        val pageString = getFileAsString(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode)
-        return LoadedPage(pageString, markdownFile)
+        return pageMetadataMap.computeIfAbsent(markdownFile) {
+            LoadedPage(getFileAsString(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode), it)
+        }
     }
 }
 
@@ -64,16 +68,16 @@ private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex
 
 fun getFileAsString(path: String, lang: String): String {
     return try {
-        val bookFile = Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(LPConstants.LP_MOD_ID, "book/$lang/$path"))
+        val bookFile = Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(LPConstants.LP_MOD_ID, "book/$lang$path"))
         bookFile.inputStream.bufferedReader().readLines().joinToString("\n")
     } catch (e: IOException) {
         if (lang != "en_us") {
             // Didn't find current file, checking for english version.
-            if (LogisticsPipes.isDEBUG()) LogisticsPipes.log.error("Language $lang for the current file (book_2/$lang$path) was not found. Defaulting to en_us.")
+            if (LogisticsPipes.isDEBUG()) LogisticsPipes.log.error("Language $lang for the current file (book/$lang$path) was not found. Defaulting to en_us.")
             getFileAsString(path, "en_us")
         } else {
             // English not found, this may be normal. Maybe the previous language file pointed to a non-existent file.
-            val errorMsg = "The requested file (book_2/$lang$path) was not found"
+            val errorMsg = "The requested file (book/$lang$path) was not found"
             if (LogisticsPipes.isDEBUG()) LogisticsPipes.log.error("$errorMsg. Make sure it exists or if the path is correct.")
             throw FileNotFoundException(errorMsg)
         }
@@ -94,10 +98,8 @@ fun String.parseMetadata(markdownFile: String): YamlPageMetadata = if (this.isNo
 fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
     // Normalize the given paths, replacing any ./.. with the appropriate absolute (resource location) paths
     val menu = this.menu.mapValues { entry ->
-        entry.value.flatMap { _ ->
-            entry.value.map {
-                Paths.get(File(markdownFile).parent ?: "", it).normalize().parent.toString()
-            }
+        entry.value.map {
+            Paths.get(File(markdownFile).parent ?: "", it).normalize().toString()
         }
     }
     return YamlPageMetadata(this.title, this.icon, menu, this.menuAsList)
@@ -109,14 +111,14 @@ data class YamlPageMetadata(val title: String,
                             val menu: Map<String, List<String>> = mapOf(),
                             val menuAsList: Boolean = false)
 
-class LoadedPage(unformattedText: String, val fileLocation: String) {
-    val metadataString: String
+class LoadedPage(unformattedText: String, fileLocation: String) {
+    private val metadataString: String
     val markdownString: String
     val metadata: YamlPageMetadata
 
     init {
         // Splits the input string into the metadata and the markdown parts of the page.
-        val result = metadataRegex.matchEntire(unformattedText) ?: throw RuntimeException("Could not load page, regex failed")
+        val result = metadataRegex.matchEntire(unformattedText) ?: throw RuntimeException("Could not load page, regex failed in $fileLocation:\n$unformattedText")
         metadataString = result.groups[1]?.value?.trim() ?: ""
         markdownString = result.groups[2]?.value?.trim() ?: ""
         metadata = metadataString.parseMetadata(fileLocation)

@@ -42,7 +42,7 @@ import logisticspipes.LogisticsPipes
 import logisticspipes.modules.abstractmodules.LogisticsModule
 
 abstract class AsyncModule<S, C> : LogisticsModule() {
-    var everyNthTick: Int = 20
+    protected open var everyNthTick: Int = 20
     private var currentTick: Int = 0
     private var currentTask: Deferred<C>? = null
 

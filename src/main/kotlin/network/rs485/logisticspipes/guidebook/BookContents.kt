@@ -102,14 +102,15 @@ fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
             Paths.get(File(markdownFile).parent ?: "", it).normalize().toString()
         }
     }
-    return YamlPageMetadata(this.title, this.icon, menu, this.menuAsList)
+    return YamlPageMetadata(this.title, this.icon, menu, this.list, this.text)
 }
 
 @Serializable
 data class YamlPageMetadata(val title: String,
                             val icon: String = "logisticspipes:itemcard",
                             val menu: Map<String, List<String>> = mapOf(),
-                            val menuAsList: Boolean = false)
+                            val list: Boolean = false,
+                            val text: String = "after")
 
 class LoadedPage(unformattedText: String, fileLocation: String) {
     private val metadataString: String

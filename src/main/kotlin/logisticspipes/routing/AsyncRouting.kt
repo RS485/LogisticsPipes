@@ -37,8 +37,9 @@
 
 package logisticspipes.routing
 
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
+import logisticspipes.LogisticsPipes
 
 object AsyncRouting {
     fun getDistance(sourceRouter: ServerRouter, destinationRouter: IRouter): List<ExitRoute>? {
@@ -49,18 +50,16 @@ object AsyncRouting {
         }
     }
 
-    suspend fun updateRoutingTable(serverRouter: ServerRouter, context: CoroutineContext) {
+    suspend fun updateRoutingTable(serverRouter: ServerRouter) {
         if (serverRouter.connectionNeedsChecking != 0) {
-            withContext(context) {
+            withContext(LogisticsPipes.getGlobalTickExecutor().asCoroutineDispatcher()) {
                 if (serverRouter.checkAdjacentUpdate()) {
                     serverRouter.updateLsa()
                 }
             }
         }
         if (serverRouter._LSAVersion > ServerRouter._lastLSAVersion[serverRouter.simpleID]) {
-            withContext(context) {
-                serverRouter.CreateRouteTable(serverRouter._LSAVersion)
-            }
+            serverRouter.CreateRouteTable(serverRouter._LSAVersion)
         }
     }
 }

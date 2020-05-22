@@ -101,8 +101,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private final int _zCoord;
 	// these are maps, not hashMaps because they are unmodifiable Collections to avoid concurrentModification exceptions.
 	public Map<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<>();
-	public Map<IRouter, ExitRoute> _adjacentRouter = new HashMap<>();
-	public Map<IRouter, ExitRoute> _adjacentRouter_Old = new HashMap<>();
+	public Map<ServerRouter, ExitRoute> _adjacentRouter = new HashMap<>();
+	public Map<ServerRouter, ExitRoute> _adjacentRouter_Old = new HashMap<>();
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> _powerAdjacent = new ArrayList<>();
 	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> _subSystemPowerAdjacent = new ArrayList<>();
 	public boolean[] sideDisconnected = new boolean[6];
@@ -338,8 +338,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public boolean isValidCache() {
-		return getPipe() != null;
+	public boolean isCacheInvalid() {
+		return getPipe() == null;
 	}
 
 	private void lazyUpdateRoutingTable() {
@@ -535,11 +535,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 
 		if (adjacentChanged) {
-			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<>();
+			HashMap<ServerRouter, ExitRoute> adjacentRouter = new HashMap<>();
 			EnumSet<EnumFacing> routedexits = EnumSet.noneOf(EnumFacing.class);
 			EnumMap<EnumFacing, Integer> subpowerexits = new EnumMap<>(EnumFacing.class);
 			for (Entry<CoreRoutedPipe, ExitRoute> pipe : adjacent.entrySet()) {
-				adjacentRouter.put(pipe.getKey().getRouter(), pipe.getValue());
+				adjacentRouter.put((ServerRouter) pipe.getKey().getRouter(), pipe.getValue());
 				if ((pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && !routedexits.contains(pipe.getValue().exitOrientation))) {
 					routedexits.add(pipe.getValue().exitOrientation);
 				}
@@ -603,7 +603,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	private void SendNewLSA() {
 		HashMap<IRouter, Quartet<Double, EnumSet<PipeRoutingConnectionType>, List<IFilter>, Integer>> neighboursWithMetric = new HashMap<>();
-		for (Entry<IRouter, ExitRoute> adjacent : _adjacentRouter.entrySet()) {
+		for (Entry<ServerRouter, ExitRoute> adjacent : _adjacentRouter.entrySet()) {
 			neighboursWithMetric.put(adjacent.getKey(), new Quartet<>(adjacent
 					.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent
 					.getValue().filters, adjacent.getValue().blockDistance));
@@ -692,7 +692,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
-		for (Entry<IRouter, ExitRoute> pipe : _adjacentRouter.entrySet()) {
+		for (Entry<ServerRouter, ExitRoute> pipe : _adjacentRouter.entrySet()) {
 			ExitRoute currentE = pipe.getValue();
 			IRouter newRouter = pipe.getKey();
 			if (newRouter != null) {
@@ -914,8 +914,16 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		debug.done();
 	}
 
-	@Override
-	public void act(BitSet hasBeenProcessed, IRAction actor) {
+	/**
+	 * @param hasBeenProcessed
+	 *            a bitset flagging which nodes have already been acted on (the
+	 *            router should set the bit for it's own id, then return true.
+	 * @param actor
+	 *            the visitor
+	 * @return true if the bitset was cleared at some stage during the process,
+	 *         resulting in a potentially incomplete bitset.
+	 */
+	public void act(BitSet hasBeenProcessed, Action actor) {
 		if (hasBeenProcessed.get(simpleID)) {
 			return;
 		}
@@ -925,10 +933,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 
 		actor.doTo(this);
-		for (IRouter r : _adjacentRouter.keySet()) {
+		for (ServerRouter r : _adjacentRouter.keySet()) {
 			r.act(hasBeenProcessed, actor);
 		}
-		return;
 	}
 
 	/**
@@ -960,7 +967,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		_hasInterestIn.clear();
 	}
 
-	@Override
 	public boolean checkAdjacentUpdate() {
 		boolean blockNeedsUpdate = recheckAdjacent();
 		if (!blockNeedsUpdate) {
@@ -975,7 +981,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return true;
 	}
 
-	@Override
 	public void flagForRoutingUpdate() {
 		_LSAVersion++;
 		//if(LogisticsPipes.DEBUG)
@@ -985,13 +990,13 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private void updateAdjacentAndLsa() {
 		//this already got a checkAdjacentUpdate, so start the recursion with neighbors
 		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
-		IRAction flood = new floodCheckAdjacent();
+		Action flood = new floodCheckAdjacent();
 		visited.set(simpleID);
 		// for all connected updatecurrent and previous
-		for (IRouter r : _adjacentRouter_Old.keySet()) {
+		for (ServerRouter r : _adjacentRouter_Old.keySet()) {
 			r.act(visited, flood);
 		}
-		for (IRouter r : _adjacentRouter.keySet()) {
+		for (ServerRouter r : _adjacentRouter.keySet()) {
 			r.act(visited, flood);
 		}
 		updateLsa();
@@ -1000,7 +1005,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	void updateLsa() {
 		//now increment LSA version in the network
 		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
-		for (IRouter r : _adjacentRouter_Old.keySet()) {
+		for (ServerRouter r : _adjacentRouter_Old.keySet()) {
 			r.act(visited, new flagForLSAUpdate());
 		}
 		_adjacentRouter_Old = new HashMap<>();
@@ -1037,9 +1042,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 			ensureChangeListenerAttachedToPipe(pipe);
 			lazyUpdateRoutingTable();
-			return;
-		}
-		if (Configs.MULTI_THREAD_NUMBER > 0) {
+		} else if (Configs.MULTI_THREAD_NUMBER > 0) {
 			lazyUpdateRoutingTable();
 		}
 	}
@@ -1161,7 +1164,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return null != dir && sideDisconnected[dir.ordinal()];
 	}
 
-	@Override
 	public void updateInterests() {
 		if (--ticksUntillNextInventoryCheck > 0) {
 			return;
@@ -1257,11 +1259,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public int getDimension() {
-		return _dimension;
-	}
-
-	@Override
 	public void queueTask(int i, IRouterQueuedTask callable) {
 		queue.add(new Pair<>(i + MainProxy.getGlobalTick(), callable));
 	}
@@ -1288,50 +1285,48 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 	}
 
+	interface Action {
+		boolean isInteresting(ServerRouter router);
+
+		void doTo(ServerRouter router);
+	}
+
 	/**
 	 * Floodfill recheckAdjacent, leave _prevAdjacentRouter around for LSA
 	 * updating
 	 */
-	static class floodCheckAdjacent implements IRAction {
+	static class floodCheckAdjacent implements Action {
 
-		@Override
-		public boolean isInteresting(IRouter that) {
-			return that.checkAdjacentUpdate();
+		public boolean isInteresting(ServerRouter router) {
+			return router.checkAdjacentUpdate();
 		}
 
-		@Override
-		public void doTo(IRouter that) {
-
-		}
+		public void doTo(ServerRouter router) {}
 	}
 
 	/**
 	 * Floodfill LSA increment and clean up the _prevAdjacentRouter list left by
 	 * floodCheckAdjacent
 	 */
-	static class flagForLSAUpdate implements IRAction {
+	static class flagForLSAUpdate implements Action {
 
-		@Override
-		public boolean isInteresting(IRouter that) {
+		public boolean isInteresting(ServerRouter router) {
 			return true;
 		}
 
-		@Override
-		public void doTo(IRouter that) {
-			that.flagForRoutingUpdate();
+		public void doTo(ServerRouter router) {
+			router.flagForRoutingUpdate();
 		}
 	}
 
-	static class floodClearCache implements IRAction {
+	static class floodClearCache implements Action {
 
-		@Override
-		public boolean isInteresting(IRouter that) {
+		public boolean isInteresting(ServerRouter router) {
 			return true;
 		}
 
-		@Override
-		public void doTo(IRouter that) {
-			CacheHolder.clearCache(((ServerRouter) that).oldTouchedPipes);
+		public void doTo(ServerRouter router) {
+			CacheHolder.clearCache(router.oldTouchedPipes);
 		}
 	}
 

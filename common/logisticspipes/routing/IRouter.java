@@ -7,7 +7,6 @@
 
 package logisticspipes.routing;
 
-import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +28,6 @@ public interface IRouter extends LPFinalSerializable {
 	void destroy();
 
 	void update(boolean doFullRefresh, CoreRoutedPipe pipe);
-
-	void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 
 	boolean isRoutedExit(EnumFacing connection);
 
@@ -64,21 +61,6 @@ public interface IRouter extends LPFinalSerializable {
 
 	DoubleCoordinates getLPPosition();
 
-	/**
-	 * @param hasBeenProcessed
-	 *            a bitset flagging which nodes have already been acted on (the
-	 *            router should set the bit for it's own id, then return true.
-	 * @param actor
-	 *            the visitor
-	 * @return true if the bitset was cleared at some stage during the process,
-	 *         resulting in a potentially incomplete bitset.
-	 */
-	void act(BitSet hasBeenProcessed, IRAction actor);
-
-	void flagForRoutingUpdate();
-
-	boolean checkAdjacentUpdate();
-
 	/* Automated Disconnection */
 	boolean isSideDisconnected(EnumFacing dir);
 
@@ -90,14 +72,12 @@ public interface IRouter extends LPFinalSerializable {
 
 	List<Pair<ISubSystemPowerProvider, List<IFilter>>> getSubSystemPowerProvider();
 
-	boolean isValidCache();
+	boolean isCacheInvalid();
 
 	//force-update LSA version in the network
 	void forceLsaUpdate();
 
 	List<ExitRoute> getRoutersOnSide(EnumFacing direction);
-
-	int getDimension();
 
 	void queueTask(int i, IRouterQueuedTask callable);
 
@@ -106,10 +86,4 @@ public interface IRouter extends LPFinalSerializable {
 		output.writeSerializable(getLPPosition());
 	}
 
-	interface IRAction {
-
-		boolean isInteresting(IRouter that);
-
-		void doTo(IRouter that);
-	}
 }

@@ -94,7 +94,7 @@ public class RequestTreeNode {
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 
-			if (!r.isValidCache()) {
+			if (r.isCacheInvalid()) {
 				continue; //Skip Routers without a valid pipe
 			}
 
@@ -104,7 +104,7 @@ public class RequestTreeNode {
 			}
 		}
 		// closer providers are good
-		Collections.sort(validSources, new workWeightedSorter(1.0));
+		validSources.sort(new workWeightedSorter(1.0));
 
 		List<Pair<IProvide, List<IFilter>>> providers = new LinkedList<>();
 		validSources.stream().filter(r -> r.containsFlag(PipeRoutingConnectionType.canRequestFrom)).forEach(r -> {
@@ -398,7 +398,7 @@ public class RequestTreeNode {
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
 
-			if (!r.isValidCache()) {
+			if (r.isCacheInvalid()) {
 				continue; //Skip Routers without a valid pipe
 			}
 

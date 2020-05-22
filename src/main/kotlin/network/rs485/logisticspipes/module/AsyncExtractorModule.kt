@@ -40,9 +40,7 @@ package network.rs485.logisticspipes.module
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.*
-import logisticspipes.LogisticsPipes
 import logisticspipes.interfaces.*
 import logisticspipes.logistics.AsyncLogisticsManager
 import logisticspipes.network.NewGuiHandler
@@ -144,13 +142,12 @@ class AsyncExtractorModule : AsyncModule<List<Pair<Int, ItemStack>?>?, List<Asyn
         var itemsLeft = itemsToExtract
         val jamList = LinkedList<Int>()
         val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
-        val lpContext = LogisticsPipes.getGlobalTickExecutor().asCoroutineDispatcher()
 
         return setupObject.asFlow().filterNotNull().flatMapConcat { pair ->
             flow<AsyncResult> {
                 if (itemsLeft > 0) {
                     val itemid = ItemIdentifier.get(pair.second)
-                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter, jamList, lpContext) { itemsLeft > 0 }.map { reply ->
+                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter, jamList) { itemsLeft > 0 }.map { reply ->
                         jamList.add(reply.first)
                         itemsLeft -= getExtractionMax(itemsLeft, pair.second, reply.second)
                         AsyncResult(pair.first, itemid, reply.first, reply.second)

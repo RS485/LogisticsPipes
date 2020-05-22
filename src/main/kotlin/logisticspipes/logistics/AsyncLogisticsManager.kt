@@ -39,7 +39,6 @@ package logisticspipes.logistics
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import logisticspipes.modules.abstractmodules.LogisticsModule
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.proxy.SimpleServiceLocator
@@ -51,31 +50,27 @@ import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
 import java.util.*
 import java.util.stream.Stream
-import kotlin.coroutines.CoroutineContext
 
 object AsyncLogisticsManager {
     @ExperimentalCoroutinesApi
-    fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>, context: CoroutineContext, filter: () -> Boolean) = flow {
-        var destination = getDestination(itemid, canBeDefault, sourceRouter, routersToExclude, context)
+    fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>, filter: () -> Boolean) = flow {
+        var destination = getDestination(itemid, canBeDefault, sourceRouter, routersToExclude)
         while (filter() && Objects.nonNull(destination)) {
             emit(destination!!)
-            destination = getDestination(itemid, canBeDefault, sourceRouter, routersToExclude, context)
+            destination = getDestination(itemid, canBeDefault, sourceRouter, routersToExclude)
         }
-    }.flowOn(context)
+    }
 
-    suspend fun getDestination(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>, context: CoroutineContext): Pair<Int, SinkReply>? {
-        AsyncRouting.updateRoutingTable(sourceRouter, context)
+    suspend fun getDestination(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>): Pair<Int, SinkReply>? {
+        AsyncRouting.updateRoutingTable(sourceRouter)
         val destinationStream = ServerRouter.getRoutersInterestedIn(itemid).stream()
                 .mapToObj(SimpleServiceLocator.routerManager::getServerRouter)
                 .flatMap {
                     it?.let { router ->
-                        AsyncRouting.getDistance(sourceRouter, router)
-                                ?.let { routes ->
-                                    routes.stream()
-                                            .filter { exitRoute -> exitRoute.containsFlag(PipeRoutingConnectionType.canRouteTo) }
-                                }
-                    }
-                            ?: Stream.empty()
+                        AsyncRouting.getDistance(sourceRouter, router)?.let { routes ->
+                            routes.stream().filter { exitRoute -> exitRoute.containsFlag(PipeRoutingConnectionType.canRouteTo) }
+                        }
+                    } ?: Stream.empty()
                 }
         return getBestReply(itemid, sourceRouter, destinationStream, routersToExclude, canBeDefault)
     }

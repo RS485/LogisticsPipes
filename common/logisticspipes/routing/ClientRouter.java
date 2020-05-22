@@ -1,7 +1,6 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -44,9 +43,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {
-
-	}
+	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {}
 
 	@Override
 	public boolean isRoutedExit(EnumFacing connection) {
@@ -141,28 +138,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void clearPipeCache() {
-		//Not On Client Side
-	}
+	public void clearPipeCache() {}
 
 	@Override
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider() {
 		return null;
-	}
-
-	@Override
-	public void act(BitSet hasBeenProcessed, IRAction actor) {
-
-	}
-
-	@Override
-	public void flagForRoutingUpdate() {
-
-	}
-
-	@Override
-	public boolean checkAdjacentUpdate() {
-		return false;
 	}
 
 	@Override
@@ -171,23 +151,16 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void updateInterests() {
-
-	}
-
-	@Override
 	public List<ExitRoute> getDistanceTo(IRouter r) {
 		return null;
 	}
 
 	@Override
-	public void clearInterests() {
-
-	}
+	public void clearInterests() {}
 
 	@Override
-	public boolean isValidCache() {
-		return true;
+	public boolean isCacheInvalid() {
+		return false;
 	}
 
 	@Override
@@ -211,11 +184,6 @@ public class ClientRouter implements IRouter {
 	@Override
 	public List<ExitRoute> getRoutersOnSide(EnumFacing exitOrientation) {
 		return null;
-	}
-
-	@Override
-	public int getDimension() {
-		return 0;
 	}
 
 	@Override

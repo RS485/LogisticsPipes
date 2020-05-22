@@ -116,6 +116,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			_upgradeManagers[i] = new ModuleUpgradeManager(this, upgradeManager);
 		}
 		_module = new ChassiModule(getChassiSize(), this);
+		_module.registerHandler(this, this);
 		hud = new HudChassisPipe(this, _moduleInventory);
 		pointedDirection = null;
 	}

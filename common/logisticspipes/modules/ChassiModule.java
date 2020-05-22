@@ -30,7 +30,6 @@ public class ChassiModule extends LogisticsModule implements Gui {
 	public ChassiModule(int moduleCount, PipeLogisticsChassi parentChassis) {
 		modules = new LogisticsModule[moduleCount];
 		this.parentChassis = parentChassis;
-		_service = parentChassis;
 		registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 

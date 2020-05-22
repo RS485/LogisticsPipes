@@ -45,11 +45,14 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
     protected open var everyNthTick: Int = 20
     private var currentTick: Int = 0
     private var currentTask: Deferred<C>? = null
+    private var currentSyncWork: Runnable? = null
+    private val lock: Any = object {}
 
     override fun tick() {
         when {
-            currentTask?.isActive == true -> return
+            currentTask?.isActive == true -> runSyncWork()
             currentTask?.isCompleted == true -> try {
+                runSyncWork()
                 completeTick(currentTask!!)
             } finally {
                 currentTask = null
@@ -64,6 +67,23 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
                     }
                 }
             }
+        }
+    }
+
+    private fun runSyncWork() {
+        if (currentSyncWork != null) {
+            synchronized(lock) { currentSyncWork?.also { currentSyncWork = null } }?.run()
+        }
+    }
+
+    fun appendSyncWork(runnable: Runnable) {
+        synchronized(lock) {
+            currentSyncWork = currentSyncWork?.let { previousSyncWork ->
+                Runnable {
+                    previousSyncWork.run()
+                    runnable.run()
+                }
+            } ?: runnable
         }
     }
 

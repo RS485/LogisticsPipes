@@ -104,6 +104,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? {
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return null
         val directedInventoryUtil = _service.getSneakyInventory(direction) ?: return null
+        if (directedInventoryUtil.sizeInventory == 0) return null
         val limit = TimeUnit.NANOSECONDS.toNanos(500)
 
         class ChunkedItemChannel(private var lastSlotSeen: Int = 0) :

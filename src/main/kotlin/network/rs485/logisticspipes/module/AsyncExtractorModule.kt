@@ -67,7 +67,6 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.fml.client.FMLClientHandler
 import network.rs485.grow.ChunkedChannel
-import network.rs485.grow.takeWhileServerNotOverloaded
 import network.rs485.grow.takeWhileTimeRemains
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -117,7 +116,6 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
                 val start = System.nanoTime()
                 return (lastSlotSeen until directedInventoryUtil.sizeInventory).asSequence()
                         .chunked(4)
-                        .takeWhileServerNotOverloaded()
                         .takeWhileTimeRemains(start, limit)
                         .flatten()
                         .map { slot ->

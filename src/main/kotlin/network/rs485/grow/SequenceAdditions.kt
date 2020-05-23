@@ -37,13 +37,6 @@
 
 package network.rs485.grow
 
-import net.minecraft.server.MinecraftServer
-import net.minecraftforge.fml.common.FMLCommonHandler
-
 fun <T> Sequence<T>.takeWhileTimeRemains(startTime: Long, timeLimit: Long): Sequence<T> {
     return takeWhile { System.nanoTime() - startTime < timeLimit }
-}
-
-fun <T> Sequence<T>.takeWhileServerNotOverloaded(): Sequence<T> {
-    return takeWhile { MinecraftServer.getCurrentTimeMillis() - FMLCommonHandler.instance().minecraftServerInstance.currentTime < 49L }
 }

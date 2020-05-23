@@ -33,20 +33,24 @@ public class LPTickHandler {
 
 	@SubscribeEvent
 	public void clientTick(ClientTickEvent event) {
-		FluidIdentifier.initFromForge(true);
-		SimpleServiceLocator.clientBufferHandler.clientTick(event);
-		MainProxy.proxy.tickClient();
-		DebugGuiController.instance().execClient();
+		if (event.phase == Phase.END) {
+			FluidIdentifier.initFromForge(true);
+			SimpleServiceLocator.clientBufferHandler.clientTick();
+			MainProxy.proxy.tickClient();
+			DebugGuiController.instance().execClient();
+		}
 	}
 
 	@SubscribeEvent
 	public void serverTick(ServerTickEvent event) {
-		HudUpdateTick.tick();
-		SimpleServiceLocator.serverBufferHandler.serverTick(event);
-		MainProxy.proxy.tickServer();
-		LPTickHandler.adjChecksDone = 0;
-		DebugGuiController.instance().execServer();
-		LogisticsPipes.getGlobalTickExecutor().tick();
+		if (event.phase == Phase.END) {
+			HudUpdateTick.tick();
+			SimpleServiceLocator.serverBufferHandler.serverTick();
+			MainProxy.proxy.tickServer();
+			LPTickHandler.adjChecksDone = 0;
+			DebugGuiController.instance().execServer();
+			LogisticsPipes.getGlobalTickExecutor().tick();
+		}
 	}
 
 	private static Map<World, LPWorldInfo> worldInfo = new MapMaker().weakKeys().makeMap();

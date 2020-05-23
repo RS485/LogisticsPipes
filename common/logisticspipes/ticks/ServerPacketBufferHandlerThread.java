@@ -57,10 +57,7 @@ public class ServerPacketBufferHandlerThread {
 		return out.toByteArray();
 	}
 
-	public void serverTick(TickEvent.ServerTickEvent event) {
-		if (event.phase != TickEvent.Phase.END) {
-			return;
-		}
+	public void serverTick() {
 		serverDecompressorThread.serverTickEnd();
 	}
 

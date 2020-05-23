@@ -54,10 +54,7 @@ public class ClientPacketBufferHandlerThread {
 		return out.toByteArray();
 	}
 
-	public void clientTick(TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.END) {
-			return;
-		}
+	public void clientTick() {
 		clientDecompressorThread.clientTickEnd();
 	}
 

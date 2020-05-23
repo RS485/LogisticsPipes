@@ -38,16 +38,19 @@
 package network.rs485.logisticspipes.module
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.abstractmodules.LogisticsModule
+import java.time.Duration
 
 abstract class AsyncModule<S, C> : LogisticsModule() {
-    protected open var everyNthTick: Int = 20
+    protected open val everyNthTick: Int = 20
     private var currentTick: Int = 0
-    private var currentTask: Deferred<C>? = null
+    private var currentTask: Deferred<C?>? = null
     private var currentSyncWork: Runnable? = null
     private val lock: Any = object {}
 
+    @ExperimentalCoroutinesApi
     override fun tick() {
         when {
             currentTask?.isActive == true -> runSyncWork()
@@ -56,15 +59,20 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
                 completeTick(currentTask!!)
             } finally {
                 currentTask = null
-                --currentTick
             }
-            else -> if (--currentTick < 0) {
-                currentTick = everyNthTick
+            else -> if (_service.isNthTick(everyNthTick)) {
                 val setup = tickSetup()
                 currentTask = GlobalScope.async {
-                    withContext(LogisticsPipes.singleThreadExecutor.asCoroutineDispatcher()) {
-                        tickAsync(setup)
+                    try {
+                        return@async withTimeout(Duration.ofSeconds(10)) {
+                            tickAsync(setup)
+                        }
+                    } catch (e: TimeoutCancellationException) {
+                        LogisticsPipes.log.warn("Timeout on async module $this")
+                    } catch (e: RuntimeException) {
+                        LogisticsPipes.log.error("Error on async module $this", e)
                     }
+                    return@async null
                 }
             }
         }
@@ -89,7 +97,7 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
 
     abstract fun tickSetup(): S
 
-    abstract fun completeTick(task: Deferred<C>)
+    abstract fun completeTick(task: Deferred<C?>)
 
     abstract suspend fun tickAsync(setupObject: S): C
 }

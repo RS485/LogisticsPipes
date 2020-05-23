@@ -89,39 +89,42 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
     override val pipeGuiProvider: ModuleCoordinatesGuiProvider = NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider::class.java).setSneakyOrientation(_sneakyDirection)
     override val inHandGuiProvider: ModuleInHandGuiProvider = NewGuiHandler.getGui(SneakyModuleInHandGuiProvider::class.java)
 
+    private val stacksToExtract: Int
+        get() = 1 + (upgradeManager?.itemStackExtractionUpgrade ?: 0)
     private val itemsToExtract: Int
         get() = upgradeManager?.let { 2.0.pow(it.itemExtractionUpgrade) }?.toInt() ?: 0
     private val energyPerItem: Int
         get() = upgradeManager?.let { 5 * 1.1.pow(it.itemExtractionUpgrade) * 1.2.pow(it.itemStackExtractionUpgrade) }?.toInt() ?: 5
     private val itemSendMode: CoreRoutedPipe.ItemSendMode
         get() = upgradeManager?.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } } ?: CoreRoutedPipe.ItemSendMode.Normal
-    override var everyNthTick: Int
+    override val everyNthTick: Int
         get() = (80 / (upgradeManager?.let { 2.0.pow(it.actionSpeedUpgrade) } ?: 1.0)).toInt().coerceAtLeast(2)
-        set(value) {}
 
-
+    @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? {
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return null
         val directedInventoryUtil = _service.getSneakyInventory(direction) ?: return null
         if (directedInventoryUtil.sizeInventory == 0) return null
-        val limit = TimeUnit.NANOSECONDS.toNanos(500)
+        val limit = TimeUnit.MICROSECONDS.toNanos(50)
+        var stacksLeft = stacksToExtract
+        var itemsLeft = itemsToExtract
 
-        class ChunkedItemChannel(private var lastSlotSeen: Int = 0) :
+        class ChunkedItemChannel(private var currentSlot: Int = 0) :
                 ChunkedChannel<Pair<Int, ItemStack>>(Channel(Channel.UNLIMITED)) {
 
-            override fun hasWork(): Boolean = lastSlotSeen + 1 < directedInventoryUtil.sizeInventory
+            override fun hasWork(): Boolean = !channel.isClosedForReceive && stacksLeft > 0 && itemsLeft > 0 && currentSlot < directedInventoryUtil.sizeInventory
             override fun rerun(r: Runnable) = appendSyncWork(r)
 
             override fun sequenceFactory(): Sequence<Pair<Int, ItemStack>> {
                 val start = System.nanoTime()
-                return (lastSlotSeen until directedInventoryUtil.sizeInventory).asSequence()
-                        .chunked(4)
+                return (currentSlot until directedInventoryUtil.sizeInventory).asSequence()
+                        .constrainOnce()
                         .takeWhileTimeRemains(start, limit)
-                        .flatten()
                         .map { slot ->
                             val stack = directedInventoryUtil.getStackInSlot(slot)
-                            // stores the last seen slot for continuing this sequence at a later time
-                            lastSlotSeen = slot
+                            itemsLeft -= stack.count.also { if (it > 0) --stacksLeft }
+                            // stores the next slot for continuing this sequence at a later time
+                            currentSlot = slot + 1
                             (slot to stack).takeUnless { stack.isEmpty }
                         }.filterNotNull()
             }
@@ -132,8 +135,8 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
         return chunkedChannel.channel
     }
 
-    private fun getExtractionMax(itemsLeft: Int, stack: ItemStack, sinkReply: SinkReply): Int {
-        return min(itemsLeft, stack.count).let {
+    private fun getExtractionMax(itemsLeft: Int, stackCount: Int, sinkReply: SinkReply): Int {
+        return min(itemsLeft, stackCount).let {
             if (sinkReply.maxNumberOfItems > 0) {
                 min(it, sinkReply.maxNumberOfItems)
             } else it
@@ -153,11 +156,14 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
             flow<AsyncResult> {
                 if (itemsLeft > 0) {
+                    var stackLeft = pair.second.count
                     val itemid = ItemIdentifier.get(pair.second)
-                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter, jamList) { itemsLeft > 0 }
+                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter, jamList) { itemsLeft > 0 && stackLeft > 0 }
                             .map { reply ->
                                 jamList.add(reply.first)
-                                itemsLeft -= getExtractionMax(itemsLeft, pair.second, reply.second)
+                                val maxExtraction = getExtractionMax(itemsLeft, stackLeft, reply.second)
+                                stackLeft -= maxExtraction
+                                itemsLeft -= maxExtraction
                                 AsyncResult(pair.first, itemid, reply.first, reply.second)
                             })
                 }
@@ -167,25 +173,27 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
 
     @ExperimentalCoroutinesApi
     override fun completeTick(task: Deferred<List<AsyncResult>?>) {
+        // always get result, fast exit if it is null or throw on error
+        val result = task.getCompleted() ?: return
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return
         val directedInventoryUtil = _service.getSneakyInventory(direction) ?: return
-        val inventorySize = directedInventoryUtil.sizeInventory
         var itemsLeft = itemsToExtract
-        task.getCompleted()?.forEach { obj ->
-            if (itemsLeft <= 0) return@forEach
-            if (obj.slot >= inventorySize) return@forEach
-            val stack = directedInventoryUtil.getStackInSlot(obj.slot)
-            if (!obj.itemid.equalsWithoutNBT(stack)) return@forEach
-            var extract = getExtractionMax(itemsLeft, stack, obj.sinkReply)
-            while (extract > 0 && !_service.useEnergy(energyPerItem * extract)) {
-                _service.spawnParticle(Particles.OrangeParticle, 2)
-                extract--
-            }
-            if (extract <= 0) return@forEach
-            val toSend = directedInventoryUtil.decrStackSize(obj.slot, extract).takeUnless { it.isEmpty } ?: return@forEach
-            _service.sendStack(toSend, obj.destRouterId, obj.sinkReply, itemSendMode)
-            itemsLeft -= toSend.count
-        }
+        result.takeWhile { itemsLeft > 0 }
+                .filter { it.slot < directedInventoryUtil.sizeInventory }
+                .map { directedInventoryUtil.getStackInSlot(it.slot) to it }
+                .filter { it.second.itemid.equalsWithNBT(it.first) }
+                .forEach { stackToResult ->
+                    var extract = getExtractionMax(itemsLeft, stackToResult.first.count, stackToResult.second.sinkReply)
+                    if (extract < 1) return@forEach
+                    while (!_service.useEnergy(energyPerItem * extract)) {
+                        _service.spawnParticle(Particles.OrangeParticle, 2)
+                        if (extract < 2) return@forEach
+                        extract /= 2
+                    }
+                    val toSend = directedInventoryUtil.decrStackSize(stackToResult.second.slot, extract).takeUnless { it.isEmpty } ?: return@forEach
+                    _service.sendStack(toSend, stackToResult.second.destRouterId, stackToResult.second.sinkReply, itemSendMode)
+                    itemsLeft -= toSend.count
+                }
     }
 
     override fun recievePassive(): Boolean = false
@@ -244,3 +252,8 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
     }
 
 }
+
+private fun ItemIdentifier.equalsWithNBT(stack: ItemStack): Boolean = this.item == stack.item &&
+        this.itemDamage == stack.itemDamage &&
+        ((this.tag == null && stack.tagCompound == null) ||
+                (this.tag != null && stack.tagCompound != null && this.tag == stack.tagCompound))

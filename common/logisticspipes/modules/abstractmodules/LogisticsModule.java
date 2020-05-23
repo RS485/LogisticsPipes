@@ -3,6 +3,7 @@ package logisticspipes.modules.abstractmodules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -190,4 +191,18 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	public Object getCCType() {
 		return ccType;
 	}
+
+	@Override
+	public String toString() {
+		String at = "{service is null}";
+		if (_service != null) {
+			at = Objects.toString(_service.getPos());
+		}
+		String in = "{world is null}";
+		if (_world != null) {
+			in = Objects.toString(_world.getWorld());
+		}
+		return String.format("%s at %s in %s", getClass().getName(), at, in);
+	}
+
 }

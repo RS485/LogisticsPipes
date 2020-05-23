@@ -26,9 +26,6 @@ public class ModuleSatellite extends LogisticsModule {
 		pipe = pipeItemsSatelliteLogistics;
 	}
 
-	@Override
-	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {}
-
 	private SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
 
 	@Override

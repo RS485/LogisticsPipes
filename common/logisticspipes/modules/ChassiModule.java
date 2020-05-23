@@ -131,11 +131,6 @@ public class ChassiModule extends LogisticsModule implements Gui {
 	}
 
 	@Override
-	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
-		//Not used in Chassie Module
-	}
-
-	@Override
 	public boolean hasGenericInterests() {
 		return false;
 	}

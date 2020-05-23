@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.proxy.MainProxy;
-import network.rs485.logisticspipes.gui.guidebook.SavedTab;
+import network.rs485.logisticspipes.gui.guidebook.SavedPage;
 import network.rs485.logisticspipes.network.packets.SetCurrentPagePacket;
 
 public class ItemGuideBook extends LogisticsItem {
@@ -21,11 +21,11 @@ public class ItemGuideBook extends LogisticsItem {
 		this.setMaxStackSize(1);
 	}
 
-	public static void setCurrentPage(SavedTab page, ArrayList<SavedTab> tabs, EnumHand hand) {
+	public static void setCurrentPage(SavedPage page, ArrayList<SavedPage> tabs, EnumHand hand) {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
 				.setHand(hand)
 				.setPage(page)
-				.setSavedTabs(tabs));
+				.setSavedPages(tabs));
 	}
 
 	@Nonnull

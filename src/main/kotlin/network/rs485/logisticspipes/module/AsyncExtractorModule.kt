@@ -40,6 +40,8 @@ package network.rs485.logisticspipes.module
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import logisticspipes.interfaces.*
 import logisticspipes.logistics.AsyncLogisticsManager
@@ -64,11 +66,15 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.fml.client.FMLClientHandler
+import network.rs485.grow.ChunkedChannel
+import network.rs485.grow.takeWhileServerNotOverloaded
+import network.rs485.grow.takeWhileTimeRemains
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.math.min
 import kotlin.math.pow
 
-class AsyncExtractorModule : AsyncModule<List<Pair<Int, ItemStack>?>?, List<AsyncExtractorModule.AsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<AsyncExtractorModule.AsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
     private val localModeWatchers = PlayerCollectionList()
     private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
     private var _sneakyDirection: EnumFacing? = null
@@ -94,13 +100,70 @@ class AsyncExtractorModule : AsyncModule<List<Pair<Int, ItemStack>?>?, List<Asyn
         get() = (80 / (upgradeManager?.let { 2.0.pow(it.actionSpeedUpgrade) } ?: 1.0)).toInt().coerceAtLeast(2)
         set(value) {}
 
-    override fun tickSetup(): List<Pair<Int, ItemStack>?>? {
+
+    override fun tickSetup(): Channel<Pair<Int, ItemStack>>? {
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return null
         val directedInventoryUtil = _service.getSneakyInventory(direction) ?: return null
-        return (0 until directedInventoryUtil.sizeInventory).map { slot ->
-            val stack = directedInventoryUtil.getStackInSlot(slot)
-            (slot to stack).takeUnless { stack.isEmpty }
+        val limit = TimeUnit.NANOSECONDS.toNanos(500)
+
+        class ChunkedItemChannel(private var lastSlotSeen: Int = 0) :
+                ChunkedChannel<Pair<Int, ItemStack>>(Channel(Channel.UNLIMITED)) {
+
+            override fun hasWork(): Boolean = lastSlotSeen + 1 < directedInventoryUtil.sizeInventory
+            override fun rerun(r: Runnable) = appendSyncWork(r)
+
+            override fun sequenceFactory(): Sequence<Pair<Int, ItemStack>> {
+                val start = System.nanoTime()
+                return (lastSlotSeen until directedInventoryUtil.sizeInventory).asSequence()
+                        .chunked(4)
+                        .takeWhileServerNotOverloaded()
+                        .takeWhileTimeRemains(start, limit)
+                        .flatten()
+                        .map { slot ->
+                            val stack = directedInventoryUtil.getStackInSlot(slot)
+                            // stores the last seen slot for continuing this sequence at a later time
+                            lastSlotSeen = slot
+                            (slot to stack).takeUnless { stack.isEmpty }
+                        }.filterNotNull()
+            }
         }
+
+        val chunkedChannel = ChunkedItemChannel()
+        chunkedChannel.run()
+        return chunkedChannel.channel
+    }
+
+    private fun getExtractionMax(itemsLeft: Int, stack: ItemStack, sinkReply: SinkReply): Int {
+        return min(itemsLeft, stack.count).let {
+            if (sinkReply.maxNumberOfItems > 0) {
+                min(it, sinkReply.maxNumberOfItems)
+            } else it
+        }
+    }
+
+    data class AsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
+
+    @FlowPreview
+    @ExperimentalCoroutinesApi
+    override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<AsyncResult>? {
+        setupObject ?: return null
+        var itemsLeft = itemsToExtract
+        val jamList = LinkedList<Int>()
+        val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
+
+        return setupObject.consumeAsFlow().flatMapConcat { pair ->
+            flow<AsyncResult> {
+                if (itemsLeft > 0) {
+                    val itemid = ItemIdentifier.get(pair.second)
+                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter, jamList) { itemsLeft > 0 }
+                            .map { reply ->
+                                jamList.add(reply.first)
+                                itemsLeft -= getExtractionMax(itemsLeft, pair.second, reply.second)
+                                AsyncResult(pair.first, itemid, reply.first, reply.second)
+                            })
+                }
+            }
+        }.toList()
     }
 
     @ExperimentalCoroutinesApi
@@ -121,43 +184,10 @@ class AsyncExtractorModule : AsyncModule<List<Pair<Int, ItemStack>?>?, List<Asyn
             }
             if (extract <= 0) return@forEach
             val toSend = directedInventoryUtil.decrStackSize(obj.slot, extract).takeUnless { it.isEmpty } ?: return@forEach
-            extract = toSend.count
             _service.sendStack(toSend, obj.destRouterId, obj.sinkReply, itemSendMode)
-            itemsLeft -= extract
+            itemsLeft -= toSend.count
         }
     }
-
-    private fun getExtractionMax(itemsLeft: Int, stack: ItemStack, sinkReply: SinkReply): Int {
-        return min(itemsLeft, stack.count).let {
-            if (sinkReply.maxNumberOfItems > 0) {
-                min(it, sinkReply.maxNumberOfItems)
-            } else it
-        }
-    }
-
-    @FlowPreview
-    @ExperimentalCoroutinesApi
-    override suspend fun tickAsync(setupObject: List<Pair<Int, ItemStack>?>?): List<AsyncResult>? {
-        setupObject ?: return null
-        var itemsLeft = itemsToExtract
-        val jamList = LinkedList<Int>()
-        val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
-
-        return setupObject.asFlow().filterNotNull().flatMapConcat { pair ->
-            flow<AsyncResult> {
-                if (itemsLeft > 0) {
-                    val itemid = ItemIdentifier.get(pair.second)
-                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter, jamList) { itemsLeft > 0 }.map { reply ->
-                        jamList.add(reply.first)
-                        itemsLeft -= getExtractionMax(itemsLeft, pair.second, reply.second)
-                        AsyncResult(pair.first, itemid, reply.first, reply.second)
-                    })
-                }
-            }
-        }.toList()
-    }
-
-    data class AsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
     override fun recievePassive(): Boolean = false
 

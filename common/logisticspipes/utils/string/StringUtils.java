@@ -15,7 +15,7 @@ import net.minecraft.util.text.translation.I18n;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.UnmodifiableListIterator;
-import static network.rs485.logisticspipes.gui.guidebook.book.DrawablePage.HEADER_SCALING;
+import static network.rs485.logisticspipes.gui.guidebook.DrawablePage.HEADER_SCALING;
 import org.lwjgl.input.Keyboard;
 
 public final class StringUtils {

@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.guidebook.book;
+package network.rs485.logisticspipes.gui.guidebook;
 
 import java.util.ArrayList;
 
@@ -44,14 +44,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
 
 import logisticspipes.utils.string.StringUtils;
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook;
-import network.rs485.logisticspipes.gui.guidebook.SavedTab;
+import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
 
 public class DrawablePage {
 
 	public static final float HEADER_SCALING = 1.5F;
 
-	public static int draw(Minecraft mc, SavedTab page, GuiGuideBook gui, int mouseX, int mouseY, int yOffset) {
+	public static int draw(Minecraft mc, SavedPage page, GuiGuideBook gui, int mouseX, int mouseY, int yOffset) {
 		// Draw menu items if applicable
 		int areaCurrentY = 0;
 		mouseX = mouseX < gui.getGuiX0() || mouseX > gui.getGuiX3() ? 0 : mouseX;

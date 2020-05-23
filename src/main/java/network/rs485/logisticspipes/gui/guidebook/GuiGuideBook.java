@@ -61,7 +61,6 @@ import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
 import logisticspipes.items.ItemGuideBook;
-import network.rs485.logisticspipes.gui.guidebook.book.DrawablePage;
 import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
 
 public class GuiGuideBook extends GuiScreen {
@@ -100,8 +99,8 @@ public class GuiGuideBook extends GuiScreen {
 	private int tabID = 50;
 
 	private int mouseX, mouseY;
-	public static SavedTab currentPage;
-	private SavedTab menuPage;
+	public static SavedPage currentPage;
+	private SavedPage menuPage;
 	private static String title;
 
 	// Book Experimental variables
@@ -142,8 +141,8 @@ public class GuiGuideBook extends GuiScreen {
 	public GuiGuideBook(EnumHand hand) {
 		super();
 		this.hand = hand;
-		currentPage = new SavedTab();
-		this.menuPage = new SavedTab();
+		currentPage = new SavedPage();
+		this.menuPage = new SavedPage();
 		this.tabList = new ArrayList<>();
 	}
 
@@ -208,13 +207,13 @@ public class GuiGuideBook extends GuiScreen {
 		ItemStack bookItemStack = mc.player.getHeldItem(hand);
 		if (bookItemStack.hasTagCompound()) {
 			NBTTagCompound nbt = bookItemStack.getTagCompound();
-			currentPage = new SavedTab().fromTag(nbt.getCompoundTag("page"));
+			currentPage = new SavedPage().fromTag(nbt.getCompoundTag("page"));
 			NBTTagList tagList = nbt.getTagList("bookmarks", 10);
-			for (NBTBase tag : tagList) tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, new SavedTab().fromTag((NBTTagCompound) tag)));
+			for (NBTBase tag : tagList) tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, new SavedPage().fromTag((NBTTagCompound) tag)));
 			return true;
 		} else {
-			SavedTab defaultPage = new SavedTab();
-			currentPage = new SavedTab(defaultPage);
+			SavedPage defaultPage = new SavedPage();
+			currentPage = new SavedPage(defaultPage);
 			return true;
 		}
 	}
@@ -252,7 +251,7 @@ public class GuiGuideBook extends GuiScreen {
 	@Override
 	public void onGuiClosed() {
 		currentPage.setProgress(slider.getProgress());
-		ArrayList<SavedTab> tabs = new ArrayList<>();
+		ArrayList<SavedPage> tabs = new ArrayList<>();
 		for (GuiGuideBookTabButton tab : tabList) tabs.add(tab.getTab());
 		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), currentPage, tabs, hand);
 		super.onGuiClosed();
@@ -262,7 +261,7 @@ public class GuiGuideBook extends GuiScreen {
 	protected void actionPerformed(GuiButton button) throws IOException {
 		switch (button.id) {
 			case 1:
-				currentPage = new SavedTab(menuPage);
+				currentPage = new SavedPage(menuPage);
 				slider.reset();
 				break;
 			case 2:
@@ -275,7 +274,7 @@ public class GuiGuideBook extends GuiScreen {
 		updateButtonVisibility();
 	}
 
-	private void tryAddTab(SavedTab currentPage) {
+	private void tryAddTab(SavedPage currentPage) {
 		tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, currentPage));
 		updateButtonVisibility();
 	}
@@ -303,7 +302,7 @@ public class GuiGuideBook extends GuiScreen {
 			for (GuiGuideBookTabButton tab : tabList) {
 				if (tab.mousePressed(mc, mouseX, mouseY)) {
 					if (mouseButton == 0) {
-						currentPage = new SavedTab(tab.getTab());
+						currentPage = new SavedPage(tab.getTab());
 						tab.playPressSound(this.mc.getSoundHandler());
 					} else if (mouseButton == 1) {
 						tryRemoveTab(tab);
@@ -322,7 +321,7 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	protected void selectPage(MenuItem item) {
-		currentPage = new SavedTab(item.getTarget(), 0, 0.0F);
+		currentPage = new SavedPage(item.getTarget(), 0, 0.0F);
 		title = updateTitle();
 		updateButtonVisibility();
 	}
@@ -346,7 +345,7 @@ public class GuiGuideBook extends GuiScreen {
 		title = updateTitle();
 	}
 
-	protected boolean tabNotFound(SavedTab checkTab) {
+	protected boolean tabNotFound(SavedPage checkTab) {
 		for (GuiGuideBookTabButton tab : tabList) if (tab.getTab().isEqual(checkTab)) return false;
 		return true;
 	}
@@ -490,6 +489,18 @@ public class GuiGuideBook extends GuiScreen {
 		tessellator.draw();
 		if (blend) GlStateManager.disableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
+	public static void putTexturedSquare(BufferBuilder bufferbuilder, int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1) {
+		u0 *= atlasWidthScale;
+		v0 *= atlasHeightScale;
+		u1 *= atlasWidthScale;
+		v1 *= atlasHeightScale;
+		// Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
+		bufferbuilder.pos(x0, y1, z).tex(u0, v1).endVertex();
+		bufferbuilder.pos(x1, y1, z).tex(u1, v1).endVertex();
+		bufferbuilder.pos(x1, y0, z).tex(u1, v0).endVertex();
+		bufferbuilder.pos(x0, y0, z).tex(u0, v0).endVertex();
 	}
 
 	/**

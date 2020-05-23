@@ -46,7 +46,7 @@ import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
 import java.util.*
 
-class SavedTab constructor(var page: String = BookContents.MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
+class SavedPage constructor(var page: String = BookContents.MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
 
     var metadata: YamlPageMetadata
     var menuItems: MutableList<MenuItemsDivision>
@@ -81,10 +81,10 @@ class SavedTab constructor(var page: String = BookContents.MAIN_MENU_FILE, var c
         return BookContents.get(page).markdownString
     }
 
-    constructor(tab: SavedTab) : this(tab.page, tab.color, tab.progress) {}
+    constructor(page: SavedPage) : this(page.page, page.color, page.progress) {}
 
-    fun fromBytes(input: LPDataInput): SavedTab {
-        return SavedTab(
+    fun fromBytes(input: LPDataInput): SavedPage {
+        return SavedPage(
                 input.readUTF() ?: BookContents.MAIN_MENU_FILE,
                 input.readInt(),
                 input.readFloat())
@@ -96,8 +96,8 @@ class SavedTab constructor(var page: String = BookContents.MAIN_MENU_FILE, var c
         output.writeFloat(progress)
     }
 
-    fun fromTag(nbt: NBTTagCompound): SavedTab {
-        return SavedTab(
+    fun fromTag(nbt: NBTTagCompound): SavedPage {
+        return SavedPage(
                 nbt.getString("page"),
                 nbt.getInteger("color"),
                 nbt.getFloat("progress"))
@@ -111,7 +111,7 @@ class SavedTab constructor(var page: String = BookContents.MAIN_MENU_FILE, var c
         return nbt
     }
 
-    fun isEqual(b: SavedTab): Boolean = this.page == b.page
+    fun isEqual(b: SavedPage): Boolean = this.page == b.page
 
     fun cycleColor(invert: Boolean = false) {
         if (invert) color--

@@ -18,7 +18,7 @@ import logisticspipes.LPItems;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.proxy.MainProxy;
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook;
-import network.rs485.logisticspipes.gui.guidebook.SavedTab;
+import network.rs485.logisticspipes.gui.guidebook.SavedPage;
 import network.rs485.logisticspipes.network.packets.SetCurrentPagePacket;
 
 public class ItemGuideBook extends LogisticsItem {
@@ -27,17 +27,17 @@ public class ItemGuideBook extends LogisticsItem {
 		this.maxStackSize = 1;
 	}
 
-	public static void setCurrentPage(ItemStack stack, SavedTab page, ArrayList<SavedTab> tabs, EnumHand hand) {
+	public static void setCurrentPage(ItemStack stack, SavedPage page, ArrayList<SavedPage> tabs, EnumHand hand) {
 		if (!stack.isEmpty() && stack.getItem() == LPItems.itemGuideBook) {
 			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
 			tag.setTag("page", page.toTag());
 			NBTTagList bookmarkTagList = new NBTTagList();
-			for (SavedTab tab : tabs) bookmarkTagList.appendTag(tab.toTag());
+			for (SavedPage tab : tabs) bookmarkTagList.appendTag(tab.toTag());
 			tag.setTag("bookmarks", bookmarkTagList);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
 				.setHand(hand)
 				.setPage(page)
-				.setSavedTabs(tabs));
+				.setSavedPages(tabs));
 		}
 	}
 

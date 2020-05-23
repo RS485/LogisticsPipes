@@ -52,9 +52,9 @@ public class GuiGuideBookTabButton extends GuiButton {
 	public boolean isActive;
 	@Getter
 	@Setter
-	private SavedTab tab;
+	private SavedPage tab;
 
-	public GuiGuideBookTabButton(int buttonId, int x, int y, SavedTab tab) {
+	public GuiGuideBookTabButton(int buttonId, int x, int y, SavedPage tab) {
 		super(buttonId, x, y, 24, 24, "");
 		this.tab = tab;
 		this.visible = true;

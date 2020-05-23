@@ -52,7 +52,7 @@ import lombok.Setter;
 import logisticspipes.LPItems;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
-import network.rs485.logisticspipes.gui.guidebook.SavedTab;
+import network.rs485.logisticspipes.gui.guidebook.SavedPage;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -61,7 +61,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private SavedTab page;
+	private SavedPage page;
 
 	@Getter
 	@Setter
@@ -69,7 +69,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Getter
 	@Setter
-	private ArrayList<SavedTab> savedTabs = new ArrayList<>();
+	private ArrayList<SavedPage> savedPages = new ArrayList<>();
 
 	public SetCurrentPagePacket(int id) {
 		super(id);
@@ -83,7 +83,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		NBTTagCompound nbt = book.hasTagCompound() ? Objects.requireNonNull(book.getTagCompound()) : new NBTTagCompound();
 		nbt.setTag("page", page.toTag());
 		NBTTagList tagList = new NBTTagList();
-		for (SavedTab tab : savedTabs) tagList.appendTag(tab.toTag());
+		for (SavedPage tab : savedPages) tagList.appendTag(tab.toTag());
 		nbt.setTag("bookmarks", tagList);
 		book.setTagCompound(nbt);
 	}
@@ -92,10 +92,10 @@ public class SetCurrentPagePacket extends ModernPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		hand = input.readEnum(EnumHand.class);
-		page = new SavedTab().fromBytes(input);
+		page = new SavedPage().fromBytes(input);
 		int size = input.readInt();
 		for (int i = 0; i < size; i++) {
-			savedTabs.add(new SavedTab().fromBytes(input));
+			savedPages.add(new SavedPage().fromBytes(input));
 		}
 	}
 
@@ -104,8 +104,8 @@ public class SetCurrentPagePacket extends ModernPacket {
 		super.writeData(output);
 		output.writeEnum(hand);
 		page.toBytes(output);
-		output.writeInt(savedTabs.size());
-		for (SavedTab tab : savedTabs) tab.toBytes(output);
+		output.writeInt(savedPages.size());
+		for (SavedPage tab : savedPages) tab.toBytes(output);
 	}
 
 	@Override

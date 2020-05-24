@@ -58,14 +58,14 @@ abstract class ChunkedChannel<T>(val channel: Channel<T>) : Runnable {
      */
     abstract fun rerun(r: Runnable)
 
+    private fun checkWork(): Boolean = if (hasWork()) false else true.also { channel.close() }
+
     override fun run() {
         try {
+            if (checkWork()) return
             sequenceFactory().forEach(channel::sendBlocking)
-            if (hasWork()) {
-                rerun(this)
-            } else {
-                channel.close()
-            }
+            if (checkWork()) return
+            rerun(this)
         } catch (e: Throwable) {
             channel.close(e)
         }

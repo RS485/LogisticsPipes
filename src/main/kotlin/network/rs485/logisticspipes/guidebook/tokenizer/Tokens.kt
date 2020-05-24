@@ -35,14 +35,14 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.guidebook.tokenizer
+package network.rs485.logisticspipes.guidebook.tokenizer
 
 import java.awt.Color
 
 sealed class IToken
 
 /* Normal Token that stores the text and the formatting tags of said text. */
-class Token(var str: String, private val tags: MutableList<Tokenizer.TokenTag>, val color: Color = Color.WHITE) : IToken() {
+data class Token(var str: String, val tags: MutableList<Tokenizer.TokenTag>, val color: Color = Color.WHITE) : IToken() {
     override fun toString(): String {
         val opt = if (color != Color.WHITE) "| Color: ${color.toString()} " else ""
         return "Text: $str | Tags: $tags $opt"
@@ -50,7 +50,7 @@ class Token(var str: String, private val tags: MutableList<Tokenizer.TokenTag>, 
 }
 
 /* Header token, stores all the tokens that are apart of the header. */
-class TokenHeader(val tokens: MutableList<IToken>) : IToken() {
+data class TokenHeader(val tokens: MutableList<IToken>) : IToken() {
     // Debugging purposes only
     override fun toString(): String {
         var str = "\nHeader -↓-        \n"
@@ -63,7 +63,7 @@ class TokenHeader(val tokens: MutableList<IToken>) : IToken() {
 }
 
 /* Image token, stores a token list in case the image is not correctly loaded as well as the image's path*/
-class TokenImage(val tokens: MutableList<IToken>, val url: String) : IToken() {
+data class TokenImage(val tokens: MutableList<IToken>, val url: String) : IToken() {
     override fun toString(): String {
         var alt = "\nImage -↓-        \n Tokens: \n"
         tokens.forEach {
@@ -80,22 +80,29 @@ class TokenLink(val str: String, val url: String) : IToken() {
     }
 }
 
+/* Menu token, stores the key and the type of menu in a page. */
+data class TokenMenu(val key: String, val options: String) : IToken() {
+    override fun toString(): String {
+        return "MenuKey: \"$key\" | Options: \"$options\""
+    }
+}
+
 /* Item token, stores the alternative name, in case the item is not recognized, as well as the unlocalized name of the desired item */
-class TokenItem(val name: String, val item: String) : IToken() {
+data class TokenItem(val name: String, val item: String) : IToken() {
     override fun toString(): String {
         return "Name: \"$name\" | Target item: \"$item\""
     }
 }
 
 /* LineBreak token, simply represents a line break in the text. */
-class TokenLineBreak : IToken() {
+object TokenLineBreak : IToken() {
     override fun toString(): String {
         return "Linebreak: \\n"
     }
 }
 
 /* Stores the text and the type of paragraph. */
-class Paragraph(var str: String, var type: ParagraphType) {
+data class Paragraph(var str: String, var type: ParagraphType) {
     override fun toString(): String {
         return "$str | $type"
     }

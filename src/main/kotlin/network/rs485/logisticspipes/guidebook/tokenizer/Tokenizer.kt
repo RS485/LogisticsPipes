@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.guidebook.tokenizer
+package network.rs485.logisticspipes.guidebook.tokenizer
 
 // TODO replace this asap
 import java.awt.Color
@@ -225,6 +225,36 @@ object Tokenizer {
     }
 
     /*
+    * Turns a well formatted string into a Menu token
+    * */
+    private fun String.toMenuToken(): TokenMenu {
+        val strC = toCharArray()
+        val key = StringBuilder()
+        val options = StringBuilder()
+        var readingUnlocalizedName = false;
+        strC.forEachIndexed { index, c ->
+            if (!readingUnlocalizedName) {
+                when (c) {
+                    '$', '[', ']' -> {
+                        if (strC.isEscaped(index)) key.append(c)
+                    }
+                    '(' -> {
+                        if (strC.isEscaped(index)) key.append(c)
+                        else readingUnlocalizedName = true
+                    }
+                    else -> {
+                        key.append(c)
+                    }
+                }
+            } else {
+                if (c == ')' && strC.isNotEscaped(index))
+                else options.append(c)
+            }
+        }
+        return TokenMenu(key.toString(), options.toString())
+    }
+
+    /*
     * Turns a well formatted string into a List of Linked tokens
     * */
     private fun String.toLinkedTokens(): MutableList<IToken> {
@@ -320,10 +350,11 @@ object Tokenizer {
             val tDef = definition
             definition = Tokenizer.Definition.None
             when (tDef) {
-                Tokenizer.Definition.Color -> tokens.addAll(toString().toColoredTokens())
-                Tokenizer.Definition.Link -> tokens.addAll(toString().toLinkedTokens())
-                Tokenizer.Definition.Item -> tokens.add(toString().toItemToken())
-                Tokenizer.Definition.None -> {
+                Definition.Color -> tokens.addAll(toString().toColoredTokens())
+                Definition.Link -> tokens.addAll(toString().toLinkedTokens())
+                Definition.Item -> tokens.add(toString().toItemToken())
+                Definition.Menu -> tokens.add(toString().toMenuToken())
+                Definition.None -> {
                     tokens.addAll(toString().toTokens(Color.WHITE))
                 }
             }
@@ -333,9 +364,10 @@ object Tokenizer {
         when (definition) {
             Definition.None -> {
                 when (strC.prevChar(index)) {
-                    '+' -> start('+', Tokenizer.Definition.Color)
-                    '$' -> start('$', Tokenizer.Definition.Item)
-                    ' ' -> start(' ', Tokenizer.Definition.Link)
+                    '+' -> start('+', Definition.Color)
+                    '$' -> start('$', Definition.Item)
+                    '#' -> start('#', Definition.Menu)
+                    ' ' -> start(' ', Definition.Link)
                     else -> Unit
                 }
             }
@@ -352,7 +384,7 @@ object Tokenizer {
         fun StringBuilder.handleLineBreak() {
             when {
                 strC.isAfterTwoSpaces(index) -> {
-                    tokens.add(TokenLineBreak())
+                    tokens.add(TokenLineBreak)
                 }
                 strC.isAfterOneSpace(index) -> Unit
                 else -> {
@@ -546,6 +578,7 @@ object Tokenizer {
         None,  // Defines the normal state of text handling.
         Color, // '+'
         Link,  // ' '
+        Menu,  // '#'
         Item   // '$'
     }
 }

@@ -124,6 +124,8 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		hasPatternUpgrade = false;
 		craftingCleanup = 0;
 		actionSpeedUpgrade = 0;
+		itemExtractionUpgrade = 0;
+		itemStackExtractionUpgrade = 0;
 		guiUpgrades = new boolean[2];
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];

@@ -44,6 +44,8 @@ import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.guidebook.tokenizer.IToken
+import network.rs485.logisticspipes.guidebook.tokenizer.Tokenizer
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -97,25 +99,33 @@ fun String.parseMetadata(markdownFile: String): YamlPageMetadata = if (this.isNo
 
 fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
     // Normalize the given paths, replacing any ./.. with the appropriate absolute (resource location) paths
-    val menu = this.menu.mapValues { entry ->
-        entry.value.map {
-            Paths.get(File(markdownFile).parent ?: "", it).normalize().toString()
+    val menu = this.menu.entries.associate {
+        it.key to it.value.mapValues { menuMap ->
+            menuMap.value.map { pagePath ->
+                Paths.get(File(markdownFile).parent ?: "", pagePath).normalize().toString()
+            }
         }
     }
-    return YamlPageMetadata(this.title, this.icon, menu, this.list, this.text)
+    return YamlPageMetadata(this.title, this.icon, menu)
 }
 
 @Serializable
 data class YamlPageMetadata(val title: String,
                             val icon: String = "logisticspipes:itemcard",
-                            val menu: Map<String, List<String>> = mapOf(),
-                            val list: Boolean = false,
-                            val text: String = "after")
+                            val menu: Map<String, Map<String, List<String>>> = mapOf())
 
 class LoadedPage(unformattedText: String, fileLocation: String) {
     private val metadataString: String
-    val markdownString: String
+    private val markdownString: String
     val metadata: YamlPageMetadata
+    var tokens: List<IToken>
+        get() {
+            if (field.isEmpty() && markdownString.isNotEmpty()) {
+                field = Tokenizer.tokenize(markdownString).toList()
+                return field
+            }
+            return field
+        }
 
     init {
         // Splits the input string into the metadata and the markdown parts of the page.
@@ -123,5 +133,6 @@ class LoadedPage(unformattedText: String, fileLocation: String) {
         metadataString = result.groups[1]?.value?.trim() ?: ""
         markdownString = result.groups[2]?.value?.trim() ?: ""
         metadata = metadataString.parseMetadata(fileLocation)
+        tokens = listOf()
     }
 }

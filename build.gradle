@@ -25,7 +25,6 @@ buildscript {
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'kotlin'
-apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin: 'com.matthewprenger.cursegradle'
@@ -33,24 +32,12 @@ apply plugin: 'com.matthewprenger.cursegradle'
 def ENV = System.getenv()
 
 allprojects {
-    group = "network.rs485"
-    version = "0.10.3"
-    ext.vendor = "unknown"
-    ext.target = "Forge $forge_version"
+    apply plugin: 'net.minecraftforge.gradle'
 
-    if (ENV.BUILD_NUMBER) {
-        version = "$version.${ENV.BUILD_NUMBER}"
-    } else if (ENV.VERSION) {
-        version = "$version.${ENV.VERSION}"
-    } else {
-        version = "$version-SNAPSHOT"
-    }
+    minecraft {
+        mappings channel: 'snapshot', version: "$mappings_version"
 
-    if (ENV.JENKINS_URL) {
-        ext.vendor = ENV.JENKINS_URL
-    } else if (ENV.JITPACK) {
-        ext.vendor = "JitPack.io"
-        group = ENV.GROUP
+        accessTransformer = file("$rootDir/resources/META-INF/lp_at.cfg")
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -59,6 +46,10 @@ allprojects {
     compileKotlin {
         kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
     }
+
+    dependencies {
+        minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
+    }
 }
 
 subprojects {
@@ -66,6 +57,25 @@ subprojects {
 }
 
 archivesBaseName = "logisticspipes"
+group = "network.rs485"
+version = "0.10.3"
+ext.vendor = "unknown"
+ext.target = "Forge $forge_version"
+
+if (ENV.BUILD_NUMBER) {
+    version = "$version.${ENV.BUILD_NUMBER}"
+} else if (ENV.VERSION) {
+    version = "$version.${ENV.VERSION}"
+} else {
+    version = "$version-SNAPSHOT"
+}
+
+if (ENV.JENKINS_URL) {
+    ext.vendor = ENV.JENKINS_URL
+} else if (ENV.JITPACK) {
+    ext.vendor = "JitPack.io"
+    group = ENV.GROUP
+}
 
 sourceSets {
     api {
@@ -86,10 +96,6 @@ sourceSets {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: "$mappings_version"
-
-    accessTransformer = file('resources/META-INF/lp_at.cfg')
-
     runs {
         client {
             workingDirectory project.file('run')
@@ -214,8 +220,6 @@ repositories {
 dependencies {
     compileOnly project(':dummy')
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-
-    minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
 
     implementation group: 'net.shadowfacts', name: 'Forgelin', version: '1.8.4'
     implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '5901b4c6f4af70e6ef2dbe194bf7e0e097bb375c', classifier: 'deobf'

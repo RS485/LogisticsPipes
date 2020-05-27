@@ -81,6 +81,21 @@ if (ENV.JENKINS_URL) {
     group = ENV.GROUP
 }
 
+ext.sharedManifest = manifest {
+    attributes(
+            'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'FMLAT': 'lp_at.cfg',
+            'Specification-Title': 'LogisticsPipes',
+            'Specification-Vendor': 'RS485',
+            'Specification-Version': '1',
+            'Implementation-Vendor': "$vendor",
+            'Implementation-Title': "${project.name}",
+            'Implementation-Version': "$version",
+            'Implementation-Target': "$target",
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
+}
+
 sourceSets {
     api {
         java {
@@ -139,19 +154,8 @@ jar {
     from sourceSets.api.output
     finalizedBy 'reobfJar'
 
-    manifest {
-        attributes(
-                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLAT': 'lp_at.cfg',
-                'Specification-Title': 'LogisticsPipes',
-                'Specification-Vendor': 'RS485',
-                'Specification-Version': '1',
-                'Implementation-Vendor': "$vendor",
-                'Implementation-Title': "${project.name}",
-                'Implementation-Version': "$version",
-                'Implementation-Target': "$target",
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
+    manifest = project.manifest {
+        from sharedManifest
     }
 }
 
@@ -258,19 +262,9 @@ task deobfJar(type: Jar) {
     from sourceSets.main.output
     from sourceSets.api.output
     classifier = 'deobf'
-    manifest {
-        attributes(
-                'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLAT': 'lp_at.cfg',
-                'Specification-Title': 'LogisticsPipes',
-                'Specification-Vendor': 'RS485',
-                'Specification-Version': '1',
-                'Implementation-Vendor': "$vendor",
-                'Implementation-Title': "${project.name}",
-                'Implementation-Version': "$version",
-                'Implementation-Target': "$target",
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"))
+
+    manifest = project.manifest {
+        from sharedManifest
     }
 }
 

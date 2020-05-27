@@ -45,7 +45,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.util.getExtractionMax
 import java.util.*
@@ -56,7 +55,7 @@ const val NORMAL_DELAY = 6
 
 data class QuicksortAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
-class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>() {
+class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAsyncResult?>() {
     private var stalled = true
     private var currentSlot = 0
     private var stallSlot = 0
@@ -68,23 +67,23 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     override val everyNthTick: Int
         get() = if (stalled) STALLED_DELAY else NORMAL_DELAY
 
-    override fun tickSetup(): Pair<Int, ItemStack>? {
+    override fun tickSetup(): Pair<Int, ItemIdentifier>? {
         val inventory = _service.pointedInventory ?: return null
         if (inventory.sizeInventory == 0) return null
         if (currentSlot >= inventory.sizeInventory) currentSlot = 0
-        val stack = inventory.getStackInSlot(currentSlot)
-        ++currentSlot
-        if (!stalled && currentSlot == stallSlot) stalled = true
+        val slot = currentSlot++
+        val stack = inventory.getStackInSlot(slot)
+        if (!stalled && slot == stallSlot) stalled = true
         if (stack.isEmpty) return null
-        return currentSlot to stack
+        val itemid = ItemIdentifier.get(stack)
+        return slot to itemid
     }
 
-    override suspend fun tickAsync(setupObject: Pair<Int, ItemStack>?): QuicksortAsyncResult? {
+    override suspend fun tickAsync(setupObject: Pair<Int, ItemIdentifier>?): QuicksortAsyncResult? {
         if (setupObject == null) return null
-        val itemid = ItemIdentifier.get(setupObject.second)
         val jamList = LinkedList<Int>()
-        val result = AsyncLogisticsManager.getDestination(itemid, false, _service.router as ServerRouter, jamList) ?: return null
-        return QuicksortAsyncResult(setupObject.first, itemid, result.first, result.second)
+        val result = AsyncLogisticsManager.getDestination(setupObject.second, false, _service.router as ServerRouter, jamList) ?: return null
+        return QuicksortAsyncResult(setupObject.first, setupObject.second, result.first, result.second)
     }
 
     @ExperimentalCoroutinesApi

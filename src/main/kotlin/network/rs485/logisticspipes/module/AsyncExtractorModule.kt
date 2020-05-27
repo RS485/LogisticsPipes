@@ -68,12 +68,15 @@ import net.minecraft.util.EnumFacing
 import net.minecraftforge.fml.client.FMLClientHandler
 import network.rs485.grow.ChunkedChannel
 import network.rs485.grow.takeWhileTimeRemains
+import network.rs485.logisticspipes.util.equalsWithNBT
+import network.rs485.logisticspipes.util.getExtractionMax
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.math.min
 import kotlin.math.pow
 
-class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<AsyncExtractorModule.AsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+data class ExtractorAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
+
+class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
     private val localModeWatchers = PlayerCollectionList()
     private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
     private var _sneakyDirection: EnumFacing? = null
@@ -135,26 +138,16 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
         return chunkedChannel.channel
     }
 
-    private fun getExtractionMax(itemsLeft: Int, stackCount: Int, sinkReply: SinkReply): Int {
-        return min(itemsLeft, stackCount).let {
-            if (sinkReply.maxNumberOfItems > 0) {
-                min(it, sinkReply.maxNumberOfItems)
-            } else it
-        }
-    }
-
-    data class AsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
-
     @FlowPreview
     @ExperimentalCoroutinesApi
-    override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<AsyncResult>? {
+    override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? {
         setupObject ?: return null
         var itemsLeft = itemsToExtract
         val jamList = LinkedList<Int>()
         val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
 
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
-            flow<AsyncResult> {
+            flow<ExtractorAsyncResult> {
                 if (itemsLeft > 0) {
                     var stackLeft = pair.second.count
                     val itemid = ItemIdentifier.get(pair.second)
@@ -164,7 +157,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
                                 val maxExtraction = getExtractionMax(itemsLeft, stackLeft, reply.second)
                                 stackLeft -= maxExtraction
                                 itemsLeft -= maxExtraction
-                                AsyncResult(pair.first, itemid, reply.first, reply.second)
+                                ExtractorAsyncResult(pair.first, itemid, reply.first, reply.second)
                             })
                 }
             }
@@ -172,7 +165,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
     }
 
     @ExperimentalCoroutinesApi
-    override fun completeTick(task: Deferred<List<AsyncResult>?>) {
+    override fun completeTick(task: Deferred<List<ExtractorAsyncResult>?>) {
         // always get result, fast exit if it is null or throw on error
         val result = task.getCompleted() ?: return
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return
@@ -252,8 +245,3 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<As
     }
 
 }
-
-private fun ItemIdentifier.equalsWithNBT(stack: ItemStack): Boolean = this.item == stack.item &&
-        this.itemDamage == stack.itemDamage &&
-        ((this.tag == null && stack.tagCompound == null) ||
-                (this.tag != null && stack.tagCompound != null && this.tag == stack.tagCompound))

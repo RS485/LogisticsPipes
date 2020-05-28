@@ -144,7 +144,6 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
     override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? {
         setupObject ?: return null
         var itemsLeft = itemsToExtract
-        val jamList = LinkedList<Int>()
         val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
         AsyncRouting.updateRoutingTable(serverRouter)
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
@@ -152,9 +151,8 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
                 if (itemsLeft > 0) {
                     var stackLeft = pair.second.count
                     val itemid = ItemIdentifier.get(pair.second)
-                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter, jamList) { itemsLeft > 0 && stackLeft > 0 }
+                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
                             .map { reply ->
-                                jamList.add(reply.first)
                                 val maxExtraction = getExtractionMax(itemsLeft, stackLeft, reply.second)
                                 stackLeft -= maxExtraction
                                 itemsLeft -= maxExtraction

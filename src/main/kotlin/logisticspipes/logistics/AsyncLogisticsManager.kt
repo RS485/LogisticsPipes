@@ -46,14 +46,16 @@ import logisticspipes.routing.PipeRoutingConnectionType
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
+import java.util.*
 import java.util.stream.Stream
 
 object AsyncLogisticsManager {
-    fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>, filter: () -> Boolean): Sequence<Pair<Int, SinkReply>> {
-        var destination: Pair<Int, SinkReply>?
+    fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, filter: () -> Boolean): Sequence<Pair<Int, SinkReply>> {
+        val jamList = LinkedList<Int>()
         return generateSequence {
-            destination = getDestination(itemid, canBeDefault, sourceRouter, routersToExclude)
-            return@generateSequence destination.takeIf { filter() }
+            return@generateSequence getDestination(itemid, canBeDefault, sourceRouter, jamList)
+                    ?.takeIf { filter() }
+                    ?.also { jamList.add(it.first) }
         }
     }
 

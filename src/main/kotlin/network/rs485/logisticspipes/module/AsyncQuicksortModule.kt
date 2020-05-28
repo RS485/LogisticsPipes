@@ -81,8 +81,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
 
     override suspend fun tickAsync(setupObject: Pair<Int, ItemIdentifier>?): QuicksortAsyncResult? {
         if (setupObject == null) return null
-        val jamList = LinkedList<Int>()
-        val result = AsyncLogisticsManager.getDestination(setupObject.second, false, _service.router as ServerRouter, jamList) ?: return null
+        val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
+        val result = AsyncLogisticsManager.getDestination(setupObject.second, false, serverRouter, emptyList()) ?: return null
         return QuicksortAsyncResult(setupObject.first, setupObject.second, result.first, result.second)
     }
 

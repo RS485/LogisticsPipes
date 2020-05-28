@@ -44,6 +44,7 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import logisticspipes.interfaces.*
+import logisticspipes.modules.abstractmodules.getServerRouter
 import logisticspipes.network.NewGuiHandler
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
@@ -57,7 +58,6 @@ import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.proxy.MainProxy
 import logisticspipes.routing.AsyncRouting
-import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.PlayerCollectionList
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
@@ -144,7 +144,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
     override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? {
         setupObject ?: return null
         var itemsLeft = itemsToExtract
-        val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
+        val serverRouter = this.getServerRouter()
         AsyncRouting.updateRoutingTable(serverRouter)
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
             flow<ExtractorAsyncResult> {

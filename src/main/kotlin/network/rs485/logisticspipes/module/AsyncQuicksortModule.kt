@@ -39,16 +39,19 @@ package network.rs485.logisticspipes.module
 
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import logisticspipes.interfaces.IInventoryUtil
+import logisticspipes.modules.abstractmodules.getServerRouter
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
-import logisticspipes.routing.ServerRouter
+import logisticspipes.routing.AsyncRouting
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
+import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.logistics.LogisticsManager
+import network.rs485.logisticspipes.util.equalsWithNBT
 import network.rs485.logisticspipes.util.getExtractionMax
 
-const val MAX_EXTRACT = 64
 const val STALLED_DELAY = 24
 const val NORMAL_DELAY = 6
 
@@ -80,7 +83,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
 
     override suspend fun tickAsync(setupObject: Pair<Int, ItemIdentifier>?): QuicksortAsyncResult? {
         if (setupObject == null) return null
-        val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
+        val serverRouter = this.getServerRouter()
+        AsyncRouting.updateRoutingTable(serverRouter)
         val result = LogisticsManager.getDestination(setupObject.second, false, serverRouter, emptyList()) ?: return null
         return QuicksortAsyncResult(setupObject.first, setupObject.second, result.first, result.second)
     }
@@ -91,14 +95,20 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
         val inventory = _service.pointedInventory ?: return
         if (result.slot >= inventory.sizeInventory) return
         val stack = inventory.getStackInSlot(result.slot)
-        val toExtract = getExtractionMax(stack.count, MAX_EXTRACT, result.sinkReply)
+        if (result.itemid.equalsWithNBT(stack)) {
+            extractAndSend(result.slot, stack, inventory, result.destRouterId, result.sinkReply)
+        }
+    }
+
+    private fun extractAndSend(slot: Int, stack: ItemStack, inventory: IInventoryUtil, destRouterId: Int, sinkReply: SinkReply) {
+        val toExtract = getExtractionMax(stack.count, stack.maxStackSize, sinkReply)
         if (toExtract <= 0) return
         if (!_service.useEnergy(energyPerStack)) return
         stalled = false
-        stallSlot = result.slot
-        val extracted = inventory.decrStackSize(result.slot, toExtract)
+        stallSlot = slot
+        val extracted = inventory.decrStackSize(slot, toExtract)
         if (extracted.isEmpty) return
-        _service.sendStack(extracted, result.destRouterId, result.sinkReply, CoreRoutedPipe.ItemSendMode.Fast)
+        _service.sendStack(extracted, destRouterId, sinkReply, CoreRoutedPipe.ItemSendMode.Fast)
         _service.spawnParticle(Particles.OrangeParticle, 8)
     }
 

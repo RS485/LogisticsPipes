@@ -37,8 +37,6 @@
 
 package logisticspipes.logistics
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import logisticspipes.modules.abstractmodules.LogisticsModule
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.proxy.SimpleServiceLocator
@@ -48,21 +46,18 @@ import logisticspipes.routing.PipeRoutingConnectionType
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
-import java.util.*
 import java.util.stream.Stream
 
 object AsyncLogisticsManager {
-    @ExperimentalCoroutinesApi
-    fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>, filter: () -> Boolean) = flow {
-        var destination = getDestination(itemid, canBeDefault, sourceRouter, routersToExclude)
-        while (filter() && Objects.nonNull(destination)) {
-            emit(destination!!)
+    fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>, filter: () -> Boolean): Sequence<Pair<Int, SinkReply>> {
+        var destination: Pair<Int, SinkReply>?
+        return generateSequence {
             destination = getDestination(itemid, canBeDefault, sourceRouter, routersToExclude)
+            return@generateSequence destination.takeIf { filter() }
         }
     }
 
-    suspend fun getDestination(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>): Pair<Int, SinkReply>? {
-        AsyncRouting.updateRoutingTable(sourceRouter)
+    fun getDestination(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>): Pair<Int, SinkReply>? {
         val destinationStream = ServerRouter.getRoutersInterestedIn(itemid).stream()
                 .mapToObj(SimpleServiceLocator.routerManager::getServerRouter)
                 .flatMap {

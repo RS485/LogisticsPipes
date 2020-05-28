@@ -57,6 +57,7 @@ import logisticspipes.network.packets.modules.SneakyModuleDirectionUpdate
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.proxy.MainProxy
+import logisticspipes.routing.AsyncRouting
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.PlayerCollectionList
 import logisticspipes.utils.SinkReply
@@ -145,7 +146,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
         var itemsLeft = itemsToExtract
         val jamList = LinkedList<Int>()
         val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
-
+        AsyncRouting.updateRoutingTable(serverRouter)
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
             flow<ExtractorAsyncResult> {
                 if (itemsLeft > 0) {
@@ -158,7 +159,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
                                 stackLeft -= maxExtraction
                                 itemsLeft -= maxExtraction
                                 ExtractorAsyncResult(pair.first, itemid, reply.first, reply.second)
-                            })
+                            }.asFlow())
                 }
             }
         }.toList()

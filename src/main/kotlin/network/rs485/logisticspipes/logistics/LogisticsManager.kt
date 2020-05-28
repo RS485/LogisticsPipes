@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package logisticspipes.logistics
+package network.rs485.logisticspipes.logistics
 
 import logisticspipes.modules.abstractmodules.LogisticsModule
 import logisticspipes.pipefxhandlers.Particles
@@ -49,7 +49,7 @@ import logisticspipes.utils.item.ItemIdentifier
 import java.util.*
 import java.util.stream.Stream
 
-object AsyncLogisticsManager {
+object LogisticsManager {
     fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, filter: () -> Boolean): Sequence<Pair<Int, SinkReply>> {
         val jamList = LinkedList<Int>()
         return generateSequence {

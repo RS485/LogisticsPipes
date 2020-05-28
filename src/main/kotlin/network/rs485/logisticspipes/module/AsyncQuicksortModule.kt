@@ -39,15 +39,14 @@ package network.rs485.logisticspipes.module
 
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import logisticspipes.logistics.AsyncLogisticsManager
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
 import net.minecraft.nbt.NBTTagCompound
+import network.rs485.logisticspipes.logistics.LogisticsManager
 import network.rs485.logisticspipes.util.getExtractionMax
-import java.util.*
 
 const val MAX_EXTRACT = 64
 const val STALLED_DELAY = 24
@@ -82,7 +81,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
     override suspend fun tickAsync(setupObject: Pair<Int, ItemIdentifier>?): QuicksortAsyncResult? {
         if (setupObject == null) return null
         val serverRouter = this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
-        val result = AsyncLogisticsManager.getDestination(setupObject.second, false, serverRouter, emptyList()) ?: return null
+        val result = LogisticsManager.getDestination(setupObject.second, false, serverRouter, emptyList()) ?: return null
         return QuicksortAsyncResult(setupObject.first, setupObject.second, result.first, result.second)
     }
 

@@ -44,7 +44,6 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import logisticspipes.interfaces.*
-import logisticspipes.logistics.AsyncLogisticsManager
 import logisticspipes.network.NewGuiHandler
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
@@ -69,6 +68,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraftforge.fml.client.FMLClientHandler
 import network.rs485.grow.ChunkedChannel
 import network.rs485.grow.takeWhileTimeRemains
+import network.rs485.logisticspipes.logistics.LogisticsManager
 import network.rs485.logisticspipes.util.equalsWithNBT
 import network.rs485.logisticspipes.util.getExtractionMax
 import java.util.*
@@ -151,7 +151,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
                 if (itemsLeft > 0) {
                     var stackLeft = pair.second.count
                     val itemid = ItemIdentifier.get(pair.second)
-                    emitAll(AsyncLogisticsManager.allDestinations(itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
+                    emitAll(LogisticsManager.allDestinations(itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
                             .map { reply ->
                                 val maxExtraction = getExtractionMax(itemsLeft, stackLeft, reply.second)
                                 stackLeft -= maxExtraction

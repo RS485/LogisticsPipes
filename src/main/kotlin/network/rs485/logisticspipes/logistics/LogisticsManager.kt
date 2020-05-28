@@ -53,9 +53,7 @@ object LogisticsManager {
     fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, filter: () -> Boolean): Sequence<Pair<Int, SinkReply>> {
         val jamList = LinkedList<Int>()
         return generateSequence {
-            return@generateSequence getDestination(itemid, canBeDefault, sourceRouter, jamList)
-                    ?.takeIf { filter() }
-                    ?.also { jamList.add(it.first) }
+            return@generateSequence if (filter()) getDestination(itemid, canBeDefault, sourceRouter, jamList)?.also { jamList.add(it.first) } else null
         }
     }
 

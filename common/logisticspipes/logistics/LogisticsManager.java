@@ -37,92 +37,12 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 
 public class LogisticsManager implements ILogisticsManager {
-
-	/**
-	 * Method used to check if a given stack has a destination.
-	 *
-	 * @return Triplet of destinationSimpleID, sinkreply, relays; null if
-	 *         nothing found
-	 * @param stack
-	 *            The stack to check if it has destination.
-	 * @param allowDefault
-	 *            Boolean, if true then a default route will be considered a
-	 *            valid destination.
-	 * @param sourceRouter
-	 *            The UUID of the router pipe that wants to send the stack.
-	 * @param excludeSource
-	 *            Boolean, true means it will not consider the pipe itself as a
-	 *            valid destination.
-	 */
-	@Override
-	public Triplet<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
-		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
-		if (sourceRouter == null) {
-			return null;
-		}
-		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(stack);
-		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
-		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
-			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
-			if (exits != null) {
-				validDestinations
-						.addAll(exits.stream().filter(e -> e.containsFlag(PipeRoutingConnectionType.canRouteTo))
-								.collect(Collectors.toList()));
-			}
-		}
-		Collections.sort(validDestinations);
-		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, null, allowDefault);
-
-		if (search.getValue2() == null) {
-			return null;
-		}
-
-		if (!allowDefault && search.getValue2().isDefault) {
-			return null;
-		}
-
-		return search;
-	}
-
-	/**
-	 * Method used to check if a given stack has a passive sink destination at a
-	 * priority.
-	 *
-	 * @return Triplet of destinationSimpleID, sinkreply, relays; null if
-	 *         nothing found
-	 * @param stack
-	 *            The stack to check if it has destination.
-	 * @param sourceRouter
-	 *            The UUID of the router pipe that wants to send the stack.
-	 * @param excludeSource
-	 *            Boolean, true means it will not consider the pipe itself as a
-	 *            valid destination.
-	 * @param priority
-	 *            The priority that the stack must have.
-	 */
-	@Override
-	public Triplet<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
-		IRouter router = SimpleServiceLocator.routerManager.getRouter(sourceRouter);
-		if (router == null) {
-			return null;
-		}
-		Triplet<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, router, router.getIRoutersByCost(), excludeSource, new ArrayList<>(), null, true);
-		if (search.getValue2() == null) {
-			return null;
-		}
-		if (search.getValue2().fixedPriority.ordinal() < priority.ordinal()) {
-			return null;
-		}
-		return search;
-	}
 
 	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, @Nonnull IRouter sourceRouter, @Nonnull List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
 		if (result == null) {

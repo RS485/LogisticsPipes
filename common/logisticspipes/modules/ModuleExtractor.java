@@ -11,6 +11,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
+import kotlin.Pair;
+
 import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -30,11 +32,12 @@ import logisticspipes.network.packets.modules.SneakyModuleDirectionUpdate;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.logistics.LogisticsManager;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SneakyDirection;
 
@@ -127,7 +130,7 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 			}
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = _service.hasDestination(slotitem, true, jamList);
+			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(slotitem, true, (ServerRouter) _service.getRouter(), jamList);
 			if (reply == null) {
 				continue;
 			}
@@ -135,8 +138,8 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 			while (reply != null) {
 				int count = Math.min(itemsleft, slot.getCount());
 				count = Math.min(count, slotitem.getMaxStackSize());
-				if (reply.getValue2().maxNumberOfItems > 0) {
-					count = Math.min(count, reply.getValue2().maxNumberOfItems);
+				if (reply.getSecond().maxNumberOfItems > 0) {
+					count = Math.min(count, reply.getSecond().maxNumberOfItems);
 				}
 
 				while (!_service.useEnergy(neededEnergy() * count) && count > 0) {
@@ -153,7 +156,7 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 					break;
 				}
 				count = stackToSend.getCount();
-				_service.sendStack(stackToSend, reply, itemSendMode());
+				_service.sendStack(stackToSend, reply.getFirst(), reply.getSecond(), itemSendMode());
 				itemsleft -= count;
 				if (itemsleft <= 0) {
 					break;
@@ -162,8 +165,8 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 				if (slot.isEmpty()) {
 					break;
 				}
-				jamList.add(reply.getValue1());
-				reply = _service.hasDestination(ItemIdentifier.get(slot), true, jamList);
+				jamList.add(reply.getFirst());
+				reply = LogisticsManager.INSTANCE.getDestination(ItemIdentifier.get(slot), true, (ServerRouter) _service.getRouter(), jamList);
 			}
 			if (itemsleft <= 0) {
 				break;

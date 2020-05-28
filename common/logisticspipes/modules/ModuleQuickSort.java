@@ -10,6 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import kotlin.Pair;
+
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
@@ -18,10 +20,11 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.logistics.LogisticsManager;
 
 public class ModuleQuickSort extends LogisticsModule {
 
@@ -88,7 +91,7 @@ public class ModuleQuickSort extends LogisticsModule {
 				}
 
 				LinkedList<Integer> jamList = new LinkedList<>();
-				Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), false, jamList);
+				Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), false, (ServerRouter) _service.getRouter(), jamList);
 				if (reply == null) {
 					if (lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
@@ -108,8 +111,8 @@ public class ModuleQuickSort extends LogisticsModule {
 				int availableItems = Math.min(maxItemsToSend, item.getValue());
 				while (reply != null) {
 					int count = availableItems;
-					if (reply.getValue2().maxNumberOfItems != 0) {
-						count = Math.min(count, reply.getValue2().maxNumberOfItems);
+					if (reply.getSecond().maxNumberOfItems != 0) {
+						count = Math.min(count, reply.getSecond().maxNumberOfItems);
 					}
 					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
 					if (stackToSend.isEmpty()) {
@@ -117,7 +120,7 @@ public class ModuleQuickSort extends LogisticsModule {
 					}
 
 					availableItems -= stackToSend.getCount();
-					_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
+					_service.sendStack(stackToSend, reply.getFirst(), reply.getSecond(), ItemSendMode.Fast);
 
 					_service.spawnParticle(Particles.OrangeParticle, 8);
 
@@ -125,8 +128,8 @@ public class ModuleQuickSort extends LogisticsModule {
 						break;
 					}
 
-					jamList.add(reply.getValue1());
-					reply = _service.hasDestination(item.getKey(), false, jamList);
+					jamList.add(reply.getFirst());
+					reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), false, (ServerRouter) _service.getRouter(), jamList);
 				}
 				if (availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
 					lastSuceededStack = lastStackLookedAt;
@@ -173,7 +176,7 @@ public class ModuleQuickSort extends LogisticsModule {
 
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
+			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(ItemIdentifier.get(slot), false, (ServerRouter) _service.getRouter(), jamList);
 			if (reply == null) {
 				if (lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
@@ -196,20 +199,20 @@ public class ModuleQuickSort extends LogisticsModule {
 			boolean partialSend = false;
 			while (reply != null) {
 				int count = slot.getCount();
-				if (reply.getValue2().maxNumberOfItems > 0) {
-					count = Math.min(count, reply.getValue2().maxNumberOfItems);
+				if (reply.getSecond().maxNumberOfItems > 0) {
+					count = Math.min(count, reply.getSecond().maxNumberOfItems);
 				}
 				ItemStack stackToSend = slot.splitStack(count);
 
-				_service.sendStack(stackToSend, reply, ItemSendMode.Fast);
+				_service.sendStack(stackToSend, reply.getFirst(), reply.getSecond(), ItemSendMode.Fast);
 				_service.spawnParticle(Particles.OrangeParticle, 8);
 
 				if (slot.isEmpty()) {
 					break;
 				}
 
-				jamList.add(reply.getValue1());
-				reply = _service.hasDestination(ItemIdentifier.get(slot), false, jamList);
+				jamList.add(reply.getFirst());
+				reply = LogisticsManager.INSTANCE.getDestination(ItemIdentifier.get(slot), false, (ServerRouter) _service.getRouter(), jamList);
 			}
 
 			int amountToExtract = sizePrev - slot.getCount();

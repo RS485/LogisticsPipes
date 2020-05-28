@@ -11,22 +11,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.tuples.Triplet;
 
 public interface ILogisticsManager {
 
 	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
-
-	Triplet<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude);
-
-	Triplet<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
 
 	LinkedList<ItemIdentifier> getCraftableItems(List<ExitRoute> list);
 

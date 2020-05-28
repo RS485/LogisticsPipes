@@ -1556,15 +1556,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	/* ISendRoutedItem */
 
-	public int getSourceint() {
-		return getRouter().getSimpleID();
-	}
-
-	@Override
-	public Triplet<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude) {
-		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), routerIDsToExclude);
-	}
-
 	@Override
 	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);

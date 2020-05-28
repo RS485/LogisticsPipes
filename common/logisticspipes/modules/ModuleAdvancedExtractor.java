@@ -14,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
+import kotlin.Pair;
+
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
@@ -38,13 +40,14 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.logistics.LogisticsManager;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.module.SneakyDirection;
@@ -149,7 +152,7 @@ public class ModuleAdvancedExtractor extends LogisticsModule implements SimpleFi
 				continue;
 			}
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = _service.hasDestination(item.getKey(), true, jamList);
+			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), true, (ServerRouter) _service.getRouter(), jamList);
 			if (reply == null) {
 				continue;
 			}
@@ -157,8 +160,8 @@ public class ModuleAdvancedExtractor extends LogisticsModule implements SimpleFi
 			while (reply != null) {
 				int count = Math.min(itemsleft, item.getValue());
 				count = Math.min(count, item.getKey().getMaxStackSize());
-				if (reply.getValue2().maxNumberOfItems > 0) {
-					count = Math.min(count, reply.getValue2().maxNumberOfItems);
+				if (reply.getSecond().maxNumberOfItems > 0) {
+					count = Math.min(count, reply.getSecond().maxNumberOfItems);
 				}
 
 				while (!_service.useEnergy(neededEnergy() * count) && count > 0) {
@@ -175,17 +178,17 @@ public class ModuleAdvancedExtractor extends LogisticsModule implements SimpleFi
 					break;
 				}
 				count = stackToSend.getCount();
-				_service.sendStack(stackToSend, reply, itemSendMode());
+				_service.sendStack(stackToSend, reply.getFirst(), reply.getSecond(), itemSendMode());
 				itemsleft -= count;
 				if (itemsleft <= 0) {
 					break;
 				}
 
 				if (count <= 0) {
-					jamList.add(reply.getValue1());
+					jamList.add(reply.getFirst());
 				}
 
-				reply = _service.hasDestination(item.getKey(), true, jamList);
+				reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), true, (ServerRouter) _service.getRouter(), jamList);
 			}
 			if (itemsleft <= 0) {
 				return;

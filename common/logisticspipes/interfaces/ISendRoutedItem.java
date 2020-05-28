@@ -1,6 +1,5 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
@@ -11,7 +10,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 
 public interface ISendRoutedItem {
@@ -20,8 +18,6 @@ public interface ISendRoutedItem {
 
 	@Nonnull
 	IRouter getRouter();
-
-	Pair<Integer, SinkReply> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude);
 
 	IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode);
 

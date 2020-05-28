@@ -1,6 +1,6 @@
 package logisticspipes.proxy.td;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -20,11 +20,13 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.td.subproxies.TDPart;
 import logisticspipes.routing.ItemRoutingInformation;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.logistics.LogisticsManager;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -90,7 +92,8 @@ public class LPDuctUnitItem extends DuctUnitItem {
 	public int canRouteItem(ItemStack arg0, byte i) {
 		if (!arg0.isEmpty()) {
 			if (pipe.pipe.isRoutedPipe() && !((CoreRoutedPipe) pipe.pipe).stillNeedReplace()) {
-				if (SimpleServiceLocator.logisticsManager.hasDestination(ItemIdentifier.get(arg0), true, ((CoreRoutedPipe) pipe.pipe).getRouterId(), new ArrayList<>()) != null) {
+				final ServerRouter serverRouter = (ServerRouter) ((CoreRoutedPipe) pipe.pipe).getRouter();
+				if (LogisticsManager.INSTANCE.getDestination(ItemIdentifier.get(arg0), true, serverRouter, Collections.emptyList()) != null) {
 					return 0;
 				}
 			}

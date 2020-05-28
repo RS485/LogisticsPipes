@@ -70,6 +70,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
         get() = if (stalled) STALLED_DELAY else NORMAL_DELAY
 
     override fun tickSetup(): Pair<Int, ItemIdentifier>? {
+        val serverRouter = this.getServerRouter()
         val inventory = _service.pointedInventory ?: return null
         if (inventory.sizeInventory == 0) return null
         if (currentSlot >= inventory.sizeInventory) currentSlot = 0
@@ -78,7 +79,13 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
         if (!stalled && slot == stallSlot) stalled = true
         if (stack.isEmpty) return null
         val itemid = ItemIdentifier.get(stack)
-        return slot to itemid
+        if (AsyncRouting.routingTableNeedsUpdate(serverRouter)) {
+            // go async
+            return slot to itemid
+        }
+        val result = LogisticsManager.getDestination(itemid, false, serverRouter, emptyList()) ?: return null
+        extractAndSend(slot, stack, inventory, result.first, result.second)
+        return null
     }
 
     override suspend fun tickAsync(setupObject: Pair<Int, ItemIdentifier>?): QuicksortAsyncResult? {

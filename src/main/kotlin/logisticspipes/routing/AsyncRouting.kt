@@ -50,6 +50,10 @@ object AsyncRouting {
         }
     }
 
+    fun routingTableNeedsUpdate(serverRouter: ServerRouter): Boolean {
+        return serverRouter.connectionNeedsChecking != 0 && serverRouter._LSAVersion > ServerRouter._lastLSAVersion[serverRouter.simpleID]
+    }
+
     suspend fun updateRoutingTable(serverRouter: ServerRouter) {
         if (serverRouter.connectionNeedsChecking != 0) {
             withContext(LogisticsPipes.getGlobalTickExecutor().asCoroutineDispatcher()) {

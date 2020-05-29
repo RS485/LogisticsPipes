@@ -58,6 +58,7 @@ import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.proxy.MainProxy
 import logisticspipes.routing.AsyncRouting
+import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.PlayerCollectionList
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
@@ -81,6 +82,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
     private val localModeWatchers = PlayerCollectionList()
     private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
     private var _sneakyDirection: EnumFacing? = null
+    private var currentSlot = 0
 
     override var sneakyDirection: EnumFacing?
         get() = _sneakyDirection
@@ -107,36 +109,52 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? {
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return null
-        val directedInventoryUtil = _service.getSneakyInventory(direction) ?: return null
-        if (directedInventoryUtil.sizeInventory == 0) return null
-        val limit = TimeUnit.MICROSECONDS.toNanos(50)
-        var stacksLeft = stacksToExtract
+        val inventory = _service.getSneakyInventory(direction) ?: return null
+        if (inventory.sizeInventory == 0) return null
+        // run item sequence as far as possible and return the channel
+        return ChunkedItemChannel(inventory).also(ChunkedItemChannel::run).channel
+    }
+
+    private inner class ChunkedItemChannel(val inventory: IInventoryUtil) : ChunkedChannel<Pair<Int, ItemStack>>(Channel(Channel.UNLIMITED)) {
+        val timeLimit = TimeUnit.MICROSECONDS.toNanos(50)
+        val serverRouter = getServerRouter()
+
         var itemsLeft = itemsToExtract
+        var stacksLeft = stacksToExtract
+        var index = 0
 
-        class ChunkedItemChannel(private var currentSlot: Int = 0) :
-                ChunkedChannel<Pair<Int, ItemStack>>(Channel(Channel.UNLIMITED)) {
+        @ExperimentalCoroutinesApi
+        override fun hasWork(): Boolean = !channel.isClosedForReceive && stacksLeft > 0 && itemsLeft > 0 && index < inventory.sizeInventory
+        override fun rerun(r: Runnable) = appendSyncWork(r)
 
-            override fun hasWork(): Boolean = !channel.isClosedForReceive && stacksLeft > 0 && itemsLeft > 0 && currentSlot < directedInventoryUtil.sizeInventory
-            override fun rerun(r: Runnable) = appendSyncWork(r)
+        override fun sequenceFactory(): Sequence<Pair<Int, ItemStack>> {
+            val start = System.nanoTime()
+            val runAsync = AsyncRouting.routingTableNeedsUpdate(serverRouter)
+            return (currentSlot until inventory.sizeInventory).plus(0 until currentSlot).asSequence()
+                    .constrainOnce()
+                    .takeWhileTimeRemains(start, timeLimit)
+                    .map { slot ->
+                        val stack = inventory.getStackInSlot(slot)
 
-            override fun sequenceFactory(): Sequence<Pair<Int, ItemStack>> {
-                val start = System.nanoTime()
-                return (currentSlot until directedInventoryUtil.sizeInventory).asSequence()
-                        .constrainOnce()
-                        .takeWhileTimeRemains(start, limit)
-                        .map { slot ->
-                            val stack = directedInventoryUtil.getStackInSlot(slot)
-                            itemsLeft -= stack.count.also { if (it > 0) --stacksLeft }
-                            // stores the next slot for continuing this sequence at a later time
-                            currentSlot = slot + 1
-                            (slot to stack).takeUnless { stack.isEmpty }
-                        }.filterNotNull()
-            }
+                        // saves the index for continuing this sequence at a later time
+                        ++index
+                        currentSlot = slot + 1
+                        if (stack.isEmpty) return@map null
+                        --stacksLeft
+                        if (runAsync) return@map (slot to stack)
+
+                        // find destinations and send stacks now
+                        var sourceStackLeft = stack.count
+                        LogisticsManager.allDestinations(ItemIdentifier.get(stack), true, serverRouter) { itemsLeft > 0 && sourceStackLeft > 0 }
+                                .forEach { pair ->
+                                    extractAndSend(slot, sourceStackLeft, inventory, pair.first, pair.second, itemsLeft).also {
+                                        itemsLeft -= it
+                                        sourceStackLeft -= it
+                                    }
+                                }
+                        return@map null
+                    }.filterNotNull()
         }
-
-        val chunkedChannel = ChunkedItemChannel()
-        chunkedChannel.run()
-        return chunkedChannel.channel
     }
 
     @FlowPreview
@@ -144,22 +162,19 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
     override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? {
         setupObject ?: return null
         var itemsLeft = itemsToExtract
-        val serverRouter = this.getServerRouter()
-        AsyncRouting.updateRoutingTable(serverRouter)
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
-            flow<ExtractorAsyncResult> {
-                if (itemsLeft > 0) {
-                    var stackLeft = pair.second.count
-                    val itemid = ItemIdentifier.get(pair.second)
-                    emitAll(LogisticsManager.allDestinations(itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
-                            .map { reply ->
-                                val maxExtraction = getExtractionMax(itemsLeft, stackLeft, reply.second)
-                                stackLeft -= maxExtraction
-                                itemsLeft -= maxExtraction
-                                ExtractorAsyncResult(pair.first, itemid, reply.first, reply.second)
-                            }.asFlow())
-                }
-            }
+            if (itemsLeft <= 0) return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
+            val serverRouter = this._service.router as? ServerRouter ?: return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
+            var stackLeft = pair.second.count
+            val itemid = ItemIdentifier.get(pair.second)
+            AsyncRouting.updateRoutingTable(serverRouter)
+            LogisticsManager.allDestinations(itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
+                    .map { reply ->
+                        val maxExtraction = getExtractionMax(stackLeft, itemsLeft, reply.second)
+                        stackLeft -= maxExtraction
+                        itemsLeft -= maxExtraction
+                        ExtractorAsyncResult(pair.first, itemid, reply.first, reply.second)
+                    }.asFlow()
         }.toList()
     }
 
@@ -168,24 +183,31 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
         // always get result, fast exit if it is null or throw on error
         val result = task.getCompleted() ?: return
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return
-        val directedInventoryUtil = _service.getSneakyInventory(direction) ?: return
+        val inventory = _service.getSneakyInventory(direction) ?: return
         var itemsLeft = itemsToExtract
-        result.takeWhile { itemsLeft > 0 }
-                .filter { it.slot < directedInventoryUtil.sizeInventory }
-                .map { directedInventoryUtil.getStackInSlot(it.slot) to it }
-                .filter { it.second.itemid.equalsWithNBT(it.first) }
-                .forEach { stackToResult ->
-                    var extract = getExtractionMax(itemsLeft, stackToResult.first.count, stackToResult.second.sinkReply)
-                    if (extract < 1) return@forEach
-                    while (!_service.useEnergy(energyPerItem * extract)) {
-                        _service.spawnParticle(Particles.OrangeParticle, 2)
-                        if (extract < 2) return@forEach
-                        extract /= 2
+        result.asSequence()
+                .takeWhile { itemsLeft > 0 }
+                .forEach {
+                    if (it.slot < inventory.sizeInventory) return@forEach
+                    val stack = inventory.getStackInSlot(it.slot)
+                    if (it.itemid.equalsWithNBT(stack)) {
+                        itemsLeft -= extractAndSend(it.slot, stack.count, inventory, it.destRouterId, it.sinkReply, itemsLeft)
                     }
-                    val toSend = directedInventoryUtil.decrStackSize(stackToResult.second.slot, extract).takeUnless { it.isEmpty } ?: return@forEach
-                    _service.sendStack(toSend, stackToResult.second.destRouterId, stackToResult.second.sinkReply, itemSendMode)
-                    itemsLeft -= toSend.count
                 }
+    }
+
+    private fun extractAndSend(slot: Int, count: Int, inventory: IInventoryUtil, destRouterId: Int, sinkReply: SinkReply, itemsLeft: Int): Int {
+        var extract = getExtractionMax(count, itemsLeft, sinkReply)
+        if (extract < 1) return 0
+        while (!_service.useEnergy(energyPerItem * extract)) {
+            _service.spawnParticle(Particles.OrangeParticle, 2)
+            if (extract < 2) return 0
+            extract /= 2
+        }
+        val toSend = inventory.decrStackSize(slot, extract)
+        if (toSend.isEmpty) return 0
+        _service.sendStack(toSend, destRouterId, sinkReply, itemSendMode)
+        return toSend.count
     }
 
     override fun recievePassive(): Boolean = false

@@ -21,7 +21,7 @@ import net.minecraft.util.text.TextComponentString;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRequestAPI;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;

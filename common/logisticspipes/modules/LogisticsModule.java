@@ -1,4 +1,4 @@
-package logisticspipes.modules.abstractmodules;
+package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.module
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import logisticspipes.interfaces.IInventoryUtil
-import logisticspipes.modules.abstractmodules.getServerRouter
+import logisticspipes.modules.getServerRouter
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.routing.AsyncRouting

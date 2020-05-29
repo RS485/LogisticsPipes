@@ -1,10 +1,10 @@
 package logisticspipes.pipes.upgrades;
 
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;

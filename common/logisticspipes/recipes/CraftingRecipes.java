@@ -7,7 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LPItems;
 import logisticspipes.items.ItemModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 
 //@formatter:off
 //CHECKSTYLE:OFF

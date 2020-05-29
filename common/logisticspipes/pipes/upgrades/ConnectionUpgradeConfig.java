@@ -11,7 +11,7 @@ import net.minecraft.util.EnumFacing;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.network.guis.upgrade.DisconnectionUpgradeConfigGuiProvider;

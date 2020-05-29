@@ -9,8 +9,8 @@ import net.minecraft.item.ItemStack;
 
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.utils.DummyWorldProvider;
 
 public class DummyModuleContainer extends DummyContainer {

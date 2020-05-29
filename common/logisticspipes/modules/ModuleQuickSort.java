@@ -13,7 +13,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import kotlin.Pair;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.modules.QuickSortState;
 import logisticspipes.pipefxhandlers.Particles;

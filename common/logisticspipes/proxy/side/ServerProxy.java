@@ -21,7 +21,7 @@ import net.minecraftforge.fml.server.FMLServerHandler;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemLogisticsPipe;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;

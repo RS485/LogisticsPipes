@@ -10,12 +10,12 @@ import net.minecraft.util.EnumFacing;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModulePolymorphicItemSink;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.UpgradeCoordinatesGuiProvider;
 import logisticspipes.network.guis.upgrade.SneakyUpgradeConfigGuiProvider;

@@ -21,7 +21,7 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.RemoteOrderer;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 
 public class LPItems {

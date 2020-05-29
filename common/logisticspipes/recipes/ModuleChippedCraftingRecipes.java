@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleCrafter;
@@ -31,7 +32,6 @@ import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 
 public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 

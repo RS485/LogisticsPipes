@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.items.ItemUpgrade;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.abstractguis.BooleanModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassi;

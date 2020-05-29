@@ -6,7 +6,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IQueueCCEvent;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.OneList;

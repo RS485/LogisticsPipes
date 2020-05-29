@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.module
 import kotlinx.coroutines.*
 import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
-import logisticspipes.modules.abstractmodules.LogisticsModule
+import logisticspipes.modules.LogisticsModule
 import java.time.Duration
 
 abstract class AsyncModule<S, C> : LogisticsModule() {

@@ -2,8 +2,8 @@ package logisticspipes.network.guis.module.inhand;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.StaticResolve;

@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.module
 
-import logisticspipes.modules.abstractmodules.LogisticsModule
+import logisticspipes.modules.LogisticsModule
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider
 

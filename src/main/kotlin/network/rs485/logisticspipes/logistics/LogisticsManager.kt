@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.logistics
 
-import logisticspipes.modules.abstractmodules.LogisticsModule
+import logisticspipes.modules.LogisticsModule
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.proxy.SimpleServiceLocator
 import logisticspipes.routing.AsyncRouting

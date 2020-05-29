@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package logisticspipes.modules.abstractmodules
+package logisticspipes.modules
 
 import logisticspipes.routing.ServerRouter
 

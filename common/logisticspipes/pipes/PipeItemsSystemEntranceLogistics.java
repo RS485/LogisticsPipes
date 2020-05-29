@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;

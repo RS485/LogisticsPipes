@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 
 import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.guis.pipe.ChassiGuiProvider;

@@ -6,8 +6,8 @@ import net.minecraft.inventory.Container;
 
 import lombok.Getter;
 
-import logisticspipes.modules.abstractmodules.LogisticsModule;
-import logisticspipes.modules.abstractmodules.LogisticsModule.ModulePositionType;
+import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiOpenChassie;
 import logisticspipes.proxy.MainProxy;

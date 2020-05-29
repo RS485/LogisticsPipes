@@ -44,7 +44,7 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import logisticspipes.interfaces.*
-import logisticspipes.modules.abstractmodules.getServerRouter
+import logisticspipes.modules.getServerRouter
 import logisticspipes.network.NewGuiHandler
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider

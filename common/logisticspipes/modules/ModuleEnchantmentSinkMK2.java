@@ -16,7 +16,6 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -143,7 +142,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	@Override
 	/*
 	 * (non-Javadoc)
-	 * @see logisticspipes.modules.abstractmodules.LogisticsModule#hasGenericInterests()
+	 * @see logisticspipes.modules.LogisticsModule#hasGenericInterests()
 	 * Only looking for items in filter
 	 */
 	public boolean hasGenericInterests() {

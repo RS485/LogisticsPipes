@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
@@ -65,13 +66,12 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
 		if (_filterInventory.containsExcludeNBTItem(item.getUndamaged().getIgnoringNBT())) {
-			if (item.makeNormalStack(1).isItemEnchanted()) {
+			if (stack.isItemEnchanted()) {
 				return _sinkReply;
 			}
 			return null;

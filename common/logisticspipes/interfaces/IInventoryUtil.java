@@ -30,20 +30,6 @@ public interface IInventoryUtil {
 	boolean containsUndamagedItem(ItemIdentifier item);
 
 	/**
-	 * Checks all possible room for a given item. This method is laggy!
-	 * @see #roomForItem(ItemIdentifier, int)
-	 * @deprecated use {@link #roomForItem(ItemStack)} where possible
-	 */
-	@Deprecated
-	int roomForItem(ItemIdentifier item);
-
-	/**
-	 * @deprecated use {@link #roomForItem(ItemStack)} where possible
-	 */
-	@Deprecated
-	int roomForItem(ItemIdentifier item, int count);
-
-	/**
 	 * Inventory space count which terminates when space for max items are
 	 * found.
 	 *

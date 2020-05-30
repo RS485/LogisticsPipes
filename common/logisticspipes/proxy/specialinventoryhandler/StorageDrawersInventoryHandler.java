@@ -259,16 +259,6 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, 1);
-	}
-
-	@Override
-	public int roomForItem(ItemIdentifier item, int count) {
-		return roomForItem(item.makeNormalStack(count));
-	}
-
-	@Override
 	public int roomForItem(ItemStack stack) {
 		int room = 0;
 

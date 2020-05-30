@@ -9,8 +9,6 @@ import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.OneList;
-import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
@@ -26,12 +24,6 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 	@Override
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {
 		this.eventQueuer = eventQueuer;
-	}
-
-	@Override
-	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
-		return null;
 	}
 
 	@Override

@@ -81,12 +81,6 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
-		return null;
-	}
-
-	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_sneakyDirection = SneakyDirection.readSneakyDirection(nbttagcompound);
 	}
@@ -129,7 +123,7 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 			}
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(slotitem, true, (ServerRouter) _service.getRouter(), jamList);
+			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(slot, slotitem, true, (ServerRouter) _service.getRouter(), jamList);
 			if (reply == null) {
 				continue;
 			}
@@ -165,7 +159,7 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 					break;
 				}
 				jamList.add(reply.getFirst());
-				reply = LogisticsManager.INSTANCE.getDestination(ItemIdentifier.get(slot), true, (ServerRouter) _service.getRouter(), jamList);
+				reply = LogisticsManager.INSTANCE.getDestination(slot, ItemIdentifier.get(slot), true, (ServerRouter) _service.getRouter(), jamList);
 			}
 			if (itemsleft <= 0) {
 				break;

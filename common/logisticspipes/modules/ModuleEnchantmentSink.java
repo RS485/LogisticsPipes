@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
@@ -26,8 +27,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		// check to see if a better route is already found
 		// Note: Higher MKs are higher priority
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
@@ -35,7 +35,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 		}
 
 		//check to see if item is enchanted
-		if (item.makeNormalStack(1).isItemEnchanted()) {
+		if (stack.isItemEnchanted()) {
 			return _sinkReply;
 		}
 		return null;

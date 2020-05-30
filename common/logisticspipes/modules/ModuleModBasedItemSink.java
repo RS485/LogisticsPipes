@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.gui.hud.modules.HUDStringBasedItemSink;
@@ -51,13 +52,12 @@ public class ModuleModBasedItemSink extends LogisticsModule implements IStringBa
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		if (modIdSet == null) {
-			buildModIdSet();
+		if (modIdSet.isEmpty()) {
+			modIdSet.addAll(modList);
 		}
 		if (modIdSet.contains(item.getModName())) {
 			if (_service.canUseEnergy(5)) {
@@ -67,11 +67,6 @@ public class ModuleModBasedItemSink extends LogisticsModule implements IStringBa
 		return null;
 	}
 
-	private void buildModIdSet() {
-		modIdSet.clear();
-		modIdSet.addAll(modList);
-	}
-
 	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		modList.clear();
@@ -79,7 +74,8 @@ public class ModuleModBasedItemSink extends LogisticsModule implements IStringBa
 		for (int i = 0; i < limit; i++) {
 			modList.add(nbttagcompound.getString("Mod" + i));
 		}
-		buildModIdSet();
+		modIdSet.clear();
+		modIdSet.addAll(modList);
 	}
 
 	@Override

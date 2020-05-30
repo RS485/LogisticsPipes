@@ -7,6 +7,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -99,6 +100,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * Gives an sink answer on the given itemstack
 	 *
 	 * @param stack              to sink
+	 * @param item               to sink
 	 * @param bestPriority       best priority seen so far
 	 * @param bestCustomPriority best custom subpriority
 	 * @param allowDefault       is a default only sink allowed to sink this?
@@ -107,8 +109,9 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * @param forcePassive       check for passive routing only, in case this method is redirected to other sinks
 	 * @return SinkReply whether the module sinks the item or not
 	 */
-	public abstract SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive);
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+		return null;
+	}
 
 	/**
 	 * A tick for the Module

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -26,22 +27,26 @@ public class ModuleSatellite extends LogisticsModule {
 	private SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit));
+		final int itemCount = spaceFor(stack, item, includeInTransit);
+		if (itemCount > 0) {
+			return new SinkReply(_sinkReply, itemCount);
+		} else {
+			return null;
+		}
 	}
 
-	private int spaceFor(ItemIdentifier item, boolean includeInTransit) {
+	private int spaceFor(ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(pipe.container);
 
 		int count = worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
 				.map(adjacent -> adjacent.sneakyInsertion().from(getUpgradeManager()))
 				.map(NeighborTileEntity::getInventoryUtil)
 				.filter(Objects::nonNull)
-				.map(util -> util.roomForItem(item, 9999))
+				.map(util -> util.roomForItem(stack))
 				.reduce(Integer::sum).orElse(0);
 
 		if (includeInTransit) {

@@ -169,16 +169,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, item.getMaxStackSize());
-	}
-
-	@Override
-	public int roomForItem(ItemIdentifier itemIdent, int count) {
-		return roomForItem(itemIdent.makeNormalStack(count));
-	}
-
-	@Override
 	public int roomForItem(ItemStack itemStack) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);

@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.gui.hud.modules.HUDItemSink;
@@ -95,8 +96,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		if (_isDefaultRoute && !allowDefault) {
 			return null;
 		}
@@ -111,20 +111,20 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		}
 		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
 		if (upgradeManager != null && upgradeManager.isFuzzyUpgrade()) {
-			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
-				if (stack == null) {
+			for (Pair<ItemIdentifierStack, Integer> filter : _filterInventory) {
+				if (filter == null) {
 					continue;
 				}
-				if (stack.getValue1() == null) {
+				if (filter.getValue1() == null) {
 					continue;
 				}
 				ItemIdentifier ident1 = item;
-				ItemIdentifier ident2 = stack.getValue1().getItem();
-				if (ignoreData.get(stack.getValue2())) {
+				ItemIdentifier ident2 = filter.getValue1().getItem();
+				if (ignoreData.get(filter.getValue2())) {
 					ident1 = ident1.getIgnoringData();
 					ident2 = ident2.getIgnoringData();
 				}
-				if (ignoreNBT.get(stack.getValue2())) {
+				if (ignoreNBT.get(filter.getValue2())) {
 					ident1 = ident1.getIgnoringNBT();
 					ident2 = ident2.getIgnoringNBT();
 				}

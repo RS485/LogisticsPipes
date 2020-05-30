@@ -18,6 +18,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.ItemStack;
+
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -44,7 +46,7 @@ import logisticspipes.utils.tuples.Triplet;
 
 public class LogisticsManager implements ILogisticsManager {
 
-	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, @Nonnull IRouter sourceRouter, @Nonnull List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
+	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemStack stack, ItemIdentifier item, @Nonnull IRouter sourceRouter, @Nonnull List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
 		if (result == null) {
 			result = new Triplet<>(null, null, null);
 		}
@@ -65,12 +67,12 @@ public class LogisticsManager implements ILogisticsManager {
 			}
 
 			for (IFilter filter : candidateRouter.filters) {
-				if (filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) {
+				if (filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(item))) {
 					continue outer;
 				}
 			}
 
-			SinkReply reply = LogisticsManager.canSink(candidateRouter.destination, sourceRouter, excludeSource, stack, result.getValue2(), false, allowDefault);
+			SinkReply reply = LogisticsManager.canSink(stack, candidateRouter.destination, sourceRouter, excludeSource, item, result.getValue2(), false, allowDefault);
 
 			if (reply == null) {
 				continue;
@@ -107,7 +109,7 @@ public class LogisticsManager implements ILogisticsManager {
 		return result;
 	}
 
-	public static SinkReply canSink(@Nonnull IRouter destination, IRouter sourceRouter, boolean excludeSource, ItemIdentifier stack, SinkReply result, boolean activeRequest, boolean allowDefault) {
+	public static SinkReply canSink(@Nonnull ItemStack stack, @Nonnull IRouter destination, IRouter sourceRouter, boolean excludeSource, ItemIdentifier item, SinkReply result, boolean activeRequest, boolean allowDefault) {
 
 		SinkReply reply;
 		LogisticsModule module = destination.getLogisticsModule();
@@ -127,9 +129,9 @@ public class LogisticsManager implements ILogisticsManager {
 			}
 		}
 		if (result == null) {
-			reply = module.sinksItem(stack, -1, 0, allowDefault, true, true);
+			reply = module.sinksItem(stack, item, -1, 0, allowDefault, true, true);
 		} else {
-			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority, allowDefault, true, true);
+			reply = module.sinksItem(stack, item, result.fixedPriority.ordinal(), result.customPriority, allowDefault, true, true);
 		}
 		if (result != null && result.maxNumberOfItems < 0) {
 			return null;
@@ -166,7 +168,11 @@ public class LogisticsManager implements ILogisticsManager {
 		//Wipe current destination
 		item.clearDestination();
 
-		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getItemIdentifierStack().getItem());
+		final ItemIdentifierStack itemIdStack = item.getItemIdentifierStack();
+		if (itemIdStack == null) {
+			return item;
+		}
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(itemIdStack.getItem());
 		List<ExitRoute> validDestinations = new ArrayList<>(); // get the routing table
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getServerRouter(i);
@@ -178,14 +184,14 @@ public class LogisticsManager implements ILogisticsManager {
 			}
 		}
 		Collections.sort(validDestinations);
-		if (item.getItemIdentifierStack() != null && item.getItemIdentifierStack().makeNormalStack().getItem() instanceof LogisticsFluidContainer) {
-			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item.getItemIdentifierStack()), sourceRouter, item.getJamList());
+		final ItemStack stack = itemIdStack.makeNormalStack();
+		if (stack.getItem() instanceof LogisticsFluidContainer) {
+			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(itemIdStack), sourceRouter, item.getJamList());
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0) {
 				item.setDestination(bestReply.getValue1());
 			}
-			return item;
 		} else {
-			Triplet<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemIdentifierStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), null, true);
+			Triplet<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(stack, itemIdStack.getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), null, true);
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0) {
 				item.setDestination(bestReply.getValue1());
 				if (bestReply.getValue2().isPassive) {
@@ -199,8 +205,8 @@ public class LogisticsManager implements ILogisticsManager {
 				}
 				item.setAdditionalTargetInformation(bestReply.getValue2().addInfo);
 			}
-			return item;
 		}
+		return item;
 	}
 
 	/**

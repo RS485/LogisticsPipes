@@ -140,17 +140,6 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		return false;
 	}
 
-	//Ignores slot/item hiding
-	@Override
-	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, Integer.MAX_VALUE);
-	}
-
-	@Override
-	public int roomForItem(ItemIdentifier item, int count) {
-		return roomForItem(item.unsafeMakeNormalStack(count));
-	}
-
 	@Override
 	public int roomForItem(ItemStack stack) {
 		// Special casing for "unlimited" storage items

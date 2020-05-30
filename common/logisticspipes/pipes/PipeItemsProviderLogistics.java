@@ -173,7 +173,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 				_orderManager.sendFailed();
 				return 0;
 			}
-			SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
+			SinkReply reply = LogisticsManager.canSink(stack.makeNormalStack(), dRtr, null, true, stack.getItem(), null, true, false);
 			boolean defersend = false;
 			if (reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 				if (reply.maxNumberOfItems < wanted) {

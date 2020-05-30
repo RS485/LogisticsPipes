@@ -176,39 +176,45 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		return new SinkReply(_sinkReply, spaceFor(item, includeInTransit), areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
+		final int itemCount = spaceFor(stack, item, includeInTransit);
+		if (itemCount > 0) {
+			return new SinkReply(_sinkReply, itemCount, areAllOrderesToBuffer() ? BufferMode.DESTINATION_BUFFERED : BufferMode.NONE);
+		} else {
+			return null;
+		}
 	}
 
-	protected int spaceFor(ItemIdentifier item, boolean includeInTransit) {
+	protected int spaceFor(ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
 		Pair<String, ItemIdentifier> key = new Pair<>("spaceFor", item);
 		Object cache = _service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
+		int onRoute = 0;
+		if (includeInTransit) {
+			onRoute = _service.countOnRoute(item);
+		}
 		if (cache != null) {
-			int count = (Integer) cache;
-			if (includeInTransit) {
-				count -= _service.countOnRoute(item);
-			}
-			return count;
+			return ((Integer) cache) - onRoute;
 		}
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
+		if (includeInTransit) {
+			stack = stack.copy();
+			stack.grow(onRoute);
+		}
+		final ItemStack finalStack = stack;
 		int count = worldCoordinates
 				.connectedTileEntities(ConnectionPipeType.ITEM)
 				.map(neighbor -> neighbor.sneakyInsertion().from(getUpgradeManager()))
 				.filter(NeighborTileEntity::isItemHandler)
 				.map(NeighborTileEntity::getUtilForItemHandler)
-				.map(invUtil -> invUtil.roomForItem(item, 9999)) // ToDo: Magic number
+				.map(invUtil -> invUtil.roomForItem(finalStack))
 				.reduce(Integer::sum).orElse(0);
 
 		_service.getCacheHolder().setCache(CacheTypes.Inventory, key, count);
-		if (includeInTransit) {
-			count -= _service.countOnRoute(item);
-		}
-		return count;
+		return count - onRoute;
 	}
 
 	public int getPriority() {
@@ -307,7 +313,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		while (lostItem != null && rerequested < 100) {
 			Pair<ItemIdentifierStack, IAdditionalTargetInformation> pair = lostItem.get();
 			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
-				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, pair.getValue1().getItem(), null, true, true);
+				SinkReply reply = LogisticsManager.canSink(pair.getValue1().makeNormalStack(), getRouter(), null, true, pair.getValue1().getItem(), null, true, true);
 				if (reply == null || reply.maxNumberOfItems < 1) {
 					_lostItems.add(new DelayedGeneric<>(pair, 9000 + (int) (Math.random() * 2000)));
 					lostItem = _lostItems.poll();
@@ -1121,8 +1127,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 				itemsleft -= numtosend;
 				ItemStack stackToSend = extracted.splitStack(numtosend);
 				if (nextOrder.getDestination() != null) {
-					SinkReply reply = LogisticsManager.canSink(nextOrder.getDestination().getRouter(), null, true, ItemIdentifier.get(stackToSend), null, true,
-							false);
+					SinkReply reply = LogisticsManager.canSink(stackToSend, nextOrder.getDestination().getRouter(), null, true, ItemIdentifier.get(stackToSend), null, true, false);
 					boolean defersend = false;
 					if (reply == null || reply.bufferMode != BufferMode.NONE || reply.maxNumberOfItems < 1) {
 						defersend = true;
@@ -1157,7 +1162,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		boolean result = true;
 		for (LogisticsItemOrder order : _service.getItemOrderManager()) {
 			if (order.getDestination() instanceof IItemSpaceControl) {
-				SinkReply reply = LogisticsManager.canSink(order.getDestination().getRouter(), null, true, order.getResource().getItem(), null, true, false);
+				SinkReply reply = LogisticsManager.canSink(order.getResource().stack.makeNormalStack(), order.getDestination().getRouter(), null, true, order.getResource().getItem(), null, true, false);
 				if (reply != null && reply.bufferMode == BufferMode.NONE && reply.maxNumberOfItems >= 1) {
 					result = false;
 					break;

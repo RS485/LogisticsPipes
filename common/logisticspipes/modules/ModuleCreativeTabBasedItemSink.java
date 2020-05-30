@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.gui.hud.modules.HUDStringBasedItemSink;
@@ -51,13 +52,12 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		if (tabSet == null) {
-			buildModIdSet();
+		if (tabSet.isEmpty()) {
+			tabSet.addAll(tabList);
 		}
 		if (tabSet.contains(item.getCreativeTabName())) {
 			if (_service.canUseEnergy(5)) {
@@ -67,11 +67,6 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 		return null;
 	}
 
-	private void buildModIdSet() {
-		tabSet.clear();
-		tabSet.addAll(tabList);
-	}
-
 	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		tabList.clear();
@@ -79,7 +74,8 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 		for (int i = 0; i < limit; i++) {
 			tabList.add(nbttagcompound.getString("Mod" + i));
 		}
-		buildModIdSet();
+		tabSet.clear();
+		tabSet.addAll(tabList);
 	}
 
 	@Override

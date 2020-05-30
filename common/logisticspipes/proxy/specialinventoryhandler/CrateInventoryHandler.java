@@ -96,16 +96,6 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, 1);
-	}
-
-	@Override
-	public int roomForItem(ItemIdentifier itemIdent, int count) {
-		return roomForItem(itemIdent.unsafeMakeNormalStack(count));
-	}
-
-	@Override
 	public int roomForItem(ItemStack stack) {
 		return _tile.getSpaceForItem(stack);
 	}
@@ -122,8 +112,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 				st.shrink(overflow.getCount());
 			}
 		} else {
-			int space = roomForItem(ItemIdentifier.get(stack), 0);
-			st.setCount(Math.max(Math.min(space, stack.getCount()), 0));
+			st.setCount(Math.max(Math.min(roomForItem(stack), stack.getCount()), 0));
 		}
 		return st;
 	}

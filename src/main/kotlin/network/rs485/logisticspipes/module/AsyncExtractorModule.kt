@@ -147,7 +147,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
 
                         // find destinations and send stacks now
                         var sourceStackLeft = stack.count
-                        LogisticsManager.allDestinations(ItemIdentifier.get(stack), true, serverRouter) { itemsLeft > 0 && sourceStackLeft > 0 }
+                        LogisticsManager.allDestinations(stack, ItemIdentifier.get(stack), true, serverRouter) { itemsLeft > 0 && sourceStackLeft > 0 }
                                 .forEach { pair ->
                                     extractAndSend(slot, sourceStackLeft, inventory, pair.first, pair.second, itemsLeft).also {
                                         itemsLeft -= it
@@ -170,7 +170,7 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
             var stackLeft = pair.second.count
             val itemid = ItemIdentifier.get(pair.second)
             AsyncRouting.updateRoutingTable(serverRouter)
-            LogisticsManager.allDestinations(itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
+            LogisticsManager.allDestinations(pair.second, itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
                     .map { reply ->
                         val maxExtraction = getExtractionMax(stackLeft, itemsLeft, reply.second)
                         stackLeft -= maxExtraction
@@ -223,8 +223,6 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
     }
 
     override fun hasGenericInterests(): Boolean = false
-
-    override fun sinksItem(stack: ItemIdentifier?, bestPriority: Int, bestCustomPriority: Int, allowDefault: Boolean, includeInTransit: Boolean, forcePassive: Boolean): SinkReply? = null
 
     override fun interestedInUndamagedID(): Boolean = false
 

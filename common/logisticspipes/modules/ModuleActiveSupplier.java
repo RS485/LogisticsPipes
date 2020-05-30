@@ -47,7 +47,6 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -70,12 +69,6 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 
 	public ModuleActiveSupplier() {
 		dummyInventory.addListener(this);
-	}
-
-	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
-		return null;
 	}
 
 	@Override
@@ -288,17 +281,16 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 			if (haveCount == null) {
 				haveCount = 0;
 			}
-			int spaceAvailable = invUtil.roomForItem(item.getKey());
+			int spaceAvailable = invUtil.roomForItem(item.getKey().unsafeMakeNormalStack(Integer.MAX_VALUE));
 			if (_requestMode == SupplyMode.Infinite) {
 				Integer requestedCount = _requestedItems.get(item.getKey());
 				if (requestedCount != null) {
 					spaceAvailable -= requestedCount;
 				}
-				item.setValue(Math.min(item.getKey().getMaxStackSize(), spaceAvailable));
+				item.setValue(Math.min(item.getKey().getMaxStackSize(), Math.max(0, spaceAvailable)));
 				continue;
-
 			}
-			if (spaceAvailable == 0 || (_requestMode == SupplyMode.Bulk50 && haveCount > item.getValue() / 2) || (_requestMode == SupplyMode.Bulk100 && haveCount >= item.getValue())) {
+			if (spaceAvailable < 1 || (_requestMode == SupplyMode.Bulk50 && haveCount > item.getValue() / 2) || (_requestMode == SupplyMode.Bulk100 && haveCount >= item.getValue())) {
 				item.setValue(0);
 				continue;
 			}

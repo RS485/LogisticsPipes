@@ -59,7 +59,7 @@ const val NORMAL_DELAY = 6
 
 data class QuicksortAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
-class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAsyncResult?>() {
+class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>() {
     private var stalled = true
     private var currentSlot = 0
     private var stallSlot = 0
@@ -71,7 +71,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
     override val everyNthTick: Int
         get() = if (stalled) STALLED_DELAY else NORMAL_DELAY
 
-    override fun tickSetup(): Pair<Int, ItemIdentifier>? {
+    override fun tickSetup(): Pair<Int, ItemStack>? {
         val serverRouter = this.getServerRouter()
         val inventory = _service.pointedInventory ?: return null
         if (inventory.sizeInventory == 0) return null
@@ -80,22 +80,23 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
         val stack = inventory.getStackInSlot(slot)
         if (!stalled && slot == stallSlot) stalled = true
         if (stack.isEmpty) return null
-        val itemid = ItemIdentifier.get(stack)
         if (ServerRouter.getBiggestSimpleID() > (ASYNC_THRESHOLD * 2) || AsyncRouting.routingTableNeedsUpdate(serverRouter)) {
             // go async
-            return slot to itemid
+            return slot to stack
         }
-        val result = LogisticsManager.getDestination(itemid, false, serverRouter, emptyList()) ?: return null
+        val itemid = ItemIdentifier.get(stack)
+        val result = LogisticsManager.getDestination(stack, itemid, false, serverRouter, emptyList()) ?: return null
         extractAndSend(slot, stack, inventory, result.first, result.second)
         return null
     }
 
-    override suspend fun tickAsync(setupObject: Pair<Int, ItemIdentifier>?): QuicksortAsyncResult? {
+    override suspend fun tickAsync(setupObject: Pair<Int, ItemStack>?): QuicksortAsyncResult? {
         if (setupObject == null) return null
         val serverRouter = this.getServerRouter()
         AsyncRouting.updateRoutingTable(serverRouter)
-        val result = LogisticsManager.getDestination(setupObject.second, false, serverRouter, emptyList()) ?: return null
-        return QuicksortAsyncResult(setupObject.first, setupObject.second, result.first, result.second)
+        val itemid = ItemIdentifier.get(setupObject.second)
+        val result = LogisticsManager.getDestination(setupObject.second, itemid, false, serverRouter, emptyList()) ?: return null
+        return QuicksortAsyncResult(setupObject.first, itemid, result.first, result.second)
     }
 
     @ExperimentalCoroutinesApi
@@ -128,8 +129,6 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
     override fun writeToNBT(nbttagcompound: NBTTagCompound) {}
 
     override fun hasGenericInterests(): Boolean = false
-
-    override fun sinksItem(stack: ItemIdentifier?, bestPriority: Int, bestCustomPriority: Int, allowDefault: Boolean, includeInTransit: Boolean, forcePassive: Boolean): SinkReply? = null
 
     override fun interestedInUndamagedID(): Boolean = false
 

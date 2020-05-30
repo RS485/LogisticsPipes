@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IInventoryUtil;
@@ -51,13 +52,12 @@ public class ChassiModule extends LogisticsModule implements Gui {
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		SinkReply bestresult = null;
 		for (LogisticsModule module : modules) {
 			if (module != null) {
 				if (!forcePassive || module.recievePassive()) {
-					SinkReply result = module.sinksItem(item, bestPriority, bestCustomPriority, allowDefault, includeInTransit, forcePassive);
+					SinkReply result = module.sinksItem(stack, item, bestPriority, bestCustomPriority, allowDefault, includeInTransit, forcePassive);
 					if (result != null && result.maxNumberOfItems >= 0) {
 						bestresult = result;
 						bestPriority = result.fixedPriority.ordinal();
@@ -75,17 +75,18 @@ public class ChassiModule extends LogisticsModule implements Gui {
 		if (invUtil == null) {
 			return null;
 		}
-		int roomForItem = invUtil.roomForItem(item);
-		if (roomForItem < 1) {
-			return null;
-		}
+		int roomForItem;
 		if (includeInTransit) {
 			int onRoute = parentChassis.countOnRoute(item);
-			roomForItem = invUtil.roomForItem(item, onRoute + item.getMaxStackSize());
+			final ItemStack copy = stack.copy();
+			copy.setCount(onRoute + item.getMaxStackSize());
+			roomForItem = invUtil.roomForItem(copy);
 			roomForItem -= onRoute;
-			if (roomForItem < 1) {
-				return null;
-			}
+		} else {
+			roomForItem = invUtil.roomForItem(stack);
+		}
+		if (roomForItem < 1) {
+			return null;
 		}
 
 		if (bestresult.maxNumberOfItems == 0) {

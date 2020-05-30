@@ -98,12 +98,6 @@ public class ModuleAdvancedExtractor extends LogisticsModule implements SimpleFi
 		SneakyDirection.writeSneakyDirection(_sneakyDirection, nbttagcompound);
 	}
 
-	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
-		return null;
-	}
-
 	protected int ticksToAction() {
 		return 80 / (int) (Math.pow(2, getUpgradeManager().getActionSpeedUpgrade()));
 	}
@@ -147,11 +141,12 @@ public class ModuleAdvancedExtractor extends LogisticsModule implements SimpleFi
 		Map<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
 		int itemsleft = itemsToExtract();
 		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
-			if (!CanExtract(item.getKey().makeNormalStack(item.getValue()))) {
+			final ItemStack stack = item.getKey().makeNormalStack(item.getValue());
+			if (!CanExtract(stack)) {
 				continue;
 			}
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), true, (ServerRouter) _service.getRouter(), jamList);
+			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(stack, item.getKey(), true, (ServerRouter) _service.getRouter(), jamList);
 			if (reply == null) {
 				continue;
 			}
@@ -187,7 +182,7 @@ public class ModuleAdvancedExtractor extends LogisticsModule implements SimpleFi
 					jamList.add(reply.getFirst());
 				}
 
-				reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), true, (ServerRouter) _service.getRouter(), jamList);
+				reply = LogisticsManager.INSTANCE.getDestination(stackToSend, item.getKey(), true, (ServerRouter) _service.getRouter(), jamList);
 			}
 			if (itemsleft <= 0) {
 				return;

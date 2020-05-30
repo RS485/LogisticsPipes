@@ -46,12 +46,6 @@ public class ModuleQuickSort extends LogisticsModule {
 	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
-		return null;
-	}
-
-	@Override
 	public void tick() {
 		if (--currentTick > 0) {
 			return;
@@ -90,7 +84,8 @@ public class ModuleQuickSort extends LogisticsModule {
 				}
 
 				LinkedList<Integer> jamList = new LinkedList<>();
-				Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), false, (ServerRouter) _service.getRouter(), jamList);
+				final ItemStack stack = item.getKey().makeNormalStack(item.getValue());
+				Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(stack, item.getKey(), false, (ServerRouter) _service.getRouter(), jamList);
 				if (reply == null) {
 					if (lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
@@ -128,7 +123,7 @@ public class ModuleQuickSort extends LogisticsModule {
 					}
 
 					jamList.add(reply.getFirst());
-					reply = LogisticsManager.INSTANCE.getDestination(item.getKey(), false, (ServerRouter) _service.getRouter(), jamList);
+					reply = LogisticsManager.INSTANCE.getDestination(stackToSend, item.getKey(), false, (ServerRouter) _service.getRouter(), jamList);
 				}
 				if (availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
 					lastSuceededStack = lastStackLookedAt;
@@ -175,7 +170,7 @@ public class ModuleQuickSort extends LogisticsModule {
 
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<>();
-			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(ItemIdentifier.get(slot), false, (ServerRouter) _service.getRouter(), jamList);
+			Pair<Integer, SinkReply> reply = LogisticsManager.INSTANCE.getDestination(slot, ItemIdentifier.get(slot), false, (ServerRouter) _service.getRouter(), jamList);
 			if (reply == null) {
 				if (lastStackLookedAt == lastSuceededStack) {
 					stalled = true;
@@ -211,7 +206,7 @@ public class ModuleQuickSort extends LogisticsModule {
 				}
 
 				jamList.add(reply.getFirst());
-				reply = LogisticsManager.INSTANCE.getDestination(ItemIdentifier.get(slot), false, (ServerRouter) _service.getRouter(), jamList);
+				reply = LogisticsManager.INSTANCE.getDestination(slot, ItemIdentifier.get(slot), false, (ServerRouter) _service.getRouter(), jamList);
 			}
 
 			int amountToExtract = sizePrev - slot.getCount();

@@ -46,18 +46,19 @@ import logisticspipes.routing.PipeRoutingConnectionType
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
+import net.minecraft.item.ItemStack
 import java.util.*
 import java.util.stream.Stream
 
 object LogisticsManager {
-    fun allDestinations(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, filter: () -> Boolean): Sequence<Pair<Int, SinkReply>> {
+    fun allDestinations(stack: ItemStack, itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, filter: () -> Boolean): Sequence<Pair<Int, SinkReply>> {
         val jamList = LinkedList<Int>()
         return generateSequence {
-            return@generateSequence if (filter()) getDestination(itemid, canBeDefault, sourceRouter, jamList)?.also { jamList.add(it.first) } else null
+            return@generateSequence if (filter()) getDestination(stack, itemid, canBeDefault, sourceRouter, jamList)?.also { jamList.add(it.first) } else null
         }
     }
 
-    fun getDestination(itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>): Pair<Int, SinkReply>? {
+    fun getDestination(stack: ItemStack, itemid: ItemIdentifier, canBeDefault: Boolean, sourceRouter: ServerRouter, routersToExclude: List<Int>): Pair<Int, SinkReply>? {
         val destinationStream = ServerRouter.getRoutersInterestedIn(itemid).stream()
                 .mapToObj(SimpleServiceLocator.routerManager::getServerRouter)
                 .flatMap {
@@ -67,10 +68,10 @@ object LogisticsManager {
                         }
                     } ?: Stream.empty()
                 }
-        return getBestReply(itemid, sourceRouter, destinationStream, routersToExclude, canBeDefault)
+        return getBestReply(stack, itemid, sourceRouter, destinationStream, routersToExclude, canBeDefault)
     }
 
-    private fun getBestReply(itemid: ItemIdentifier, sourceRouter: ServerRouter, destinationStream: Stream<ExitRoute>, routersToExclude: List<Int>, canBeDefault: Boolean): Pair<Int, SinkReply>? {
+    private fun getBestReply(stack: ItemStack, itemid: ItemIdentifier, sourceRouter: ServerRouter, destinationStream: Stream<ExitRoute>, routersToExclude: List<Int>, canBeDefault: Boolean): Pair<Int, SinkReply>? {
         var resultRouterId: Int? = null
         var result: SinkReply? = null
         destinationStream.filter {
@@ -87,9 +88,9 @@ object LogisticsManager {
             val reply: SinkReply?
             val module: LogisticsModule = it.destination.logisticsModule
             reply = when {
-                result == null -> module.sinksItem(itemid, -1, 0, canBeDefault, true, true)
+                result == null -> module.sinksItem(stack, itemid, -1, 0, canBeDefault, true, true)
                 result!!.maxNumberOfItems < 0 -> null
-                else -> module.sinksItem(itemid, result!!.fixedPriority.ordinal, result!!.customPriority, canBeDefault, true, true)
+                else -> module.sinksItem(stack, itemid, result!!.fixedPriority.ordinal, result!!.customPriority, canBeDefault, true, true)
             }
 
             if (reply != null && (result == null ||

@@ -134,8 +134,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit,
-			boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		return null;
 	}
 
@@ -270,7 +269,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 			_service.getItemOrderManager().sendFailed();
 			return 0;
 		}
-		SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
+		SinkReply reply = LogisticsManager.canSink(stack.makeNormalStack(), dRtr, null, true, stack.getItem(), null, true, false);
 		boolean defersend = false;
 		if (reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 			if (reply.maxNumberOfItems < wanted) {

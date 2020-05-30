@@ -173,16 +173,6 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, 0);
-	}
-
-	@Override
-	public int roomForItem(ItemIdentifier item, int count) {
-		return roomForItemInner(barrelStack -> ItemIdentifier.get(barrelStack).equals(item));
-	}
-
-	@Override
 	public int roomForItem(ItemStack stack) {
 		return roomForItemInner(barrelStack -> barrelStack.isItemEqual(stack) && Objects.equals(barrelStack.getTagCompound(), stack.getTagCompound()) && barrelStack.areCapsCompatible(stack));
 	}

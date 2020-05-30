@@ -106,16 +106,6 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, 1);
-	}
-
-	@Override
-	public int roomForItem(ItemIdentifier item, int count) {
-		return roomForItemInner(dsuStack -> ItemIdentifier.get(dsuStack).equals(item));
-	}
-
-	@Override
 	public int roomForItem(ItemStack stack) {
 		return roomForItemInner(dsuStack -> dsuStack.isItemEqual(stack) && Objects.equals(dsuStack.getTagCompound(), stack.getTagCompound()) && dsuStack.areCapsCompatible(stack));
 	}

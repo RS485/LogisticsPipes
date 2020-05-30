@@ -144,7 +144,7 @@ public class ModuleOreDictItemSink extends LogisticsModule implements IClientInf
 	public void tick() {}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Ores: ");
 		list.addAll(oreList);

@@ -93,7 +93,7 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	public void tick() {}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Terminated: ");
 		list.add("<inventory>");

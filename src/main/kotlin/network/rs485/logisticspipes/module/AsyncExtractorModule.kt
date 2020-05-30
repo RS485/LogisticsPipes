@@ -79,11 +79,11 @@ import kotlin.math.pow
 
 data class ExtractorAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
-class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
-    private val localModeWatchers = PlayerCollectionList()
+class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack -> stack.isEmpty }) : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
     private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
     private var _sneakyDirection: EnumFacing? = null
     private var currentSlot = 0
+    val localModeWatchers = PlayerCollectionList()
 
     override var sneakyDirection: EnumFacing?
         get() = _sneakyDirection
@@ -141,7 +141,9 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
                         // saves the index for continuing this sequence at a later time
                         ++index
                         currentSlot = slot + 1
-                        if (stack.isEmpty) return@map null
+
+                        // filters the stack out by the given filter method
+                        if (filterOutMethod(stack)) return@map null
                         --stacksLeft
                         if (runAsync) return@map (slot to stack)
 

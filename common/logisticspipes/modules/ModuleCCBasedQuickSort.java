@@ -270,7 +270,7 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements Gui, ICli
 	}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>(5);
 		list.add("Timeout: " + timeout);
 		return list;

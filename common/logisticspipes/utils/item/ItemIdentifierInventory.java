@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
@@ -41,7 +43,7 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
-public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>> {
+public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>>, IClientInformationProvider {
 
 	private Object ccType;
 	private ItemIdentifierStack[] _contents;
@@ -555,4 +557,10 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		list.addAll(0, StreamSupport.stream(this.spliterator(), false).filter(Objects::nonNull).map(it -> it.getValue1().makeNormalStack()).collect(Collectors.toSet()));
 		return list;
 	}
+
+	@Override
+	public @Nonnull List<String> getClientInformation() {
+		return Arrays.stream(_contents).map(ItemIdentifierStack::toString).collect(Collectors.toList());
+	}
+
 }

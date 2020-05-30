@@ -90,7 +90,7 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 	public void tick() {}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Mods: ");
 		list.addAll(tabList);

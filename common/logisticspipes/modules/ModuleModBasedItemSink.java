@@ -90,7 +90,7 @@ public class ModuleModBasedItemSink extends LogisticsModule implements IStringBa
 	public void tick() {}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Mods: ");
 		list.addAll(modList);

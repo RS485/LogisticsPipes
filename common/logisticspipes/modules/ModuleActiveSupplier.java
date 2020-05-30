@@ -72,7 +72,7 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 	}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Supplied: ");
 		list.add("<inventory>");

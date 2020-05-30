@@ -168,7 +168,7 @@ public class ModuleExtractor extends LogisticsModule implements SneakyDirection,
 	}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>(1);
 		list.add("Extraction: " + ((_sneakyDirection == null) ? "DEFAULT" : _sneakyDirection.name()));
 		return list;

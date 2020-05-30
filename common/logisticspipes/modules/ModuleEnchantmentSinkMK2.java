@@ -93,7 +93,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	public void tick() {}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Filter: ");
 		list.add("<inventory>");

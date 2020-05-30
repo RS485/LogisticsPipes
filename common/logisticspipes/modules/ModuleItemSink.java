@@ -170,7 +170,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	public void tick() {}
 
 	@Override
-	public List<String> getClientInformation() {
+	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Default: " + (isDefaultRoute() ? "Yes" : "No"));
 		list.add("Filter: ");

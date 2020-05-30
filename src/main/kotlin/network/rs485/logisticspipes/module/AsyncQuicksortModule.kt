@@ -39,11 +39,13 @@ package network.rs485.logisticspipes.module
 
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import logisticspipes.config.Configs.ASYNC_THRESHOLD
 import logisticspipes.interfaces.IInventoryUtil
 import logisticspipes.modules.getServerRouter
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.routing.AsyncRouting
+import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
 import net.minecraft.item.ItemStack
@@ -79,7 +81,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemIdentifier>?, QuicksortAs
         if (!stalled && slot == stallSlot) stalled = true
         if (stack.isEmpty) return null
         val itemid = ItemIdentifier.get(stack)
-        if (AsyncRouting.routingTableNeedsUpdate(serverRouter)) {
+        if (ServerRouter.getBiggestSimpleID() > (ASYNC_THRESHOLD * 2) || AsyncRouting.routingTableNeedsUpdate(serverRouter)) {
             // go async
             return slot to itemid
         }

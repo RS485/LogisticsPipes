@@ -43,6 +43,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import logisticspipes.config.Configs
 import logisticspipes.interfaces.*
 import logisticspipes.modules.getServerRouter
 import logisticspipes.network.NewGuiHandler
@@ -129,7 +130,8 @@ class AsyncExtractorModule : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<Ex
 
         override fun sequenceFactory(): Sequence<Pair<Int, ItemStack>> {
             val start = System.nanoTime()
-            val runAsync = AsyncRouting.routingTableNeedsUpdate(serverRouter)
+            // we should do it like Volkswagen and check for a profiler here
+            val runAsync = ServerRouter.getBiggestSimpleID() > Configs.ASYNC_THRESHOLD || AsyncRouting.routingTableNeedsUpdate(serverRouter)
             return (currentSlot until inventory.sizeInventory).plus(0 until currentSlot).asSequence()
                     .constrainOnce()
                     .takeWhileTimeRemains(start, timeLimit)

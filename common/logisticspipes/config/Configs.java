@@ -15,7 +15,7 @@ import logisticspipes.LogisticsPipes;
 public class Configs {
 
 	public static final String CATEGORY_MULTITHREAD = "multithread";
-	public static final String CATEGORY_DEBUG 		= "debug";
+	public static final String CATEGORY_ASYNC = "async";
 
 	private static Configuration CONFIGURATION;
 
@@ -47,6 +47,7 @@ public class Configs {
 	// MultiThread
 	public static int MULTI_THREAD_NUMBER = 4;
 	public static int MULTI_THREAD_PRIORITY = Thread.NORM_PRIORITY;
+	public static int ASYNC_THRESHOLD = 100;
 
 	public static double POWER_USAGE_MULTIPLIER = 1;
 	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
@@ -161,6 +162,8 @@ public class Configs {
 					"Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest").set(Integer
 							.toString(Thread.NORM_PRIORITY));
 		}
+		Configs.ASYNC_THRESHOLD = Configs.CONFIGURATION.get(Configs.CATEGORY_ASYNC, "threshold", Configs.ASYNC_THRESHOLD,
+				"Threshold for running asynchronous code. A lower value will make async calls with small networks where the impact is low. Low values might hurt performance").getInt();
 
 
 		Configs.POWER_USAGE_MULTIPLIER = Configs.CONFIGURATION.get(

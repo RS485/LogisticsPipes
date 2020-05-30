@@ -29,7 +29,19 @@ public interface IInventoryUtil {
 	 */
 	boolean containsUndamagedItem(ItemIdentifier item);
 
+	/**
+	 * Checks all possible room for a given item. This method is laggy!
+	 * @see #roomForItem(ItemIdentifier, int)
+	 * @deprecated use {@link #roomForItem(ItemStack)} where possible
+	 */
+	@Deprecated
 	int roomForItem(ItemIdentifier item);
+
+	/**
+	 * @deprecated use {@link #roomForItem(ItemStack)} where possible
+	 */
+	@Deprecated
+	int roomForItem(ItemIdentifier item, int count);
 
 	/**
 	 * Inventory space count which terminates when space for max items are
@@ -38,7 +50,7 @@ public interface IInventoryUtil {
 	 * @return spaces found. If this is less than max, then there are only
 	 * spaces for that amount.
 	 */
-	int roomForItem(ItemIdentifier item, int count);
+	int roomForItem(ItemStack stack);
 
 	Set<ItemIdentifier> getItems();
 

@@ -148,6 +148,11 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
+		return roomForItem(item.unsafeMakeNormalStack(count));
+	}
+
+	@Override
+	public int roomForItem(ItemStack stack) {
 		// Special casing for "unlimited" storage items
 		if (_inventory.getSlots() == 1 && _inventory.getSlotLimit(0) == Integer.MAX_VALUE) {
 			ItemStack content = _inventory.extractItem(0, Integer.MAX_VALUE, true);
@@ -158,9 +163,9 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 		}
 
 		int totalRoom = 0;
-		for (int i = 0; i < _inventory.getSlots() && count > totalRoom; i++) {
-			ItemStack leftover = _inventory.insertItem(i, item.unsafeMakeNormalStack(count), true);
-			totalRoom += count - leftover.getCount();
+		for (int i = 0; i < _inventory.getSlots() && stack.getCount() > totalRoom; i++) {
+			ItemStack leftover = _inventory.insertItem(i, stack, true);
+			totalRoom += stack.getCount() - leftover.getCount();
 		}
 		return totalRoom;
 	}

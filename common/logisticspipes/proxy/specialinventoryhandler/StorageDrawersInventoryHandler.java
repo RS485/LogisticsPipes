@@ -260,24 +260,28 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, 0);
+		return roomForItem(item, 1);
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier itemIdent, int count) {
+	public int roomForItem(ItemIdentifier item, int count) {
+		return roomForItem(item.makeNormalStack(count));
+	}
+
+	@Override
+	public int roomForItem(ItemStack stack) {
 		int room = 0;
-		ItemStack protoStack = itemIdent.makeNormalStack(1);
 
 		if (_smartGroup != null) {
 			BitSet set = new BitSet();
-			for (int slot : _smartGroup.enumerateDrawersForInsertion(protoStack, false)) {
+			for (int slot : _smartGroup.enumerateDrawersForInsertion(stack, false)) {
 				set.set(slot);
 			}
-			for (int slot : _smartGroup.enumerateDrawersForExtraction(protoStack, false)) {
+			for (int slot : _smartGroup.enumerateDrawersForExtraction(stack, false)) {
 				set.set(slot);
 			}
 			int slot = -1;
-			while ((slot = set.nextSetBit(slot + 1)) != -1) {
+			while ((slot = set.nextSetBit(slot + 1)) != -1 && stack.getCount() < room) {
 				IDrawer drawer = _drawer.getDrawer(slot);
 				if (!drawer.isEmpty()) {
 					if (drawer instanceof IVoidable && ((IVoidable) drawer).isVoid()) {
@@ -286,18 +290,14 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 						room += drawer.getRemainingCapacity();
 					}
 				} else {
-					room += drawer.getMaxCapacity(protoStack);
-				}
-
-				if (count != 0 && room >= count) {
-					return count;
+					room += drawer.getMaxCapacity(stack);
 				}
 			}
 
 			return room;
 		}
 
-		for (int i = 0; i < _drawer.getDrawerCount(); i++) {
+		for (int i = 0; i < _drawer.getDrawerCount() && stack.getCount() < room; i++) {
 			if (!_drawer.isDrawerEnabled(i)) {
 				continue;
 			}
@@ -307,9 +307,9 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 				continue;
 			}
 
-			if (drawer.canItemBeStored(protoStack)) {
+			if (drawer.canItemBeStored(stack)) {
 				if (drawer.isEmpty()) {
-					room += drawer.getMaxCapacity(protoStack);
+					room += drawer.getMaxCapacity(stack);
 				} else {
 					if (drawer instanceof IVoidable && ((IVoidable) drawer).isVoid()) {
 						room += drawer.getMaxCapacity();
@@ -317,10 +317,6 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 						room += drawer.getRemainingCapacity();
 					}
 				}
-			}
-
-			if (count != 0 && room >= count) {
-				return count;
 			}
 		}
 

@@ -61,12 +61,17 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, 0);
+		return roomForItem(item, 1);
 	}
 
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
-		return cap.insert(item.makeNormalStack(64), false, true).getCount();
+		return roomForItem(item.makeNormalStack(count));
+	}
+
+	@Override
+	public int roomForItem(ItemStack stack) {
+		return stack.getCount() - cap.insert(stack, false, true).getCount();
 	}
 
 	@Override

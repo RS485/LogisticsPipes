@@ -175,17 +175,23 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier itemIdent, int count) {
+		return roomForItem(itemIdent.makeNormalStack(count));
+	}
+
+	@Override
+	public int roomForItem(ItemStack itemStack) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null) {
 			return 0;
 		}
-		while (count > 0) {
-			IAEItemStack stack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(itemIdent.makeNormalStack(count));
+		IAEItemStack stack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(itemStack);
+		if (stack == null) return 0;
+		while (stack.getStackSize() > 0) {
 			if (tmp.getInventory(channel).canAccept(stack)) {
-				return count;
+				return stack.getStackSize() > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) stack.getStackSize();
 			}
-			count--;
+			stack.decStackSize(1);
 		}
 		return 0;
 	}

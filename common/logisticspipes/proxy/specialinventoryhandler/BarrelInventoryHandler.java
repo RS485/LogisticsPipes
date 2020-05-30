@@ -4,8 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 import net.minecraft.inventory.IInventory;
@@ -176,12 +178,21 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier itemIdent, int count) {
+	public int roomForItem(ItemIdentifier item, int count) {
+		return roomForItemInner(barrelStack -> ItemIdentifier.get(barrelStack).equals(item));
+	}
+
+	@Override
+	public int roomForItem(ItemStack stack) {
+		return roomForItemInner(barrelStack -> barrelStack.isItemEqual(stack) && Objects.equals(barrelStack.getTagCompound(), stack.getTagCompound()) && barrelStack.areCapsCompatible(stack));
+	}
+
+	private int roomForItemInner(Function<ItemStack, Boolean> isStackEqual) {
 		try {
-			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
+			ItemStack barrelStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			int max = (Integer) BarrelInventoryHandler.getMaxSize.invoke(_tile, new Object[] {});
-			if (itemStack != null && !itemStack.isEmpty()) {
-				if (!ItemIdentifier.get(itemStack).equals(itemIdent)) {
+			if (barrelStack != null && !barrelStack.isEmpty()) {
+				if (!isStackEqual.apply(barrelStack)) {
 					return 0;
 				}
 				int value = (Integer) BarrelInventoryHandler.getItemCount.invoke(_tile, new Object[] {});

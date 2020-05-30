@@ -1,8 +1,10 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
@@ -105,20 +107,26 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item) {
-		return roomForItem(item, 0);
+		return roomForItem(item, 1);
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier itemIdent, int count) {
-		if (itemIdent.tag != null) {
-			return 0;
-		}
-		ItemStack items = _tile.getStoredItemType();
-		if (items.isEmpty()) {
+	public int roomForItem(ItemIdentifier item, int count) {
+		return roomForItemInner(dsuStack -> ItemIdentifier.get(dsuStack).equals(item));
+	}
+
+	@Override
+	public int roomForItem(ItemStack stack) {
+		return roomForItemInner(dsuStack -> dsuStack.isItemEqual(stack) && Objects.equals(dsuStack.getTagCompound(), stack.getTagCompound()) && dsuStack.areCapsCompatible(stack));
+	}
+
+	private int roomForItemInner(Function<ItemStack, Boolean> isStackEqual) {
+		ItemStack dsuStack = _tile.getStoredItemType();
+		if (dsuStack == null || dsuStack.isEmpty()) {
 			return _tile.getMaxStoredCount();
 		}
-		if (ItemIdentifier.get(items).equals(itemIdent)) {
-			return _tile.getMaxStoredCount() - items.getCount();
+		if (isStackEqual.apply(dsuStack)) {
+			return _tile.getMaxStoredCount() - dsuStack.getCount();
 		}
 		return 0;
 	}

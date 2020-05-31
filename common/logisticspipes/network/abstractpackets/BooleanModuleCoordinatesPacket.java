@@ -1,15 +1,10 @@
 package logisticspipes.network.abstractpackets;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class BooleanModuleCoordinatesPacket extends ModuleCoordinatesPacket {
 
-	@Getter
-	@Setter
 	boolean flag;
 
 	public BooleanModuleCoordinatesPacket(int id) {
@@ -26,5 +21,14 @@ public abstract class BooleanModuleCoordinatesPacket extends ModuleCoordinatesPa
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		flag = input.readBoolean();
+	}
+
+	public boolean isFlag() {
+		return this.flag;
+	}
+
+	public BooleanModuleCoordinatesPacket setFlag(boolean flag) {
+		this.flag = flag;
+		return this;
 	}
 }

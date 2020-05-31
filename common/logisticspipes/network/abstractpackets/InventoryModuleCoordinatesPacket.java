@@ -6,9 +6,6 @@ import java.util.Set;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -18,18 +15,12 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 	private static final byte STACK_MARKER = 0;
 	private static final byte IDENT_MARKER = 1;
 
-	@Setter
 	private IInventory inventory;
 
-	@Getter
-	@Setter
 	private List<ItemStack> stackList;
 
-	@Getter
-	@Setter
 	private List<ItemIdentifierStack> identList;
 
-	@Setter
 	private Set<ItemIdentifierStack> identSet;
 
 	public InventoryModuleCoordinatesPacket(int id) {
@@ -72,5 +63,33 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 		} else {
 			throw new UnsupportedOperationException("Unknown marker: " + marker);
 		}
+	}
+
+	public List<ItemStack> getStackList() {
+		return this.stackList;
+	}
+
+	public InventoryModuleCoordinatesPacket setStackList(List<ItemStack> stackList) {
+		this.stackList = stackList;
+		return this;
+	}
+
+	public List<ItemIdentifierStack> getIdentList() {
+		return this.identList;
+	}
+
+	public InventoryModuleCoordinatesPacket setIdentList(List<ItemIdentifierStack> identList) {
+		this.identList = identList;
+		return this;
+	}
+
+	public InventoryModuleCoordinatesPacket setInventory(IInventory inventory) {
+		this.inventory = inventory;
+		return this;
+	}
+
+	public InventoryModuleCoordinatesPacket setIdentSet(Set<ItemIdentifierStack> identSet) {
+		this.identSet = identSet;
+		return this;
 	}
 }

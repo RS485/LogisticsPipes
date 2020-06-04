@@ -43,14 +43,8 @@ import logisticspipes.interfaces.IClientInformationProvider
 import logisticspipes.interfaces.IModuleWatchReciver
 import logisticspipes.interfaces.IPipeServiceProvider
 import logisticspipes.interfaces.IWorldProvider
-import logisticspipes.network.NewGuiHandler
-import logisticspipes.network.PacketHandler
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider
-import logisticspipes.network.guis.module.inhand.CCBasedQuickSortInHand
-import logisticspipes.network.guis.module.inpipe.CCBasedQuickSortSlot
-import logisticspipes.network.packets.modules.CCBasedQuickSortMode
-import logisticspipes.network.packets.modules.CCBasedQuickSortSinkSize
 import logisticspipes.proxy.MainProxy
 import logisticspipes.utils.PlayerCollectionList
 import net.minecraft.entity.player.EntityPlayer
@@ -67,7 +61,7 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         set(value) {
             _timeout = if (value == 0) 100 else value
             if (MainProxy.isServer(_world.world)) {
-                MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode::class.java).setTimeOut(timeout).setModulePos(this), localModeWatchers)
+//                MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode::class.java).setTimeOut(timeout).setModulePos(this), localModeWatchers)
             }
         }
 
@@ -77,15 +71,19 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         set(value) {
             _sinkSize = value
             if (MainProxy.isServer(_world.world)) {
-                MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize::class.java).setSinkSize(sinkSize).setModulePos(this), localModeWatchers)
+//                MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize::class.java).setSinkSize(sinkSize).setModulePos(this), localModeWatchers)
             }
         }
 
     override val module = this
     override val pipeGuiProvider: ModuleCoordinatesGuiProvider
-        get() = NewGuiHandler.getGui(CCBasedQuickSortSlot::class.java).setTimeOut(timeout)
+        get() = TODO("Reimplement CCBasedQuickSortSlot")
     override val inHandGuiProvider: ModuleInHandGuiProvider
-        get() = NewGuiHandler.getGui(CCBasedQuickSortInHand::class.java)
+        get() = TODO("Reimplement CCBasedQuickSortInHand")
+
+    init {
+        TODO("Class still needs to be implemented")
+    }
 
     override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
         super.registerHandler(world, service)
@@ -126,8 +124,8 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
 
     override fun startWatching(player: EntityPlayer?) {
         localModeWatchers.add(player)
-        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode::class.java).setTimeOut(timeout).setModulePos(this), player)
-        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize::class.java).setSinkSize(sinkSize).setModulePos(this), player)
+//        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode::class.java).setTimeOut(timeout).setModulePos(this), player)
+//        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize::class.java).setSinkSize(sinkSize).setModulePos(this), player)
     }
 
     override fun stopWatching(player: EntityPlayer?) {

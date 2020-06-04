@@ -41,9 +41,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
-import logisticspipes.interfaces.IClientInformationProvider
-import logisticspipes.interfaces.IModuleInventoryReceive
-import logisticspipes.interfaces.IModuleWatchReciver
+import logisticspipes.interfaces.*
 import logisticspipes.network.NewGuiHandler
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
@@ -75,6 +73,16 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
             _itemsIncluded = value
             MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude::class.java).setFlag(_itemsIncluded).setModulePos(this), extractor.localModeWatchers)
         }
+
+    override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
+        super.registerHandler(world, service)
+        extractor.registerHandler(world, service)
+    }
+
+    override fun registerPosition(slot: ModulePositionType?, positionInt: Int) {
+        super.registerPosition(slot, positionInt)
+        extractor.registerPosition(slot, positionInt)
+    }
 
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? = extractor.tickSetup()

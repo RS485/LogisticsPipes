@@ -41,6 +41,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import logisticspipes.interfaces.IClientInformationProvider
 import logisticspipes.interfaces.IModuleWatchReciver
+import logisticspipes.interfaces.IPipeServiceProvider
+import logisticspipes.interfaces.IWorldProvider
 import logisticspipes.network.NewGuiHandler
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
@@ -84,6 +86,16 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         get() = NewGuiHandler.getGui(CCBasedQuickSortSlot::class.java).setTimeOut(timeout)
     override val inHandGuiProvider: ModuleInHandGuiProvider
         get() = NewGuiHandler.getGui(CCBasedQuickSortInHand::class.java)
+
+    override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
+        super.registerHandler(world, service)
+        quicksort.registerHandler(world, service)
+    }
+
+    override fun registerPosition(slot: ModulePositionType?, positionInt: Int) {
+        super.registerPosition(slot, positionInt)
+        quicksort.registerPosition(slot, positionInt)
+    }
 
     override fun tickSetup(): Pair<Int, ItemStack>? = quicksort.tickSetup()
 

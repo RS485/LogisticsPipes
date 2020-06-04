@@ -189,10 +189,10 @@ class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return
         val inventory = _service.getSneakyInventory(direction) ?: return
         var itemsLeft = itemsToExtract
-        result.asSequence()
+        result.filter { it.slot < inventory.sizeInventory }
+                .asSequence()
                 .takeWhile { itemsLeft > 0 }
                 .forEach {
-                    if (it.slot < inventory.sizeInventory) return@forEach
                     val stack = inventory.getStackInSlot(it.slot)
                     if (it.itemid.equalsWithNBT(stack)) {
                         itemsLeft -= extractAndSend(it.slot, stack.count, inventory, it.destRouterId, it.sinkReply, itemsLeft)

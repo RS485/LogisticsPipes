@@ -42,12 +42,17 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import logisticspipes.config.Configs.ASYNC_THRESHOLD
 import logisticspipes.interfaces.IInventoryUtil
 import logisticspipes.modules.getServerRouter
+import logisticspipes.network.PacketHandler
+import logisticspipes.network.packets.modules.QuickSortState
 import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
+import logisticspipes.proxy.MainProxy
 import logisticspipes.routing.AsyncRouting
 import logisticspipes.routing.ServerRouter
+import logisticspipes.utils.PlayerCollectionList
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.logistics.LogisticsManager
@@ -60,8 +65,13 @@ const val NORMAL_DELAY = 6
 data class QuicksortAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
 class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>() {
+    private val localSlotWatchers = PlayerCollectionList()
     private var stalled = true
     private var currentSlot = 0
+        set(value) {
+            field = value
+            MainProxy.sendToPlayerList(PacketHandler.getPacket(QuickSortState::class.java).setInteger(value).setModulePos(this), localSlotWatchers)
+        }
     private var stallSlot = 0
 
     private val stacksToExtract: Int
@@ -133,5 +143,14 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     override fun interestedInUndamagedID(): Boolean = false
 
     override fun interestedInAttachedInventory(): Boolean = false
+
+    fun addWatchingPlayer(player: EntityPlayer) {
+        localSlotWatchers.add(player)
+        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState::class.java).setInteger(currentSlot).setModulePos(this), player)
+    }
+
+    fun removeWatchingPlayer(player: EntityPlayer) {
+        localSlotWatchers.remove(player)
+    }
 
 }

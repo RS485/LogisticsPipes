@@ -41,6 +41,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import logisticspipes.gui.hud.modules.HUDAdvancedExtractor
 import logisticspipes.interfaces.*
 import logisticspipes.network.NewGuiHandler
 import logisticspipes.network.PacketHandler
@@ -48,6 +49,8 @@ import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider
 import logisticspipes.network.guis.module.inhand.AdvancedExtractorModuleInHand
 import logisticspipes.network.guis.module.inpipe.AdvancedExtractorModuleSlot
+import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket
+import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket
 import logisticspipes.network.packets.module.ModuleInventory
 import logisticspipes.network.packets.modules.AdvancedExtractorInclude
 import logisticspipes.proxy.MainProxy
@@ -63,8 +66,9 @@ import net.minecraft.util.EnumFacing
 import network.rs485.logisticspipes.util.matchingSequence
 
 
-class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), SimpleFilter, SneakyDirection, IClientInformationProvider, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
+class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), SimpleFilter, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
     private val filterInventory: ItemIdentifierInventory = ItemIdentifierInventory(9, "Item list", 1)
+    private val hud = HUDAdvancedExtractor(this)
     private val extractor = AsyncExtractorModule(filterOutMethod = { it.isEmpty || _itemsIncluded != filterInventory.matchingSequence(it).any() })
     private var _itemsIncluded: Boolean = true
     var itemsIncluded: Boolean
@@ -73,6 +77,21 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
             _itemsIncluded = value
             MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude::class.java).setFlag(_itemsIncluded).setModulePos(this), extractor.localModeWatchers)
         }
+
+    override var sneakyDirection: EnumFacing?
+        get() = extractor.sneakyDirection
+        set(value) {
+            extractor.sneakyDirection = value
+        }
+
+    override val module = this
+
+    override val pipeGuiProvider: ModuleCoordinatesGuiProvider
+        get() = NewGuiHandler.getGui(AdvancedExtractorModuleSlot::class.java).setAreItemsIncluded(_itemsIncluded)
+
+    override val inHandGuiProvider: ModuleInHandGuiProvider
+        get() = NewGuiHandler.getGui(AdvancedExtractorModuleInHand::class.java)
+
 
     override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
         super.registerHandler(world, service)
@@ -127,12 +146,6 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         }
     }
 
-    override var sneakyDirection: EnumFacing?
-        get() = extractor.sneakyDirection
-        set(value) {
-            extractor.sneakyDirection = value
-        }
-
     override fun getClientInformation(): MutableList<String> {
         val clientInformation = extractor.clientInformation
         clientInformation.add(if (_itemsIncluded) "Included" else "Excluded")
@@ -149,11 +162,16 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     override fun stopWatching(player: EntityPlayer?) = extractor.stopWatching(player)
 
-    override val module = this
+    override fun startHUDWatching() {
+        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java).setModulePos(this))
+    }
 
-    override val pipeGuiProvider: ModuleCoordinatesGuiProvider
-        get() = NewGuiHandler.getGui(AdvancedExtractorModuleSlot::class.java).setAreItemsIncluded(_itemsIncluded)
+    override fun getHUDRenderer(): IHUDModuleRenderer {
+        return hud
+    }
 
-    override val inHandGuiProvider: ModuleInHandGuiProvider
-        get() = NewGuiHandler.getGui(AdvancedExtractorModuleInHand::class.java)
+    override fun stopHUDWatching() {
+        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java).setModulePos(this))
+    }
+
 }

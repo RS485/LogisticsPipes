@@ -18,20 +18,20 @@ import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
 import logisticspipes.modules.ModuleEnchantmentSink;
 import logisticspipes.modules.ModuleEnchantmentSinkMK2;
-import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
+import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
+import network.rs485.logisticspipes.module.AsyncExtractorModule;
+import network.rs485.logisticspipes.module.AsyncQuicksortModule;
 
 public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 
@@ -191,11 +191,11 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 	protected void loadRecipes(CraftingParts parts) {
 		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleItemSink.class, null);
 		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModulePassiveSupplier.class, null);
-		registerModuleRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleExtractor.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, AsyncExtractorModule.class, null);
 		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModulePolymorphicItemSink.class, null);
-		registerModuleRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleQuickSort.class, null);
+		registerModuleRecipe(parts, RecipeType.LEVEL_3, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, AsyncQuicksortModule.class, null);
 		registerModuleRecipe(parts, RecipeType.LEVEL_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleTerminus.class, null);
-		registerModuleRecipe(parts, RecipeType.UPGRADE_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleAdvancedExtractor.class, ModuleExtractor.class);
+		registerModuleRecipe(parts, RecipeType.UPGRADE_1, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, AsyncAdvancedExtractor.class, AsyncExtractorModule.class);
 		registerModuleRecipe(parts, RecipeType.LEVEL_4, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS, ModuleProvider.class, null);
 		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleModBasedItemSink.class, null);
 		registerModuleRecipe(parts, RecipeType.UPGRADE_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.CHASSIS_2, ModuleOreDictItemSink.class, null);

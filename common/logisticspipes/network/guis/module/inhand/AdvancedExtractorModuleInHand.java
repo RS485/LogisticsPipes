@@ -4,12 +4,12 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.modules.LogisticsModule;
-import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
+import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
 
 @StaticResolve
 public class AdvancedExtractorModuleInHand extends ModuleInHandGuiProvider {
@@ -21,19 +21,19 @@ public class AdvancedExtractorModuleInHand extends ModuleInHandGuiProvider {
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsModule module = getLogisticsModule(player);
-		if (!(module instanceof ModuleAdvancedExtractor)) {
+		if (!(module instanceof AsyncAdvancedExtractor)) {
 			return null;
 		}
-		return new GuiAdvancedExtractor(player.inventory, (ModuleAdvancedExtractor) module);
+		return new GuiAdvancedExtractor(player.inventory, (AsyncAdvancedExtractor) module);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		DummyModuleContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if (!(dummy.getModule() instanceof ModuleAdvancedExtractor)) {
+		if (!(dummy.getModule() instanceof AsyncAdvancedExtractor)) {
 			return null;
 		}
-		dummy.setInventory(((ModuleAdvancedExtractor) dummy.getModule()).getFilterInventory());
+		dummy.setInventory(((AsyncAdvancedExtractor) dummy.getModule()).getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots

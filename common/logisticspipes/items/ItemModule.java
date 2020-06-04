@@ -33,19 +33,16 @@ import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.modules.ModuleActiveSupplier;
-import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
 import logisticspipes.modules.ModuleEnchantmentSink;
 import logisticspipes.modules.ModuleEnchantmentSinkMK2;
-import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -54,6 +51,9 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
+import network.rs485.logisticspipes.module.AsyncExtractorModule;
+import network.rs485.logisticspipes.module.AsyncQuicksortModule;
 import network.rs485.logisticspipes.module.Gui;
 
 public class ItemModule extends LogisticsItem {
@@ -92,11 +92,11 @@ public class ItemModule extends LogisticsItem {
 	public static void loadModules(IForgeRegistry<Item> registry) {
 		registerModule(registry, "item_sink", ModuleItemSink::new);
 		registerModule(registry, "passive_supplier", ModulePassiveSupplier::new);
-		registerModule(registry, "extractor", ModuleExtractor::new);
+		registerModule(registry, "extractor", AsyncExtractorModule::new);
 		registerModule(registry, "item_sink_polymorphic", ModulePolymorphicItemSink::new);
-		registerModule(registry, "quick_sort", ModuleQuickSort::new);
+		registerModule(registry, "quick_sort", AsyncQuicksortModule::new);
 		registerModule(registry, "terminus", ModuleTerminus::new);
-		registerModule(registry, "extractor_advanced", ModuleAdvancedExtractor::new);
+		registerModule(registry, "extractor_advanced", AsyncAdvancedExtractor::new);
 		registerModule(registry, "provider", ModuleProvider::new);
 		registerModule(registry, "item_sink_mod", ModuleModBasedItemSink::new);
 		registerModule(registry, "item_sink_oredict", ModuleOreDictItemSink::new);

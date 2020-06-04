@@ -12,22 +12,22 @@ import org.lwjgl.opengl.GL11;
 
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
+import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
 
 public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 
 	private List<IHUDButton> buttons = new ArrayList<>();
 	private int selected = 0;
 
-	private ModuleAdvancedExtractor module;
+	private AsyncAdvancedExtractor module;
 
-	public HUDAdvancedExtractor(ModuleAdvancedExtractor moduleAdvancedExtractor) {
+	public HUDAdvancedExtractor(AsyncAdvancedExtractor moduleAdvancedExtractor) {
 		module = moduleAdvancedExtractor;
 		buttons.add(new TabButton("Side", 0, -30, -50, 25, 10));
 		buttons.add(new TabButton("Inv", 1, -5, -50, 25, 10));
@@ -46,7 +46,7 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);
 			ItemStackRenderer.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, 100.0F, DisplayAmount.NEVER, false, shifted);
 			GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
-			if (module.areItemsIncluded()) {
+			if (module.getItemsIncluded()) {
 				mc.fontRenderer.drawString("Included", -22, 25, 0);
 			} else {
 				mc.fontRenderer.drawString("Excluded", -22, 25, 0);

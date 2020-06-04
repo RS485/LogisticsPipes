@@ -1,15 +1,10 @@
 package logisticspipes.network.abstractpackets;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 public abstract class IntegerModuleCoordinatesPacket extends ModuleCoordinatesPacket {
 
-	@Getter
-	@Setter
 	private int integer;
 
 	public IntegerModuleCoordinatesPacket(int id) {
@@ -26,5 +21,14 @@ public abstract class IntegerModuleCoordinatesPacket extends ModuleCoordinatesPa
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 		output.writeInt(getInteger());
+	}
+
+	public int getInteger() {
+		return this.integer;
+	}
+
+	public IntegerModuleCoordinatesPacket setInteger(int integer) {
+		this.integer = integer;
+		return this;
 	}
 }

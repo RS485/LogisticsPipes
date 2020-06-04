@@ -4,7 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
-import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
@@ -13,6 +12,7 @@ import logisticspipes.network.guis.module.inpipe.SneakyModuleInSlotGuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyModuleContainer;
+import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
 
 @StaticResolve
 public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {
@@ -31,7 +31,7 @@ public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {
 		if (getType() == ModulePositionType.IN_HAND) {
 			if (player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if (dummy.getModule() instanceof ModuleAdvancedExtractor) {
+				if (dummy.getModule() instanceof AsyncAdvancedExtractor) {
 					player.closeScreen();
 					NewGuiHandler.getGui(SneakyModuleInHandGuiProvider.class).setInvSlot(getPositionInt()).open(player);
 				}
@@ -41,9 +41,9 @@ public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {
 
 		PipeLogisticsChassi pipe = getTileOrPipe(player.world, PipeLogisticsChassi.class);
 		LogisticsModule subModule = pipe.getSubModule(getPositionInt());
-		if (subModule instanceof ModuleAdvancedExtractor) {
+		if (subModule instanceof AsyncAdvancedExtractor) {
 			NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class)
-					.setSneakyOrientation(((ModuleAdvancedExtractor) subModule).getSneakyDirection())
+					.setSneakyOrientation(((AsyncAdvancedExtractor) subModule).getSneakyDirection())
 					.setSlot(getType())
 					.setPositionInt(getPositionInt())
 					.setPosX(getPosX())

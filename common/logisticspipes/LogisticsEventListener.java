@@ -48,7 +48,6 @@ import lombok.Setter;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IItemAdvancedExistance;
-import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.PlayerConfigToClientPacket;
 import logisticspipes.network.packets.chassis.ChestGuiClosed;
@@ -73,11 +72,12 @@ import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.PlayerConfiguration;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.module.AsyncQuicksortModule;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
 
-	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<>();
+	public static final WeakHashMap<EntityPlayer, List<WeakReference<AsyncQuicksortModule>>> chestQuickSortConnection = new WeakHashMap<>();
 	public static Map<ChunkPos, PlayerCollectionList> watcherList = new ConcurrentHashMap<>();
 
 	@SubscribeEvent
@@ -130,15 +130,15 @@ public class LogisticsEventListener {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().world, event.getPos());
 			TileEntity tileEntity = worldCoordinates.getTileEntity();
 			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
-				List<WeakReference<ModuleQuickSort>> list = worldCoordinates.allNeighborTileEntities()
+				List<WeakReference<AsyncQuicksortModule>> list = worldCoordinates.allNeighborTileEntities()
 						.filter(NeighborTileEntity::isLogisticsPipe)
 						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof PipeLogisticsChassi)
 						.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe).getPointedOrientation()
 								== adjacent.getOurDirection())
 						.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe)
 						.flatMap(pipeLogisticsChassi -> Arrays.stream(pipeLogisticsChassi.getModules().getModules()))
-						.filter(logisticsModule -> logisticsModule instanceof ModuleQuickSort)
-						.map(logisticsModule -> new WeakReference<>((ModuleQuickSort) logisticsModule))
+						.filter(logisticsModule -> logisticsModule instanceof AsyncQuicksortModule)
+						.map(logisticsModule -> new WeakReference<>((AsyncQuicksortModule) logisticsModule))
 						.collect(Collectors.toList());
 
 				if (!list.isEmpty()) {

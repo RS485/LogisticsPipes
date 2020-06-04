@@ -6,9 +6,9 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.LogisticsEventListener;
-import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.module.AsyncQuicksortModule;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -24,12 +24,12 @@ public class ChestGuiClosed extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		List<WeakReference<ModuleQuickSort>> list = LogisticsEventListener.chestQuickSortConnection.get(player);
+		List<WeakReference<AsyncQuicksortModule>> list = LogisticsEventListener.chestQuickSortConnection.get(player);
 		if (list == null || list.isEmpty()) {
 			return;
 		}
-		for (WeakReference<ModuleQuickSort> sorter : list) {
-			ModuleQuickSort module = sorter.get();
+		for (WeakReference<AsyncQuicksortModule> sorter : list) {
+			AsyncQuicksortModule module = sorter.get();
 			if (module == null) {
 				continue;
 			}

@@ -462,7 +462,7 @@ public class PipeTransportLogistics {
 		}
 
 		markChunkModified(tile);
-		if (MainProxy.isServer(getWorld()) && arrivingItem.getInfo() != null && arrivingItem.getArrived() && isRouted) {
+		if (arrivingItem.getInfo() != null && arrivingItem.getArrived() && isRouted) {
 			getRoutedPipe().notifyOfItemArival(arrivingItem.getInfo());
 		}
 		if (getPipe() instanceof FluidRoutedPipe) {
@@ -471,11 +471,9 @@ public class PipeTransportLogistics {
 			}
 		}
 		boolean isSpecialConnectionInformationTransition = false;
-		if (MainProxy.isServer(getWorld())) {
-			if (SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
-				isSpecialConnectionInformationTransition = true;
-				SimpleServiceLocator.specialtileconnection.transmit(tile, arrivingItem);
-			}
+		if (SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
+			isSpecialConnectionInformationTransition = true;
+			SimpleServiceLocator.specialtileconnection.transmit(tile, arrivingItem);
 		}
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			if (passToNextPipe(arrivingItem, tile)) {
@@ -487,74 +485,102 @@ public class PipeTransportLogistics {
 				getRoutedPipe().getCacheHolder().trigger(CacheTypes.Inventory);
 
 				// items.scheduleRemoval(arrivingItem);
-				if (MainProxy.isServer(getWorld())) {
-					// destroy the item on exit if it isn't exitable
-					if (!isSpecialConnectionInformationTransition && !isItemExitable(arrivingItem.getItemIdentifierStack())) {
+				// destroy the item on exit if it isn't exitable
+				if (!isSpecialConnectionInformationTransition && !isItemExitable(arrivingItem.getItemIdentifierStack())) {
+					return;
+				}
+				// last chance for chassi to back out
+				if (arrivingItem != null) {
+					if (arrivingItem.getTransportMode() != TransportMode.Active && !getRoutedPipe().getTransportLayer().stillWantItem(arrivingItem)) {
+						reverseItem(arrivingItem);
 						return;
 					}
-					// last chance for chassi to back out
-					if (arrivingItem != null) {
-						if (arrivingItem.getTransportMode() != TransportMode.Active && !getRoutedPipe().getTransportLayer().stillWantItem(arrivingItem)) {
-							reverseItem(arrivingItem);
-							return;
-						}
+				}
+				ISlotUpgradeManager slotManager;
+				{
+					ModulePositionType slot = null;
+					int positionInt = -1;
+					if (arrivingItem.getInfo().targetInfo instanceof ChassiTargetInformation) {
+						positionInt = ((ChassiTargetInformation) arrivingItem.getInfo().targetInfo).getModuleSlot();
+						slot = ModulePositionType.SLOT;
+					} else if (LogisticsPipes.isDEBUG() && container.pipe instanceof PipeLogisticsChassi) {
+						System.out.println(arrivingItem);
+						new RuntimeException("[ItemInsertion] Information weren't ment for a chassi pipe").printStackTrace();
 					}
-					ISlotUpgradeManager slotManager;
-					{
-						ModulePositionType slot = null;
-						int positionInt = -1;
-						if (arrivingItem.getInfo().targetInfo instanceof ChassiTargetInformation) {
-							positionInt = ((ChassiTargetInformation) arrivingItem.getInfo().targetInfo).getModuleSlot();
-							slot = ModulePositionType.SLOT;
-						} else if (LogisticsPipes.isDEBUG() && container.pipe instanceof PipeLogisticsChassi) {
-							System.out.println(arrivingItem);
-							new RuntimeException("[ItemInsertion] Information weren't ment for a chassi pipe").printStackTrace();
-						}
-						slotManager = getRoutedPipe().getUpgradeManager(slot, positionInt);
-					}
-					boolean tookSome = false;
-					if (arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
+					slotManager = getRoutedPipe().getUpgradeManager(slot, positionInt);
+				}
+				boolean tookSome = false;
+				if (arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
 
-						ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
-						if (util instanceof ISpecialInsertion) {
-							int slot = information.getTargetSlot();
-							int amount = information.getAmount();
-							if (util.getSizeInventory() > slot) {
-								ItemStack content = util.getStackInSlot(slot);
-								ItemStack toAdd = arrivingItem.getItemIdentifierStack().makeNormalStack();
-								final int amountLeft = Math.max(0, amount - content.getCount());
-								toAdd.setCount(Math.min(toAdd.getCount(), amountLeft));
-								if (toAdd.getCount() > 0) {
-									if (util.getSizeInventory() > slot) {
-										int added = ((ISpecialInsertion) util).addToSlot(toAdd, slot);
-										arrivingItem.getItemIdentifierStack().lowerStackSize(added);
-										if (added > 0) {
-										}
+					ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
+					if (util instanceof ISpecialInsertion) {
+						int slot = information.getTargetSlot();
+						int amount = information.getAmount();
+						if (util.getSizeInventory() > slot) {
+							ItemStack content = util.getStackInSlot(slot);
+							ItemStack toAdd = arrivingItem.getItemIdentifierStack().makeNormalStack();
+							final int amountLeft = Math.max(0, amount - content.getCount());
+							toAdd.setCount(Math.min(toAdd.getCount(), amountLeft));
+							if (toAdd.getCount() > 0) {
+								if (util.getSizeInventory() > slot) {
+									int added = ((ISpecialInsertion) util).addToSlot(toAdd, slot);
+									arrivingItem.getItemIdentifierStack().lowerStackSize(added);
+									if (added > 0) {
 									}
 								}
 							}
-							if (information.isLimited()) {
-								if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
-									reverseItem(arrivingItem);
-								}
-								return;
+						}
+						if (information.isLimited()) {
+							if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+								reverseItem(arrivingItem);
 							}
+							return;
 						}
 					}
-					// sneaky insertion
-					if (!getRoutedPipe().getUpgradeManager().hasCombinedSneakyUpgrade() || slotManager.hasOwnSneakyUpgrade()) {
-						EnumFacing insertion = arrivingItem.output.getOpposite();
-						if (slotManager.hasSneakyUpgrade()) {
-							insertion = slotManager.getSneakyOrientation();
+				}
+				// sneaky insertion
+				if (!getRoutedPipe().getUpgradeManager().hasCombinedSneakyUpgrade() || slotManager.hasOwnSneakyUpgrade()) {
+					EnumFacing insertion = arrivingItem.output.getOpposite();
+					if (slotManager.hasSneakyUpgrade()) {
+						insertion = slotManager.getSneakyOrientation();
+					}
+					ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
+
+					arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
+
+					if (added.getCount() > 0 && arrivingItem instanceof IRoutedItem) {
+						arrivingItem.setBufferCounter(0);
+					}
+
+					ItemRoutingInformation info;
+
+					if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+						// we have some leftovers, we are splitting the stack, we need to clone the info
+						info = arrivingItem.getInfo().clone();
+						// For InvSysCon
+						info.getItem().setStackSize(added.getCount());
+						insertedItemStack(info, tile);
+					} else {
+						info = arrivingItem.getInfo();
+						info.getItem().setStackSize(added.getCount());
+						// For InvSysCon
+						insertedItemStack(info, tile);
+
+						// back to normal code, break if we've inserted everything, all items disposed of.
+						return; // every item has been inserted.
+					}
+				} else {
+					EnumFacing[] dirs = getRoutedPipe().getUpgradeManager().getCombinedSneakyOrientation();
+					for (EnumFacing insertion : dirs) {
+						if (insertion == null) {
+							continue;
 						}
 						ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
 
 						arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
-
-						if (added.getCount() > 0 && arrivingItem instanceof IRoutedItem) {
+						if (added.getCount() > 0) {
 							arrivingItem.setBufferCounter(0);
 						}
-
 						ItemRoutingInformation info;
 
 						if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
@@ -568,44 +594,14 @@ public class PipeTransportLogistics {
 							info.getItem().setStackSize(added.getCount());
 							// For InvSysCon
 							insertedItemStack(info, tile);
-
 							// back to normal code, break if we've inserted everything, all items disposed of.
-							return; // every item has been inserted.
-						}
-					} else {
-						EnumFacing[] dirs = getRoutedPipe().getUpgradeManager().getCombinedSneakyOrientation();
-						for (EnumFacing insertion : dirs) {
-							if (insertion == null) {
-								continue;
-							}
-							ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
-
-							arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
-							if (added.getCount() > 0) {
-								arrivingItem.setBufferCounter(0);
-							}
-							ItemRoutingInformation info;
-
-							if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
-								// we have some leftovers, we are splitting the stack, we need to clone the info
-								info = arrivingItem.getInfo().clone();
-								// For InvSysCon
-								info.getItem().setStackSize(added.getCount());
-								insertedItemStack(info, tile);
-							} else {
-								info = arrivingItem.getInfo();
-								info.getItem().setStackSize(added.getCount());
-								// For InvSysCon
-								insertedItemStack(info, tile);
-								// back to normal code, break if we've inserted everything, all items disposed of.
-								return;// every item has been inserted.
-							}
+							return;// every item has been inserted.
 						}
 					}
+				}
 
-					if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
-						reverseItem(arrivingItem);
-					}
+				if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+					reverseItem(arrivingItem);
 				}
 				return;// the item is handled
 			}// end of insert into IInventory

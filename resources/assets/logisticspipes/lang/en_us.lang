@@ -24,7 +24,7 @@ item.logisticspipes.pipe_request.tip4= - Put a chest on the pipe to catch items 
 
 item.logisticspipes.pipe_request_mk2.name=Request Logistics Pipe Mk2
 item.logisticspipes.pipe_request_mk2.tip1=Type: Active requester
-item.logisticspipes.pipe_request_mk2.tip2= - Faster then a Mk1
+item.logisticspipes.pipe_request_mk2.tip2= - Can have a Logistics Disk for macro requests
 item.logisticspipes.pipe_request_mk2.tip3= - Lets you manually request items
 item.logisticspipes.pipe_request_mk2.tip4= - Items can come from any Source pipe
 item.logisticspipes.pipe_request_mk2.tip5= - Put a chest on the pipe to catch items coming out.

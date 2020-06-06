@@ -23,7 +23,7 @@ public class TransportInvConnection extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected void insertedItemStack(ItemRoutingInformation info, TileEntity tile) {
+	protected void inventorySystemConnectorHook(ItemRoutingInformation info, TileEntity tile) {
 		if (tile == null) {
 			return;
 		}

@@ -490,11 +490,9 @@ public class PipeTransportLogistics {
 					return;
 				}
 				// last chance for chassi to back out
-				if (arrivingItem != null) {
-					if (arrivingItem.getTransportMode() != TransportMode.Active && !getRoutedPipe().getTransportLayer().stillWantItem(arrivingItem)) {
-						reverseItem(arrivingItem);
-						return;
-					}
+				if (arrivingItem.getTransportMode() != TransportMode.Active && !getRoutedPipe().getTransportLayer().stillWantItem(arrivingItem)) {
+					reverseItem(arrivingItem);
+					return;
 				}
 				ISlotUpgradeManager slotManager;
 				{
@@ -509,7 +507,6 @@ public class PipeTransportLogistics {
 					}
 					slotManager = getRoutedPipe().getUpgradeManager(slot, positionInt);
 				}
-				boolean tookSome = false;
 				if (arrivingItem.getAdditionalTargetInformation() instanceof ITargetSlotInformation) {
 
 					ITargetSlotInformation information = (ITargetSlotInformation) arrivingItem.getAdditionalTargetInformation();
@@ -525,8 +522,6 @@ public class PipeTransportLogistics {
 								if (util.getSizeInventory() > slot) {
 									int added = ((ISpecialInsertion) util).addToSlot(toAdd, slot);
 									arrivingItem.getItemIdentifierStack().lowerStackSize(added);
-									if (added > 0) {
-									}
 								}
 							}
 						}
@@ -544,59 +539,14 @@ public class PipeTransportLogistics {
 					if (slotManager.hasSneakyUpgrade()) {
 						insertion = slotManager.getSneakyOrientation();
 					}
-					ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
-
-					arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
-
-					if (added.getCount() > 0 && arrivingItem instanceof IRoutedItem) {
-						arrivingItem.setBufferCounter(0);
-					}
-
-					ItemRoutingInformation info;
-
-					if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
-						// we have some leftovers, we are splitting the stack, we need to clone the info
-						info = arrivingItem.getInfo().clone();
-						// For InvSysCon
-						info.getItem().setStackSize(added.getCount());
-						insertedItemStack(info, tile);
-					} else {
-						info = arrivingItem.getInfo();
-						info.getItem().setStackSize(added.getCount());
-						// For InvSysCon
-						insertedItemStack(info, tile);
-
-						// back to normal code, break if we've inserted everything, all items disposed of.
-						return; // every item has been inserted.
-					}
+					if (insertArrivingItem(arrivingItem, tile, insertion)) return;
 				} else {
 					EnumFacing[] dirs = getRoutedPipe().getUpgradeManager().getCombinedSneakyOrientation();
 					for (EnumFacing insertion : dirs) {
 						if (insertion == null) {
 							continue;
 						}
-						ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
-
-						arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
-						if (added.getCount() > 0) {
-							arrivingItem.setBufferCounter(0);
-						}
-						ItemRoutingInformation info;
-
-						if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
-							// we have some leftovers, we are splitting the stack, we need to clone the info
-							info = arrivingItem.getInfo().clone();
-							// For InvSysCon
-							info.getItem().setStackSize(added.getCount());
-							insertedItemStack(info, tile);
-						} else {
-							info = arrivingItem.getInfo();
-							info.getItem().setStackSize(added.getCount());
-							// For InvSysCon
-							insertedItemStack(info, tile);
-							// back to normal code, break if we've inserted everything, all items disposed of.
-							return;// every item has been inserted.
-						}
+						if (insertArrivingItem(arrivingItem, tile, insertion)) return;
 					}
 				}
 
@@ -607,6 +557,30 @@ public class PipeTransportLogistics {
 			}// end of insert into IInventory
 		}
 		dropItem(arrivingItem);
+	}
+
+	/**
+	 * @return true, if every item has been inserted and otherwise false.
+	 */
+	private boolean insertArrivingItem(LPTravelingItemServer arrivingItem, TileEntity tile, EnumFacing insertion) {
+		ItemStack added = InventoryHelper.getTransactorFor(tile, insertion).add(arrivingItem.getItemIdentifierStack().makeNormalStack(), insertion, true);
+
+		arrivingItem.getItemIdentifierStack().lowerStackSize(added.getCount());
+
+		if (added.getCount() > 0) {
+			arrivingItem.setBufferCounter(0);
+		}
+
+		ItemRoutingInformation info = arrivingItem.getInfo();
+		if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+			// we have some leftovers, we are splitting the stack, we need to clone the info
+			info = info.clone();
+		}
+		info.getItem().setStackSize(added.getCount());
+		inventorySystemConnectorHook(info, tile);
+
+		// back to normal code, break if we've inserted everything, all items disposed of.
+		return arrivingItem.getItemIdentifierStack().getStackSize() <= 0;
 	}
 
 	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, EnumFacing dir) {
@@ -623,7 +597,7 @@ public class PipeTransportLogistics {
 		return true;
 	}
 
-	protected void insertedItemStack(ItemRoutingInformation info, TileEntity tile) {}
+	protected void inventorySystemConnectorHook(ItemRoutingInformation info, TileEntity tile) {}
 
 	public boolean canPipeConnect(TileEntity tile, EnumFacing side) {
 		return canPipeConnect_internal(tile, side);

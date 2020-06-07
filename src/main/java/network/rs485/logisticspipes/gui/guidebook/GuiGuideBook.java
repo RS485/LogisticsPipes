@@ -39,6 +39,8 @@ package network.rs485.logisticspipes.gui.guidebook;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -54,14 +56,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
 
 import lombok.Getter;
+import static network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
 import logisticspipes.items.ItemGuideBook;
 import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
+import network.rs485.logisticspipes.guidebook.BookContents;
+import network.rs485.logisticspipes.util.math.Rectangle;
 
 public class GuiGuideBook extends GuiScreen {
 
@@ -80,11 +84,11 @@ public class GuiGuideBook extends GuiScreen {
 	@Getter
 	private final int zTooltip = 20;      // Tooltip z
 	@Getter
-	private final int zTitleButtons = 15; // Title and Buttons Z
+	final int zTitleButtons = 15; // Title and Buttons Z
 	@Getter
 	private final int zFrame = 10;        // Frame Z
 	@Getter
-	private final int zText = 5;          // Text/Information Z
+	final int zText = 5;          // Text/Information Z
 	@Getter
 	private final int zBackground = 0;    // Background Z
 
@@ -100,7 +104,6 @@ public class GuiGuideBook extends GuiScreen {
 
 	private int mouseX, mouseY;
 	public static SavedPage currentPage;
-	private SavedPage menuPage;
 	private static String title;
 
 	// Book Experimental variables
@@ -108,7 +111,9 @@ public class GuiGuideBook extends GuiScreen {
 
 	// Gui Drawing variables
 	@Getter
-	private int guiX0, guiY0, guiX1, guiY1, guiX2, guiY2, guiX3, guiY3, guiWidth, guiHeight, guiInnerWidth, guiInnerHeight, guiBgX0, guiBgY0, guiBgX1, guiBgY1;
+	private Rectangle visibleArea = new Rectangle(0, 0);
+	@Getter
+	int guiX0, guiY0, guiX1, guiY1, guiX2, guiY2, guiX3, guiY3, guiWidth, guiHeight, guiInnerWidth, guiInnerHeight, guiBgX0, guiBgY0, guiBgX1, guiBgY1;
 	@Getter
 	private int guiSepX0, guiSepY0, guiSepY1, guiSepX1, guiSepY2, guiSepY3, guiSliderX, guiSliderY0, guiSliderY1;
 	private final int guiBorderThickness = 16, guiShadowThickness = 5, guiSeparatorThickness = 6;
@@ -117,14 +122,14 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiTabWidth = 24, guiTabHeight = 24, guiFullTabHeight = 32;
 	// Usable area
 	@Getter
-	private int areaX0, areaY0, areaX1, areaY1, areaAcrossX, areaCenterX, areaAcrossY, areaCurrentlyDrawnY, areaOffsetCenterX;
+	int areaX0, areaY0, areaX1, areaY1, areaAcrossX, areaCenterX, areaAcrossY, areaCurrentlyDrawnY;
 	// Menu Tiles and Text sizes
 	@Getter
-	private final int tileSpacing = 5;
+	final int tileSpacing = 5;
 	@Getter
-	private int tileMax;
+	int tileMax;
 	@Getter
-	private final int tileSize = 40;
+	final int tileSize = 40;
 
 	// Texture atlas constants
 	private static final int atlasWidth = 256;
@@ -138,20 +143,32 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiAtlasV0 = 0, guiAtlasV1 = guiBorderWithShadowThickness, guiAtlasV2 = guiAtlasWidth - guiBorderWithShadowThickness, guiAtlasV3 = guiAtlasWidth;
 	private final int guiAtlasSepU0 = 96, guiAtlasSepV0 = 32, guiAtlasSepV1 = 33, guiAtlasSepU1 = 112, guiAtlasSepV2 = 63, guiAtlasSepV3 = 64;
 
+	protected static Map<String, SavedPage> cachedPages;
+
 	public GuiGuideBook(EnumHand hand) {
 		super();
+		cachedPages = new HashMap<>();
 		this.hand = hand;
-		currentPage = new SavedPage();
-		this.menuPage = new SavedPage();
+		BookContents.INSTANCE.get(MAIN_MENU_FILE).getParagraphs();
+		setPage(MAIN_MENU_FILE);
 		this.tabList = new ArrayList<>();
+	}
+
+	/**
+	 *
+	 */
+	public void setPage(String pagePath) {
+		//GuiGuideBook.cachedPages.replace(currentPage.getPage(), currentPage);
+		currentPage = cachedPages.computeIfAbsent(pagePath, it -> new SavedPage(it, 0, 0.0f));
+		Rectangle visibleArea = this.getVisibleArea();
+		currentPage.initDrawables(visibleArea.getX0(), visibleArea.getY0(), visibleArea.getWidth());
 	}
 
 	/*
 	 * Chooses the appropriate draw methods for the current to be drawn content
 	 */
 	protected void drawCurrentEvent() {
-		int yOffset = slider.enabled ? -(int) (MathHelper.clamp(slider.getProgress() * (areaCurrentlyDrawnY - areaAcrossY), 0, areaCurrentlyDrawnY - areaAcrossY)) : 0;
-		areaCurrentlyDrawnY = DrawablePage.draw(mc, currentPage, this, mouseX, mouseY, yOffset);
+		//int yOffset = slider.enabled ? -(int) (MathHelper.clamp(slider.getProgress() * (areaCurrentlyDrawnY - areaAcrossY), 0, areaCurrentlyDrawnY - areaAcrossY)) : 0;
 	}
 
 	/*
@@ -193,11 +210,8 @@ public class GuiGuideBook extends GuiScreen {
 		areaAcrossX = areaX1 - areaX0;
 		areaCenterX = areaX0 + areaAcrossX / 2;
 		areaAcrossY = areaY1 - areaY0;
-		areaOffsetCenterX = (int) (1.0 / 4 * areaAcrossX);
+		visibleArea.setPos(areaX0, areaY0).setSize(areaAcrossX, areaAcrossY);
 		// End usable area
-		// Menu tiles and text
-		tileMax = (int) ((areaAcrossX) / (float) (tileSize + tileSpacing));
-		// End menu
 	}
 
 	/**
@@ -210,12 +224,11 @@ public class GuiGuideBook extends GuiScreen {
 			currentPage = new SavedPage().fromTag(nbt.getCompoundTag("page"));
 			NBTTagList tagList = nbt.getTagList("bookmarks", 10);
 			for (NBTBase tag : tagList) tabList.add(new GuiGuideBookTabButton(tabID++, guiX3 - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), guiY0, new SavedPage().fromTag((NBTTagCompound) tag)));
-			return true;
 		} else {
 			SavedPage defaultPage = new SavedPage();
 			currentPage = new SavedPage(defaultPage);
-			return true;
 		}
+		return true;
 	}
 
 	@Override
@@ -226,6 +239,7 @@ public class GuiGuideBook extends GuiScreen {
 		this.drawCurrentEvent();
 		slider.enabled = areaCurrentlyDrawnY > areaAcrossY;
 		super.drawScreen(mouseX, mouseY, partialTicks);
+		currentPage.draw(mouseX, mouseY, partialTicks, visibleArea);
 		for (GuiGuideBookTabButton tab : tabList) tab.drawButton(mc, mouseX, mouseY, partialTicks);
 		this.drawGuiScroll();
 		this.drawTitle();
@@ -233,8 +247,9 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void initGui() {
-		if (!loadedNBT) loadedNBT = this.getDataFromNBT();
 		this.calculateConstraints();
+		currentPage.initDrawables(visibleArea.getX0(), visibleArea.getY0(), visibleArea.getWidth());
+		if (!loadedNBT) loadedNBT = this.getDataFromNBT();
 		title = updateTitle();
 		this.slider = this.addButton(new GuiGuideBookSlider(0, guiSliderX, guiSliderY0, guiSliderY1, zTitleButtons, currentPage.getProgress(), guiSliderWidth, guiSliderHeight));
 		this.slider.enabled = false;
@@ -250,6 +265,8 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
+		// TODO THIS IS FOR TESTING ONLY
+		BookContents.INSTANCE.clear();
 		currentPage.setProgress(slider.getProgress());
 		ArrayList<SavedPage> tabs = new ArrayList<>();
 		for (GuiGuideBookTabButton tab : tabList) tabs.add(tab.getTab());
@@ -261,11 +278,11 @@ public class GuiGuideBook extends GuiScreen {
 	protected void actionPerformed(GuiButton button) throws IOException {
 		switch (button.id) {
 			case 1:
-				currentPage = new SavedPage(menuPage);
+				setPage(MAIN_MENU_FILE);
 				slider.reset();
 				break;
 			case 2:
-				if (!currentPage.isEqual(menuPage)) {
+				if (!currentPage.getPage().equals(MAIN_MENU_FILE)) {
 					if (tabNotFound(currentPage)) tryAddTab(currentPage);
 				}
 			default:
@@ -286,19 +303,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		if (!currentPage.getMenuItems().isEmpty()) {
-			for (MenuItemsDivision div : currentPage.getMenuItems()) {
-				for (MenuItem item : div.getList()) {
-					if (item.mousePressed()) {
-						item.playPressSound(this.mc.getSoundHandler());
-						this.pressedItem(item);
-						updateButtonVisibility();
-						return;
-					}
-				}
-			}
-		}
-		if(tabList != null && tabList.size() > 0) {
+		if (tabList != null && tabList.size() > 0) {
 			for (GuiGuideBookTabButton tab : tabList) {
 				if (tab.mousePressed(mc, mouseX, mouseY)) {
 					if (mouseButton == 0) {
@@ -327,11 +332,11 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	protected static String updateTitle() {
-		return currentPage.getMetadata().getTitle();
+		return currentPage.getLoadedPage().getMetadata().getTitle();
 	}
 
 	protected void updateButtonVisibility() {
-		this.home.visible = !currentPage.isEqual(menuPage);
+		this.home.visible = !currentPage.getPage().equals(MAIN_MENU_FILE);
 		int offset = 0;
 		for (GuiGuideBookTabButton tab : tabList) {
 			tab.y = guiY0;
@@ -339,7 +344,7 @@ public class GuiGuideBook extends GuiScreen {
 			offset += guiTabWidth;
 			tab.isActive = tab.getTab().isEqual(currentPage);
 		}
-		this.button.visible = !currentPage.isEqual(menuPage) && tabList.size() < maxTabs;
+		this.button.visible = !currentPage.getPage().equals(MAIN_MENU_FILE) && tabList.size() < maxTabs;
 		this.button.enabled = tabNotFound(currentPage);
 		this.button.x = guiX3 - 20 - guiTabWidth - offset;
 		title = updateTitle();
@@ -404,31 +409,6 @@ public class GuiGuideBook extends GuiScreen {
 		this.drawStretchingSquare(guiX3 - guiShadowThickness, guiY0 + guiShadowThickness, this.width, guiY3 - guiShadowThickness, zFrame, 0, 0, 0, 0, true);
 		GlStateManager.enableAlpha();
 		GlStateManager.popMatrix();
-	}
-
-	/**
-	 * Draws the underlay below where the page arrows and page count are to be drawn
-	 */
-	protected void drawCenteredArrowUnderlay(int width) {
-		//Positioning
-		int slideX1 = areaCenterX - width / 2;
-		int slideX2 = areaCenterX + width / 2;
-		int slideY0 = guiY3 - 4;
-		int slideX0 = slideX1 - 12;
-		int slideX3 = slideX2 + 12;
-		int slideY1 = slideY0 + 14;
-		//Texture
-		int slideU0 = 0;
-		int slideU1 = 12;
-		int slideV0 = 96;
-		int slideU2 = 20;
-		int slideU3 = 32;
-		int slideV1 = 110;
-		// Draw Left & Right slides.
-		this.drawStretchingSquare(slideX0, slideY0, slideX1, slideY1, zFrame, slideU0, slideV0, slideU1, slideV1, true);
-		this.drawStretchingSquare(slideX2, slideY0, slideX3, slideY1, zFrame, slideU2, slideV0, slideU3, slideV1, true);
-		// Draw in-between slides.
-		this.drawStretchingSquare(slideX1, slideY0, slideX2, slideY1, zFrame, slideU1, slideV0, slideU2, slideV1, true);
 	}
 
 	/**
@@ -566,17 +546,32 @@ public class GuiGuideBook extends GuiScreen {
 		GlStateManager.enableAlpha();
 		mc.renderEngine.bindTexture(GUI_BOOK_TEXTURE);
 		// Background
-		drawRepeatingSquare(x1, y1, x2, y2, z, u1, v1, u2, v2, false);
+
+		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+		//u0 *= atlasWidthScale;
+		//v0 *= atlasHeightScale;
+		//u1 *= atlasWidthScale;
+		//v1 *= atlasHeightScale;
+		// Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		putTexturedSquare(bufferbuilder, x1, y1, x2, y2, z, u1, v1, u2, v2);
+		GlStateManager.enableBlend();
 		// Corners: TopLeft, TopRight, BottomLeft & BottomRight
-		drawStretchingSquare(x0, y0, x1, y1, z, u0, v0, u1, v1, true);
-		drawStretchingSquare(x2, y0, x3, y1, z, u2, v0, u3, v1, true);
-		drawStretchingSquare(x0, y2, x1, y3, z, u0, v2, u1, v3, true);
-		drawStretchingSquare(x2, y2, x3, y3, z, u2, v2, u3, v3, true);
+		putTexturedSquare(bufferbuilder, x0, y0, x1, y1, z, u0, v0, u1, v1);
+		putTexturedSquare(bufferbuilder, x2, y0, x3, y1, z, u2, v0, u3, v1);
+		putTexturedSquare(bufferbuilder, x0, y2, x1, y3, z, u0, v2, u1, v3);
+		putTexturedSquare(bufferbuilder, x2, y2, x3, y3, z, u2, v2, u3, v3);
 		// Edges: Top, Bottom, Left & Right
-		drawStretchingSquare(x1, y0, x2, y1, z, u1, v0, u2, v1, true);
-		drawStretchingSquare(x1, y2, x2, y3, z, u1, v2, u2, v3, true);
-		drawStretchingSquare(x0, y1, x1, y2, z, u0, v1, u1, v2, true);
-		drawStretchingSquare(x2, y1, x3, y2, z, u2, v1, u3, v2, true);
+		putTexturedSquare(bufferbuilder, x1, y0, x2, y1, z, u1, v0, u2, v1);
+		putTexturedSquare(bufferbuilder, x1, y2, x2, y3, z, u1, v2, u2, v3);
+		putTexturedSquare(bufferbuilder, x0, y1, x1, y2, z, u0, v1, u1, v2);
+		putTexturedSquare(bufferbuilder, x2, y1, x3, y2, z, u2, v1, u3, v2);
+		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GlStateManager.disableBlend();
+		tessellator.draw();
 		GlStateManager.disableAlpha();
 		GlStateManager.popMatrix();
 	}
@@ -595,7 +590,7 @@ public class GuiGuideBook extends GuiScreen {
 		public String name;
 
 		@Getter
-		private final ArrayList<MenuItem> list;
+		final ArrayList<MenuItem> list;
 
 		public MenuItemsDivision(String name, ArrayList<MenuItem> list) {
 			this.list = list;

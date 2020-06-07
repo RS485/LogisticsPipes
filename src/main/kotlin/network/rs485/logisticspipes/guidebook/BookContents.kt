@@ -42,10 +42,10 @@ import com.charleskorn.kaml.YamlException
 import kotlinx.serialization.Serializable
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
+import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.guidebook.tokenizer.IToken
-import network.rs485.logisticspipes.guidebook.tokenizer.Tokenizer
+import network.rs485.logisticspipes.guidebook.tokenizer.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -57,16 +57,33 @@ val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon 
 object BookContents {
 
     const val MAIN_MENU_FILE = "/main_menu.md"
-    val pageMetadataMap = hashMapOf<String, LoadedPage>()
+    const val DEBUG_FILE = "/debug.md"
+
+    val cachedLoadedPages = hashMapOf<String, LoadedPage>()
+
+    init {
+        //if(LogisticsPipes.isDEBUG()) addDebugPages()
+    }
 
     fun get(markdownFile: String): LoadedPage {
-        return pageMetadataMap.computeIfAbsent(markdownFile) {
+        return cachedLoadedPages.computeIfAbsent(markdownFile) {
             LoadedPage(getFileAsString(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode), it)
         }
     }
+
+    fun clear() {
+        cachedLoadedPages.clear()
+        //if(LogisticsPipes.isDEBUG()) addDebugPages()
+    }
+
+    fun addDebugPages(){
+        val debugLoadedPage = LoadedPage(getFileAsString(DEBUG_FILE, "en_us"), DEBUG_FILE)
+        debugLoadedPage.paragraphs = listOf(HeaderParagraph("Nulla faucibus cursus bibendum.".split(" ").map { Text(it, listOf(), MinecraftColor.values()[(it.length) % 16].colorCode) }, 5), TextParagraph("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl.".split(" ").map { Text(it, listOf(), MinecraftColor.values()[(it.length) % 16].colorCode) }))
+        cachedLoadedPages[DEBUG_FILE] = debugLoadedPage
+    }
 }
 
-private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(kotlin.text.RegexOption.DOT_MATCHES_ALL)
+private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(RegexOption.DOT_MATCHES_ALL)
 
 fun getFileAsString(path: String, lang: String): String {
     return try {
@@ -86,16 +103,18 @@ fun getFileAsString(path: String, lang: String): String {
     }
 }
 
-fun String.parseMetadata(markdownFile: String): YamlPageMetadata = if (this.isNotEmpty()) {
-    // Takes the metadata string and parses the YAML information
-    try {
-        Yaml.default.parse(YamlPageMetadata.serializer(), this).normalizeMetadata(markdownFile)
-    } catch (e: YamlException) {
-        LogisticsPipes.log.error("Exception: $e")
-        LogisticsPipes.log.error("The following Yaml is malformed! \n$this")
-        MISSING_META
-    }
-} else MISSING_META
+private fun parseMetadata(metadataString: String, markdownFile: String): YamlPageMetadata {
+    return if (metadataString.isNotEmpty()) {
+        // Takes the metadata string and parses the YAML information
+        try {
+            Yaml.default.parse(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
+        } catch (e: YamlException) {
+            LogisticsPipes.log.error("Exception: $e")
+            LogisticsPipes.log.error("The following Yaml is malformed! \n$metadataString")
+            MISSING_META
+        }
+    } else MISSING_META
+}
 
 fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
     // Normalize the given paths, replacing any ./.. with the appropriate absolute (resource location) paths
@@ -109,19 +128,24 @@ fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
     return YamlPageMetadata(this.title, this.icon, menu)
 }
 
+/**
+ * @param title title of the page
+ * @param icon the icon
+ * @param menu menus of the page: Map of id to (category to entries)
+ */
 @Serializable
 data class YamlPageMetadata(val title: String,
                             val icon: String = "logisticspipes:itemcard",
-                            val menu: Map<String, Map<String, List<String>>> = mapOf())
+                            val menu: Map<String, Map<String, List<String>>> = emptyMap())
 
 class LoadedPage(unformattedText: String, fileLocation: String) {
     private val metadataString: String
     private val markdownString: String
     val metadata: YamlPageMetadata
-    var tokens: List<IToken>
+    var paragraphs: List<GenericParagraphToken> = emptyList()
         get() {
             if (field.isEmpty() && markdownString.isNotEmpty()) {
-                field = Tokenizer.tokenize(markdownString).toList()
+                field = Tokenizer.parseParagraphs(markdownString)
                 return field
             }
             return field
@@ -132,7 +156,6 @@ class LoadedPage(unformattedText: String, fileLocation: String) {
         val result = metadataRegex.matchEntire(unformattedText) ?: throw RuntimeException("Could not load page, regex failed in $fileLocation:\n$unformattedText")
         metadataString = result.groups[1]?.value?.trim() ?: ""
         markdownString = result.groups[2]?.value?.trim() ?: ""
-        metadata = metadataString.parseMetadata(fileLocation)
-        tokens = listOf()
+        metadata = parseMetadata(metadataString, fileLocation)
     }
 }

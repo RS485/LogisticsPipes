@@ -2,7 +2,7 @@
 title: Logistics Pipes' Compendium
 menu:
   main_menu:
-    Guides: 
+    Guides:
       - guides/quickstart_guide.md
       - guides/start_guide.md
       - guides/intermediate_guide.md
@@ -15,5 +15,6 @@ menu:
     Item Sinks:
       - items/itemsinks/oredict_itemsink.md
 --->
-#[main_menu](type=menu)
+![Main Menu](menu://main_menu)
+
 This _is_ example **Markdown** text right after the metadata. This ***should*** work.

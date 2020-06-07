@@ -75,19 +75,27 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
     private constructor(firstPoint: Pair<Int, Int>, secondPoint: Pair<Int, Int>) : this(firstPoint.first, firstPoint.second, (secondPoint.first - firstPoint.first), (secondPoint.second - firstPoint.second))
 
     // Transformations
-    fun size(newWidth: Int, newHeight: Int): Rectangle{
+    fun setSize(newWidth: Int, newHeight: Int): Rectangle {
         width = newWidth
         height = newHeight
         return this
     }
-    fun scale(fMultiplier: Float): Rectangle {
+
+    fun setScale(fMultiplier: Float): Rectangle {
         width = (fMultiplier * width).toInt()
         height = (fMultiplier * height).toInt()
         return this
     }
-    fun pos(newX: Int, newY: Int): Rectangle{
+
+    fun setPos(newX: Int, newY: Int): Rectangle {
         x0 = newX
         y0 = newY
+        return this
+    }
+
+    fun translate(translateX: Int, translateY: Int): Rectangle {
+        x0 += translateX
+        y0 += translateY
         return this
     }
 

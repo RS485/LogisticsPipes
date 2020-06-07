@@ -572,7 +572,8 @@ public class PipeTransportLogistics {
 		}
 
 		ItemRoutingInformation info = arrivingItem.getInfo();
-		if (arrivingItem.getItemIdentifierStack().getStackSize() > 0) {
+		final boolean isSplitStack = arrivingItem.getItemIdentifierStack().getStackSize() > 0;
+		if (isSplitStack) {
 			// we have some leftovers, we are splitting the stack, we need to clone the info
 			info = info.clone();
 		}
@@ -580,7 +581,7 @@ public class PipeTransportLogistics {
 		inventorySystemConnectorHook(info, tile);
 
 		// back to normal code, break if we've inserted everything, all items disposed of.
-		return arrivingItem.getItemIdentifierStack().getStackSize() <= 0;
+		return !isSplitStack;
 	}
 
 	protected void handleTileReachedClient(LPTravelingItemClient arrivingItem, TileEntity tile, EnumFacing dir) {

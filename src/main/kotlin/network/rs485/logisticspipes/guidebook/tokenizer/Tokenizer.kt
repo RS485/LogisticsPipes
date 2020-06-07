@@ -37,137 +37,73 @@
 
 package network.rs485.logisticspipes.guidebook.tokenizer
 
-// TODO replace this asap
-import java.awt.Color
+import logisticspipes.utils.MinecraftColor
 
 object Tokenizer {
-    private var definition = Tokenizer.Definition.None
+    private var definition = Definition.None
     private val current = mutableListOf<TokenTag>()
 
-    fun tokenize(str: String): MutableList<IToken> {
-        val paragraphs = phaseOne(str)
-        return phaseTwo(paragraphs)
+    private fun countChars(char: Char, str: String, index: Int): Int {
+        if (str[index] != char) return 0
+        var count = 1
+        while ((index + count) < str.length && str[index + count] == char) ++count
+        return count
     }
 
-    /*
-    * First phase -> responsible for splitting the whole text into Paragraphs.
-    * The splitting is done at every LineBreak and at every Image tag
-    * */
-    private fun phaseOne(str: String): MutableList<Paragraph> {
-        val paragraphs = mutableListOf<Paragraph>()
-        val characters = str.toCharArray()
-        val string = StringBuilder()
-        var currentType = ParagraphType.Text
-        characters.forEachIndexed { i, char ->
+    /**
+     * First phase -> responsible for splitting the whole text into Paragraphs.
+     * The splitting is done at every LineBreak and at every Image tag
+     * Second phase -> responsible for turning the paragraph list into a Token List.
+     * The splitting of the paragraphs is make at every space and each token stores all the applied markdown tags accordingly.
+     */
+    fun parseParagraphs(str: String): List<GenericParagraphToken> {
+        val paragraphs = ArrayList<GenericParagraphToken>()
+        val sb = StringBuilder()
+        val lines = str.split('\n')
+
+        fun completeTextParagraph() {
+            paragraphs.add(TextParagraph(listOf(Text(sb.toString(), emptyList()))))
+            // TODO: add ImageParagraph
+            // TODO: parse TokenText(s)
+            sb.clear()
+        }
+
+        lines.flatMap { line ->
+            if (line.endsWith('\\')) {
+                sb.append(line.substring(0, line.length - 1))
+                return@flatMap emptyList<String>()
+            }
+            sb.append(line)
+            val concatLine = sb.toString()
+            sb.clear()
+            return@flatMap listOf(concatLine)
+        }.forEach { dirtyLine ->
+            val line = dirtyLine.trimStart()
             when {
-                char == '#' && characters.isNotEscaped(i) -> when {
-                    characters.nextChar(i) == '#' -> Unit
-                    characters.prevChar(i) == '#' -> {
-                        if (string.isNotEmpty()) {
-                            string.append("  \n")
-                            when (currentType) {
-                                ParagraphType.Text -> paragraphs.add(Paragraph(string.toString(), ParagraphType.Text))
-                                ParagraphType.Header -> paragraphs.add(
-                                        Paragraph(
-                                                string.toString(),
-                                                ParagraphType.Header
-                                        )
-                                )
-                                ParagraphType.Image -> paragraphs.add(Paragraph(string.toString(), ParagraphType.Image))
-                            }
-                            string.clear()
-                            currentType = ParagraphType.Header
-                        }
-                    }
-                    else -> {
-                        string.append(char)
-                    }
+                line.isEmpty() -> completeTextParagraph()
+                line.startsWith(Tag.HEADER.char) -> {
+                    completeTextParagraph()
+                    val headerLevel = countChars(Tag.HEADER.char, line, 0)
+                    // TODO: parse TokenText(s)
+                    val text = Text(line.substring(headerLevel).trim(), emptyList())
+                    paragraphs.add(HeaderParagraph(listOf(text), headerLevel))
                 }
-                char == '\n' && characters.isNotEscaped(i) -> when {
-                    characters.isAfterTwoSpaces(i) -> {
-                        string.append(char)
-                        if (string.isNotEmpty()) {
-                            when (currentType) {
-                                ParagraphType.Text -> paragraphs.add(Paragraph(string.toString(), ParagraphType.Text))
-                                ParagraphType.Header -> paragraphs.add(
-                                        Paragraph(
-                                                string.toString(),
-                                                ParagraphType.Header
-                                        )
-                                )
-                                ParagraphType.Image -> paragraphs.add(Paragraph(string.toString(), ParagraphType.Image))
-                            }
-                            string.clear()
-                            currentType = ParagraphType.Text
-                        }
-                    }
-                    !characters.isAfterOneSpace(i) -> {
-                        string.append(' ')
-                    }
-                }
-                char == '[' && characters.prevChar(i) == '!' -> {
-                    string.append(char)
-                    currentType = ParagraphType.Image
-                }
-                char == ')' && characters.isNotEscaped(i) && currentType == ParagraphType.Image -> {
-                    string.append(char)
-                    if (string.isNotEmpty()) {
-                        when (currentType) {
-                            ParagraphType.Text -> paragraphs.add(Paragraph(string.toString(), ParagraphType.Text))
-                            ParagraphType.Header -> paragraphs.add(Paragraph(string.toString(), ParagraphType.Header))
-                            ParagraphType.Image -> paragraphs.add(Paragraph(string.toString(), ParagraphType.Image))
-                        }
-                        string.clear()
-                        currentType = ParagraphType.Text
-                    }
-                }
+                // TODO: add MenuParagraph
+                // TODO: add ListParagraph
                 else -> {
-                    string.append(char)
-                    if (i == characters.lastIndex && string.isNotBlank()) {
-                        string.append('\n')
-                        paragraphs.add(Paragraph(string.toString(), currentType))
-                        string.clear()
-                        currentType = ParagraphType.Text
-                    }
+                    if (sb.isNotEmpty()) sb.append(' ')
+                    sb.append(line.trimEnd())
                 }
             }
         }
+        if (sb.isNotEmpty()) completeTextParagraph()
         return paragraphs
-    }
-
-    /*
-    * Second phase -> responsible for turning the paragraph list into a Token List.
-    * The splitting of the paragraphs is make at every space and each token stores all the applied markdown tags accordingly.
-    * */
-    private fun phaseTwo(paragraphs: MutableList<Paragraph>): MutableList<IToken> {
-        val tokens = mutableListOf<IToken>()
-        paragraphs.forEach { paragraph ->
-            when (paragraph.type) {
-                ParagraphType.Text -> {
-                    tokens.addAll(paragraph.str.toTokens())
-                }
-                ParagraphType.Header -> {
-                    tokens.add(TokenHeader(paragraph.str.toTokens()))
-                }
-                ParagraphType.Image -> {
-                    tokens.add(paragraph.toImageToken())
-                }
-            }
-        }
-        return tokens
-    }
-
-    /*
-    * Turns a Paragraph into an Image Token
-    * */
-    private fun Paragraph.toImageToken(): TokenImage {
-        return str.toImageToken()
     }
 
     /*
     * Turns a well formatted string into an Image token
     * */
-    private fun String.toImageToken(): TokenImage {
+    private fun String.toImageToken(): ImageParagraph {
         val strC = toCharArray()
         val alternativeText = StringBuilder()
         val imagePath = StringBuilder()
@@ -191,13 +127,13 @@ object Tokenizer {
                 else imagePath.append(c)
             }
         }
-        return TokenImage(alternativeText.toString().toTokens(), imagePath.toString())
+        return ImageParagraph(alternativeText.toString().toTokens(), imagePath.toString())
     }
 
     /*
     * Turns a well formatted string into an Item token
     * */
-    private fun String.toItemToken(): TokenItem {
+    private fun String.toItemToken(): ListParagraph {
         val strC = toCharArray()
         val name = StringBuilder()
         val item = StringBuilder()
@@ -221,13 +157,13 @@ object Tokenizer {
                 else item.append(c)
             }
         }
-        return TokenItem(name.toString(), item.toString())
+        return ListParagraph(listOf(listOf()))
     }
 
     /*
     * Turns a well formatted string into a Menu token
     * */
-    private fun String.toMenuToken(): TokenMenu {
+    private fun String.toMenuToken(): MenuParagraph {
         val strC = toCharArray()
         val key = StringBuilder()
         val options = StringBuilder()
@@ -235,7 +171,7 @@ object Tokenizer {
         strC.forEachIndexed { index, c ->
             if (!readingUnlocalizedName) {
                 when (c) {
-                    '$', '[', ']' -> {
+                    '#', '[', ']' -> {
                         if (strC.isEscaped(index)) key.append(c)
                     }
                     '(' -> {
@@ -251,13 +187,13 @@ object Tokenizer {
                 else options.append(c)
             }
         }
-        return TokenMenu(key.toString(), options.toString())
+        return MenuParagraph(key.toString(), options.toString())
     }
 
     /*
     * Turns a well formatted string into a List of Linked tokens
     * */
-    private fun String.toLinkedTokens(): MutableList<IToken> {
+    private fun String.toLinkedTokens(): MutableList<Link> {
         val strC = toCharArray()
         val linkedText = StringBuilder()
         val linkedPath = StringBuilder()
@@ -281,17 +217,18 @@ object Tokenizer {
                 else linkedPath.append(c)
             }
         }
-        val tokens = mutableListOf<IToken>()
-        linkedText.toString().toTokens().forEach {
-            tokens.add(TokenLink((it as Token).str, linkedPath.toString()))
-        }
-        return tokens
+//        val tokens = mutableListOf<Text>()
+//        linkedText.toString().toTokens().forEach {
+//            tokens.add(Link((it as Text).str, linkedPath.toString()))
+//        }
+//        return tokens
+        return mutableListOf()
     }
 
     /*
     * Turns a well formatted string into a List of Tokens with overwritten color
     * */
-    private fun String.toColoredTokens(): MutableList<IToken> {
+    private fun String.toColoredTokens(): MutableList<Text> {
         val strC = toCharArray()
         val coloredText = StringBuilder()
         val colorString = StringBuilder()
@@ -321,14 +258,14 @@ object Tokenizer {
     /*
     * Tokenizes a String to any kinds of Tokens
     * */
-    private fun String.toTokens(color: Color = Color.WHITE): MutableList<IToken> {
-        val tokens = mutableListOf<IToken>()
+    private fun String.toTokens(color: Int = MinecraftColor.WHITE.colorCode): MutableList<Text> {
+        val tokens = mutableListOf<Text>()
         val strC = toCharArray()
         val string = StringBuilder()
         strC.forEachIndexed { index, c ->
             handleCharacter(c, index, tokens, strC, string, color)
         }
-        definition = Tokenizer.Definition.None
+        definition = Definition.None
         current.clear()
         return tokens
     }
@@ -336,10 +273,10 @@ object Tokenizer {
     /*
     * Opens and closes Special definitions like TokenImages or TokenLinks
     * */
-    private fun StringBuilder.handleSpecialDefinitions(c: Char, index: Int, tokens: MutableList<IToken>, strC: CharArray) {
+    private fun StringBuilder.handleSpecialDefinitions(c: Char, index: Int, tokens: MutableList<Text>, strC: CharArray) {
         fun start(pChar: Char, def: Definition) {
             if (isNotEmpty() && this[lastIndex] == pChar) deleteCharAt(lastIndex)
-            addToken(tokens, Color.WHITE)
+            addToken(tokens, MinecraftColor.WHITE.colorCode)
             clear()
             append("$pChar[")
             definition = def
@@ -348,14 +285,12 @@ object Tokenizer {
         fun close() {
             append(c)
             val tDef = definition
-            definition = Tokenizer.Definition.None
+            definition = Definition.None
             when (tDef) {
                 Definition.Color -> tokens.addAll(toString().toColoredTokens())
                 Definition.Link -> tokens.addAll(toString().toLinkedTokens())
-                Definition.Item -> tokens.add(toString().toItemToken())
-                Definition.Menu -> tokens.add(toString().toMenuToken())
                 Definition.None -> {
-                    tokens.addAll(toString().toTokens(Color.WHITE))
+                    tokens.addAll(toString().toTokens(MinecraftColor.WHITE.colorCode))
                 }
             }
             clear()
@@ -365,8 +300,6 @@ object Tokenizer {
             Definition.None -> {
                 when (strC.prevChar(index)) {
                     '+' -> start('+', Definition.Color)
-                    '$' -> start('$', Definition.Item)
-                    '#' -> start('#', Definition.Menu)
                     ' ' -> start(' ', Definition.Link)
                     else -> Unit
                 }
@@ -380,16 +313,16 @@ object Tokenizer {
     /*
     * Handles cumulative tags as well as the line break Token.
     * */
-    private fun StringBuilder.handleSpecialTag(c: Char, index: Int, tokens: MutableList<IToken>, strC: CharArray, color: Color) {
+    private fun StringBuilder.handleSpecialTag(c: Char, index: Int, tokens: MutableList<Text>, strC: CharArray, color: Int) {
         fun StringBuilder.handleLineBreak() {
             when {
                 strC.isAfterTwoSpaces(index) -> {
-                    tokens.add(TokenLineBreak)
+                    tokens.add(Break)
                 }
                 strC.isAfterOneSpace(index) -> Unit
                 else -> {
                     append(' ')
-                    tokens.add(Token(toString(), current.toMutableList()))
+                    tokens.add(Text(toString(), current.toMutableList()))
                 }
             }
             clear()
@@ -454,16 +387,16 @@ object Tokenizer {
     /*
     * Adds a normal token to the given Token MutableList the text being the StringBuilder itself.
     * */
-    private fun StringBuilder.addToken(tokens: MutableList<IToken>, color: Color) {
+    private fun StringBuilder.addToken(tokens: MutableList<Text>, color: Int) {
         if (isNotEmpty()) {
-            tokens.add(Token(toString(), current.toMutableList(), color = color))
+            tokens.add(Text(toString(), current.toMutableList(), color = color))
         }
     }
 
     /*
     * Handles non-special characters, if not instructed not to, it also creates a new token at every space character and at the end of the CharSequence.
     * */
-    private fun StringBuilder.handleTextDefault(c: Char, index: Int, tokens: MutableList<IToken>, strC: CharArray, color: Color, ignoreSpaces: Boolean = false) {
+    private fun StringBuilder.handleTextDefault(c: Char, index: Int, tokens: MutableList<Text>, strC: CharArray, color: Int, ignoreSpaces: Boolean = false) {
         append(c)
         if ((c == ' ' && strC.nextChar(index) != ' ' && strC.nextChar(index) != '\n' && strC.nextChar(index) != '[' && !ignoreSpaces) || index == strC.lastIndex) {
             addToken(tokens, color)
@@ -474,9 +407,9 @@ object Tokenizer {
     /*
     * Handles a single character in an array, checks for escaping and reacts according to the character itself
     * */
-    private fun handleCharacter(c: Char, index: Int, tokens: MutableList<IToken>, strC: CharArray, string: StringBuilder, color: Color) {
+    private fun handleCharacter(c: Char, index: Int, tokens: MutableList<Text>, strC: CharArray, string: StringBuilder, color: Int) {
         when (definition) {
-            Tokenizer.Definition.None -> when (c) {
+            Definition.None -> when (c) {
                 '_', '*', '~', '^', '\n' -> if (strC.isEscaped(index)) string.handleTextDefault(
                         c,
                         index,
@@ -548,15 +481,14 @@ object Tokenizer {
     /*
     * Converts a string of type #hex or a color name to a valid non-null Color object.
     * */
-    private fun String.toColor(): Color {
-        if (isNotEmpty() && first() == '#') return Color(this.substring(1, lastIndex).toInt(16))
-        return try {
-            val field = Class.forName("java.awt.Color").getField(this.toUpperCase())
-            field.get(null) as Color
-        } catch (e: Exception) {
-            println("The given string: $this does not correspond to an hex color value nor a color name. Defaulted to WHITE.")
-            Color.WHITE
-        }
+    private fun String.toColor(): Int {
+        return if (isNotEmpty() && first() == '#') {
+            this.substring(1, lastIndex).toInt(16)
+        } else MinecraftColor.WHITE.colorCode
+    }
+
+    enum class Tag(val char: Char) {
+        HEADER('#')
     }
 
     /*
@@ -578,7 +510,5 @@ object Tokenizer {
         None,  // Defines the normal state of text handling.
         Color, // '+'
         Link,  // ' '
-        Menu,  // '#'
-        Item   // '$'
     }
 }

@@ -37,79 +37,261 @@
 
 package network.rs485.logisticspipes.guidebook.tokenizer
 
-import java.awt.Color
+import logisticspipes.LPConstants
+import logisticspipes.utils.MinecraftColor
+import net.minecraft.client.Minecraft
+import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
+import network.rs485.logisticspipes.gui.guidebook.IDrawable
+import network.rs485.logisticspipes.guidebook.BookContents
+import network.rs485.logisticspipes.guidebook.YamlPageMetadata
+import network.rs485.logisticspipes.util.math.Rectangle
 
-sealed class IToken
+sealed class GenericToken : IDrawable
+//sealed class GenericTextToken : GenericToken()
+sealed class GenericParagraphToken : GenericToken()
 
-/* Normal Token that stores the text and the formatting tags of said text. */
-data class Token(var str: String, val tags: MutableList<Tokenizer.TokenTag>, val color: Color = Color.WHITE) : IToken() {
-    override fun toString(): String {
-        val opt = if (color != Color.WHITE) "| Color: ${color.toString()} " else ""
-        return "Text: $str | Tags: $tags $opt"
-    }
-}
+const val DEBUG_AREAS = false
 
-/* Header token, stores all the tokens that are apart of the header. */
-data class TokenHeader(val tokens: MutableList<IToken>) : IToken() {
-    // Debugging purposes only
-    override fun toString(): String {
-        var str = "\nHeader -↓-        \n"
-        tokens.forEach {
-            str += "$it\n"
+/**
+ * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
+ */
+data class TextParagraph(val textTokens: List<Text>) : GenericParagraphToken() {
+    override val area = Rectangle(0, 0)
+    override var isHovered = false
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        if (DEBUG_AREAS) area.render(1.0F, 0.0F, 0.0F)
+        for (textToken in textTokens.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
+            if (isHovered && textToken is Link) {
+                textToken.hovering(mouseX, mouseY, yOffset)
+            }
+            textToken.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
-        str += "Header -↑-        \n"
-        return str
     }
-}
 
-/* Image token, stores a token list in case the image is not correctly loaded as well as the image's path*/
-data class TokenImage(val tokens: MutableList<IToken>, val url: String) : IToken() {
-    override fun toString(): String {
-        var alt = "\nImage -↓-        \n Tokens: \n"
-        tokens.forEach {
-            alt += "$it\n"
+    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        area.setPos(x, y)
+        var currentX = 1
+        var currentY = 1
+        for (textToken in textTokens) {
+            when (textToken) {
+                is Text, is Link -> {
+                    if ((currentX + textToken.area.width) > maxWidth) {
+                        currentX = 0
+                        currentY += textToken.area.height
+                    }
+                }
+                is Break -> {
+                    currentX = 0
+                    currentY += textToken.area.height
+                }
+            }
+            textToken.init(currentX + x, currentY + y, maxWidth - 2)
+            currentX += textToken.area.width
+            if (textToken == textTokens.last()) currentY += textToken.area.height
         }
-        return "$alt\nPath: $url \nImage -↑-        \n"
+        currentY += 1
+        area.setSize(maxWidth, currentY)
+        return currentY
     }
 }
 
-/* Link token, stores the linked string, as well as the 'url'. */
-class TokenLink(val str: String, val url: String) : IToken() {
-    override fun toString(): String {
-        return "Text: \"$str\" | Target: \"$url\""
+/**
+ * Header token, stores all the tokens that are apart of the header.
+ */
+data class HeaderParagraph(val textTokens: List<Text>, val headerLevel: Int) : GenericParagraphToken() {
+    private val LEVELS = listOf(2.0, 1.75, 1.5, 1.25, 1.0)
+    override val area = Rectangle(0, 0)
+    override var isHovered = true
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        if (DEBUG_AREAS) area.render(0.0F, 1.0F, 0.0F)
+        for (textToken in textTokens.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
+            if (isHovered && textToken is Link) {
+                textToken.hovering(mouseX, mouseY, yOffset)
+            }
+            textToken.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        }
+    }
+
+    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        area.setPos(x, y)
+        var currentX = 0
+        var currentY = 0
+        for (textToken in textTokens) {
+            textToken.scale = LEVELS[headerLevel - 1]
+            when (textToken) {
+                is Link -> {
+                    if ((currentX + textToken.area.width) > maxWidth - 2) {
+                        currentX = 0
+                        currentY += textToken.area.height
+                    }
+                }
+                is Break -> {
+                    currentX = 0
+                    currentY += textToken.area.height
+                }
+            }
+            textToken.init(currentX + x + 1, currentY + y + 1, maxWidth - 2)
+            currentX += textToken.area.width
+            if (textToken == textTokens.last()) currentY += textToken.area.height
+        }
+        currentY += 2
+        area.setSize(maxWidth, currentY)
+        return currentY
     }
 }
 
-/* Menu token, stores the key and the type of menu in a page. */
-data class TokenMenu(val key: String, val options: String) : IToken() {
-    override fun toString(): String {
-        return "MenuKey: \"$key\" | Options: \"$options\""
+/**
+ * Image token, stores a token list in case the image is not correctly loaded as well as the image's path
+ * @param textTokens this is the alt text, only used in case the image provided via the URL fails to load.
+ *
+ */
+data class ImageParagraph(val textTokens: List<Text>, val imageParameters: String) : GenericParagraphToken() {
+    // TODO
+    private val image: ResourceLocation
+    private var imageAvailible: Boolean
+
+    override val area = Rectangle(0, 0)
+    override var isHovered = false
+
+    init {
+        val parameters = imageParameters.split(" ")
+        image = ResourceLocation(LPConstants.LP_MOD_ID, parameters.first())
+        imageAvailible = true
+    }
+
+    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        area.setPos(x, y)
+        return area.height
     }
 }
 
-/* Item token, stores the alternative name, in case the item is not recognized, as well as the unlocalized name of the desired item */
-data class TokenItem(val name: String, val item: String) : IToken() {
-    override fun toString(): String {
-        return "Name: \"$name\" | Target item: \"$item\""
+/**
+ * Menu token, stores the key and the type of menu in a page.
+ */
+data class MenuParagraph(val menuId: String, val options: String) : GenericParagraphToken() {
+    // TODO how to get the actual menu Map in here?
+    override val area: Rectangle = Rectangle(0, 0)
+    override var isHovered = false
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+    }
+
+    private val menu = mutableMapOf<String, List<MenuParagraphTile>>()
+
+    fun setContent(map: Map<String, List<String>>): MenuParagraph {
+        menu.clear()
+        menu.putAll(map.asSequence().associate { div -> div.key to div.value.map { page -> MenuParagraphTile(BookContents.get(page).metadata) } })
+        return this
+    }
+
+    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        area.setPos(x, y)
+        var currentX = 0
+        var currentY = 0
+        for (division in menu) {
+            currentY += Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT
+            for (tile in division.value) {
+                // Checks if the tile fits in the current row, if not skips to next row
+                if (currentX + tile.tileSize + tile.tileSpacing > maxWidth) {
+                    currentX = 0
+                    currentY += tile.tileSize + tile.tileSpacing
+                }
+                // Sets the position of the tile
+                tile.init(x + currentX, y + currentY, maxWidth)
+                // Checks if the tile is the last on in the current list, if so add the height and spacing for the next division to be correctly drawn
+                if (tile == division.value.last()) {
+                    currentY += tile.tileSize + tile.tileSpacing
+                }
+            }
+        }
+        area.setSize(maxWidth, currentY)
+        TODO("Not yet implemented")
+    }
+
+    override fun hovering(mouseX: Int, mouseY: Int, yOffset: Int) {
+        super.hovering(mouseX, mouseY, yOffset)
+    }
+
+    // Make a custom inner class for the title of a division?
+
+    private class MenuParagraphTile(metadata: YamlPageMetadata) : IDrawable {
+        val tileSize = 40
+        val tileSpacing = 5
+
+        // Maybe there needs to be a constant Int defining the size of all the tiles
+        override val area = Rectangle(tileSize, tileSize)
+        override var isHovered = false
+
+        override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+            super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+            // Draw tile bg
+            // Draw icon
+            // Draw tooltip
+        }
+
+        override fun init(x: Int, y: Int, maxWidth: Int): Int {
+            area.setPos(x, y)
+            return area.height
+        }
     }
 }
 
-/* LineBreak token, simply represents a line break in the text. */
-object TokenLineBreak : IToken() {
-    override fun toString(): String {
-        return "Linebreak: \\n"
+/**
+ * List token, has several items that are shown in a list.
+ */
+data class ListParagraph(val entries: List<List<Text>>) : GenericParagraphToken() {
+    override val area: Rectangle
+        get() = TODO("Not yet implemented")
+    override var isHovered: Boolean
+        get() = TODO("Not yet implemented")
+        set(value) {}
+
+    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        TODO("Not yet implemented")
     }
 }
 
-/* Stores the text and the type of paragraph. */
-data class Paragraph(var str: String, var type: ParagraphType) {
-    override fun toString(): String {
-        return "$str | $type"
+/**
+ * Normal Token that stores the text and the formatting tags of said text.
+ */
+open class Text(private val str: String, private val tags: List<Tokenizer.TokenTag>, val color: Int = MinecraftColor.WHITE.colorCode) : GenericToken() {
+    override val area = Rectangle(1, 1)
+    override var isHovered = false
+    var scale: Double = 1.0
+        set(value) {
+            area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, tags.contains(Tokenizer.TokenTag.Italic), tags.contains(Tokenizer.TokenTag.Bold), value), GuiGuideBook.lpFontRenderer.getFontHeight(value))
+            field = value
+        }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        val color = if (isHovered) MinecraftColor.BLUE.colorCode else this.color
+        val r = ((color shr 16) and 0xff) / 255.0F
+        val g = ((color shr 8) and 0xff) / 255.0F
+        val b = (color and 0xff) / 1.0F
+        if (DEBUG_AREAS) area.render(r, g, b)
+        GuiGuideBook.lpFontRenderer.drawString(str, area.x0, area.y0, color, tags, scale)
+    }
+
+    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        area.setPos(x, y)
+        this.scale = scale
+        return (area.height * scale).toInt()
     }
 }
 
-enum class ParagraphType {
-    Text,
-    Header,
-    Image
-}
+/**
+ * Line break token, simply represents a line break in the text.
+ */
+object Break : Text("", emptyList())
+
+/**
+ * Link token, stores the linked string, as well as the 'url'.
+ */
+data class Link(val text: String, val linkUrl: String) : Text(text, listOf(Tokenizer.TokenTag.Underline), MinecraftColor.LIGHT_BLUE.colorCode)

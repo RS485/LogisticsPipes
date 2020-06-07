@@ -45,6 +45,9 @@ import net.minecraft.util.math.MathHelper;
 
 import lombok.Getter;
 import static network.rs485.logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
+import org.jetbrains.annotations.NotNull;
+
+import network.rs485.logisticspipes.util.math.Rectangle;
 
 public class GuiGuideBookSlider extends GuiButton {
 
@@ -77,7 +80,7 @@ public class GuiGuideBookSlider extends GuiButton {
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+	public void drawButton(@NotNull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		if (!this.visible) return;
 		mc.getTextureManager().bindTexture(GUI_BOOK_TEXTURE);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -89,7 +92,7 @@ public class GuiGuideBookSlider extends GuiButton {
 	}
 
 	@Override
-	protected void mouseDragged(Minecraft mc, int mouseX, int mouseY) {
+	protected void mouseDragged(@NotNull Minecraft mc, int mouseX, int mouseY) {
 		if (dragging) {
 			setProgress((int) (mouseY - this.height / 2.0F));
 		}
@@ -113,5 +116,5 @@ public class GuiGuideBookSlider extends GuiButton {
 	}
 
 	@Override
-	public void playPressSound(SoundHandler soundHandlerIn) {}
+	public void playPressSound(@NotNull SoundHandler soundHandlerIn) {}
 }

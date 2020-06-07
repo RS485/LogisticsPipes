@@ -42,14 +42,16 @@ import com.charleskorn.kaml.YamlException
 import kotlinx.serialization.Serializable
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
+import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import network.rs485.markdown.MarkdownParser
-import network.rs485.markdown.Paragraph
+import network.rs485.markdown.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.nio.file.Paths
+import java.util.*
+import kotlin.random.Random
 
 
 val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon = "logisticspipes:unrouted_pipe")
@@ -57,16 +59,51 @@ val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon 
 object BookContents {
 
     const val MAIN_MENU_FILE = "/main_menu.md"
-    val pageMetadataMap = hashMapOf<String, LoadedPage>()
+    const val DEBUG_FILE = "/debug/debug_page.md"
+
+    private val cachedLoadedPages = hashMapOf<String, LoadedPage>()
+
+    init {
+        if (LogisticsPipes.isDEBUG()) addDebugPages()
+    }
 
     fun get(markdownFile: String): LoadedPage {
-        return pageMetadataMap.computeIfAbsent(markdownFile) {
+        return cachedLoadedPages.computeIfAbsent(markdownFile) {
             LoadedPage(getFileAsString(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode), it)
         }
     }
+
+    fun clear() {
+        cachedLoadedPages.clear()
+        if (LogisticsPipes.isDEBUG()) addDebugPages()
+    }
+
+    private fun addDebugPages() {
+        val debugLoadedPage = LoadedPage(getFileAsString(DEBUG_FILE, "en_us"), DEBUG_FILE)
+        fun randomColor(): Int = MinecraftColor.values()[Random.nextInt(MinecraftColor.values().size)].colorCode
+        debugLoadedPage.paragraphs = listOf(
+                HeaderParagraph(listOf(TextFormatting(
+                        "Nulla faucibus cursus bibendum.".split(" ").map { ColorFormatting(listOf(Word(it)), randomColor()) },
+                        EnumSet.of(TextFormat.Italic, TextFormat.Shadow)
+                )), 4),
+                RegularParagraph(listOf(TextFormatting(
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl.".split(" ").map { ColorFormatting(listOf(Word(it)), randomColor()) },
+                        EnumSet.of(TextFormat.Bold, TextFormat.Shadow)
+                ))),
+                RegularParagraph(listOf(TextFormatting(
+                        ("Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa. Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.  \n" +
+                                "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque.").split(" ").map { ColorFormatting(listOf(Word(it)), randomColor()) },
+                        EnumSet.of(TextFormat.Bold, TextFormat.Italic)
+                ))),
+                RegularParagraph(listOf(TextFormatting(
+                        "Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante.".split(" ").map { ColorFormatting(listOf(Word(it)), randomColor()) },
+                        EnumSet.of(TextFormat.Underline, TextFormat.Shadow)
+                ))))
+        cachedLoadedPages[DEBUG_FILE] = debugLoadedPage
+    }
 }
 
-private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(kotlin.text.RegexOption.DOT_MATCHES_ALL)
+private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(RegexOption.DOT_MATCHES_ALL)
 
 fun getFileAsString(path: String, lang: String): String {
     return try {
@@ -86,16 +123,18 @@ fun getFileAsString(path: String, lang: String): String {
     }
 }
 
-fun String.parseMetadata(markdownFile: String): YamlPageMetadata = if (this.isNotEmpty()) {
-    // Takes the metadata string and parses the YAML information
-    try {
-        Yaml.default.parse(YamlPageMetadata.serializer(), this).normalizeMetadata(markdownFile)
-    } catch (e: YamlException) {
-        LogisticsPipes.log.error("Exception: $e")
-        LogisticsPipes.log.error("The following Yaml is malformed! \n$this")
-        MISSING_META
-    }
-} else MISSING_META
+private fun parseMetadata(metadataString: String, markdownFile: String): YamlPageMetadata {
+    return if (metadataString.isNotEmpty()) {
+        // Takes the metadata string and parses the YAML information
+        try {
+            Yaml.default.parse(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
+        } catch (e: YamlException) {
+            LogisticsPipes.log.error("Exception: $e")
+            LogisticsPipes.log.error("The following Yaml is malformed! \n$metadataString")
+            MISSING_META
+        }
+    } else MISSING_META
+}
 
 fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
     // Normalize the given paths, replacing any ./.. with the appropriate absolute (resource location) paths
@@ -109,19 +148,24 @@ fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
     return YamlPageMetadata(this.title, this.icon, menu)
 }
 
+/**
+ * @param title title of the page
+ * @param icon the icon
+ * @param menu menus of the page: Map of id to (category to entries)
+ */
 @Serializable
 data class YamlPageMetadata(val title: String,
                             val icon: String = "logisticspipes:itemcard",
-                            val menu: Map<String, Map<String, List<String>>> = mapOf())
+                            val menu: Map<String, Map<String, List<String>>> = emptyMap())
 
 class LoadedPage(unformattedText: String, fileLocation: String) {
     private val metadataString: String
     internal val markdownString: String
     val metadata: YamlPageMetadata
-    var tokens: List<Paragraph>
+    var paragraphs: List<Paragraph> = emptyList()
         get() {
             if (field.isEmpty() && markdownString.isNotEmpty()) {
-                field = MarkdownParser.parseParagraphs(markdownString).toList()
+                field = MarkdownParser.parseParagraphs(markdownString)
                 return field
             }
             return field
@@ -132,7 +176,6 @@ class LoadedPage(unformattedText: String, fileLocation: String) {
         val result = metadataRegex.matchEntire(unformattedText) ?: throw RuntimeException("Could not load page, regex failed in $fileLocation:\n$unformattedText")
         metadataString = result.groups[1]?.value?.trim() ?: ""
         markdownString = result.groups[2]?.value?.trim() ?: ""
-        metadata = metadataString.parseMetadata(fileLocation)
-        tokens = listOf()
+        metadata = parseMetadata(metadataString, fileLocation)
     }
 }

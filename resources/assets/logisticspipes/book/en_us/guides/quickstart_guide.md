@@ -8,5 +8,10 @@ First off, *thanks* for playing _Logistics Pipes_. A __lot of changes have been 
 Test another line§f
 =====
 ##Header text but with a very long line so I can properly test and *implement* with header line breaks, _hopefully_
------
+-----  
+
+![alternate text](image/path spaces_allow_for_more_properties)
+
+$[Menu, kinda?](menu_property=something?)
+
 More text...

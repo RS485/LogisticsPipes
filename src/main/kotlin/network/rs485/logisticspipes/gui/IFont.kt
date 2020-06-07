@@ -35,29 +35,23 @@
  * SOFTWARE.
  */
 
-package network.rs485.markdown
+package network.rs485.logisticspipes.gui
 
 import java.util.*
 
-sealed class InlineElement
+interface IFont {
+    val glyphs: Map<Char, IGlyph>
+    val defaultChar: Char
+}
 
-data class TextFormatting(val elements: List<InlineElement>,
-                          val format: EnumSet<TextFormat>) : InlineElement()
-
-data class ColorFormatting(val elements: List<InlineElement>,
-                           val color: Int) : InlineElement()
-
-data class Word(val str: String) : InlineElement()
-
-object Break : InlineElement()
-
-/**
- * Used to track the tags a token has so the renderer knows how to draw said token.
- */
-enum class TextFormat {
-    Italic,
-    Bold,
-    Strikethrough,
-    Underline,
-    Shadow
+interface IGlyph{
+    val name: String
+    val charPoint: Char
+    val dWidthX: Int
+    val dWidthY: Int
+    val width: Int
+    val height: Int
+    val offsetX: Int
+    var offsetY: Int
+    val bitmap: BitSet
 }

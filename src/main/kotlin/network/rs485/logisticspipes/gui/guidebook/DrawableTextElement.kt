@@ -35,29 +35,36 @@
  * SOFTWARE.
  */
 
-package network.rs485.markdown
+package network.rs485.logisticspipes.gui.guidebook
 
-import java.util.*
+import network.rs485.logisticspipes.util.math.Rectangle
 
-sealed class InlineElement
+class DrawableTextElement : IElement, IDrawable {
+    override val drawer: PageDrawer
+        get() = TODO("Not yet implemented")
 
-data class TextFormatting(val elements: List<InlineElement>,
-                          val format: EnumSet<TextFormat>) : InlineElement()
+    override val widgets: MutableList<IElementWidget> = mutableListOf()
 
-data class ColorFormatting(val elements: List<InlineElement>,
-                           val color: Int) : InlineElement()
+    override val area: Rectangle
+        get() = TODO("Not yet implemented")
 
-data class Word(val str: String) : InlineElement()
+    override var isHovered: Boolean = false
 
-object Break : InlineElement()
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        widgets.forEach{ it.draw(mouseX, mouseY, delta, yOffset, visibleArea) }
+    }
 
-/**
- * Used to track the tags a token has so the renderer knows how to draw said token.
- */
-enum class TextFormat {
-    Italic,
-    Bold,
-    Strikethrough,
-    Underline,
-    Shadow
+    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onClick(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun addWidget(widget: IElementWidget): DrawableTextElement {
+        widgets.add(widget)
+        return this
+    }
+
 }

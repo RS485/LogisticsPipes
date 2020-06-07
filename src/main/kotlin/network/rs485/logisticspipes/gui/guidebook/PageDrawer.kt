@@ -35,29 +35,27 @@
  * SOFTWARE.
  */
 
-package network.rs485.markdown
+package network.rs485.logisticspipes.gui.guidebook
 
-import java.util.*
+import net.minecraft.client.Minecraft
+import network.rs485.logisticspipes.util.math.Rectangle
 
-sealed class InlineElement
+object PageDrawer {
+    const val HEADER_SCALING = 1.5f
 
-data class TextFormatting(val elements: List<InlineElement>,
-                          val format: EnumSet<TextFormat>) : InlineElement()
+    // Needs to be set on Gui init.
+    var visibleArea: Rectangle = Rectangle(0, 0)
+    var yOffset: Int = 0
+    var savedPage: SavedPage = SavedPage()
+        set(savedPage) {
+            field = savedPage
+            yOffset = savedPage.progress.toInt()
+        }
 
-data class ColorFormatting(val elements: List<InlineElement>,
-                           val color: Int) : InlineElement()
+    fun draw(mc: Minecraft, gui: GuiGuideBook, mouseX: Int, mouseY: Int, yOffset: Int): Int {
+        return 0
+    }
 
-data class Word(val str: String) : InlineElement()
-
-object Break : InlineElement()
-
-/**
- * Used to track the tags a token has so the renderer knows how to draw said token.
- */
-enum class TextFormat {
-    Italic,
-    Bold,
-    Strikethrough,
-    Underline,
-    Shadow
+    @JvmStatic
+    fun draw(mc: Minecraft, currentPage: SavedPage, guiGuideBook: GuiGuideBook, mouseX: Int, mouseY: Int, yOffset: Int): Int = draw(mc, guiGuideBook, mouseX, mouseY, yOffset)
 }

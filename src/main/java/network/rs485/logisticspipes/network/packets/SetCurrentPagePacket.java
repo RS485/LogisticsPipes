@@ -50,6 +50,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.LPItems;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.gui.guidebook.SavedPage;
@@ -91,11 +92,15 @@ public class SetCurrentPagePacket extends ModernPacket {
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		hand = input.readEnum(EnumHand.class);
-		page = new SavedPage().fromBytes(input);
-		int size = input.readInt();
-		for (int i = 0; i < size; i++) {
-			savedPages.add(new SavedPage().fromBytes(input));
+		try {
+			hand = input.readEnum(EnumHand.class);
+			page = new SavedPage().fromBytes(input);
+			int size = input.readInt();
+			for (int i = 0; i < size; i++) {
+				savedPages.add(new SavedPage().fromBytes(input));
+			}
+		} catch (IllegalStateException e) {
+			LogisticsPipes.log.warn("Couldn't read SetCurrentPagePacket data", e);
 		}
 	}
 

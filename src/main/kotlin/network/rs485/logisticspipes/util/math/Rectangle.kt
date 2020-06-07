@@ -37,8 +37,13 @@
 
 package network.rs485.logisticspipes.util.math
 
+import logisticspipes.utils.MinecraftColor
+import logisticspipes.utils.gui.SimpleGraphics
+import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import java.lang.Integer.max
 import java.lang.Integer.min
+import kotlin.math.ceil
 
 class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
@@ -71,23 +76,32 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         private set
 
     // Constructors
+    constructor() : this(0, 0, 0, 0)
     constructor(width: Int, height: Int) : this(0, 0, width, height)
     private constructor(firstPoint: Pair<Int, Int>, secondPoint: Pair<Int, Int>) : this(firstPoint.first, firstPoint.second, (secondPoint.first - firstPoint.first), (secondPoint.second - firstPoint.second))
 
     // Transformations
-    fun size(newWidth: Int, newHeight: Int): Rectangle{
+    fun setSize(newWidth: Int, newHeight: Int): Rectangle {
         width = newWidth
         height = newHeight
         return this
     }
-    fun scale(fMultiplier: Float): Rectangle {
-        width = (fMultiplier * width).toInt()
-        height = (fMultiplier * height).toInt()
-        return this
-    }
-    fun pos(newX: Int, newY: Int): Rectangle{
+    fun setPos(newX: Int, newY: Int): Rectangle {
         x0 = newX
         y0 = newY
+        return this
+    }
+
+    fun scale(fMultiplier: Float): Rectangle = scale(fMultiplier.toDouble())
+    fun scale(dMultiplier: Double): Rectangle {
+        width = ceil(dMultiplier * width).toInt()
+        height = ceil(dMultiplier * height).toInt()
+        return this
+    }
+
+    fun translate(translateX: Int, translateY: Int): Rectangle {
+        x0 += translateX
+        y0 += translateY
         return this
     }
 
@@ -100,4 +114,21 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
     // Operations
     fun overlap(rect: Rectangle): Rectangle = Rectangle(max(this.x0, rect.x0) to max(this.y0, rect.y0), min(this.x1, rect.x1) to min(this.y1, rect.y1))
+
+    // Debug placement
+    fun render(r: Float, g: Float, b: Float) {
+        GlStateManager.pushMatrix()
+        GlStateManager.disableAlpha()
+        GlStateManager.disableBlend()
+        GlStateManager.color(r, g, b)
+        GlStateManager.translate(0f, 0f, 500f)
+        GuiGuideBook.drawHorizontalLine(x0 - 1, x1, y0 - 1, 1, 1) // TOP
+        GuiGuideBook.drawHorizontalLine(x0, x1 + 1, y1, 1, 1) // BOTTOM
+        GuiGuideBook.drawVerticalLine(x0 - 1, y0, y1 + 1, 1, 1) // LEFT
+        GuiGuideBook.drawVerticalLine(x1, y0 - 1, y1, 1, 1) // RIGHT
+        GlStateManager.translate(0f, 0f, -500f)
+        GlStateManager.enableAlpha()
+        GlStateManager.enableBlend()
+        GlStateManager.popMatrix()
+    }
 }

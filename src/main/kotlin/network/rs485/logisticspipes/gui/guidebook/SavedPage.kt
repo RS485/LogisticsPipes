@@ -38,58 +38,57 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.nbt.NBTTagCompound
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook.MenuItemsDivision
-import network.rs485.logisticspipes.gui.guidebook.book.MenuItem
 import network.rs485.logisticspipes.guidebook.BookContents
-import network.rs485.logisticspipes.guidebook.YamlPageMetadata
+import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
+import network.rs485.logisticspipes.guidebook.LoadedPage
 import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
-import java.util.*
+import network.rs485.logisticspipes.util.math.Rectangle
 
-class SavedPage constructor(var page: String = BookContents.MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
+class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
 
-    var metadata: YamlPageMetadata
-    var menuItems: MutableList<MenuItemsDivision>
+    val loadedPage: LoadedPage = BookContents.get(page)
+    var height: Int = 0
 
-    init {
-        metadata = BookContents.get(page).metadata
-        menuItems = mutableListOf()
-        updateMenuItems()
-    }
+    constructor(page: SavedPage) : this(page.page, page.color, page.progress)
 
-    private fun updateMenuItems() {
-        menuItems.clear()
-        if (metadata.menu.isNotEmpty()) {
-            for (div in metadata.menu) {
-                val list = mutableListOf<MenuItem>();
-                for (pagePath in div.value) {
-                    list.add(MenuItem(BookContents.get(page).metadata, page))
-                }
-                menuItems.add(MenuItemsDivision(div.key, list as ArrayList<MenuItem>))
-            }
+    fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        val yOffset = ((height - visibleArea.height) * progress).toInt()
+        /*
+        loadedPage.paragraphs.filter {
+            it.area.overlaps(visibleArea.translate(0 ,yOffset))
+        }.forEach { paragraph ->
+            paragraph.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        }
+        */
+        visibleArea.render(0.0F, 0.0F, 0.0F)
+        loadedPage.paragraphs.forEach { paragraph ->
+            //paragraph.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
     }
 
-    /* Page Setters */
-    fun setPage(page: String, progress: Float) {
-        this.page = page
-        metadata = BookContents.get(page).metadata
-        this.progress = progress
+    fun initDrawables(x: Int, y: Int, maxWidth: Int) {
+//        height = loadedPage.paragraphs.fold(y) { currentY, paragraph ->
+//            currentY + paragraph.init(x + 1, currentY + 1, maxWidth - 2) + 3
+//        }
     }
 
-    fun getText(): String {
-        return BookContents.get(page).markdownString
-    }
-
-    constructor(page: SavedPage) : this(page.page, page.color, page.progress) {}
-
+    /**
+     * Takes in an LPDataInput buffer and turns the buffered bytes object into a SavedPage object.
+     * @param input the received data
+     * @return SavedPage object created from the buffered data
+     */
     fun fromBytes(input: LPDataInput): SavedPage {
         return SavedPage(
-                input.readUTF() ?: BookContents.MAIN_MENU_FILE,
+                input.readUTF() ?: error("Oh fuck you!"),
                 input.readInt(),
                 input.readFloat())
     }
 
+    /**
+     * Takes in an LPDataOutput buffer and turns a SavedPage object into bytes and puts them inside the buffer.
+     * @param output data to send
+     */
     fun toBytes(output: LPDataOutput) {
         output.writeUTF(page)
         output.writeInt(color)

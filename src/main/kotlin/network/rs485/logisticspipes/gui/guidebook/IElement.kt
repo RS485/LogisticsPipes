@@ -35,29 +35,12 @@
  * SOFTWARE.
  */
 
-package network.rs485.markdown
+package network.rs485.logisticspipes.gui.guidebook
 
-import java.util.*
+interface IElement: IDrawable {
+    val drawer: PageDrawer
+    val widgets: MutableList<IElementWidget>
 
-sealed class InlineElement
-
-data class TextFormatting(val elements: List<InlineElement>,
-                          val format: EnumSet<TextFormat>) : InlineElement()
-
-data class ColorFormatting(val elements: List<InlineElement>,
-                           val color: Int) : InlineElement()
-
-data class Word(val str: String) : InlineElement()
-
-object Break : InlineElement()
-
-/**
- * Used to track the tags a token has so the renderer knows how to draw said token.
- */
-enum class TextFormat {
-    Italic,
-    Bold,
-    Strikethrough,
-    Underline,
-    Shadow
+    fun onClick(mouseX: Int, mouseY: Int, mouseButton: Int)
+    fun addWidget(widget: IElementWidget): IElement
 }

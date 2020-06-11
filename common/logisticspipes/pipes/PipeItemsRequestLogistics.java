@@ -7,20 +7,16 @@
 
 package logisticspipes.pipes;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.api.IRequestAPI;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
@@ -31,12 +27,6 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
-import logisticspipes.request.RequestLog;
-import logisticspipes.request.RequestTree;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.request.resources.IResource;
-import logisticspipes.request.resources.ItemResource;
-import logisticspipes.routing.order.LinkedLogisticsOrderList;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -45,7 +35,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
 @CCType(name = "LogisticsPipes:Request")
-public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {
+public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems {
 
 	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<>();
 
@@ -90,116 +80,11 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 		}
 	}
 
-	public LinkedList<Map<ItemIdentifier, Integer>> getHistory() {
-		return _history;
-	}
-
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
 
-	/* IRequestAPI */
-
-	@Override
-	public List<ItemStack> getProvidedItems() {
-		if (stillNeedReplace()) {
-			return new ArrayList<>();
-		}
-		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
-		List<ItemStack> list = new ArrayList<>(items.size());
-		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
-			ItemStack is = item.getKey().unsafeMakeNormalStack(item.getValue());
-			list.add(is);
-		}
-		return list;
-	}
-
-	@Override
-	public List<ItemStack> getCraftedItems() {
-		if (stillNeedReplace()) {
-			return new ArrayList<>();
-		}
-		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
-		List<ItemStack> list = new ArrayList<>(items.size());
-		for (ItemIdentifier item : items) {
-			ItemStack is = item.unsafeMakeNormalStack(1);
-			list.add(is);
-		}
-		return list;
-	}
-
-	@Override
-	public SimulationResult simulateRequest(@Nonnull ItemStack wanted) {
-		final List<IResource> used = new ArrayList<>();
-		final List<IResource> missing = new ArrayList<>();
-		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
-
-			@Override
-			public void handleMissingItems(List<IResource> items) {
-				missing.addAll(items);
-			}
-
-			@Override
-			public void handleSucessfullRequestOf(IResource item, LinkedLogisticsOrderList parts) {}
-
-			@Override
-			public void handleSucessfullRequestOfList(List<IResource> items, LinkedLogisticsOrderList parts) {
-				used.addAll(items);
-			}
-		});
-		List<ItemStack> usedList = new ArrayList<>(used.size());
-		List<ItemStack> missingList = new ArrayList<>(missing.size());
-		for (IResource e : used) {
-			if (e instanceof ItemResource) {
-				usedList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			} else if (e instanceof DictResource) {
-				usedList.add(((DictResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			}
-		}
-		for (IResource e : missing) {
-			if (e instanceof ItemResource) {
-				missingList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			} else if (e instanceof DictResource) {
-				missingList.add(((DictResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			}
-		}
-
-		SimulationResult r = new SimulationResult();
-		r.used = usedList;
-		r.missing = missingList;
-		return r;
-	}
-
-	@Override
-	public List<ItemStack> performRequest(@Nonnull ItemStack wanted) {
-		final List<IResource> missing = new ArrayList<>();
-		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
-
-			@Override
-			public void handleMissingItems(List<IResource> items) {
-				missing.addAll(items);
-			}
-
-			@Override
-			public void handleSucessfullRequestOf(IResource item, LinkedLogisticsOrderList parts) {}
-
-			@Override
-			public void handleSucessfullRequestOfList(List<IResource> items, LinkedLogisticsOrderList parts) {}
-		}, null);
-		List<ItemStack> missingList = new ArrayList<>(missing.size());
-		for (IResource e : missing) {
-			if (e instanceof ItemResource) {
-				missingList.add(((ItemResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			} else if (e instanceof DictResource) {
-				missingList.add(((DictResource) e).getItem().unsafeMakeNormalStack(e.getRequestedAmount()));
-			}
-		}
-
-		return missingList;
-	}
-
-	/* CC */
 	@CCCommand(description = "Requests the given ItemIdentifierStack")
 	@CCQueued
 	public Object[] makeRequest(ItemIdentifierStack stack) throws Exception {
@@ -260,4 +145,5 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 		}
 		return 0;
 	}
+
 }

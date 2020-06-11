@@ -1,6 +1,5 @@
 package logisticspipes.pipes.basic;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -12,8 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -153,25 +152,17 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		}
 	}
 
-	public void dropItem(ItemStack stack) {
+	public void dropItem(@Nonnull ItemStack stack) {
 		MainProxy.dropItems(container.getWorld(), stack, getX(), getY(), getZ());
 	}
 
-	public void onBlockRemoval() {
-		if (getWorld().getWorldInfo().getGameType() != GameType.CREATIVE) {
-			computeItemDrop().forEach(this::dropItem);
-		}
-	}
-
-	public ArrayList<ItemStack> computeItemDrop() {
-		return new ArrayList<>();
-	}
+	public void onBlockRemoval() {}
 
 	public LogisticsTileGenericPipe getContainer() {
 		return container;
 	}
 
-	public List<ItemStack> dropContents() {
+	public NonNullList<ItemStack> dropContents() {
 		return transport.dropContents();
 	}
 

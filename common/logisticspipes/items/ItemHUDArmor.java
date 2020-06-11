@@ -85,12 +85,12 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 	}
 
 	@Override
-	public boolean isEnabled(ItemStack item) {
+	public boolean isEnabled(@Nonnull ItemStack item) {
 		return true;
 	}
 
 	@Override
-	public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
+	public String getArmorTexture(@Nonnull ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
 		return "logisticspipes:textures/armor/LogisticsHUD_1.png";
 	}
 

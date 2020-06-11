@@ -37,7 +37,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		ItemStack book;
 		book = player.getHeldItem(hand);
-		if (book.getItem() != LPItems.itemGuideBook) return;
+		if (book.isEmpty() || book.getItem() != LPItems.itemGuideBook) return;
 		NBTTagCompound nbt = book.getTagCompound();
 		if (nbt == null) nbt = new NBTTagCompound();
 		nbt.setFloat("sliderProgress", sliderProgress);

@@ -67,7 +67,6 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

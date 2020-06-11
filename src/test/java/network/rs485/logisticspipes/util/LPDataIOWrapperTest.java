@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -674,6 +675,34 @@ public class LPDataIOWrapperTest {
 
 		LPDataIOWrapper.provideData(data, input -> {
 			assertNull(input.readSet(LPDataInput::readUTF));
+
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
+		});
+	}
+
+	@org.junit.jupiter.api.Test
+	public void testNonNullList() {
+		NonNullList<String> nonNullList = NonNullList.withSize(3, "");
+		nonNullList.set(0, "drölf");
+		nonNullList.set(1, "text");
+
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(nonNullList,
+				LPDataOutput::writeUTF));
+
+		LPDataIOWrapper.provideData(data, input -> {
+			assertEquals(nonNullList, input.readNonNullList(LPDataInput::readUTF, ""));
+
+			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
+		});
+	}
+
+	@org.junit.jupiter.api.Test
+	public void testNullNonNullList() {
+		byte[] data = LPDataIOWrapper.collectData(output -> output.writeCollection(null,
+				LPDataOutput::writeUTF));
+
+		LPDataIOWrapper.provideData(data, input -> {
+			assertNull(input.readNonNullList(LPDataInput::readUTF, ""));
 
 			assertEquals(0, ((LPDataIOWrapper) input).localBuffer.readableBytes(), BUFFER_EMPTY_MSG);
 		});

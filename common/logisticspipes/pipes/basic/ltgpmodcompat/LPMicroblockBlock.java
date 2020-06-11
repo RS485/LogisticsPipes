@@ -462,7 +462,7 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 	@Nonnull
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult hit, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
+	public ItemStack getPickBlock(IBlockState state, RayTraceResult hit, World world, BlockPos pos, EntityPlayer player) {
 		if (hit != null && hit.subHit >= 0) {
 			return getTile(world, pos).map(t -> t.get(MCMultiPart.slotRegistry.getValue(hit.subHit))).filter(Optional::isPresent)
 					.map(o -> o.get().getPart().getPickPart(o.get(), (RayTraceResult) hit.hitInfo, player)).orElse(ItemStack.EMPTY);

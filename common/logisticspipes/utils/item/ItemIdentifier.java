@@ -362,7 +362,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	@SuppressWarnings("ConstantConditions")
 	@Nonnull
-	public static ItemIdentifier get(ItemStack itemStack) {
+	public static ItemIdentifier get(@Nonnull ItemStack itemStack) {
 		ItemIdentifier proposal = null;
 		IAddInfoProvider prov = null;
 		if (((Object) itemStack) instanceof IAddInfoProvider && !itemStack.hasTagCompound()) {
@@ -435,7 +435,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	@Nonnull
-	private String getName(ItemStack stack) {
+	private String getName(@Nonnull ItemStack stack) {
 		return item.getItemStackDisplayName(stack);
 	}
 
@@ -545,7 +545,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return map;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws SecurityException, IllegalArgumentException {
 		if (nbt == null) return null;
 
@@ -677,7 +676,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return this.item == item.item && (item.isDamageable() || (itemDamage == item.itemDamage));
 	}
 
-	public boolean equalsWithoutNBT(ItemStack stack) {
+	public boolean equalsWithoutNBT(@Nonnull ItemStack stack) {
 		return item == stack.getItem() && itemDamage == stack.getItemDamage();
 	}
 

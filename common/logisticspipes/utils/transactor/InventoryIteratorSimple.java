@@ -67,7 +67,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 		}
 
 		@Override
-		public boolean canPutStackInSlot(ItemStack stack) {
+		public boolean canPutStackInSlot(@Nonnull ItemStack stack) {
 			ItemStack toTest = stack.copy();
 			toTest.setCount(1);
 			return inv.insertItem(slot, toTest, true).isEmpty();

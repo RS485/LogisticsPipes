@@ -40,6 +40,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -302,14 +303,13 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 	@Nonnull
 	@Override
-	public ArrayList<ItemStack> getDrops(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
+	public NonNullList<ItemStack> getDrops(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
+		NonNullList<ItemStack> list = NonNullList.create();
 		if (MainProxy.isClient(world)) {
-			return null;
+			return list;
 		}
 
 		Random rand = world instanceof World ? ((World) world).rand : RANDOM;
-
-		ArrayList<ItemStack> list = new ArrayList<>();
 		int count = quantityDropped(state, fortune, rand);
 		for (int i = 0; i < count; i++) {
 			CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
@@ -331,6 +331,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		return list;
 	}
 
+	@Nonnull
 	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
 		return BlockFaceShape.UNDEFINED;
 	}
@@ -669,7 +670,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 					spawnAsEntity(world, pos, stack);
 				}
 				spawnAsEntity(world, pos, new ItemStack(pipe.item, 1, damageDropped(state)));
-				ArrayList<ItemStack> list = new ArrayList<>();
+				final NonNullList<ItemStack> list = NonNullList.create();
 				CoreUnroutedPipe finalPipe = pipe;
 				BlockAccessDelegate worldDelegate = new BlockAccessDelegate(world) {
 
@@ -700,6 +701,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 	@SideOnly(Side.CLIENT)
 	@Override
+	@Nonnull
 	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
 		ItemStack pick = super.getPickBlock(state, target, world, pos, player);
 		if (!pick.isEmpty()) {
@@ -708,9 +710,9 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		InternalRayTraceResult rayTraceResult = doRayTrace(world, pos, player);
 
 		if (rayTraceResult != null && rayTraceResult.boundingBox != null) {
-			switch (rayTraceResult.hitPart) {
-				case PIPE:
-					return new ItemStack(LogisticsBlockGenericPipe.getPipe(world, pos).item);
+			if (rayTraceResult.hitPart == Part.PIPE) {
+				final CoreUnroutedPipe pipe = Objects.requireNonNull(LogisticsBlockGenericPipe.getPipe(world, pos));
+				return new ItemStack(pipe.item);
 			}
 		}
 		return ItemStack.EMPTY;
@@ -729,7 +731,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, @Nonnull ItemStack stack) {
 		super.onBlockPlacedBy(world, pos, state, placer, stack);
 		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 

@@ -54,7 +54,6 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);

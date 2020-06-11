@@ -46,7 +46,7 @@ import network.rs485.logisticspipes.util.items.ItemStackLoader;
 public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>>, IClientInformationProvider {
 
 	private Object ccType;
-	private ItemIdentifierStack[] _contents;
+	private final ItemIdentifierStack[] _contents;
 	private final String _name;
 	private final int _stackLimit;
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
@@ -111,30 +111,12 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		return ret;
 	}
 
-	// here so the returned stack can be stuck in another inventory without re-converting it/
-	public ItemIdentifierStack decrIDStackSize(int slot, int count) {
-		if (_contents[slot] == null) return null;
-
-		if (_contents[slot].getStackSize() > count) {
-			ItemIdentifierStack ret = _contents[slot].clone();
-			ret.setStackSize(count);
-			_contents[slot].setStackSize(_contents[slot].getStackSize() - count);
-			updateContents();
-			return ret;
-		}
-
-		ItemIdentifierStack ret = _contents[slot];
-		_contents[slot] = null;
-		updateContents();
-		return ret;
-	}
-
 	@Override
 	public void setInventorySlotContents(int i, @Nonnull ItemStack itemstack) {
 		if (itemstack.isEmpty()) {
 			_contents[i] = null;
 		} else {
-			if (!isValidStack(itemstack)) {
+			if (isInvalidStack(itemstack)) {
 				if (LogisticsPipes.isDEBUG()) {
 					new UnsupportedOperationException("Not valid for this Inventory: (" + itemstack + ")").printStackTrace();
 				}
@@ -243,14 +225,12 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		}
 	}
 
-	public static void dropItems(World world, ItemStack stack, BlockPos pos) {
+	public static void dropItems(World world, @Nonnull ItemStack stack, BlockPos pos) {
 		dropItems(world, stack, pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	public static void dropItems(World world, ItemStack stack, int i, int j, int k) {
-		if (stack.getCount() <= 0) {
-			return;
-		}
+	public static void dropItems(World world, @Nonnull ItemStack stack, int i, int j, int k) {
+		if (stack.isEmpty()) return;
 		float f1 = 0.7F;
 		double d = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
 		double d1 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
@@ -274,7 +254,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	@Override
 	public ItemStack removeStackFromSlot(int i) {
 		if (_contents[i] == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 
 		ItemStack stackToTake = _contents[i].makeNormalStack();
@@ -295,8 +275,8 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		markDirty();
 	}
 
-	private int tryAddToSlot(int i, ItemStack stack, int realstacklimit) {
-		if (!isValidStack(stack)) {
+	private int tryAddToSlot(int i, @Nonnull ItemStack stack, int realstacklimit) {
+		if (isInvalidStack(stack)) {
 			if (LogisticsPipes.isDEBUG()) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
@@ -328,10 +308,10 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		}
 	}
 
-	public int addCompressed(ItemStack stack, boolean ignoreMaxStackSize) {
-		if (stack == null) return 0;
+	public int addCompressed(@Nonnull ItemStack stack, boolean ignoreMaxStackSize) {
+		if (stack.isEmpty()) return 0;
 
-		if (!isValidStack(stack)) {
+		if (isInvalidStack(stack)) {
 			if (LogisticsPipes.isDEBUG()) {
 				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
 			}
@@ -343,7 +323,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
 		int stacklimit = _stackLimit;
 
-		if (!ignoreMaxStackSize && stackIdent != null) {
+		if (!ignoreMaxStackSize) {
 			stacklimit = Math.min(stacklimit, stackIdent.getMaxStackSize());
 		}
 
@@ -377,7 +357,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			if (_content == null) continue;
 
 			ItemIdentifier itemId = _content.getItem();
-			_contentsMap.merge(itemId, _content.getStackSize(), (a, b) -> a + b);
+			_contentsMap.merge(itemId, _content.getStackSize(), Integer::sum);
 			_contentsUndamagedSet.add(itemId.getUndamaged()); // add is cheaper than check then add; it just returns false if it is already there
 			_contentsNoNBTSet.add(itemId.getIgnoringNBT()); // add is cheaper than check then add; it just returns false if it is already there
 			_contentsUndamagedNoNBTSet.add(itemId.getIgnoringNBT().getUndamaged()); // add is cheaper than check then add; it just returns false if it is already there
@@ -482,11 +462,11 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		}
 	}
 
-	private boolean isValidStack(@Nonnull ItemStack stack) {
-		if (isLiquidInventory) {
-			return FluidIdentifier.get(stack) != null;
+	private boolean isInvalidStack(@Nonnull ItemStack stack) {
+		if (isLiquidInventory && !stack.isEmpty()) {
+			return FluidIdentifier.get(stack) == null;
 		}
-		return true;
+		return false;
 	}
 
 	private boolean isValidStack(ItemIdentifierStack stack) {

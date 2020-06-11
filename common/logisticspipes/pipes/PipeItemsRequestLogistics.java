@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -129,7 +130,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	}
 
 	@Override
-	public SimulationResult simulateRequest(ItemStack wanted) {
+	public SimulationResult simulateRequest(@Nonnull ItemStack wanted) {
 		final List<IResource> used = new ArrayList<>();
 		final List<IResource> missing = new ArrayList<>();
 		RequestTree.simulate(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
@@ -171,7 +172,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	}
 
 	@Override
-	public List<ItemStack> performRequest(ItemStack wanted) {
+	public List<ItemStack> performRequest(@Nonnull ItemStack wanted) {
 		final List<IResource> missing = new ArrayList<>();
 		RequestTree.request(ItemIdentifier.get(wanted).makeStack(wanted.getCount()), this, new RequestLog() {
 

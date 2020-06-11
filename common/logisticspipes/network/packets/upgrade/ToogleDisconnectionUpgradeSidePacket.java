@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.upgrade;
 
+import java.util.Objects;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,16 +33,17 @@ public class ToogleDisconnectionUpgradeSidePacket extends SlotPacket {
 	public void processPacket(EntityPlayer player) {
 		UpgradeSlot slot = getSlot(player, UpgradeSlot.class);
 		ItemStack stack = slot.getStack();
+		if (stack.isEmpty()) return;
 
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
 
-		NBTTagCompound nbt = stack.getTagCompound();
+		NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
 		String sideName = ConnectionUpgradeConfig.Sides.getNameForDirection(side);
-		nbt.setBoolean(sideName, !nbt.getBoolean(sideName));
+		tag.setBoolean(sideName, !tag.getBoolean(sideName));
 
-		stack.setTagCompound(nbt);
+		stack.setTagCompound(tag);
 
 		slot.putStack(stack);
 	}

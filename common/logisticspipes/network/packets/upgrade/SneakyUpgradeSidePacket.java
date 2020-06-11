@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.upgrade;
 
+import java.util.Objects;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,10 +33,12 @@ public class SneakyUpgradeSidePacket extends SlotPacket {
 	public void processPacket(EntityPlayer player) {
 		UpgradeSlot slot = getSlot(player, UpgradeSlot.class);
 		ItemStack stack = slot.getStack();
+		if (stack.isEmpty()) return;
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
-		stack.getTagCompound().setString(SneakyUpgradeConfig.SIDE_KEY, SneakyUpgradeConfig.Sides.getNameForDirection(side));
+		final NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+		tag.setString(SneakyUpgradeConfig.SIDE_KEY, SneakyUpgradeConfig.Sides.getNameForDirection(side));
 		slot.putStack(stack);
 	}
 

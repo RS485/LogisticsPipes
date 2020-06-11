@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
@@ -80,7 +81,7 @@ public final class StringUtils {
 		return result;
 	}
 
-	public static void addShiftAddition(ItemStack stack, List<String> list) {
+	public static void addShiftAddition(@Nonnull ItemStack stack, List<String> list) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
 			String key = baseKey + 1;

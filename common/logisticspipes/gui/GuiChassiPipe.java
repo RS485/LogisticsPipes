@@ -79,7 +79,6 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -95,13 +94,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 			if (_moduleInventory == null) {
 				continue;
 			}
-			ItemStack module = _moduleInventory.getStackInSlot(i);
-			LogisticsModule subModule = _chassiPipe.getSubModule(i);
-			if (module.isEmpty() || subModule == null) {
-				moduleConfigButtons.get(i).visible = false;
-			} else {
-				moduleConfigButtons.get(i).visible = subModule instanceof Gui;
-			}
+			updateModuleConfigButtonVisibility(i);
 
 			if (hasUpgradeModuleUpgarde) {
 				upgradeConfig[i * 2] = addButton(new SmallGuiButton(100 + i, guiLeft + 134, guiTop + 12 + i * 20, 10, 10, "!"));
@@ -109,6 +102,16 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 				upgradeConfig[i * 2 + 1] = addButton(new SmallGuiButton(120 + i, guiLeft + 182, guiTop + 12 + i * 20, 10, 10, "!"));
 				upgradeConfig[i * 2 + 1].visible = _chassiPipe.getModuleUpgradeManager(i).hasGuiUpgrade(1);
 			}
+		}
+	}
+
+	private void updateModuleConfigButtonVisibility(int slot) {
+		ItemStack module = _moduleInventory.getStackInSlot(slot);
+		LogisticsModule subModule = _chassiPipe.getSubModule(slot);
+		if (module.isEmpty() || subModule == null) {
+			moduleConfigButtons.get(slot).visible = false;
+		} else {
+			moduleConfigButtons.get(slot).visible = subModule instanceof Gui;
 		}
 	}
 
@@ -139,13 +142,7 @@ public class GuiChassiPipe extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
-			ItemStack module = _moduleInventory.getStackInSlot(i);
-			LogisticsModule subModule = _chassiPipe.getSubModule(i);
-			if (module.isEmpty() || subModule == null) {
-				moduleConfigButtons.get(i).visible = false;
-			} else {
-				moduleConfigButtons.get(i).visible = subModule instanceof Gui;
-			}
+			updateModuleConfigButtonVisibility(i);
 		}
 		if (hasUpgradeModuleUpgarde) {
 			for (int i = 0; i < upgradeConfig.length; i++) {

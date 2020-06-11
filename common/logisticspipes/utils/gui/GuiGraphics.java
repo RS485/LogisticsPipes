@@ -9,6 +9,7 @@
 package logisticspipes.utils.gui;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -62,10 +63,9 @@ public final class GuiGraphics {
 	 * @param x         the x-coordinate for the bar
 	 * @param y         the y-coordinate for the bar
 	 * @param zLevel    the z-level for the bar
-	 * @see net.minecraft.client.renderer.entity.RenderItem#renderItemOverlayIntoGUI(FontRenderer,
 	 * TextureManager, ItemStack, int, int, String)
 	 */
-	public static void drawDurabilityBar(ItemStack itemstack, int x, int y, double zLevel) {
+	public static void drawDurabilityBar(@Nonnull ItemStack itemstack, int x, int y, double zLevel) {
 		if (itemstack.getItem().showDurabilityBar(itemstack)) {
 			double health = itemstack.getItem().getDurabilityForDisplay(itemstack);
 			int j1 = (int) Math.round(13.0D - health * 13.0D);
@@ -95,6 +95,7 @@ public final class GuiGraphics {
 
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		ItemStack stack = (ItemStack) tooltip[2];
+		if (stack == null) stack = ItemStack.EMPTY;
 
 		List<String> tooltipLines;
 		if (mc.currentScreen instanceof GuiContainer) {
@@ -128,8 +129,8 @@ public final class GuiGraphics {
 		// use vanilla Minecraft code
 		int boxWidth = 0;
 
-		for (int i = 0; i < msg.size(); ++i) {
-			int width = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(msg.get(i));
+		for (String str : msg) {
+			int width = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(str);
 
 			if (width > boxWidth) {
 				boxWidth = width;

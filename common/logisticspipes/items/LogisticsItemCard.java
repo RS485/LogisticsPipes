@@ -1,11 +1,14 @@
 package logisticspipes.items;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,24 +29,24 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 		hasSubtypes = true;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (!stack.hasTagCompound()) {
 			tooltip.add(StringUtils.translate("tooltip.logisticsItemCard"));
 		} else {
-			if (stack.getTagCompound().hasKey("UUID")) {
+			final NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+			if (tag.hasKey("UUID")) {
 				if (stack.getItemDamage() == LogisticsItemCard.FREQ_CARD) {
 					tooltip.add("Freq. Card");
 				} else if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
 					tooltip.add("Sec. Card");
 				}
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-					tooltip.add("Id: " + stack.getTagCompound().getString("UUID"));
+					tooltip.add("Id: " + tag.getString("UUID"));
 					if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
-						UUID id = UUID.fromString(stack.getTagCompound().getString("UUID"));
+						UUID id = UUID.fromString(tag.getString("UUID"));
 						tooltip.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "Authorized" : "Deauthorized"));
 					}
 				}
@@ -62,12 +65,12 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 	}
 
 	@Override
-	public boolean canExistInNormalInventory(ItemStack stack) {
+	public boolean canExistInNormalInventory(@Nonnull ItemStack stack) {
 		return true;
 	}
 
 	@Override
-	public boolean canExistInWorld(ItemStack stack) {
+	public boolean canExistInWorld(@Nonnull ItemStack stack) {
 		return stack.getItemDamage() != LogisticsItemCard.SEC_CARD;
 	}
 }

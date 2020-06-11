@@ -2,6 +2,7 @@ package logisticspipes.renderer.newpipe;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
@@ -29,7 +30,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 	private static final Map<FluidIdentifier, int[]> renderLists = new HashMap<>();
 
 	@SideOnly(Side.CLIENT)
-	public void doRenderItem(ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch, double yawForPitch) {
+	public void doRenderItem(@Nonnull ItemStack itemstack, float light, double x, double y, double z, double boxScale, double yaw, double pitch, double yawForPitch) {
 		if (LogisticsNewRenderPipe.innerTransportBox == null) return;
 		GL11.glPushMatrix();
 
@@ -61,7 +62,7 @@ public class LogisticsNewPipeItemBoxRenderer {
 		GL11.glScaled(1 / boxScale, 1 / boxScale, 1 / boxScale);
 		GL11.glTranslated(-0.5, -0.5, -0.5);
 
-		if (itemstack != null && itemstack.getItem() instanceof LogisticsFluidContainer) {
+		if (!itemstack.isEmpty() && itemstack.getItem() instanceof LogisticsFluidContainer) {
 			FluidIdentifierStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(itemstack));
 			if (f != null) {
 				/*

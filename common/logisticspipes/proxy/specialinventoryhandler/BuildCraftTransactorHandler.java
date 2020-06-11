@@ -49,8 +49,8 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getSingleItem(ItemIdentifier item) {
+	@Nonnull
+	public ItemStack getSingleItem(ItemIdentifier item) {
 		return ItemStack.EMPTY;
 	}
 
@@ -60,7 +60,7 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemStack stack) {
+	public int roomForItem(@Nonnull ItemStack stack) {
 		return stack.getCount() - cap.insert(stack, false, true).getCount();
 	}
 
@@ -75,21 +75,22 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getStackInSlot(int slot) {
+	@Nonnull
+	public ItemStack getStackInSlot(int slot) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, 0, 64, true);
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack decrStackSize(int slot, int amount) {
+	@Nonnull
+	public ItemStack decrStackSize(int slot, int amount) {
 		if (slot != 0) return ItemStack.EMPTY;
 		return cap.extract(it -> true, amount, amount, false);
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing orientation, boolean doAdd) {
+	@Nonnull
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing orientation, boolean doAdd) {
 		ItemStack overflow = cap.insert(stack.copy(), false, !doAdd);
 		stack.setCount(stack.getCount() - overflow.getCount());
 		return stack;

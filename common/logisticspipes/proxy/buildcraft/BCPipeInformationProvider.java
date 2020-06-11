@@ -1,6 +1,7 @@
 package logisticspipes.proxy.buildcraft;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import net.minecraft.item.ItemStack;
@@ -201,7 +202,8 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 			if (!transportStack.hasTagCompound()) {
 				transportStack.setTagCompound(new NBTTagCompound());
 			}
-			transportStack.getTagCompound().setTag("logisticspipes:routingdata_buildcraft", routingData);
+			final NBTTagCompound tag = Objects.requireNonNull(transportStack.getTagCompound());
+			tag.setTag("logisticspipes:routingdata_buildcraft", routingData);
 
 			IFlowItems itemPipe = (IFlowItems) pipe.getPipe().getFlow();
 			itemPipe.insertItemsForce(transportStack, item.output.getOpposite(), null, item.getSpeed());

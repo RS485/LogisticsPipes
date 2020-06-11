@@ -1,6 +1,7 @@
 package logisticspipes.pipes.upgrades;
 
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -87,10 +88,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		sneakyInv.readFromNBT(nbttagcompound, "SneakyUpgradeInventory_");
 		secInv.readFromNBT(nbttagcompound, "SecurityInventory_");
 
-		if (sneakyInv.getStackInSlot(8) != null) {
+		if (!sneakyInv.getStackInSlot(8).isEmpty()) {
 			if (sneakyInv.getStackInSlot(8).getItem() == LPItems.itemCard && sneakyInv.getStackInSlot(8).getItemDamage() == LogisticsItemCard.SEC_CARD) {
 				secInv.setInventorySlotContents(0, sneakyInv.getStackInSlot(8));
-				sneakyInv.setInventorySlotContents(8, null);
+				sneakyInv.setInventorySlotContents(8, ItemStack.EMPTY);
 			}
 		}
 
@@ -132,7 +133,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			ItemStack item = inv.getStackInSlot(i);
 			if (!item.isEmpty()) {
 				needUpdate |= updateModule(i, upgrades, inv);
-			} else if (item.isEmpty() && upgrades[i] != null) {
+			} else if (upgrades[i] != null) {
 				needUpdate |= removeUpgrade(i, upgrades);
 			}
 		}
@@ -165,13 +166,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		for (int i = 0; i < upgrades.length; i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if (upgrade instanceof SneakyUpgradeConfig && sneakyOrientation == null && !isCombinedSneakyUpgrade) {
-				ItemStack stack = getInv().getStackInSlot(i);
-				sneakyOrientation = ((SneakyUpgradeConfig) upgrade).getSide(stack);
+				sneakyOrientation = ((SneakyUpgradeConfig) upgrade).getSide(getInv().getStackInSlot(i));
 			} else if (upgrade instanceof SpeedUpgrade) {
 				speedUpgradeCount += inv.getStackInSlot(i).getCount();
 			} else if (upgrade instanceof ConnectionUpgradeConfig) {
-				ItemStack stack = getInv().getStackInSlot(i);
-				((ConnectionUpgradeConfig) upgrade).getSides(stack).forEach(disconnectedSides::add);
+				((ConnectionUpgradeConfig) upgrade).getSides(getInv().getStackInSlot(i)).forEach(disconnectedSides::add);
 			} else if (upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;
 			} else if (upgrade instanceof FuzzyUpgrade) {
@@ -226,7 +225,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			ItemStack item = sneakyInv.getStackInSlot(i);
 			if (!item.isEmpty()) {
 				needUpdate |= updateModule(i, sneakyUpgrades, sneakyInv);
-			} else if (item.isEmpty() && sneakyUpgrades[i] != null) {
+			} else if (sneakyUpgrades[i] != null) {
 				needUpdate |= removeUpgrade(i, sneakyUpgrades);
 			}
 		}
@@ -249,7 +248,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		uuid = null;
 		uuidS = null;
 		ItemStack stack = secInv.getStackInSlot(0);
-		if (stack == null) {
+		if (stack.isEmpty()) {
 			return;
 		}
 		if (stack.getItem() != LPItems.itemCard || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
@@ -352,7 +351,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			if (MainProxy.isClient(world)) {
 				return true;
 			}
-			if (secInv.getStackInSlot(0) == null) {
+			if (secInv.getStackInSlot(0).isEmpty()) {
 				ItemStack newItem = itemStackInMainHand.splitStack(1);
 				secInv.setInventorySlotContents(0, newItem);
 				InventoryChanged(secInv);
@@ -389,7 +388,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	public void insetSecurityID(UUID id) {
 		ItemStack stack = new ItemStack(LPItems.itemCard, 1, LogisticsItemCard.SEC_CARD);
 		stack.setTagCompound(new NBTTagCompound());
-		stack.getTagCompound().setString("UUID", id.toString());
+		final NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+		tag.setString("UUID", id.toString());
 		secInv.setInventorySlotContents(0, stack);
 		InventoryChanged(secInv);
 	}

@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -304,7 +305,7 @@ public class MainProxy {
 		MainProxy.globalTick++;
 	}
 
-	public static EntityItem dropItems(World world, ItemStack stack, int xCoord, int yCoord, int zCoord) {
+	public static EntityItem dropItems(World world, @Nonnull ItemStack stack, int xCoord, int yCoord, int zCoord) {
 		EntityItem item = new EntityItem(world, xCoord, yCoord, zCoord, stack);
 		world.spawnEntity(item);
 		return item;

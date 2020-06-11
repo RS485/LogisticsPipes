@@ -1,6 +1,7 @@
 package logisticspipes.gui.orderer;
 
 import java.io.IOException;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +32,6 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -74,6 +74,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getDisk() {
 		return pipe.getDisk();
 	}

@@ -1,5 +1,7 @@
 package logisticspipes.utils.gui;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -17,10 +19,11 @@ public class HandelableSlot extends Slot {
 	}
 
 	@Override
-	public boolean isItemValid(ItemStack par1ItemStack) {
-		return par1ItemStack == null;
+	public boolean isItemValid(@Nonnull ItemStack par1ItemStack) {
+		return par1ItemStack.isEmpty();
 	}
 
+	@Nonnull
 	public ItemStack getProvidedStack() {
 		return _handler.getResultForClick();
 	}

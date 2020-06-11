@@ -120,9 +120,9 @@ public class ItemModule extends LogisticsItem {
 		registry.register(mod);
 	}
 
-	private void openConfigGui(ItemStack stack, EntityPlayer player, World world) {
+	private void openConfigGui(@Nonnull ItemStack stack, EntityPlayer player, World world) {
 		LogisticsModule module = getModuleForItem(stack, null, null, null);
-		if (module instanceof Gui && stack != null && stack.getCount() > 0) {
+		if (module instanceof Gui && !stack.isEmpty()) {
 			ItemModuleInformationManager.readInformation(stack, module);
 			module.registerPosition(ModulePositionType.IN_HAND, player.inventory.currentItem);
 			Gui.getInHandGuiProvider((Gui) module).open(player);
@@ -169,8 +169,8 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Nullable
-	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IWorldProvider world, IPipeServiceProvider service) {
-		if (itemStack == null) {
+	public LogisticsModule getModuleForItem(@Nonnull ItemStack itemStack, LogisticsModule currentModule, IWorldProvider world, IPipeServiceProvider service) {
+		if (itemStack.isEmpty()) {
 			return null;
 		}
 		if (itemStack.getItem() != this) {
@@ -195,7 +195,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		if (stack.hasTagCompound()) {
 			NBTTagCompound nbt = stack.getTagCompound();
 			assert nbt != null;

@@ -90,7 +90,6 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addCollisionBoxesToList(List<AxisAlignedBB> arraylist, AxisAlignedBB axisalignedbb) {
 		double x = getX();
 		double y = getY();
@@ -133,7 +132,7 @@ public class HSTubeCurve extends CoreMultiBlockPipe {
 			xTwo += (2 + addTwo) * Math.sin(angle + (2 * Math.PI / 200 * (i + 1)));
 			zTwo += (2 + addTwo) * Math.cos(angle + (2 * Math.PI / 200 * (i)));
 			AxisAlignedBB box = new AxisAlignedBB(Math.min(xOne, xTwo), yMin, Math.min(zOne, zTwo), Math.max(xOne, xTwo), yMax, Math.max(zOne, zTwo));
-			if (box != null && (axisalignedbb == null || axisalignedbb.intersects(box))) {
+			if (axisalignedbb == null || axisalignedbb.intersects(box)) {
 				arraylist.add(box);
 			}
 		}

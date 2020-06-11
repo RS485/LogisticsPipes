@@ -1,6 +1,7 @@
 package logisticspipes.items;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
@@ -18,19 +19,18 @@ public class LogisticsBrokenItem extends LogisticsItem implements IItemAdvancedE
 	private static final String PREFIX = "tooltip.brokenItem.";
 
 	@Override
-	public boolean canExistInNormalInventory(ItemStack stack) {
+	public boolean canExistInNormalInventory(@Nonnull ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	public boolean canExistInWorld(ItemStack stack) {
+	public boolean canExistInWorld(@Nonnull ItemStack stack) {
 		return false;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		tooltip.add(" - " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "1"));
 		tooltip.add(" - " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "2"));
 		tooltip.add("    " + StringUtils.translate(LogisticsBrokenItem.PREFIX + "3"));

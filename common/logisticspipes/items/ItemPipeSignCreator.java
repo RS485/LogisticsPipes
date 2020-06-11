@@ -2,6 +2,7 @@ package logisticspipes.items;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,7 +43,7 @@ public class ItemPipeSignCreator extends LogisticsItem {
 			return EnumActionResult.FAIL;
 		}
 		ItemStack itemStack = player.inventory.getCurrentItem();
-		if (itemStack.getItemDamage() > this.getMaxDamage() || itemStack.getCount() == 0) {
+		if (itemStack.isEmpty() || itemStack.getItemDamage() > this.getMaxDamage()) {
 			return EnumActionResult.FAIL;
 		}
 		TileEntity tile = world.getTileEntity(pos);
@@ -100,9 +101,9 @@ public class ItemPipeSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	public int getMetadata(ItemStack stack) {
-		if (!stack.hasTagCompound()) return 0;
-		int mode = stack.getTagCompound().getInteger("CreatorMode");
+	public int getMetadata(@Nonnull ItemStack stack) {
+		if (stack.isEmpty() || !stack.hasTagCompound()) return 0;
+		int mode = Objects.requireNonNull(stack.getTagCompound()).getInteger("CreatorMode");
 		return Math.min(mode, ItemPipeSignCreator.signTypes.size() - 1);
 	}
 

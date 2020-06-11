@@ -36,8 +36,7 @@ public class NewGuiHandler {
 
 	private NewGuiHandler() { }
 
-	@SuppressWarnings("unchecked")
-	// Suppressed because this cast should never fail.
+	@SuppressWarnings("unchecked") // Suppressed because this cast should never fail.
 	public static <T extends GuiProvider> T getGui(Class<T> clazz) {
 		return (T) NewGuiHandler.guimap.get(clazz).template();
 	}

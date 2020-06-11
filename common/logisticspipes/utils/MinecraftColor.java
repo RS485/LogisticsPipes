@@ -1,5 +1,7 @@
 package logisticspipes.utils;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
@@ -28,7 +30,7 @@ public enum MinecraftColor {
 		this.colorCode = colorCode;
 	}
 
-	public static MinecraftColor getColor(ItemStack item) {
+	public static MinecraftColor getColor(@Nonnull ItemStack item) {
 		if (!item.isEmpty()) {
 			if (item.getItem() == Items.DYE && item.getItemDamage() < 16) {
 				return MinecraftColor.values()[item.getItemDamage()];
@@ -41,6 +43,7 @@ public enum MinecraftColor {
 		return colorCode;
 	}
 
+	@Nonnull
 	public ItemStack getItemStack() {
 		if (this == BLANK) {
 			return ItemStack.EMPTY;

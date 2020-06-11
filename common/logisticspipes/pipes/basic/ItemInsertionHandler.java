@@ -38,7 +38,7 @@ public class ItemInsertionHandler implements IItemHandler {
 	@Override
 	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
 		if (!simulate) {
-			handleItemInsetion(pipe, dir, stack);
+			return handleItemInsetion(pipe, dir, stack);
 		}
 		return ItemStack.EMPTY;
 	}
@@ -54,7 +54,8 @@ public class ItemInsertionHandler implements IItemHandler {
 		return 64;
 	}
 
-	public static ItemStack handleItemInsetion(LogisticsTileGenericPipe pipe, EnumFacing from, ItemStack stack) {
+	@Nonnull
+	public static ItemStack handleItemInsetion(LogisticsTileGenericPipe pipe, EnumFacing from, @Nonnull ItemStack stack) {
 		for (ILPItemAcceptor acceptor : ACCEPTORS) {
 			if (acceptor.accept(pipe, from, stack)) {
 				return ItemStack.EMPTY;

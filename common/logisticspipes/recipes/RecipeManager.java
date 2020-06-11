@@ -77,7 +77,7 @@ public class RecipeManager {
 		}
 
 		@SuppressWarnings("unchecked")
-		public void addRecipe(ItemStack stack, Object... objects) {
+		public void addRecipe(@Nonnull ItemStack stack, Object... objects) {
 			List<Object> result = new ArrayList<>();
 			final boolean[] addRecipe = { true };
 			Arrays.stream(objects).forEach(o -> {
@@ -110,7 +110,7 @@ public class RecipeManager {
 			GameData.register_impl(new ShapedOreRecipe(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, result.toArray()).setRegistryName(getFreeRecipeResourceLocation(stack)));
 		}
 
-		private void dumpRecipe(ItemStack result, Object layout, RecipeIndex... indices) {
+		private void dumpRecipe(@Nonnull ItemStack result, Object layout, RecipeIndex... indices) {
 			JsonObject obj = new JsonObject();
 			JsonArray pattern = new JsonArray();
 			JsonObject keys = new JsonObject();
@@ -182,17 +182,14 @@ public class RecipeManager {
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
+		public void addOrdererRecipe(@Nonnull ItemStack stack, String dye, ItemStack orderer) {
 			GameData.register_impl(new ShapelessOrdererRecipe(getFreeRecipeResourceLocation(stack), stack, dye, orderer));
 		}
 
-		@SuppressWarnings("unchecked")
-		public void addShapelessRecipe(ItemStack stack, Object... objects) {
+		public void addShapelessRecipe(@Nonnull ItemStack stack, Object... objects) {
 			GameData.register_impl(new ShapelessOreRecipe(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), stack, objects).setRegistryName(getFreeRecipeResourceLocation(stack)));
 		}
 
-		@SuppressWarnings("unchecked")
 		public void addShapelessResetRecipe(Item item, int meta) {
 			ShapelessResetRecipe value = new ShapelessResetRecipe(item, meta);
 			value.setRegistryName(getFreeRecipeResourceLocation(item));
@@ -201,7 +198,7 @@ public class RecipeManager {
 
 		public static class ShapelessOrdererRecipe extends ShapelessOreRecipe {
 
-			public ShapelessOrdererRecipe(ResourceLocation registryName, ItemStack result, Object... recipe) {
+			public ShapelessOrdererRecipe(ResourceLocation registryName, @Nonnull ItemStack result, Object... recipe) {
 				super(new ResourceLocation(LPConstants.LP_MOD_ID, "group.mainRecipeGroup"), result, recipe);
 				setRegistryName(registryName);
 			}
@@ -222,7 +219,7 @@ public class RecipeManager {
 		}
 	}
 
-	private static ResourceLocation getFreeRecipeResourceLocation(ItemStack stack) {
+	private static ResourceLocation getFreeRecipeResourceLocation(@Nonnull ItemStack stack) {
 		return getFreeRecipeResourceLocation(stack.getItem());
 	}
 

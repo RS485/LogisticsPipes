@@ -1,5 +1,7 @@
 package logisticspipes.network.guis.pipe;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -60,11 +62,8 @@ public class ChassiGuiProvider extends BooleanModuleCoordinatesGuiProvider {
 		return dummy;
 	}
 
-	public static boolean checkStack(ItemStack stack, PipeLogisticsChassi chassiPipe, int moduleSlot) {
-		if (stack == null) {
-			return false;
-		}
-		if (!(stack.getItem() instanceof ItemUpgrade)) {
+	public static boolean checkStack(@Nonnull ItemStack stack, PipeLogisticsChassi chassiPipe, int moduleSlot) {
+		if (stack.isEmpty() || !(stack.getItem() instanceof ItemUpgrade)) {
 			return false;
 		}
 		LogisticsModule module = chassiPipe.getModules().getModule(moduleSlot);

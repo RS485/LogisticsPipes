@@ -41,6 +41,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
@@ -126,7 +127,7 @@ public interface LPDataOutput {
 
 	void writeNBTTagCompound(@Nullable NBTTagCompound tag);
 
-	void writeItemStack(ItemStack itemstack);
+	void writeItemStack(@Nonnull ItemStack itemstack);
 
 	void writeItemIdentifier(@Nullable ItemIdentifier item);
 

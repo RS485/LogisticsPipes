@@ -188,10 +188,7 @@ public class RenderTickHandler {
 	}
 
 	private boolean checkItemStackForPipeGhost(ItemStack stack) {
-		if (stack.getItem() instanceof ItemLogisticsPipe) {
-			return true;
-		}
-		return false;
+		return !stack.isEmpty() && stack.getItem() instanceof ItemLogisticsPipe;
 	}
 
 }

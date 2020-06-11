@@ -1,5 +1,7 @@
 package logisticspipes.network.packets;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -52,7 +54,7 @@ public class SetGhostItemPacket extends ModernPacket {
 		return this;
 	}
 
-	public SetGhostItemPacket setStack(ItemStack value) {
+	public SetGhostItemPacket setStack(@Nonnull ItemStack value) {
 		stack.setValue(value);
 		return this;
 	}

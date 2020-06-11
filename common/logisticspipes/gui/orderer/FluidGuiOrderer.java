@@ -21,7 +21,6 @@ public class FluidGuiOrderer extends GuiOrderer {
 		refreshItems();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		boolean setItemDisplay = itemDisplay == null;

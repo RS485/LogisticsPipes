@@ -13,7 +13,7 @@ import com.google.gson.JsonObject;
 import logisticspipes.recipes.CraftingPartRecipes;
 import logisticspipes.recipes.CraftingParts;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // used in recipes
 public class IngredientPart implements IIngredientFactory {
 
 	public enum PartType {
@@ -22,6 +22,7 @@ public class IngredientPart implements IIngredientFactory {
 		chip_fpga,
 		;
 
+		@Nonnull
 		public ItemStack getStack(CraftingParts parts) {
 			switch (this) {
 				case chip_basic:

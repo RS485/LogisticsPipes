@@ -40,7 +40,6 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
 		super.initGui();
@@ -131,7 +130,6 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 		super.mouseClicked(mouseX, mouseY, button);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if (search.isEmpty()) {

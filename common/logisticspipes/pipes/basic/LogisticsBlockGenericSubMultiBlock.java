@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -61,7 +62,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 					.filter(LogisticsTileGenericPipe::isMultiBlock)
 					.map(mainPipe -> pipe.getDrops(world, mainPipe.getPos(), world.getBlockState(mainPipe.getPos()), fortune))
 					.flatMap(Collection::stream)
-					.collect(Collectors.toList());
+					.collect(Collectors.toCollection(NonNullList::create));
 		}
 		return Collections.emptyList();
 	}
@@ -124,7 +125,7 @@ public class LogisticsBlockGenericSubMultiBlock extends BlockContainer {
 		}
 		BlockPos mainPipePos = LogisticsBlockGenericPipe.pipeSubMultiRemoved.get(new DoubleCoordinates(pos));
 		if (mainPipePos != null) {
-			pipe.dropBlockAsItemWithChance(world, mainPipePos, null, chance, fortune);
+			pipe.dropBlockAsItemWithChance(world, mainPipePos, state, chance, fortune);
 		}
 	}
 

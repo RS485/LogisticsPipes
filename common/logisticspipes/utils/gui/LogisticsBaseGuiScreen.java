@@ -333,7 +333,6 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		return isPointInRegion(fuzzySlot.getX(), fuzzySlot.getY() + 16, 60, 52, x, y);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
 		for (GuiButton button : buttonList) {
 			if (extentionControllerLeft.renderButtonControlled(button)) {
@@ -346,7 +345,6 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	@Nonnull
-	@SuppressWarnings("unchecked")
 	public <T extends GuiButton> T addButton(@Nonnull T button) {
 		buttonList.add(button);
 		return button;
@@ -371,12 +369,9 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			if (slotOpt.isPresent()) {
 				DummySlot slot = slotOpt.get();
 				slot.setRedirectCall(true);
-				if (slot.getSlotStackLimit() > 0) {
-					ItemStack stack = slot.getStack();
-					if (!stack.isEmpty()) {
-						int buttonActionID = dWheel > 0 ? 1000 : 1001;
-						this.mc.playerController.windowClick(this.inventorySlots.windowId, slot.slotNumber, buttonActionID, ClickType.SWAP, this.mc.player);
-					}
+				if (slot.getSlotStackLimit() > 0 && slot.getHasStack()) {
+					int buttonActionID = dWheel > 0 ? 1000 : 1001;
+					this.mc.playerController.windowClick(this.inventorySlots.windowId, slot.slotNumber, buttonActionID, ClickType.SWAP, this.mc.player);
 				}
 				slot.setRedirectCall(false);
 				mouseHandled = true;
@@ -579,7 +574,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.neiModID)
-	public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, ItemStack stack) {
+	public Iterable<Integer> getItemSpawnSlots(GuiContainer gui, @Nonnull ItemStack stack) {
 		return null;
 	}
 

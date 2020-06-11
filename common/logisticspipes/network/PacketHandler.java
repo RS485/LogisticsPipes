@@ -49,8 +49,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 	private static int packetDebugID = 1;
 
-	@SuppressWarnings("unchecked")
-	// Suppressed because this cast should never fail.
+	@SuppressWarnings("unchecked") // Suppressed because this cast should never fail.
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
 		T packet = (T) PacketHandler.packetmap.get(clazz).template();
 		if (LogisticsPipes.isDEBUG() && MainProxy.proxy.getSide().equals("Client")) {

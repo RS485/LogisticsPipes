@@ -27,7 +27,6 @@ public class NormalGuiOrderer extends GuiOrderer {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
 		buttonList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, "Refresh")); // Refresh

@@ -44,7 +44,6 @@ public class GuiThaumicAspectSink extends ModuleBaseGui {
 		ySize = 172;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

@@ -157,7 +157,6 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void checkButtons() {
 		super.checkButtons();
 		tabs.forEach(StatisticsTab::checkButtons);

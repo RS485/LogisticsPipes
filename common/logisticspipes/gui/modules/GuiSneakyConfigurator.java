@@ -36,7 +36,6 @@ public class GuiSneakyConfigurator extends ModuleBaseGui {
 		ySize = 200;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

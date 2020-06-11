@@ -44,7 +44,6 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		_tile = tile;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

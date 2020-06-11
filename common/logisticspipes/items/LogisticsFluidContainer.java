@@ -30,17 +30,18 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	}
 
 	@Override
-	public boolean canExistInNormalInventory(ItemStack stack) {
+	public boolean canExistInNormalInventory(@Nonnull ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	public boolean canExistInWorld(ItemStack stack) {
+	public boolean canExistInWorld(@Nonnull ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
+	@Nonnull
+	public String getUnlocalizedName(@Nonnull ItemStack stack) {
 		FluidIdentifierStack fluidStack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack));
 		if (fluidStack != null) {
 			String s = fluidStack.makeFluidStack().getFluid().getUnlocalizedName();
@@ -52,7 +53,8 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack itemstack) {
+	@Nonnull
+	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
 		String unlocalizedName = getUnlocalizedName(itemstack);
 		String unlocalizedNameInefficiently = getUnlocalizedNameInefficiently(itemstack); // Fix for Logistics fluid container naming
 		return StringUtils.translate(unlocalizedName + (unlocalizedName.equals(unlocalizedNameInefficiently) ? ".name" : "")).trim();
@@ -60,7 +62,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			FluidIdentifierStack fluidStack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack));

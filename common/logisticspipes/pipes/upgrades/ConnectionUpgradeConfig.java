@@ -1,8 +1,10 @@
 package logisticspipes.pipes.upgrades;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -71,11 +73,13 @@ public class ConnectionUpgradeConfig implements IConfigPipeUpgrade {
 		return NewGuiHandler.getGui(DisconnectionUpgradeConfigGuiProvider.class);
 	}
 
-	public Stream<EnumFacing> getSides(ItemStack stack) {
+	@Nonnull
+	public Stream<EnumFacing> getSides(@Nonnull ItemStack stack) {
+		if (stack.isEmpty()) return Stream.empty();
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
-		NBTTagCompound nbt = stack.getTagCompound();
-		return Arrays.stream(Sides.values()).filter(side -> nbt.getBoolean(side.getLpName())).map(Sides::getDir);
+		final NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+		return Arrays.stream(Sides.values()).filter(side -> tag.getBoolean(side.getLpName())).map(Sides::getDir);
 	}
 }

@@ -3,6 +3,7 @@ package logisticspipes.gui.modules;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -15,7 +16,6 @@ import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
-import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
@@ -47,7 +47,6 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		ySize = 208;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -142,8 +141,8 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		}
 	}
 
-	private List<String> getOreNames(ItemStack s) {
-		int[] oreids = OreDictionary.getOreIDs(s);
+	private List<String> getOreNames(@Nonnull ItemStack stack) {
+		int[] oreids = OreDictionary.getOreIDs(stack);
 		List<String> oreNames = new ArrayList<>(oreids.length);
 		for (int oreid : oreids) {
 			String oreName = OreDictionary.getOreName(oreid);

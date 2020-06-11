@@ -1,5 +1,7 @@
 package logisticspipes.api;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -9,7 +11,7 @@ import net.minecraft.item.ItemStack;
  */
 public interface ILPPipeConfigTool {
 
-	boolean canWrench(EntityPlayer player, ItemStack wrench, ILPPipeTile pipe);
+	boolean canWrench(EntityPlayer player, @Nonnull ItemStack wrench, ILPPipeTile pipe);
 
-	void wrenchUsed(EntityPlayer player, ItemStack wrench, ILPPipeTile pipe);
+	void wrenchUsed(EntityPlayer player, @Nonnull ItemStack wrench, ILPPipeTile pipe);
 }

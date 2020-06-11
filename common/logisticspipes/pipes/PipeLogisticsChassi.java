@@ -274,9 +274,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
 				ItemIdentifierStack ms = _moduleInventory.getIDStackInSlot(i);
 				if (ms != null) {
-					ItemStack s = ms.makeNormalStack();
-					ItemModuleInformationManager.saveInformation(s, getSubModule(i));
-					_moduleInventory.setInventorySlotContents(i, s);
+					ItemStack stack = ms.makeNormalStack();
+					ItemModuleInformationManager.saveInformation(stack, getSubModule(i));
+					_moduleInventory.setInventorySlotContents(i, stack);
 				}
 			}
 			_moduleInventory.dropContents(getWorld(), getX(), getY(), getZ());

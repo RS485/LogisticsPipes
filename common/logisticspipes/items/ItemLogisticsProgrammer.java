@@ -32,7 +32,7 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		if (!stack.isEmpty()) {
 			if (stack.hasTagCompound()) {
 				NBTTagCompound nbt = stack.getTagCompound();

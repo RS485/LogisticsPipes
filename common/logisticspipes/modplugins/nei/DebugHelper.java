@@ -2,6 +2,7 @@ package logisticspipes.modplugins.nei;
 
 import java.awt.BorderLayout;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -37,8 +38,8 @@ public class DebugHelper implements IContainerTooltipHandler {
 	public void handleTooltip(GuiScreen gui, int mousex, int mousey, List<String> currenttip) {}
 
 	@Override
-	public void handleItemDisplayName(GuiScreen gui, ItemStack itemstack, List<String> currenttip) {
-		if (Configs.TOOLTIP_INFO && itemstack != null && !itemstack.isEmpty()) {
+	public void handleItemDisplayName(GuiScreen gui, @Nonnull ItemStack itemstack, List<String> currenttip) {
+		if (Configs.TOOLTIP_INFO && !itemstack.isEmpty()) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if (DebugHelper.lastTime + 1000 < System.currentTimeMillis()) {
 					DebugHelper.lastTime = System.currentTimeMillis();
@@ -75,7 +76,6 @@ public class DebugHelper implements IContainerTooltipHandler {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void addNBTToTree(NBTBase nbt, DefaultMutableTreeNode node) throws SecurityException, IllegalArgumentException {
 		if (nbt == null) {
 			return;

@@ -1,5 +1,7 @@
 package logisticspipes.proxy.bs;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 
 public interface ICrateStorageProxy {
@@ -8,11 +10,13 @@ public interface ICrateStorageProxy {
 
 	int getUniqueItems();
 
-	int getItemCount(ItemStack stack);
+	int getItemCount(@Nonnull ItemStack stack);
 
-	ItemStack extractItems(ItemStack stack, int count);
+	@Nonnull
+	ItemStack extractItems(@Nonnull ItemStack stack, int count);
 
-	int getSpaceForItem(ItemStack stack);
+	int getSpaceForItem(@Nonnull ItemStack stack);
 
-	ItemStack insertItems(ItemStack stack);
+	@Nonnull
+	ItemStack insertItems(@Nonnull ItemStack stack);
 }

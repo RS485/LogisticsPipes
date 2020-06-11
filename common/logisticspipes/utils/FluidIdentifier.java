@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -196,7 +197,7 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 		return FluidIdentifier.get(stack.makeStack(1));
 	}
 
-	public static FluidIdentifier get(ItemStack stack) {
+	public static FluidIdentifier get(@Nonnull ItemStack stack) {
 		return FluidIdentifier.get(ItemIdentifierStack.getFromStack(stack));
 	}
 

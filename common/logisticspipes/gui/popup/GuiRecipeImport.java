@@ -10,6 +10,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.NEISetCraftingRecipe;
@@ -76,7 +77,6 @@ public class GuiRecipeImport extends SubGuiScreen {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
@@ -179,17 +179,17 @@ public class GuiRecipeImport extends SubGuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		int id = button.id;
 		if (id == 0) {
-			ItemStack[] stack = new ItemStack[9];
+			NonNullList<ItemStack> stackList = NonNullList.withSize(9, ItemStack.EMPTY);
 			int i = 0;
 			for (Canidates canidate : grid) {
 				if (canidate == null) {
 					i++;
 					continue;
 				}
-				stack[i++] = canidate.order.get(canidate.pos).makeNormalStack();
+				stackList.set(i++, canidate.order.get(canidate.pos).makeNormalStack());
 			}
 			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
-			MainProxy.sendPacketToServer(packet.setContent(stack).setBlockPos(tile.getPos()));
+			MainProxy.sendPacketToServer(packet.setStackList(stackList).setBlockPos(tile.getPos()));
 			exitGui();
 		} else if (id == 1) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FindMostLikelyRecipeComponents.class).setContent(list).setTilePos(tile));

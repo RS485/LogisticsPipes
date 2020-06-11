@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -164,7 +165,7 @@ public class LogisticsHUDRenderer {
 				&& checkItemStackForHUD(FMLClientHandler.instance().getClient().player.inventory.armorInventory.get(3));
 	}
 
-	private boolean checkItemStackForHUD(ItemStack stack) {
+	private boolean checkItemStackForHUD(@Nonnull ItemStack stack) {
 		if (stack.getItem() instanceof IHUDArmor) {
 			return ((IHUDArmor) stack.getItem()).isEnabled(stack);
 		}
@@ -371,9 +372,9 @@ public class LogisticsHUDRenderer {
 							mc.fontRenderer.drawString(textData.get(i), 28, 8 + i * 10, 0x000000);
 						}
 
-						ItemStack item = SimpleServiceLocator.neiProxy.getItemForPosition(player.world, player, box);
+						ItemStack stack = SimpleServiceLocator.neiProxy.getItemForPosition(player.world, player, box);
 
-						if (item != null) {
+						if (!stack.isEmpty()) {
 							float scaleX = 1.5F * 0.8F;
 							float scaleY = 1.5F * 0.8F;
 							float scaleZ = -0.0001F;
@@ -381,7 +382,7 @@ public class LogisticsHUDRenderer {
 							GL11.glScalef(scaleX, scaleY, scaleZ);
 
 							ItemStackRenderer itemStackRenderer = new ItemStackRenderer(5, 6, 0.0F, true, true);
-							itemStackRenderer.setItemstack(item).setDisplayAmount(DisplayAmount.NEVER);
+							itemStackRenderer.setItemstack(stack).setDisplayAmount(DisplayAmount.NEVER);
 							itemStackRenderer.setScaleX(scaleX).setScaleY(scaleY).setScaleZ(scaleZ);
 
 							itemStackRenderer.renderInGui();

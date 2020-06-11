@@ -114,8 +114,8 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	@Nonnull
+	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		ItemStack stack = ItemStack.EMPTY;
 
 		if (_smartGroup != null) {
@@ -217,8 +217,8 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getSingleItem(ItemIdentifier itemIdent) {
+	@Nonnull
+	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		return getMultipleItems(itemIdent, 1);
 	}
 
@@ -259,7 +259,7 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemStack stack) {
+	public int roomForItem(@Nonnull ItemStack stack) {
 		int room = 0;
 
 		if (_smartGroup != null) {
@@ -314,7 +314,8 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	@Nonnull
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.setCount(0);
 
@@ -403,8 +404,8 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getStackInSlot(int i) {
+	@Nonnull
+	public ItemStack getStackInSlot(int i) {
 		if (!_drawer.isDrawerEnabled(i)) {
 			return ItemStack.EMPTY;
 		}
@@ -413,8 +414,8 @@ public class StorageDrawersInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack decrStackSize(int i, int j) {
+	@Nonnull
+	public ItemStack decrStackSize(int i, int j) {
 		if (!_drawer.isDrawerEnabled(i)) {
 			return ItemStack.EMPTY;
 		}

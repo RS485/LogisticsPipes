@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.enchantment.Enchantment;
@@ -118,7 +118,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
 
@@ -256,7 +255,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 					private int width = 4;
 					private GuiButton localControlledButton;
 
-					@SuppressWarnings("unchecked")
 					@Override
 					public void renderForground(int left, int top) {
 						if (!_table.watchedRequests.containsKey(entry.getKey())) {
@@ -526,7 +524,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			list.addAll(_table.matrix.getItemsAndCount().entrySet().stream()
 					.map(e -> e.getKey().makeStack(e.getValue())).collect(Collectors.toList()));
 			for (Pair<ItemStack, Integer> entry : _table.inv) {
-				if (entry.getValue1() == null) continue;
+				if (entry.getValue1().isEmpty()) continue;
 				int size = entry.getValue1().getCount();
 				ItemIdentifier ident = ItemIdentifier.get(entry.getValue1());
 				for (ItemIdentifierStack stack : list) {
@@ -536,12 +534,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 					size -= toUse;
 				}
 			}
-			Iterator<ItemIdentifierStack> iter = list.iterator();
-			while (iter.hasNext()) {
-				if (iter.next().getStackSize() <= 0) {
-					iter.remove();
-				}
-			}
+			list.removeIf(itemIdentifierStack -> itemIdentifierStack.getStackSize() <= 0);
 			if (!list.isEmpty()) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
 				refreshItems();
@@ -580,7 +573,6 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		Macrobutton.enabled = _table.diskInv.getStackInSlot(0) != null && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if (search.isEmpty()) {
@@ -678,6 +670,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	}
 
 	@Override
+	@Nonnull
 	public ItemStack getDisk() {
 		return _table.diskInv.getStackInSlot(0);
 	}

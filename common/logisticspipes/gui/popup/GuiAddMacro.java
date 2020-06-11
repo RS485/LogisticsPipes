@@ -96,7 +96,6 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -170,8 +169,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 		tooltip = null;
 
-		for (ItemIdentifierStack itemStack : diskProvider.getItemDisplay()._allItems) {
-			ItemIdentifier item = itemStack.getItem();
+		for (ItemIdentifierStack itemidStack : diskProvider.getItemDisplay()._allItems) {
+			ItemIdentifier item = itemidStack.getItem();
 			if (!itemSearched(item)) {
 				continue;
 			}
@@ -183,7 +182,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			if (ppi > 45 * (pageAll + 1)) {
 				continue;
 			}
-			ItemStack st = itemStack.unsafeMakeNormalStack();
+			ItemStack st = itemidStack.unsafeMakeNormalStack();
 			int x = guiLeft + 10 + panelxSize * column;
 			int y = guiTop + 18 + panelySize * row;
 

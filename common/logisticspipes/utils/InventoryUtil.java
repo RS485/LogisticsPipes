@@ -90,14 +90,14 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getSingleItem(ItemIdentifier item) {
+	@Nonnull
+	public ItemStack getSingleItem(ItemIdentifier item) {
 		return getMultipleItems(item, 1);
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getMultipleItems(ItemIdentifier item, int count) {
+	@Nonnull
+	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
 		if (itemCount(item) < count) {
 			return ItemStack.EMPTY;
 		}
@@ -141,7 +141,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
-	public int roomForItem(ItemStack stack) {
+	public int roomForItem(@Nonnull ItemStack stack) {
 		// Special casing for "unlimited" storage items
 		if (_inventory.getSlots() == 1 && _inventory.getSlotLimit(0) == Integer.MAX_VALUE) {
 			ItemStack content = _inventory.extractItem(0, Integer.MAX_VALUE, true);
@@ -165,19 +165,19 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getStackInSlot(int i) {
+	@Nonnull
+	public ItemStack getStackInSlot(int i) {
 		return _inventory.getStackInSlot(i);
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack decrStackSize(int i, int j) {
+	@Nonnull
+	public ItemStack decrStackSize(int i, int j) {
 		return _inventory.extractItem(i, j, false);
 	}
 
 	@Override
-	public int addToSlot(ItemStack stack, int slot) {
+	public int addToSlot(@Nonnull ItemStack stack, int slot) {
 		int wanted = stack.getCount();
 		ItemStack rest = _inventory.insertItem(slot, stack, false);
 		return wanted - rest.getCount();

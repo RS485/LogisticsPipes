@@ -121,7 +121,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			data.getItemIdentifierStack().lowerStackSize(1);
 			Item item = data.getItemIdentifierStack().getItem().item;
 			if (item.hasContainerItem(data.getItemIdentifierStack().makeNormalStack())) {
-				Item containerItem = item.getContainerItem();
+				Item containerItem = Objects.requireNonNull(item.getContainerItem());
 				transport.sendItem(new ItemStack(containerItem, 1));
 			}
 		}

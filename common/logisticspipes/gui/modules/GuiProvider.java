@@ -42,7 +42,6 @@ public class GuiProvider extends ModuleBaseGui {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

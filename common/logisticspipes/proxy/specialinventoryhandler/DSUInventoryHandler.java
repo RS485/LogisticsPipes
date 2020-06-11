@@ -106,7 +106,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemStack stack) {
+	public int roomForItem(@Nonnull ItemStack stack) {
 		return roomForItemInner(dsuStack -> dsuStack.isItemEqual(stack) && Objects.equals(dsuStack.getTagCompound(), stack.getTagCompound()) && dsuStack.areCapsCompatible(stack));
 	}
 
@@ -122,7 +122,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	public @Nonnull ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.setCount(0);
 		if (stack.getTagCompound() != null) {

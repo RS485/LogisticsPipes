@@ -1,8 +1,10 @@
 package logisticspipes.interfaces;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 
 public interface ISpecialInsertion {
 
-	int addToSlot(ItemStack stack, int i);
+	int addToSlot(@Nonnull ItemStack stack, int i);
 }

@@ -1,5 +1,7 @@
 package logisticspipes.utils;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -9,7 +11,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class RoutedItemHelper {
 
-	public LPTravelingItemServer createNewTravelItem(ItemStack item) {
+	public LPTravelingItemServer createNewTravelItem(@Nonnull ItemStack item) {
 		return createNewTravelItem(ItemIdentifierStack.getFromStack(item));
 	}
 

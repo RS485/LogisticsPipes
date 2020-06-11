@@ -1,11 +1,10 @@
 package logisticspipes.proxy.buildcraft.recipeprovider;
 
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -38,7 +37,7 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			inputs.setInventorySlotContents(i, inventory.getIDStackInSlot(i));
 		}
-		ItemStack output = inventory.getStackInSlot(inventory.getSizeInventory() - 2);
+		final ItemStack output = inventory.getStackInSlot(inventory.getSizeInventory() - 2);
 
 		//see if there's a recipe planned in the table that matches the current pipe settings, if yes take the next, otherwise take the first
 		AssemblyRecipeBasic firstRecipe = null;
@@ -57,7 +56,7 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 					nextRecipe = (AssemblyRecipeBasic) r;
 					break;
 				}
-				if (output != null && r.getOutputPreviews().stream().anyMatch(it -> ItemStack.areItemStacksEqual(output, it))) {
+				if (!output.isEmpty() && r.getOutputPreviews().stream().anyMatch(it -> ItemStack.areItemStacksEqual(output, it))) {
 					if (!r.getOutputs(inputs.toNonNullList()).isEmpty()) {
 						takeNext = true;
 					}
@@ -79,10 +78,11 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 			}
 			int i = 0;
 			for (Object input : nextRecipe.getInputsFor(inventory.getStackInSlot(inventory.getSizeInventory() - 2))) {
-				ItemStack processed = null;
+				ItemStack processed = ItemStack.EMPTY;
 				if (input instanceof String) {
-					List<ItemStack> ores = OreDictionary.getOres((String) input);
+					NonNullList<ItemStack> ores = OreDictionary.getOres((String) input);
 					if (ores != null && ores.size() > 0) {
+						processed = ores.get(0);
 					}
 				} else if (input instanceof ItemStack) {
 					processed = (ItemStack) input;
@@ -91,18 +91,18 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 				} else if (input instanceof Block) {
 					processed = new ItemStack((Block) input, 1, 0);
 				} else if (input instanceof Integer) {
-					processed = null;
+					// was null
 				} else {
 					throw new IllegalArgumentException("Unknown Object passed to recipe!");
 				}
-				if (processed != null) {
+				if (!processed.isEmpty()) {
 					inventory.setInventorySlotContents(i, processed);
 					++i;
 				}
 			}
-		} catch (ClassCastException e) {// TODO: make it show a nice error or
+		} catch (ClassCastException e) {
+			// TODO: make it show a nice error or
 			// remove this hack altogether.
-
 		}
 		// Compact
 		inventory.compactFirst(9);

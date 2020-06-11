@@ -39,11 +39,12 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 			if (i >= inventory.getSizeInventory() - 2) {
 				break;
 			}
-			final ItemStack newStack = bench.matrix.getStackInSlot(i).copy();
-			if (!newStack.isEmpty() && newStack.getCount() > 1) {
-				newStack.setCount(1);
+			ItemStack stackInSlot = bench.matrix.getStackInSlot(i);
+			if (!stackInSlot.isEmpty() && stackInSlot.getCount() > 1) {
+				stackInSlot = stackInSlot.copy();
+				stackInSlot.setCount(1);
 			}
-			inventory.setInventorySlotContents(i, newStack);
+			inventory.setInventorySlotContents(i, stackInSlot);
 		}
 
 		if (!bench.isFuzzy()) {

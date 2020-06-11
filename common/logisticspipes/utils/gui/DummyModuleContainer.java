@@ -22,6 +22,7 @@ public class DummyModuleContainer extends DummyContainer {
 		super(player.inventory, null);
 		this.slot = slot;
 		ItemStack moduleStack = player.inventory.mainInventory.get(slot);
+		if (moduleStack.isEmpty()) throw new IllegalStateException("Module stack is empty");
 		module = ((ItemModule) moduleStack.getItem()).getModuleForItem(moduleStack, null, new DummyWorldProvider(player.world), null);
 		module.registerPosition(ModulePositionType.IN_HAND, slot);
 		ItemModuleInformationManager.readInformation(moduleStack, module);

@@ -29,7 +29,6 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 		inventorySlots = dummy;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

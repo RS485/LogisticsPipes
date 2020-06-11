@@ -50,7 +50,6 @@ public class GuiManageChannelPopup extends SubGuiScreen implements IGUIChannelIn
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

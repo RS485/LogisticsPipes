@@ -491,7 +491,8 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		return SimpleServiceLocator.ccProxy.getLastCCID(this);
 	}
 
-	public ItemStack insertItem(EnumFacing from, ItemStack stack) {
+	@Nonnull
+	public ItemStack insertItem(EnumFacing from, @Nonnull ItemStack stack) {
 		int used = injectItem(stack, true, from);
 		if (used == stack.getCount()) {
 			return ItemStack.EMPTY;
@@ -637,7 +638,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		return 1;
 	}
 
-	public int injectItem(ItemStack payload, boolean doAdd, EnumFacing from) {
+	public int injectItem(@Nonnull ItemStack payload, boolean doAdd, EnumFacing from) {
 		if (LogisticsBlockGenericPipe.isValid(pipe) && pipe.transport != null && isPipeConnectedCached(from)) {
 			if (doAdd && MainProxy.isServer(getWorld())) {
 				ItemStack leftStack = payload.copy();

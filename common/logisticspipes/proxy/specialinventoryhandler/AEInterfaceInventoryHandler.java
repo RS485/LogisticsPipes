@@ -169,7 +169,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemStack itemStack) {
+	public int roomForItem(@Nonnull ItemStack itemStack) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null) {
@@ -246,7 +246,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	@Nonnull
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IAEItemStack tst = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(stack);

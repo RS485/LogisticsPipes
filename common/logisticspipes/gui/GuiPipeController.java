@@ -90,38 +90,21 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 		private Upgrades(DummyContainer dummy) {
 			for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-				addSlot(upgradeslot[pipeSlot] = dummy.addUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot, 10 + pipeSlot * 18, 42, itemStack -> {
-					if (itemStack == null) {
-						return false;
-					}
-					if (itemStack.getItem() instanceof ItemUpgrade) {
-						if (!((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
-							return false;
-						}
-					} else {
-						return false;
-					}
-					return true;
-				}));
+				addSlot(upgradeslot[pipeSlot] = dummy.addUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot, 10 + pipeSlot * 18, 42, itemStack ->
+						!itemStack.isEmpty() && itemStack.getItem() instanceof ItemUpgrade && ((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)));
 			}
 
 			for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 				TAB_SLOTS_SNEAKY_INV.add(addSlot(upgradeslot[pipeSlot + 9] = dummy.addSneakyUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot + 9, 10 + pipeSlot * 18, 88, itemStack -> {
-					if (itemStack == null) {
+					if (itemStack.isEmpty()) {
 						return false;
 					}
 					if (itemStack.getItem() instanceof ItemUpgrade) {
 						IPipeUpgrade upgrade = ((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null);
-						if (!(upgrade instanceof SneakyUpgradeConfig)) {
-							return false;
-						}
-						if (!upgrade.isAllowedForPipe(pipe)) {
-							return false;
-						}
+						return upgrade instanceof SneakyUpgradeConfig && upgrade.isAllowedForPipe(pipe);
 					} else {
 						return false;
 					}
-					return true;
 				})));
 			}
 		}
@@ -203,7 +186,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		public Security(DummyContainer dummy) {
 			addSlot(dummy
 					.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 10, 42, itemStack -> {
-						if (itemStack == null) {
+						if (itemStack.isEmpty()) {
 							return false;
 						}
 						if (itemStack.getItem() != LPItems.itemCard) {

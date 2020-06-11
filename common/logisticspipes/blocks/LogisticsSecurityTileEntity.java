@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -204,14 +206,14 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				if (inv.getIDStackInSlot(0) == null) {
 					ItemStack stack = new ItemStack(LPItems.itemCard, 1, LogisticsItemCard.SEC_CARD);
 					stack.setTagCompound(new NBTTagCompound());
-					stack.getTagCompound().setString("UUID", getSecId().toString());
+					Objects.requireNonNull(stack.getTagCompound()).setString("UUID", getSecId().toString());
 					inv.setInventorySlotContents(0, stack);
 				} else {
 					ItemStack slot = inv.getStackInSlot(0);
 					if (slot.getCount() < 64) {
 						slot.grow(1);
 						slot.setTagCompound(new NBTTagCompound());
-						slot.getTagCompound().setString("UUID", getSecId().toString());
+						Objects.requireNonNull(slot.getTagCompound()).setString("UUID", getSecId().toString());
 						inv.setInventorySlotContents(0, slot);
 					}
 				}
@@ -223,15 +225,16 @@ public class LogisticsSecurityTileEntity extends LogisticsSolidTileEntity implem
 				}
 				ItemStack stack = new ItemStack(LPItems.itemCard, 64, LogisticsItemCard.SEC_CARD);
 				stack.setTagCompound(new NBTTagCompound());
-				stack.getTagCompound().setString("UUID", getSecId().toString());
+				Objects.requireNonNull(stack.getTagCompound()).setString("UUID", getSecId().toString());
 				inv.setInventorySlotContents(0, stack);
 				break;
 		}
 	}
 
-	public void handleOpenSecurityPlayer(EntityPlayer player, String string) {
+	public void handleOpenSecurityPlayer(EntityPlayer player, @Nonnull String string) {
 		SecuritySettings setting = settingsList.get(string);
-		if (setting == null && string != null && !string.isEmpty()) {
+		if (setting == null) {
+			if (string.isEmpty()) return;
 			setting = new SecuritySettings(string);
 			settingsList.put(string, setting);
 		}

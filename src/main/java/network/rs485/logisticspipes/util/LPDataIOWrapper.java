@@ -61,6 +61,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import io.netty.buffer.ByteBuf;
@@ -327,8 +328,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeItemStack(ItemStack itemstack) {
-		if (itemstack == ItemStack.EMPTY) {
+	public void writeItemStack(@Nonnull ItemStack itemstack) {
+		if (itemstack.isEmpty()) {
 			writeInt(0);
 		} else {
 			writeInt(Item.getIdFromItem(itemstack.getItem()));
@@ -678,6 +679,21 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Nullable
 	@Override
+	public <T> NonNullList<T> readNonNullList(IReadListObject<T> reader, @Nonnull T fillItem) {
+		int size = readInt();
+		if (size == -1) {
+			return null;
+		}
+
+		NonNullList<T> list = NonNullList.withSize(size, fillItem);
+		for (int i = 0; i < size; i++) {
+			list.set(i, reader.readObject(this));
+		}
+		return list;
+	}
+
+	@Nullable
+	@Override
 	public <T extends Enum<T>> T readEnum(Class<T> clazz) {
 		return clazz.getEnumConstants()[localBuffer.readInt()];
 	}
@@ -726,4 +742,5 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	public PlayerIdentifier readPlayerIdentifier() {
 		return PlayerIdentifier.get(this.readUTF(), this.readUUID());
 	}
+
 }

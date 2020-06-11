@@ -1,6 +1,7 @@
 package logisticspipes.proxy.td;
 
 import java.util.Collections;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -89,7 +90,7 @@ public class LPDuctUnitItem extends DuctUnitItem {
 	}
 
 	@Override
-	public int canRouteItem(ItemStack stack, byte directionOrdinal) {
+	public int canRouteItem(@Nonnull ItemStack stack, byte directionOrdinal) {
 		if (!stack.isEmpty()) {
 			if (pipe.pipe.isRoutedPipe() && !((CoreRoutedPipe) pipe.pipe).stillNeedReplace()) {
 				final ServerRouter serverRouter = (ServerRouter) ((CoreRoutedPipe) pipe.pipe).getRouter();

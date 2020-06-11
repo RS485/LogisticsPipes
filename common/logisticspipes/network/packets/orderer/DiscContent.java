@@ -31,8 +31,8 @@ public class DiscContent extends ItemPacket {
 		}
 		if (tile.pipe instanceof PipeItemsRequestLogisticsMk2) {
 			if (MainProxy.isServer(tile.getWorld())) {
-				if (((PipeItemsRequestLogisticsMk2) tile.pipe).getDisk() != null && ((PipeItemsRequestLogisticsMk2) tile.pipe).getDisk().getItem().equals(LPItems.disk)) {
-					if (getStack() != null && getStack().getItem().equals(LPItems.disk)) {
+				if (!((PipeItemsRequestLogisticsMk2) tile.pipe).getDisk().isEmpty() && ((PipeItemsRequestLogisticsMk2) tile.pipe).getDisk().getItem().equals(LPItems.disk)) {
+					if (!getStack().isEmpty() && getStack().getItem().equals(LPItems.disk)) {
 						((PipeItemsRequestLogisticsMk2) tile.pipe).getDisk().setTagCompound(getStack().getTagCompound());
 					}
 				}
@@ -42,8 +42,8 @@ public class DiscContent extends ItemPacket {
 		}
 		if (tile.pipe instanceof PipeBlockRequestTable) {
 			if (MainProxy.isServer(tile.getWorld())) {
-				if (((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0) != null && ((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).getItem().equals(LPItems.disk)) {
-					if (getStack() != null && getStack().getItem().equals(LPItems.disk)) {
+				if (!((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).isEmpty() && ((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).getItem().equals(LPItems.disk)) {
+					if (!getStack().isEmpty() && getStack().getItem().equals(LPItems.disk)) {
 						((PipeBlockRequestTable) tile.pipe).diskInv.getStackInSlot(0).setTagCompound(getStack().getTagCompound());
 					}
 				}

@@ -261,7 +261,7 @@ public class DummyContainer extends Container {
 		return false;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Nonnull
 	public ItemStack superSlotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		InventoryPlayer inventoryplayer = player.inventory;
@@ -530,7 +530,7 @@ public class DummyContainer extends Container {
 		return itemstack;
 	}
 
-	private void handleSwitch(Slot slot2, ItemStack out, ItemStack in, EntityPlayer player) {
+	private void handleSwitch(Slot slot2, @Nonnull ItemStack out, @Nonnull ItemStack in, EntityPlayer player) {
 		if (slot2 instanceof ModuleSlot) {
 			ChassiModule chassis = (ChassiModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
 			int moduleIndex = ((ModuleSlot) slot2).get_moduleIndex();
@@ -541,13 +541,6 @@ public class DummyContainer extends Container {
 				}
 			}
 		}
-	}
-
-	private boolean areEqualForMerge(ItemStack itemstack3, ItemStack itemstack4, Slot slot) {
-		if (slot instanceof ModuleSlot) {
-			return false;
-		}
-		return ItemStack.areItemStackTagsEqual(itemstack3, itemstack4);
 	}
 
 	/**
@@ -819,7 +812,6 @@ public class DummyContainer extends Container {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void detectAndSendChanges() {
 		for (int i = 0; i < inventorySlots.size(); ++i) {
 			if (inventorySlots.get(i) instanceof IFuzzySlot) {

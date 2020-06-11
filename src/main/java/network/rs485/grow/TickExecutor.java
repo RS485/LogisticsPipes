@@ -61,7 +61,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@SuppressWarnings({ "unused", "WeakerAccess" })
 @ParametersAreNonnullByDefault
 public class TickExecutor extends AbstractExecutorService implements ScheduledExecutorService {
 

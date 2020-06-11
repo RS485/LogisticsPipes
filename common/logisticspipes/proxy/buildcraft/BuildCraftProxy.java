@@ -41,7 +41,7 @@ public class BuildCraftProxy implements IBCProxy {
 		LogisticsTileGenericPipe.pipeInventoryConnectionChecker.addSupportedClassType(TileBC_Neptune.class);
 
 		ItemInsertionHandler.ACCEPTORS.add((pipe, from, stack) -> {
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("logisticspipes:routingdata_buildcraft")) {
+			if (!stack.isEmpty() && stack.hasTagCompound() && stack.getTagCompound().hasKey("logisticspipes:routingdata_buildcraft")) {
 				NBTTagCompound routingData = stack.getTagCompound().getCompoundTag("logisticspipes:routingdata_buildcraft");
 				ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(routingData);
 				LPTravelingItem item = new LPTravelingItem.LPTravelingItemServer(info);

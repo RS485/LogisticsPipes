@@ -30,7 +30,7 @@ public class ThermalDynamicsHooks {
 		if (item.stack.hasTagCompound()) {
 			if (item.stack.getTagCompound().getString("LogsitcsPipes_ITEM_ON_TRANSPORTATION").equals("YES")) {
 				double scale = 0.59 / 0.6;
-				LogisticsRenderPipe.boxRenderer.doRenderItem(null, 10, 0, 0, 0, scale, 0, 0, 0);
+				LogisticsRenderPipe.boxRenderer.doRenderItem(ItemStack.EMPTY, 10, 0, 0, 0, scale, 0, 0, 0);
 			}
 		}
 	}

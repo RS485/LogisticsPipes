@@ -27,6 +27,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -46,5 +47,5 @@ public interface IMCMPBlockAccess {
 
 	Block getBlock();
 
-	void addDrops(List<ItemStack> list, IBlockAccess world, BlockPos pos, IBlockState state, int fortune);
+	void addDrops(NonNullList<ItemStack> list, IBlockAccess world, BlockPos pos, IBlockState state, int fortune);
 }

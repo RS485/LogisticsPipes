@@ -53,7 +53,7 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
+	public String getUnlocalizedName(@Nonnull ItemStack stack) {
 		if (getHasSubtypes()) {
 			return String.format("%s.%d", super.getUnlocalizedName(stack), stack.getMetadata());
 		}
@@ -68,8 +68,7 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 	 */
 	@Override
 	@SideOnly(Side.CLIENT)
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (addShiftInfo()) {
 			StringUtils.addShiftAddition(stack, tooltip);

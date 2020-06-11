@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.gui;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.ClickType;
@@ -28,6 +30,7 @@ public class DummyContainerSlotClick extends ModernPacket {
 
 	@Getter
 	@Setter
+	@Nonnull
 	ItemStack stack;
 
 	@Getter

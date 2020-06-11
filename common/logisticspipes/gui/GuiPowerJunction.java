@@ -57,7 +57,6 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 		mc.fontRenderer.drawString("10 RF = 5 LP", guiLeft + 24, guiTop + 68, 0x404040);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

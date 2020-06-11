@@ -1,5 +1,7 @@
 package logisticspipes.network.packets.block;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -35,10 +37,12 @@ public class CompilerStatusPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
+	@Nonnull
 	private ItemStack disk;
 
 	@Getter
 	@Setter
+	@Nonnull
 	private ItemStack programmer;
 
 	@Override

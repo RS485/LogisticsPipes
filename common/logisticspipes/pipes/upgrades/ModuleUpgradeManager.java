@@ -179,10 +179,10 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
 		ItemStack stackInSlot = inv.getStackInSlot(slot);
-		if (stackInSlot.getItem() instanceof ItemUpgrade) {
-			upgrades[slot] = ((ItemUpgrade) stackInSlot.getItem()).getUpgradeForItem(stackInSlot, upgrades[slot]);
-		} else {
+		if (stackInSlot.isEmpty() || !(stackInSlot.getItem() instanceof ItemUpgrade)) {
 			upgrades[slot] = null;
+		} else {
+			upgrades[slot] = ((ItemUpgrade) stackInSlot.getItem()).getUpgradeForItem(stackInSlot, upgrades[slot]);
 		}
 		if (upgrades[slot] == null) {
 			inv.setInventorySlotContents(slot, ItemStack.EMPTY);

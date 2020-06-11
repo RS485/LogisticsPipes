@@ -3,6 +3,7 @@ package logisticspipes.modplugins.mcmp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -100,7 +101,7 @@ public class LPPipeMultipart implements IMultipart {
 		return false;
 	}
 
-	public void onPartPlacedBy(IPartInfo part, EntityLivingBase placer, ItemStack stack) {}
+	public void onPartPlacedBy(IPartInfo part, EntityLivingBase placer, @Nonnull ItemStack stack) {}
 
 	public boolean isSideSolid(IBlockAccess world, BlockPos pos, IPartInfo part, EnumFacing side) {
 		return false;
@@ -184,6 +185,7 @@ public class LPPipeMultipart implements IMultipart {
 		return 0;
 	}
 
+	@Nonnull
 	public ItemStack getPickPart(IPartInfo part, RayTraceResult hit, EntityPlayer player) {
 		return ItemStack.EMPTY;
 	}

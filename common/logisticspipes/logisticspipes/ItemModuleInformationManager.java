@@ -1,7 +1,9 @@
 package logisticspipes.logisticspipes;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,7 +16,7 @@ import logisticspipes.proxy.MainProxy;
 
 public class ItemModuleInformationManager {
 
-	public static void saveInformation(ItemStack itemStack, LogisticsModule module) {
+	public static void saveInformation(@Nonnull ItemStack stack, LogisticsModule module) {
 		if (module == null) {
 			return;
 		}
@@ -29,19 +31,19 @@ public class ItemModuleInformationManager {
 			String info2 = "to see the information.";
 			list.appendTag(new NBTTagString(info1));
 			list.appendTag(new NBTTagString(info2));
-			if (!itemStack.hasTagCompound()) {
-				itemStack.setTagCompound(new NBTTagCompound());
+			if (!stack.hasTagCompound()) {
+				stack.setTagCompound(new NBTTagCompound());
 			}
-			NBTTagCompound stacktag = itemStack.getTagCompound();
-			stacktag.setTag("informationList", list);
-			stacktag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
+			NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+			tag.setTag("informationList", list);
+			tag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
 			return;
 		}
-		if (!itemStack.hasTagCompound()) {
-			itemStack.setTagCompound(new NBTTagCompound());
+		if (!stack.hasTagCompound()) {
+			stack.setTagCompound(new NBTTagCompound());
 		}
-		NBTTagCompound stacktag = itemStack.getTagCompound();
-		stacktag.setTag("moduleInformation", nbt);
+		NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+		tag.setTag("moduleInformation", nbt);
 		if (module instanceof IClientInformationProvider) {
 			List<String> information = ((IClientInformationProvider) module).getClientInformation();
 			if (information.size() > 0) {
@@ -49,18 +51,18 @@ public class ItemModuleInformationManager {
 				for (String info : information) {
 					list.appendTag(new NBTTagString(info));
 				}
-				stacktag.setTag("informationList", list);
+				tag.setTag("informationList", list);
 			}
 		}
-		stacktag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
+		tag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
 	}
 
-	public static void readInformation(ItemStack itemStack, LogisticsModule module) {
+	public static void readInformation(@Nonnull ItemStack stack, LogisticsModule module) {
 		if (module == null) {
 			return;
 		}
-		if (itemStack.hasTagCompound()) {
-			NBTTagCompound nbt = itemStack.getTagCompound();
+		if (stack.hasTagCompound()) {
+			NBTTagCompound nbt = Objects.requireNonNull(stack.getTagCompound());
 			if (nbt.hasKey("moduleInformation")) {
 				NBTTagCompound moduleInformation = nbt.getCompoundTag("moduleInformation");
 				module.readFromNBT(moduleInformation);

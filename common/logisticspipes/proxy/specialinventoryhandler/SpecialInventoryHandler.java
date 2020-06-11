@@ -27,8 +27,8 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	@Nonnull
+	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {
 			return ItemStack.EMPTY;
 		}

@@ -173,7 +173,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemStack stack) {
+	public int roomForItem(@Nonnull ItemStack stack) {
 		return roomForItemInner(barrelStack -> barrelStack.isItemEqual(stack) && Objects.equals(barrelStack.getTagCompound(), stack.getTagCompound()) && barrelStack.areCapsCompatible(stack));
 	}
 
@@ -196,7 +196,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public ItemStack add(ItemStack stack, EnumFacing from, boolean doAdd) {
+	@Nonnull
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		assert _tile != null;
 
 		ItemStack st = stack.copy();

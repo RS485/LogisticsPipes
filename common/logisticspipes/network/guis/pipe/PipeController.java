@@ -1,8 +1,10 @@
 package logisticspipes.network.guis.pipe;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LPItems;
 import logisticspipes.gui.GuiPipeController;
@@ -58,42 +60,25 @@ public class PipeController extends CoordinatesGuiProvider {
 		dummy.addNormalSlotsForPlayerInventory(0, 0);
 		// TAB_1 SLOTS
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-			dummy.addUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot, 8 + pipeSlot * 18, 18, itemStack -> {
-				if (itemStack == null) {
-					return false;
-				}
-				if (itemStack.getItem() instanceof ItemUpgrade) {
-					if (!((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)) {
-						return false;
-					}
-				} else {
-					return false;
-				}
-				return true;
-			});
+			dummy.addUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot, 8 + pipeSlot * 18, 18, itemStack ->
+					!itemStack.isEmpty() && itemStack.getItem() instanceof ItemUpgrade && ((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe));
 		}
 		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 			dummy.addSneakyUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot + 9, 8 + pipeSlot * 18, 48, itemStack -> {
-				if (itemStack == null) {
+				if (itemStack.isEmpty()) {
 					return false;
 				}
 				if (itemStack.getItem() instanceof ItemUpgrade) {
 					IPipeUpgrade upgrade = ((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null);
-					if (!(upgrade instanceof SneakyUpgradeConfig)) {
-						return false;
-					}
-					if (!upgrade.isAllowedForPipe(pipe)) {
-						return false;
-					}
+					return upgrade instanceof SneakyUpgradeConfig && upgrade.isAllowedForPipe(pipe);
 				} else {
 					return false;
 				}
-				return true;
 			});
 		}
 		// TAB_2 SLOTS
 		dummy.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 8 + 8 * 18, 18, itemStack -> {
-			if (itemStack == null) {
+			if (itemStack.isEmpty()) {
 				return false;
 			}
 			if (itemStack.getItem() != LPItems.itemCard) {
@@ -102,7 +87,8 @@ public class PipeController extends CoordinatesGuiProvider {
 			if (itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) {
 				return false;
 			}
-			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")));
+			final NBTTagCompound tag = Objects.requireNonNull(itemStack.getTagCompound());
+			return SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(tag.getString("UUID")));
 		}, 1);
 		dummy.addRestrictedSlot(0, tile.logicController.diskInv, 14, 36, LPItems.disk);
 		return dummy;

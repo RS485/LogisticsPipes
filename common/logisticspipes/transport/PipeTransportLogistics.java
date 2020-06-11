@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -21,6 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -728,8 +730,8 @@ public class PipeTransportLogistics {
 
 	protected void neighborChange() {}
 
-	public List<ItemStack> dropContents() {
-		List<ItemStack> list = new ArrayList<>();
+	public NonNullList<ItemStack> dropContents() {
+		NonNullList<ItemStack> list = NonNullList.create();
 		if (MainProxy.isServer(getWorld())) {
 			for (LPTravelingItem item : items) {
 				list.add(item.getItemIdentifierStack().makeNormalStack());
@@ -782,7 +784,7 @@ public class PipeTransportLogistics {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(PipeContentRequest.class).setInteger(travelId));
 	}
 
-	public void sendItem(ItemStack stackToSend) {
+	public void sendItem(@Nonnull ItemStack stackToSend) {
 		this.injectItem((LPTravelingItem) SimpleServiceLocator.routedItemHelper.createNewTravelItem(stackToSend), EnumFacing.UP);
 	}
 

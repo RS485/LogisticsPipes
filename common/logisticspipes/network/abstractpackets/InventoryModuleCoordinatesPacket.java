@@ -5,6 +5,7 @@ import java.util.Set;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -17,7 +18,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 
 	private IInventory inventory;
 
-	private List<ItemStack> stackList;
+	private NonNullList<ItemStack> stackList;
 
 	private List<ItemIdentifierStack> identList;
 
@@ -57,7 +58,7 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 
 		byte marker = input.readByte();
 		if (marker == STACK_MARKER) {
-			stackList = input.readLinkedList(LPDataInput::readItemStack);
+			stackList = input.readNonNullList(LPDataInput::readItemStack, ItemStack.EMPTY);
 		} else if (marker == IDENT_MARKER) {
 			identList = input.readLinkedList(LPDataInput::readItemIdentifierStack);
 		} else {
@@ -65,11 +66,11 @@ public abstract class InventoryModuleCoordinatesPacket extends ModuleCoordinates
 		}
 	}
 
-	public List<ItemStack> getStackList() {
+	public NonNullList<ItemStack> getStackList() {
 		return this.stackList;
 	}
 
-	public InventoryModuleCoordinatesPacket setStackList(List<ItemStack> stackList) {
+	public InventoryModuleCoordinatesPacket setStackList(NonNullList<ItemStack> stackList) {
 		this.stackList = stackList;
 		return this;
 	}

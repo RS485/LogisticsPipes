@@ -178,8 +178,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			double itemPitch = lPipe.getItemRenderPitch(fPos, item);
 			double itemYawForPitch = lPipe.getItemRenderYaw(fPos, item);
 
-			ItemStack itemstack = item.getItemIdentifierStack().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorld(), lX + pos.getXCoord(), lY + pos.getYCoord(), lZ + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, itemYawForPitch, partialTickTime);
+			ItemStack stack = item.getItemIdentifierStack().makeNormalStack();
+			doRenderItem(stack, pipe.container.getWorld(), lX + pos.getXCoord(), lY + pos.getYCoord(), lZ + pos.getZCoord(), light, 0.75F, boxScale, itemYaw, itemPitch, itemYawForPitch, partialTickTime);
 			count++;
 		}
 
@@ -193,8 +193,8 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 			if (item == null || item.getValue1() == null) {
 				continue;
 			}
-			ItemStack itemstack = item.getValue1().makeNormalStack();
-			doRenderItem(itemstack, pipe.container.getWorld(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.25F, 0, 0, 0, 0, partialTickTime);
+			ItemStack stack = item.getValue1().makeNormalStack();
+			doRenderItem(stack, pipe.container.getWorld(), x + pos.getXCoord(), y + pos.getYCoord(), z + pos.getZCoord(), light, 0.25F, 0, 0, 0, 0, partialTickTime);
 			count++;
 			if (count >= 27) {
 				break;

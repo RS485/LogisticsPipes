@@ -1,11 +1,10 @@
 package logisticspipes.network.packets;
 
-import java.util.Arrays;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +23,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private ItemStack[] content = new ItemStack[9];
+	private NonNullList<ItemStack> stackList = NonNullList.withSize(9, ItemStack.EMPTY);
 
 	public NEISetCraftingRecipe(int id) {
 		super(id);
@@ -34,9 +33,9 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		TileEntity tile = getTileAs(player.world, TileEntity.class);
 		if (tile instanceof LogisticsCraftingTableTileEntity) {
-			((LogisticsCraftingTableTileEntity) tile).handleNEIRecipePacket(getContent());
+			((LogisticsCraftingTableTileEntity) tile).handleNEIRecipePacket(getStackList());
 		} else if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe instanceof PipeBlockRequestTable) {
-			((PipeBlockRequestTable) ((LogisticsTileGenericPipe) tile).pipe).handleNEIRecipePacket(getContent());
+			((PipeBlockRequestTable) ((LogisticsTileGenericPipe) tile).pipe).handleNEIRecipePacket(getStackList());
 		}
 	}
 
@@ -49,17 +48,17 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
 
-		output.writeInt(content.length);
+		output.writeInt(stackList.size());
 
-		for (int i = 0; i < content.length; i++) {
-			final ItemStack itemstack = content[i];
+		for (int i = 0; i < stackList.size(); i++) {
+			final ItemStack stack = stackList.get(i);
 
-			if (itemstack != null && !itemstack.isEmpty()) {
+			if (!stack.isEmpty()) {
 				output.writeByte(i);
-				output.writeInt(Item.getIdFromItem(itemstack.getItem()));
-				output.writeInt(itemstack.getCount());
-				output.writeInt(itemstack.getItemDamage());
-				output.writeNBTTagCompound(itemstack.getTagCompound());
+				output.writeInt(Item.getIdFromItem(stack.getItem()));
+				output.writeInt(stack.getCount());
+				output.writeInt(stack.getItemDamage());
+				output.writeNBTTagCompound(stack.getTagCompound());
 			}
 		}
 		output.writeByte(-1); // mark packet end
@@ -69,9 +68,6 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 
-		content = new ItemStack[input.readInt()];
-		Arrays.fill(content, ItemStack.EMPTY); // initialize array with empty stacks
-
 		byte index = input.readByte();
 
 		while (index != -1) { // read until the end
@@ -80,7 +76,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 			int damage = input.readInt();
 			ItemStack stack = new ItemStack(Item.getItemById(itemID), stackSize, damage);
 			stack.setTagCompound(input.readNBTTagCompound());
-			content[index] = stack;
+			stackList.set(index, stack);
 			index = input.readByte(); // read the next slot
 		}
 	}

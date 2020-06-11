@@ -24,6 +24,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -298,6 +299,7 @@ public class LogisticsPipes {
 	public static final CreativeTabs CREATIVE_TAB_LP = new CreativeTabs("Logistics_Pipes") {
 
 		@SideOnly(Side.CLIENT)
+		@Nonnull
 		public ItemStack getTabIconItem() {
 			return new ItemStack(LPItems.pipeBasic);
 		}

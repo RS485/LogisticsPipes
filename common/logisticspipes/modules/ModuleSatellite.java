@@ -39,7 +39,7 @@ public class ModuleSatellite extends LogisticsModule {
 		}
 	}
 
-	private int spaceFor(ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
+	private int spaceFor(@Nonnull ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(pipe.container);
 
 		int count = worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)

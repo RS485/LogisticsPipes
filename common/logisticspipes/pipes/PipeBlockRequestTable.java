@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.event.world.WorldEvent;
@@ -360,6 +361,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		cacheRecipe();
 	}
 
+	@Nonnull
 	public ItemStack getOutput(boolean oreDict) {
 		if (cache == null) {
 			cacheRecipe();
@@ -497,9 +499,10 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		}
 	}
 
-	public void handleNEIRecipePacket(ItemStack[] content) {
-		for (int i = 0; i < 9; i++) {
-			matrix.setInventorySlotContents(i, content[i]);
+	public void handleNEIRecipePacket(NonNullList<ItemStack> content) {
+		if (matrix.getSizeInventory() != content.size()) throw new IllegalStateException("Different sizes of matrix and inventory from packet");
+		for (int i = 0; i < content.size(); i++) {
+			matrix.setInventorySlotContents(i, content.get(i));
 		}
 		cacheRecipe();
 	}
@@ -603,6 +606,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		}
 	}
 
+	@Nonnull
 	public ItemStack getDisk() {
 		return diskInv.getStackInSlot(0);
 	}

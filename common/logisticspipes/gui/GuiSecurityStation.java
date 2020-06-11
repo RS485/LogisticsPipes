@@ -66,7 +66,6 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		authorized = SimpleServiceLocator.securityStationManager.isAuthorized(tile.getSecId());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);

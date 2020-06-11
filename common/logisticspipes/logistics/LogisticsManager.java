@@ -46,7 +46,7 @@ import logisticspipes.utils.tuples.Triplet;
 
 public class LogisticsManager implements ILogisticsManager {
 
-	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(ItemStack stack, ItemIdentifier item, @Nonnull IRouter sourceRouter, @Nonnull List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
+	private Triplet<Integer, SinkReply, List<IFilter>> getBestReply(@Nonnull ItemStack stack, ItemIdentifier item, @Nonnull IRouter sourceRouter, @Nonnull List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, Triplet<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
 		if (result == null) {
 			result = new Triplet<>(null, null, null);
 		}

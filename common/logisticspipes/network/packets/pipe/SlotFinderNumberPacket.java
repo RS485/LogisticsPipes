@@ -51,10 +51,10 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
 		TileEntity inv = this.getTileAs(player.world, tile -> tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
 		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv, null);
+		if (util == null) return;
 		Slot result = null;
 		if (player.openContainer.inventorySlots.get(inventorySlot).slotNumber == inventorySlot) {
 			result = player.openContainer.inventorySlots.get(inventorySlot);
@@ -81,7 +81,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 				}
 			}
 		} else {
-			ItemStack dummyStack = new ItemStack(Blocks.STONE, 0, 0);
+			ItemStack dummyStack = new ItemStack(Blocks.DIRT, 1, 0);
 			NBTTagCompound nbt = new NBTTagCompound();
 			nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
 			dummyStack.setTagCompound(nbt); // dummyStack: yay, I am unique

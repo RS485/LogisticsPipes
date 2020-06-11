@@ -54,7 +54,6 @@ public class GuiSelectSatellitePopup extends SubGuiScreen {
 		mc.fontRenderer.drawStringWithShadow(StringUtils.translate(GUI_LANG_KEY + "title"), xCenter - (mc.fontRenderer.getStringWidth(StringUtils.translate(GUI_LANG_KEY + "title")) / 2f), guiTop + 6, 0xFFFFFF);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

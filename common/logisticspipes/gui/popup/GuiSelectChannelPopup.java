@@ -22,7 +22,6 @@ public class GuiSelectChannelPopup extends GuiManageChannelPopup {
 		this.handleResult = handleResult;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

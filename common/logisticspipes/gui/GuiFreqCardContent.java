@@ -14,18 +14,8 @@ public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 	public GuiFreqCardContent(EntityPlayer player, IInventory card) {
 		super(180, 130, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, card);
-		dummy.addRestrictedSlot(0, card, 82, 15, itemStack -> {
-			if (itemStack == null) {
-				return false;
-			}
-			if (itemStack.getItem() != LPItems.itemCard) {
-				return false;
-			}
-			if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
-				return false;
-			}
-			return true;
-		});
+		dummy.addRestrictedSlot(0, card, 82, 15, itemStack ->
+				!itemStack.isEmpty() && itemStack.getItem() == LPItems.itemCard && itemStack.getItemDamage() == LogisticsItemCard.FREQ_CARD);
 		dummy.addNormalSlotsForPlayerInventory(10, 45);
 		inventorySlots = dummy;
 	}

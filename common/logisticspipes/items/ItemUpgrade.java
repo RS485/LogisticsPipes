@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.util.ITooltipFlag;
@@ -121,7 +122,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registry.register(item);
 	}
 
-	public IPipeUpgrade getUpgradeForItem(ItemStack itemStack, IPipeUpgrade currentUpgrade) {
+	public IPipeUpgrade getUpgradeForItem(@Nonnull ItemStack itemStack, IPipeUpgrade currentUpgrade) {
 		if (itemStack.isEmpty()) {
 			return null;
 		}
@@ -152,8 +153,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		IPipeUpgrade upgrade = getUpgradeForItem(stack, null);
 		if (upgrade == null) {
@@ -176,7 +176,7 @@ public class ItemUpgrade extends LogisticsItem {
 				//Can be applied to {0} pipes
 				String base = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "pipe");
 				tooltip.add(MessageFormat.format(base, join(pipe)));
-			} else if (!module.isEmpty()) {
+			} else {
 				//Can be applied to {0} modules
 				String base = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "module");
 				tooltip.add(MessageFormat.format(base, join(module)));

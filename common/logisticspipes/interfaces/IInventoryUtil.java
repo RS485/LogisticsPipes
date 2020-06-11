@@ -35,8 +35,9 @@ public interface IInventoryUtil {
 	 *
 	 * @return spaces found. If this is less than max, then there are only
 	 * spaces for that amount.
+	 * @param stack
 	 */
-	int roomForItem(ItemStack stack);
+	int roomForItem(@Nonnull ItemStack stack);
 
 	Set<ItemIdentifier> getItems();
 

@@ -37,6 +37,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IPipeServiceProvider;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -188,7 +189,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		}
 	}
 
-	protected int spaceFor(ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
+	protected int spaceFor(@Nonnull ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
 		Pair<String, ItemIdentifier> key = new Pair<>("spaceFor", item);
 		Object cache = _service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
 		int onRoute = 0;
@@ -853,7 +854,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		return _cleanupInventory;
 	}
 
-	public void setDummyInventorySlot(int slot, ItemStack itemstack) {
+	public void setDummyInventorySlot(int slot, @Nonnull ItemStack itemstack) {
 		_dummyInventory.setInventorySlotContents(slot, itemstack);
 	}
 
@@ -1037,16 +1038,17 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		waitingForCraft = false;
 
 		if ((!_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
-			if (getUpgradeManager().getCrafterCleanup() > 0) {
+			final ISlotUpgradeManager upgradeManager = Objects.requireNonNull(getUpgradeManager());
+			if (upgradeManager.getCrafterCleanup() > 0) {
 				final List<NeighborTileEntity<TileEntity>> crafters = locateCraftersForExtraction();
-				ItemStack extracted = null;
+				ItemStack extracted = ItemStack.EMPTY;
 				for (NeighborTileEntity<TileEntity> adjacentCrafter : crafters) {
-					extracted = extractFiltered(adjacentCrafter, _cleanupInventory, cleanupModeIsExclude, getUpgradeManager().getCrafterCleanup() * 3);
-					if (extracted != null && !extracted.isEmpty()) {
+					extracted = extractFiltered(adjacentCrafter, _cleanupInventory, cleanupModeIsExclude, upgradeManager.getCrafterCleanup() * 3);
+					if (!extracted.isEmpty()) {
 						break;
 					}
 				}
-				if (extracted != null && !extracted.isEmpty()) {
+				if (!extracted.isEmpty()) {
 					_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), EnumFacing.UP);
 					_service.getCacheHolder().trigger(CacheTypes.Inventory);
 				}
@@ -1078,20 +1080,21 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			int maxtosend = Math.min(itemsleft, nextOrder.getResource().stack.getStackSize());
 			maxtosend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
-			ItemStack extracted = null;
+			ItemStack extracted = ItemStack.EMPTY;
 			NeighborTileEntity<TileEntity> adjacent = null; // there has to be at least one adjacentCrafter at this point; adjacent wont stay null
 			for (NeighborTileEntity<TileEntity> adjacentCrafter : adjacentCrafters) {
 				adjacent = adjacentCrafter;
 				extracted = extract(adjacent, nextOrder.getResource(), maxtosend);
-				if (extracted != null && !extracted.isEmpty()) {
+				if (!extracted.isEmpty()) {
 					break;
 				}
 			}
-			if (extracted == null || extracted.isEmpty()) {
+			if (extracted.isEmpty()) {
 				_service.getItemOrderManager().deferSend();
 				break;
 			}
 			_service.getCacheHolder().trigger(CacheTypes.Inventory);
+			Objects.requireNonNull(adjacent);
 			lastAccessedCrafter = new WeakReference<>(adjacent.getTileEntity());
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
@@ -1175,16 +1178,19 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		cachedAreAllOrderesToBuffer = result;
 	}
 
+	@Nonnull
 	private ItemStack extract(NeighborTileEntity<TileEntity> adjacent, IResource item, int amount) {
 		return adjacent.getJavaInstanceOf(LogisticsCraftingTableTileEntity.class)
 				.map(adjacentCraftingTable -> extractFromLogisticsCraftingTable(adjacentCraftingTable, item, amount))
 				.orElseGet(() -> adjacent.isItemHandler() ? extractFromInventory(adjacent.getUtilForItemHandler(), item, amount) : ItemStack.EMPTY);
 	}
 
+	@Nonnull
 	private ItemStack extractFiltered(NeighborTileEntity<TileEntity> adjacent, ItemIdentifierInventory inv, boolean isExcluded, int filterInvLimit) {
-		return adjacent.isItemHandler() ? extractFromInventoryFiltered(adjacent.getUtilForItemHandler(), inv, isExcluded, filterInvLimit) : null;
+		return adjacent.isItemHandler() ? extractFromInventoryFiltered(adjacent.getUtilForItemHandler(), inv, isExcluded, filterInvLimit) : ItemStack.EMPTY;
 	}
 
+	@Nonnull
 	private ItemStack extractFromInventory(@Nonnull IInventoryUtil invUtil, IResource wanteditem, int count) {
 		ItemIdentifier itemToExtract = null;
 		if (wanteditem instanceof ItemResource) {
@@ -1201,88 +1207,73 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 				}
 			}
 			if (toExtract == null) {
-				return null;
+				return ItemStack.EMPTY;
 			}
 			itemToExtract = toExtract;
 		}
 		int available = invUtil.itemCount(itemToExtract);
-		if (available == 0) {
-			return null;
-		}
-		if (!_service.canUseEnergy(neededEnergy() * Math.min(count, available))) {
-			return null;
+		if (available == 0 || !_service.canUseEnergy(neededEnergy() * Math.min(count, available))) {
+			return ItemStack.EMPTY;
 		}
 		ItemStack extracted = invUtil.getMultipleItems(itemToExtract, Math.min(count, available));
 		_service.useEnergy(neededEnergy() * extracted.getCount());
 		return extracted;
 	}
 
+	@Nonnull
 	private ItemStack extractFromInventoryFiltered(@Nonnull IInventoryUtil invUtil, ItemIdentifierInventory filter, boolean isExcluded, int filterInvLimit) {
 		ItemIdentifier wanteditem = null;
+		boolean found = false;
 		for (ItemIdentifier item : invUtil.getItemsAndCount().keySet()) {
-			if (isExcluded) {
-				boolean found = false;
-				for (int i = 0; i < filter.getSizeInventory() && i < filterInvLimit; i++) {
-					ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
-					if (identStack == null) {
-						continue;
-					}
-					if (identStack.getItem().equalsWithoutNBT(item)) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					wanteditem = item;
-				}
-			} else {
-				boolean found = false;
-				for (int i = 0; i < filter.getSizeInventory() && i < filterInvLimit; i++) {
-					ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
-					if (identStack == null) {
-						continue;
-					}
-					if (identStack.getItem().equalsWithoutNBT(item)) {
-						found = true;
-						break;
-					}
-				}
-				if (found) {
-					wanteditem = item;
-				}
+			found = isFiltered(filter, filterInvLimit, item, found);
+			if (isExcluded != found) {
+				wanteditem = item;
+				break;
 			}
 		}
 		if (wanteditem == null) {
-			return null;
+			return ItemStack.EMPTY;
 		}
 		int available = invUtil.itemCount(wanteditem);
-		if (available == 0) {
-			return null;
-		}
-		if (!_service.canUseEnergy(neededEnergy() * Math.min(64, available))) {
-			return null;
+		if (available == 0 || !_service.canUseEnergy(neededEnergy() * Math.min(64, available))) {
+			return ItemStack.EMPTY;
 		}
 		ItemStack extracted = invUtil.getMultipleItems(wanteditem, Math.min(64, available));
 		_service.useEnergy(neededEnergy() * extracted.getCount());
 		return extracted;
 	}
 
+	private boolean isFiltered(ItemIdentifierInventory filter, int filterInvLimit, ItemIdentifier item, boolean found) {
+		for (int i = 0; i < filter.getSizeInventory() && i < filterInvLimit; i++) {
+			ItemIdentifierStack identStack = filter.getIDStackInSlot(i);
+			if (identStack == null) {
+				continue;
+			}
+			if (identStack.getItem().equalsWithoutNBT(item)) {
+				found = true;
+				break;
+			}
+		}
+		return found;
+	}
+
+	@Nonnull
 	private ItemStack extractFromLogisticsCraftingTable(
 			NeighborTileEntity<LogisticsCraftingTableTileEntity> adjacentCraftingTable,
 			IResource wanteditem, int count) {
 		ItemStack extracted = extractFromInventory(
 				Objects.requireNonNull(adjacentCraftingTable.getInventoryUtil()),
 				wanteditem, count);
-		if (extracted != null && !extracted.isEmpty()) {
+		if (!extracted.isEmpty()) {
 			return extracted;
 		}
-		ItemStack retstack = null;
+		ItemStack retstack = ItemStack.EMPTY;
 		while (count > 0) {
 			ItemStack stack = adjacentCraftingTable.getTileEntity().getOutput(wanteditem, _service);
-			if (stack == null || stack.getCount() == 0) {
+			if (stack.isEmpty()) {
 				break;
 			}
-			if (retstack == null) {
+			if (retstack.isEmpty()) {
 				if (!wanteditem.matches(ItemIdentifier.get(stack), wanteditem instanceof ItemResource ? IResource.MatchSettings.WITHOUT_NBT : IResource.MatchSettings.NORMAL)) {
 					break;
 				}
@@ -1298,13 +1289,13 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 				break;
 			}
 
-			if (retstack == null) {
+			if (retstack.isEmpty()) {
 				retstack = stack;
 			} else {
 				retstack.grow(stack.getCount());
 			}
 			count -= stack.getCount();
-			if (getUpgradeManager().isFuzzyUpgrade()) {
+			if (Objects.requireNonNull(getUpgradeManager()).isFuzzyUpgrade()) {
 				break;
 			}
 		}
@@ -1343,7 +1334,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			_cleanupInventory.setInventorySlotContents(i, _dummyInventory.getStackInSlot(i));
 		}
 		for (int i = 10; i < _cleanupInventory.getSizeInventory(); i++) {
-			_cleanupInventory.setInventorySlotContents(i, (ItemStack) null);
+			_cleanupInventory.setInventorySlotContents(i, ItemStack.EMPTY);
 		}
 		_cleanupInventory.compactFirst(10);
 		_cleanupInventory.recheckStackLimit();

@@ -111,7 +111,6 @@ public class LPChatListener {
 		FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().clearChatMessages(true);
 	}
 
-	@SuppressWarnings("unchecked")
 	@ClientSideOnlyMethodContent
 	private void storeSendMessages() {
 		sendChatMessages = new ArrayList<>();

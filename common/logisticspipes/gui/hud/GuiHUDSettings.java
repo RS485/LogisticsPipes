@@ -33,12 +33,11 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 		inventorySlots = dummy;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@SneakyThrows(IOException.class)
 	public void initGui() {
 		super.initGui();
-		if (player.inventory.getStackInSlot(slot) != null) {
+		if (!player.inventory.getStackInSlot(slot).isEmpty()) {
 			IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
 			buttonList.add(new GuiCheckBox(0, guiLeft + 30, guiTop + 10, 12, 12, config.isHUDChassie()));
 			buttonList.add(new GuiCheckBox(1, guiLeft + 30, guiTop + 30, 12, 12, config.isHUDCrafting()));

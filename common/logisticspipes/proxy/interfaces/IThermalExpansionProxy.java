@@ -1,5 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,7 +17,7 @@ public interface IThermalExpansionProxy {
 
 	boolean isToolHammer(Item stack);
 
-	boolean canHammer(ItemStack stack, EntityPlayer entityplayer, BlockPos pos);
+	boolean canHammer(@Nonnull ItemStack stack, EntityPlayer entityplayer, BlockPos pos);
 
-	void toolUsed(ItemStack stack, EntityPlayer entityplayer, BlockPos pos);
+	void toolUsed(@Nonnull ItemStack stack, EntityPlayer entityplayer, BlockPos pos);
 }

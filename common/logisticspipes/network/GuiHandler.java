@@ -161,16 +161,13 @@ public class GuiHandler implements IGuiHandler {
 					dummy = new DummyContainer(player.inventory, inv);
 
 					dummy.addRestrictedSlot(0, inv, 40, 40, itemStack -> {
-						if (itemStack == null) {
+						if (itemStack.isEmpty()) {
 							return false;
 						}
 						if (itemStack.getItem() != LPItems.itemCard) {
 							return false;
 						}
-						if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) {
-							return false;
-						}
-						return true;
+						return itemStack.getItemDamage() == LogisticsItemCard.FREQ_CARD;
 					});
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 

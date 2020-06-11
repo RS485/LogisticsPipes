@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import net.minecraft.init.Items;
@@ -57,7 +58,8 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 		Item baseModule = baseModuleClass == null ? LPItems.blankModule : LPItems.modules.get(baseModuleClass);
 		ItemStack programmerStack = new ItemStack(LPItems.logisticsProgrammer);
 		programmerStack.setTagCompound(new NBTTagCompound());
-		programmerStack.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, module.getRegistryName().toString());
+		final NBTTagCompound tag = Objects.requireNonNull(programmerStack.getTagCompound());
+		tag.setString(ItemLogisticsProgrammer.RECIPE_TARGET, module.getRegistryName().toString());
 		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);
 
 		if (!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {

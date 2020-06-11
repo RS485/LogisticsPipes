@@ -1,6 +1,7 @@
 package logisticspipes.items;
 
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -45,12 +46,11 @@ public class RemoteOrderer extends LogisticsItem {
 		return true;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("connectedPipe-x")) {
+		if (stack.hasTagCompound() && Objects.requireNonNull(stack.getTagCompound()).hasKey("connectedPipe-x")) {
 			tooltip.add("\u00a77Has Remote Pipe");
 		}
 	}
@@ -59,10 +59,7 @@ public class RemoteOrderer extends LogisticsItem {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand handIn) {
 		ItemStack par1ItemStack = player.inventory.getCurrentItem();
-		if (par1ItemStack.isEmpty()) {
-			return null;
-		}
-		if (!par1ItemStack.hasTagCompound()) {
+		if (par1ItemStack.isEmpty() || !par1ItemStack.hasTagCompound()) {
 			return ActionResult.newResult(EnumActionResult.FAIL, par1ItemStack);
 		}
 		PipeItemsRemoteOrdererLogistics pipe = RemoteOrderer.getPipe(par1ItemStack);
@@ -82,40 +79,39 @@ public class RemoteOrderer extends LogisticsItem {
 		return ActionResult.newResult(EnumActionResult.PASS, par1ItemStack);
 	}
 
-	public static void connectToPipe(ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {
+	public static void connectToPipe(@Nonnull ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {
 		stack.setTagCompound(new NBTTagCompound());
-		stack.getTagCompound().setInteger("connectedPipe-x", pipe.getX());
-		stack.getTagCompound().setInteger("connectedPipe-y", pipe.getY());
-		stack.getTagCompound().setInteger("connectedPipe-z", pipe.getZ());
+		final NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+		tag.setInteger("connectedPipe-x", pipe.getX());
+		tag.setInteger("connectedPipe-y", pipe.getY());
+		tag.setInteger("connectedPipe-z", pipe.getZ());
 		int dimension = 0;
 		for (Integer dim : DimensionManager.getIDs()) {
-			if (pipe.getWorld().equals(DimensionManager.getWorld(dim.intValue()))) {
-				dimension = dim.intValue();
+			if (pipe.getWorld().equals(DimensionManager.getWorld(dim))) {
+				dimension = dim;
 				break;
 			}
 		}
-		stack.getTagCompound().setInteger("connectedPipe-world-dim", dimension);
+		tag.setInteger("connectedPipe-world-dim", dimension);
 	}
 
-	public static PipeItemsRemoteOrdererLogistics getPipe(ItemStack stack) {
-		if (stack == null) {
+	public static PipeItemsRemoteOrdererLogistics getPipe(@Nonnull ItemStack stack) {
+		if (stack.isEmpty() || !stack.hasTagCompound()) {
 			return null;
 		}
-		if (!stack.hasTagCompound()) {
+		final NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
+		if (!tag.hasKey("connectedPipe-x") || !tag.hasKey("connectedPipe-y") || !tag.hasKey("connectedPipe-z")) {
 			return null;
 		}
-		if (!stack.getTagCompound().hasKey("connectedPipe-x") || !stack.getTagCompound().hasKey("connectedPipe-y") || !stack.getTagCompound().hasKey("connectedPipe-z")) {
+		if (!tag.hasKey("connectedPipe-world-dim")) {
 			return null;
 		}
-		if (!stack.getTagCompound().hasKey("connectedPipe-world-dim")) {
-			return null;
-		}
-		int dim = stack.getTagCompound().getInteger("connectedPipe-world-dim");
+		int dim = tag.getInteger("connectedPipe-world-dim");
 		World world = DimensionManager.getWorld(dim);
 		if (world == null) {
 			return null;
 		}
-		TileEntity tile = world.getTileEntity(new BlockPos(stack.getTagCompound().getInteger("connectedPipe-x"), stack.getTagCompound().getInteger("connectedPipe-y"), stack.getTagCompound().getInteger("connectedPipe-z")));
+		TileEntity tile = world.getTileEntity(new BlockPos(tag.getInteger("connectedPipe-x"), tag.getInteger("connectedPipe-y"), tag.getInteger("connectedPipe-z")));
 		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}

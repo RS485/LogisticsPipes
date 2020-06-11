@@ -49,7 +49,8 @@ interface SneakyDirection {
         @JvmStatic
         fun readSneakyDirection(nbt: NBTTagCompound): EnumFacing? {
             return if (nbt.hasKey(SNEAKY_DIRECTION_NBT)) {
-                EnumFacing.values()[nbt.getInteger(SNEAKY_DIRECTION_NBT)]
+                // will read direction index 6 as null (was ForgeDirection.UNKNOWN)
+                nbt.getInteger(SNEAKY_DIRECTION_NBT).let { if (it in EnumFacing.VALUES.indices) EnumFacing.VALUES[it] else null }
             } else {
                 null
             }

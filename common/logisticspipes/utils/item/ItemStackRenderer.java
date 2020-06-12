@@ -9,6 +9,7 @@
 package logisticspipes.utils.item;
 
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
@@ -39,6 +40,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import logisticspipes.LPItems;
+import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
@@ -265,16 +267,14 @@ public class ItemStackRenderer {
 		assert scaleZ != 0.0F;
 
 		if (entityitem == null || !ItemStack.areItemStacksEqual(entityitem.getItem(), itemstack)) {
+			Objects.requireNonNull(world, "World is needed for EntityItem creation");
 			if (itemstack.isEmpty()) {
-				throw new RuntimeException("No EntityItem and no ItemStack, I do not know what to render!");
-			} else {
-				if (world == null) {
-					throw new NullPointerException("World object is null");
-				}
-				entityitem = new EntityItem(world, 0.0D, 0.0D, 0.0D, itemstack);
-				entityitem.getItem().setCount(1);
-				entityitem.hoverStart = 0.0F;
+				// :itemcard: 🤷
+				itemstack = new ItemStack(LPItems.itemCard);
 			}
+			entityitem = new EntityItem(world, 0.0D, 0.0D, 0.0D, itemstack);
+			entityitem.getItem().setCount(1);
+			entityitem.hoverStart = 0.0F;
 		}
 
 		Item item = itemstack.getItem();

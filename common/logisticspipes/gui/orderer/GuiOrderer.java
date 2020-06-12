@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -76,7 +78,7 @@ public abstract class GuiOrderer extends LogisticsBaseGuiScreen implements IItem
 	public abstract void refreshItems();
 
 	public void handlePacket(Collection<ItemIdentifierStack> allItems) {
-		itemDisplay.setItemList(allItems);
+		itemDisplay.setItemList(allItems.stream().filter(Objects::nonNull).collect(Collectors.toList()));
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -70,6 +71,7 @@ public class ItemDisplay {
 	private final boolean shiftPageChange;
 	private final Minecraft mc = FMLClientHandler.instance().getClient();
 	private static DisplayOption option = DisplayOption.ID;
+	private final ItemStackRenderer stackRenderer = new ItemStackRenderer(0, 0, 100.0F, false, false);
 
 	public ItemDisplay(IItemSearch search, FontRenderer fontRenderer, LogisticsBaseGuiScreen screen, ISpecialItemRenderer renderer, int left, int top, int width, int height, int amountPosLeft, int amountPosTop, int amountWidth, int[] amountChangeMode, boolean shiftPageChange) {
 		this.search = search;
@@ -108,8 +110,7 @@ public class ItemDisplay {
 	public void setItemList(Collection<ItemIdentifierStack> allItems) {
 		listbyserver = true;
 		_allItems.clear();
-		_allItems.addAll(allItems);
-		Collections.sort(_allItems, new StackComparitor());
+		allItems.stream().sorted(new ItemidStackDisplayOptionComparator()).forEach(_allItems::add);
 		boolean found = false;
 		if (selectedItem == null) {
 			return;
@@ -126,7 +127,7 @@ public class ItemDisplay {
 		}
 	}
 
-	private static class StackComparitor implements Comparator<ItemIdentifierStack> {
+	private static class ItemidStackDisplayOptionComparator implements Comparator<ItemIdentifierStack> {
 
 		@Override
 		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
@@ -195,7 +196,7 @@ public class ItemDisplay {
 			i = 0;
 		}
 		ItemDisplay.option = DisplayOption.values()[i];
-		Collections.sort(_allItems, new StackComparitor());
+		_allItems.sort(new ItemidStackDisplayOptionComparator());
 	}
 
 	public void renderSortMode(int x, int y) {
@@ -328,9 +329,7 @@ public class ItemDisplay {
 
 				GlStateManager.enableLighting();
 				// use GuiGraphics to render the ItemStacks
-				ItemStackRenderer itemstackRenderer = new ItemStackRenderer(x, y, 100.0F, false, false);
-				itemstackRenderer.setItemIdentStack(itemIdentifierStack).setDisplayAmount(DisplayAmount.HIDE_ONE);
-				itemstackRenderer.renderInGui();
+				stackRenderer.setPosX(x).setPosY(y).setItemIdentStack(itemIdentifierStack).setDisplayAmount(DisplayAmount.HIDE_ONE).renderInGui();
 				GlStateManager.disableLighting();
 
 				x += panelxSize;

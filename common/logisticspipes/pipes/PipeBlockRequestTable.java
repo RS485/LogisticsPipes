@@ -474,6 +474,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		return result;
 	}
 
+	@Nonnull
 	public ItemStack getResultForClick() {
 		if (MainProxy.isServer(getWorld())) {
 			ItemStack result = getOutput(true);

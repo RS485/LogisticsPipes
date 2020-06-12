@@ -68,6 +68,7 @@ import io.netty.buffer.ByteBuf;
 import static io.netty.buffer.Unpooled.buffer;
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.IReadListObject;
 import logisticspipes.network.IWriteListObject;
 import logisticspipes.routing.channels.ChannelInformation;
@@ -613,6 +614,10 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 		}
 
 		ItemIdentifier item = readItemIdentifier();
+		if (item == null) {
+			LogisticsPipes.log.error("Read null ItemIdentifier in readItemIdentifierStack");
+			return null;
+		}
 		return new ItemIdentifierStack(item, stacksize);
 	}
 

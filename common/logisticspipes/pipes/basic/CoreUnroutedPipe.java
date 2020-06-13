@@ -41,8 +41,6 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
-	private Object ccType;
-
 	public LogisticsTileGenericPipe container;
 	public final PipeTransportLogistics transport;
 	public final Item item;
@@ -261,16 +259,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public boolean isFluidPipe() {
 		return false;
-	}
-
-	@Override
-	public void setCCType(Object type) {
-		ccType = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccType;
 	}
 
 	public abstract int getTextureIndex();

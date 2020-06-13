@@ -45,7 +45,6 @@ import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>>, IClientInformationProvider {
 
-	private Object ccType;
 	private final ItemIdentifierStack[] _contents;
 	private final String _name;
 	private final int _stackLimit;
@@ -475,16 +474,6 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 			return FluidIdentifier.get(stack.getItem()) != null;
 		}
 		return true;
-	}
-
-	@Override
-	public void setCCType(Object type) {
-		ccType = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccType;
 	}
 
 	@Override

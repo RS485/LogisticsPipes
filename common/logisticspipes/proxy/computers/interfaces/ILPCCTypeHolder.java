@@ -1,8 +1,13 @@
 package logisticspipes.proxy.computers.interfaces;
 
 public interface ILPCCTypeHolder {
+	Object[] ccType = new Object[1];
 
-	void setCCType(Object type);
+	default void setCCType(Object type) {
+		ccType[0] = type;
+	}
 
-	Object getCCType();
+	default Object getCCType() {
+		return ccType[0];
+	}
 }

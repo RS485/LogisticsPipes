@@ -27,7 +27,6 @@ public class DictResource implements IResource {
 	public boolean ignore_nbt = false;
 	//match all items with same oredict prefix
 	public boolean use_category = false;
-	private Object ccObject;
 
 	public DictResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
@@ -160,16 +159,6 @@ public class DictResource implements IResource {
 		clone.ignore_nbt = ignore_nbt;
 		clone.use_category = use_category;
 		return clone;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
-	}
-
-	@Override
-	public void setCCType(Object type) {
-		ccObject = type;
 	}
 
 	@Override

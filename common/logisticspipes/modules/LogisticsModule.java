@@ -31,8 +31,6 @@ import network.rs485.logisticspipes.module.Gui;
 @CCType(name = "LogisticsModule")
 public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
-	private Object ccType;
-
 	protected IWorldProvider _world;
 	protected IPipeServiceProvider _service;
 
@@ -184,16 +182,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * typically used when the neighboring block changes
 	 */
 	public void clearCache() {}
-
-	@Override
-	public void setCCType(Object type) {
-		ccType = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccType;
-	}
 
 	@Override
 	public String toString() {

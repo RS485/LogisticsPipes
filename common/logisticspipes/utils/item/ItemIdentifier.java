@@ -235,8 +235,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		this.uniqueID = uniqueID;
 	}
 
-	private Object ccType;
-
 	public final Item item;
 	public final int itemDamage;
 	public final FinalNBTTagCompound tag;
@@ -784,13 +782,4 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		}
 	}
 
-	@Override
-	public void setCCType(Object type) {
-		ccType = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccType;
-	}
 }

@@ -46,7 +46,6 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 public class LogisticsSolidTileEntity extends TileEntity implements ITickable, ILPCCTypeHolder, IRotationProvider, ManagedPeripheral, Environment, SidedEnvironment, IOCTile {
 
 	private boolean addedToNetwork = false;
-	private Object ccType = null;
 	private boolean init = false;
 	public int rotation = 0;
 
@@ -201,16 +200,6 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 
 	public DoubleCoordinates getLPPosition() {
 		return new DoubleCoordinates(this);
-	}
-
-	@Override
-	public void setCCType(Object type) {
-		ccType = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccType;
 	}
 
 	public World getWorldForHUD() {

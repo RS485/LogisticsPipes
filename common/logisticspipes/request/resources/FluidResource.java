@@ -16,7 +16,6 @@ public class FluidResource implements IResource {
 	private final FluidIdentifier liquid;
 	private final IRequestFluid target;
 	private int amount;
-	private Object ccObject;
 
 	public FluidResource(FluidIdentifier liquid, int amount, IRequestFluid target) {
 		this.liquid = liquid;
@@ -88,16 +87,6 @@ public class FluidResource implements IResource {
 	@Override
 	public IResource copyForDisplayWith(int amount) {
 		return new FluidResource(liquid, amount, null);
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
-	}
-
-	@Override
-	public void setCCType(Object type) {
-		ccObject = type;
 	}
 
 	@Override

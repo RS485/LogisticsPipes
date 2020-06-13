@@ -356,15 +356,4 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 		return SimpleServiceLocator.logisticsFluidManager.getFluidContainer(this.makeFluidIdentifierStack(1)).getItem();
 	}
 
-	private Object ccObject;
-
-	@Override
-	public void setCCType(Object type) {
-		ccObject = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccObject;
-	}
 }

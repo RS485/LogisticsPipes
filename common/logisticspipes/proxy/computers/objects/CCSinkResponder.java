@@ -12,8 +12,6 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 @CCType(name = "CCItemSinkRequest")
 public class CCSinkResponder implements ILPCCTypeHolder {
 
-	private Object ccType;
-
 	@Getter
 	private final ItemIdentifierStack stack;
 	@Getter
@@ -57,13 +55,4 @@ public class CCSinkResponder implements ILPCCTypeHolder {
 		done = true;
 	}
 
-	@Override
-	public void setCCType(Object type) {
-		ccType = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccType;
-	}
 }

@@ -23,7 +23,6 @@ import logisticspipes.utils.tuples.Triplet;
 
 public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>, ILPCCTypeHolder {
 
-	private Object ccType;
 	private final ItemIdentifier _item;
 	private int stackSize;
 
@@ -155,13 +154,4 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return c;
 	}
 
-	@Override
-	public void setCCType(Object type) {
-		ccType = type;
-	}
-
-	@Override
-	public Object getCCType() {
-		return ccType;
-	}
 }

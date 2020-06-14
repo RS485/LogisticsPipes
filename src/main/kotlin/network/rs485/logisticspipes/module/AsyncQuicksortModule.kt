@@ -65,6 +65,11 @@ const val NORMAL_DELAY = 6
 data class QuicksortAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
 class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>() {
+    companion object {
+        @JvmStatic
+        val name: String = "quick_sort"
+    }
+
     private val localSlotWatchers = PlayerCollectionList()
     private var stalled = true
     private var currentSlot = 0

@@ -67,6 +67,11 @@ import network.rs485.logisticspipes.util.matchingSequence
 
 
 class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), SimpleFilter, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
+    companion object {
+        @JvmStatic
+        val name: String = "extractor_advanced"
+    }
+
     private val filterInventory: ItemIdentifierInventory = ItemIdentifierInventory(9, "Item list", 1)
     private val hud = HUDAdvancedExtractor(this)
     private val extractor = AsyncExtractorModule(filterOutMethod = { it.isEmpty || _itemsIncluded != filterInventory.matchingSequence(it).any() })

@@ -144,7 +144,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			RenderHelper.enableGUIStandardItemLighting();
-			ItemStack stack = new ItemStack(LPItems.upgrades.get(SneakyUpgradeConfig.class), 1);
+			ItemStack stack = new ItemStack(ItemUpgrade.getAndCheckUpgrade(LPItems.upgrades.get(SneakyUpgradeConfig.getName())));
 			itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);

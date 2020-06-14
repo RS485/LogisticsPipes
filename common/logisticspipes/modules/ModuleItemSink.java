@@ -65,6 +65,10 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		_filterInventory.addListener(this);
 	}
 
+	public static String getName() {
+		return "item_sink";
+	}
+
 	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
 	@Nonnull

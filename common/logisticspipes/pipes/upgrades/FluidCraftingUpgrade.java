@@ -7,6 +7,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class FluidCraftingUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "fluid_crafting";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

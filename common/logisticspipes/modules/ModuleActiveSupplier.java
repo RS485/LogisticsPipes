@@ -71,6 +71,10 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 		dummyInventory.addListener(this);
 	}
 
+	public static String getName() {
+		return "active_supplier";
+	}
+
 	@Override
 	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();

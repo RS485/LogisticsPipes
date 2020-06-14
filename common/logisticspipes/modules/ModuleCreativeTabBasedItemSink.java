@@ -45,6 +45,10 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 
 	private SinkReply _sinkReply;
 
+	public static String getName() {
+		return "item_sink_creativetab";
+	}
+
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);

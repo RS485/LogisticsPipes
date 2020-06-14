@@ -80,6 +80,11 @@ import kotlin.math.pow
 data class ExtractorAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
 class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack -> stack.isEmpty }) : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+    companion object {
+        @JvmStatic
+        val name: String = "extractor"
+    }
+
     private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
     private var _sneakyDirection: EnumFacing? = null
     private var currentSlot = 0

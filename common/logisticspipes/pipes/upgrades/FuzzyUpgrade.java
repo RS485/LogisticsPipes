@@ -9,6 +9,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class FuzzyUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "fuzzy";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

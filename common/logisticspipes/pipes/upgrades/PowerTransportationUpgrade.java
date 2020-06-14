@@ -5,6 +5,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class PowerTransportationUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "power_transportation";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

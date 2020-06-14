@@ -6,6 +6,10 @@ import logisticspipes.pipes.upgrades.IPipeUpgrade;
 
 public class BCPowerSupplierUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "power_supplier_mj";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return true;

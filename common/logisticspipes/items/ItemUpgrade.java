@@ -3,6 +3,7 @@ package logisticspipes.items;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,6 +11,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -87,38 +89,43 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 
 	public static void loadUpgrades(IForgeRegistry<Item> registry) {
-		registerUpgrade(registry, "sneaky_combination", CombinedSneakyUpgrade::new);
-		registerUpgrade(registry, "sneaky", SneakyUpgradeConfig::new);
-		registerUpgrade(registry, "speed", SpeedUpgrade::new);
-		registerUpgrade(registry, "disconnection", ConnectionUpgradeConfig::new);
+		registerUpgrade(registry, CombinedSneakyUpgrade.getName(), CombinedSneakyUpgrade::new);
+		registerUpgrade(registry, SneakyUpgradeConfig.getName(), SneakyUpgradeConfig::new);
+		registerUpgrade(registry, SpeedUpgrade.getName(), SpeedUpgrade::new);
+		registerUpgrade(registry, ConnectionUpgradeConfig.getName(), ConnectionUpgradeConfig::new);
 
-		registerUpgrade(registry, "satellite_advanced", AdvancedSatelliteUpgrade::new);
-		registerUpgrade(registry, "fluid_crafting", FluidCraftingUpgrade::new);
-		registerUpgrade(registry, "crafting_byproduct", CraftingByproductUpgrade::new);
-		registerUpgrade(registry, "pattern", PatternUpgrade::new);
-		registerUpgrade(registry, "fuzzy", FuzzyUpgrade::new);
-		registerUpgrade(registry, "power_transportation", PowerTransportationUpgrade::new);
-		registerUpgrade(registry, "power_supplier_mj", BCPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_rf", RFPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_eu_lv", IC2LVPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_eu_mv", IC2MVPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_eu_hv", IC2HVPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "power_supplier_eu_ev", IC2EVPowerSupplierUpgrade::new);
-		registerUpgrade(registry, "cc_remote_control", CCRemoteControlUpgrade::new);
-		registerUpgrade(registry, "crafting_monitoring", CraftingMonitoringUpgrade::new);
-		registerUpgrade(registry, "opaque", OpaqueUpgrade::new);
-		registerUpgrade(registry, "crafting_cleanup", CraftingCleanupUpgrade::new);
-		registerUpgrade(registry, "logic_controller", LogicControllerUpgrade::new);
-		registerUpgrade(registry, "module_upgrade", UpgradeModuleUpgrade::new);
-		registerUpgrade(registry, "action_speed", ActionSpeedUpgrade::new);
-		registerUpgrade(registry, "item_extraction", ItemExtractionUpgrade::new);
-		registerUpgrade(registry, "item_stack_extraction", ItemStackExtractionUpgrade::new);
+		registerUpgrade(registry, AdvancedSatelliteUpgrade.getName(), AdvancedSatelliteUpgrade::new);
+		registerUpgrade(registry, FluidCraftingUpgrade.getName(), FluidCraftingUpgrade::new);
+		registerUpgrade(registry, CraftingByproductUpgrade.getName(), CraftingByproductUpgrade::new);
+		registerUpgrade(registry, PatternUpgrade.getName(), PatternUpgrade::new);
+		registerUpgrade(registry, FuzzyUpgrade.getName(), FuzzyUpgrade::new);
+		registerUpgrade(registry, PowerTransportationUpgrade.getName(), PowerTransportationUpgrade::new);
+		registerUpgrade(registry, BCPowerSupplierUpgrade.getName(), BCPowerSupplierUpgrade::new);
+		registerUpgrade(registry, RFPowerSupplierUpgrade.getName(), RFPowerSupplierUpgrade::new);
+		registerUpgrade(registry, IC2LVPowerSupplierUpgrade.getName(), IC2LVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, IC2MVPowerSupplierUpgrade.getName(), IC2MVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, IC2HVPowerSupplierUpgrade.getName(), IC2HVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, IC2EVPowerSupplierUpgrade.getName(), IC2EVPowerSupplierUpgrade::new);
+		registerUpgrade(registry, CCRemoteControlUpgrade.getName(), CCRemoteControlUpgrade::new);
+		registerUpgrade(registry, CraftingMonitoringUpgrade.getName(), CraftingMonitoringUpgrade::new);
+		registerUpgrade(registry, OpaqueUpgrade.getName(), OpaqueUpgrade::new);
+		registerUpgrade(registry, CraftingCleanupUpgrade.getName(), CraftingCleanupUpgrade::new);
+		registerUpgrade(registry, LogicControllerUpgrade.getName(), LogicControllerUpgrade::new);
+		registerUpgrade(registry, UpgradeModuleUpgrade.getName(), UpgradeModuleUpgrade::new);
+		registerUpgrade(registry, ActionSpeedUpgrade.getName(), ActionSpeedUpgrade::new);
+		registerUpgrade(registry, ItemExtractionUpgrade.getName(), ItemExtractionUpgrade::new);
+		registerUpgrade(registry, ItemStackExtractionUpgrade.getName(), ItemStackExtractionUpgrade::new);
+	}
+
+	@Nonnull
+	public static Item getAndCheckUpgrade(ResourceLocation resource) {
+		Objects.requireNonNull(resource, "Resource for upgrade is null. Was the upgrade registered?");
+		return Objects.requireNonNull(Item.REGISTRY.getObject(resource), "Upgrade " + resource.toString() + " not found in Item registry");
 	}
 
 	public static void registerUpgrade(IForgeRegistry<Item> registry, String name, Supplier<? extends IPipeUpgrade> upgradeConstructor) {
-		Upgrade upgrade = new Upgrade(upgradeConstructor);
-		ItemUpgrade item = LogisticsPipes.setName(new ItemUpgrade(upgrade), String.format("upgrade_%s", name));
-		LPItems.upgrades.put(upgrade.getIPipeUpgradeClass(), item); // TODO account for registry overrides → move to init or something
+		ItemUpgrade item = LogisticsPipes.setName(new ItemUpgrade(new Upgrade(upgradeConstructor)), String.format("upgrade_%s", name));
+		LPItems.upgrades.put(name, item.getRegistryName());
 		registry.register(item);
 	}
 

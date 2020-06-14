@@ -40,11 +40,9 @@ public abstract class CraftingPartRecipes implements IRecipeProvider {
 
 	@Override
 	public final void loadRecipes() {
-		loadPlainRecipes();
 		getCraftingPartList().forEach(this::loadRecipes);
 	}
 
 	protected abstract void loadRecipes(CraftingParts parts);
 
-	protected abstract void loadPlainRecipes();
 }

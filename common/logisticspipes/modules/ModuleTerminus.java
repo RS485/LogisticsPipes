@@ -50,6 +50,10 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 		_filterInventory.addListener(this);
 	}
 
+	public static String getName() {
+		return "terminus";
+	}
+
 	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
 	@Nonnull

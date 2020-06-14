@@ -5,6 +5,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class OpaqueUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "opaque";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return true;

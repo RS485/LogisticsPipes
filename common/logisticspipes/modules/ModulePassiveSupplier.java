@@ -46,6 +46,10 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 		_filterInventory.addListener(this);
 	}
 
+	public static String getName() {
+		return "passive_supplier";
+	}
+
 	@Override
 	@Nonnull
 	public IInventory getFilterInventory() {

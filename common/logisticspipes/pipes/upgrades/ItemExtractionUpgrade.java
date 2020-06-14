@@ -11,6 +11,10 @@ import network.rs485.logisticspipes.module.AsyncExtractorModule;
 
 public class ItemExtractionUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "item_extraction";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

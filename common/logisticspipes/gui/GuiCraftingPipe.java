@@ -25,6 +25,7 @@ import org.lwjgl.opengl.GL12;
 import logisticspipes.LPItems;
 import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.GuiSelectSatellitePopup;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.cpipe.CPipeCleanupImport;
@@ -397,7 +398,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
-				ItemStack stack = new ItemStack(LPItems.upgrades.get(FluidCraftingUpgrade.class));
+				ItemStack stack = new ItemStack(ItemUpgrade.getAndCheckUpgrade(LPItems.upgrades.get(FluidCraftingUpgrade.getName())));
 				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				itemRender.renderItemOverlayIntoGUI(fontRenderer, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -507,7 +508,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
-				ItemStack stack = new ItemStack(LPItems.upgrades.get(CraftingByproductUpgrade.class));
+				ItemStack stack = new ItemStack(ItemUpgrade.getAndCheckUpgrade(LPItems.upgrades.get(CraftingByproductUpgrade.getName())));
 				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				itemRender.renderItemOverlayIntoGUI(fontRenderer, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -540,7 +541,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				RenderHelper.enableGUIStandardItemLighting();
-				ItemStack stack = new ItemStack(LPItems.upgrades.get(CraftingCleanupUpgrade.class));
+				ItemStack stack = new ItemStack(ItemUpgrade.getAndCheckUpgrade(LPItems.upgrades.get(CraftingCleanupUpgrade.getName())));
 				itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 				itemRender.renderItemOverlayIntoGUI(fontRenderer, stack, left + 5, top + 5, "");
 				GL11.glDisable(GL11.GL_LIGHTING);

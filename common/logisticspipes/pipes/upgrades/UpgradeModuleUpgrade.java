@@ -6,6 +6,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class UpgradeModuleUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "module_upgrade";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

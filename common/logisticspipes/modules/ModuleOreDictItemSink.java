@@ -53,6 +53,10 @@ public class ModuleOreDictItemSink extends LogisticsModule implements IClientInf
 
 	private SinkReply _sinkReply;
 
+	public static String getName() {
+		return "item_sink_oredict";
+	}
+
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);

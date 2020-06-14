@@ -7,6 +7,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class CraftingCleanupUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "crafting_cleanup";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

@@ -7,6 +7,10 @@ import network.rs485.logisticspipes.module.AsyncExtractorModule;
 
 public class ActionSpeedUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "action_speed";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

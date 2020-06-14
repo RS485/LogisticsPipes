@@ -27,6 +27,10 @@ public class SneakyUpgradeConfig implements IConfigPipeUpgrade {
 
 	public static final String SIDE_KEY = "LPSNEAKY-SIDE";
 
+	public static String getName() {
+		return "sneaky";
+	}
+
 	@AllArgsConstructor
 	public enum Sides {
 		UP(EnumFacing.UP, "LPSNEAKY-UP"),

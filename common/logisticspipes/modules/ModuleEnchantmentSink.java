@@ -12,6 +12,10 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 public class ModuleEnchantmentSink extends LogisticsModule {
 
+	public static String getName() {
+		return "enchantment_sink";
+	}
+
 	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 

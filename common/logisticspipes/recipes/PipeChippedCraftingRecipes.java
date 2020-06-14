@@ -228,8 +228,4 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 
 	}
 
-	@Override
-	protected void loadPlainRecipes() {
-
-	}
 }

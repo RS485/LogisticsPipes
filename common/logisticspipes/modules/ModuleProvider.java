@@ -86,6 +86,10 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 
 	public ModuleProvider() {}
 
+	public static String getName() {
+		return "provider";
+	}
+
 	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");

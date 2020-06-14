@@ -7,6 +7,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class CraftingByproductUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "crafting_byproduct";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

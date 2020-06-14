@@ -6,6 +6,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class CraftingMonitoringUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "crafting_monitoring";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

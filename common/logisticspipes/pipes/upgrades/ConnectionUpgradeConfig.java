@@ -21,6 +21,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class ConnectionUpgradeConfig implements IConfigPipeUpgrade {
 
+	public static String getName() {
+		return "disconnection";
+	}
+
 	@AllArgsConstructor
 	public enum Sides {
 		UP(EnumFacing.UP, "LPDIS-UP"),

@@ -6,6 +6,10 @@ import logisticspipes.pipes.upgrades.IPipeUpgrade;
 
 public class RFPowerSupplierUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "power_supplier_rf";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return true;

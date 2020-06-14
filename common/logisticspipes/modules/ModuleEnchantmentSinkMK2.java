@@ -50,6 +50,10 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
+	public static String getName() {
+		return "enchantment_sink_mk2";
+	}
+
 	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
 	@Nonnull

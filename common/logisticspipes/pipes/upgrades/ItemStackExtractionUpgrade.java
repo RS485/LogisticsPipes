@@ -9,6 +9,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class ItemStackExtractionUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "item_stack_extraction";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

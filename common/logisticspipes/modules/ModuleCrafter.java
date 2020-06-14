@@ -161,6 +161,10 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		}
 	}
 
+	public static String getName() {
+		return "crafter";
+	}
+
 	/**
 	 * assumes that the invProvider is also IRequest items.
 	 */

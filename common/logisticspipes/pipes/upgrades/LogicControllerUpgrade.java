@@ -5,6 +5,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class LogicControllerUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "logic_controller";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

@@ -1,11 +1,12 @@
 package logisticspipes;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
@@ -13,14 +14,10 @@ import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsProgrammer;
-import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemPipeController;
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.RemoteOrderer;
-import logisticspipes.modules.LogisticsModule;
-import logisticspipes.pipes.upgrades.IPipeUpgrade;
 
 public class LPItems {
 
@@ -108,8 +105,8 @@ public class LPItems {
 	@ObjectHolder("logisticspipes:module_blank")
 	public static ItemBlankModule blankModule;
 
-	public static Map<Class<? extends LogisticsModule>, ItemModule> modules = new HashMap<>();
-	public static Map<Class<? extends IPipeUpgrade>, ItemUpgrade> upgrades = new HashMap<>();
+	public static BiMap<String, ResourceLocation> modules = HashBiMap.create();
+	public static BiMap<String, ResourceLocation> upgrades = HashBiMap.create();
 
 	// Miscellaneous Items
 	@ObjectHolder("logisticspipes:guide_book")

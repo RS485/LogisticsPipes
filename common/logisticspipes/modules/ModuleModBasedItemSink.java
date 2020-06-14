@@ -45,6 +45,10 @@ public class ModuleModBasedItemSink extends LogisticsModule implements IStringBa
 
 	private SinkReply _sinkReply;
 
+	public static String getName() {
+		return "item_sink_mod";
+	}
+
 	@Override
 	public void registerPosition(ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);

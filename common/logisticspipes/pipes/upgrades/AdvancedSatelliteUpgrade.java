@@ -7,6 +7,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class AdvancedSatelliteUpgrade implements IPipeUpgrade {
 
+	public static String getName() {
+		return "satellite_advanced";
+	}
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

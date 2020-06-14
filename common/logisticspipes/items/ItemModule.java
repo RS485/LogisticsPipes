@@ -90,23 +90,23 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	public static void loadModules(IForgeRegistry<Item> registry) {
-		registerModule(registry, "item_sink", ModuleItemSink::new);
-		registerModule(registry, "passive_supplier", ModulePassiveSupplier::new);
-		registerModule(registry, "extractor", AsyncExtractorModule::new);
-		registerModule(registry, "item_sink_polymorphic", ModulePolymorphicItemSink::new);
-		registerModule(registry, "quick_sort", AsyncQuicksortModule::new);
-		registerModule(registry, "terminus", ModuleTerminus::new);
-		registerModule(registry, "extractor_advanced", AsyncAdvancedExtractor::new);
-		registerModule(registry, "provider", ModuleProvider::new);
-		registerModule(registry, "item_sink_mod", ModuleModBasedItemSink::new);
-		registerModule(registry, "item_sink_oredict", ModuleOreDictItemSink::new);
-		registerModule(registry, "enchantment_sink", ModuleEnchantmentSink::new);
-		registerModule(registry, "enchantment_sink_mk2", ModuleEnchantmentSinkMK2::new);
+		registerModule(registry, ModuleItemSink.getName(), ModuleItemSink::new);
+		registerModule(registry, ModulePassiveSupplier.getName(), ModulePassiveSupplier::new);
+		registerModule(registry, AsyncExtractorModule.getName(), AsyncExtractorModule::new);
+		registerModule(registry, ModulePolymorphicItemSink.getName(), ModulePolymorphicItemSink::new);
+		registerModule(registry, AsyncQuicksortModule.getName(), AsyncQuicksortModule::new);
+		registerModule(registry, ModuleTerminus.getName(), ModuleTerminus::new);
+		registerModule(registry, AsyncAdvancedExtractor.getName(), AsyncAdvancedExtractor::new);
+		registerModule(registry, ModuleProvider.getName(), ModuleProvider::new);
+		registerModule(registry, ModuleModBasedItemSink.getName(), ModuleModBasedItemSink::new);
+		registerModule(registry, ModuleOreDictItemSink.getName(), ModuleOreDictItemSink::new);
+		registerModule(registry, ModuleEnchantmentSink.getName(), ModuleEnchantmentSink::new);
+		registerModule(registry, ModuleEnchantmentSinkMK2.getName(), ModuleEnchantmentSinkMK2::new);
 		//registerModule(registry, "quick_sort_cc", ModuleCCBasedQuickSort::new);
 		//registerModule(registry, "item_sink_cc", ModuleCCBasedItemSink::new);
-		registerModule(registry, "crafter", ModuleCrafter::new);
-		registerModule(registry, "active_supplier", ModuleActiveSupplier::new);
-		registerModule(registry, "item_sink_creativetab", ModuleCreativeTabBasedItemSink::new);
+		registerModule(registry, ModuleCrafter.getName(), ModuleCrafter::new);
+		registerModule(registry, ModuleActiveSupplier.getName(), ModuleActiveSupplier::new);
+		registerModule(registry, ModuleCreativeTabBasedItemSink.getName(), ModuleCreativeTabBasedItemSink::new);
 	}
 
 	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
@@ -114,10 +114,9 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor, String modID) {
-		Module module = new Module(moduleConstructor);
-		ItemModule mod = LogisticsPipes.setName(new ItemModule(module), String.format("module_%s", name), modID);
-		LPItems.modules.put(module.getILogisticsModuleClass(), mod); // TODO account for registry overrides → move to init or something
-		registry.register(mod);
+		ItemModule module = LogisticsPipes.setName(new ItemModule(new Module(moduleConstructor)), String.format("module_%s", name), modID);
+		LPItems.modules.put(name, module.getRegistryName());
+		registry.register(module);
 	}
 
 	private void openConfigGui(@Nonnull ItemStack stack, EntityPlayer player, World world) {

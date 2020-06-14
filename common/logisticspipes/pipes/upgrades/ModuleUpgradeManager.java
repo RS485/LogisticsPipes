@@ -218,6 +218,6 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	}
 
 	public void dropUpgrades() {
-		inv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		inv.dropContents(pipe.getWorld(), pipe.getPos());
 	}
 }

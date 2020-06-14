@@ -9,6 +9,7 @@ package logisticspipes.utils.item;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.item.EntityItem;
@@ -162,30 +163,27 @@ public class SimpleStackInventory implements IInventory, ISaveState, Iterable<Pa
 	}
 
 	public void dropContents(World world, BlockPos pos) {
-		dropContents(world, pos.getX(), pos.getY(), pos.getZ());
-	}
-
-	public void dropContents(World world, int posX, int posY, int posZ) {
 		if (MainProxy.isServer(world)) {
 			for (int i = 0; i < stackList.size(); i++) {
-				final ItemStack stack = stackList.get(i);
-				while (!stack.isEmpty()) {
-					ItemStack todrop = decrStackSize(i, stack.getMaxStackSize());
-					dropItems(world, todrop, posX, posY, posZ);
-				}
+				dropSlot(i, world, pos);
 			}
 		}
 	}
 
-	private void dropItems(World world, @Nonnull ItemStack stack, int i, int j, int k) {
-		if (stack.isEmpty()) return;
-		float f1 = 0.7F;
-		double d = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
-		double d1 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
-		double d2 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
-		EntityItem entityitem = new EntityItem(world, i + d, j + d1, k + d2, stack);
-		entityitem.setDefaultPickupDelay();
-		world.spawnEntity(entityitem);
+	private void dropSlot(int slot, World world, BlockPos pos) {
+		final ItemStack slotStack = stackList.get(slot);
+		IntStream.range(0, (slotStack.getCount() / slotStack.getMaxStackSize()) + 1)
+				.mapToObj(i -> decrStackSize(slot, slotStack.getMaxStackSize()))
+				.filter(dropStack -> !dropStack.isEmpty())
+				.forEach(dropStack -> {
+					float f1 = 0.7F;
+					double d = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
+					double d1 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
+					double d2 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
+					EntityItem entityitem = new EntityItem(world, pos.getX() + d, pos.getY() + d1, pos.getZ() + d2, dropStack);
+					entityitem.setDefaultPickupDelay();
+					world.spawnEntity(entityitem);
+				});
 	}
 
 	public void addListener(ISimpleInventoryEventHandler listner) {

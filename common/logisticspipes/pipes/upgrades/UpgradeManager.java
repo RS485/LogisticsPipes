@@ -305,7 +305,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			public void guiClosedByPlayer(EntityPlayer player) {
 				players.remove(player);
 				if (players.isEmpty() && !isCombinedSneakyUpgrade) {
-					sneakyInv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+					sneakyInv.dropContents(pipe.getWorld(), pipe.getPos());
 				}
 			}
 		};
@@ -318,8 +318,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	}
 
 	public void dropUpgrades() {
-		inv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
-		sneakyInv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		inv.dropContents(pipe.getWorld(), pipe.getPos());
+		sneakyInv.dropContents(pipe.getWorld(), pipe.getPos());
 	}
 
 	@Override

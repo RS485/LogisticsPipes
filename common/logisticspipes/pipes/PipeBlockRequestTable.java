@@ -251,9 +251,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void onAllowedRemoval() {
 		if (MainProxy.isServer(getWorld())) {
-			inv.dropContents(getWorld(), getX(), getY(), getZ());
-			toSortInv.dropContents(getWorld(), getX(), getY(), getZ());
-			diskInv.dropContents(getWorld(), getX(), getY(), getZ());
+			inv.dropContents(getWorld(), getPos());
+			toSortInv.dropContents(getWorld(), getPos());
+			diskInv.dropContents(getWorld(), getPos());
 		}
 	}
 

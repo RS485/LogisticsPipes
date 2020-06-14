@@ -29,7 +29,7 @@ public class RoutingLaserPacket extends ModernPacket {
 	@Override
 	public void readData(LPDataInput input) {
 		while (input.readBoolean()) {
-			lasers.add(new LaserData().readData(input));
+			lasers.add(new LaserData(input));
 		}
 	}
 

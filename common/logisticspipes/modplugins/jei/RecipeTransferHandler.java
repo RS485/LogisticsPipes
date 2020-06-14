@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -83,17 +84,22 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 					int slot = ps.getKey() - 1;
 
 					if (slot < 9) {
-						stackList.set(slot, ps.getValue().getDisplayedIngredient());
-						List<ItemStack> list = new ArrayList<>(ps.getValue().getAllIngredients());
+						final ItemStack displayedIngredient = ps.getValue().getDisplayedIngredient();
+						stackList.set(slot, displayedIngredient == null ? ItemStack.EMPTY : displayedIngredient);
+						NonNullList<ItemStack> list = NonNullList.create();
+						ps.getValue().getAllIngredients().stream().map(itemStack -> itemStack == null ? ItemStack.EMPTY : itemStack).forEach(stackList::add);
 						if (!list.isEmpty()) {
 							Iterator<ItemStack> iter = list.iterator();
 							while (iter.hasNext()) {
 								ItemStack wildCardCheckStack = iter.next();
 								if (wildCardCheckStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 									iter.remove();
-									NonNullList<ItemStack> secondList = NonNullList.create();
-									wildCardCheckStack.getItem().getSubItems(Objects.requireNonNull(wildCardCheckStack.getItem().getCreativeTab()), secondList);
-									list.addAll(secondList);
+									final CreativeTabs creativeTab = wildCardCheckStack.getItem().getCreativeTab();
+									if (creativeTab != null) {
+										NonNullList<ItemStack> secondList = NonNullList.create();
+										wildCardCheckStack.getItem().getSubItems(creativeTab, secondList);
+										list.addAll(secondList);
+									}
 									iter = list.iterator();
 								}
 							}

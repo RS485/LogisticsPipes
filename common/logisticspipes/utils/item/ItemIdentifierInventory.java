@@ -529,7 +529,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 
 	@Override
 	public @Nonnull List<String> getClientInformation() {
-		return Arrays.stream(_contents).map(ItemIdentifierStack::toString).collect(Collectors.toList());
+		return Arrays.stream(_contents).map(String::valueOf).collect(Collectors.toList());
 	}
 
 }

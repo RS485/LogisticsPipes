@@ -1,10 +1,9 @@
 package logisticspipes.modplugins.jei;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -69,10 +68,10 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 				return recipeTransferHandlerHelper.createInternalError();
 			}
 
-			NonNullList<ItemStack> stackList = NonNullList.withSize(9, ItemStack.EMPTY);
+			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
+			NonNullList<ItemStack> stackList = packet.getStackList();
 			ItemStack[][] stacks = new ItemStack[9][];
 			boolean hasCanidates = false;
-			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
 
 			IGuiItemStackGroup guiItemStackGroup = recipeLayout.getItemStacks();
 			Map<Integer, ? extends IGuiIngredient<ItemStack>> guiIngredients = guiItemStackGroup.getGuiIngredients();
@@ -86,10 +85,15 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 					if (slot < 9) {
 						final ItemStack displayedIngredient = ps.getValue().getDisplayedIngredient();
 						stackList.set(slot, displayedIngredient == null ? ItemStack.EMPTY : displayedIngredient);
-						NonNullList<ItemStack> list = NonNullList.create();
-						ps.getValue().getAllIngredients().stream().map(itemStack -> itemStack == null ? ItemStack.EMPTY : itemStack).forEach(stackList::add);
-						if (!list.isEmpty()) {
-							Iterator<ItemStack> iter = list.iterator();
+						NonNullList<ItemStack> itemCandidateList = NonNullList.create();
+
+						// add all non-null non-empty ingredients to the itemCandidateList
+						ps.getValue().getAllIngredients().stream()
+								.filter(itemStack -> Objects.nonNull(itemStack) && !itemStack.isEmpty())
+								.forEach(itemCandidateList::add);
+
+						if (!itemCandidateList.isEmpty()) {
+							Iterator<ItemStack> iter = itemCandidateList.iterator();
 							while (iter.hasNext()) {
 								ItemStack wildCardCheckStack = iter.next();
 								if (wildCardCheckStack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
@@ -98,12 +102,12 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 									if (creativeTab != null) {
 										NonNullList<ItemStack> secondList = NonNullList.create();
 										wildCardCheckStack.getItem().getSubItems(creativeTab, secondList);
-										list.addAll(secondList);
+										itemCandidateList.addAll(secondList);
 									}
-									iter = list.iterator();
+									iter = itemCandidateList.iterator();
 								}
 							}
-							stacks[slot] = list.toArray(new ItemStack[0]);
+							stacks[slot] = itemCandidateList.toArray(new ItemStack[0]);
 							if (stacks[slot].length > 1) {
 								hasCanidates = true;
 							} else if (stacks[slot].length == 1) {
@@ -116,7 +120,7 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 				if (hasCanidates) {
 					gui.setSubGui(new GuiRecipeImport(tile, stacks));
 				} else {
-					MainProxy.sendPacketToServer(packet.setStackList(stackList).setTilePos(tile));
+					MainProxy.sendPacketToServer(packet.setTilePos(tile));
 				}
 			}
 			return null;

@@ -150,6 +150,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				extention = new FluidCraftingExtention(0);
 			}
 			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 125, (height - ySize) / 2 + 57, 37, 10, StringUtils.translate(PREFIX + "Select")));
+			normalButtonArray[0].enabled = craftingModule.getSlot().isInWorld();
 			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
 			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
 			addButton(normalButtonArray[3] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
@@ -186,7 +187,9 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
 			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
 			if (isAdvancedSat) {
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 2, guiTop + 160, 37, 10, StringUtils.translate(PREFIX + "Select")))));
+				final SmallGuiButton advancedSatelliteSelector = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 2, guiTop + 160, 37, 10, StringUtils.translate(PREFIX + "Select"));
+				advancedSatelliteSelector.enabled = craftingModule.getSlot().isInWorld();
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = advancedSatelliteSelector)));
 				extentionControllerLeft.addExtention(extention);
 			}
 			extention.registerSlot(fluidSlotIDs[i]);
@@ -292,8 +295,10 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	}
 
 	private void openSubGuiForSatelliteSelection(int id, boolean fluidSatellite) {
-		this.setSubGui(new GuiSelectSatellitePopup(module.getBlockPos(), fluidSatellite,
-				uuid -> MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeSetSatellitePacket.class).setPipeID(uuid).setInteger(id).setModulePos(module))));
+		if (module.getSlot().isInWorld()) {
+			this.setSubGui(new GuiSelectSatellitePopup(module.getBlockPos(), fluidSatellite, uuid ->
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeSetSatellitePacket.class).setPipeID(uuid).setInteger(id).setModulePos(module))));
+		}
 	}
 
 	@Override

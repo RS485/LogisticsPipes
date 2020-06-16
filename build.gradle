@@ -125,6 +125,9 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
+            // load LP core mod from classpath
+            property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
+
             mods {
                 logisticspipes {
                     sources = [sourceSets.api, sourceSets.main]
@@ -140,6 +143,9 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+
+            // load LP core mod from classpath
+            property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
 
             mods {
                 logisticspipes {

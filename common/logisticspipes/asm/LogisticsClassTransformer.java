@@ -1,12 +1,20 @@
 package logisticspipes.asm;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -17,14 +25,12 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.asm.transformers.AccessTransformer;
 import net.minecraftforge.fml.common.asm.transformers.ModAccessTransformer;
-import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.minecraftforge.fml.common.versioning.VersionParser;
 import net.minecraftforge.fml.common.versioning.VersionRange;
 import net.minecraftforge.fml.relauncher.Side;
 
-import com.google.common.collect.Multimap;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
@@ -98,17 +104,69 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	}
 
 	private void bootATRemapper() {
+		System.err.println("Fetching ModAccessTransformers");
+		final List<IClassTransformer> modATs = Launch.classLoader.getTransformers().stream().filter(transformer -> transformer instanceof ModAccessTransformer).collect(Collectors.toList());
+		System.err.println("Found " + modATs);
+		if (modATs.size() == 0) return;
+
+		System.err.println("Inserting missing ATs from classpath");
+		try {
+			readClasspathATs(modATs);
+		} catch (IllegalStateException e) {
+			System.err.println("Could not inject classpath FMLATs");
+			e.printStackTrace();
+		}
+
 		System.err.println("Booting Logistics Pipes ModAccessTransformerRemapper");
-		ModAccessTransformerRemapper remapper = null;
+		final ModAccessTransformerRemapper remapper;
 		try {
 			remapper = new ModAccessTransformerRemapper();
 		} catch (IllegalStateException e) {
 			System.err.println("Could not initialize ModAccessTransformerRemapper:");
 			e.printStackTrace();
+			return;
 		}
 
-		if (remapper != null) {
-			Launch.classLoader.getTransformers().stream().filter(transformer -> transformer instanceof ModAccessTransformer).forEach(remapper::apply);
+		modATs.forEach(remapper::apply);
+	}
+
+	private void readClasspathATs(List<IClassTransformer> modATs) {
+		final Method readMapFile;
+		try {
+			readMapFile = AccessTransformer.class.getDeclaredMethod("readMapFile", String.class);
+		} catch (NoSuchMethodException e) {
+			throw new IllegalStateException("Could not find method readMapFile on AccessTransformer class", e);
+		}
+		final boolean wasAccessible = readMapFile.isAccessible();
+		if (!wasAccessible) readMapFile.setAccessible(true);
+		try {
+			readClasspathATsInner(path -> {
+				final IClassTransformer classTransformer = modATs.get(0);
+				try {
+					readMapFile.invoke(classTransformer, path);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					throw new IllegalStateException("Could not access readMapFile method of " + classTransformer);
+				}
+			});
+		} catch (IOException e) {
+			throw new IllegalArgumentException("IO Error when fetching FMLATs", e);
+		} finally {
+			if (!wasAccessible) readMapFile.setAccessible(false);
+		}
+	}
+
+	private void readClasspathATsInner(Consumer<String> readMapFile) throws IOException {
+		final Enumeration<URL> manifestEntries = Launch.classLoader.findResources("META-INF/MANIFEST.MF");
+		while (manifestEntries.hasMoreElements()) {
+			final String accessTransformer;
+			try (InputStream manifestInputStream = manifestEntries.nextElement().openStream()) {
+				final Manifest manifest = new Manifest(manifestInputStream);
+				accessTransformer = manifest.getMainAttributes().getValue(ModAccessTransformer.FMLAT);
+			}
+			final Enumeration<URL> atEntries = Launch.classLoader.findResources("META-INF/" + accessTransformer);
+			while (atEntries.hasMoreElements()) {
+				readMapFile.accept(atEntries.nextElement().toString());
+			}
 		}
 	}
 

@@ -16,6 +16,7 @@ public class ModAccessTransformerRemapper {
 
 	private final Map<String, Map<String, String>> fieldMappings;
 	private final Map<String, Map<String, String>> methodMappings;
+	private final Field modifiersField;
 
 	private Field modifierDesc;
 	private Field modifierName;
@@ -41,23 +42,17 @@ public class ModAccessTransformerRemapper {
 		} catch (IllegalAccessException | NoSuchFieldException e) {
 			throw new IllegalStateException("Could not access rawMethodMaps of FMLDeobfuscatingRemapper", e);
 		}
+
+		try {
+			modifiersField = AccessTransformer.class.getDeclaredField("modifiers");
+		} catch (NoSuchFieldException e) {
+			throw new IllegalStateException("Could not access modifiers field of AccessTransformer", e);
+		}
 	}
 
 	public void apply(IClassTransformer modAT) {
-		final Multimap<?, ?> modifiersMap;
-		try {
-			final Field modifiers = AccessTransformer.class.getDeclaredField("modifiers");
-			final boolean wasAccessible = modifiers.isAccessible();
-			if (!wasAccessible) modifiers.setAccessible(true);
-			modifiersMap = (Multimap<?, ?>) modifiers.get(modAT); // String to AccessTransformer.Modifier
-			if (!wasAccessible) modifiers.setAccessible(false);
-
-			if (modifiersMap.isEmpty()) return;
-		} catch (NoSuchFieldException | IllegalAccessException | ClassCastException e) {
-			System.err.println("Could not access modifiers field of AccessTransformer:");
-			e.printStackTrace();
-			return;
-		}
+		final Multimap<String, ?> modifiersMap = getModifiers(modAT);
+		if (modifiersMap.isEmpty()) return;
 
 		modifiersMap.forEach(this::applySingleModifier);
 
@@ -71,8 +66,24 @@ public class ModAccessTransformerRemapper {
 		}
 	}
 
-	private void applySingleModifier(Object className, Object modifier) {
-		final String classKey = ((String) className).replaceAll("\\.", "/");
+	@SuppressWarnings("unchecked")
+	@Nonnull
+	private Multimap<String, ?> getModifiers(IClassTransformer modAT) {
+		final boolean wasAccessible = modifiersField.isAccessible();
+		if (!wasAccessible) modifiersField.setAccessible(true);
+		final Multimap<String, ?> modifiersMap; // String to AccessTransformer.Modifier
+		try {
+			modifiersMap = (Multimap<String, ?>) modifiersField.get(modAT);
+		} catch (IllegalAccessException | ClassCastException e) {
+			throw new IllegalStateException("Could not access modifiers field of " + modAT, e);
+		} finally {
+			if (!wasAccessible) modifiersField.setAccessible(false);
+		}
+		return modifiersMap;
+	}
+
+	private void applySingleModifier(String className, Object modifier) {
+		final String classKey = className.replaceAll("\\.", "/");
 		final String desc, name;
 		try {
 			name = getName(modifier);

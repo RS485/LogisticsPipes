@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -14,12 +15,16 @@ import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.asm.transformers.AccessTransformer;
+import net.minecraftforge.fml.common.asm.transformers.ModAccessTransformer;
+import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.minecraftforge.fml.common.versioning.VersionParser;
 import net.minecraftforge.fml.common.versioning.VersionRange;
 import net.minecraftforge.fml.relauncher.Side;
 
+import com.google.common.collect.Multimap;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
@@ -65,6 +70,9 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
+		// if dev environment and transform on first class is launched, boot the AT remapper
+		if (LogisticsPipesCoreLoader.isDevelopmentEnvironment() && name.equals("net.minecraftforge.fml.common.Loader")) bootATRemapper();
+
 		Thread thread = Thread.currentThread();
 		if (thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
 			clearNegativeInterfaceCache();
@@ -87,6 +95,21 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			bytes = writer.toByteArray();
 		}
 		return ParamProfiler.handleClass(bytes);
+	}
+
+	private void bootATRemapper() {
+		System.err.println("Booting Logistics Pipes ModAccessTransformerRemapper");
+		ModAccessTransformerRemapper remapper = null;
+		try {
+			remapper = new ModAccessTransformerRemapper();
+		} catch (IllegalStateException e) {
+			System.err.println("Could not initialize ModAccessTransformerRemapper:");
+			e.printStackTrace();
+		}
+
+		if (remapper != null) {
+			Launch.classLoader.getTransformers().stream().filter(transformer -> transformer instanceof ModAccessTransformer).forEach(remapper::apply);
+		}
 	}
 
 	private byte[] applyLPTransforms(String name, byte[] bytes) {

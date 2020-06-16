@@ -13,6 +13,7 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 
 	@Getter
 	private static boolean coremodLoaded = false;
+	private static boolean developmentEnvironment = false;
 
 	public LogisticsPipesCoreLoader() throws Exception {
 		Launch.classLoader.addTransformerExclusion("logisticspipes.asm.");
@@ -36,11 +37,17 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 
 	@Override
 	public void injectData(Map<String, Object> data) {
-
+		if (data.containsKey("runtimeDeobfuscationEnabled")) {
+			developmentEnvironment = !((Boolean) data.get("runtimeDeobfuscationEnabled"));
+		}
 	}
 
 	@Override
 	public String getAccessTransformerClass() {
 		return null;
+	}
+
+	public static boolean isDevelopmentEnvironment() {
+		return developmentEnvironment;
 	}
 }

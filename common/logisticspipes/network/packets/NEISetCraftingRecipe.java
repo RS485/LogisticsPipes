@@ -1,13 +1,10 @@
 package logisticspipes.network.packets;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
-
-import lombok.Getter;
-import lombok.Setter;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
@@ -21,12 +18,14 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 @StaticResolve
 public class NEISetCraftingRecipe extends CoordinatesPacket {
 
-	@Getter
-	@Setter
 	private NonNullList<ItemStack> stackList = NonNullList.withSize(9, ItemStack.EMPTY);
 
 	public NEISetCraftingRecipe(int id) {
 		super(id);
+	}
+
+	public NonNullList<ItemStack> getStackList() {
+		return this.stackList;
 	}
 
 	@Override
@@ -47,37 +46,16 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-
-		output.writeInt(stackList.size());
-
-		for (int i = 0; i < stackList.size(); i++) {
-			final ItemStack stack = stackList.get(i);
-
-			if (!stack.isEmpty()) {
-				output.writeByte(i);
-				output.writeInt(Item.getIdFromItem(stack.getItem()));
-				output.writeInt(stack.getCount());
-				output.writeInt(stack.getItemDamage());
-				output.writeNBTTagCompound(stack.getTagCompound());
-			}
-		}
-		output.writeByte(-1); // mark packet end
+		output.writeCollection(stackList, (out, stack) -> out.writeNBTTagCompound(stack.isEmpty() ? null : stack.writeToNBT(new NBTTagCompound())));
 	}
 
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-
-		byte index = input.readByte();
-
-		while (index != -1) { // read until the end
-			final int itemID = input.readInt();
-			int stackSize = input.readInt();
-			int damage = input.readInt();
-			ItemStack stack = new ItemStack(Item.getItemById(itemID), stackSize, damage);
-			stack.setTagCompound(input.readNBTTagCompound());
-			stackList.set(index, stack);
-			index = input.readByte(); // read the next slot
-		}
+		NonNullList<ItemStack> readList = input.readNonNullList(inp -> {
+			NBTTagCompound tag = inp.readNBTTagCompound();
+			return tag == null ? null : new ItemStack(tag);
+		}, ItemStack.EMPTY);
+		if (readList != null) stackList = readList;
 	}
 }

@@ -179,7 +179,8 @@ public class GuiRecipeImport extends SubGuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		int id = button.id;
 		if (id == 0) {
-			NonNullList<ItemStack> stackList = NonNullList.withSize(9, ItemStack.EMPTY);
+			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
+			NonNullList<ItemStack> stackList = packet.getStackList();
 			int i = 0;
 			for (Canidates canidate : grid) {
 				if (canidate == null) {
@@ -188,8 +189,7 @@ public class GuiRecipeImport extends SubGuiScreen {
 				}
 				stackList.set(i++, canidate.order.get(canidate.pos).makeNormalStack());
 			}
-			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
-			MainProxy.sendPacketToServer(packet.setStackList(stackList).setBlockPos(tile.getPos()));
+			MainProxy.sendPacketToServer(packet.setBlockPos(tile.getPos()));
 			exitGui();
 		} else if (id == 1) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FindMostLikelyRecipeComponents.class).setContent(list).setTilePos(tile));

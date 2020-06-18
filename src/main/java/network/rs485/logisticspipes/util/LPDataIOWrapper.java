@@ -692,7 +692,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 		NonNullList<T> list = NonNullList.withSize(size, fillItem);
 		for (int i = 0; i < size; i++) {
-			list.set(i, reader.readObject(this));
+			T obj = reader.readObject(this);
+			if (obj != null) list.set(i, obj);
 		}
 		return list;
 	}

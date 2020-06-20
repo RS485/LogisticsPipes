@@ -54,7 +54,9 @@ public class ItemGuideBook extends LogisticsItem {
 
 	public static void openGuideBook(@Nonnull EnumHand hand) {
 		Minecraft mc = Minecraft.getMinecraft();
-		final GuiGuideBook guideBook = new GuiGuideBook(hand);
-		mc.displayGuiScreen(guideBook);
+		mc.addScheduledTask(() -> {
+			final GuiGuideBook guideBook = new GuiGuideBook(hand);
+			mc.displayGuiScreen(guideBook);
+		});
 	}
 }

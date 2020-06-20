@@ -131,4 +131,8 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         GlStateManager.enableBlend()
         GlStateManager.popMatrix()
     }
+
+    override fun toString(): String {
+        return "Rectangle(x = $x0, y = $y0, width = $width, height = $height)"
+    }
 }

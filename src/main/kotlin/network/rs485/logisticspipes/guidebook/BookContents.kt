@@ -45,6 +45,7 @@ import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.guidebook.IDrawable
 import network.rs485.markdown.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -61,13 +62,13 @@ object BookContents {
     const val MAIN_MENU_FILE = "/main_menu.md"
     const val DEBUG_FILE = "/debug/debug_page.md"
 
-    private val cachedLoadedPages = hashMapOf<String, LoadedPage>()
+    private val cachedLoadedPages = hashMapOf<String, PageInfoProvider>()
 
     init {
         if (LogisticsPipes.isDEBUG()) addDebugPages()
     }
 
-    fun get(markdownFile: String): LoadedPage {
+    fun get(markdownFile: String): PageInfoProvider {
         return cachedLoadedPages.computeIfAbsent(markdownFile) {
             LoadedPage(getFileAsString(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode), it)
         }
@@ -79,37 +80,38 @@ object BookContents {
     }
 
     private fun addDebugPages() {
-        val debugLoadedPage = LoadedPage(getFileAsString(DEBUG_FILE, "en_us"), DEBUG_FILE)
         fun randomColor(): Int = MinecraftColor.values()[Random.nextInt(MinecraftColor.values().size)].colorCode
-        debugLoadedPage.paragraphs = listOf(
-            HeaderParagraph(
-                listOf(
-                    listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow))),
-                    "Nulla faucibus cursus bibendum.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
-                ).flatten(), headerLevel = 4
-            ),
-            RegularParagraph(
-                listOf(
-                    listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Shadow))),
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
-                ).flatten()
-            ),
-            RegularParagraph(
-                listOf(
-                    listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic))),
-                    ("Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa. Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.  \n" +
-                            "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque.").split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
-                ).flatten()
-            ),
-            RegularParagraph(
-                listOf(
-                    listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow))),
-                    "Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
-                ).flatten()
+        cachedLoadedPages[DEBUG_FILE] = object : PageInfoProvider {
+            override val metadata: YamlPageMetadata = YamlPageMetadata("Debug Page")
+            override val paragraphs: List<Paragraph> = listOf(
+                HeaderParagraph(
+                    listOf(
+                        listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow))),
+                        "Nulla faucibus cursus bibendum.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
+                    ).flatten(), headerLevel = 4
+                ),
+                RegularParagraph(
+                    listOf(
+                        listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Shadow))),
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
+                    ).flatten()
+                ),
+                RegularParagraph(
+                    listOf(
+                        listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic))),
+                        ("Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa. Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.  \n" +
+                                "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque.").split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
+                    ).flatten()
+                ),
+                RegularParagraph(
+                    listOf(
+                        listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow))),
+                        "Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
+                    ).flatten()
+                )
             )
-        )
-        cachedLoadedPages[DEBUG_FILE] = debugLoadedPage
-    }
+            override val drawableParagraphs: List<IDrawable> = asDrawables(paragraphs)
+        }
 }
 
 private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(RegexOption.DOT_MATCHES_ALL)
@@ -167,24 +169,32 @@ data class YamlPageMetadata(val title: String,
                             val icon: String = "logisticspipes:itemcard",
                             val menu: Map<String, Map<String, List<String>>> = emptyMap())
 
-class LoadedPage(unformattedText: String, fileLocation: String) {
+class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvider {
     private val metadataString: String
-    internal val markdownString: String
-    val metadata: YamlPageMetadata
-    var paragraphs: List<Paragraph> = emptyList()
-        get() {
-            if (field.isEmpty() && markdownString.isNotEmpty()) {
-                field = MarkdownParser.parseParagraphs(markdownString)
-                return field
-            }
-            return field
-        }
+    private val markdownString: String
 
     init {
         // Splits the input string into the metadata and the markdown parts of the page.
         val result = metadataRegex.matchEntire(unformattedText) ?: throw RuntimeException("Could not load page, regex failed in $fileLocation:\n$unformattedText")
         metadataString = result.groups[1]?.value?.trim() ?: ""
         markdownString = result.groups[2]?.value?.trim() ?: ""
-        metadata = parseMetadata(metadataString, fileLocation)
     }
+
+    override val metadata: YamlPageMetadata by lazy {
+        parseMetadata(metadataString, fileLocation)
+    }
+
+    override val paragraphs: List<Paragraph> by lazy {
+        MarkdownParser.parseParagraphs(markdownString)
+    }
+
+    override val drawableParagraphs: List<IDrawable> by lazy {
+        asDrawables(paragraphs)
+    }
+}
+
+interface PageInfoProvider {
+    val metadata: YamlPageMetadata
+    val paragraphs: List<Paragraph>
+    val drawableParagraphs: List<IDrawable>
 }

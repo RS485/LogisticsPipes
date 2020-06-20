@@ -74,7 +74,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     private val filterInventory: ItemIdentifierInventory = ItemIdentifierInventory(9, "Item list", 1)
     private val hud = HUDAdvancedExtractor(this)
-    private val extractor = AsyncExtractorModule(filterOutMethod = { it.isEmpty || _itemsIncluded != filterInventory.matchingSequence(it).any() })
+    private val extractor = AsyncExtractorModule(inverseFilter = { it.isEmpty || _itemsIncluded != filterInventory.matchingSequence(it).any() })
     private var _itemsIncluded: Boolean = true
     var itemsIncluded: Boolean
         get() = _itemsIncluded

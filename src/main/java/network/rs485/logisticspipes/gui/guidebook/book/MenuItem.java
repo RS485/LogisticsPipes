@@ -126,7 +126,7 @@ public class MenuItem {
 		int j = this.enabled ? 1 : 2;
 		if (visible) {
 			// Fill: Middle
-			GuiGuideBook.drawRepeatingSquare(btnBgX0, btnBgY0, btnBgX1, btnBgY1, zText - 1, btnBgAtlasU0, btnBgAtlasV0 + (i * j * 32), btnBgAtlasU1, btnBgAtlasV1 + (i * j * 32), false);
+			//GuiGuideBook.drawRepeatingSquare(btnBgX0, btnBgY0, btnBgX1, btnBgY1, zText - 1, btnBgAtlasU0, btnBgAtlasV0 + (i * j * 32), btnBgAtlasU1, btnBgAtlasV1 + (i * j * 32), false);
 			// Corners: TopLeft, TopRight, BottomLeft & BottomRight
 			GuiGuideBook.drawStretchingSquare(btnX0, btnY0, btnX1, btnY1, zText, btnAtlasU0, btnAtlasV0 + (i * j * 16), btnAtlasU1, btnAtlasV1 + (i * j * 16));
 			GuiGuideBook.drawStretchingSquare(btnX2, btnY0, btnX3, btnY1, zText, btnAtlasU2, btnAtlasV0 + (i * j * 16), btnAtlasU3, btnAtlasV1 + (i * j * 16));

@@ -40,14 +40,13 @@ package network.rs485.logisticspipes.gui.guidebook
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
-import network.rs485.logisticspipes.guidebook.LoadedPage
 import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
 import network.rs485.logisticspipes.util.math.Rectangle
 
 class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
 
-    val loadedPage: LoadedPage = BookContents.get(page)
+    val loadedPage = BookContents.get(page)
     var height: Int = 0
 
     constructor(page: SavedPage) : this(page.page, page.color, page.progress)
@@ -62,15 +61,15 @@ class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 
         }
         */
         visibleArea.render(0.0F, 0.0F, 0.0F)
-        loadedPage.paragraphs.forEach { paragraph ->
-            //paragraph.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        loadedPage.drawableParagraphs.forEach { paragraph ->
+            paragraph.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
     }
 
     fun initDrawables(x: Int, y: Int, maxWidth: Int) {
-//        height = loadedPage.paragraphs.fold(y) { currentY, paragraph ->
-//            currentY + paragraph.init(x + 1, currentY + 1, maxWidth - 2) + 3
-//        }
+        height = loadedPage.drawableParagraphs.fold(y) { currentY, paragraph ->
+            currentY + paragraph.init(x + 1, currentY + 1, maxWidth - 2) + 3
+        }
     }
 
     /**

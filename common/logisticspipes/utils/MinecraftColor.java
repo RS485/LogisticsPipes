@@ -39,69 +39,7 @@ public enum MinecraftColor {
 		return BLANK;
 	}
 
-	/**
-	 * Extracts the 8 bits of alpha value information from the color code and returns them as an integer.
-	 * @return 8 bit (0-255) value of the Alpha channel.
-	 */
-	public int getAlpha(){
-		return ((colorCode << 24) & 0xff);
-	}
-
-	/**
-	 * Extracts the 8 bits of alpha value information from the color code and returns them as an percentage float.
-	 * @return 8 bit (0-255) value of the Alpha channel as a float (0.0f - 1.0f).
-	 */
-	public float getAlphaF() {
-		return getAlpha() / 255.0F;
-	}
-
-	/**
-	 * Extracts the 8 bits of red color information from the color code and returns them as an integer.
-	 * @return 8 bit (0-255) value of the Red channel.
-	 */
-	public int getRed(){
-		return ((colorCode << 16) & 0xff);
-	}
-
-	/**
-	 * Extracts the 8 bits of red color information from the color code and returns them as an percentage float.
-	 * @return 8 bit (0-255) value of the Red channel as a float (0.0f - 1.0f).
-	 */
-	public float getRedF() {
-		return getRed() / 255.0F;
-	}
-
-	/**
-	 * Extracts the 8 bits of green color information from the color code and returns them as an integer.
-	 * @return 8 bit (0-255) value of the Green channel.
-	 */
-	public int getGreen(){
-		return ((colorCode << 8) & 0xff);
-	}
-
-	/**
-	 * Extracts the 8 bits of green color information from the color code and returns them as an percentage float.
-	 * @return 8 bit (0-255) value of the Green channel as a float (0.0f - 1.0f).
-	 */
-	public float getGreenF() {
-		return getGreen() / 255.0F;
-	}
-
-	/**
-	 * Extracts the 8 bits of blue color information from the color code and returns them as an integer.
-	 * @return 8 bit (0-255) value of the Blue channel.
-	 */
-	public int getBlue(){
-		return colorCode & 0xFF;
-	}
-
-	/**
-	 * Extracts the 8 bits of blue color information from the color code and returns them as an percentage float.
-	 * @return 8 bit (0-255) value of the Blue channel as a float (0.0f - 1.0f).
-	 */
-	public float getBlueF() {
-		return getBlue() / 255.0F;
-	}
+	
 
 	public int getColorCode() {
 		return colorCode;

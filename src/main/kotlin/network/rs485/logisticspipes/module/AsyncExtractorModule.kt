@@ -78,7 +78,7 @@ import kotlin.math.pow
 
 data class ExtractorAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
 
-class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack -> stack.isEmpty }) : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -> stack.isEmpty }) : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
     companion object {
         @JvmStatic
         val name: String = "extractor"
@@ -158,7 +158,7 @@ class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack
                         val stack = session.inventory.getStackInSlot(slot)
 
                         // filters the stack out by the given filter method
-                        if (filterOutMethod(stack)) return@map null
+                        if (inverseFilter(stack)) return@map null
                         --stacksLeft
                         if (runAsync) return@map (slot to stack)
 

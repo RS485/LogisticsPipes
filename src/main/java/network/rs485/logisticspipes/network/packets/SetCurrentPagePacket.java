@@ -78,8 +78,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		ItemStack book;
-		book = player.getHeldItem(hand);
+		ItemStack book = player.getHeldItem(hand);
 		if (book.isEmpty() || book.getItem() != LPItems.itemGuideBook) return;
 		NBTTagCompound nbt = book.hasTagCompound() ? Objects.requireNonNull(book.getTagCompound()) : new NBTTagCompound();
 		nbt.setTag("page", page.toTag());

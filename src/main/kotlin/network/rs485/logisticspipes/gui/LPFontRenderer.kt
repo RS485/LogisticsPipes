@@ -44,9 +44,10 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.guidebook.tokenizer.Tokenizer
+import network.rs485.markdown.*
 import org.lwjgl.opengl.GL11
 import java.io.IOException
+import java.util.*
 import kotlin.math.ceil
 import kotlin.math.tan
 
@@ -62,7 +63,6 @@ open class LPFontRenderer(fontName: String) {
     private val zLevel = 15.0
     private val tessellator: Tessellator
     private val buffer: BufferBuilder
-    private val textFormattingState: MutableList<Tokenizer.TokenTag>
 
     private fun start() {
         GlStateManager.enableTexture2D()
@@ -172,31 +172,48 @@ open class LPFontRenderer(fontName: String) {
     /**
      * Draws the given string with all the possible parameters applied to it.
      */
-    fun drawString(string: String, x: Int, y: Int, color: Int, italics: Boolean, bold: Boolean, shadow: Boolean, underline: Boolean, strikethrough: Boolean, scale: Double): Int {
+    fun drawString(string: String, x: Int, y: Int, color: Int, format: EnumSet<TextFormat>, scale: Double): Int =
+            drawString(string = string, x = x, y = y, color = color, italic = format.italic(), bold = format.bold(),
+                    shadow = format.shadow(), underline = format.underline(), strikethrough = format.strikethrough(), scale = scale)
+
+    /**
+     * Draws the given string with all the possible parameters applied to it.
+     */
+    private fun drawString(string: String, x: Int, y: Int, color: Int, italic: Boolean, bold: Boolean, shadow: Boolean, underline: Boolean, strikethrough: Boolean, scale: Double): Int {
         start()
-        var stringSize = string.fold(0.0) { currentX, char -> currentX + draw(char, x + currentX, y.toDouble(), color, italics, bold, shadow, scale) }
+        var stringSize = string.fold(0.0) { currentX, char -> currentX + draw(char, x + currentX, y.toDouble(), color, italic, bold, shadow, scale) }
         render()
         // Lines...
-        val underlineY = wrapperPlain.charHeight + wrapperPlain.charOffsetY + 1
-        if (underline) lineDrawHorizontal(x, y + underlineY, stringSize.toInt(), 1, color, italics, shadow)
-        if (italics) stringSize += scale
+        if (underline){
+            val underlineY = wrapperPlain.charHeight + wrapperPlain.charOffsetY + 1
+            lineDrawHorizontal(x, y + underlineY, stringSize.toInt(), scale, color, italic, shadow)
+        }
+        if (strikethrough) {
+            val strikethroughY = (wrapperPlain.charHeight + wrapperPlain.charOffsetY) / 2
+            lineDrawHorizontal(x, y + strikethroughY, stringSize.toInt(), scale, color, italic, shadow)
+        }
+        if (italic) stringSize += scale
         return ceil(stringSize).toInt()
     }
 
-    fun drawString(string: String, x: Int, y: Int, color: Int, tags: List<Tokenizer.TokenTag>, scale: Double): Int {
-        return drawString(string, x, y, color, tags.contains(Tokenizer.TokenTag.Italic), tags.contains(Tokenizer.TokenTag.Bold), tags.contains(Tokenizer.TokenTag.Shadow), tags.contains(Tokenizer.TokenTag.Underline), tags.contains(Tokenizer.TokenTag.Strikethrough), scale)
+    fun drawSpace(x: Int, y: Int, size: Int, color: Int, italics: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double): Int {
+        if (underline){
+            val underlineY = wrapperPlain.charHeight + wrapperPlain.charOffsetY + 1
+            lineDrawHorizontal(x, y + underlineY, size, 1.0, color, italics, shadow)
+        }
+        if (strikethrough) {
+            val strikethroughY = (wrapperPlain.charHeight + wrapperPlain.charOffsetY) / 2
+            lineDrawHorizontal(x, y + strikethroughY, size, scale, color, italics, shadow)
+        }
+        return size
     }
 
-    fun drawCenteredString(string: String, x: Int, y: Int, tags: List<Tokenizer.TokenTag>, scale: Double): Int {
+    fun drawSpace(x: Int, y: Int, size: Int, color: Int, tags: EnumSet<TextFormat>, scale: Double): Int {
+        return drawSpace(x, y, size, color, tags.contains(TextFormat.Italic), tags.contains(TextFormat.Underline), tags.contains(TextFormat.Strikethrough), tags.contains(TextFormat.Shadow), scale)
+    }
+
+    fun drawCenteredString(string: String, x: Int, y: Int, tags: EnumSet<TextFormat>, scale: Double): Int {
         return drawCenteredString(string, x - (getStringWidth(string, tags, scale) / 2.0).toInt(), y, tags, scale)
-    }
-
-    fun drawStringWithShadow(string: String, x: Int, y: Int, color: Int): Int {
-        return drawStringWithShadow(string, x, y, color, bold = false, underline = false, strikethrough = false, italics = false)
-    }
-
-    fun drawStringWithShadow(string: String, x: Int, y: Int, color: Int, bold: Boolean, underline: Boolean, strikethrough: Boolean, italics: Boolean): Int {
-        return drawString(string, x, y, color, italics, bold, true, underline, strikethrough, 1.0)
     }
 
     fun getFontHeight(scale: Double = 1.0): Int{
@@ -225,29 +242,28 @@ open class LPFontRenderer(fontName: String) {
         return (string.fold(0.0) { currentX, char -> currentX + getCharWidth(char, bold, scale) } + italicsOffset).toInt()
     }
 
-    fun getStringWidth(string: String, tags: List<Tokenizer.TokenTag>, scale: Double): Int {
-        return  getStringWidth(string, tags.contains(Tokenizer.TokenTag.Italic), tags.contains(Tokenizer.TokenTag.Bold), scale)
+    fun getStringWidth(string: String, tags: EnumSet<TextFormat>, scale: Double): Int {
+        return  getStringWidth(string, tags.contains(TextFormat.Italic), tags.contains(TextFormat.Bold), scale)
     }
 
-    private fun putHorizontalLine(buff: BufferBuilder, x: Int, y: Int, width: Int, thickness: Int, color: Int, italics: Boolean) {
-        // TODO implement italics slight tilt
+    private fun putHorizontalLine(buff: BufferBuilder, x: Double, y: Double, width: Int, thickness: Double, color: Int, italics: Boolean) {
+        // TODO implement italics slight tilt. Done?
         // TODO try to apply this directly to the buffer before drawing, difficult right now because this is untextured quads and I don't know how to mix them.
+        val italicsOffset = if (italics) thickness * tan(0.2181662) else 0.0
         val clr = Color(color)
-        buff.pos(x.toDouble(), y.toDouble(), 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
-        buff.pos(x.toDouble(), y + thickness.toDouble(), 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
-        buff.pos(x + width.toDouble(), y + thickness.toDouble(), 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
-        buff.pos(x + width.toDouble(), y.toDouble(), 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
-        //      buffer.finishDrawing()
-        //      buffer.begin() test this out
+        buff.pos(x + italicsOffset, y, 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
+        buff.pos(x + italicsOffset, y + thickness, 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
+        buff.pos(x + width.toDouble(), y + thickness, 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
+        buff.pos(x + width.toDouble(), y, 5.0).color(clr.red, clr.green, clr.blue, clr.alpha).endVertex()
     }
 
-    private fun lineDrawHorizontal(x: Int, y: Int, width: Int, thickness: Int, color: Int, italics: Boolean, shadow: Boolean) {
+    private fun lineDrawHorizontal(x: Int, y: Int, width: Int, thickness: Double, color: Int, italics: Boolean, shadow: Boolean) {
         GlStateManager.disableTexture2D()
         val tessellator = Tessellator.getInstance()
         val buff = tessellator.buffer
         buff.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
         if(shadow) putHorizontalLine(buff , x + thickness, y + thickness, width,  thickness, shadowColor, italics)
-        putHorizontalLine(buff , x, y, width,  thickness, color, italics)
+        putHorizontalLine(buff , x.toDouble(), y.toDouble(), width,  thickness, color, italics)
         tessellator.draw()
         GlStateManager.enableTexture2D()
     }
@@ -256,7 +272,6 @@ open class LPFontRenderer(fontName: String) {
     init {
         val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName-plain.bdf")
         val fontResourceBold = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName-bold.bdf")
-        textFormattingState = mutableListOf()
         fontPlain = FontParser.read(fontResourcePlain)?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
         fontBold = FontParser.read(fontResourceBold)
         wrapperPlain = FontWrapper(fontPlain)

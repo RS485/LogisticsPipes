@@ -39,13 +39,23 @@ package network.rs485.markdown
 
 import java.util.*
 
-sealed class InlineElement
+data class InlineDrawableState(var format: EnumSet<TextFormat>, var color: Int)
 
-data class TextFormatting(val elements: List<InlineElement>,
-                          val format: EnumSet<TextFormat>) : InlineElement()
+sealed class InlineElement {
+    open fun changeDrawableState(state: InlineDrawableState) {}
+}
 
-data class ColorFormatting(val elements: List<InlineElement>,
-                           val color: Int) : InlineElement()
+data class TextFormatting(val format: EnumSet<TextFormat>) : InlineElement() {
+    override fun changeDrawableState(state: InlineDrawableState) {
+        state.format = this.format
+    }
+}
+
+data class ColorFormatting(val color: Int) : InlineElement() {
+    override fun changeDrawableState(state: InlineDrawableState) {
+        state.color = this.color
+    }
+}
 
 data class Word(val str: String) : InlineElement()
 
@@ -61,3 +71,13 @@ enum class TextFormat {
     Underline,
     Shadow
 }
+
+fun EnumSet<TextFormat>.italic() = this.contains(TextFormat.Italic)
+
+fun EnumSet<TextFormat>.bold() = this.contains(TextFormat.Bold)
+
+fun EnumSet<TextFormat>.strikethrough() = this.contains(TextFormat.Strikethrough)
+
+fun EnumSet<TextFormat>.underline() = this.contains(TextFormat.Underline)
+
+fun EnumSet<TextFormat>.shadow() = this.contains(TextFormat.Shadow)

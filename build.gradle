@@ -244,8 +244,9 @@ dependencies {
 
     implementation group: 'net.shadowfacts', name: 'Forgelin', version: '1.8.4'
     implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '5901b4c6f4af70e6ef2dbe194bf7e0e097bb375c', classifier: 'deobf'
-    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-runtime', version: '0.20.0'
-    implementation group: 'com.charleskorn.kaml', name: 'kaml', version: '0.17.0'
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-runtime', version: '0.13.0', transitive: false
+    implementation group: 'com.charleskorn.kaml', name: 'kaml', version: '0.14.0', transitive: false
+    implementation group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '1.0', transitive: false
 
     compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.293'
     compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.3', classifier: 'deobf'

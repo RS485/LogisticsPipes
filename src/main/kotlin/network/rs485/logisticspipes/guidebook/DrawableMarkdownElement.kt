@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.guidebook.tokenizer
+package network.rs485.logisticspipes.guidebook
 
 import logisticspipes.LPConstants
 import logisticspipes.utils.MinecraftColor
@@ -43,27 +43,25 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.guidebook.BookContents
-import network.rs485.logisticspipes.guidebook.YamlPageMetadata
 import network.rs485.logisticspipes.util.math.Rectangle
-
-sealed class GenericToken : IDrawable
-//sealed class GenericTextToken : GenericToken()
-sealed class GenericParagraphToken : GenericToken()
+import network.rs485.markdown.*
+import java.util.*
 
 const val DEBUG_AREAS = false
+
+private val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
 
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
  */
-data class TextParagraph(val textTokens: List<Text>) : GenericParagraphToken() {
+data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawable {
     override val area = Rectangle(0, 0)
     override var isHovered = false
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         if (DEBUG_AREAS) area.render(1.0F, 0.0F, 0.0F)
-        for (textToken in textTokens.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
+        for (textToken in drawables.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
             if (isHovered && textToken is Link) {
                 textToken.hovering(mouseX, mouseY, yOffset)
             }
@@ -75,22 +73,23 @@ data class TextParagraph(val textTokens: List<Text>) : GenericParagraphToken() {
         area.setPos(x, y)
         var currentX = 1
         var currentY = 1
-        for (textToken in textTokens) {
+        for (textToken in drawables) {
+            textToken.scale = 1.0
             when (textToken) {
-                is Text, is Link -> {
+                is Link -> {
                     if ((currentX + textToken.area.width) > maxWidth) {
                         currentX = 0
                         currentY += textToken.area.height
                     }
                 }
-                is Break -> {
+                is DrawableBreak -> {
                     currentX = 0
                     currentY += textToken.area.height
                 }
             }
             textToken.init(currentX + x, currentY + y, maxWidth - 2)
             currentX += textToken.area.width
-            if (textToken == textTokens.last()) currentY += textToken.area.height
+            if (textToken == drawables.last()) currentY += textToken.area.height
         }
         currentY += 1
         area.setSize(maxWidth, currentY)
@@ -101,7 +100,7 @@ data class TextParagraph(val textTokens: List<Text>) : GenericParagraphToken() {
 /**
  * Header token, stores all the tokens that are apart of the header.
  */
-data class HeaderParagraph(val textTokens: List<Text>, val headerLevel: Int) : GenericParagraphToken() {
+data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val headerLevel: Int = 1) : IDrawable {
     private val LEVELS = listOf(2.0, 1.75, 1.5, 1.25, 1.0)
     override val area = Rectangle(0, 0)
     override var isHovered = true
@@ -109,7 +108,7 @@ data class HeaderParagraph(val textTokens: List<Text>, val headerLevel: Int) : G
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         if (DEBUG_AREAS) area.render(0.0F, 1.0F, 0.0F)
-        for (textToken in textTokens.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
+        for (textToken in drawables.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
             if (isHovered && textToken is Link) {
                 textToken.hovering(mouseX, mouseY, yOffset)
             }
@@ -121,7 +120,7 @@ data class HeaderParagraph(val textTokens: List<Text>, val headerLevel: Int) : G
         area.setPos(x, y)
         var currentX = 0
         var currentY = 0
-        for (textToken in textTokens) {
+        for (textToken in drawables) {
             textToken.scale = LEVELS[headerLevel - 1]
             when (textToken) {
                 is Link -> {
@@ -130,14 +129,14 @@ data class HeaderParagraph(val textTokens: List<Text>, val headerLevel: Int) : G
                         currentY += textToken.area.height
                     }
                 }
-                is Break -> {
+                is DrawableBreak -> {
                     currentX = 0
                     currentY += textToken.area.height
                 }
             }
             textToken.init(currentX + x + 1, currentY + y + 1, maxWidth - 2)
             currentX += textToken.area.width
-            if (textToken == textTokens.last()) currentY += textToken.area.height
+            if (textToken == drawables.last()) currentY += textToken.area.height
         }
         currentY += 2
         area.setSize(maxWidth, currentY)
@@ -150,7 +149,7 @@ data class HeaderParagraph(val textTokens: List<Text>, val headerLevel: Int) : G
  * @param textTokens this is the alt text, only used in case the image provided via the URL fails to load.
  *
  */
-data class ImageParagraph(val textTokens: List<Text>, val imageParameters: String) : GenericParagraphToken() {
+data class ImageParagraph(val textTokens: List<DrawableWord>, val imageParameters: String) : IDrawable {
     // TODO
     private val image: ResourceLocation
     private var imageAvailible: Boolean
@@ -173,7 +172,7 @@ data class ImageParagraph(val textTokens: List<Text>, val imageParameters: Strin
 /**
  * Menu token, stores the key and the type of menu in a page.
  */
-data class MenuParagraph(val menuId: String, val options: String) : GenericParagraphToken() {
+data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
     // TODO how to get the actual menu Map in here?
     override val area: Rectangle = Rectangle(0, 0)
     override var isHovered = false
@@ -245,7 +244,7 @@ data class MenuParagraph(val menuId: String, val options: String) : GenericParag
 /**
  * List token, has several items that are shown in a list.
  */
-data class ListParagraph(val entries: List<List<Text>>) : GenericParagraphToken() {
+data class ListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
     override val area: Rectangle
         get() = TODO("Not yet implemented")
     override var isHovered: Boolean
@@ -260,38 +259,58 @@ data class ListParagraph(val entries: List<List<Text>>) : GenericParagraphToken(
 /**
  * Normal Token that stores the text and the formatting tags of said text.
  */
-open class Text(private val str: String, private val tags: List<Tokenizer.TokenTag>, val color: Int = MinecraftColor.WHITE.colorCode) : GenericToken() {
+open class DrawableWord(private val str: String, state: InlineDrawableState) : IDrawable {
+    private val format: EnumSet<TextFormat> = state.format
+    private val color: Int = state.color
+
     override val area = Rectangle(1, 1)
     override var isHovered = false
+
     var scale: Double = 1.0
         set(value) {
-            area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, tags.contains(Tokenizer.TokenTag.Italic), tags.contains(Tokenizer.TokenTag.Bold), value), GuiGuideBook.lpFontRenderer.getFontHeight(value))
+            area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, TextFormat.Italic in format, format.contains(TextFormat.Bold), value), GuiGuideBook.lpFontRenderer.getFontHeight(value))
             field = value
         }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        val color = if (isHovered) MinecraftColor.BLUE.colorCode else this.color
+        val color = if (isHovered) MinecraftColor.BLUE.colorCode else color
+        // TODO fun red(color: Int): Float etc...
         val r = ((color shr 16) and 0xff) / 255.0F
         val g = ((color shr 8) and 0xff) / 255.0F
         val b = (color and 0xff) / 1.0F
         if (DEBUG_AREAS) area.render(r, g, b)
-        GuiGuideBook.lpFontRenderer.drawString(str, area.x0, area.y0, color, tags, scale)
+        GuiGuideBook.lpFontRenderer.drawString(string = str, x = area.x0, y = area.y0, color = color, format = format, scale = scale)
     }
 
     override fun init(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
-        this.scale = scale
         return (area.height * scale).toInt()
     }
 }
 
-/**
- * Line break token, simply represents a line break in the text.
- */
-object Break : Text("", emptyList())
+object DrawableBreak : DrawableWord("", DEFAULT_DRAWABLE_STATE)
 
 /**
  * Link token, stores the linked string, as well as the 'url'.
  */
-data class Link(val text: String, val linkUrl: String) : Text(text, listOf(Tokenizer.TokenTag.Underline), MinecraftColor.LIGHT_BLUE.colorCode)
+data class Link(private val text: String) : DrawableWord(text, DEFAULT_DRAWABLE_STATE)
+
+private fun toDrawables(elements: List<InlineElement>) = DEFAULT_DRAWABLE_STATE.let { state ->
+    elements.mapNotNull { element ->
+        element.changeDrawableState(state)
+        when (element) {
+            is Word -> DrawableWord(element.str, state)
+            Break -> DrawableBreak
+            else -> null
+        }
+    }
+}
+
+private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
+    is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements))
+    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements), paragraph.headerLevel)
+    HorizontalLineParagraph -> TODO()
+}
+
+fun asDrawables(paragraphs: List<Paragraph>) = paragraphs.map(::toDrawable)

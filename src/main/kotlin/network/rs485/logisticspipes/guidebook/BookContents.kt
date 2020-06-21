@@ -44,8 +44,8 @@ import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.guidebook.tokenizer.IToken
-import network.rs485.logisticspipes.guidebook.tokenizer.Tokenizer
+import network.rs485.markdown.MarkdownParser
+import network.rs485.markdown.Paragraph
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -118,10 +118,10 @@ class LoadedPage(unformattedText: String, fileLocation: String) {
     private val metadataString: String
     private val markdownString: String
     val metadata: YamlPageMetadata
-    var tokens: List<IToken>
+    var tokens: List<Paragraph>
         get() {
             if (field.isEmpty() && markdownString.isNotEmpty()) {
-                field = Tokenizer.tokenize(markdownString).toList()
+                field = MarkdownParser.parseParagraphs(markdownString).toList()
                 return field
             }
             return field

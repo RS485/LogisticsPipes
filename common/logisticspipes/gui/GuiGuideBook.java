@@ -134,8 +134,7 @@ public class GuiGuideBook extends GuiScreen {
 				drawString(this.fontRenderer, text.get(i), textX, drawY, 0xFFFFFF);
 			}
 		}
-<<<<<<< refs/remotes/RS485/dev-mc1122
-=======
+
 		GlStateManager.popMatrix();
 		/** Top & Bottom */
 		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8, 24, 0, 8, tileSize, this.width * 6 / 8 - 2 * tileSize, tileSize, 256.0F, 256.0F);
@@ -145,7 +144,6 @@ public class GuiGuideBook extends GuiScreen {
 		drawScaledCustomSizeModalRect(this.width * 7 / 8 - tileSize, this.height * 1 / 8 + tileSize, tileSize, 24, tileSize, 8, tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
 		/**Background*/
 		drawScaledCustomSizeModalRect(this.width * 1 / 8 + tileSize, this.height * 1 / 8 + tileSize, 24, 24, 8, 8, this.width * 6 / 8 - 2 * tileSize, this.height * 6 / 8 - 2 * tileSize, 256.0F, 256.0F);
->>>>>>> Resolved multiple issues
 	}
 
 	private void drawPageBorder() {

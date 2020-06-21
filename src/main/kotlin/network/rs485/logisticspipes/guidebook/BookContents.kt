@@ -116,7 +116,7 @@ data class YamlPageMetadata(val title: String,
 
 class LoadedPage(unformattedText: String, fileLocation: String) {
     private val metadataString: String
-    private val markdownString: String
+    internal val markdownString: String
     val metadata: YamlPageMetadata
     var tokens: List<Paragraph>
         get() {

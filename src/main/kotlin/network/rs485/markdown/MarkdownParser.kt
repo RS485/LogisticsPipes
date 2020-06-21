@@ -37,6 +37,8 @@
 
 package network.rs485.markdown
 
+import java.lang.Integer.min
+
 object MarkdownParser {
 
     internal fun splitToInlineElements(char: CharSequence): List<InlineElement> {
@@ -52,10 +54,11 @@ object MarkdownParser {
         }
     }
 
-    private fun countChars(char: Char, str: String, index: Int): Int {
+    private fun countChars(char: Char, str: String, index: Int = 0, maximum: Int = str.length): Int {
         if (str[index] != char) return 0
         var count = 1
-        while ((index + count) < str.length && str[index + count] == char) ++count
+        val actualMax = min(str.length - index, maximum)
+        while (count < actualMax && str[index + count] == char) ++count
         return count
     }
 
@@ -75,10 +78,12 @@ object MarkdownParser {
         lines.flatMap { line ->
             when {
                 line.endsWith('\\') -> {
+                    // special handling for escaped line endings
                     sb.append(line.substring(0, line.length - 1))
                     return@flatMap emptyList<String>()
                 }
                 line.endsWith("  ") -> {
+                    // special handling for special line breaks
                     sb.append(line.substring(0, line.length - 2))
                     sb.append('\n')
                 }
@@ -93,8 +98,8 @@ object MarkdownParser {
                 line.isEmpty() -> completeParagraph()
                 line.startsWith(Tag.HEADER.char) -> {
                     completeParagraph()
-                    val headerLevel = countChars(Tag.HEADER.char, line, 0)
-                    paragraphs.add(HeaderParagraph(splitToInlineElements(line.substring(headerLevel)), headerLevel))
+                    val headerLevel = countChars(Tag.HEADER.char, line, maximum = 4)
+                    paragraphs.add(HeaderParagraph(splitToInlineElements(line.trimStart(Tag.HEADER.char)), headerLevel))
                 }
                 // TODO: add MenuParagraph
                 // TODO: add ListParagraph

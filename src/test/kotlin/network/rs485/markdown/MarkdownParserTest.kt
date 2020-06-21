@@ -41,7 +41,6 @@ import network.rs485.markdown.MarkdownParser.parseParagraphs
 import network.rs485.markdown.MarkdownParser.splitToInlineElements
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class MarkdownParserTest {
 
@@ -58,7 +57,7 @@ internal class MarkdownParserTest {
         val str = ""
         val splitElements = splitToInlineElements(str)
 
-        assertTrue(splitElements.isEmpty())
+        assertEquals(emptyList(), splitElements)
     }
 
     @Test
@@ -119,6 +118,13 @@ internal class MarkdownParserTest {
     }
 
     @Test
+    fun `parse empty text in parseParagraphs`() {
+        val paragraphs = parseParagraphs("")
+
+        assertEquals(emptyList(), paragraphs)
+    }
+
+    @Test
     fun `parse two regular paragraphs with text in parseParagraphs`() {
         val firstStr = "Split"
         val secondStr = "text"
@@ -155,11 +161,76 @@ internal class MarkdownParserTest {
     }
 
     @Test
+    fun `escaped line break in parseParagraphs`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val paragraphs = parseParagraphs("$firstStr\\\n$secondStr")
+
+        assertEquals(listOf(RegularParagraph(listOf(Text("$firstStr$secondStr")))), paragraphs)
+    }
+
+    @Test
+    fun `escaped line break and no content in parseParagraphs`() {
+        val paragraphs = parseParagraphs("\\\n")
+
+        assertEquals(emptyList(), paragraphs)
+    }
+
+    @Test
     fun `parse simple header in parseParagraphs`() {
         val headerStr = "I am header!"
         val paragraphs = parseParagraphs("# $headerStr")
 
         assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 1)), paragraphs)
+    }
+
+    @Test
+    fun `parse header with spaces in parseParagraphs`() {
+        val headerStr = "I am header!"
+        val paragraphs = parseParagraphs("  #  $headerStr")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 1)), paragraphs)
+    }
+
+    @Test
+    fun `parse level two header in parseParagraphs`() {
+        val headerStr = "I am header lvl 2!"
+        val paragraphs = parseParagraphs("## $headerStr")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 2)), paragraphs)
+    }
+
+    @Test
+    fun `parse level four header in parseParagraphs`() {
+        val headerStr = "I am header lvl 4!"
+        val paragraphs = parseParagraphs("#### $headerStr")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 4)), paragraphs)
+    }
+
+    @Test
+    fun `parse level five header in parseParagraphs`() {
+        val headerStr = "I am also header lvl 4!"
+        val paragraphs = parseParagraphs("##### $headerStr")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 4)), paragraphs)
+    }
+
+    @Test
+    fun `parse uber level header in parseParagraphs`() {
+        val headerStr = "I am also header lvl 4!"
+        val paragraphs = parseParagraphs("########## $headerStr")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 4)), paragraphs)
+    }
+
+    @Test
+    fun `escaped line break for simple header in parseParagraphs`() {
+        val firstStr = "Multiline"
+        val secondStr = "Header"
+        val paragraphs = parseParagraphs("# $firstStr \\\n$secondStr")
+
+        assertEquals(listOf(HeaderParagraph(listOf(Text(firstStr), Text(secondStr)), 1)), paragraphs)
     }
 
     @Test

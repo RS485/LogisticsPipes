@@ -41,9 +41,13 @@ import java.util.*
 
 sealed class InlineElement
 
-data class Text(val str: String,
-                val format: EnumSet<TextFormat> = EnumSet.noneOf(TextFormat::class.java),
-                val color: Int = 0xffffffff.toInt()) : InlineElement()
+data class TextFormatting(val elements: List<InlineElement>,
+                          val format: EnumSet<TextFormat>)
+
+data class ColorFormatting(val elements: List<InlineElement>,
+                           val color: Int)
+
+data class Word(val str: String) : InlineElement()
 
 object Break : InlineElement()
 

@@ -43,7 +43,7 @@ object MarkdownParser {
     private val htmlBreakRegex = Regex("<br(\\s*/)?>")
 
     internal fun splitToInlineElements(inputChars: CharSequence): List<InlineElement> {
-        // TODO: parse TokenText(s)
+        // TODO: parse colors, links, formatting
 
         // newlines are already handled as special break characters at this point
         val chars = htmlBreakRegex.replace(inputChars, "\n")
@@ -61,7 +61,7 @@ object MarkdownParser {
         }
     }
 
-    private fun parseTextElement(word: String) = Text(word).takeIf { word.isNotBlank() }
+    private fun parseTextElement(word: String) = Word(word).takeIf { word.isNotBlank() }
 
     private fun countChars(char: Char, str: String, index: Int = 0, maximum: Int = str.length): Int {
         if (str[index] != char) return 0

@@ -89,22 +89,31 @@ object MarkdownParser {
             bufferOrReturnLine(line, sb)
         }.forEach { dirtyLine ->
             val line = dirtyLine.trimStart()
+
+            fun dumpLineToBuffer() {
+                if (sb.isNotEmpty()) sb.append(' ')
+                sb.append(line)
+            }
+
             when {
                 line.isEmpty() -> completeParagraph()
                 line.startsWith(Tag.HEADER.char) -> {
-                    completeParagraph()
                     val headerLevel = countChars(Tag.HEADER.char, line, maximum = 4)
-                    paragraphs.add(HeaderParagraph(splitToInlineElements(line.trimStart(Tag.HEADER.char)), headerLevel))
+                    // check if there is at least one space and characters after the header indicators
+                    line.trimStart(Tag.HEADER.char)
+                            .takeUnless { it.isBlank() }
+                            ?.takeIf { chars -> chars[0] == ' ' }
+                            ?.let {
+                                completeParagraph()
+                                paragraphs.add(HeaderParagraph(splitToInlineElements(it), headerLevel))
+                            } ?: dumpLineToBuffer()
                 }
                 // TODO: add MenuParagraph
                 // TODO: add ListParagraph
-                else -> {
-                    if (sb.isNotEmpty()) sb.append(' ')
-                    sb.append(line)
-                }
+                else -> dumpLineToBuffer()
             }
         }
-        if (sb.isNotEmpty()) completeParagraph()
+        completeParagraph()
         return paragraphs
     }
 

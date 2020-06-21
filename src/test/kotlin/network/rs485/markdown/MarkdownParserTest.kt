@@ -239,6 +239,14 @@ internal class MarkdownParserTest {
     }
 
     @Test
+    fun `parse non-header in parseParagraphs`() {
+        val noHeaderStr = "#I ain't no header!"
+        val paragraphs = parseParagraphs(noHeaderStr)
+
+        assertEquals(listOf(RegularParagraph(splitToInlineElements(noHeaderStr))), paragraphs)
+    }
+
+    @Test
     fun `parse header with spaces in parseParagraphs`() {
         val headerStr = "I am header!"
         val paragraphs = parseParagraphs("  #  $headerStr")

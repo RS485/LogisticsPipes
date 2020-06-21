@@ -2,7 +2,6 @@ package logisticspipes.proxy.interfaces;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetHandler;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import logisticspipes.items.ItemLogisticsPipe;
@@ -50,8 +49,6 @@ public interface IProxy {
 	boolean checkSinglePlayerOwner(String commandSenderName);
 
 	void openFluidSelectGui(int slotId);
-
-	void openGuideBookGui(EnumHand hand);
 
 	default void registerModels() {}
 

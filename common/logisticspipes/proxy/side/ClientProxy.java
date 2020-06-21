@@ -12,7 +12,6 @@ import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -31,7 +30,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiCraftingPipe;
-import logisticspipes.gui.GuiGuideBook;
 import logisticspipes.gui.modules.ModuleBaseGui;
 import logisticspipes.gui.popup.SelectItemOutOfList;
 import logisticspipes.interfaces.ILogisticsItem;
@@ -63,7 +61,6 @@ import logisticspipes.renderer.newpipe.LogisticsNewPipeModel;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.GuideBookContents;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -249,15 +246,6 @@ public class ClientProxy implements IProxy {
 			}
 		} else {
 			throw new UnsupportedOperationException(String.valueOf(Minecraft.getMinecraft().currentScreen));
-		}
-	}
-
-	@Override
-	public void openGuideBookGui(EnumHand hand) {
-		Minecraft mc = Minecraft.getMinecraft();
-		GuideBookContents gbc = GuideBookContents.load();
-		if (gbc != null) {
-			mc.displayGuiScreen(new GuiGuideBook(hand, gbc));
 		}
 	}
 

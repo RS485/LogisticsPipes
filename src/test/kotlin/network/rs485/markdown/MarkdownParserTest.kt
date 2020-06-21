@@ -110,6 +110,42 @@ internal class MarkdownParserTest {
     }
 
     @Test
+    fun `html line break in splitToInlineElements`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val splitElements = splitToInlineElements("$firstStr<br>$secondStr")
+
+        assertEquals(listOf(Text(firstStr), Break, Text(secondStr)), splitElements)
+    }
+
+    @Test
+    fun `xhtml line break in splitToInlineElements`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val splitElements = splitToInlineElements("$firstStr<br/>$secondStr")
+
+        assertEquals(listOf(Text(firstStr), Break, Text(secondStr)), splitElements)
+    }
+
+    @Test
+    fun `xhtml line break with one space in splitToInlineElements`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val splitElements = splitToInlineElements("$firstStr<br />$secondStr")
+
+        assertEquals(listOf(Text(firstStr), Break, Text(secondStr)), splitElements)
+    }
+
+    @Test
+    fun `xhtml line break with multiple space in splitToInlineElements`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val splitElements = splitToInlineElements("$firstStr<br   />$secondStr")
+
+        assertEquals(listOf(Text(firstStr), Break, Text(secondStr)), splitElements)
+    }
+
+    @Test
     fun `parse simple text in parseParagraphs`() {
         val str = "Just some text"
         val paragraphs = parseParagraphs(str)
@@ -131,6 +167,24 @@ internal class MarkdownParserTest {
         val paragraphs = parseParagraphs("$firstStr\n\n$secondStr")
 
         assertEquals(listOf(RegularParagraph(splitToInlineElements(firstStr)), RegularParagraph(splitToInlineElements(secondStr))), paragraphs)
+    }
+
+    @Test
+    fun `parse html line break in parseParagraphs`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val paragraphs = parseParagraphs("$firstStr<br>$secondStr")
+
+        assertEquals(listOf(RegularParagraph(listOf(Text(firstStr), Break, Text(secondStr)))), paragraphs)
+    }
+
+    @Test
+    fun `parse xhtml line break in parseParagraphs`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val paragraphs = parseParagraphs("$firstStr<br />$secondStr")
+
+        assertEquals(listOf(RegularParagraph(listOf(Text(firstStr), Break, Text(secondStr)))), paragraphs)
     }
 
     @Test
@@ -261,6 +315,42 @@ internal class MarkdownParserTest {
         val expectedParagraphs = listOf(
                 HeaderParagraph(splitToInlineElements(headerStr), 1),
                 RegularParagraph(splitToInlineElements(textStr))
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse text paragraph before and after header in parseParagraphs`() {
+        val firstStr = "Before!"
+        val headerStr = "Header!"
+        val secondStr = "After!"
+        val paragraphs = parseParagraphs(
+                "$firstStr\n" +
+                        "\n" +
+                        "# $headerStr\n" +
+                        "\n" +
+                        secondStr)
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(splitToInlineElements(firstStr)),
+                HeaderParagraph(splitToInlineElements(headerStr), 1),
+                RegularParagraph(splitToInlineElements(secondStr))
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse text without extra newlines before and after header in parseParagraphs`() {
+        val firstStr = "Before!"
+        val headerStr = "Header!"
+        val secondStr = "After!"
+        val paragraphs = parseParagraphs(
+                "$firstStr\n ## $headerStr\n $secondStr")
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(splitToInlineElements(firstStr)),
+                HeaderParagraph(splitToInlineElements(headerStr), 2),
+                RegularParagraph(splitToInlineElements(secondStr))
         )
         assertEquals(expectedParagraphs, paragraphs)
     }

@@ -40,19 +40,28 @@ package network.rs485.markdown
 import java.lang.Integer.min
 
 object MarkdownParser {
+    private val htmlBreakRegex = Regex("<br(\\s*/)?>")
 
-    internal fun splitToInlineElements(char: CharSequence): List<InlineElement> {
+    internal fun splitToInlineElements(inputChars: CharSequence): List<InlineElement> {
         // TODO: parse TokenText(s)
-        return char.split(' ').flatMap { word ->
+
+        // newlines are already handled as special break characters at this point
+        val chars = htmlBreakRegex.replace(inputChars, "\n")
+
+        // breaks up all the words and returns them as inline elements without spaces
+        return chars.split(' ').flatMap { word ->
             when {
+                // new-line character is replaced with a Break element
                 word.contains('\n') -> word.split('\n').zipWithNext { a, b ->
-                    listOfNotNull(Text(a).takeIf { a.isNotBlank() }, Break, Text(b).takeIf { b.isNotBlank() })
+                    listOfNotNull(parseTextElement(a), Break, parseTextElement(b))
                 }.flatten()
-                word.isBlank() -> emptyList()
-                else -> listOf(Text(word))
+                // parse anything else as text element
+                else -> listOfNotNull(parseTextElement(word))
             }
         }
     }
+
+    private fun parseTextElement(word: String) = Text(word).takeIf { word.isNotBlank() }
 
     private fun countChars(char: Char, str: String, index: Int = 0, maximum: Int = str.length): Int {
         if (str[index] != char) return 0

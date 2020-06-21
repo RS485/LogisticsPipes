@@ -2,7 +2,6 @@ package logisticspipes.network;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -23,7 +22,6 @@ import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.interfaces.IGuiOpenControler;
-import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
@@ -248,15 +246,6 @@ public class GuiHandler implements IGuiHandler {
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
 		if (ID == -1) {
 			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
-		}
-
-		if (ID == GuiIDs.GUI_Guide_Book_ID) {
-			ItemStack itemstack = player.getHeldItem(player.getActiveHand());
-			if (itemstack.getItem() == LPItems.itemGuideBook) {
-				return ItemGuideBook.openGuideBook(player.getActiveHand());
-			} else {
-				return null;
-			}
 		}
 
 		TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));

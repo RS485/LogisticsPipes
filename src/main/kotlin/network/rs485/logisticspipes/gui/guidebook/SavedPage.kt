@@ -63,7 +63,7 @@ class SavedPage constructor(var page: String = BookContents.MAIN_MENU_FILE, var 
             for (div in metadata.menu) {
                 val list = mutableListOf<MenuItem>();
                 for (pagePath in div.value) {
-                    list.add(MenuItem(BookContents.get(pagePath).metadata, pagePath))
+                    list.add(MenuItem(BookContents.get(page).metadata, page))
                 }
                 menuItems.add(MenuItemsDivision(div.key, list as ArrayList<MenuItem>))
             }

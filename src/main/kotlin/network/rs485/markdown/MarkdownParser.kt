@@ -97,16 +97,27 @@ object MarkdownParser {
 
             when {
                 line.isEmpty() -> completeParagraph()
-                line.startsWith(Tag.HEADER.char) -> {
-                    val headerLevel = countChars(Tag.HEADER.char, line, maximum = 4)
+                line.startsWith('#') -> {
+                    val charCount = countChars('#', line, maximum = 6)
                     // check if there is at least one space and characters after the header indicators
-                    line.trimStart(Tag.HEADER.char)
-                            .takeUnless { it.isBlank() }
-                            ?.takeIf { chars -> chars[0] == ' ' }
-                            ?.let {
-                                completeParagraph()
-                                paragraphs.add(HeaderParagraph(splitToInlineElements(it), headerLevel))
-                            } ?: dumpLineToBuffer()
+                    val text = line.trimStart('#')
+                    when {
+                        text.isBlank() -> dumpLineToBuffer()
+                        text[0] == ' ' -> {
+                            // it's an header!
+                            completeParagraph()
+                            paragraphs.add(HeaderParagraph(splitToInlineElements(text.trimEnd('#')), charCount))
+                        }
+                        else -> dumpLineToBuffer()
+                    }
+                }
+                line.startsWith("===") -> {
+                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitToInlineElements(sb.toString()), 1))
+                    sb.clear()
+                }
+                line.startsWith("---") -> {
+                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitToInlineElements(sb.toString()), 2))
+                    sb.clear()
                 }
                 // TODO: add MenuParagraph
                 // TODO: add ListParagraph
@@ -134,10 +145,6 @@ object MarkdownParser {
         val concatLine = buffer.toString()
         buffer.clear()
         return listOf(concatLine)
-    }
-
-    enum class Tag(val char: Char) {
-        HEADER('#')
     }
 
 }

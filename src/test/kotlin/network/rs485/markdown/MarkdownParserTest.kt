@@ -263,27 +263,27 @@ internal class MarkdownParserTest {
     }
 
     @Test
-    fun `parse level four header in parseParagraphs`() {
-        val headerStr = "I am header lvl 4!"
-        val paragraphs = parseParagraphs("#### $headerStr")
+    fun `parse level six header in parseParagraphs`() {
+        val headerStr = "I am header lvl 6!"
+        val paragraphs = parseParagraphs("###### $headerStr")
 
-        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 4)), paragraphs)
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 6)), paragraphs)
     }
 
     @Test
-    fun `parse level five header in parseParagraphs`() {
-        val headerStr = "I am also header lvl 4!"
-        val paragraphs = parseParagraphs("##### $headerStr")
+    fun `parse level seven header in parseParagraphs`() {
+        val headerStr = "I am also header lvl 6!"
+        val paragraphs = parseParagraphs("####### $headerStr")
 
-        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 4)), paragraphs)
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 6)), paragraphs)
     }
 
     @Test
     fun `parse uber level header in parseParagraphs`() {
-        val headerStr = "I am also header lvl 4!"
-        val paragraphs = parseParagraphs("########## $headerStr")
+        val headerStr = "I am also header lvl 6!"
+        val paragraphs = parseParagraphs("############## $headerStr")
 
-        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 4)), paragraphs)
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 6)), paragraphs)
     }
 
     @Test
@@ -352,14 +352,186 @@ internal class MarkdownParserTest {
         val firstStr = "Before!"
         val headerStr = "Header!"
         val secondStr = "After!"
-        val paragraphs = parseParagraphs(
-                "$firstStr\n ## $headerStr\n $secondStr")
+        val paragraphs = parseParagraphs("$firstStr\n ## $headerStr\n $secondStr")
 
         val expectedParagraphs = listOf(
                 RegularParagraph(splitToInlineElements(firstStr)),
                 HeaderParagraph(splitToInlineElements(headerStr), 2),
                 RegularParagraph(splitToInlineElements(secondStr))
         )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse first level underscored header in parseParagraphs`() {
+        val headerStr = "Header!"
+        val paragraphs = parseParagraphs("$headerStr\n===")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 1)), paragraphs)
+    }
+
+    @Test
+    fun `parse first level uber underscored header in parseParagraphs`() {
+        val headerStr = "Header!"
+        val paragraphs = parseParagraphs("$headerStr\n=============================")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 1)), paragraphs)
+    }
+
+    @Test
+    fun `dont parse first level underscored header in parseParagraphs`() {
+        val str = "Not a header"
+        val noHeaderStr = "$str\n=="
+        val paragraphs = parseParagraphs(noHeaderStr)
+
+        assertEquals(listOf(RegularParagraph(splitToInlineElements("$str =="))), paragraphs)
+    }
+
+    @Test
+    fun `parse first level underscored header and then text in parseParagraphs`() {
+        val headerStr = "Header!"
+        val textStr = "Hello.."
+        val paragraphs = parseParagraphs("$headerStr\n=======\n$textStr")
+
+        val expectedParagraphs = listOf(
+                HeaderParagraph(splitToInlineElements(headerStr), 1),
+                RegularParagraph(splitToInlineElements(textStr))
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse second level underscored header in parseParagraphs`() {
+        val headerStr = "Header!"
+        val paragraphs = parseParagraphs("$headerStr\n---")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 2)), paragraphs)
+    }
+
+    @Test
+    fun `parse second level uber underscored header in parseParagraphs`() {
+        val headerStr = "Header!"
+        val paragraphs = parseParagraphs("$headerStr\n----------------------------------")
+
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 2)), paragraphs)
+    }
+
+    @Test
+    fun `dont parse second level underscored header in parseParagraphs`() {
+        val str = "Not a header"
+        val noHeaderStr = "$str\n--"
+        val paragraphs = parseParagraphs(noHeaderStr)
+
+        assertEquals(listOf(RegularParagraph(splitToInlineElements("$str --"))), paragraphs)
+    }
+
+    @Test
+    fun `parse second level underscored header and then text in parseParagraphs`() {
+        val headerStr = "Header!"
+        val textStr = "Hello.."
+        val paragraphs = parseParagraphs("$headerStr\n-------\n$textStr")
+
+        val expectedParagraphs = listOf(
+                HeaderParagraph(splitToInlineElements(headerStr), 2),
+                RegularParagraph(splitToInlineElements(textStr))
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse double horizontal line in parseParagraphs`() {
+        val str = "==="
+        val paragraphs = parseParagraphs(str)
+
+        assertEquals(listOf(HorizontalLineParagraph), paragraphs)
+    }
+
+    @Test
+    fun `dont parse double horizontal line in parseParagraphs`() {
+        val str = "=="
+        val paragraphs = parseParagraphs(str)
+
+        assertEquals(listOf(RegularParagraph(listOf(Text(str)))), paragraphs)
+    }
+
+    @Test
+    fun `parse single horizontal line in parseParagraphs`() {
+        val str = "---"
+        val paragraphs = parseParagraphs(str)
+
+        assertEquals(listOf(HorizontalLineParagraph), paragraphs)
+    }
+
+    @Test
+    fun `dont parse single horizontal line in parseParagraphs`() {
+        val str = "--"
+        val paragraphs = parseParagraphs(str)
+
+        assertEquals(listOf(RegularParagraph(listOf(Text(str)))), paragraphs)
+    }
+
+    @Test
+    fun `parse double horizontal line with text around in parseParagraphs`() {
+        val firstStr = "Hello"
+        val secondStr = "World!"
+        val paragraphs = parseParagraphs("$firstStr\n\n===\n\n$secondStr")
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(splitToInlineElements(firstStr)),
+                HorizontalLineParagraph,
+                RegularParagraph(splitToInlineElements(secondStr)))
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse double horizontal line with text around and less newlines in parseParagraphs`() {
+        val firstStr = "Hello"
+        val secondStr = "World!"
+        val paragraphs = parseParagraphs("$firstStr\n\n===\n$secondStr")
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(splitToInlineElements(firstStr)),
+                HorizontalLineParagraph,
+                RegularParagraph(splitToInlineElements(secondStr)))
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse single horizontal line with text around in parseParagraphs`() {
+        val firstStr = "Hello"
+        val secondStr = "World!"
+        val paragraphs = parseParagraphs("$firstStr\n\n---\n\n$secondStr")
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(splitToInlineElements(firstStr)),
+                HorizontalLineParagraph,
+                RegularParagraph(splitToInlineElements(secondStr)))
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse single horizontal line with text around and less newlines in parseParagraphs`() {
+        val firstStr = "Hello"
+        val secondStr = "World!"
+        val paragraphs = parseParagraphs("$firstStr\n\n---\n$secondStr")
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(splitToInlineElements(firstStr)),
+                HorizontalLineParagraph,
+                RegularParagraph(splitToInlineElements(secondStr)))
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `dont parse single horizontal line with text around in parseParagraphs`() {
+        val firstStr = "Hello"
+        val secondStr = "World!"
+        val paragraphs = parseParagraphs("$firstStr\n\n--\n\n$secondStr")
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(splitToInlineElements(firstStr)),
+                RegularParagraph(listOf(Text("--"))),
+                RegularParagraph(splitToInlineElements(secondStr)))
         assertEquals(expectedParagraphs, paragraphs)
     }
 }

@@ -42,3 +42,5 @@ sealed class Paragraph
 data class RegularParagraph(val elements: List<InlineElement>) : Paragraph()
 
 data class HeaderParagraph(val elements: List<InlineElement>, val headerLevel: Int) : Paragraph()
+
+object HorizontalLineParagraph : Paragraph()

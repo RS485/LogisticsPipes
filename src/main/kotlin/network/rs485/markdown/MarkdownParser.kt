@@ -51,7 +51,7 @@ object MarkdownParser {
         // breaks up all the words and returns them as inline elements without spaces
         return chars.split(' ').flatMap { word ->
             when {
-                // new-line character is replaced with a Break element
+                // newline character is replaced with a Break element
                 word.contains('\n') -> word.split('\n').zipWithNext { a, b ->
                     listOfNotNull(parseTextElement(a), Break, parseTextElement(b))
                 }.flatten()
@@ -85,22 +85,8 @@ object MarkdownParser {
         }
 
         lines.flatMap { line ->
-            when {
-                line.endsWith('\\') -> {
-                    // special handling for escaped line endings
-                    sb.append(line.substring(0, line.length - 1))
-                    return@flatMap emptyList<String>()
-                }
-                line.endsWith("  ") -> {
-                    // special handling for special line breaks
-                    sb.append(line.substring(0, line.length - 2))
-                    sb.append('\n')
-                }
-                else -> sb.append(line)
-            }
-            val concatLine = sb.toString()
-            sb.clear()
-            return@flatMap listOf(concatLine)
+            // repack lines with special endings
+            bufferOrReturnLine(line, sb)
         }.forEach { dirtyLine ->
             val line = dirtyLine.trimStart()
             when {
@@ -120,6 +106,25 @@ object MarkdownParser {
         }
         if (sb.isNotEmpty()) completeParagraph()
         return paragraphs
+    }
+
+    private fun bufferOrReturnLine(line: String, buffer: StringBuilder): List<String> {
+        when {
+            line.endsWith('\\') -> {
+                // special handling for escaped line endings -> buffer line
+                buffer.append(line.substring(0, line.length - 1))
+                return emptyList()
+            }
+            line.endsWith("  ") -> {
+                // special handling for special line breaks -> add newline char
+                buffer.append(line.substring(0, line.length - 2))
+                buffer.append('\n')
+            }
+            else -> buffer.append(line)
+        }
+        val concatLine = buffer.toString()
+        buffer.clear()
+        return listOf(concatLine)
     }
 
     enum class Tag(val char: Char) {

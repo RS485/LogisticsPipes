@@ -14,7 +14,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import logisticspipes.LPItems;
-import logisticspipes.gui.GuiGuideBook;
+import logisticspipes.gui.guidebook.GuiGuideBook;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.SetCurrentPagePacket;
 import logisticspipes.proxy.MainProxy;
@@ -26,14 +26,15 @@ public class ItemGuideBook extends LogisticsItem {
 		this.maxStackSize = 1;
 	}
 
-	public static void setCurrentPage(ItemStack stack, int pageIndex, int chapter, float sliderProgress, EnumHand hand) {
+	public static void setCurrentPage(ItemStack stack, GuiGuideBook.PageInformation page, EnumHand hand) {
 		if (!stack.isEmpty() && stack.getItem() == LPItems.itemGuideBook) {
 			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
-			tag.setInteger("page", pageIndex);
-			tag.setInteger("chapter", chapter);
-			tag.setFloat("sliderProgress", sliderProgress);
+			tag.setFloat("sliderProgress", page.getProgress());
+			tag.setInteger("page", page.getPage());
+			tag.setInteger("chapter", page.getChapter());
+			tag.setInteger("division", page.getDivision());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SetCurrentPagePacket.class)
-					.setPage(pageIndex).setChapter(chapter).setSliderProgress(sliderProgress).setHand(hand));
+					.setHand(hand).setSliderProgress(page.getProgress()).setPage(page.getPage()).setChapter(page.getChapter()).setDivision(page.getDivision()));
 		}
 	}
 

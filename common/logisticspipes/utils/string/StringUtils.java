@@ -176,4 +176,35 @@ public final class StringUtils {
 		sb.insert(0, source.substring(0, i));
 		return sb.toString();
 	}
+
+	public static ArrayList<String> splitLines(String text, FontRenderer fontRenderer, int maxLength){
+		if (text.charAt(text.length() - 1) != '\n') text += '\n';
+		ArrayList<String> lines = new ArrayList<>();
+		StringBuilder currentLine = new StringBuilder();
+		int lastSplitPoint = 0;
+		int curLength = 0;
+		for (char c : text.toCharArray()) {
+			if (c == '\n') {
+				lines.add(currentLine.toString());
+				currentLine.delete(0, currentLine.length());
+				lastSplitPoint = 0;
+				curLength = fontRenderer.getStringWidth(currentLine.toString());
+			} else if (Character.isWhitespace(c)) {
+				currentLine.append(c);
+				curLength += fontRenderer.getCharWidth(c);
+				lastSplitPoint = currentLine.length();
+			} else {
+				if ((currentLine.length() > 1 && curLength + fontRenderer.getCharWidth(c) > maxLength)) {
+					if (lastSplitPoint == 0) lastSplitPoint = currentLine.length();
+					lines.add(currentLine.substring(0, lastSplitPoint));
+					currentLine.delete(0, lastSplitPoint);
+					lastSplitPoint = 0;
+					curLength = fontRenderer.getStringWidth(currentLine.toString());
+				}
+				currentLine.append(c);
+				curLength += fontRenderer.getCharWidth(c);
+			}
+		}
+		return lines;
+	}
 }

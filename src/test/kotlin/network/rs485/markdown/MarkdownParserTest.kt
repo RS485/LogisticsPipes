@@ -38,16 +38,48 @@
 package network.rs485.markdown
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 
 internal class MarkdownParserTest {
+
+    @Test
+    fun `default text case in splitToInlineElements`() {
+        val str = "Split this please"
+        val splitElements = MarkdownParser.splitToInlineElements(str)
+
+        assertArrayEquals(arrayOf(Text("Split"), Text("this"), Text("please")), splitElements.toTypedArray())
+    }
+
+    @Test
+    fun `empty string in splitToInlineElements`() {
+        val str = ""
+        val splitElements = MarkdownParser.splitToInlineElements(str)
+
+        assert(splitElements.isEmpty())
+    }
+
+    @Test
+    fun `too many spaces in splitToInlineElements`() {
+        val str = "  two text    nodes   "
+        val splitElements = MarkdownParser.splitToInlineElements(str)
+
+        assertArrayEquals(arrayOf(Text("two"), Text("text"), Text("nodes")), splitElements.toTypedArray())
+    }
+
+    @Test
+    fun `single word in splitToInlineElements`() {
+        val str = "word"
+        val splitElements = MarkdownParser.splitToInlineElements(str)
+
+        assertArrayEquals(arrayOf(Text("word")), splitElements.toTypedArray())
+    }
 
     @Test
     fun `parse simple text in parseParagraphs`() {
         val str = "Just some text"
         val paragraphs = MarkdownParser.parseParagraphs(str)
 
-        assertArrayEquals(arrayOf(RegularParagraph(listOf(Text(str)))), paragraphs.toTypedArray())
+        assertArrayEquals(arrayOf(RegularParagraph(MarkdownParser.splitToInlineElements(str))), paragraphs.toTypedArray())
     }
 
     @Test
@@ -55,7 +87,7 @@ internal class MarkdownParserTest {
         val headerStr = "I am header!"
         val paragraphs = MarkdownParser.parseParagraphs("# $headerStr")
 
-        assertArrayEquals(arrayOf(HeaderParagraph(listOf(Text(headerStr)), 1)), paragraphs.toTypedArray())
+        assertArrayEquals(arrayOf(HeaderParagraph(MarkdownParser.splitToInlineElements(headerStr), 1)), paragraphs.toTypedArray())
     }
 
     @Test
@@ -68,8 +100,8 @@ internal class MarkdownParserTest {
                         "# $headerStr")
 
         val expectedParagraphs = arrayOf(
-                RegularParagraph(listOf(Text(textStr))),
-                HeaderParagraph(listOf(Text(headerStr)), 1)
+                RegularParagraph(MarkdownParser.splitToInlineElements(textStr)),
+                HeaderParagraph(MarkdownParser.splitToInlineElements(headerStr), 1)
         )
         assertArrayEquals(expectedParagraphs, paragraphs.toTypedArray())
     }
@@ -84,8 +116,8 @@ internal class MarkdownParserTest {
                         textStr)
 
         val expectedParagraphs = arrayOf(
-                HeaderParagraph(listOf(Text(headerStr)), 1),
-                RegularParagraph(listOf(Text(textStr)))
+                HeaderParagraph(MarkdownParser.splitToInlineElements(headerStr), 1),
+                RegularParagraph(MarkdownParser.splitToInlineElements(textStr))
         )
         assertArrayEquals(expectedParagraphs, paragraphs.toTypedArray())
     }

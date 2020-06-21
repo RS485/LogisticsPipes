@@ -39,6 +39,11 @@ package network.rs485.markdown
 
 object MarkdownParser {
 
+    internal fun splitToInlineElements(char: CharSequence): List<InlineElement> {
+        // TODO: parse TokenText(s)
+        return char.split(' ').filter(String::isNotBlank).map { Text(it) }
+    }
+
     private fun countChars(char: Char, str: String, index: Int): Int {
         if (str[index] != char) return 0
         var count = 1
@@ -53,7 +58,7 @@ object MarkdownParser {
 
         fun completeTextParagraph() {
             if (sb.isNotBlank()) {
-                paragraphs.add(RegularParagraph(listOf(Text(sb.toString()))))
+                paragraphs.add(RegularParagraph(splitToInlineElements(sb)))
                 // TODO: add ImageParagraph
                 // TODO: parse TokenText(s)
             }
@@ -76,9 +81,7 @@ object MarkdownParser {
                 line.startsWith(Tag.HEADER.char) -> {
                     completeTextParagraph()
                     val headerLevel = countChars(Tag.HEADER.char, line, 0)
-                    // TODO: parse TokenText(s)
-                    val text = Text(line.substring(headerLevel).trim())
-                    paragraphs.add(HeaderParagraph(listOf(text), headerLevel))
+                    paragraphs.add(HeaderParagraph(splitToInlineElements(line.substring(headerLevel)), headerLevel))
                 }
                 // TODO: add MenuParagraph
                 // TODO: add ListParagraph

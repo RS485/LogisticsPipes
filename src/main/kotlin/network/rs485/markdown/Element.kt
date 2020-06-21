@@ -45,6 +45,8 @@ data class Text(val str: String,
                 val format: EnumSet<TextFormat> = EnumSet.noneOf(TextFormat::class.java),
                 val color: Int = 0xffffffff.toInt()) : InlineElement()
 
+object Break : InlineElement()
+
 /**
  * Used to track the tags a token has so the renderer knows how to draw said token.
  */

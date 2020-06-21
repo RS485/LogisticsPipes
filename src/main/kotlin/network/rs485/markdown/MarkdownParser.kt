@@ -41,7 +41,15 @@ object MarkdownParser {
 
     internal fun splitToInlineElements(char: CharSequence): List<InlineElement> {
         // TODO: parse TokenText(s)
-        return char.split(' ').filter(String::isNotBlank).map { Text(it) }
+        return char.split(' ').flatMap { word ->
+            when {
+                word.contains('\n') -> word.split('\n').zipWithNext { a, b ->
+                    listOfNotNull(Text(a).takeIf { a.isNotBlank() }, Break, Text(b).takeIf { b.isNotBlank() })
+                }.flatten()
+                word.isBlank() -> emptyList()
+                else -> listOf(Text(word))
+            }
+        }
     }
 
     private fun countChars(char: Char, str: String, index: Int): Int {
@@ -56,30 +64,35 @@ object MarkdownParser {
         val sb = StringBuilder()
         val lines = str.split('\n')
 
-        fun completeTextParagraph() {
+        fun completeParagraph() {
             if (sb.isNotBlank()) {
                 paragraphs.add(RegularParagraph(splitToInlineElements(sb)))
                 // TODO: add ImageParagraph
-                // TODO: parse TokenText(s)
             }
             sb.clear()
         }
 
         lines.flatMap { line ->
-            if (line.endsWith('\\')) {
-                sb.append(line.substring(0, line.length - 1))
-                return@flatMap emptyList<String>()
+            when {
+                line.endsWith('\\') -> {
+                    sb.append(line.substring(0, line.length - 1))
+                    return@flatMap emptyList<String>()
+                }
+                line.endsWith("  ") -> {
+                    sb.append(line.substring(0, line.length - 2))
+                    sb.append('\n')
+                }
+                else -> sb.append(line)
             }
-            sb.append(line)
             val concatLine = sb.toString()
             sb.clear()
             return@flatMap listOf(concatLine)
         }.forEach { dirtyLine ->
             val line = dirtyLine.trimStart()
             when {
-                line.isEmpty() -> completeTextParagraph()
+                line.isEmpty() -> completeParagraph()
                 line.startsWith(Tag.HEADER.char) -> {
-                    completeTextParagraph()
+                    completeParagraph()
                     val headerLevel = countChars(Tag.HEADER.char, line, 0)
                     paragraphs.add(HeaderParagraph(splitToInlineElements(line.substring(headerLevel)), headerLevel))
                 }
@@ -87,11 +100,11 @@ object MarkdownParser {
                 // TODO: add ListParagraph
                 else -> {
                     if (sb.isNotEmpty()) sb.append(' ')
-                    sb.append(line.trimEnd())
+                    sb.append(line)
                 }
             }
         }
-        if (sb.isNotEmpty()) completeTextParagraph()
+        if (sb.isNotEmpty()) completeParagraph()
         return paragraphs
     }
 

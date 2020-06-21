@@ -37,6 +37,8 @@
 
 package network.rs485.markdown
 
+import network.rs485.markdown.MarkdownParser.parseParagraphs
+import network.rs485.markdown.MarkdownParser.splitToInlineElements
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -46,7 +48,7 @@ internal class MarkdownParserTest {
     @Test
     fun `default text case in splitToInlineElements`() {
         val str = "Split this please"
-        val splitElements = MarkdownParser.splitToInlineElements(str)
+        val splitElements = splitToInlineElements(str)
 
         assertEquals(listOf(Text("Split"), Text("this"), Text("please")), splitElements)
     }
@@ -54,7 +56,7 @@ internal class MarkdownParserTest {
     @Test
     fun `empty string in splitToInlineElements`() {
         val str = ""
-        val splitElements = MarkdownParser.splitToInlineElements(str)
+        val splitElements = splitToInlineElements(str)
 
         assertTrue(splitElements.isEmpty())
     }
@@ -62,7 +64,7 @@ internal class MarkdownParserTest {
     @Test
     fun `too many spaces in splitToInlineElements`() {
         val str = "  two text    nodes   "
-        val splitElements = MarkdownParser.splitToInlineElements(str)
+        val splitElements = splitToInlineElements(str)
 
         assertEquals(listOf(Text("two"), Text("text"), Text("nodes")), splitElements)
     }
@@ -70,39 +72,108 @@ internal class MarkdownParserTest {
     @Test
     fun `single word in splitToInlineElements`() {
         val str = "word"
-        val splitElements = MarkdownParser.splitToInlineElements(str)
+        val splitElements = splitToInlineElements(str)
 
-        assertEquals(listOf(Text("word")), splitElements)
+        assertEquals(listOf(Text(str)), splitElements)
+    }
+
+    @Test
+    fun `special line break in splitToInlineElements`() {
+        val firstStr = "one"
+        val secondStr = "paragraph"
+        val splitElements = splitToInlineElements("$firstStr\n$secondStr")
+
+        assertEquals(listOf(Text(firstStr), Break, Text(secondStr)), splitElements)
+    }
+
+    @Test
+    fun `special line break after word in splitToInlineElements`() {
+        val str = "word"
+        val splitElements = splitToInlineElements("$str\n")
+
+        assertEquals(listOf(Text(str), Break), splitElements)
+    }
+
+    @Test
+    fun `special line break before word in splitToInlineElements`() {
+        val str = "weird"
+        val splitElements = splitToInlineElements("\n$str")
+
+        assertEquals(listOf(Break, Text(str)), splitElements)
+    }
+
+    @Test
+    fun `special line break and spaces in splitToInlineElements`() {
+        val str = "weird"
+        val splitElements = splitToInlineElements("  \n $str")
+
+        assertEquals(listOf(Break, Text(str)), splitElements)
     }
 
     @Test
     fun `parse simple text in parseParagraphs`() {
         val str = "Just some text"
-        val paragraphs = MarkdownParser.parseParagraphs(str)
+        val paragraphs = parseParagraphs(str)
 
-        assertEquals(listOf(RegularParagraph(MarkdownParser.splitToInlineElements(str))), paragraphs)
+        assertEquals(listOf(RegularParagraph(splitToInlineElements(str))), paragraphs)
+    }
+
+    @Test
+    fun `parse two regular paragraphs with text in parseParagraphs`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val paragraphs = parseParagraphs("$firstStr\n\n$secondStr")
+
+        assertEquals(listOf(RegularParagraph(splitToInlineElements(firstStr)), RegularParagraph(splitToInlineElements(secondStr))), paragraphs)
+    }
+
+    @Test
+    fun `special line break with two spaces in parseParagraphs`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val paragraphs = parseParagraphs("$firstStr  \n$secondStr")
+
+        assertEquals(listOf(RegularParagraph(listOf(Text(firstStr), Break, Text(secondStr)))), paragraphs)
+    }
+
+    @Test
+    fun `special line break with too many spaces in parseParagraphs`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val paragraphs = parseParagraphs("$firstStr     \n $secondStr")
+
+        assertEquals(listOf(RegularParagraph(listOf(Text(firstStr), Break, Text(secondStr)))), paragraphs)
+    }
+
+    @Test
+    fun `line break with one space in parseParagraphs`() {
+        val firstStr = "Split"
+        val secondStr = "text"
+        val paragraphs = parseParagraphs("$firstStr \n$secondStr")
+
+        assertEquals(listOf(RegularParagraph(splitToInlineElements("$firstStr $secondStr"))), paragraphs)
     }
 
     @Test
     fun `parse simple header in parseParagraphs`() {
         val headerStr = "I am header!"
-        val paragraphs = MarkdownParser.parseParagraphs("# $headerStr")
+        val paragraphs = parseParagraphs("# $headerStr")
 
-        assertEquals(listOf(HeaderParagraph(MarkdownParser.splitToInlineElements(headerStr), 1)), paragraphs)
+        assertEquals(listOf(HeaderParagraph(splitToInlineElements(headerStr), 1)), paragraphs)
     }
 
     @Test
     fun `parse text paragraph before header in parseParagraphs`() {
         val textStr = "Before!"
         val headerStr = "Header!"
-        val paragraphs = MarkdownParser.parseParagraphs(
+        val paragraphs = parseParagraphs(
                 "$textStr\n" +
                         "\n" +
                         "# $headerStr")
 
         val expectedParagraphs = listOf(
-                RegularParagraph(MarkdownParser.splitToInlineElements(textStr)),
-                HeaderParagraph(MarkdownParser.splitToInlineElements(headerStr), 1)
+                RegularParagraph(splitToInlineElements(textStr)),
+                HeaderParagraph(splitToInlineElements(headerStr), 1)
         )
         assertEquals(expectedParagraphs, paragraphs)
     }
@@ -111,14 +182,14 @@ internal class MarkdownParserTest {
     fun `parse text paragraph after header in parseParagraphs`() {
         val headerStr = "Header!"
         val textStr = "After!"
-        val paragraphs = MarkdownParser.parseParagraphs(
+        val paragraphs = parseParagraphs(
                 "# $headerStr\n" +
                         "\n" +
                         textStr)
 
         val expectedParagraphs = listOf(
-                HeaderParagraph(MarkdownParser.splitToInlineElements(headerStr), 1),
-                RegularParagraph(MarkdownParser.splitToInlineElements(textStr))
+                HeaderParagraph(splitToInlineElements(headerStr), 1),
+                RegularParagraph(splitToInlineElements(textStr))
         )
         assertEquals(expectedParagraphs, paragraphs)
     }

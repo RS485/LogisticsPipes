@@ -1,5 +1,6 @@
 package logisticspipes.items;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -12,10 +13,8 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
+import logisticspipes.LPItems;
 import logisticspipes.gui.GuiGuideBook;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.SetCurrentPagePacket;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.GuideBookContents;
 
 public class ItemGuideBook extends LogisticsItem {
@@ -27,8 +26,12 @@ public class ItemGuideBook extends LogisticsItem {
 		nbt.setFloat("sliderProgress", 0.0F);
 	}
 
-	public static void setCurrentPage(int slot, EntityPlayer player, NBTTagCompound nbt){
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SetCurrentPagePacket.class).setNbt(nbt).setSlot(slot), player);
+	public static void setCurrentPage(ItemStack stack, int pageIndex, float sliderProgress, EnumHand hand) {
+		if (stack.getItem() == LPItems.itemGuideBook) {
+			final NBTTagCompound tag = stack.hasTagCompound() ? Objects.requireNonNull(stack.getTagCompound()) : new NBTTagCompound();
+			tag.setInteger("page", pageIndex);
+			tag.setFloat("sliderProgress", sliderProgress);
+		}
 	}
 
 	@Nonnull

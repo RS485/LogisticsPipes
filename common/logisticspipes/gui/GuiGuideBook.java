@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -245,7 +246,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		ItemGuideBook.setCurrentPage(page.getIndex(), sliderProgress, hand);
+		ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), page.getIndex(), sliderProgress, hand);
 		super.onGuiClosed();
 	}
 

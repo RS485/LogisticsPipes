@@ -255,6 +255,8 @@ dependencies {
     compileOnly group: 'dan200.computercraft', name: 'ComputerCraft', version: '1.80pr1-build5', transitive: false
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 }
 
 tasks.withType(Test) {

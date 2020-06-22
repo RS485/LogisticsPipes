@@ -254,9 +254,9 @@ dependencies {
     compileOnly group: 'cofh', name: 'ThermalExpansion', version: '1.12.2-5.5.4.43', classifier: 'deobf', transitive: false
     compileOnly group: 'dan200.computercraft', name: 'ComputerCraft', version: '1.80pr1-build5', transitive: false
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
 
 tasks.withType(Test) {

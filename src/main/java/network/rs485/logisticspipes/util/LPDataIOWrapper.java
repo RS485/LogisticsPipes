@@ -267,7 +267,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	@Override
-	public void writeBitSet(BitSet bits) {
+	public void writeBitSet(@Nonnull BitSet bits) {
 		writeByteArray(bits.toByteArray());
 	}
 

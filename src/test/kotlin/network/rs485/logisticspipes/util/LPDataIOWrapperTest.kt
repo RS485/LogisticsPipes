@@ -51,339 +51,391 @@ private const val BUFFER_EMPTY_MSG = "Buffer must be empty"
 
 class LPDataIOWrapperTest {
     @Test
-    fun testDirectBuffer() {
+    fun `test reading and writing to direct buffer`() {
         Unpooled.directBuffer().use { directBuf ->
             LPDataIOWrapper.writeData(directBuf) { output: LPDataOutput ->
                 output.writeInt(12)
                 output.writeByte(13)
             }
             LPDataIOWrapper.provideData(directBuf) { input: LPDataInput ->
-                assertEquals(12, input.readInt())
-                assertEquals(13, input.readByte())
+                val firstReadVal = input.readInt()
+                val secondReadVal = input.readByte()
+
+                assertEquals(12, firstReadVal)
+                assertEquals(13, secondReadVal)
             }
-            assertEquals(0, directBuf.readableBytes(), BUFFER_EMPTY_MSG)
+            val bytesLeft = directBuf.readableBytes()
+            assertEquals(0, bytesLeft, BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testProvideByteData() {
+    fun `test provideData on byte array`() {
         val result = 16909060
         LPDataIOWrapper.provideData(getBytesFromInteger(result)) { input: LPDataInput ->
-            assertEquals(result, input.readInt())
+            val actual = input.readInt()
+
+            assertEquals(result, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testProvideByteBufData() {
+    fun `test provideData with a ByteBuf`() {
         val result = 1234
         Unpooled.wrappedBuffer(getBytesFromInteger(result)).use { dataBuffer ->
             LPDataIOWrapper.provideData(dataBuffer) { dataInput: LPDataInput -> assertEquals(result, dataInput.readInt()) }
+            val actual = dataBuffer.readableBytes()
+
+            assertEquals(0, actual, BUFFER_EMPTY_MSG)
+        }
+    }
+
+    @Test
+    fun `test writeData on ByteBuf`() {
+        Unpooled.buffer(Integer.BYTES).use { dataBuffer ->
+            LPDataIOWrapper.writeData(dataBuffer) { dataOutput: LPDataOutput -> dataOutput.writeInt(5) }
+            val actual = dataBuffer.readInt()
+
+            assertEquals(5, actual)
             assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testWriteData() {
-        val dataBuffer = Unpooled.buffer(Integer.BYTES)
-        LPDataIOWrapper.writeData(dataBuffer) { dataOutput: LPDataOutput -> dataOutput.writeInt(5) }
-        assertEquals(5, dataBuffer.readInt())
-        assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG)
-        dataBuffer.release()
+    fun `test collectData with an integer`() {
+        val value = 7890
+        val expected = getBytesFromInteger(value)
+        val arr = LPDataIOWrapper.collectData { dataOutput: LPDataOutput -> dataOutput.writeInt(value) }
+
+        assertTrue(expected.contentEquals(arr))
     }
 
     @Test
-    fun testCollectData() {
-        val arr = LPDataIOWrapper.collectData { dataOutput: LPDataOutput -> dataOutput.writeInt(7890) }
-        assertTrue(getBytesFromInteger(7890).contentEquals(arr))
-    }
+    fun `test writeByteArray to a ByteBuf`() {
+        Unpooled.buffer(Int.SIZE_BYTES * 2).use { dataBuffer ->
+            val arr = getBytesFromInteger(-1)
+            LPDataIOWrapper.writeData(dataBuffer) { dataOutput: LPDataOutput -> dataOutput.writeByteArray(arr) }
+            val firstReadVal = dataBuffer.readInt()
+            val secondReadVal = dataBuffer.readInt()
 
-    @Test
-    fun testWriteByteArray() {
-        val dataBuffer = Unpooled.buffer(Integer.BYTES * 2)
-        val arr = getBytesFromInteger(-1)
-        LPDataIOWrapper.writeData(dataBuffer) { dataOutput: LPDataOutput -> dataOutput.writeByteArray(arr) }
-        assertEquals(4, dataBuffer.readInt())
-        assertEquals(-1, dataBuffer.readInt())
-        assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG)
-        dataBuffer.release()
-    }
+            assertEquals(4, firstReadVal)
+            assertEquals(-1, secondReadVal)
 
-    @Test
-    fun testNullByteArray() {
-        val dataBuffer = Unpooled.buffer()
-        LPDataIOWrapper.writeData(dataBuffer) { output: LPDataOutput -> output.writeByteArray(null) }
-        LPDataIOWrapper.provideData(dataBuffer) { input: LPDataInput -> assertNull(input.readByteArray()) }
-        assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG)
-        dataBuffer.release()
-    }
-
-    @Test
-    fun testReadByteArray() {
-        val dataBuffer = Unpooled.buffer(Integer.BYTES * 2)
-        dataBuffer.writeInt(4)
-        dataBuffer.writeInt(-1)
-        LPDataIOWrapper.provideData(dataBuffer) { dataInput: LPDataInput ->
-            val bytes = dataInput.readByteArray()!!
-            assertTrue(getBytesFromInteger(-1).contentEquals(bytes))
+            val bytesLeft = dataBuffer.readableBytes()
+            assertEquals(0, bytesLeft, BUFFER_EMPTY_MSG)
         }
-        assertEquals(0, dataBuffer.readableBytes(), BUFFER_EMPTY_MSG)
-        dataBuffer.release()
     }
 
     @Test
-    fun testWriteByte() {
+    fun `test writeByteArray and readByteArray with null`() {
+        Unpooled.buffer().use { dataBuffer ->
+            LPDataIOWrapper.writeData(dataBuffer) { output: LPDataOutput -> output.writeByteArray(null) }
+            LPDataIOWrapper.provideData(dataBuffer) { input: LPDataInput ->
+                val actual = input.readByteArray()
+
+                assertNull(actual)
+            }
+            val bytesLeft = dataBuffer.readableBytes()
+            assertEquals(0, bytesLeft, BUFFER_EMPTY_MSG)
+        }
+    }
+
+    @Test
+    fun `test readByteArray with four bytes`() {
+        Unpooled.buffer(Int.SIZE_BYTES * 2).use { dataBuffer ->
+            dataBuffer.writeInt(4)
+            dataBuffer.writeInt(-1)
+            LPDataIOWrapper.provideData(dataBuffer) { dataInput: LPDataInput ->
+                val expected = getBytesFromInteger(-1)
+                val actual = dataInput.readByteArray()!!
+
+                assertTrue(expected.contentEquals(actual))
+            }
+            val bytesLeft = dataBuffer.readableBytes()
+            assertEquals(0, bytesLeft, BUFFER_EMPTY_MSG)
+        }
+    }
+
+    @Test
+    fun `test writeByte with a single byte`() {
         val value: Byte = 0x6f
-        val testBuffer = Unpooled.buffer(java.lang.Byte.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeByte(value) }
-        val compareBuffer = Unpooled.buffer(java.lang.Byte.BYTES)
-        compareBuffer.writeByte(value.toInt())
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(Byte.SIZE_BYTES).use { expected ->
+            expected.writeByte(value.toInt())
+            Unpooled.buffer(Byte.SIZE_BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeByte(value) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteByteInt() {
+    fun `test writeByte with a byte converted to int`() {
         val byteValue = 0x6f
-        val testBuffer = Unpooled.buffer(java.lang.Byte.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeByte(byteValue) }
-        val compareBuffer = Unpooled.buffer(java.lang.Byte.BYTES)
-        compareBuffer.writeByte(byteValue)
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(Byte.SIZE_BYTES).use { expected ->
+            expected.writeByte(byteValue)
+            Unpooled.buffer(Byte.SIZE_BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeByte(byteValue) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteShort() {
+    fun `test writeShort with a single short`() {
         val value: Short = 0x6f0f
-        val testBuffer = Unpooled.buffer(java.lang.Short.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeShort(value) }
-        val compareBuffer = Unpooled.buffer(java.lang.Short.BYTES)
-        compareBuffer.writeShort(value.toInt())
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(java.lang.Short.BYTES).use { expected ->
+            expected.writeShort(value.toInt())
+            Unpooled.buffer(java.lang.Short.BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeShort(value) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteShortInt() {
+    fun `test writeShort with a short converted to int`() {
         val shortValue = 0x6f0f
-        val testBuffer = Unpooled.buffer(java.lang.Short.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeShort(shortValue) }
-        val compareBuffer = Unpooled.buffer(java.lang.Short.BYTES)
-        compareBuffer.writeShort(shortValue)
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(java.lang.Short.BYTES).use { expected ->
+            expected.writeShort(shortValue)
+            Unpooled.buffer(java.lang.Short.BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeShort(shortValue) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteInt() {
+    fun `test writeInt with a single int`() {
         val value = 0x6f0f9f3f
-        val testBuffer = Unpooled.buffer(Integer.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeInt(value) }
-        val compareBuffer = Unpooled.buffer(Integer.BYTES)
-        compareBuffer.writeInt(value)
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(Int.SIZE_BYTES).use { expected ->
+            expected.writeInt(value)
+            Unpooled.buffer(Int.SIZE_BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeInt(value) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteLong() {
+    fun `test writeLong with a single long`() {
         val value = 0x6f0f9f3f6f0f9f3fL
-        val testBuffer = Unpooled.buffer(java.lang.Long.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeLong(value) }
-        val compareBuffer = Unpooled.buffer(java.lang.Long.BYTES)
-        compareBuffer.writeLong(value)
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(Long.SIZE_BYTES).use { expected ->
+            expected.writeLong(value)
+            Unpooled.buffer(Long.SIZE_BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeLong(value) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteFloat() {
+    fun `test writeFloat with a single float`() {
         val value = 0.123456f
-        val testBuffer = Unpooled.buffer(java.lang.Float.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeFloat(value) }
-        val compareBuffer = Unpooled.buffer(java.lang.Float.BYTES)
-        compareBuffer.writeFloat(value)
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(java.lang.Float.BYTES).use { expected ->
+            expected.writeFloat(value)
+            Unpooled.buffer(java.lang.Float.BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeFloat(value) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteDouble() {
+    fun `test writeDouble with a single double value`() {
         val value = 0.1234567890123456
-        val testBuffer = Unpooled.buffer(java.lang.Double.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeDouble(value) }
-        val compareBuffer = Unpooled.buffer(java.lang.Double.BYTES)
-        compareBuffer.writeDouble(value)
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(java.lang.Double.BYTES).use { expected ->
+            expected.writeDouble(value)
+            Unpooled.buffer(java.lang.Double.BYTES).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeDouble(value) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testWriteBoolean() {
+    fun `test writeBoolean with a single boolean`() {
         val value = true
-        val testBuffer = Unpooled.buffer(1)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeBoolean(value) }
-        val compareBuffer = Unpooled.buffer(1)
-        compareBuffer.writeBoolean(value)
-        assertEquals(testBuffer, compareBuffer)
-        testBuffer.release()
-        compareBuffer.release()
+        Unpooled.buffer(1).use { expected ->
+            expected.writeBoolean(value)
+            Unpooled.buffer(1).use { actual ->
+                LPDataIOWrapper.writeData(actual) { output: LPDataOutput -> output.writeBoolean(value) }
+
+                assertEquals(expected, actual)
+            }
+        }
     }
 
     @Test
-    fun testUTF() {
+    fun `test writeUTF and readUTF with a unicode string`() {
         val value = "◘ËTest♀StringßüöäÜÖÄ"
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeUTF(value) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(value, input.readUTF())
+            val actual = input.readUTF()
+
+            assertEquals(value, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullUTF() {
+    fun `test writeUTF and readUTF with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeUTF(null) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readUTF())
+            val actual = input.readUTF()
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testForgeDirection() {
+    fun `test writeFacing and readFacing for a single EnumFacing value`() {
         val value = EnumFacing.UP
-        val testBuffer = Unpooled.buffer(java.lang.Long.BYTES)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeFacing(value) }
-        LPDataIOWrapper.provideData(testBuffer) { input: LPDataInput ->
-            assertEquals(value, input.readFacing())
-            assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
+        Unpooled.buffer(Long.SIZE_BYTES).use { testBuffer ->
+            LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeFacing(value) }
+            LPDataIOWrapper.provideData(testBuffer) { input: LPDataInput ->
+                val actual = input.readFacing()
+
+                assertEquals(value, actual)
+                assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
+            }
         }
-        testBuffer.release()
     }
 
     @Test
-    fun testNullForgeDirection() {
+    fun `test writeFacing and readFacing with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeFacing(null) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readFacing())
+            val actual = input.readFacing()
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testBitSet() {
+    fun `test writeBitSet and readBitSet`() {
         val value = BitSet(9)
         value[3] = true
         value[4] = true
         value[9] = true
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeBitSet(value) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(value, input.readBitSet())
+            val actual = input.readBitSet()
+
+            assertEquals(value, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullBitSet() {
-        assertFailsWith<NullPointerException> {
-            LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeBitSet(null) }
-        }
-    }
-
-    @Test
-    fun testBooleanArray() {
+    fun `test writeBooleanArray and readBooleanArray`() {
         val arr = booleanArrayOf(true, false, true, true)
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeBooleanArray(arr) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertTrue(arr.contentEquals(input.readBooleanArray()!!))
+            val actual = input.readBooleanArray()!!
+
+            assertTrue(arr.contentEquals(actual))
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testEmptyBooleanArray() {
+    fun `test writeBooleanArray and readBooleanArray with empty array`() {
         val arr = BooleanArray(0)
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeBooleanArray(arr) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertTrue(arr.contentEquals(input.readBooleanArray()!!))
+            val actual = input.readBooleanArray()!!
+
+            assertTrue(arr.contentEquals(actual))
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullBooleanArray() {
+    fun `test writeBooleanArray and readBooleanArray with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeBooleanArray(null) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readBooleanArray())
+            val actual = input.readBooleanArray()
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testInvalidBooleanArray() {
+    fun `test readBooleanArray with invalid values`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput ->
             output.writeInt(12)
             output.writeByteArray(null)
         }
+
         assertFailsWith<NullPointerException> {
             LPDataIOWrapper.provideData(data) { obj: LPDataInput -> obj.readBooleanArray() }
         }
     }
 
     @Test
-    fun testIntArray() {
+    fun `test writeIntArray and readIntArray`() {
         val arr = intArrayOf(12, 13, 13513, Int.MAX_VALUE, Int.MIN_VALUE)
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeIntArray(arr) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertTrue(arr.contentEquals(input.readIntArray()!!))
+            val actual = input.readIntArray()!!
+
+            assertTrue(arr.contentEquals(actual))
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullIntArray() {
+    fun `test writeIntArray and readIntArray with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeIntArray(null) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readIntArray())
+            val actual = input.readIntArray()
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testByteBuf() {
+    fun `test writing and reading bytes via ByteBuf`() {
         val arr = getBytesFromInteger(741893247)
-        val testBuffer = Unpooled.buffer(arr.size)
-        LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeBytes(arr) }
+        Unpooled.buffer(arr.size).use { testBuffer ->
+            LPDataIOWrapper.writeData(testBuffer) { output: LPDataOutput -> output.writeBytes(arr) }
 
-        // buffer in byte array
-        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeByteBuf(testBuffer) }
-        LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            LPDataIOWrapper.provideData(input.readByteBuf()) { bufferInput: LPDataInput ->
-                assertTrue(arr.contentEquals(bufferInput.readBytes(arr.size)))
-                assertEquals(0, (bufferInput as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
+            // buffer in byte array
+            val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeByteBuf(testBuffer) }
+            LPDataIOWrapper.provideData(data) { input: LPDataInput ->
+                LPDataIOWrapper.provideData(input.readByteBuf()) { bufferInput: LPDataInput ->
+                    val actual = bufferInput.readBytes(arr.size)
+
+                    assertTrue(arr.contentEquals(actual))
+                    assertEquals(0, (bufferInput as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
+                }
+                assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
             }
-            assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullByteBuf() {
+    fun `test writeByteBuf with null`() {
         assertFailsWith<NullPointerException> {
             LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeByteBuf(null) }
         }
     }
 
     @Test
-    fun testInvalidByteBuf() {
+    fun `test readByteBuf with invalid values`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeByteArray(null) }
         assertFailsWith<NullPointerException> {
             LPDataIOWrapper.provideData(data) { obj: LPDataInput -> obj.readByteBuf() }
@@ -391,82 +443,96 @@ class LPDataIOWrapperTest {
     }
 
     @Test
-    fun testLongArray() {
+    fun `test writeLongArray and readLongArray`() {
         val arr = longArrayOf(12L, 13L, 1351312398172398L, Long.MAX_VALUE, Long.MIN_VALUE)
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeLongArray(arr) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertTrue(arr.contentEquals(input.readLongArray()!!))
+            val actual = input.readLongArray()!!
+
+            assertTrue(arr.contentEquals(actual))
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullLongArray() {
+    fun `test writeLongArray and readLongArray with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeLongArray(null) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readLongArray())
+            val actual = input.readLongArray()
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testReadShort() {
+    fun `test readShort with regular value`() {
         val value: Short = 12
         val dataBuffer = Unpooled.buffer(java.lang.Short.BYTES)
         dataBuffer.writeShort(value.toInt())
         LPDataIOWrapper.provideData(dataBuffer) { input: LPDataInput ->
-            assertEquals(value, input.readShort())
+            val actual = input.readShort()
+
+            assertEquals(value, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testReadLong() {
+    fun `test readLong with regular value`() {
         val value = 1092347801374L
-        val dataBuffer = Unpooled.buffer(java.lang.Long.BYTES)
+        val dataBuffer = Unpooled.buffer(Long.SIZE_BYTES)
         dataBuffer.writeLong(value)
         LPDataIOWrapper.provideData(dataBuffer) { input: LPDataInput ->
-            assertEquals(value, input.readLong())
+            val actual = input.readLong()
+
+            assertEquals(value, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testReadFloat() {
+    fun `test readFloat with regular value`() {
         val value = 0.123456f
         val dataBuffer = Unpooled.buffer(java.lang.Float.BYTES)
         dataBuffer.writeFloat(value)
         LPDataIOWrapper.provideData(dataBuffer) { input: LPDataInput ->
+            val actual = input.readFloat()
+
             // compares floating point numbers correctly in Kotlin
-            assertEquals(value, input.readFloat())
+            assertEquals(value, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testReadDouble() {
+    fun `test readDouble with regular value`() {
         val value = 0.1234567890123456
         val dataBuffer = Unpooled.buffer(java.lang.Double.BYTES)
         dataBuffer.writeDouble(value)
         LPDataIOWrapper.provideData(dataBuffer) { input: LPDataInput ->
+            val actual = input.readDouble()
+
             // compares floating point numbers correctly in Kotlin
-            assertEquals(value, input.readDouble())
+            assertEquals(value, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testBoolean() {
+    fun `test readBoolean with regular value`() {
         val value = true
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeBoolean(value) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(value, input.readBoolean())
+            val actual = input.readBoolean()
+
+            assertEquals(value, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNBTTagCompound() {
+    fun `test writeNBTTagCompound and readNBTTagCompound with plenty information`() {
         val tag = NBTTagCompound()
         tag.setBoolean("bool", true)
         tag.setByte("byte", 127.toByte())
@@ -481,138 +547,164 @@ class LPDataIOWrapperTest {
         tag.setTag("tag", NBTTagCompound())
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeNBTTagCompound(tag) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(tag, input.readNBTTagCompound())
+            val actual = input.readNBTTagCompound()
+
+            assertEquals(tag, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullNBTTagCompound() {
+    fun `test writeNBTTagCompound and readNBTTagCompound with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeNBTTagCompound(null) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readNBTTagCompound())
+            val actual = input.readNBTTagCompound()
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testEmptyItemStack() {
+    fun `test readItemStack with EMPTY value`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeItemStack(ItemStack.EMPTY) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(input.readItemStack(), ItemStack.EMPTY)
+            val actual = input.readItemStack()
+
+            assertEquals(ItemStack.EMPTY, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testArrayList() {
-        val arrayList = ArrayList<String>()
-        arrayList.add("drölf")
-        arrayList.add("text")
-        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection(arrayList) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
+    fun `test writeCollection and readArrayList with UTF strings`() {
+        val arr = arrayListOf("drölf", "text")
+        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection(arr) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(arrayList, input.readArrayList<String> { obj: LPDataInput -> obj.readUTF() })
+            val actual = input.readArrayList<String> { obj: LPDataInput -> obj.readUTF() }
+
+            assertEquals(arr, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullArrayList() {
+    fun `test writeCollection and readArrayList with null UTF string`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection<String>(null) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readArrayList { obj: LPDataInput -> obj.readUTF() })
+            val actual = input.readArrayList { obj: LPDataInput -> obj.readUTF() }
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testLinkedList() {
+    fun `test writeCollection and readLinkedList with UTF strings`() {
         val linkedList = LinkedList<String>()
         linkedList.add("drölf")
         linkedList.add("text")
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection(linkedList) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(linkedList, input.readLinkedList<String> { obj: LPDataInput -> obj.readUTF() })
+            val actual = input.readLinkedList<String> { obj: LPDataInput -> obj.readUTF() }
+
+            assertEquals(linkedList, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullLinkedList() {
+    fun `test writeCollection and readLinkedList with UTF null value`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection<String>(null) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readLinkedList { obj: LPDataInput -> obj.readUTF() })
+            val actual = input.readLinkedList { obj: LPDataInput -> obj.readUTF() }
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testSet() {
-        val set = HashSet<String>()
-        set.add("drölf")
-        set.add("text")
-        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection(set) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
+    fun `test writeCollection and readSet with UTF strings`() {
+        val expected = setOf("drölf", "text")
+        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection(expected) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(set, input.readSet { obj: LPDataInput -> obj.readUTF() })
+            val actual = input.readSet { obj: LPDataInput -> obj.readUTF() }
+
+            assertEquals(expected, actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullSet() {
+    fun `test writeCollection and readSet with null`() {
+        val data = LPDataIOWrapper.collectData { output: LPDataOutput ->
+            output.writeCollection<String>(null) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) }
+        }
+        LPDataIOWrapper.provideData(data) { input: LPDataInput ->
+            val actual = input.readSet { obj: LPDataInput -> obj.readUTF() }
+
+            assertNull(actual)
+            assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
+        }
+    }
+
+    @Test
+    fun `test writeCollection and readNonNullList with UTF strings`() {
+        val expected = NonNullList.withSize(3, "")
+        expected[0] = "drölf"
+        expected[1] = "text"
+        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection(expected) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
+        LPDataIOWrapper.provideData(data) { input: LPDataInput ->
+            val actual = input.readNonNullList({ obj: LPDataInput -> obj.readUTF() }, "")
+
+            assertEquals(expected, actual)
+            assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
+        }
+    }
+
+    @Test
+    fun `test writeCollection and readNonNullList with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection<String>(null) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readSet { obj: LPDataInput -> obj.readUTF() })
+            val actual = input.readNonNullList({ obj: LPDataInput -> obj.readUTF() }, "")
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNonNullList() {
-        val nonNullList = NonNullList.withSize(3, "")
-        nonNullList[0] = "drölf"
-        nonNullList[1] = "text"
-        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection(nonNullList) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
+    fun `test writeUTFArray and readUTFArray`() {
+        val arr = arrayOf("◘ËTest♀StringßüöäÜÖÄ", "◘ËTest♀TESTpartßüöäÜÖÄ")
+        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeUTFArray(arr) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertEquals(nonNullList, input.readNonNullList({ obj: LPDataInput -> obj.readUTF() }, ""))
+            val actual = input.readUTFArray()!!
+
+            assertTrue(arr.contentEquals(actual))
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testNullNonNullList() {
-        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeCollection<String>(null) { obj: LPDataOutput, s: String? -> obj.writeUTF(s) } }
-        LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readNonNullList({ obj: LPDataInput -> obj.readUTF() }, ""))
-            assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
-        }
-    }
-
-    @Test
-    fun testUTFArray() {
-        val array = arrayOf("◘ËTest♀StringßüöäÜÖÄ", "◘ËTest♀TESTpartßüöäÜÖÄ")
-        val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeUTFArray(array) }
-        LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertTrue(array.contentEquals(input.readUTFArray()!!))
-            assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
-        }
-    }
-
-    @Test
-    fun testNullUTFArray() {
+    fun `test writeUTFArray and readUTFArray with null`() {
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeUTFArray(null) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertNull(input.readUTFArray())
+            val actual = input.readUTFArray()
+
+            assertNull(actual)
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }
 
     @Test
-    fun testUTFArrayNull() {
+    fun `test writeUTFArray and readUTFArray with null value`() {
         val array = arrayOf("◘ËTest♀StringßüöäÜÖÄ", null)
         val data = LPDataIOWrapper.collectData { output: LPDataOutput -> output.writeUTFArray(array) }
         LPDataIOWrapper.provideData(data) { input: LPDataInput ->
-            assertTrue(array.contentEquals(input.readUTFArray()!!))
+            val actual = input.readUTFArray()!!
+
+            assertTrue(array.contentEquals(actual))
             assertEquals(0, (input as LPDataIOWrapper).localBuffer.readableBytes(), BUFFER_EMPTY_MSG)
         }
     }

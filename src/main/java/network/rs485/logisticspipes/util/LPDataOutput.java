@@ -123,7 +123,7 @@ public interface LPDataOutput {
 
 	<T extends Enum<T>> void writeEnumSet(EnumSet<T> types, Class<T> clazz);
 
-	void writeBitSet(BitSet bits);
+	void writeBitSet(@Nonnull BitSet bits);
 
 	void writeNBTTagCompound(@Nullable NBTTagCompound tag);
 

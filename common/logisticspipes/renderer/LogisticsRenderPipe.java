@@ -39,7 +39,6 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.tuples.Pair;
-import network.rs485.debug.PerformanceMeter;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -54,7 +53,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	public static ClientConfiguration config = LogisticsPipes.getClientPlayerConfig();
 	private static ItemStackRenderer itemRenderer = new ItemStackRenderer(0, 0, 0, false, false);
 	private ModelSign modelSign;
-	private final PerformanceMeter renderItemStackOnSignPerfMeter = new PerformanceMeter("renderItemStackOnSign", 60, LogisticsPipes.isDEBUG());
 
 	public LogisticsRenderPipe() {
 		super();
@@ -332,13 +330,6 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 	}
 
 	public void renderItemStackOnSign(@Nonnull ItemStack itemstack) {
-		long start = System.nanoTime();
-		this.renderItemStackOnSignInner(itemstack);
-		long end = System.nanoTime();
-		renderItemStackOnSignPerfMeter.newPerfValue(end - start);
-	}
-
-	private void renderItemStackOnSignInner(@Nonnull ItemStack itemstack) {
 		if (itemstack.isEmpty()) {
 			return; // Only happens on false configuration
 		}

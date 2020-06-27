@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,12 +14,10 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
-import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleCreativeTabBasedItemSink;
@@ -66,16 +65,9 @@ public class ModuleChippedCraftingRecipes extends CraftingPartRecipes {
 		}
 		if (baseModule == null) return;
 
-		ItemStack programmerStack = new ItemStack(LPItems.logisticsProgrammer);
-		programmerStack.setTagCompound(new NBTTagCompound());
-		final NBTTagCompound tag = Objects.requireNonNull(programmerStack.getTagCompound());
-		tag.setString(ItemLogisticsProgrammer.RECIPE_TARGET, moduleResource.toString());
-		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);
-
-		if (!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
-			LogisticsProgramCompilerTileEntity.programByCategory.put(recipeCategory, new HashSet<>());
-		}
-		LogisticsProgramCompilerTileEntity.programByCategory.get(recipeCategory).add(moduleResource);
+		Ingredient programmer = programmerIngredient(moduleResource.toString());
+		final Set<ResourceLocation> compilerPrograms = LogisticsProgramCompilerTileEntity.programByCategory.putIfAbsent(recipeCategory, new HashSet<>());
+		Objects.requireNonNull(compilerPrograms).add(moduleResource);
 
 		RecipeManager.RecipeLayout layout = null;
 		switch (type) {

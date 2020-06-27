@@ -5,19 +5,17 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.LPItems;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
-import logisticspipes.items.ItemLogisticsProgrammer;
-import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.upgrades.ActionSpeedUpgrade;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
@@ -54,16 +52,9 @@ public class UpgradeChippedCraftingRecipes extends CraftingPartRecipes {
 		Item upgrade = Item.REGISTRY.getObject(upgradeResource);
 		if (upgrade == null) return;
 
-		ItemStack programmerStack = new ItemStack(LPItems.logisticsProgrammer);
-		programmerStack.setTagCompound(new NBTTagCompound());
-		final NBTTagCompound tag = Objects.requireNonNull(programmerStack.getTagCompound());
-		tag.setString(ItemLogisticsProgrammer.RECIPE_TARGET, upgradeResource.toString());
-		Ingredient programmer = NBTIngredient.fromStacks(programmerStack);
-
-		if (!LogisticsProgramCompilerTileEntity.programByCategory.containsKey(recipeCategory)) {
-			LogisticsProgramCompilerTileEntity.programByCategory.put(recipeCategory, new HashSet<>());
-		}
-		LogisticsProgramCompilerTileEntity.programByCategory.get(recipeCategory).add(upgradeResource);
+		Ingredient programmer = programmerIngredient(upgradeResource.toString());
+		final Set<ResourceLocation> compilerPrograms = LogisticsProgramCompilerTileEntity.programByCategory.putIfAbsent(recipeCategory, new HashSet<>());
+		Objects.requireNonNull(compilerPrograms).add(upgradeResource);
 
 		RecipeManager.RecipeLayout layout = null;
 		switch (type) {

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -65,7 +66,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
-	public boolean isType(TileEntity tile, EnumFacing dir) {
+	public boolean isType(@Nonnull TileEntity tile, @Nullable EnumFacing dir) {
 		if (tile instanceof IGridHost && tile.hasCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir)) {
 			// for some reason when AE loads (5 ticks) this is null
 			return ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir)) != null;
@@ -80,7 +81,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new AEInterfaceInventoryHandler(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 

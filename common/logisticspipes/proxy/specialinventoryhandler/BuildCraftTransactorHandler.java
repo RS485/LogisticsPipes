@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -30,12 +31,12 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
-	public boolean isType(TileEntity tile, EnumFacing dir) {
+	public boolean isType(@Nonnull TileEntity tile, @Nullable EnumFacing dir) {
 		return tile.hasCapability(CapUtil.CAP_ITEM_TRANSACTOR, dir);
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		IItemTransactor cap = tile.getCapability(CapUtil.CAP_ITEM_TRANSACTOR, dir);
 		if (cap != null) {
 			return new BuildCraftTransactorHandler(cap);

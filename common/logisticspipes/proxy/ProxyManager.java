@@ -91,17 +91,13 @@ import network.rs485.logisticspipes.proxy.mcmp.MCMPProxy;
 import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPBlockAccess;
 import network.rs485.logisticspipes.proxy.mcmp.subproxy.IMCMPLTGPCompanion;
 
-//import logisticspipes.proxy.nei.NEIProxy;
-
-//@formatter:off
-//CHECKSTYLE:OFF
-
 public class ProxyManager {
+
 	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy, Class<?>... wrapperInterfaces) {
 		try {
 			return LogisticsWrapperHandler.getWrappedProxy(modId, interfaze, proxyClazz, dummyProxy, wrapperInterfaces);
-		} catch(Exception e) {
-			if(e instanceof RuntimeException) {
+		} catch (Exception e) {
+			if (e instanceof RuntimeException) {
 				throw (RuntimeException) e;
 			}
 			throw new RuntimeException(e);
@@ -109,6 +105,9 @@ public class ProxyManager {
 	}
 
 	public static void load() {
+		//@formatter:off
+		//CHECKSTYLE:OFF
+
 		SimpleServiceLocator.setBuildCraftProxy(ProxyManager.getWrappedProxy(LPConstants.bcTransportModID + "+" + LPConstants.bcSiliconModID, IBCProxy.class, BuildCraftProxy.class, new IBCProxy() {
 			@Override public void registerPipeInformationProvider() {}
 			@Override public void initProxy() {}
@@ -350,7 +349,11 @@ public class ProxyManager {
 			@Override public Object getColourMultiplier(int i) {return null;}
 			@Override public IModelState getDefaultBlockState() {return null;}
 		};
-		Class<?>[] cclSubWrapper = new Class<?>[] {TextureTransformation.class, IRenderState.class, IModel3D.class, ITranslation.class, IVec3.class, IBounds.class};
+
+		//@formatter:on
+		//CHECKSTYLE:ON
+
+		Class<?>[] cclSubWrapper = new Class<?>[] { TextureTransformation.class, IRenderState.class, IModel3D.class, ITranslation.class, IVec3.class, IBounds.class };
 		SimpleServiceLocator.setCCLProxy(ProxyManager.getWrappedProxy("!" + LPConstants.cclrenderModID, ICCLProxy.class, CCLProxy.class, dummyCCLProxy, cclSubWrapper));
 
 		SimpleServiceLocator.setConfigToolHandler(new ConfigToolHandler());

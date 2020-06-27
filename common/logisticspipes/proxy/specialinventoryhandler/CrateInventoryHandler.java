@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -37,12 +38,12 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 	}
 
 	@Override
-	public boolean isType(TileEntity tile, EnumFacing dir) {
+	public boolean isType(@Nonnull TileEntity tile, @Nullable EnumFacing dir) {
 		return SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new CrateInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 

@@ -21,7 +21,7 @@ public class CCFilterInventory {
 		return inv.getSizeInventory();
 	}
 
-	@CCCommand(description = "Returns the ItemIdentifier in the givven slot")
+	@CCCommand(description = "Returns the ItemIdentifier in the given slot")
 	@CCQueued
 	public ItemIdentifier getItemIdentifier(Double slot) {
 		int s = slot.intValue();
@@ -38,7 +38,7 @@ public class CCFilterInventory {
 		return inv.getIDStackInSlot(s).getItem();
 	}
 
-	@CCCommand(description = "Sets the ItemIdentifier at the givven slot")
+	@CCCommand(description = "Sets the ItemIdentifier at the given slot")
 	@CCQueued
 	public void setItemIdentifier(Double slot, ItemIdentifier ident) {
 		int s = slot.intValue();
@@ -52,7 +52,7 @@ public class CCFilterInventory {
 		inv.setInventorySlotContents(s, ident.makeStack(1));
 	}
 
-	@CCCommand(description = "Sets the ItemIdentifierStack at the givven slot")
+	@CCCommand(description = "Sets the ItemIdentifierStack at the given slot")
 	@CCQueued
 	public void clearSlot(Double slot) {
 		int s = slot.intValue();

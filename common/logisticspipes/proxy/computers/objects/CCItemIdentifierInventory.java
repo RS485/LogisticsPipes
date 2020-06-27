@@ -20,7 +20,7 @@ public class CCItemIdentifierInventory {
 		return inv.getSizeInventory();
 	}
 
-	@CCCommand(description = "Returns the ItemIdentifierStack in the givven slot")
+	@CCCommand(description = "Returns the ItemIdentifierStack in the given slot")
 	@CCQueued
 	public ItemIdentifierStack getItemIdentifierStack(Double slot) {
 		int s = slot.intValue();
@@ -34,7 +34,7 @@ public class CCItemIdentifierInventory {
 		return inv.getIDStackInSlot(s);
 	}
 
-	@CCCommand(description = "Sets the ItemIdentifierStack at the givven slot")
+	@CCCommand(description = "Sets the ItemIdentifierStack at the given slot")
 	@CCQueued
 	public void setItemIdentifierStack(Double slot, ItemIdentifierStack stack) {
 		int s = slot.intValue();
@@ -48,7 +48,7 @@ public class CCItemIdentifierInventory {
 		inv.setInventorySlotContents(s, stack);
 	}
 
-	@CCCommand(description = "Sets the ItemIdentifierStack at the givven slot")
+	@CCCommand(description = "Sets the ItemIdentifierStack at the given slot")
 	@CCQueued
 	public void clearSlot(Double slot) {
 		int s = slot.intValue();

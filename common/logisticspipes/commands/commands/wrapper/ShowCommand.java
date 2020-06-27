@@ -27,7 +27,7 @@ public class ShowCommand implements ICommandHandler {
 
 	@Override
 	public String[] getDescription() {
-		return new String[] { "Reenables the givven proxy", "if it was disabled by an exception." };
+		return new String[] { "Reenables the given proxy", "if it was disabled by an exception." };
 	}
 
 	@Override

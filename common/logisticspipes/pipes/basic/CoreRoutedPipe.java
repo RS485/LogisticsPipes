@@ -1378,7 +1378,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return true;
 	}
 
-	@CCCommand(description = "Sends a message to the givven computerId over the LP network. Event: " + CCConstants.LP_CC_MESSAGE_EVENT)
+	@CCCommand(description = "Sends a message to the given computerId over the LP network. Event: " + CCConstants.LP_CC_MESSAGE_EVENT)
 	@CCDirectCall
 	public void sendMessage(final Double computerId, final Object message) {
 		int sourceId = -1;
@@ -1412,7 +1412,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				});
 	}
 
-	@CCCommand(description = "Returns the access to the pipe of the givven router UUID")
+	@CCCommand(description = "Returns the access to the pipe of the given router UUID")
 	@ModDependentMethod(modId = LPConstants.computerCraftModID)
 	@CCDirectCall
 	public Object getPipeForUUID(String sUuid) throws PermissionException {

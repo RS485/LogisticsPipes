@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -55,12 +56,12 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public boolean isType(TileEntity tile, EnumFacing dir) {
+	public boolean isType(@Nonnull TileEntity tile, @Nullable EnumFacing dir) {
 		return SimpleServiceLocator.factorizationProxy.isBarral(tile);
 	}
 
 	@Override
-	public SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new BarrelInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 

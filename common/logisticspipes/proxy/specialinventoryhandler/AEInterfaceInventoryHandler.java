@@ -35,7 +35,7 @@ import appeng.api.util.AEPartLocation;
 
 import logisticspipes.utils.item.ItemIdentifier;
 
-public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
+public class AEInterfaceInventoryHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
 	public boolean init = false;
 	private final boolean hideOnePerStack;

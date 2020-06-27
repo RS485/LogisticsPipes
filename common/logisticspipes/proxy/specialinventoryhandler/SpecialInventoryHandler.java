@@ -3,6 +3,7 @@ package logisticspipes.proxy.specialinventoryhandler;
 import java.util.Map;
 import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -13,12 +14,6 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.transactor.ITransactor;
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
-
-	public abstract boolean init();
-
-	public abstract boolean isType(TileEntity tile, EnumFacing dir);
-
-	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
@@ -32,12 +27,20 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 		if (itemCount(itemIdent) < count) {
 			return ItemStack.EMPTY;
 		}
-		return IntStream.range(0, count)
-				.mapToObj((i) -> getSingleItem(itemIdent))
-				.filter(itemStack -> !itemStack.isEmpty())
-				.reduce((left, right) -> {
-					left.grow(right.getCount());
-					return left;
-				}).orElse(ItemStack.EMPTY);
+		return IntStream.range(0, count).mapToObj((i) -> getSingleItem(itemIdent)).filter(itemStack -> !itemStack.isEmpty()).reduce((left, right) -> {
+			left.grow(right.getCount());
+			return left;
+		}).orElse(ItemStack.EMPTY);
+	}
+
+	public interface Factory {
+
+		boolean init();
+
+		boolean isType(@Nonnull TileEntity tile, @Nullable EnumFacing dir);
+
+		@Nullable
+		SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
+
 	}
 }

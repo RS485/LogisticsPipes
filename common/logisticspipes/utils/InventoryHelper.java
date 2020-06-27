@@ -1,5 +1,6 @@
 package logisticspipes.utils;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -13,8 +14,8 @@ public class InventoryHelper {
 
 	//BC getTransactorFor using our getInventory
 	public static ITransactor getTransactorFor(Object object, EnumFacing dir) {
-		if (object instanceof ICapabilityProvider) {
-			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getUtilForInv((ICapabilityProvider) object, dir, false, false, 0, 0);
+		if (object instanceof TileEntity) {
+			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getUtilForInv((TileEntity) object, dir, false, false, 0, 0);
 			if (t != null) {
 				return t;
 			}

@@ -15,7 +15,7 @@ import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 
 import logisticspipes.utils.item.ItemIdentifier;
 
-public class DSUInventoryHandler extends SpecialInventoryHandler {
+public class DSUInventoryHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
 	private final IDeepStorageUnit _tile;
 	private final boolean _hideOnePerStack;

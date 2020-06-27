@@ -16,7 +16,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 
-public class CrateInventoryHandler extends SpecialInventoryHandler {
+public class CrateInventoryHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
 	private final ICrateStorageProxy _tile;
 	private final boolean _hideOnePerStack;

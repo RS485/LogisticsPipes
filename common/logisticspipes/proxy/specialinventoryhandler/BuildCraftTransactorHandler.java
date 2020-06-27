@@ -14,7 +14,7 @@ import buildcraft.lib.misc.CapUtil;
 
 import logisticspipes.utils.item.ItemIdentifier;
 
-public class BuildCraftTransactorHandler extends SpecialInventoryHandler {
+public class BuildCraftTransactorHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
 	private IItemTransactor cap = null;
 

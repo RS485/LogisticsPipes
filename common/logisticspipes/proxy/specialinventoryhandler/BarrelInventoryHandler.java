@@ -19,7 +19,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.utils.item.ItemIdentifier;
 
-public class BarrelInventoryHandler extends SpecialInventoryHandler {
+public class BarrelInventoryHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
 	private static Class<?> barrelClass;
 	private static Method getItemCount;

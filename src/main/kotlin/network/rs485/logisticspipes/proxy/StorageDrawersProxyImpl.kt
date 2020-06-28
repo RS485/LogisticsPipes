@@ -134,12 +134,12 @@ class StorageDrawersInventoryHandler(private val drawerGroup: IDrawerGroup,
         enabledDrawerSequence()
                 .takeWhile { left > 0 }
                 .filter { drawer -> drawer.canItemBeStored(stack) }
-                .forEach { drawer -> left = if (doAdd) drawer.adjustStoredItemCount(left) else (left - drawer.remainingCapacity).coerceAtLeast(0) }
+                .forEach { drawer -> left = if (doAdd) drawer.adjustStoredItemCount(left) else (left - drawer.acceptingRemainingCapacity).coerceAtLeast(0) }
         return stack.copy().also { it.grow(-left) }
     }
 
     override fun roomForItem(stack: ItemStack): Int = accessibleDrawerSlots().map { slot ->
-        drawerGroup.getDrawer(slot).let { if (it.isEnabled && it.canItemBeStored(stack)) it.remainingCapacity else 0 }
+        drawerGroup.getDrawer(slot).let { if (it.isEnabled && it.canItemBeStored(stack)) it.acceptingRemainingCapacity else 0 }
     }.sum()
 
     override fun getSingleItem(item: ItemIdentifier?): ItemStack = throw NotImplementedError("Unused operation")

@@ -229,6 +229,10 @@ repositories {
     maven {
         url "http://maven.amadornes.com/"
     }
+    maven {
+        name = "storagedrawers"
+        url = "https://dl.bintray.com/jaquadro/dev/"
+    }
 }
 
 dependencies {
@@ -253,6 +257,7 @@ dependencies {
     compileOnly group: 'cofh', name: 'ThermalFoundation', version: '1.12.2-2.6.3.27', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'ThermalExpansion', version: '1.12.2-5.5.4.43', classifier: 'deobf', transitive: false
     compileOnly group: 'dan200.computercraft', name: 'ComputerCraft', version: '1.80pr1-build5', transitive: false
+    compileOnly group: 'com.jaquadro.minecraft.storagedrawers', name: 'StorageDrawers', version: '1.12.2-5.4.2', transitive: false
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'

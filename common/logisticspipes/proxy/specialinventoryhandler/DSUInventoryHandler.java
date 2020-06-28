@@ -1,6 +1,7 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -47,7 +48,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
-	public int itemCount(ItemIdentifier itemIdent) {
+	public int itemCount(@Nonnull ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
 		if (!items.isEmpty() && ItemIdentifier.get(items).equals(itemIdent)) {
 			return items.getCount() - (_hideOnePerStack ? 1 : 0);
@@ -56,8 +57,8 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	@Nonnull
+	public ItemStack getMultipleItems(@Nonnull ItemIdentifier itemIdent, int count) {
 		ItemStack items = _tile.getStoredItemType();
 		if (items.isEmpty() || !ItemIdentifier.get(items).equals(itemIdent)) {
 			return ItemStack.EMPTY;
@@ -75,6 +76,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
+	@Nonnull
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<>();
 		ItemStack items = _tile.getStoredItemType();
@@ -85,7 +87,8 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
+	@Nonnull
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<>();
 		ItemStack items = _tile.getStoredItemType();
 		if (!items.isEmpty()) {
@@ -95,13 +98,13 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getSingleItem(ItemIdentifier itemIdent) {
+	@Nonnull
+	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		return getMultipleItems(itemIdent, 1);
 	}
 
 	@Override
-	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+	public boolean containsUndamagedItem(@Nonnull ItemIdentifier itemIdent) {
 		ItemStack items = _tile.getStoredItemType();
 		return !items.isEmpty() && ItemIdentifier.get(items).getUndamaged().equals(itemIdent);
 	}
@@ -123,7 +126,8 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
-	public @Nonnull ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
+	@Nonnull
+	public ItemStack add(@Nonnull ItemStack stack, EnumFacing from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		st.setCount(0);
 		if (stack.getTagCompound() != null) {
@@ -161,8 +165,8 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getStackInSlot(int slot) {
+	@Nonnull
+	public ItemStack getStackInSlot(int slot) {
 		if (slot != 0) {
 			return ItemStack.EMPTY;
 		}
@@ -170,8 +174,8 @@ public class DSUInventoryHandler extends SpecialInventoryHandler implements Spec
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack decrStackSize(int slot, int amount) {
+	@Nonnull
+	public ItemStack decrStackSize(int slot, int amount) {
 		if (slot != 0) {
 			return ItemStack.EMPTY;
 		}

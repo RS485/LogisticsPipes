@@ -10,15 +10,17 @@ import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IInventoryUtil {
 
-	int itemCount(ItemIdentifier item);
+	int itemCount(@Nonnull ItemIdentifier item);
 
+	@Nonnull
 	Map<ItemIdentifier, Integer> getItemsAndCount();
 
+	@Deprecated
 	@Nonnull
 	ItemStack getSingleItem(ItemIdentifier item);
 
 	@Nonnull
-	ItemStack getMultipleItems(ItemIdentifier item, int count);
+	ItemStack getMultipleItems(@Nonnull ItemIdentifier item, int count);
 
 	/**
 	 * Checks to see if the item is inside the inventory. Used by the PolymorphicItemSink
@@ -27,7 +29,7 @@ public interface IInventoryUtil {
 	 * @param item The item to check
 	 * @return true if the item is inside the inventory
 	 */
-	boolean containsUndamagedItem(ItemIdentifier item);
+	boolean containsUndamagedItem(@Nonnull ItemIdentifier item);
 
 	/**
 	 * Inventory space count which terminates when space for max items are
@@ -39,6 +41,7 @@ public interface IInventoryUtil {
 	 */
 	int roomForItem(@Nonnull ItemStack stack);
 
+	@Nonnull
 	Set<ItemIdentifier> getItems();
 
 	//IInventory adapter

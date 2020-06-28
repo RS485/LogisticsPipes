@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -66,7 +67,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public int itemCount(ItemIdentifier itemIdent) {
+	public int itemCount(@Nonnull ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
@@ -82,8 +83,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	@Nonnull
+	public ItemStack getMultipleItems(@Nonnull ItemIdentifier itemIdent, int count) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
@@ -107,6 +108,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
+	@Nonnull
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<>();
 		try {
@@ -121,7 +123,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
+	@Nonnull
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<>();
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
@@ -136,8 +139,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getSingleItem(ItemIdentifier itemIdent) {
+	@Nonnull
+	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
@@ -160,7 +163,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+	public boolean containsUndamagedItem(@Nonnull ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			if (itemStack != null && !itemStack.isEmpty()) {
@@ -239,8 +242,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack getStackInSlot(int i) {
+	@Nonnull
+	public ItemStack getStackInSlot(int i) {
 		if (i != 0) {
 			return ItemStack.EMPTY;
 		}
@@ -262,8 +265,8 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler implements S
 	}
 
 	@Override
-	public @Nonnull
-	ItemStack decrStackSize(int i, int j) {
+	@Nonnull
+	public ItemStack decrStackSize(int i, int j) {
 		try {
 			ItemStack itemStack = (ItemStack) BarrelInventoryHandler.item.get(_tile);
 			int value = (Integer) BarrelInventoryHandler.getItemCount.invoke(_tile, new Object[] {});

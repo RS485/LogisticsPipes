@@ -16,14 +16,14 @@ import logisticspipes.utils.transactor.ITransactor;
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 
 	@Override
-	public int itemCount(ItemIdentifier itemIdent) {
+	public int itemCount(@Nonnull ItemIdentifier itemIdent) {
 		final Map<ItemIdentifier, Integer> map = getItemsAndCount();
 		return map.getOrDefault(itemIdent, 0);
 	}
 
 	@Override
 	@Nonnull
-	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	public ItemStack getMultipleItems(@Nonnull ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {
 			return ItemStack.EMPTY;
 		}

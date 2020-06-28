@@ -48,6 +48,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 	}
 
 	@Override
+	@Nonnull
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<>();
 		for (ItemStack stack : _tile.getContents()) {
@@ -57,6 +58,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 	}
 
 	@Override
+	@Nonnull
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return getItemsAndCount(false);
 	}
@@ -82,7 +84,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 	}
 
 	@Override
-	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+	public boolean containsUndamagedItem(@Nonnull ItemIdentifier itemIdent) {
 		if (!itemIdent.isDamageable()) {
 			int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
 			return (count > 0);

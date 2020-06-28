@@ -86,6 +86,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
+	@Nonnull
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return getItemsAndCount(false);
 	}
@@ -135,7 +136,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 
 	@Override
 	@Nonnull
-	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+	public ItemStack getMultipleItems(@Nonnull ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) {
 			return ItemStack.EMPTY;
 		}
@@ -153,7 +154,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
-	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+	public boolean containsUndamagedItem(@Nonnull ItemIdentifier itemIdent) {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		IStorageMonitorable tmp = acc.getInventory(source);
 		if (tmp == null || tmp.getInventory(channel) == null || tmp.getInventory(channel).getStorageList() == null) {
@@ -188,6 +189,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
+	@Nonnull
 	public Set<ItemIdentifier> getItems() {
 		IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
 		Set<ItemIdentifier> result = new TreeSet<>();

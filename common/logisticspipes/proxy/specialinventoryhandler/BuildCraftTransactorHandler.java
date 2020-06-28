@@ -45,6 +45,7 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
+	@Nonnull
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return Collections.emptyMap();
 	}
@@ -56,7 +57,7 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
-	public boolean containsUndamagedItem(ItemIdentifier item) {
+	public boolean containsUndamagedItem(@Nonnull ItemIdentifier item) {
 		return false;
 	}
 
@@ -66,6 +67,7 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler impleme
 	}
 
 	@Override
+	@Nonnull
 	public Set<ItemIdentifier> getItems() {
 		return Collections.emptySet();
 	}

@@ -38,7 +38,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
-	public int itemCount(ItemIdentifier item) {
+	public int itemCount(@Nonnull ItemIdentifier item) {
 		int count = 0;
 		boolean first = true;
 		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
@@ -57,6 +57,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
+	@Nonnull
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		Map<ItemIdentifier, Integer> items = new LinkedHashMap<>();
 		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
@@ -77,6 +78,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	}
 
 	@Override
+	@Nonnull
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> items = new TreeSet<>();
 		for (int i = _cropStart; i < _inventory.getSlots() - _cropEnd; i++) {
@@ -97,7 +99,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	@Override
 	@Nonnull
-	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
+	public ItemStack getMultipleItems(@Nonnull ItemIdentifier item, int count) {
 		if (itemCount(item) < count) {
 			return ItemStack.EMPTY;
 		}
@@ -127,7 +129,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	//Ignores slot/item hiding
 	@Override
-	public boolean containsUndamagedItem(ItemIdentifier item) {
+	public boolean containsUndamagedItem(@Nonnull ItemIdentifier item) {
 		for (int i = 0; i < _inventory.getSlots(); i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack.isEmpty()) {

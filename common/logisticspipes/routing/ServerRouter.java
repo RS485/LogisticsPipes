@@ -19,12 +19,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NavigableSet;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -36,6 +40,7 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.DimensionManager;
 
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
@@ -79,10 +84,21 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected static final Lock SharedLSADatabasewriteLock = ServerRouter.SharedLSADatabaseLock.writeLock();
 	protected static int[] _lastLSAVersion = new int[0];
 	protected static LSA[] SharedLSADatabase = new LSA[0];
+
 	// things with specific interests -- providers (including crafters)
-	static HashMap<ItemIdentifier, TreeSet<ServerRouter>> _globalSpecificInterests = new HashMap<>();
+	@Nonnull
+	private static final ConcurrentHashMap<ItemIdentifier, TreeSet<ServerRouter>> globalSpecificInterests = new ConcurrentHashMap<>();
+
 	// things potentially interested in every item (chassi with generic sinks)
-	static TreeSet<ServerRouter> _genericInterests = new TreeSet<>();
+	@Nonnull
+	private static TreeSet<ServerRouter> genericInterests = new TreeSet<>();
+	private static final Lock genericInterestsWLock = new ReentrantLock();
+
+	// things this pipe is interested in (either providing or sinking)
+	@Nonnull
+	private TreeSet<ItemIdentifier> interests = new TreeSet<>();
+	private final Lock interestsRWLock = new ReentrantLock();
+
 	static int iterated = 0;// used pseudp-random to spread items over the tick range
 	private static int maxLSAUpdateIndex = 0;
 	private static int firstFreeId = 1;
@@ -114,8 +130,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> _LPPowerTable = Collections.unmodifiableList(new ArrayList<>());
 	public List<Pair<ISubSystemPowerProvider, List<IFilter>>> _SubSystemPowerTable = Collections.unmodifiableList(new ArrayList<>());
 	protected int _LSAVersion = 0;
-	// things this pipe is interested in (either providing or sinking)
-	Set<ItemIdentifier> _hasInterestIn = new TreeSet<>();
 	int ticksUntillNextInventoryCheck = 0;
 	private EnumSet<EnumFacing> _routedExits = EnumSet.noneOf(EnumFacing.class);
 	private EnumMap<EnumFacing, Integer> _subPowerExits = new EnumMap<>(EnumFacing.class);
@@ -192,8 +206,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	// called on server shutdown only
 	public static void cleanup() {
-		ServerRouter._globalSpecificInterests.clear();
-		ServerRouter._genericInterests.clear();
+		ServerRouter.globalSpecificInterests.clear();
+		ServerRouter.genericInterests.clear();
 		ServerRouter.SharedLSADatabasewriteLock.lock();
 		ServerRouter.SharedLSADatabase = new LSA[0];
 		ServerRouter._lastLSAVersion = new int[0];
@@ -221,7 +235,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	private static void setBitsForItemInterests(@Nonnull final BitSet bitset, @Nonnull final ItemIdentifier itemid) {
-		TreeSet<ServerRouter> specifics = ServerRouter._globalSpecificInterests.get(itemid);
+		TreeSet<ServerRouter> specifics = ServerRouter.globalSpecificInterests.get(itemid);
 		if (specifics != null) {
 			for (IRouter r : specifics) {
 				bitset.set(r.getSimpleID());
@@ -231,10 +245,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	public static BitSet getRoutersInterestedIn(ItemIdentifier item) {
 		final BitSet s = new BitSet(ServerRouter.getBiggestSimpleID() + 1);
-		if (ServerRouter._genericInterests != null) {
-			for (IRouter r : ServerRouter._genericInterests) {
-				s.set(r.getSimpleID());
-			}
+		for (IRouter r : ServerRouter.genericInterests) {
+			s.set(r.getSimpleID());
 		}
 		if (item != null) {
 			Stream.of(item, item.getUndamaged(), item.getIgnoringNBT(), item.getUndamaged().getIgnoringNBT(), item.getIgnoringData(), item.getIgnoringData().getIgnoringNBT())
@@ -251,28 +263,24 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		} else if (item instanceof DictResource) {
 			DictResource dict = (DictResource) item;
 			BitSet s = new BitSet(ServerRouter.getBiggestSimpleID() + 1);
-			if (ServerRouter._genericInterests != null) {
-				for (IRouter r : ServerRouter._genericInterests) {
-					s.set(r.getSimpleID());
-				}
+			for (IRouter r : ServerRouter.genericInterests) {
+				s.set(r.getSimpleID());
 			}
-			ServerRouter._globalSpecificInterests.entrySet().stream()
-					.filter(entry -> dict.matches(entry.getKey(), IResource.MatchSettings.NORMAL)).forEach(entry -> {
-				for (IRouter r : entry.getValue()) {
-					s.set(r.getSimpleID());
-				}
-			});
+			ServerRouter.globalSpecificInterests.entrySet().stream()
+					.filter(entry -> dict.matches(entry.getKey(), IResource.MatchSettings.NORMAL))
+					.flatMap(entry -> entry.getValue().stream())
+					.forEach(router -> s.set(router.simpleID));
 			return s;
 		}
 		return new BitSet(ServerRouter.getBiggestSimpleID() + 1);
 	}
 
-	public static Map<ItemIdentifier, TreeSet<ServerRouter>> getInterestedInSpecifics() {
-		return ServerRouter._globalSpecificInterests;
+	public static void forEachGlobalSpecificInterest(BiConsumer<ItemIdentifier, NavigableSet<ServerRouter>> consumer) {
+		ServerRouter.globalSpecificInterests.forEach((itemIdentifier, serverRouters) -> consumer.accept(itemIdentifier, Collections.unmodifiableNavigableSet(serverRouters)));
 	}
 
-	public static TreeSet<ServerRouter> getInterestedInGeneral() {
-		return ServerRouter._genericInterests;
+	public static NavigableSet<ServerRouter> getInterestedInGeneral() {
+		return Collections.unmodifiableNavigableSet(ServerRouter.genericInterests);
 	}
 
 	@Override
@@ -915,13 +923,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	/**
-	 * @param hasBeenProcessed
-	 *            a bitset flagging which nodes have already been acted on (the
-	 *            router should set the bit for it's own id, then return true.
-	 * @param actor
-	 *            the visitor
-	 * @return true if the bitset was cleared at some stage during the process,
-	 *         resulting in a potentially incomplete bitset.
+	 * @param hasBeenProcessed a BitSet flagging which nodes have already been acted on. The router should set the bit for its own id.
 	 */
 	public void act(BitSet hasBeenProcessed, Action actor) {
 		if (hasBeenProcessed.get(simpleID)) {
@@ -963,8 +965,14 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	private void removeAllInterests() {
 		removeGenericInterest();
-		_hasInterestIn.forEach(this::removeInterest);
-		_hasInterestIn.clear();
+
+		interestsRWLock.lock();
+		try {
+			interests.forEach(this::removeGlobalInterest);
+			interests.clear();
+		} finally {
+			interestsRWLock.unlock();
+		}
 	}
 
 	public boolean checkAdjacentUpdate() {
@@ -1186,37 +1194,68 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 		TreeSet<ItemIdentifier> newInterests = new TreeSet<>();
 		pipe.collectSpecificInterests(newInterests);
-		if (newInterests.size() == _hasInterestIn.size() && newInterests.containsAll(_hasInterestIn)) {
-			// interests are up-to-date
-			return;
-		}
 
-		_hasInterestIn.stream().filter(itemid -> !newInterests.contains(itemid)).forEach(this::removeInterest);
-		newInterests.stream().filter(itemid -> !_hasInterestIn.contains(itemid)).forEach(this::addInterest);
-		_hasInterestIn = newInterests;
+		interestsRWLock.lock();
+		try {
+			if (newInterests.size() == interests.size() && newInterests.containsAll(interests)) {
+				// interests are up-to-date
+				return;
+			}
+
+			interests.stream().filter(itemid -> !newInterests.contains(itemid)).forEach(this::removeGlobalInterest);
+			newInterests.stream().filter(itemid -> !interests.contains(itemid)).forEach(this::addGlobalInterest);
+			interests = newInterests;
+		} finally {
+			interestsRWLock.unlock();
+		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void removeGenericInterest() {
-		ServerRouter._genericInterests.remove(this);
+		genericInterestsWLock.lock();
+		try {
+			final TreeSet<ServerRouter> newGenericInterests = (TreeSet<ServerRouter>) ServerRouter.genericInterests.clone();
+			if (newGenericInterests.remove(this)) {
+				ServerRouter.genericInterests = newGenericInterests;
+			}
+		} finally {
+			genericInterestsWLock.unlock();
+		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void declareGenericInterest() {
-		ServerRouter._genericInterests.add(this);
+		genericInterestsWLock.lock();
+		try {
+			final TreeSet<ServerRouter> newGenericInterests = (TreeSet<ServerRouter>) ServerRouter.genericInterests.clone();
+			if (newGenericInterests.add(this)) {
+				ServerRouter.genericInterests = newGenericInterests;
+			}
+		} finally {
+			genericInterestsWLock.unlock();
+		}
 	}
 
-	private void addInterest(ItemIdentifier itemid) {
-		ServerRouter._globalSpecificInterests.computeIfAbsent(itemid, _itemid -> new TreeSet<>()).add(this);
+	@SuppressWarnings("unchecked")
+	private void addGlobalInterest(ItemIdentifier itemid) {
+		ServerRouter.globalSpecificInterests.compute(itemid, (unused, serverRouters) -> {
+			final TreeSet<ServerRouter> newServerRouters = serverRouters == null ? new TreeSet<>() : (TreeSet<ServerRouter>) serverRouters.clone();
+			newServerRouters.add(this);
+			return newServerRouters;
+		});
 	}
 
-	private void removeInterest(ItemIdentifier p2) {
-		TreeSet<ServerRouter> interests = ServerRouter._globalSpecificInterests.get(p2);
-		if (interests == null) {
-			return;
-		}
-		interests.remove(this);
-		if (interests.isEmpty()) {
-			ServerRouter._globalSpecificInterests.remove(p2);
-		}
+	@SuppressWarnings("unchecked")
+	private void removeGlobalInterest(ItemIdentifier itemid) {
+		ServerRouter.globalSpecificInterests.computeIfPresent(itemid, (unused, serverRouters) -> {
+			if (serverRouters.equals(ObjectSets.singleton(this))) {
+				return null;
+			} else {
+				final TreeSet<ServerRouter> newServerRouters = (TreeSet<ServerRouter>) serverRouters.clone();
+				newServerRouters.remove(this);
+				return newServerRouters;
+			}
+		});
 	}
 
 	@Override

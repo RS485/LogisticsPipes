@@ -474,13 +474,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 		System.out.println("***");
 		System.out.println("---------Interests---------------");
-		for (Entry<ItemIdentifier, TreeSet<ServerRouter>> entry : ServerRouter.getInterestedInSpecifics().entrySet()) {
-			System.out.print(entry.getKey().getFriendlyName() + ":");
-			for (IRouter j : entry.getValue()) {
+		ServerRouter.forEachGlobalSpecificInterest((itemIdentifier, serverRouters) -> {
+			System.out.print(itemIdentifier.getFriendlyName() + ":");
+			for (IRouter j : serverRouters) {
 				System.out.print(j.getSimpleID() + ",");
 			}
 			System.out.println();
-		}
+		});
 
 		System.out.print("ALL ITEMS:");
 		for (IRouter j : ServerRouter.getInterestedInGeneral()) {

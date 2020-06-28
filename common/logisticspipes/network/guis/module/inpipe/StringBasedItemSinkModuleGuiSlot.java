@@ -21,7 +21,7 @@ public class StringBasedItemSinkModuleGuiSlot extends NBTModuleCoordinatesGuiPro
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsModule module = this.getLogisticsModule(player.getEntityWorld(), LogisticsModule.class);
-		if (module instanceof IStringBasedModule) {
+		if (!(module instanceof IStringBasedModule)) {
 			return null;
 		}
 		module.readFromNBT(getNbt());

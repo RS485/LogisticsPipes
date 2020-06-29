@@ -76,10 +76,8 @@ open class NeighborTileEntity<T : TileEntity>(val tileEntity: T, val direction: 
 
     @Nonnull
     fun getUtilForItemHandler(): IInventoryUtil {
-        if (LogisticsPipes.isDEBUG()) {
-            if (!hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY)) {
-                error("Constraint broken: getUtilForItemHandler was called, but adjacent tile entity is not an item handler")
-            }
+        if (!hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY)) {
+            error("Constraint broken: getUtilForItemHandler was called, but adjacent tile entity is not an item handler")
         }
         return getInventoryUtil() ?: throw NullPointerException("IInventoryUtil is null for an item handler")
     }

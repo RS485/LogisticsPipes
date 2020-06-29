@@ -57,7 +57,9 @@ public class InventoryUtilFactory {
 	public IInventoryUtil getHidingInventoryUtil(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		if (tile != null) {
 			IInventoryUtil util = getUtilForInv(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
-			if (util == null && tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir)) {
+			if (util != null) {
+				return util;
+			} else if (tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir)) {
 				return new InventoryUtil(tile.getCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
 			}
 		}

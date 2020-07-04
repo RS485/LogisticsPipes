@@ -49,7 +49,12 @@ import kotlin.math.min
  * @return a range-checked sequence over slots to work on.
  */
 fun sloterator(started: Boolean, current: Int, last: Int, size: Int) = when {
+    // end of the sequence
     started and (current == last + 1) -> emptySequence()
+
+    // sequence with turnaround: [..., size-2, size-1, 0, 1, ...]
     current > last -> (current until size).asSequence().plus(0 until min(size, last + 1))
+
+    // sequence until last possible element
     else -> (current until min(size, last + 1)).asSequence()
 }

@@ -35,10 +35,21 @@
  * SOFTWARE.
  */
 
-package logisticspipes.modules
+package network.rs485.logisticspipes.module
 
-import logisticspipes.routing.ServerRouter
+import kotlin.math.min
 
-fun LogisticsModule.getServerRouter(): ServerRouter {
-    return this._service.router as? ServerRouter ?: error("Router was not set or not a ServerRouter")
+/**
+ * Sequence of slots to look at. Minds possible change of inventory size.
+ *
+ * @param started should be true on every call after the first slot was already handled.
+ * @param current the current slot index, should be last + 1 on the first call.
+ * @param last the last slot index to look at. May be -1 as a special case.
+ * @param size the size of the inventory to never violate. May change for each call.
+ * @return a range-checked sequence over slots to work on.
+ */
+fun sloterator(started: Boolean, current: Int, last: Int, size: Int) = when {
+    started and (current == last + 1) -> emptySequence()
+    current > last -> (current until size).asSequence().plus(0 until min(size, last + 1))
+    else -> (current until min(size, last + 1)).asSequence()
 }

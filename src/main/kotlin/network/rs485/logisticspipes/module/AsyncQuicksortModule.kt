@@ -41,7 +41,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import logisticspipes.config.Configs.ASYNC_THRESHOLD
 import logisticspipes.interfaces.IInventoryUtil
-import logisticspipes.modules.getServerRouter
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.packets.modules.QuickSortState
 import logisticspipes.pipefxhandlers.Particles
@@ -87,7 +86,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         get() = if (stalled) STALLED_DELAY else NORMAL_DELAY
 
     override fun tickSetup(): Pair<Int, ItemStack>? {
-        val serverRouter = this.getServerRouter()
+        val serverRouter = this._service.router as? ServerRouter ?: return null
         val inventory = _service.pointedInventory ?: return null
         if (inventory.sizeInventory == 0) return null
         if (currentSlot >= inventory.sizeInventory) currentSlot = 0
@@ -107,7 +106,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
 
     override suspend fun tickAsync(setupObject: Pair<Int, ItemStack>?): QuicksortAsyncResult? {
         if (setupObject == null) return null
-        val serverRouter = this.getServerRouter()
+        val serverRouter = this._service.router as? ServerRouter ?: return null
         AsyncRouting.updateRoutingTable(serverRouter)
         val itemid = ItemIdentifier.get(setupObject.second)
         val result = LogisticsManager.getDestination(setupObject.second, itemid, false, serverRouter, emptyList()) ?: return null

@@ -41,30 +41,36 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.sendBlocking
 
-abstract class ChunkedChannel<T>(val channel: Channel<T>) : Runnable {
+abstract class ChunkedChannel<T, O>(val channel: Channel<T>) : Runnable {
+
+    /**
+     * Returns a session object for this run.
+     */
+    abstract fun newSession(): O
 
     /**
      * Returns true, if there is more to do. False otherwise.
      */
-    abstract fun hasWork(): Boolean
+    abstract fun hasWork(session: O): Boolean
 
     /**
-     * Returns a Sequence based on current.
+     * Returns a Sequence based on the current session.
      */
-    abstract fun sequenceFactory(): Sequence<T>
+    abstract fun sequenceFactory(session: O): Sequence<T>
 
     /**
      * Is called if there is more work to do. Should be used with some kind of work queue.
      */
     abstract fun rerun(r: Runnable)
 
-    private fun checkWork(): Boolean = if (hasWork()) false else true.also { channel.close() }
+    private fun checkWork(session: O): Boolean = if (hasWork(session)) false else true.also { channel.close() }
 
     override fun run() {
         try {
-            if (checkWork()) return
-            sequenceFactory().forEach(channel::sendBlocking)
-            if (checkWork()) return
+            val session = newSession()
+            if (checkWork(session)) return
+            sequenceFactory(session).forEach(channel::sendBlocking)
+            if (checkWork(session)) return
             rerun(this)
         } catch (e: Throwable) {
             channel.close(e)

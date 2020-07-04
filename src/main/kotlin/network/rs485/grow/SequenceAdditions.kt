@@ -37,6 +37,4 @@
 
 package network.rs485.grow
 
-fun <T> Sequence<T>.takeWhileTimeRemains(startTime: Long, timeLimit: Long): Sequence<T> {
-    return takeWhile { System.nanoTime() - startTime < timeLimit }
-}
+fun <T> Sequence<T>.takeWhileTimeRemains(startTime: Long, timeLimit: Long): Sequence<T> = takeWhile { System.nanoTime() - startTime < timeLimit }

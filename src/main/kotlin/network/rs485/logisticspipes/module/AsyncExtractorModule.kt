@@ -45,7 +45,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import logisticspipes.config.Configs
 import logisticspipes.interfaces.*
-import logisticspipes.modules.getServerRouter
 import logisticspipes.network.NewGuiHandler
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider
@@ -115,37 +114,49 @@ class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? {
         val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return null
-        val inventory = _service.getSneakyInventory(direction) ?: return null
-        if (inventory.sizeInventory == 0) return null
+
         // run item sequence as far as possible and return the channel
-        return ChunkedItemChannel(inventory).also(ChunkedItemChannel::run).channel
+        return ChunkedItemChannel { _service.getSneakyInventory(direction) }.also(ChunkedItemChannel::run).channel
     }
 
-    private inner class ChunkedItemChannel(val inventory: IInventoryUtil) : ChunkedChannel<Pair<Int, ItemStack>>(Channel(Channel.UNLIMITED)) {
-        val timeLimit = TimeUnit.MICROSECONDS.toNanos(50)
-        val serverRouter = getServerRouter()
+    private data class InventorySession(val serverRouter: ServerRouter, val inventory: IInventoryUtil)
 
+    private inner class ChunkedItemChannel(private val inventoryGetter: () -> IInventoryUtil?) : ChunkedChannel<Pair<Int, ItemStack>, InventorySession?>(Channel(Channel.UNLIMITED)) {
+        val timeLimit = TimeUnit.MICROSECONDS.toNanos(50)
+        val lastIndex = currentSlot - 1
+        var started = false
         var itemsLeft = itemsToExtract
         var stacksLeft = stacksToExtract
-        var index = 0
+
+        private fun sloterator(session: InventorySession) = sloterator(started = started, current = currentSlot, last = lastIndex, size = session.inventory.sizeInventory)
+
+        override fun newSession(): InventorySession? = (_service.router as? ServerRouter)?.let { serverRouter ->
+            inventoryGetter()?.let { inventory ->
+                InventorySession(serverRouter, inventory)
+            }
+        }
 
         @ExperimentalCoroutinesApi
-        override fun hasWork(): Boolean = !channel.isClosedForReceive && stacksLeft > 0 && itemsLeft > 0 && index < inventory.sizeInventory
+        override fun hasWork(session: InventorySession?): Boolean = !channel.isClosedForReceive && stacksLeft > 0 && itemsLeft > 0 && session != null && sloterator(session).any()
+
         override fun rerun(r: Runnable) = appendSyncWork(r)
 
-        override fun sequenceFactory(): Sequence<Pair<Int, ItemStack>> {
+        override fun sequenceFactory(session: InventorySession?): Sequence<Pair<Int, ItemStack>> {
+            session!! // as checked in hasWork
+            val sloterator = sloterator(session)
+
             val start = System.nanoTime()
             // we should do it like Volkswagen and check for a profiler here
-            val runAsync = ServerRouter.getBiggestSimpleID() > Configs.ASYNC_THRESHOLD || AsyncRouting.routingTableNeedsUpdate(serverRouter)
-            return (currentSlot until inventory.sizeInventory).plus(0 until currentSlot).asSequence()
-                    .constrainOnce()
+            val runAsync = ServerRouter.getBiggestSimpleID() > Configs.ASYNC_THRESHOLD || AsyncRouting.routingTableNeedsUpdate(session.serverRouter)
+
+            return sloterator.constrainOnce()
                     .takeWhileTimeRemains(start, timeLimit)
                     .map { slot ->
-                        val stack = inventory.getStackInSlot(slot)
-
-                        // saves the index for continuing this sequence at a later time
-                        ++index
+                        // saves the slot for continuing this sequence at a later time
                         currentSlot = slot + 1
+                        started = true
+
+                        val stack = session.inventory.getStackInSlot(slot)
 
                         // filters the stack out by the given filter method
                         if (filterOutMethod(stack)) return@map null
@@ -154,9 +165,9 @@ class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack
 
                         // find destinations and send stacks now
                         var sourceStackLeft = stack.count
-                        LogisticsManager.allDestinations(stack, ItemIdentifier.get(stack), true, serverRouter) { itemsLeft > 0 && sourceStackLeft > 0 }
+                        LogisticsManager.allDestinations(stack, ItemIdentifier.get(stack), true, session.serverRouter) { itemsLeft > 0 && sourceStackLeft > 0 }
                                 .forEach { pair ->
-                                    extractAndSend(slot, sourceStackLeft, inventory, pair.first, pair.second, itemsLeft).also {
+                                    extractAndSend(slot, sourceStackLeft, session.inventory, pair.first, pair.second, itemsLeft).also {
                                         itemsLeft -= it
                                         sourceStackLeft -= it
                                     }

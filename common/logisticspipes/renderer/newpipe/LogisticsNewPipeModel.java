@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4f;
@@ -133,55 +132,57 @@ public class LogisticsNewPipeModel implements IModel {
 	@SideOnly(Side.CLIENT)
 	@Nonnull
 	public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-		final List<BakedQuad> quads = Lists.newArrayList();
 		return new IBakedModel() {
+			private ArrayList<BakedQuad> quads = null;
 
 			@Override
 			@SideOnly(Side.CLIENT)
 			@Nonnull
 			public List<BakedQuad> getQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side, long rand) {
-				List<BakedQuad> result = Collections.emptyList();
 				BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
+				ArrayList<BakedQuad> result;
 				if (layer == BlockRenderLayer.CUTOUT || layer == null || blockstate == null) {
 					result = getLPQuads(blockstate, side);
+				} else {
+					result = Lists.newArrayList();
 				}
-				return addOtherQuads(result, blockstate, side, rand);
+				addOtherQuads(result, blockstate, side, rand);
+				return result;
 			}
 
-			private List<BakedQuad> addOtherQuads(List<BakedQuad> list, IBlockState blockstate, EnumFacing side, long rand) {
+			private void addOtherQuads(@Nonnull List<BakedQuad> list, IBlockState blockstate, EnumFacing side, long rand) {
 				if (blockstate != null) {
-					return SimpleServiceLocator.mcmpProxy.addQuads(list, blockstate, side, rand);
+					SimpleServiceLocator.mcmpProxy.addQuads(list, blockstate, side, rand);
 				}
-				return list;
 			}
 
-			private List<BakedQuad> getLPQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side) {
+			private ArrayList<BakedQuad> getLPQuads(@Nullable IBlockState blockstate, @Nullable EnumFacing side) {
 				if (blockstate != null) {
 					if (side == null) {
 						IExtendedBlockState eState = (IExtendedBlockState) blockstate;
 						Cache<PipeRenderState.LocalCacheType, Object> objectCache = eState.getValue(LogisticsBlockGenericPipe.propertyCache);
 						if (objectCache != null) {
-							Object localQuads = objectCache.getIfPresent(PipeRenderState.LocalCacheType.QUADS);
-							if (localQuads instanceof List) {
+							Object pipeQuads = objectCache.getIfPresent(PipeRenderState.LocalCacheType.QUADS);
+							if (pipeQuads instanceof Collection) {
 								//noinspection unchecked
-								return (List<BakedQuad>) localQuads;
+								return new ArrayList<>((Collection<? extends BakedQuad>) pipeQuads);
 							}
 						}
-						List<BakedQuad> newLocalQuads = LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(blockstate), format, true);
+						final ArrayList<BakedQuad> pipeQuads = LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(blockstate), format, true);
 
 						if (objectCache != null) {
-							objectCache.put(PipeRenderState.LocalCacheType.QUADS, newLocalQuads);
+							objectCache.put(PipeRenderState.LocalCacheType.QUADS, new ArrayList<>(pipeQuads));
 						}
 
-						return newLocalQuads;
+						return pipeQuads;
 					}
 				} else {
-					if (quads.isEmpty()) {
-						quads.addAll(LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(), format, true));
+					if (quads == null) {
+						quads = LogisticsRenderPipe.secondRenderer.getQuadsFromRenderList(generatePipeRenderList(), format, true);
 					}
-					return quads;
+					return new ArrayList<>(quads);
 				}
-				return Collections.emptyList();
+				return Lists.newArrayList();
 			}
 
 			@Override
@@ -251,7 +252,7 @@ public class LogisticsNewPipeModel implements IModel {
 	}
 
 	private List<RenderEntry> generatePipeRenderList() {
-		List<RenderEntry> objectsToRender = new ArrayList<>();
+		ArrayList<RenderEntry> objectsToRender = new ArrayList<>();
 
 		if (getPipe() == null) {
 
@@ -290,11 +291,11 @@ public class LogisticsNewPipeModel implements IModel {
 				for (LogisticsNewRenderPipe.Corner corner : LogisticsNewRenderPipe.Corner.values()) {
 					final int fred = red;
 					final boolean ftoggle = toggle;
-					objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
+					LogisticsNewRenderPipe.corners_M.get(corner).stream()
 							.map(model -> new RenderEntry(model, ftoggle && (fred % 4 == 0 || fred % 4 == 3) || !ftoggle && (fred % 4 == 1 || fred % 4 == 2) ?
 									LogisticsNewRenderPipe.inactiveTexture :
 									LogisticsNewRenderPipe.basicPipeTexture))
-							.collect(Collectors.toList()));
+							.forEach(objectsToRender::add);
 					red++;
 					if (red > 3) {
 						red -= 4;
@@ -302,17 +303,9 @@ public class LogisticsNewPipeModel implements IModel {
 					}
 				}
 			} else {
-				objectsToRender.addAll(
-						Arrays.stream(LogisticsNewRenderPipe.Corner.values())
-								.map(it ->
-										LogisticsNewRenderPipe.corners_M.get(it).stream()
-												.map(model -> new RenderEntry(model, LogisticsNewRenderPipe.basicPipeTexture))
-												.collect(Collectors.toList())
-								)
-								.flatMap(Collection::stream)
-								.collect(Collectors.toList()
-								)
-				);
+				Arrays.stream(LogisticsNewRenderPipe.Corner.values())
+						.flatMap(corner -> LogisticsNewRenderPipe.corners_M.get(corner).stream().map(model -> new RenderEntry(model, LogisticsNewRenderPipe.basicPipeTexture)))
+						.forEach(objectsToRender::add);
 			}
 
 			for (LogisticsNewRenderPipe.Edge edge : LogisticsNewRenderPipe.Edge.values()) {

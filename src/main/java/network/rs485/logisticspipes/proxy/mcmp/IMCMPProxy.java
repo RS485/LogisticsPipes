@@ -21,6 +21,7 @@
 package network.rs485.logisticspipes.proxy.mcmp;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -41,7 +42,7 @@ public interface IMCMPProxy {
 	IMCMPBlockAccess createMCMPBlockAccess();
 
 	@SideOnly(Side.CLIENT)
-	List<BakedQuad> addQuads(List<BakedQuad> list, IBlockState state, EnumFacing side, long rand);
+	void addQuads(@Nonnull List<BakedQuad> list, IBlockState state, EnumFacing side, long rand);
 
 	void registerTileEntities();
 

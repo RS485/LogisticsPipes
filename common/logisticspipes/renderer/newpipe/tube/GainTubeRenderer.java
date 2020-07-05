@@ -1,10 +1,12 @@
 package logisticspipes.renderer.newpipe.tube;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -15,19 +17,15 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeGain;
 import logisticspipes.pipes.tubes.HSTubeGain.TubeGainRenderOrientation;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IBounds;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
 import logisticspipes.proxy.object3d.operation.LPRotation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
-import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
-import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.newpipe.RenderEntry;
 import logisticspipes.utils.tuples.Pair;
 
 public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
@@ -83,17 +81,27 @@ public class GainTubeRenderer implements ISpecialPipeRenderer, IHighlightPlaceme
 
 	}
 
+	@Nonnull
 	@Override
-	public void renderToList(CoreUnroutedPipe pipe, List<RenderEntry> objectsToRender) {
-		if (pipe instanceof HSTubeGain) {
-			HSTubeGain tube = (HSTubeGain) pipe;
-			if (tube.getOrientation() != null) {
-				objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(tube.getOrientation().getRenderOrientation()).stream().map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
-			}
+	public List<IModel3D> getModelsWithoutPipe() {
+		return GainTubeRenderer.tubeTurnBase.get(TubeGainRenderOrientation.NORTH);
+	}
+
+	@Nonnull
+	@Override
+	public List<IModel3D> getModelsFromPipe(@Nonnull CoreUnroutedPipe pipe) {
+		if (pipe instanceof HSTubeGain && ((HSTubeGain) pipe).getOrientation() != null) {
+			final TubeGainRenderOrientation orientation = ((HSTubeGain) pipe).getOrientation().getRenderOrientation();
+			return Objects.requireNonNull(GainTubeRenderer.tubeTurnBase.get(orientation), "Could not fetch model for GainTubeRenderer for orientation " + orientation);
+		} else {
+			return Collections.emptyList();
 		}
-		if (pipe == null) {
-			objectsToRender.addAll(GainTubeRenderer.tubeTurnBase.get(TubeGainRenderOrientation.NORTH).stream().map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, GainTubeRenderer.TEXTURE)).collect(Collectors.toList()));
-		}
+	}
+
+	@Nonnull
+	@Override
+	public ResourceLocation getTexture() {
+		return GainTubeRenderer.TEXTURE;
 	}
 
 	@Override

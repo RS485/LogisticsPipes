@@ -1,31 +1,30 @@
 package logisticspipes.renderer.newpipe.tube;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
 import net.minecraft.util.ResourceLocation;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
+import logisticspipes.interfaces.ITubeRenderOrientation;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.tubes.HSTubeSpeedup;
 import logisticspipes.pipes.tubes.HSTubeSpeedup.SpeedupDirection;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.object3d.interfaces.I3DOperation;
 import logisticspipes.proxy.object3d.interfaces.IModel3D;
 import logisticspipes.proxy.object3d.operation.LPColourMultiplier;
 import logisticspipes.proxy.object3d.operation.LPRotation;
 import logisticspipes.proxy.object3d.operation.LPScale;
 import logisticspipes.proxy.object3d.operation.LPTranslation;
-import logisticspipes.proxy.object3d.operation.LPUVTransformationList;
-import logisticspipes.proxy.object3d.operation.LPUVTranslation;
 import logisticspipes.renderer.newpipe.IHighlightPlacementRenderer;
 import logisticspipes.renderer.newpipe.ISpecialPipeRenderer;
 import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
-import logisticspipes.renderer.newpipe.RenderEntry;
 
 public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlightPlacementRenderer {
 
@@ -74,21 +73,26 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 	}
 
 	@Override
-	public void renderToList(CoreUnroutedPipe pipe, List<RenderEntry> objectsToRender) {
-		if (pipe instanceof HSTubeSpeedup) {
-			HSTubeSpeedup tube = (HSTubeSpeedup) pipe;
-			if (tube.getOrientation() != null) {
-				SpeedupDirection speedupDirection = (SpeedupDirection) tube.getOrientation().getRenderOrientation();
-				objectsToRender.addAll(SpeedupTubeRenderer.tubeSpeedupBase.get(speedupDirection).stream()
-						.map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, SpeedupTubeRenderer.TEXTURE))
-						.collect(Collectors.toList()));
-			}
+	@Nonnull
+	public List<IModel3D> getModelsWithoutPipe() {
+		return SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.NORTH);
+	}
+
+	@Override
+	@Nonnull
+	public List<IModel3D> getModelsFromPipe(@Nonnull CoreUnroutedPipe pipe) {
+		if (pipe instanceof HSTubeSpeedup && ((HSTubeSpeedup) pipe).getOrientation() != null) {
+			final ITubeRenderOrientation orientation = ((HSTubeSpeedup) pipe).getOrientation().getRenderOrientation();
+			return Objects.requireNonNull(SpeedupTubeRenderer.tubeSpeedupBase.get(orientation), "Could not fetch model for HSTubeSpeedup for orientation " + orientation);
+		} else {
+			return Collections.emptyList();
 		}
-		if (pipe == null) {
-			objectsToRender.addAll(SpeedupTubeRenderer.tubeSpeedupBase.get(SpeedupDirection.NORTH).stream()
-					.map(model -> new RenderEntry(model, new I3DOperation[] { new LPUVTransformationList(new LPUVTranslation(0, 0)) }, SpeedupTubeRenderer.TEXTURE))
-					.collect(Collectors.toList()));
-		}
+	}
+
+	@Override
+	@Nonnull
+	public ResourceLocation getTexture() {
+		return SpeedupTubeRenderer.TEXTURE;
 	}
 
 	@Override
@@ -98,4 +102,3 @@ public final class SpeedupTubeRenderer implements ISpecialPipeRenderer, IHighlig
 		LogisticsNewRenderPipe.renderBoxWithDir(((SpeedupDirection) orientation.getRenderOrientation()).getDir1());
 	}
 }
-

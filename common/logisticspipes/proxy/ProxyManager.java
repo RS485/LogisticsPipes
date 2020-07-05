@@ -261,7 +261,7 @@ public class ProxyManager {
 					@Override public void addDrops(NonNullList<ItemStack> list, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {}
 				};
 			}
-		    @Override public List<BakedQuad> addQuads(List<BakedQuad> list, IBlockState state, EnumFacing side, long rand) {return list;}
+		    @Override public void addQuads(@Nonnull List<BakedQuad> list, IBlockState state, EnumFacing side, long rand) {}
 		    @Override public void registerTileEntities() {}
 		    @Override public boolean checkIntersectionWith(LogisticsTileGenericPipe logisticsTileGenericPipe, AxisAlignedBB aabb) {return false;}
 		    @Override public boolean hasParts(LogisticsTileGenericPipe pipeTile) {return false;}

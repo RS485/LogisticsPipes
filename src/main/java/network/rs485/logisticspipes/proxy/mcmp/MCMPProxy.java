@@ -23,8 +23,7 @@ package network.rs485.logisticspipes.proxy.mcmp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -102,11 +101,9 @@ public class MCMPProxy implements IMCMPProxy {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public List<BakedQuad> addQuads(List<BakedQuad> list, IBlockState state, EnumFacing side, long rand) {
+	public void addQuads(@Nonnull List<BakedQuad> list, IBlockState state, EnumFacing side, long rand) {
 		if (modelMultipartContainer == null) modelMultipartContainer = new ModelMultipartContainer();
-		List<BakedQuad> newQuads = modelMultipartContainer.getQuads(state, side, rand);
-		if (newQuads.isEmpty()) return list;
-		return Stream.concat(list.stream(), modelMultipartContainer.getQuads(state, side, rand).stream()).collect(Collectors.toList());
+		list.addAll(modelMultipartContainer.getQuads(state, side, rand));
 	}
 
 	@Override

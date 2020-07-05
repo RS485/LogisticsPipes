@@ -9,7 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -27,7 +28,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -633,7 +633,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		}
 
 		if (renderState.cachedRenderer == null) {
-			List<RenderEntry> objectsToRender = new ArrayList<>();
+			ArrayList<RenderEntry> objectsToRender = new ArrayList<>();
 
 			if (pipeTile.pipe != null && pipeTile.pipe.actAsNormalPipe()) {
 				fillObjectsToRenderList(objectsToRender, pipeTile, renderState);
@@ -842,8 +842,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			}
 		}
 
-		objectsToRender.addAll(edgesToRender.stream()
-				.map(edge -> new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture)).collect(Collectors.toList()));
+		edgesToRender.stream()
+				.map(edge -> new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture))
+				.forEach(objectsToRender::add);
 
 		for (int i = 0; i < 6; i += 2) {
 			EnumFacing dir = EnumFacing.getFront(i);
@@ -925,9 +926,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				new RuntimeException("Trying to render " + mountCanidates.size() + " Mounts").printStackTrace();
 			}
 
-			objectsToRender.addAll(mountCanidates.stream()
+			mountCanidates.stream()
 					.map(mount -> new RenderEntry(LogisticsNewRenderPipe.mounts.get(mount), LogisticsNewRenderPipe.basicPipeTexture))
-					.collect(Collectors.toList()));
+					.forEach(objectsToRender::add);
 		}
 
 		for (EnumFacing dir : EnumFacing.VALUES) {
@@ -943,14 +944,14 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 		if (renderState.textureMatrix.isFluid()) {
 			for (EnumFacing dir : EnumFacing.VALUES) {
 				if (!renderState.pipeConnectionMatrix.isConnected(dir)) {
-					objectsToRender.addAll(LogisticsNewRenderPipe.texturePlate_Inner.get(dir).stream()
+					LogisticsNewRenderPipe.texturePlate_Inner.get(dir).stream()
 							.map(model -> new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.glassCenterTexture }))
-							.collect(Collectors.toList()));
+							.forEach(objectsToRender::add);
 				} else {
 					if (!renderState.textureMatrix.isRoutedInDir(dir)) {
-						objectsToRender.addAll(LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue1().stream()
+						LogisticsNewRenderPipe.sideTexturePlate.get(dir).getValue1().stream()
 								.map(model -> new RenderEntry(model, new I3DOperation[] { LogisticsNewRenderPipe.basicPipeTexture }))
-								.collect(Collectors.toList()));
+								.forEach(objectsToRender::add);
 					}
 				}
 			}
@@ -1110,9 +1111,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			TextureTransformation cornerTexture = LogisticsNewRenderPipe.basicPipeTexture;
 			int count = connectionAtCorner.getOrDefault(corner, 0);
 			if (count == 0) {
-				objectsToRender.addAll(LogisticsNewRenderPipe.corners_M.get(corner).stream()
+				LogisticsNewRenderPipe.corners_M.get(corner).stream()
 						.map(model -> new RenderEntry(model, new I3DOperation[] { cornerTexture }))
-						.collect(Collectors.toList()));
+						.forEach(objectsToRender::add);
 			} else if (count == 1) {
 				for (PipeTurnCorner turn : PipeTurnCorner.values()) {
 					if (turn.corner != corner) {
@@ -1134,22 +1135,23 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 					}
 				}
 			} else if (count == 3) {
-				objectsToRender.addAll(LogisticsNewRenderPipe.corners_I3.get(corner).stream()
+				LogisticsNewRenderPipe.corners_I3.get(corner).stream()
 						.map(model -> new RenderEntry(model, new I3DOperation[] { cornerTexture }))
-						.collect(Collectors.toList()));
+						.forEach(objectsToRender::add);
 			}
 		}
 
-		objectsToRender.addAll(edgesToRender.stream()
+		edgesToRender.stream()
 				.map(edge -> new RenderEntry(LogisticsNewRenderPipe.edges.get(edge), LogisticsNewRenderPipe.basicPipeTexture))
-				.collect(Collectors.toList()));
+				.forEach(objectsToRender::add);
 		for (RenderEntry model : objectsToRender) {
 			model.getModel().render(model.getOperations());
 		}
 	}
 
-	public List<BakedQuad> getQuadsFromRenderList(List<RenderEntry> renderEntryList, VertexFormat format, boolean skipNonBlockTextures) {
-		List<BakedQuad> quads = Lists.newArrayList();
+	@Nonnull
+	public ArrayList<BakedQuad> getQuadsFromRenderList(List<RenderEntry> renderEntryList, VertexFormat format, boolean skipNonBlockTextures) {
+		ArrayList<BakedQuad> quads = Lists.newArrayList();
 		for (RenderEntry model : renderEntryList) {
 			ResourceLocation texture = model.getTexture();
 			if (texture == null) {
@@ -1159,7 +1161,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				quads.addAll(model.getModel().renderToQuads(format, model.getOperations()));
 			}
 		}
-		return ImmutableList.copyOf(quads);
+		return quads;
 	}
 
 	@Override

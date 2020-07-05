@@ -9,7 +9,6 @@ import static logisticspipes.LPConstants.factorizationModID;
 import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
-import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
 import network.rs485.logisticspipes.proxy.StorageDrawersProxy;
 
 public class SpecialInventoryHandlerManager {
@@ -30,10 +29,6 @@ public class SpecialInventoryHandlerManager {
 		SimpleServiceLocator.buildCraftProxy.registerInventoryHandler();
 
 		StorageDrawersProxy.INSTANCE.registerInventoryHandler();
-
-		try {
-			Class.forName("powercrystals.minefactoryreloaded.api.IDeepStorageUnit");
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
-		} catch (ClassNotFoundException ignored) {}
 	}
+
 }

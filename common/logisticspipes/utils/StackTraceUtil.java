@@ -1,12 +1,11 @@
 package logisticspipes.utils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import scala.actors.threadpool.Arrays;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.utils.tuples.Pair;
@@ -83,8 +82,7 @@ public class StackTraceUtil {
 			synchronized (StackTraceUtil.informationMap) {
 				// Print our stack trace
 				@SuppressWarnings("unchecked")
-				LinkedList<StackTraceElement> traceList = new LinkedList<>(Arrays
-						.asList(Thread.currentThread().getStackTrace()));
+				LinkedList<StackTraceElement> traceList = new LinkedList<>(Arrays.asList(Thread.currentThread().getStackTrace()));
 				traceList.removeFirst();
 				traceList.removeFirst();
 				LinkedList<Pair<StackTraceElement, String>> paired = new LinkedList<>();

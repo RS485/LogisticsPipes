@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -209,6 +210,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		return 0;
 	}
 
+	@Nullable
 	private IInventoryUtil getAdaptedInventoryUtil(NeighborTileEntity<TileEntity> adjacent) {
 		return CoreRoutedPipe.getInventoryForExtractionMode(getExtractionMode(), adjacent);
 	}
@@ -452,8 +454,15 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	@Override
 	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity()))
-				.flatMap(adjacent -> getAdaptedInventoryUtil(adjacent).getItems().stream())
+				.flatMap(adjacent -> {
+					if (!SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity())) {
+						final IInventoryUtil adjacentInventoryUtil = this.getAdaptedInventoryUtil(adjacent);
+						if (adjacentInventoryUtil != null) {
+							return adjacentInventoryUtil.getItems().stream();
+						}
+					}
+					return Stream.empty();
+				})
 				.forEach(itemidCollection::add);
 	}
 

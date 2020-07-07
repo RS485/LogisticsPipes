@@ -1485,6 +1485,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return getInventoryForExtractionMode(mode, neighborItemHandler);
 	}
 
+	@Nullable
 	public static IInventoryUtil getInventoryForExtractionMode(ExtractionMode mode, NeighborTileEntity<TileEntity> neighborItemHandler) {
 		switch (mode) {
 			case LeaveFirst:

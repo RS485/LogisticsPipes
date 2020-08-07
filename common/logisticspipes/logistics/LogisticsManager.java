@@ -110,6 +110,10 @@ public class LogisticsManager implements ILogisticsManager {
 	}
 
 	public static SinkReply canSink(@Nonnull ItemStack stack, @Nonnull IRouter destination, IRouter sourceRouter, boolean excludeSource, ItemIdentifier item, SinkReply result, boolean activeRequest, boolean allowDefault) {
+		return canSink(stack, destination, sourceRouter, excludeSource, item, result, activeRequest, allowDefault, true);
+	}
+
+	public static SinkReply canSink(@Nonnull ItemStack stack, @Nonnull IRouter destination, IRouter sourceRouter, boolean excludeSource, ItemIdentifier item, SinkReply result, boolean activeRequest, boolean allowDefault, boolean forcePassive) {
 
 		SinkReply reply;
 		LogisticsModule module = destination.getLogisticsModule();
@@ -129,9 +133,9 @@ public class LogisticsManager implements ILogisticsManager {
 			}
 		}
 		if (result == null) {
-			reply = module.sinksItem(stack, item, -1, 0, allowDefault, true, true);
+			reply = module.sinksItem(stack, item, -1, 0, allowDefault, true, forcePassive);
 		} else {
-			reply = module.sinksItem(stack, item, result.fixedPriority.ordinal(), result.customPriority, allowDefault, true, true);
+			reply = module.sinksItem(stack, item, result.fixedPriority.ordinal(), result.customPriority, allowDefault, true, forcePassive);
 		}
 		if (result != null && result.maxNumberOfItems < 0) {
 			return null;

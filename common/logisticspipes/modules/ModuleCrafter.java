@@ -318,7 +318,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		while (lostItem != null && rerequested < 100) {
 			Pair<ItemIdentifierStack, IAdditionalTargetInformation> pair = lostItem.get();
 			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
-				SinkReply reply = LogisticsManager.canSink(pair.getValue1().makeNormalStack(), getRouter(), null, true, pair.getValue1().getItem(), null, true, true);
+				SinkReply reply = LogisticsManager.canSink(pair.getValue1().makeNormalStack(), getRouter(), null, true, pair.getValue1().getItem(), null, true, true, false);
 				if (reply == null || reply.maxNumberOfItems < 1) {
 					_lostItems.add(new DelayedGeneric<>(pair, 9000 + (int) (Math.random() * 2000)));
 					lostItem = _lostItems.poll();

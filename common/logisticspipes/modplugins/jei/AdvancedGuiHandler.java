@@ -3,22 +3,23 @@ package logisticspipes.modplugins.jei;
 import java.awt.Rectangle;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import mezz.jei.api.gui.IAdvancedGuiHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 
 public class AdvancedGuiHandler implements IAdvancedGuiHandler<LogisticsBaseGuiScreen> {
 
 	@Override
-	public @NotNull Class<LogisticsBaseGuiScreen> getGuiContainerClass() {
+	public @Nonnull Class<LogisticsBaseGuiScreen> getGuiContainerClass() {
 		return LogisticsBaseGuiScreen.class;
 	}
 
 	@Nullable
 	@Override
-	public List<Rectangle> getGuiExtraAreas(@NotNull LogisticsBaseGuiScreen guiContainer) {
+	public List<Rectangle> getGuiExtraAreas(@Nonnull LogisticsBaseGuiScreen guiContainer) {
 		return guiContainer.getGuiExtraAreas();
 	}
 }

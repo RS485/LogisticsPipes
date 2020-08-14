@@ -7,6 +7,7 @@
 
 package logisticspipes.utils.gui;
 
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
@@ -613,6 +616,10 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	}
 
 	public IChainAddList<EventListener> onGuiEvents = new ChainAddArrayList<>();
+
+	public List<Rectangle> getGuiExtraAreas() {
+		return Stream.concat(extentionControllerLeft.getGuiExtraAreas().stream(), extentionControllerRight.getGuiExtraAreas().stream()).collect(Collectors.toList());
+	}
 
 	public interface EventListener {
 

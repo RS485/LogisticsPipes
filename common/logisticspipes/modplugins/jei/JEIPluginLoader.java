@@ -15,5 +15,6 @@ public class JEIPluginLoader implements IModPlugin {
 		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
 		recipeTransferRegistry.addUniversalRecipeTransferHandler(new RecipeTransferHandler(registry.getJeiHelpers().recipeTransferHandlerHelper()));
 		registry.addGhostIngredientHandler(LogisticsBaseGuiScreen.class, new GhostIngredientHandler());
+		registry.addAdvancedGuiHandlers(new AdvancedGuiHandler());
 	}
 }

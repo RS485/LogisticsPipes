@@ -1,5 +1,6 @@
 package logisticspipes.utils.gui.extention;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -212,6 +213,18 @@ public class GuiExtentionController {
 		if (currentlyExtended != null) {
 			currentlyExtended.setExtending(false);
 		}
+	}
+
+	public List<Rectangle> getGuiExtraAreas() {
+		List<Rectangle> list = new ArrayList<>();
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
+				list.add(new Rectangle(extention.getCurrentXPos(), extention.getCurrentYPos(), extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0), extention.getCurrentHeight()));
+			}
+		} else {
+			list.add(new Rectangle(currentlyExtended.getCurrentXPos(), currentlyExtended.getCurrentYPos(), currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0), currentlyExtended.getCurrentHeight()));
+		}
+		return list;
 	}
 
 	public boolean isOverPanel(int x, int y, int w, int h) {

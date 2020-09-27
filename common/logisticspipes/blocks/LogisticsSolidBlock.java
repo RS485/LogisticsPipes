@@ -187,7 +187,7 @@ public class LogisticsSolidBlock extends Block {
 			LogisticsSolidTileEntity ste = (LogisticsSolidTileEntity) tile;
 			int rotation = ste.getRotation();
 			state = state
-					.withProperty(rotationProperty, rotation)
+					.withProperty(rotationProperty, Math.min(Math.max(rotation, 0), 3))
 					.withProperty(active, ste.isActive());
 		}
 

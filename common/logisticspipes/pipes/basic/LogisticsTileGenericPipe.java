@@ -244,7 +244,6 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 		if (sendClientUpdate) {
 			sendClientUpdate = false;
-			statePacketId++;
 			MainProxy.sendPacketToAllWatchingChunk(this, getLPDescriptionPacket());
 		}
 
@@ -774,7 +773,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		packet.setCoreState(coreState);
 		packet.setRenderState(renderState);
 		packet.setPipe(pipe);
-		packet.setStatePacketId(statePacketId);
+		packet.setStatePacketId(statePacketId++);
 
 		return packet;
 	}

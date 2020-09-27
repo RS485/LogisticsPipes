@@ -55,8 +55,8 @@ public class PipeTileStatePacket extends CoordinatesPacket {
 			pipe.afterStateUpdated();
 			if (pipe.pipe != null && bytesPipe.length != 0) {
 				LPDataIOWrapper.provideData(bytesPipe, pipe.pipe::readData);
-				pipe.statePacketId = statePacketId;
 			}
+			pipe.statePacketId = statePacketId;
 		}
 	}
 

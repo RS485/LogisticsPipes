@@ -20,6 +20,7 @@ public abstract class GuiExtention {
 	private int currentYPos = 0;
 	private int targetYPos = 0;
 	private boolean init = true;
+	private long lastTime;
 	private List<Integer> slotList = new ArrayList<>();
 	private List<Integer> buttonList = new ArrayList<>();
 
@@ -30,11 +31,24 @@ public abstract class GuiExtention {
 	public abstract void renderForground(int left, int top);
 
 	public final void update(int xPos, int yPos) {
+		double d = 0;
+		if(lastTime > 0) {
+			long time = System.currentTimeMillis();
+			d = (time - lastTime) * 1.0 / 5;
+			if (d < 1) {
+				d = 0;
+			} else {
+				lastTime = time;
+			}
+			d = Math.min(d, 20.0);
+		} else {
+			lastTime = System.currentTimeMillis();
+		}
 		currentXPos = xPos;
-		if (yPos > currentYPos + 1 && !init) {
-			currentYPos += 2;
-		} else if (yPos < currentYPos - 1 && !init) {
-			currentYPos -= 2;
+		if (yPos > currentYPos + 1 * d && !init) {
+			currentYPos += 2 * d;
+		} else if (yPos < currentYPos - 1 * d && !init) {
+			currentYPos -= 2 * d;
 		} else {
 			currentYPos = yPos;
 		}
@@ -42,23 +56,23 @@ public abstract class GuiExtention {
 		init = false;
 		if (extending) {
 			if (currentH < getFinalHeight()) {
-				currentH += 4;
+				currentH += 4 * d;
 			} else {
 				currentH = getFinalHeight();
 			}
 			if (currentW < getFinalWidth()) {
-				currentW += 2;
+				currentW += 2 * d;
 			} else {
 				currentW = getFinalWidth();
 			}
 		} else {
 			if (currentH > getMinimumHeight()) {
-				currentH -= 4;
+				currentH -= 4 * d;
 			} else {
 				currentH = getMinimumHeight();
 			}
 			if (currentW > getMinimumWidth()) {
-				currentW -= 2;
+				currentW -= 2 * d;
 			} else {
 				currentW = getMinimumWidth();
 			}

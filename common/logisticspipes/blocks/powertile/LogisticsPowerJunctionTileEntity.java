@@ -140,6 +140,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 			return false;
 		}
 		if (canUseEnergy(amount, null)) {
+			this.markDirty();
 			internalStorage -= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
 			if (internalStorage < LogisticsPowerJunctionTileEntity.MAX_STORAGE / 2) {
 				needMorePowerTriggerCheck = true;
@@ -188,6 +189,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		if (internalStorage == LogisticsPowerJunctionTileEntity.MAX_STORAGE) {
 			needMorePowerTriggerCheck = false;
 		}
+		this.markDirty();
 	}
 
 	@Override

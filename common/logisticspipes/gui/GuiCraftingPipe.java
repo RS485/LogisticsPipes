@@ -430,7 +430,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 						int liquidLeft = left + i * 40;
 						renderFluidText(liquidLeft, top, i);
 					}
-					if (craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) {
+					if (craftingModule.clientSideSatelliteNames == null || craftingModule.clientSideSatelliteNames.liquidSatelliteName == null  || craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) {
 						Gui.drawRect(left + 3, top + 3, left + 3 + (liquidCrafter * 40), top + 138, 0xAA8B8B8B);
 						mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
 						for (int i = 0; i < liquidCrafter; i++) {

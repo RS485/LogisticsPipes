@@ -83,6 +83,9 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
             MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude::class.java).setFlag(_itemsIncluded).setModulePos(this), extractor.localModeWatchers)
         }
 
+    override val everyNthTick: Int
+        get() = extractor.everyNthTick
+
     override var sneakyDirection: EnumFacing?
         get() = extractor.sneakyDirection
         set(value) {
@@ -171,9 +174,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java).setModulePos(this))
     }
 
-    override fun getHUDRenderer(): IHUDModuleRenderer {
-        return hud
-    }
+    override fun getHUDRenderer(): IHUDModuleRenderer = hud
 
     override fun stopHUDWatching() {
         MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java).setModulePos(this))

@@ -41,14 +41,27 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.LogisticsModule
+import net.minecraft.tileentity.TileEntity
 import java.time.Duration
 
 abstract class AsyncModule<S, C> : LogisticsModule() {
-    protected open val everyNthTick: Int = 20
     private var currentTick: Int = 0
     private var currentTask: Deferred<C?>? = null
     private var currentSyncWork: Runnable? = null
     private val lock: Any = object {}
+
+    /**
+     * Represents the wait time in ticks until the next asynchronous
+     * tick is started.
+     */
+    open val everyNthTick: Int = 20
+
+    /**
+     * A debug helper for adding the connected [TileEntity] to error
+     * information. May return null, if the information is not
+     * available.
+     */
+    private val connectedEntity: TileEntity? = _service.pointedItemHandler?.tileEntity
 
     @ExperimentalCoroutinesApi
     override fun tick() {
@@ -64,13 +77,12 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
                 val setup = tickSetup()
                 currentTask = GlobalScope.async {
                     try {
-                        return@async withTimeout(Duration.ofSeconds(10)) {
+                        return@async withTimeout(Duration.ofSeconds(90)) {
                             tickAsync(setup)
                         }
-                    } catch (e: TimeoutCancellationException) {
-                        LogisticsPipes.log.warn("Timeout on async module $this")
                     } catch (e: RuntimeException) {
-                        LogisticsPipes.log.error("Error on async module $this", e)
+                        val connected = connectedEntity?.let { " connected to $it at ${it.pos}" } ?: ""
+                        LogisticsPipes.log.error("Error in ticking async module $module$connected", e)
                     }
                     return@async null
                 }
@@ -84,7 +96,7 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
         }
     }
 
-    fun appendSyncWork(runnable: Runnable) {
+    protected fun appendSyncWork(runnable: Runnable) {
         synchronized(lock) {
             currentSyncWork = currentSyncWork?.let { previousSyncWork ->
                 Runnable {
@@ -95,9 +107,27 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
         }
     }
 
+    /**
+     * Setup function which is run on every new module tick.
+     *
+     * @return setup object S which is passed to [tickAsync].
+     */
     abstract fun tickSetup(): S
 
+    /**
+     * Completion function that is run after every successful module
+     * tick and all asynchronous work is done.
+     *
+     * @param task the [Deferred] of the asynchronous work.
+     */
     abstract fun completeTick(task: Deferred<C?>)
 
+    /**
+     * Asynchronous tick function that is run with a timeout. Takes the
+     * setup object and returns an object for [completeTick].
+     *
+     * @param setupObject the setup object from [tickSetup].
+     * @return a completion object for [completeTick].
+     */
     abstract suspend fun tickAsync(setupObject: S): C
 }

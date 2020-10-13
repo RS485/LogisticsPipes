@@ -99,6 +99,8 @@ class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack
     override val module = this
     override val pipeGuiProvider: ModuleCoordinatesGuiProvider = NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider::class.java).setSneakyOrientation(_sneakyDirection)
     override val inHandGuiProvider: ModuleInHandGuiProvider = NewGuiHandler.getGui(SneakyModuleInHandGuiProvider::class.java)
+    override val everyNthTick: Int
+        get() = (80 / (upgradeManager?.let { 2.0.pow(it.actionSpeedUpgrade) } ?: 1.0)).toInt().coerceAtLeast(2)
 
     private val stacksToExtract: Int
         get() = 1 + (upgradeManager?.itemStackExtractionUpgrade ?: 0)
@@ -108,16 +110,13 @@ class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack
         get() = upgradeManager?.let { 5 * 1.1.pow(it.itemExtractionUpgrade) * 1.2.pow(it.itemStackExtractionUpgrade) }?.toInt() ?: 5
     private val itemSendMode: CoreRoutedPipe.ItemSendMode
         get() = upgradeManager?.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } } ?: CoreRoutedPipe.ItemSendMode.Normal
-    override val everyNthTick: Int
-        get() = (80 / (upgradeManager?.let { 2.0.pow(it.actionSpeedUpgrade) } ?: 1.0)).toInt().coerceAtLeast(2)
+    private val connectedInventory: IInventoryUtil?
+        get() = sneakyDirection?.let { _service.getSneakyInventory(it) } ?: _service.pointedInventory
 
     @ExperimentalCoroutinesApi
-    override fun tickSetup(): Channel<Pair<Int, ItemStack>>? {
-        val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return null
-
+    override fun tickSetup(): Channel<Pair<Int, ItemStack>>? =
         // run item sequence as far as possible and return the channel
-        return ChunkedItemChannel { _service.getSneakyInventory(direction) }.also(ChunkedItemChannel::run).channel
-    }
+        connectedInventory?.let { ChunkedItemChannel(::connectedInventory).also(ChunkedItemChannel::run).channel }
 
     private data class InventorySession(val serverRouter: ServerRouter, val inventory: IInventoryUtil)
 
@@ -202,8 +201,7 @@ class AsyncExtractorModule(val filterOutMethod: (ItemStack) -> Boolean = { stack
     override fun completeTick(task: Deferred<List<ExtractorAsyncResult>?>) {
         // always get result, fast exit if it is null or throw on error
         val result = task.getCompleted() ?: return
-        val direction = sneakyDirection ?: _service.pointedOrientation?.opposite ?: return
-        val inventory = _service.getSneakyInventory(direction) ?: return
+        val inventory = connectedInventory ?: return
         var itemsLeft = itemsToExtract
         result.filter { it.slot < inventory.sizeInventory }
                 .asSequence()

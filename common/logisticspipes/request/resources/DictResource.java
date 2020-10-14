@@ -17,6 +17,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class DictResource implements IResource {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	private final IRequestItems requester;
 	public ItemIdentifierStack stack;
 	//match all items with same oredict name
@@ -242,4 +243,10 @@ public class DictResource implements IResource {
 			return false;
 		}
 	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
+
 }

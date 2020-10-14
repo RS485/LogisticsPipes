@@ -13,6 +13,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class FluidResource implements IResource {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	private final FluidIdentifier liquid;
 	private final IRequestFluid target;
 	private int amount;
@@ -108,4 +109,10 @@ public class FluidResource implements IResource {
 	public ItemIdentifierStack getDisplayItem() {
 		return liquid.getItemIdentifier().makeStack(amount);
 	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
+
 }

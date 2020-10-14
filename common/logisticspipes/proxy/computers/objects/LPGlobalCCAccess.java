@@ -9,6 +9,8 @@ import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 @CCType(name = "LP Global Access")
 public class LPGlobalCCAccess implements ILPCCTypeHolder {
 
+	private final Object[] ccTypeHolder = new Object[1];
+
 	@CCCommand(description = "Returns more information about the object")
 	public String identify(Object object) {
 		if (object instanceof Map<?, ?>) {
@@ -40,6 +42,11 @@ public class LPGlobalCCAccess implements ILPCCTypeHolder {
 	@CCCommand(description = "Creates a new ItemIdentifier Builder")
 	public CCItemIdentifierBuilder getItemIdentifierBuilder() {
 		return new CCItemIdentifierBuilder();
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
 	}
 
 }

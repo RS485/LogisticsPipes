@@ -12,6 +12,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 
 public class ItemResource implements IResource {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	private final ItemIdentifierStack stack;
 	private final IRequestItems requester;
 
@@ -111,4 +112,10 @@ public class ItemResource implements IResource {
 	public ItemIdentifierStack getDisplayItem() {
 		return stack;
 	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
+
 }

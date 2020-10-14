@@ -41,6 +41,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	public LogisticsTileGenericPipe container;
 	public final PipeTransportLogistics transport;
 	public final Item item;
@@ -449,4 +450,10 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public boolean isMultipartAllowedInPipe() {
 		return true;
 	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
+
 }

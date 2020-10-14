@@ -1,13 +1,19 @@
 package logisticspipes.proxy.computers.interfaces;
 
 public interface ILPCCTypeHolder {
-	Object[] ccType = new Object[1];
+
+	/**
+	 * Returns the type holder for the CC/OC interoperability.
+	 *
+	 * @return an object array with at least one element.
+	 */
+	Object[] getTypeHolder();
 
 	default void setCCType(Object type) {
-		ccType[0] = type;
+		getTypeHolder()[0] = type;
 	}
 
 	default Object getCCType() {
-		return ccType[0];
+		return getTypeHolder()[0];
 	}
 }

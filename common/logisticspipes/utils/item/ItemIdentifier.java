@@ -175,6 +175,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		}
 	}
 
+	private final Object[] ccTypeHolder = new Object[1];
+
 	//array of ItemIdentifiers for damage=0,tag=null items
 	private final static ConcurrentHashMap<Item, ItemIdentifier> simpleIdentifiers = new ConcurrentHashMap<>(4096, 0.5f, 1);
 
@@ -782,4 +784,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		}
 	}
 
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
 }

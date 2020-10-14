@@ -45,6 +45,7 @@ import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>>, IClientInformationProvider {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	private final ItemIdentifierStack[] _contents;
 	private final String _name;
 	private final int _stackLimit;
@@ -530,6 +531,11 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	@Override
 	public @Nonnull List<String> getClientInformation() {
 		return Arrays.stream(_contents).map(String::valueOf).collect(Collectors.toList());
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
 	}
 
 }

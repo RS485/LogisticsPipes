@@ -13,6 +13,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 @CCType(name = "ItemIdentifierBuilder")
 public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	private int itemID = 0;
 	private String itemIDName = null;
 	private int itemData = 0;
@@ -68,6 +69,11 @@ public class CCItemIdentifierBuilder implements ILPCCTypeHolder {
 			throw new UnsupportedOperationException("Not a valid ItemIdentifier");
 		}
 		return ItemIdentifier.getMatchingNBTIdentifier(item, itemData);
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
 	}
 
 }

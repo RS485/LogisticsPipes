@@ -35,6 +35,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHolder {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	private final static ReadWriteLock dblock = new ReentrantReadWriteLock();
 	private final static Lock rlock = FluidIdentifier.dblock.readLock();
 	private final static Lock wlock = FluidIdentifier.dblock.writeLock();
@@ -354,6 +355,11 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 
 	public ItemIdentifier getItemIdentifier() {
 		return SimpleServiceLocator.logisticsFluidManager.getFluidContainer(this.makeFluidIdentifierStack(1)).getItem();
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
 	}
 
 }

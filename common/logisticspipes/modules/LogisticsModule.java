@@ -31,6 +31,7 @@ import network.rs485.logisticspipes.module.Gui;
 @CCType(name = "LogisticsModule")
 public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	protected IWorldProvider _world;
 	protected IPipeServiceProvider _service;
 
@@ -194,6 +195,11 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 			in = Objects.toString(_world.getWorld());
 		}
 		return String.format("%s at %s in %s", getClass().getName(), at, in);
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
 	}
 
 }

@@ -12,6 +12,8 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 @CCType(name = "CCItemSinkRequest")
 public class CCSinkResponder implements ILPCCTypeHolder {
 
+	private final Object[] ccTypeHolder = new Object[1];
+
 	@Getter
 	private final ItemIdentifierStack stack;
 	@Getter
@@ -53,6 +55,11 @@ public class CCSinkResponder implements ILPCCTypeHolder {
 		canSink = ((Double) (amount > 0 ? amount : 0D)).intValue();
 		this.priority = priority.intValue();
 		done = true;
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
 	}
 
 }

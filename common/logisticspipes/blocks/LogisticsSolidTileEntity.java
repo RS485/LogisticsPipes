@@ -45,6 +45,7 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 @CCType(name = "LogisticsSolidBlock")
 public class LogisticsSolidTileEntity extends TileEntity implements ITickable, ILPCCTypeHolder, IRotationProvider, ManagedPeripheral, Environment, SidedEnvironment, IOCTile {
 
+	private final Object[] ccTypeHolder = new Object[1];
 	private boolean addedToNetwork = false;
 	private boolean init = false;
 	public int rotation = 0;
@@ -123,7 +124,8 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 		SimpleServiceLocator.openComputersProxy.handleInvalidate(this);
 	}
 
-	public void onBlockBreak() {}
+	public void onBlockBreak() {
+	}
 
 	@Override
 	@CCCommand(description = "Returns the LP rotation value for this block")
@@ -140,7 +142,8 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 		this.rotation = rotation;
 	}
 
-	public void notifyOfBlockChange() {}
+	public void notifyOfBlockChange() {
+	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
@@ -150,15 +153,18 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public void onConnect(Node node1) {}
+	public void onConnect(Node node1) {
+	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public void onDisconnect(Node node1) {}
+	public void onDisconnect(Node node1) {
+	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
-	public void onMessage(Message message) {}
+	public void onMessage(Message message) {
+	}
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
@@ -205,4 +211,10 @@ public class LogisticsSolidTileEntity extends TileEntity implements ITickable, I
 	public World getWorldForHUD() {
 		return getWorld();
 	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
+
 }

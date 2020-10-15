@@ -61,7 +61,8 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
      * information. May return null, if the information is not
      * available.
      */
-    private val connectedEntity: TileEntity? = _service.pointedItemHandler?.tileEntity
+    private val connectedEntity: TileEntity?
+        get() = _service?.pointedItemHandler?.tileEntity
 
     @ExperimentalCoroutinesApi
     override fun tick() {

@@ -185,6 +185,11 @@ shadowJar {
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version))
     }
 
+    relocate 'kotlin', 'logisticspipes.kotlin'
+    relocate 'kotlinx', 'logisticspipes.kotlinx'
+    relocate 'org.intellij', 'logisticspipes.intellij'
+    relocate 'org.jetbrains', 'logisticspipes.jetbrains'
+
     manifest {
         inheritFrom sharedManifest
     }

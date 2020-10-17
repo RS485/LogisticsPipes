@@ -170,6 +170,9 @@ jar {
 }
 
 shadowJar {
+    from sourceSets.api.output
+    finalizedBy 'reobfJar'
+
     archiveClassifier.set('')
 
     dependencies {
@@ -326,7 +329,7 @@ curseforge {
             requiredDependency 'codechicken-lib-1-8'
         }
 
-        mainArtifact(jar) {
+        mainArtifact(shadowJar) {
             displayName = "Logistics Pipes $project.version"
         }
     }
@@ -350,7 +353,7 @@ task enableSigningTasks {
 signing {
     useGpgCmd()
     sign apiJar
-    sign jar
+    sign shadowJar
     sign deobfJar
     sign sourceJar
 }
@@ -371,7 +374,7 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     taskGraph.allTasks.each { Task task ->
         if (task instanceof Sign && task.useJarsigner) {
             task.doFirst {
-                inputs.each { taskInputs ->
+                inputs.each { TaskInputs taskInputs ->
                     taskInputs.files.each { File file ->
                         // see https://ant.apache.org/manual/Tasks/signjar.html for arguments
                         // ForgeGradle also uses ant.signjar: https://fckaf.de/DCw

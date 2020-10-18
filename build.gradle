@@ -32,43 +32,18 @@ apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin: 'com.matthewprenger.cursegradle'
 apply plugin: 'com.github.johnrengelman.shadow'
-
-def ENV = System.getenv()
-
-allprojects {
-    apply plugin: 'net.minecraftforge.gradle'
-
-    minecraft {
-        mappings channel: 'snapshot', version: "$mappings_version"
-
-        accessTransformer = file("$rootDir/resources/META-INF/lp_at.cfg")
-    }
-
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions {
-            languageVersion = "1.4"
-            jvmTarget = JavaVersion.VERSION_1_8
-            freeCompilerArgs += "-Xjvm-default=enable"
-        }
-    }
-
-    dependencies {
-        minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
-    }
-}
-
-subprojects {
-    rootProject.clean.dependsOn tasks.matching { it.name == "clean" }
-}
+apply plugin: 'net.minecraftforge.gradle'
 
 archivesBaseName = "logisticspipes"
 group = "network.rs485"
 version = "0.10.3"
 ext.vendor = "unknown"
 ext.target = "Forge $forge_version"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+def ENV = System.getenv()
 
 if (ENV.BUILD_NUMBER) {
     version = "$version.${ENV.BUILD_NUMBER}"
@@ -106,9 +81,16 @@ sourceSets {
             srcDirs = ['src/api/java']
         }
     }
+    dummy {
+        java {
+            srcDirs = ['dummy/src/main/java']
+        }
+    }
     main {
+        compileClasspath += dummy.output
         compileClasspath += api.output
         runtimeClasspath += api.output
+
         java {
             srcDirs += 'common'
         }
@@ -118,7 +100,18 @@ sourceSets {
     }
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        languageVersion = "1.4"
+        jvmTarget = JavaVersion.VERSION_1_8
+        freeCompilerArgs += "-Xjvm-default=enable"
+    }
+}
+
 minecraft {
+    mappings channel: 'snapshot', version: "$mappings_version"
+    accessTransformer = file("$rootDir/resources/META-INF/lp_at.cfg")
+
     runs {
         client {
             workingDirectory project.file('run')
@@ -266,7 +259,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly project(':dummy')
+    minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
+    apiImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
+    dummyImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
+
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 
@@ -299,6 +295,23 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+}
+
+project.afterEvaluate {
+    final minecraftConf = configurations.minecraft
+
+    configurations.each { Configuration conf ->
+        if (conf != minecraftConf) {
+            conf.dependencies.each { Dependency dep ->
+                if (dep.group == 'net.minecraftforge' && dep.name == 'forge') {
+                    conf.dependencies.remove(dep)
+                    minecraftConf.dependencies.each { Dependency minecraftDep ->
+                        conf.dependencies.add(dependencies.create(group: minecraftDep.group, name: minecraftDep.name, version: minecraftDep.version))
+                    }
+                }
+            }
+        }
+    }
 }
 
 tasks.withType(Test) {

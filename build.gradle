@@ -171,8 +171,7 @@ shadowJar {
     dependencies {
         include(dependency(group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version))
         include(dependency(group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version))
-        include(dependency(group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: kotlin_version))
-        include(dependency(group: 'org.jetbrains', name: "annotations", version: kannotations_version))
+        include(dependency(group: 'org.jetbrains', name: 'annotations', version: kannotations_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version))
@@ -182,6 +181,9 @@ shadowJar {
     relocate 'kotlinx', 'logisticspipes.kotlinx'
     relocate 'org.intellij', 'logisticspipes.intellij'
     relocate 'org.jetbrains', 'logisticspipes.jetbrains'
+
+    exclude 'META-INF/versions/9/*'
+    exclude 'DebugProbesKt.bin'
 
     manifest {
         inheritFrom sharedManifest
@@ -268,7 +270,6 @@ dependencies {
 
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: kotlin_version
     implementation group: 'org.jetbrains', name: "annotations", version: kannotations_version
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version

@@ -314,6 +314,14 @@ project.afterEvaluate {
     }
 }
 
+clean {
+    // this folder is created by dependency resolution and will be created before 'clean' runs,
+    // resulting in missing minecraft sources etc. Set here: https://fckaf.de/voZ
+    setDelete(project.fileTree("$buildDir") {
+        exclude 'fg_cache'
+    })
+}
+
 tasks.withType(Test) {
     useJUnitPlatform()
     testLogging {

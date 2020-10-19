@@ -49,16 +49,27 @@ object MarkdownParser {
         val chars = htmlBreakRegex.replace(inputChars, "\n")
 
         // breaks up all the words and returns them as inline elements without spaces
-        return chars.split(' ').flatMap { word ->
-            when {
-                // newline character is replaced with a Break element
-                word.contains('\n') -> word.split('\n').zipWithNext { a, b ->
-                    listOfNotNull(parseTextElement(a), Break, parseTextElement(b))
-                }.flatten()
-                // parse anything else as text element
-                else -> listOfNotNull(parseTextElement(word))
-            }
-        }
+        return chars.split(' ')
+                .flatMap { word ->
+                    when {
+                        word.contains('\n') -> {
+                            // newline character is replaced with a Break element
+                            word.split('\n').zipWithNext { a, b ->
+                                listOfNotNull(parseTextElement(a), Break, parseTextElement(b))
+                            }.flatten()
+                        }
+                        // parse anything else as text element
+                        else -> listOfNotNull(parseTextElement(word))
+                    }
+                }
+                .plus(Break) // appended Break to be removed as the last right element in the following zipWithNext
+                .zipWithNext { left, right ->
+                    return@zipWithNext when {
+                        left is Word && right is Word -> listOf(left, Space)
+                        else -> listOf(left)
+                    }
+                }
+                .flatten()
     }
 
     private fun parseTextElement(word: String) = Word(word).takeIf { word.isNotBlank() }

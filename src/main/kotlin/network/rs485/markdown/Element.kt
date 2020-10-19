@@ -49,6 +49,8 @@ data class ColorFormatting(val elements: List<InlineElement>,
 
 data class Word(val str: String) : InlineElement()
 
+object Space : InlineElement()
+
 object Break : InlineElement()
 
 /**

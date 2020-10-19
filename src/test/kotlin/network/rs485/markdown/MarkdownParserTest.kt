@@ -49,7 +49,7 @@ internal class MarkdownParserTest {
         val str = "Split this please"
         val splitElements = splitToInlineElements(str)
 
-        assertEquals(listOf(Word("Split"), Word("this"), Word("please")), splitElements)
+        assertEquals(listOf(Word("Split"), Space, Word("this"), Space, Word("please")), splitElements)
     }
 
     @Test
@@ -65,7 +65,7 @@ internal class MarkdownParserTest {
         val str = "  two text    nodes   "
         val splitElements = splitToInlineElements(str)
 
-        assertEquals(listOf(Word("two"), Word("text"), Word("nodes")), splitElements)
+        assertEquals(listOf(Word("two"), Space, Word("text"), Space, Word("nodes")), splitElements)
     }
 
     @Test
@@ -292,7 +292,7 @@ internal class MarkdownParserTest {
         val secondStr = "Header"
         val paragraphs = parseParagraphs("# $firstStr \\\n$secondStr")
 
-        assertEquals(listOf(HeaderParagraph(listOf(Word(firstStr), Word(secondStr)), 1)), paragraphs)
+        assertEquals(listOf(HeaderParagraph(listOf(Word(firstStr), Space, Word(secondStr)), 1)), paragraphs)
     }
 
     @Test

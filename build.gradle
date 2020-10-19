@@ -98,6 +98,11 @@ sourceSets {
             srcDirs += 'resources'
         }
     }
+    test {
+        compileClasspath += dummy.output
+        compileClasspath += api.output
+        runtimeClasspath += api.output
+    }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {

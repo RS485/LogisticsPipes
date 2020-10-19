@@ -87,31 +87,66 @@ object BookContents {
                 HeaderParagraph(
                     listOf(
                         listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow))),
-                        "Nulla faucibus cursus bibendum.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
+                        MarkdownParser.splitSpacesAndWords(
+                            "Nulla faucibus cursus bibendum."
+                        ).map {
+                            if (it is Word) listOf(ColorFormatting(randomColor()), it) else listOf(it)
+                        }.flatten(),
                     ).flatten(), headerLevel = 4
                 ),
                 RegularParagraph(
                     listOf(
+                        listOf(ColorFormatting(randomColor())),
                         listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Shadow))),
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
+                        MarkdownParser.splitSpacesAndWords(
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl."
+                        ),
                     ).flatten()
                 ),
                 RegularParagraph(
                     listOf(
+                        listOf(ColorFormatting(randomColor())),
                         listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic))),
-                        ("Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa. Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.  \n" +
-                                "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque.").split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
+                        MarkdownParser.splitSpacesAndWords(
+                            "Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa. Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.  \n" +
+                                    "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."
+                        ),
                     ).flatten()
+                ),
+                HeaderParagraph(
+                    listOf(
+                        listOf(TextFormatting(EnumSet.of(TextFormat.Strikethrough))),
+                        MarkdownParser.splitSpacesAndWords(
+                            "Nulla faucibus cursus bibendum."
+                        ).map {
+                            if (it is Word) listOf(ColorFormatting(randomColor()), it) else listOf(it)
+                        }.flatten(),
+                    ).flatten(), headerLevel = 4
                 ),
                 RegularParagraph(
                     listOf(
                         listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow))),
-                        "Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante.".split(" ").map { listOf(ColorFormatting(randomColor()), Word(it)) }.flatten(),
-                    ).flatten()
-                )
+                        listOf(ColorFormatting(randomColor())),
+                        MarkdownParser.splitSpacesAndWords(
+                            "Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante."
+                        ),
+                    ).flatten(),
+                ),
+                RegularParagraph(
+                    listOf(
+                        listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Italic))),
+                        listOf(ColorFormatting(randomColor())),
+                        MarkdownParser.splitSpacesAndWords(
+                            "Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa.\n" +
+                                    "Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.\n" +
+                                    "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."
+                        ),
+                    ).flatten(),
+                ),
             )
             override val drawableParagraphs: List<IDrawable> = asDrawables(paragraphs)
         }
+    }
 }
 
 private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(RegexOption.DOT_MATCHES_ALL)
@@ -138,7 +173,7 @@ private fun parseMetadata(metadataString: String, markdownFile: String): YamlPag
     return if (metadataString.isNotEmpty()) {
         // Takes the metadata string and parses the YAML information
         try {
-            Yaml.default.parse(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
+            Yaml.default.decodeFromString(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
         } catch (e: YamlException) {
             LogisticsPipes.log.error("Exception: $e")
             LogisticsPipes.log.error("The following Yaml is malformed! \n$metadataString")

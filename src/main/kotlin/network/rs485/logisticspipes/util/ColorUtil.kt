@@ -41,55 +41,55 @@ package network.rs485.logisticspipes.util
  * Extracts the 8 bits of alpha value information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Alpha channel.
  */
-fun getAlpha(colorCode: Int): Int {
-    return colorCode shl 24 and 0xff
+fun alpha(colorCode: Int): Int {
+    return colorCode shr 24 and 0xff
 }
 
 /**
  * Extracts the 8 bits of alpha value information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Alpha channel as a float (0.0f - 1.0f).
  */
-fun getAlphaF(colorCode: Int): Float {
-    return getAlpha(colorCode) / 255.0f
+fun alphaF(colorCode: Int): Float {
+    return alpha(colorCode) / 255.0f
 }
 
 /**
  * Extracts the 8 bits of red color information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Red channel.
  */
-fun getRed(colorCode: Int): Int {
-    return colorCode shl 16 and 0xff
+fun red(colorCode: Int): Int {
+    return colorCode shr 16 and 0xff
 }
 
 /**
  * Extracts the 8 bits of red color information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Red channel as a float (0.0f - 1.0f).
  */
-fun getRedF(colorCode: Int): Float {
-    return getRed(colorCode) / 255.0f
+fun redF(colorCode: Int): Float {
+    return red(colorCode) / 255.0f
 }
 
 /**
  * Extracts the 8 bits of green color information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Green channel.
  */
-fun getGreen(colorCode: Int): Int {
-    return colorCode shl 8 and 0xff
+fun green(colorCode: Int): Int {
+    return colorCode shr 8 and 0xff
 }
 
 /**
  * Extracts the 8 bits of green color information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Green channel as a float (0.0f - 1.0f).
  */
-fun getGreenF(colorCode: Int): Float {
-    return getGreen(colorCode) / 255.0f
+fun greenF(colorCode: Int): Float {
+    return green(colorCode) / 255.0f
 }
 
 /**
  * Extracts the 8 bits of blue color information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Blue channel.
  */
-fun getBlue(colorCode: Int): Int {
+fun blue(colorCode: Int): Int {
     return colorCode and 0xFF
 }
 
@@ -97,6 +97,6 @@ fun getBlue(colorCode: Int): Int {
  * Extracts the 8 bits of blue color information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Blue channel as a float (0.0f - 1.0f).
  */
-fun getBlueF(colorCode: Int): Float {
-    return getBlue(colorCode) / 255.0f
+fun blueF(colorCode: Int): Float {
+    return blue(colorCode) / 255.0f
 }

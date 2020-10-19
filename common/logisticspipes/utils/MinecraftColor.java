@@ -39,8 +39,6 @@ public enum MinecraftColor {
 		return BLANK;
 	}
 
-	
-
 	public int getColorCode() {
 		return colorCode;
 	}

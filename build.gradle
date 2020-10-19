@@ -16,10 +16,11 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: forgegradleVersion
-        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: '1.3.0'
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "$kotlin_version"
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-serialization', version: "$kotlin_version"
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: forgegradle_version
+        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: cursegradle_version
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-serialization', version: kotlin_version
+        classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: shadow_version
     }
 }
 
@@ -27,47 +28,22 @@ apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'kotlinx-serialization'
-apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'signing'
 apply plugin: 'com.matthewprenger.cursegradle'
-
-def ENV = System.getenv()
-
-allprojects {
-    apply plugin: 'net.minecraftforge.gradle'
-
-    minecraft {
-        mappings channel: 'snapshot', version: "$mappings_version"
-
-        accessTransformer = file("$rootDir/resources/META-INF/lp_at.cfg")
-    }
-
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions {
-            languageVersion = "1.3"
-            jvmTarget = JavaVersion.VERSION_1_8
-            freeCompilerArgs += "-Xjvm-default=enable"
-        }
-    }
-
-    dependencies {
-        minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
-    }
-}
-
-subprojects {
-    rootProject.clean.dependsOn tasks.matching { it.name == "clean" }
-}
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'net.minecraftforge.gradle'
 
 archivesBaseName = "logisticspipes"
 group = "network.rs485"
 version = "0.10.3"
 ext.vendor = "unknown"
 ext.target = "Forge $forge_version"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+def ENV = System.getenv()
 
 if (ENV.BUILD_NUMBER) {
     version = "$version.${ENV.BUILD_NUMBER}"
@@ -105,9 +81,16 @@ sourceSets {
             srcDirs = ['src/api/java']
         }
     }
+    dummy {
+        java {
+            srcDirs = ['dummy/src/main/java']
+        }
+    }
     main {
+        compileClasspath += dummy.output
         compileClasspath += api.output
         runtimeClasspath += api.output
+
         java {
             srcDirs += 'common'
         }
@@ -115,9 +98,25 @@ sourceSets {
             srcDirs += 'resources'
         }
     }
+    test {
+        compileClasspath += dummy.output
+        compileClasspath += api.output
+        runtimeClasspath += api.output
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        languageVersion = "1.4"
+        jvmTarget = JavaVersion.VERSION_1_8
+        freeCompilerArgs += "-Xjvm-default=enable"
+    }
 }
 
 minecraft {
+    mappings channel: 'snapshot', version: "$mappings_version"
+    accessTransformer = file("$rootDir/resources/META-INF/lp_at.cfg")
+
     runs {
         client {
             workingDirectory project.file('run')
@@ -168,10 +167,40 @@ jar {
     }
 }
 
+shadowJar {
+    from sourceSets.api.output
+    finalizedBy 'reobfJar'
+
+    archiveClassifier.set('')
+
+    dependencies {
+        include(dependency(group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version))
+        include(dependency(group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version))
+        include(dependency(group: 'org.jetbrains', name: 'annotations', version: kannotations_version))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version))
+        include(dependency(group: 'com.charleskorn.kaml', name: 'kaml', version: '0.14.0', transitive: false))
+        include(dependency(group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '1.0', transitive: false))
+    }
+
+    relocate 'kotlin', 'logisticspipes.kotlin'
+    relocate 'kotlinx', 'logisticspipes.kotlinx'
+    relocate 'org.intellij', 'logisticspipes.intellij'
+    relocate 'org.jetbrains', 'logisticspipes.jetbrains'
+
+    exclude 'META-INF/versions/9/*'
+    exclude 'DebugProbesKt.bin'
+
+    manifest {
+        inheritFrom sharedManifest
+    }
+}
+
 task sourceJar(type: Jar) {
     from sourceSets.api.allSource
     from sourceSets.main.allSource
-    classifier "sources"
+    archiveClassifier.set('sources')
 }
 
 test {
@@ -239,12 +268,20 @@ repositories {
 }
 
 dependencies {
-    compileOnly project(':dummy')
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
+    apiImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
+    dummyImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
 
-    implementation group: 'net.shadowfacts', name: 'Forgelin', version: '1.8.4'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
+    implementation group: 'org.jetbrains', name: "annotations", version: kannotations_version
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version
     implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '5901b4c6f4af70e6ef2dbe194bf7e0e097bb375c', classifier: 'deobf'
-    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-runtime', version: '0.13.0', transitive: false
     implementation group: 'com.charleskorn.kaml', name: 'kaml', version: '0.14.0', transitive: false
     implementation group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '1.0', transitive: false
 
@@ -270,6 +307,31 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
 
+project.afterEvaluate {
+    final minecraftConf = configurations.minecraft
+
+    configurations.each { Configuration conf ->
+        if (conf != minecraftConf) {
+            conf.dependencies.each { Dependency dep ->
+                if (dep.group == 'net.minecraftforge' && dep.name == 'forge') {
+                    conf.dependencies.remove(dep)
+                    minecraftConf.dependencies.each { Dependency minecraftDep ->
+                        conf.dependencies.add(dependencies.create(group: minecraftDep.group, name: minecraftDep.name, version: minecraftDep.version))
+                    }
+                }
+            }
+        }
+    }
+}
+
+clean {
+    // this folder is created by dependency resolution and will be created before 'clean' runs,
+    // resulting in missing minecraft sources etc. Set here: https://fckaf.de/voZ
+    setDelete(project.fileTree("$buildDir") {
+        exclude 'fg_cache'
+    })
+}
+
 tasks.withType(Test) {
     useJUnitPlatform()
     testLogging {
@@ -280,7 +342,7 @@ tasks.withType(Test) {
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     from sourceSets.api.output
-    classifier = 'deobf'
+    archiveClassifier.set('deobf')
 
     manifest = project.manifest {
         from sharedManifest
@@ -290,7 +352,7 @@ task deobfJar(type: Jar) {
 task apiJar(type: Jar, dependsOn: apiClasses) {
     from sourceSets.api.output
     from sourceSets.api.allSource
-    classifier = "api"
+    archiveClassifier.set('api')
 }
 
 curseforge {
@@ -301,18 +363,17 @@ curseforge {
         releaseType = 'beta'
         relations {
             requiredDependency 'codechicken-lib-1-8'
-            requiredDependency 'shadowfacts-forgelin'
         }
 
-        mainArtifact(jar) {
-            displayName = 'Logistics Pipes ' + project.version
+        mainArtifact(shadowJar) {
+            displayName = "Logistics Pipes $project.version"
         }
     }
 }
 
 artifacts {
     archives apiJar
-    archives jar
+    archives shadowJar
     archives deobfJar
     archives sourceJar
 }
@@ -328,7 +389,7 @@ task enableSigningTasks {
 signing {
     useGpgCmd()
     sign apiJar
-    sign jar
+    sign shadowJar
     sign deobfJar
     sign sourceJar
 }
@@ -345,23 +406,24 @@ tasks.withType(Sign) {
     ext.useJarsigner = (name != "signSourceJar") // dont sign source jar, it doesn't have classes
 }
 
-gradle.taskGraph.whenReady { taskGraph ->
-    taskGraph.allTasks.each {
-        if (it instanceof Sign && it.useJarsigner) {
-            def inputFiles = it.getInputFiles()
-            it.doFirst {
-                // see https://ant.apache.org/manual/Tasks/signjar.html for arguments
-                // ForgeGradle also uses ant.signjar: https://fckaf.de/DCw
-                inputFiles.each { file ->
-                    ant.signjar(
-                            jar: file,
-                            alias: "1",
-                            storetype: findProperty("LogisticsPipes.storetype"),
-                            keystore: findProperty("LogisticsPipes.keystore"),
-                            storepass: findProperty("LogisticsPipes.storepass"),
-                            verbose: "true",
-                            preservelastmodified: "true"
-                    )
+gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+    taskGraph.allTasks.each { Task task ->
+        if (task instanceof Sign && task.useJarsigner) {
+            task.doFirst {
+                inputs.each { TaskInputs taskInputs ->
+                    taskInputs.files.each { File file ->
+                        // see https://ant.apache.org/manual/Tasks/signjar.html for arguments
+                        // ForgeGradle also uses ant.signjar: https://fckaf.de/DCw
+                        ant.signjar(
+                                jar: file,
+                                alias: "1",
+                                storetype: findProperty("LogisticsPipes.storetype"),
+                                keystore: findProperty("LogisticsPipes.keystore"),
+                                storepass: findProperty("LogisticsPipes.storepass"),
+                                verbose: "true",
+                                preservelastmodified: "true"
+                        )
+                    }
                 }
             }
         }
@@ -372,7 +434,7 @@ class DownloadTask extends DefaultTask {
     String url
 
     @OutputFile
-    RegularFileProperty outputFile = newOutputFile()
+    final RegularFileProperty outputFile = project.objects.fileProperty()
 
     @TaskAction
     void download() {
@@ -382,7 +444,7 @@ class DownloadTask extends DefaultTask {
 
 task downloadLanguage(type: DownloadTask) {
     url = "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
-    outputFile = layout.buildDirectory.file("language.zip")
+    outputFile.set(layout.buildDirectory.file("language.zip"))
 }
 
 task languageMain(dependsOn: downloadLanguage, type: Copy) {
@@ -391,7 +453,9 @@ task languageMain(dependsOn: downloadLanguage, type: Copy) {
     include "*/*.lang"
 
     includeEmptyDirs false
-    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1)) }
+    eachFile { FileCopyDetails fcd ->
+        fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1))
+    }
 }
 
 task languageBook(dependsOn: downloadLanguage, type: Copy) {
@@ -400,7 +464,9 @@ task languageBook(dependsOn: downloadLanguage, type: Copy) {
     include "*/book/"
 
     includeEmptyDirs false
-    eachFile { fcd -> fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2)) }
+    eachFile { FileCopyDetails fcd ->
+        fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2))
+    }
 }
 
 task language(dependsOn: [languageMain, languageBook], type: Copy) {
@@ -409,4 +475,14 @@ task language(dependsOn: [languageMain, languageBook], type: Copy) {
 
 install.repositories.mavenInstaller.pom.whenConfigured { pom ->
     pom.dependencies.clear()
+}
+
+tasks.named('wrapper') {
+    gradleVersion = '5.3.1'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+tasks.withType(AbstractArchiveTask) {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
 }

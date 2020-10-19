@@ -180,8 +180,7 @@ shadowJar {
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version))
-        include(dependency(group: 'com.charleskorn.kaml', name: 'kaml', version: '0.14.0', transitive: false))
-        include(dependency(group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '1.0', transitive: false))
+        include(dependency(group: 'com.charleskorn.kaml', name: 'kaml', version: kaml_version))
     }
 
     relocate 'kotlin', 'logisticspipes.kotlin'
@@ -281,9 +280,8 @@ dependencies {
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version
+    implementation group: 'com.charleskorn.kaml', name: 'kaml', version: kaml_version
     implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '5901b4c6f4af70e6ef2dbe194bf7e0e097bb375c', classifier: 'deobf'
-    implementation group: 'com.charleskorn.kaml', name: 'kaml', version: '0.14.0', transitive: false
-    implementation group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '1.0', transitive: false
 
     compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.293'
     compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.3', classifier: 'deobf'

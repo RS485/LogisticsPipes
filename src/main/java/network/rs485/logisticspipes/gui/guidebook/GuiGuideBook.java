@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.gui.guidebook;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,11 +65,13 @@ import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
 import logisticspipes.items.ItemGuideBook;
+import logisticspipes.utils.MinecraftColor;
 import logisticspipes.utils.OpenGLDebugger;
 import network.rs485.logisticspipes.gui.LPFontRenderer;
 import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
 import network.rs485.logisticspipes.guidebook.BookContents;
 import network.rs485.logisticspipes.util.math.Rectangle;
+import network.rs485.markdown.TextFormat;
 
 public class GuiGuideBook extends GuiScreen {
 
@@ -122,7 +125,7 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiTabWidth = 24, guiTabHeight = 24, guiFullTabHeight = 32;
 	// Usable area
 	@Getter
-	Rectangle usableArea;
+	public static Rectangle usableArea;
 
 	// Texture atlas constants
 	private static final int atlasWidth = 256;
@@ -138,7 +141,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	protected static Map<String, SavedPage> cachedPages;
 
-	public OpenGLDebugger glDebugger;
+//	public OpenGLDebugger glDebugger;
 	public static LPFontRenderer lpFontRenderer;
 
 	public GuiGuideBook(EnumHand hand) {
@@ -153,8 +156,8 @@ public class GuiGuideBook extends GuiScreen {
 		//setPage(MAIN_MENU_FILE);
 		setPage(DEBUG_FILE);
 		this.tabList = new ArrayList<>();
-		glDebugger = new OpenGLDebugger(20);
-		glDebugger.start();
+//		glDebugger = new OpenGLDebugger(20);
+//		glDebugger.start();
 	}
 
 	public void setPage(String pagePath) {
@@ -205,7 +208,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		glDebugger.cycle();
+//		glDebugger.cycle();
 		//this.drawTransparentOverlay();
 		//this.drawCurrentEvent();
 		//slider.enabled = areaCurrentlyDrawnY > areaAcrossY;
@@ -237,12 +240,12 @@ public class GuiGuideBook extends GuiScreen {
 	public void onGuiClosed() {
 		// TODO THIS IS FOR TESTING ONLY
 		BookContents.INSTANCE.clear();
-		glDebugger.stop();
+		//glDebugger.stop();
 		currentPage.setProgress(slider.getProgress());
 		ArrayList<SavedPage> tabs = new ArrayList<>();
 		for (GuiGuideBookTabButton tab : tabList) tabs.add(tab.getTab());
-		final ItemStack stack = Minecraft.getMinecraft().player.getHeldItem(hand);
-		ItemGuideBook.setCurrentPage(stack, currentPage, tabs, hand);
+//		final ItemStack stack = Minecraft.getMinecraft().player.getHeldItem(hand);
+//		ItemGuideBook.setCurrentPage(stack, currentPage, tabs, hand);
 		super.onGuiClosed();
 	}
 
@@ -331,20 +334,15 @@ public class GuiGuideBook extends GuiScreen {
 	 * Draws the main title on the centre of the top border of the GUI
 	 */
 	protected void drawTitle() {
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(0.0F, 0.0F, 200);
-		this.drawCenteredString(this.fontRenderer, title, this.width / 2, outerGui.getY0() + 4, 0xFFFFFF);
-		GlStateManager.popMatrix();
+		lpFontRenderer.drawCenteredString(title,this.width / 2, outerGui.getY0() + 4, MinecraftColor.WHITE.getColorCode(), EnumSet.of(TextFormat.Shadow), 1.0D);
 	}
 
 	/**
 	 * Draws the main GUI border and background
 	 */
-	@SuppressWarnings("Duplicates")
 	protected void drawGui() {
 		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
 		// Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
-		//drawRepeatingSquare(innerGui.getX0(), innerGui.getX0(), innerGui.getX0(), innerGui.getX0(), zBackground, guiAtlasBg.getX0(), guiAtlasBg.getY0(), guiAtlasBg.getX1(), guiAtlasBg.getY1(), false);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

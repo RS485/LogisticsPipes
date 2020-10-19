@@ -80,25 +80,32 @@ object BookContents {
     }
 
     private fun addDebugPages() {
-//        fun randomColor(): Int = MinecraftColor.values()[Random.nextInt(MinecraftColor.values().size)].colorCode
-//        cachedLoadedPages[DEBUG_FILE] = object : PageInfoProvider {
-//            override val metadata: YamlPageMetadata = YamlPageMetadata("Debug Page")
-//            override val paragraphs: List<Paragraph> = listOf(
-//                    HeaderParagraph(
-//                            listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow)), ColorFormatting(randomColor())) +
-//                            MarkdownParser.splitToInlineElements("Nulla faucibus cursus bibendum."), 4),
-//                    RegularParagraph(
-//                            listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Shadow)), ColorFormatting(randomColor())) +
-//                            MarkdownParser.splitToInlineElements("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl.")),
-//                    RegularParagraph(listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic)), ColorFormatting(randomColor())) +
-//                            MarkdownParser.splitToInlineElements("Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa.\n" +
-//                                    "Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.\n" +
-//                                    "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque.")),
-//                    RegularParagraph(listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow)), ColorFormatting(randomColor())) +
-//                            MarkdownParser.splitToInlineElements("Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante."))
-//            )
-//            override val drawableParagraphs: List<IDrawable> = asDrawables(paragraphs)
-//        }
+        fun randomColor(): Int = MinecraftColor.values()[Random.nextInt(MinecraftColor.values().size)].colorCode
+        cachedLoadedPages[DEBUG_FILE] = object : PageInfoProvider {
+            override val metadata: YamlPageMetadata = YamlPageMetadata("Debug Page")
+            override val paragraphs: List<Paragraph> = listOf(
+                    HeaderParagraph(
+                            listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow)), ColorFormatting(randomColor())) +
+                                    MarkdownParser.splitToInlineElements("Nulla faucibus cursus bibendum."), 4),
+                    RegularParagraph(
+                            listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Shadow)), ColorFormatting(randomColor())) +
+                                    MarkdownParser.splitToInlineElements("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl.")),
+                    RegularParagraph(listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic)), ColorFormatting(randomColor())) +
+                            MarkdownParser.splitToInlineElements("Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa.\n" +
+                                    "Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.\n" +
+                                    "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque.")),
+                    HeaderParagraph(
+                            listOf(TextFormatting(EnumSet.of(TextFormat.Strikethrough)), ColorFormatting(randomColor())) +
+                                    MarkdownParser.splitToInlineElements("Nulla faucibus cursus bibendum."), 4),
+                    RegularParagraph(listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow)), ColorFormatting(randomColor())) +
+                            MarkdownParser.splitToInlineElements("Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante.")),
+                    RegularParagraph(listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Italic)), ColorFormatting(randomColor())) +
+                            MarkdownParser.splitToInlineElements("Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa.\n" +
+                                    "Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.\n" +
+                                    "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."))
+            )
+            override val drawableParagraphs: List<IDrawable> = asDrawables(paragraphs)
+        }
     }
 }
 
@@ -126,7 +133,7 @@ private fun parseMetadata(metadataString: String, markdownFile: String): YamlPag
     return if (metadataString.isNotEmpty()) {
         // Takes the metadata string and parses the YAML information
         try {
-            Yaml.default.parse(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
+            Yaml.default.decodeFromString(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
         } catch (e: YamlException) {
             LogisticsPipes.log.error("Exception: $e")
             LogisticsPipes.log.error("The following Yaml is malformed! \n$metadataString")

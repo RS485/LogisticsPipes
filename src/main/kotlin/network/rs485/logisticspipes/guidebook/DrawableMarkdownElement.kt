@@ -43,7 +43,10 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
+import network.rs485.logisticspipes.util.blueF
+import network.rs485.logisticspipes.util.greenF
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.redF
 import network.rs485.markdown.*
 import java.util.*
 
@@ -61,38 +64,76 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         if (DEBUG_AREAS) area.render(1.0F, 0.0F, 0.0F)
-        for (textToken in drawables.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
-            if (isHovered && textToken is Link) {
-                textToken.hovering(mouseX, mouseY, yOffset)
+        // Split by lines
+        val lines = drawables.groupBy { it.area.y0 }.values
+        for (line in lines) {
+            // Check if first (representative of the whole line) is visible, aka contained within the visible area.
+            if (visibleArea.overlaps(line.first().area)) {
+                for (drawable in line) {
+                    if (isHovered && drawable is Link) {
+                        drawable.hovering(mouseX, mouseY, yOffset)
+                    }
+                    //if(drawable !is DrawableSpace)
+                    drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+                }
             }
-            textToken.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
     }
 
     override fun init(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        var currentX = 1
-        var currentY = 1
-        for (textToken in drawables) {
-            textToken.scale = 1.0
-            when (textToken) {
-                is Link -> {
-                    if ((currentX + textToken.area.width) > maxWidth) {
-                        currentX = 0
-                        currentY += textToken.area.height
+        fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
+            var maxHeight = 0
+            val spacing = if (justified && line.size != 0) {
+                (maxWidth - (line.fold(0) { i, elem -> i + elem.area.width })) / line.size
+            } else {
+                GuiGuideBook.lpFontRenderer.getStringWidth(" ")
+            }
+            line.foldIndexed(x) { index, currX, drawableWord ->
+                when (drawableWord) {
+                    is DrawableSpace -> {
+                        drawableWord.init(currX, y, maxWidth, index != line.lastIndex, spacing)
+                    }
+                    else -> {
+                        drawableWord.init(currX, y, maxWidth)
                     }
                 }
-                is DrawableBreak -> {
-                    currentX = 0
-                    currentY += textToken.area.height
+                maxHeight = maxOf(maxHeight, drawableWord.area.height)
+                if (!GuiGuideBook.usableArea.contains(drawableWord.area)) println("Is not contained in: ${GuiGuideBook.usableArea}!")
+                println("Initialized: $drawableWord at ${drawableWord.area}")
+                currX + drawableWord.area.width
+            }
+            return maxHeight
+        }
+
+        area.setPos(x, y)
+        var currentY = 1
+        var currentWidth = 0
+        if (maxWidth > 0) {
+            val currentLine = mutableListOf<DrawableWord>()
+            for (currentDrawableWord in drawables) {
+                currentDrawableWord.scale = 1.0
+                when (currentDrawableWord) {
+                    is DrawableBreak -> {
+                        currentLine.add(currentDrawableWord)
+                        currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
+                        currentLine.clear()
+                        currentWidth = 0
+                    }
+                    else -> {
+                        if (currentWidth + currentDrawableWord.area.width > maxWidth) {
+                            currentY += initLine(x, y + currentY, currentLine, true, maxWidth)
+                            currentLine.clear()
+                            currentWidth = 0
+                        }
+                        currentLine.add(currentDrawableWord)
+                        currentWidth += currentDrawableWord.area.width + GuiGuideBook.lpFontRenderer.getStringWidth(" ")
+                        if (currentDrawableWord == drawables.last()) currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
+                    }
                 }
             }
-            textToken.init(currentX + x, currentY + y, maxWidth - 2)
-            currentX += textToken.area.width
-            if (textToken == drawables.last()) currentY += textToken.area.height
+            currentY += 1
+            area.setSize(maxWidth, currentY)
         }
-        currentY += 1
-        area.setSize(maxWidth, currentY)
         return currentY
     }
 }
@@ -260,32 +301,54 @@ data class ListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
  * Normal Token that stores the text and the formatting tags of said text.
  */
 open class DrawableWord(private val str: String, state: InlineDrawableState) : IDrawable {
-    private val format: EnumSet<TextFormat> = state.format
-    private val color: Int = state.color
+    val format: EnumSet<TextFormat> = state.format
+    val color: Int = state.color
 
-    override val area = Rectangle(1, 1)
+    override val area = Rectangle(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), 1.0), GuiGuideBook.lpFontRenderer.getFontHeight(1.0))
     override var isHovered = false
 
     var scale: Double = 1.0
         set(value) {
-            area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, TextFormat.Italic in format, format.contains(TextFormat.Bold), value), GuiGuideBook.lpFontRenderer.getFontHeight(value))
+            area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), value), GuiGuideBook.lpFontRenderer.getFontHeight(value))
             field = value
         }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        val color = if (isHovered) MinecraftColor.BLUE.colorCode else color
-        // TODO fun red(color: Int): Float etc...
-        val r = ((color shr 16) and 0xff) / 255.0F
-        val g = ((color shr 8) and 0xff) / 255.0F
-        val b = (color and 0xff) / 1.0F
-        if (DEBUG_AREAS) area.render(r, g, b)
+        if (DEBUG_AREAS) area.render(redF(color), greenF(color), blueF(color))
         GuiGuideBook.lpFontRenderer.drawString(string = str, x = area.x0, y = area.y0, color = color, format = format, scale = scale)
     }
 
     override fun init(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
         return (area.height * scale).toInt()
+    }
+
+    override fun toString(): String {
+        return "\"$str\""
+    }
+}
+
+/**
+ * Space object responsible for drawing the necessary formatting in between words.
+ */
+class DrawableSpace(state: InlineDrawableState) : DrawableWord(" ", state) {
+    private var drawn: Boolean = format.isNotEmpty()
+
+    fun init(x: Int, y: Int, maxWidth: Int, lastOfLine: Boolean, width: Int): Int {
+        drawn = drawn.and(!lastOfLine)
+        area.setSize(width, 1)
+        return super.init(x, y, maxWidth)
+    }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        if (drawn) {
+            GuiGuideBook.lpFontRenderer.drawSpace(this)
+        }
+    }
+
+    override fun toString(): String {
+        return "Space of size ${area.width} with formatting: $format. Space! I'm in space. SPAAAAAACE!"
     }
 }
 
@@ -301,6 +364,7 @@ private fun toDrawables(elements: List<InlineElement>) = DEFAULT_DRAWABLE_STATE.
         element.changeDrawableState(state)
         when (element) {
             is Word -> DrawableWord(element.str, state)
+            Space -> DrawableSpace(state)
             Break -> DrawableBreak
             else -> null
         }

@@ -38,9 +38,12 @@
 package network.rs485.markdown
 
 import java.lang.Integer.min
+import java.util.*
+import kotlin.collections.ArrayList
 
 object MarkdownParser {
     private val htmlBreakRegex = Regex("<br(\\s*/)?>")
+    private val menuLinkRegex = Regex("!\\[([^]]*(?:\\\\][^]]*)*)]\\(menu://(\\w+)\\)")
 
     internal fun splitToInlineElements(inputChars: CharSequence): List<InlineElement> {
         // TODO: parse colors, links, formatting
@@ -106,6 +109,9 @@ object MarkdownParser {
                 sb.append(line)
             }
 
+            val menuLinkRegexMatch by lazy {
+                menuLinkRegex.matchEntire(line)
+            }
             when {
                 line.isEmpty() -> completeParagraph()
                 line.startsWith('#') -> {
@@ -130,7 +136,12 @@ object MarkdownParser {
                     paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitToInlineElements(sb.toString()), 2))
                     sb.clear()
                 }
-                // TODO: add MenuParagraph
+                Objects.nonNull(menuLinkRegexMatch) -> {
+                    completeParagraph()
+                    val description = menuLinkRegexMatch!!.groups[1]!!.value
+                    val link = menuLinkRegexMatch!!.groups[2]!!.value
+                    paragraphs.add(MenuParagraph(description, link))
+                }
                 // TODO: add ListParagraph
                 else -> dumpLineToBuffer()
             }

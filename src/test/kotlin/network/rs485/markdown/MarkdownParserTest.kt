@@ -534,4 +534,49 @@ internal class MarkdownParserTest {
                 RegularParagraph(splitToInlineElements(secondStr)))
         assertEquals(expectedParagraphs, paragraphs)
     }
+
+    @Test
+    fun `parse a simple menu tag`() {
+        val text = "Main Menu"
+        val link = "main_menu"
+        val paragraphs = parseParagraphs("![$text](menu://$link)")
+
+        val expectedParagraphs = listOf(
+                MenuParagraph(text, link)
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse an incomplete menu tag`() {
+        val str = "![Menu(menu://main_menu)"
+        val paragraphs = parseParagraphs(str)
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(listOf(Word(str)))
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse an invalid combination of menu tags`() {
+        val test1 = "![Test1](menu://test_menu_1)"
+        val test2 = "![Test2](menu://test_menu_2)"
+        val paragraphs = parseParagraphs("$test1 $test2")
+
+        val expectedParagraphs = listOf(
+                RegularParagraph(listOf(Word(test1), Space, Word(test2)))
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse a couple of menu tags`() {
+        val expectedParagraphs = (1..5).map { n -> MenuParagraph("Test $n", "test_menu_$n") }.toList()
+        val str = expectedParagraphs.joinToString(separator = "\n") { "![${it.description}](menu://${it.link})" }
+
+        val paragraphs = parseParagraphs(str)
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
 }

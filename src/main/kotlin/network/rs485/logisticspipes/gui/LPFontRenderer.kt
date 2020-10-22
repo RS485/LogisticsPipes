@@ -194,26 +194,24 @@ open class LPFontRenderer(fontName: String) {
      */
     private fun putOverlayFormatting(x: Int, y: Int, width: Double, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double) {
         if (underline) {
-            val underlineY = wrapperPlain.charHeight + wrapperPlain.charOffsetY + 1
-            //lineDrawHorizontal(x, y + underlineY, stringSize.toInt(), scale, color, italic, shadow)
+            val underlineY = (wrapperPlain.charHeight + wrapperPlain.charOffsetY + 1) * scale
             if (shadow) putHorizontalLine(x = x + scale, y = y + underlineY + scale, width = width, thickness = scale, color = shadowColor, italics = italic)
             putHorizontalLine(x = x + 0.0, y = y + underlineY + 0.0, width = width, thickness = scale, color = color, italics = italic)
         }
         if (strikethrough) {
-            val strikethroughY = (wrapperPlain.charBottomLine) // 2
+            val strikethroughY = ((wrapperPlain.charHeight + wrapperPlain.charOffsetY + 2) / 2) * scale
+            if (shadow) putHorizontalLine(x = x + scale, y = y + strikethroughY + scale, width = width, thickness = scale, color = shadowColor, italics = italic)
             putHorizontalLine(x = x + 0.0, y = y + strikethroughY + 0.0, width = width, thickness = scale, color = color, italics = italic)
         }
     }
 
-    private fun drawSpace(x: Int, y: Int, width: Int, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double): Int {
-        start()
-        putOverlayFormatting(x = x, y = y, width = width.toDouble(), color = color, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
-        render()
+    fun drawSpace(x: Int, y: Int, width: Int, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double): Int {
+        if (width > 0 && (underline || strikethrough)) {
+            start()
+            putOverlayFormatting(x = x, y = y, width = width.toDouble(), color = MinecraftColor.RED.colorCode, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
+            render()
+        }
         return width
-    }
-
-    fun drawSpace(space: DrawableSpace): Int {
-        return drawSpace(space.area.x0, space.area.y0, space.area.width, space.color, space.format.italic(), space.format.underline(), space.format.strikethrough(), space.format.shadow(), space.scale)
     }
 
     fun drawCenteredString(string: String, x: Int, y: Int, color: Int, tags: EnumSet<TextFormat>, scale: Double): Int {

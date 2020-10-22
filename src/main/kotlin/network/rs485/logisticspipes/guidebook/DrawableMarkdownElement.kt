@@ -330,7 +330,7 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (DEBUG_AREAS) area.render(redF(color), greenF(color), blueF(color))
+        if (DEBUG_AREAS) area.render(0.1f, 0.1f, 0.1f)
         GuiGuideBook.lpFontRenderer.drawString(string = str, x = area.x0, y = area.y0, color = color, format = format, scale = scale)
     }
 
@@ -348,7 +348,6 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
  * Space object responsible for drawing the necessary formatting in between words.
  */
 class DrawableSpace(private val scale: Double, state: InlineDrawableState) : DrawableWord(" ", scale, state) {
-    private var drawn: Boolean = format.isNotEmpty()
 
     fun setWidth(width: Int) {
         area.width = width;
@@ -360,13 +359,12 @@ class DrawableSpace(private val scale: Double, state: InlineDrawableState) : Dra
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        if (drawn) {
-            GuiGuideBook.lpFontRenderer.drawSpace(this)
-        }
+        if (DEBUG_AREAS) area.render(0.1f, 0.1f, 0.1f)
+        if (area.width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = area.x0, y = area.y0, width = area.width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
     }
 
     override fun toString(): String {
-        return "Space of size ${area.width} with formatting: $format. Space! I'm in space. SPAAAAAACE!"
+        return "Space of size ${area.width} with formatting: $format."
     }
 }
 

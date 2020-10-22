@@ -80,7 +80,7 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
         }
     }
 
-    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
             var maxHeight = 0
             val spacing = if (justified && line.size != 0) {
@@ -157,7 +157,7 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
         }
     }
 
-    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
         var currentX = 0
         var currentY = 0
@@ -175,7 +175,7 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
                     currentY += textToken.area.height
                 }
             }
-            textToken.init(currentX + x + 1, currentY + y + 1, maxWidth - 2)
+            textToken.setPos(currentX + x + 1, currentY + y + 1, maxWidth - 2)
             currentX += textToken.area.width
             if (textToken == drawables.last()) currentY += textToken.area.height
         }
@@ -204,7 +204,7 @@ data class ImageParagraph(val textTokens: List<DrawableWord>, val imageParameter
         imageAvailible = true
     }
 
-    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
         return area.height
     }
@@ -230,7 +230,7 @@ data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
         return this
     }
 
-    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
         var currentX = 0
         var currentY = 0
@@ -243,7 +243,7 @@ data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
                     currentY += tile.tileSize + tile.tileSpacing
                 }
                 // Sets the position of the tile
-                tile.init(x + currentX, y + currentY, maxWidth)
+                tile.setPos(x + currentX, y + currentY, maxWidth)
                 // Checks if the tile is the last on in the current list, if so add the height and spacing for the next division to be correctly drawn
                 if (tile == division.value.last()) {
                     currentY += tile.tileSize + tile.tileSpacing
@@ -275,7 +275,7 @@ data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
             // Draw tooltip
         }
 
-        override fun init(x: Int, y: Int, maxWidth: Int): Int {
+        override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
             area.setPos(x, y)
             return area.height
         }
@@ -292,7 +292,7 @@ data class ListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
         get() = TODO("Not yet implemented")
         set(value) {}
 
-    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         TODO("Not yet implemented")
     }
 }
@@ -319,7 +319,7 @@ open class DrawableWord(private val str: String, state: InlineDrawableState) : I
         GuiGuideBook.lpFontRenderer.drawString(string = str, x = area.x0, y = area.y0, color = color, format = format, scale = scale)
     }
 
-    override fun init(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
         return (area.height * scale).toInt()
     }

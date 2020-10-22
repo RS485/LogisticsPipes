@@ -43,21 +43,21 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
+import network.rs485.logisticspipes.util.blueF
+import network.rs485.logisticspipes.util.greenF
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.redF
 import network.rs485.markdown.*
 import java.util.*
-import kotlin.math.floor
 
 const val DEBUG_AREAS = false
 
 private val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
-private val HEADER_LEVELS = listOf(2.0, 1.75, 1.5, 1.25, 1.0)
 
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
  */
-data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawableParagraph {
+data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawable {
     override val area = Rectangle(0, 0)
     override var isHovered = false
 
@@ -81,39 +81,20 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        return setChildrenPos(x, y, maxWidth)
-    }
-
-    override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
         fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
             var maxHeight = 0
-            var remainder = 0
             val spacing = if (justified && line.size != 0) {
-                val wordsWidth = (line.fold(0) { i, elem -> i + if (elem !is DrawableSpace) elem.area.width else 0 })
-                val remainingSpace = floor(maxWidth - wordsWidth.toDouble());
-                val numberSpaces = if (line.last() is DrawableSpace) line.count { it is DrawableSpace } - 1 else line.count { it is DrawableSpace }
-                remainder = remainingSpace.rem(numberSpaces).toInt()
-                floor(remainingSpace / numberSpaces.toDouble()).toInt()
+                (maxWidth - (line.fold(0) { i, elem -> i + elem.area.width })) / line.size
             } else {
                 GuiGuideBook.lpFontRenderer.getStringWidth(" ")
             }
-            line.foldIndexed(x) { _, currX, drawableWord ->
+            line.foldIndexed(x) { index, currX, drawableWord ->
                 when (drawableWord) {
                     is DrawableSpace -> {
-                        val currentSpacing = when  {
-                            (drawableWord == line.last()) -> 0
-                            remainder > 0 -> {
-                                remainder--
-                                spacing + 1
-                            }
-                            else -> spacing
-                        }
-                        drawableWord.setPos(currX, y, maxWidth)
-                        drawableWord.setWidth(currentSpacing)
+                        drawableWord.init(currX, y, maxWidth, index != line.lastIndex, spacing)
                     }
                     else -> {
-                        drawableWord.setPos(currX, y, maxWidth)
+                        drawableWord.init(currX, y, maxWidth)
                     }
                 }
                 maxHeight = maxOf(maxHeight, drawableWord.area.height)
@@ -124,13 +105,14 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
             return maxHeight
         }
 
+        area.setPos(x, y)
         var currentY = 1
         var currentWidth = 0
         if (maxWidth > 0) {
             val currentLine = mutableListOf<DrawableWord>()
             for (currentDrawableWord in drawables) {
+                currentDrawableWord.scale = 1.0
                 when (currentDrawableWord) {
-                    // Break line and setPos on the queued up words via break signal
                     is DrawableBreak -> {
                         currentLine.add(currentDrawableWord)
                         currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
@@ -138,8 +120,7 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
                         currentWidth = 0
                     }
                     else -> {
-                        // Break line and setPos on the queued up words via line width
-                        if (currentDrawableWord !is DrawableSpace && currentWidth + currentDrawableWord.area.width > maxWidth) {
+                        if (currentWidth + currentDrawableWord.area.width > maxWidth) {
                             currentY += initLine(x, y + currentY, currentLine, true, maxWidth)
                             currentLine.clear()
                             currentWidth = 0
@@ -160,7 +141,8 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
 /**
  * Header token, stores all the tokens that are apart of the header.
  */
-data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val headerLevel: Int = 1) : IDrawableParagraph {
+data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val headerLevel: Int = 1) : IDrawable {
+    private val LEVELS = listOf(2.0, 1.75, 1.5, 1.25, 1.0)
     override val area = Rectangle(0, 0)
     override var isHovered = true
 
@@ -177,77 +159,28 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
-        return setChildrenPos(x, y, maxWidth)
-    }
-
-    override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
-        fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
-            var maxHeight = 0
-            var remainder = 0
-            val spacing = if (justified && line.size != 0) {
-                val wordsWidth = (line.fold(0) { i, elem -> i + if (elem !is DrawableSpace) elem.area.width else 0 })
-                val remainingSpace = floor(maxWidth - wordsWidth.toDouble());
-                val numberSpaces = if (line.last() is DrawableSpace) line.count { it is DrawableSpace } - 1 else line.count { it is DrawableSpace }
-                remainder = remainingSpace.rem(numberSpaces).toInt()
-                floor(remainingSpace / numberSpaces.toDouble()).toInt()
-            } else {
-                GuiGuideBook.lpFontRenderer.getStringWidth(" ")
-            }
-            line.foldIndexed(x) { _, currX, drawableWord ->
-                when (drawableWord) {
-                    is DrawableSpace -> {
-                        val currentSpacing = when  {
-                            (drawableWord == line.last()) -> 0
-                            remainder > 0 -> {
-                                remainder--
-                                spacing + 1
-                            }
-                            else -> spacing
-                        }
-                        drawableWord.setPos(currX, y, maxWidth)
-                        drawableWord.setWidth(currentSpacing)
-                    }
-                    else -> {
-                        drawableWord.setPos(currX, y, maxWidth)
+        var currentX = 0
+        var currentY = 0
+        for (textToken in drawables) {
+            textToken.scale = LEVELS[headerLevel - 1]
+            when (textToken) {
+                is Link -> {
+                    if ((currentX + textToken.area.width) > maxWidth - 2) {
+                        currentX = 0
+                        currentY += textToken.area.height
                     }
                 }
-                maxHeight = maxOf(maxHeight, drawableWord.area.height)
-                if (!GuiGuideBook.usableArea.contains(drawableWord.area)) println("Is not contained in: ${GuiGuideBook.usableArea}!")
-                println("Initialized: $drawableWord at ${drawableWord.area}")
-                currX + drawableWord.area.width
-            }
-            return maxHeight
-        }
-
-        var currentY = 1
-        var currentWidth = 0
-        if (maxWidth > 0) {
-            val currentLine = mutableListOf<DrawableWord>()
-            for (currentDrawableWord in drawables) {
-                when (currentDrawableWord) {
-                    // Break line and setPos on the queued up words via break signal
-                    is DrawableBreak -> {
-                        currentLine.add(currentDrawableWord)
-                        currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
-                        currentLine.clear()
-                        currentWidth = 0
-                    }
-                    else -> {
-                        // Break line and setPos on the queued up words via line width
-                        if (currentDrawableWord !is DrawableSpace && currentWidth + currentDrawableWord.area.width > maxWidth) {
-                            currentY += initLine(x, y + currentY, currentLine, true, maxWidth)
-                            currentLine.clear()
-                            currentWidth = 0
-                        }
-                        currentLine.add(currentDrawableWord)
-                        currentWidth += currentDrawableWord.area.width + GuiGuideBook.lpFontRenderer.getStringWidth(" ")
-                        if (currentDrawableWord == drawables.last()) currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
-                    }
+                is DrawableBreak -> {
+                    currentX = 0
+                    currentY += textToken.area.height
                 }
             }
-            currentY += 1
-            area.setSize(maxWidth, currentY)
+            textToken.setPos(currentX + x + 1, currentY + y + 1, maxWidth - 2)
+            currentX += textToken.area.width
+            if (textToken == drawables.last()) currentY += textToken.area.height
         }
+        currentY += 2
+        area.setSize(maxWidth, currentY)
         return currentY
     }
 }
@@ -367,16 +300,22 @@ data class ListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
 /**
  * Normal Token that stores the text and the formatting tags of said text.
  */
-open class DrawableWord(private val str: String, private val scale: Double, state: InlineDrawableState) : IDrawable {
+open class DrawableWord(private val str: String, state: InlineDrawableState) : IDrawable {
     val format: EnumSet<TextFormat> = state.format
     val color: Int = state.color
 
-    override val area = Rectangle(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(1.0))
+    override val area = Rectangle(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), 1.0), GuiGuideBook.lpFontRenderer.getFontHeight(1.0))
     override var isHovered = false
+
+    var scale: Double = 1.0
+        set(value) {
+            area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), value), GuiGuideBook.lpFontRenderer.getFontHeight(value))
+            field = value
+        }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (DEBUG_AREAS) area.render(0.1f, 0.1f, 0.1f)
+        if (DEBUG_AREAS) area.render(redF(color), greenF(color), blueF(color))
         GuiGuideBook.lpFontRenderer.drawString(string = str, x = area.x0, y = area.y0, color = color, format = format, scale = scale)
     }
 
@@ -393,40 +332,39 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
 /**
  * Space object responsible for drawing the necessary formatting in between words.
  */
-class DrawableSpace(private val scale: Double, state: InlineDrawableState) : DrawableWord(" ", scale, state) {
+class DrawableSpace(state: InlineDrawableState) : DrawableWord(" ", state) {
+    private var drawn: Boolean = format.isNotEmpty()
 
-    fun setWidth(width: Int) {
-        area.width = width;
-    }
-
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        return (area.height * scale).toInt()
+    fun init(x: Int, y: Int, maxWidth: Int, lastOfLine: Boolean, width: Int): Int {
+        drawn = drawn.and(!lastOfLine)
+        area.setSize(width, 1)
+        return super.init(x, y, maxWidth)
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        if (DEBUG_AREAS) area.render(0.1f, 0.1f, 0.1f)
-        if (area.width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = area.x0, y = area.y0, width = area.width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
+        if (drawn) {
+            GuiGuideBook.lpFontRenderer.drawSpace(this)
+        }
     }
 
     override fun toString(): String {
-        return "Space of size ${area.width} with formatting: $format."
+        return "Space of size ${area.width} with formatting: $format. Space! I'm in space. SPAAAAAACE!"
     }
 }
 
-object DrawableBreak : DrawableWord("", 1.0, DEFAULT_DRAWABLE_STATE)
+object DrawableBreak : DrawableWord("", DEFAULT_DRAWABLE_STATE)
 
 /**
  * Link token, stores the linked string, as well as the 'url'.
  */
-data class Link(private val text: String) : DrawableWord(text, 1.0, DEFAULT_DRAWABLE_STATE)
+data class Link(private val text: String) : DrawableWord(text, DEFAULT_DRAWABLE_STATE)
 
-private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.let { state ->
+private fun toDrawables(elements: List<InlineElement>) = DEFAULT_DRAWABLE_STATE.let { state ->
     elements.mapNotNull { element ->
         element.changeDrawableState(state)
         when (element) {
-            is Word -> DrawableWord(element.str, scale, state)
-            is Space -> DrawableSpace(scale, state)
+            is Word -> DrawableWord(element.str, state)
+            Space -> DrawableSpace(state)
             Break -> DrawableBreak
             else -> null
         }
@@ -434,8 +372,8 @@ private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_
 }
 
 private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
-    is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
-    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, HEADER_LEVELS[paragraph.headerLevel - 1]), paragraph.headerLevel)
+    is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements))
+    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements), paragraph.headerLevel)
     HorizontalLineParagraph -> TODO()
 }
 

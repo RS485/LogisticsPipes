@@ -43,16 +43,16 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.util.blueF
-import network.rs485.logisticspipes.util.greenF
+import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
 import network.rs485.logisticspipes.util.math.Rectangle
-import network.rs485.logisticspipes.util.redF
 import network.rs485.markdown.*
 import java.util.*
+import kotlin.math.floor
 
 const val DEBUG_AREAS = false
 
 private val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
+private val HEADER_LEVELS = listOf(2.0, 1.75, 1.5, 1.25, 1.0)
 
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
@@ -161,7 +161,6 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
  * Header token, stores all the tokens that are apart of the header.
  */
 data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val headerLevel: Int = 1) : IDrawableParagraph {
-    private val LEVELS = listOf(2.0, 1.75, 1.5, 1.25, 1.0)
     override val area = Rectangle(0, 0)
     override var isHovered = true
 
@@ -185,7 +184,6 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
         var currentX = 0
         var currentY = 0
         for (textToken in drawables) {
-            textToken.scale = LEVELS[headerLevel - 1]
             when (textToken) {
                 is Link -> {
                     if ((currentX + textToken.area.width) > maxWidth - 2) {
@@ -323,18 +321,12 @@ data class ListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
 /**
  * Normal Token that stores the text and the formatting tags of said text.
  */
-open class DrawableWord(private val str: String, state: InlineDrawableState) : IDrawable {
+open class DrawableWord(private val str: String, private val scale: Double, state: InlineDrawableState) : IDrawable {
     val format: EnumSet<TextFormat> = state.format
     val color: Int = state.color
 
-    override val area = Rectangle(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), 1.0), GuiGuideBook.lpFontRenderer.getFontHeight(1.0))
+    override val area = Rectangle(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(1.0))
     override var isHovered = false
-
-    var scale: Double = 1.0
-        set(value) {
-            area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), value), GuiGuideBook.lpFontRenderer.getFontHeight(value))
-            field = value
-        }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
@@ -355,7 +347,7 @@ open class DrawableWord(private val str: String, state: InlineDrawableState) : I
 /**
  * Space object responsible for drawing the necessary formatting in between words.
  */
-class DrawableSpace(state: InlineDrawableState) : DrawableWord(" ", state) {
+class DrawableSpace(private val scale: Double, state: InlineDrawableState) : DrawableWord(" ", scale, state) {
     private var drawn: Boolean = format.isNotEmpty()
 
     fun setWidth(width: Int) {
@@ -378,19 +370,19 @@ class DrawableSpace(state: InlineDrawableState) : DrawableWord(" ", state) {
     }
 }
 
-object DrawableBreak : DrawableWord("", DEFAULT_DRAWABLE_STATE)
+object DrawableBreak : DrawableWord("", 1.0, DEFAULT_DRAWABLE_STATE)
 
 /**
  * Link token, stores the linked string, as well as the 'url'.
  */
-data class Link(private val text: String) : DrawableWord(text, DEFAULT_DRAWABLE_STATE)
+data class Link(private val text: String) : DrawableWord(text, 1.0, DEFAULT_DRAWABLE_STATE)
 
-private fun toDrawables(elements: List<InlineElement>) = DEFAULT_DRAWABLE_STATE.let { state ->
+private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.let { state ->
     elements.mapNotNull { element ->
         element.changeDrawableState(state)
         when (element) {
-            is Word -> DrawableWord(element.str, state)
-            Space -> DrawableSpace(state)
+            is Word -> DrawableWord(element.str, scale, state)
+            is Space -> DrawableSpace(scale, state)
             Break -> DrawableBreak
             else -> null
         }
@@ -398,8 +390,8 @@ private fun toDrawables(elements: List<InlineElement>) = DEFAULT_DRAWABLE_STATE.
 }
 
 private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
-    is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements))
-    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements), paragraph.headerLevel)
+    is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
+    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, HEADER_LEVELS[paragraph.headerLevel - 1]), paragraph.headerLevel)
     HorizontalLineParagraph -> TODO()
 }
 

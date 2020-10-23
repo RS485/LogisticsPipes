@@ -143,7 +143,7 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
                             currentWidth = 0
                         }
                         currentLine.add(currentDrawableWord)
-                        currentWidth += currentDrawableWord.area.width + GuiGuideBook.lpFontRenderer.getStringWidth(" ")
+                        currentWidth += if (currentDrawableWord is DrawableSpace) GuiGuideBook.lpFontRenderer.getStringWidth(" ") else currentDrawableWord.area.width
                         if (currentDrawableWord == drawables.last()) currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
                     }
                 }
@@ -236,7 +236,7 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
                             currentWidth = 0
                         }
                         currentLine.add(currentDrawableWord)
-                        currentWidth += currentDrawableWord.area.width + GuiGuideBook.lpFontRenderer.getStringWidth(" ")
+                        currentWidth += if (currentDrawableWord is DrawableSpace) GuiGuideBook.lpFontRenderer.getStringWidth(" ") else currentDrawableWord.area.width
                         if (currentDrawableWord == drawables.last()) currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
                     }
                 }

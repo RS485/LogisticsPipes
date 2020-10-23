@@ -52,7 +52,7 @@ import kotlin.math.floor
 const val DEBUG_AREAS = false
 
 private val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
-private val HEADER_LEVELS = listOf(2.0, 1.75, 1.5, 1.25, 1.0)
+private val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20)
 
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
@@ -117,8 +117,6 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
                     }
                 }
                 maxHeight = maxOf(maxHeight, drawableWord.area.height)
-                if (!GuiGuideBook.usableArea.contains(drawableWord.area)) println("Is not contained in: ${GuiGuideBook.usableArea}!")
-                println("Initialized: $drawableWord at ${drawableWord.area}")
                 currX + drawableWord.area.width
             }
             return maxHeight
@@ -212,8 +210,6 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
                     }
                 }
                 maxHeight = maxOf(maxHeight, drawableWord.area.height)
-                if (!GuiGuideBook.usableArea.contains(drawableWord.area)) println("Is not contained in: ${GuiGuideBook.usableArea}!")
-                println("Initialized: $drawableWord at ${drawableWord.area}")
                 currX + drawableWord.area.width
             }
             return maxHeight
@@ -371,7 +367,7 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
     val format: EnumSet<TextFormat> = state.format
     val color: Int = state.color
 
-    override val area = Rectangle(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(1.0))
+    override val area = Rectangle(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
     override var isHovered = false
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {

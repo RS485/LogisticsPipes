@@ -114,21 +114,23 @@ open class LPFontRenderer(fontName: String) {
         val width = wrapper.getCharWidth(texIndex)
         // Height of the drawn character texture
         val height = wrapper.getCharHeight(texIndex)
-        // Y position of the drawn character (because there is a single column per texture a X value is not needed)
+        // X position of the drawn character
+        val textureX = wrapper.getGlyphX(c)
+        // Y position of the drawn character
         val textureY = wrapper.getGlyphY(c)
         // The actual character glyph containing the actual character size and offsets.
         val glyph = wrapper.getGlyph(c)
         // In case any of the above fails to be set return 0 without adding anything to the buffer.
-        if (width == -1 || height == -1 || textureY == -1 || glyph == null) return 0.0
+        if (width == -1 || height == -1 || textureX == -1 || textureY == -1 || glyph == null) return 0.0
         // Character draw coordinate calculation based on scale
         val x0 = x - (glyph.offsetX * scale)
         val y1 = y + ((wrapper.charHeight + wrapper.charOffsetY - glyph.offsetY) * scale)
         val x1 = x0 + (glyph.width * scale)
         val y0 = y1 - (glyph.height * scale)
         // Texture coordinates calculation (0.0 - 1.0 depending on the position relative to the size of the full texture)
-        val u0 = 0.0 / width.toDouble()
+        val u0 = textureX / width.toDouble()
         val v0 = textureY / height.toDouble()
-        val u1 = glyph.width / width.toDouble()
+        val u1 = (textureX + glyph.width) / width.toDouble()
         val v1 = (textureY + glyph.height) / height.toDouble()
         // The offset distance requires a tan calculation because merely adding a fixed value independent of the character's height would lead to slightly different angles for each character.
         val italicsOffset = if (italics) glyph.height * tan(0.2181662) else 0.0

@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.gui
 
-import lombok.Getter
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import org.lwjgl.opengl.GL11
@@ -49,80 +48,112 @@ private val buffer = ByteBuffer.allocateDirect(10000000).asIntBuffer()
 class FontWrapper(private val font: IFont) {
     var textures: List<Int> = emptyList(); private set
 
+    var glyphPosX: Map<Char, Int> = emptyMap()
     var glyphPosY: Map<Char, Int> = emptyMap()
     var textureIndex: Map<Char, Int> = emptyMap(); private set
 
     var widthMap: Map<Int, Int> = emptyMap(); private set
     var heightMap: Map<Int, Int> = emptyMap(); private set
 
-    var charWidth = 0; private set
-    var charHeight = 0; private set
-    var charOffsetY = 0; private set
+    val charHeight: Int
+    val charOffsetY: Int
     val charBottomLine: Int
 
     val defaultChar = font.defaultChar
 
-    private val maxTexSize = GL11.glGetInteger(GL11.GL_MAX_TEXTURE_SIZE)
+    private val maxTexSize = 256
 
     private var destroyed = false
 
     init {
         allocateTextures()
 
-        var currentHeight = 0
+        /*charHeight = font.glyphs.values.maxOfOrNull { it.height + it.offsetY }!!
+        charOffsetY = font.glyphs.values.minOfOrNull { it.offsetY }!!
+        charBottomLine = charHeight + charOffsetY*/
+
+        var currMaxCharHeight = 0
+        var currMinOffsetY = 0
+
+        var currentX = 0
+        var currentY = 0
+        var currentMaxHeight = 0
         var currentTex = 0
-        for ((k, v) in font.glyphs) {
-            charWidth = maxOf(charWidth, v.width)
-            charHeight = maxOf(charHeight, v.height + v.offsetY)
-            charOffsetY = minOf(charOffsetY, v.offsetY)
 
-            if (currentHeight + v.height > heightMap[currentTex]!!) {
-                currentHeight = 0
-                currentTex++
-                if (currentTex > textures.size)
-                    error("A fatal error occurred while writing texture sheet. This shouldn't ever happen unless this code has a bug. RIP")
+        // change this init so that it will allocate textures vertically until the right border and then jump into the next row.
+
+        for ((character, glyph) in font.glyphs) {
+            currMaxCharHeight = maxOf(currMaxCharHeight, glyph.height + glyph.offsetY)
+            currMinOffsetY = minOf(currMinOffsetY, glyph.offsetY)
+
+            if(currentX + glyph.width > widthMap[currentTex]!!){
+                currentX = 0
+                println("New row offset by: $currentMaxHeight")
+                currentY += currentMaxHeight
+                currentMaxHeight = 0
+                if(currentY > heightMap[currentTex]!!){
+                    currentY = 0
+                    currentTex++
+                }
             }
-
-            glyphPosY = glyphPosY + (k to currentHeight)
-            textureIndex = textureIndex + (k to currentTex)
-
-            setTexture(v.bitmap, currentTex, currentHeight, v.width, v.height)
-            currentHeight += v.height
+            glyphPosX = glyphPosX + (character to currentX)
+            glyphPosY = glyphPosY + (character to currentY)
+            textureIndex = textureIndex + (character to currentTex)
+            setTexture(glyph.bitmap, currentTex, currentX, currentY, glyph.width, glyph.height)
+            println("Char: $character, x: [$currentX-${currentX + glyph.width}], y: [$currentY-${currentY+glyph.height}], height: ")
+            currentX += glyph.width
+            currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
+            if (currentTex > textures.size)
+                error("A fatal error occurred while writing texture sheet. This shouldn't ever happen unless this code has a bug. RIP")
         }
+
+        charHeight = currMaxCharHeight
+        charOffsetY = currMinOffsetY
         charBottomLine = charHeight + charOffsetY
     }
 
-    private fun setTexture(bitmap: BitSet, texture: Int, y: Int, width: Int, height: Int) {
+    private fun setTexture(bitmap: BitSet, texture: Int, x: Int, y: Int, width: Int, height: Int) {
         buffer.clear()
         for (i in 0 until width * height)
             buffer.put(if (bitmap[i]) -1 else 0)
         buffer.flip()
         GlStateManager.bindTexture(textures[texture])
-        GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, y, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer)
+        GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, x, y, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer)
     }
 
     // Creates the necessary textures with all the glyphs in them
     private fun allocateTextures() {
-        val textureWidth = (font.glyphs.values.maxBy { it.width }?.width ?: 0).powerOf2() // Calculate size of
-
-        var heightTmp = font.glyphs.values.sumBy { it.height }
+        // TODO always check for height!
+        var currentWidth = 0
+        var currentHeight = 0
+        var currentMaxHeight = 0
         var texCount = 1
-        while (heightTmp > maxTexSize) {
-            heightTmp -= maxTexSize
-            texCount++
+        for (glyph in font.glyphs.values) {
+            if (currentWidth + glyph.width < maxTexSize) {
+                currentWidth += glyph.width
+                currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
+            } else {
+                if (currentHeight + glyph.height < maxTexSize) {
+                    currentWidth = 0
+                    currentHeight += currentMaxHeight
+                } else {
+                    currentWidth = 0
+                    currentHeight = 0
+                    texCount++
+                }
+            }
         }
-        for (i in 0 until texCount) {
-            val height = if (i < texCount - 1) maxTexSize else heightTmp.powerOf2()
 
+        for (i in 0 until texCount) {
             val texId = GL11.glGenTextures()
-            textures += texId
-            widthMap += i to textureWidth
-            heightMap += i to height
+            textures = textures + texId
+            widthMap = widthMap + (i to maxTexSize)
+            heightMap = heightMap + (i to maxTexSize)
 
             GlStateManager.bindTexture(texId)
-            TextureUtil.allocateTexture(texId, textureWidth, height)
+            TextureUtil.allocateTexture(texId, maxTexSize, maxTexSize)
 
-            println("Allocated $textureWidth*$height texture ($texId)")
+            println("Allocated ${widthMap[i]}*${heightMap[i]} texture id: $texId")
         }
     }
 
@@ -138,6 +169,11 @@ class FontWrapper(private val font: IFont) {
 
     fun getCharHeight(textureIndex: Int): Int {
         return heightMap[textureIndex] ?: -1
+    }
+
+    // Getter for the glyph's X coordinate
+    fun getGlyphX(c: Char): Int {
+        return glyphPosX[c] ?: -1
     }
 
     // Getter for the glyph's Y coordinate

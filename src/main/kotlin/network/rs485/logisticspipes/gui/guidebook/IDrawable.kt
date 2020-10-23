@@ -56,14 +56,14 @@ interface IDrawable {
     }
 
     /**
-     * This function is supposed to init the Drawable element by giving it the exact Y where it
-     * should start and returning the Y where the next element should need to be started in.
+     * This function is responsible for updating the Drawable's position by giving it the exact X and Y where it
+     * should start and returning it's height as an offset for the next element.
      * @param x the X position of the Drawable.
      * @param y the Y position of the Drawable.
      * @param maxWidth the the width of the parent, meaning the maximum width the child could have.
      * @return the input Y level plus the current element's height and a preset vertical spacer height.
      */
-    fun init(x: Int, y: Int, maxWidth: Int): Int
+    fun setPos(x: Int, y: Int, maxWidth: Int): Int
 
     /**
      * This function is responsible to update the isHovered field

@@ -37,34 +37,16 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.util.math.Rectangle
-
-class DrawableTextElement : IElement, IDrawable {
-    override val drawer: PageDrawer
-        get() = TODO("Not yet implemented")
-
-    override val widgets: MutableList<IElementWidget> = mutableListOf()
-
-    override val area: Rectangle
-        get() = TODO("Not yet implemented")
-
-    override var isHovered: Boolean = false
-
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        widgets.forEach{ it.draw(mouseX, mouseY, delta, yOffset, visibleArea) }
-    }
-
-    override fun init(x: Int, y: Int, maxWidth: Int): Int {
-        TODO("Not yet implemented")
-    }
-
-    override fun onClick(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun addWidget(widget: IElementWidget): DrawableTextElement {
-        widgets.add(widget)
-        return this
-    }
-
+interface IDrawableParagraph : IDrawable{
+    /**
+     * This function is supposed to update the children's position by giving it the start
+     * Y and X placement and iterating through the children while calculating their placement.
+     * This function is also responsible for updating the Paragraphs height as it directly
+     * depends on the placement of it's children.
+     * @param x the X position of the Drawable.
+     * @param y the Y position of the Drawable.
+     * @param maxWidth the the width of the parent, meaning the maximum width the child could have.
+     * @return the height of all the Paragraph's children combined.
+     */
+    fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int
 }

@@ -41,13 +41,10 @@ import logisticspipes.LPConstants
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
 import java.util.*
-import kotlin.math.floor
 
 const val DEBUG_AREAS = false
 
@@ -70,7 +67,7 @@ data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageP
     init {
         val parameters = imageParameters.split(" ")
         image = ResourceLocation(LPConstants.LP_MOD_ID, parameters.first())
-        imageAvailible = true
+        imageAvailable = true
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {

@@ -89,7 +89,7 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
             line.foldIndexed(x) { _, currX, drawableWord ->
                 when (drawableWord) {
                     is DrawableSpace -> {
-                        val currentSpacing = when  {
+                        val currentSpacing = when {
                             (drawableWord == line.last()) -> 0
                             remainder > 0 -> {
                                 remainder--

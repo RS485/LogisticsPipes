@@ -59,10 +59,10 @@ internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20)
  * @param textTokens this is the alt text, only used in case the image provided via the URL fails to load.
  *
  */
-data class ImageParagraph(val textTokens: List<DrawableWord>, val imageParameters: String) : IDrawable {
+data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageParameters: String) : IDrawable {
     // TODO
     private val image: ResourceLocation
-    private var imageAvailible: Boolean
+    private var imageAvailable: Boolean
 
     override val area = Rectangle(0, 0)
     override var isHovered = false
@@ -82,7 +82,7 @@ data class ImageParagraph(val textTokens: List<DrawableWord>, val imageParameter
 /**
  * Menu token, stores the key and the type of menu in a page.
  */
-data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
+data class DrawableMenuParagraph(val menuId: String, val options: String) : IDrawable {
     // TODO how to get the actual menu Map in here?
     override val area: Rectangle = Rectangle(0, 0)
     override var isHovered = false
@@ -91,11 +91,11 @@ data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
     }
 
-    private val menu = mutableMapOf<String, List<MenuParagraphTile>>()
+    private val menu = mutableMapOf<String, List<DrawableMenuParagraphTile>>()
 
-    fun setContent(map: Map<String, List<String>>): MenuParagraph {
+    fun setContent(map: Map<String, List<String>>): DrawableMenuParagraph {
         menu.clear()
-        menu.putAll(map.asSequence().associate { div -> div.key to div.value.map { page -> MenuParagraphTile(BookContents.get(page).metadata) } })
+        menu.putAll(map.asSequence().associate { div -> div.key to div.value.map { page -> DrawableMenuParagraphTile(BookContents.get(page).metadata) } })
         return this
     }
 
@@ -129,7 +129,7 @@ data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
 
     // Make a custom inner class for the title of a division?
 
-    private class MenuParagraphTile(metadata: YamlPageMetadata) : IDrawable {
+    private class DrawableMenuParagraphTile(metadata: YamlPageMetadata) : IDrawable {
         val tileSize = 40
         val tileSpacing = 5
 
@@ -154,7 +154,7 @@ data class MenuParagraph(val menuId: String, val options: String) : IDrawable {
 /**
  * List token, has several items that are shown in a list.
  */
-data class ListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
+data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
     override val area: Rectangle
         get() = TODO("Not yet implemented")
     override var isHovered: Boolean

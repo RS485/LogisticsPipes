@@ -122,11 +122,14 @@ open class LPFontRenderer(fontName: String) {
         val glyph = wrapper.getGlyph(c)
         // In case any of the above fails to be set return 0 without adding anything to the buffer.
         if (width == -1 || height == -1 || textureX == -1 || textureY == -1 || glyph == null) return 0.0
+        // Scaled character dimensions.
+        val sWidth = (glyph.width * scale)
+        val sHeight = (glyph.height * scale)
         // Character draw coordinate calculation based on scale
         val x0 = x - (glyph.offsetX * scale)
         val y1 = y + ((wrapper.charHeight + wrapper.charOffsetY - glyph.offsetY) * scale)
-        val x1 = x0 + (glyph.width * scale)
-        val y0 = y1 - (glyph.height * scale)
+        val x1 = x0 + sWidth
+        val y0 = y1 - sHeight
         // Texture coordinates calculation (0.0 - 1.0 depending on the position relative to the size of the full texture)
         val u0 = textureX / width.toDouble()
         val v0 = textureY / height.toDouble()
@@ -210,7 +213,7 @@ open class LPFontRenderer(fontName: String) {
     fun drawSpace(x: Int, y: Int, width: Int, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double): Int {
         if (width > 0 && (underline || strikethrough)) {
             start()
-            putOverlayFormatting(x = x, y = y, width = width.toDouble(), color = MinecraftColor.RED.colorCode, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
+            putOverlayFormatting(x = x, y = y, width = width.toDouble(), color = color, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
             render()
         }
         return width

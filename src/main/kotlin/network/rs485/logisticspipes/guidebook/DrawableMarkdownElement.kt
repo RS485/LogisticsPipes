@@ -178,7 +178,8 @@ private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_
 private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
     is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
     is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, HEADER_LEVELS[paragraph.headerLevel - 1]), paragraph.headerLevel)
-    HorizontalLineParagraph -> TODO()
+    is HorizontalLineParagraph -> TODO()
+    else -> TODO() // MenuParagraph
 }
 
 fun asDrawables(paragraphs: List<Paragraph>) = paragraphs.map(::toDrawable)

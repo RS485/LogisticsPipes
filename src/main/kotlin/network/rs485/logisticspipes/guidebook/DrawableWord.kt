@@ -111,7 +111,7 @@ internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified
         remainder = remainingSpace.rem(numberSpaces).toInt()
         floor(remainingSpace / numberSpaces.toDouble()).toInt()
     } else {
-        GuiGuideBook.lpFontRenderer.getStringWidth(" ")
+        line.find { it is DrawableSpace }?.area?.width?: GuiGuideBook.lpFontRenderer.getStringWidth(" ")
     }
     line.foldIndexed(x) { _, currX, drawableWord ->
         when (drawableWord) {

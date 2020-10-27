@@ -105,6 +105,11 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         return this
     }
 
+    // Non-destructive transformations
+    fun translated(translateX: Int, translateY: Int): Rectangle {
+        return Rectangle(x0 + translateX, y0 + translateY, width, height)
+    }
+
     // Checks
     fun contains(x: Int, y: Int): Boolean = x in x0..x1 && y in y0..y1
     fun contains(vararg coords: Pair<Int, Int>): Boolean = coords.any { contains(it.first, it.second) }

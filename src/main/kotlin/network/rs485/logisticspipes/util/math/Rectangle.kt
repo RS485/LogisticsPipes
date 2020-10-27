@@ -86,6 +86,7 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         height = newHeight
         return this
     }
+
     fun setPos(newX: Int, newY: Int): Rectangle {
         x0 = newX
         y0 = newY
@@ -126,12 +127,10 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         GlStateManager.disableAlpha()
         GlStateManager.disableBlend()
         GlStateManager.color(r, g, b)
-        GlStateManager.translate(0f, 0f, 500f)
-        GuiGuideBook.drawHorizontalLine(x0 - 1, x1, y0 - 1, 1, 1) // TOP
-        GuiGuideBook.drawHorizontalLine(x0, x1 + 1, y1, 1, 1) // BOTTOM
-        GuiGuideBook.drawVerticalLine(x0 - 1, y0, y1 + 1, 1, 1) // LEFT
-        GuiGuideBook.drawVerticalLine(x1, y0 - 1, y1, 1, 1) // RIGHT
-        GlStateManager.translate(0f, 0f, -500f)
+        GuiGuideBook.drawHorizontalLine(x0 - 1, x1, y0 - 1, 500, 1, 1) // TOP
+        GuiGuideBook.drawHorizontalLine(x0, x1 + 1, y1, 500, 1, 1) // BOTTOM
+        GuiGuideBook.drawVerticalLine(x0 - 1, y0, y1 + 1, 500, 1, 1) // LEFT
+        GuiGuideBook.drawVerticalLine(x1, y0 - 1, y1, 500, 1, 1) // RIGHT
         GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
         GlStateManager.popMatrix()

@@ -543,24 +543,40 @@ public class GuiGuideBook extends GuiScreen {
 		GlStateManager.popMatrix();
 	}
 
-	public static void drawHorizontalLine(int x0, int x1, int y, int thickness, int color) {
-		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+	public static void drawHorizontalLine(int x0, int x1, int y, int z, int thickness, int color) {
+		int r = ColorUtilKt.red(color);
+		int g = ColorUtilKt.green(color);
+		int b = ColorUtilKt.blue(color);
+		int a = ColorUtilKt.alpha(color);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		putTexturedSquare(bufferbuilder, x0, y, x1, y + thickness, 50, 0, 0, 1, 1);
+		GlStateManager.disableTexture2D();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		bufferbuilder.pos(x0, y + thickness, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x1, y + thickness, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x1, y, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x0, y, z).color(r, g, b, a).endVertex();
 		tessellator.draw();
+		GlStateManager.enableTexture2D();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.disableBlend();
 	}
 
-	public static void drawVerticalLine(int x, int y0, int y1, int thickness, int color) {
-		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+	public static void drawVerticalLine(int x, int y0, int y1, int z, int thickness, int color) {
+		int r = ColorUtilKt.red(color);
+		int g = ColorUtilKt.green(color);
+		int b = ColorUtilKt.blue(color);
+		int a = ColorUtilKt.alpha(color);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		putTexturedSquare(bufferbuilder, x, y0, x + thickness, y1, 50, 0, 0, 1, 1);
+		GlStateManager.disableTexture2D();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		bufferbuilder.pos(x, y1, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x + thickness, y1, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x + thickness, y0, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x, y0, z).color(r, g, b, a).endVertex();
 		tessellator.draw();
+		GlStateManager.enableTexture2D();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.disableBlend();
 	}

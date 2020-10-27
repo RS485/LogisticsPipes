@@ -1,8 +1,9 @@
 <!---
-title: Lorem Ipsum
+title: This is wrong on purpose.
 icon: minecraft:stick
 menu:
   main_menu:
+    Listed menus:
       - ./debug_page.md
       - /main_menu.md
       - ./debug_no_menu.md

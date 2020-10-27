@@ -65,7 +65,7 @@ object BookContents {
     private val cachedLoadedPages = hashMapOf<String, PageInfoProvider>()
 
     init {
-        if (LogisticsPipes.isDEBUG()) addDebugPages()
+        //if (LogisticsPipes.isDEBUG()) addDebugPages()
     }
 
     fun get(markdownFile: String): PageInfoProvider {
@@ -76,7 +76,7 @@ object BookContents {
 
     fun clear() {
         cachedLoadedPages.clear()
-        if (LogisticsPipes.isDEBUG()) addDebugPages()
+        //if (LogisticsPipes.isDEBUG()) addDebugPages()
     }
 
     private fun addDebugPages() {

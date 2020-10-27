@@ -112,7 +112,7 @@ data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawa
     }
 }
 
-private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.let { state ->
+private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.copy().let { state ->
     elements.mapNotNull { element ->
         element.changeDrawableState(state)
         when (element) {

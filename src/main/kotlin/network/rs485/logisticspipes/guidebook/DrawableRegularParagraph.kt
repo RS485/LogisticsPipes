@@ -51,12 +51,12 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (DEBUG_AREAS) area.render(1.0F, 0.0F, 0.0F)
+        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
         // Split by lines
         val lines = drawables.groupBy { it.area.y0 }.values
         for (line in lines) {
             // Check if first (representative of the whole line) is visible, aka contained within the visible area.
-            if (visibleArea.overlaps(line.first().area)) {
+            if (visibleArea.overlaps(line.first().area.translated(0, -yOffset))) {
                 for (drawable in line) {
                     if (isHovered && drawable is Link) {
                         drawable.hovering(mouseX, mouseY, yOffset)

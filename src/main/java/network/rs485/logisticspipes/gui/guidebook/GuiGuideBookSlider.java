@@ -95,6 +95,7 @@ public class GuiGuideBookSlider extends GuiButton {
 	protected void mouseDragged(@NotNull Minecraft mc, int mouseX, int mouseY) {
 		if (dragging) {
 			setProgress((int) (mouseY - this.height / 2.0F));
+			GuiGuideBook.currentPage.setProgress(progress);
 		}
 		super.mouseDragged(mc, mouseX, mouseY);
 	}
@@ -103,6 +104,7 @@ public class GuiGuideBookSlider extends GuiButton {
 	public void mouseReleased(int mouseX, int mouseY) {
 		if (dragging) {
 			dragging = false;
+			GuiGuideBook.currentPage.setProgress(progress);
 		}
 		super.mouseReleased(mouseX, mouseY);
 	}

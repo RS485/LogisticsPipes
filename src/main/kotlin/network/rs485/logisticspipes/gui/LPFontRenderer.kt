@@ -64,7 +64,7 @@ open class LPFontRenderer(fontName: String) {
     private val shadowColor = 0xEE3C3F41.toInt()
     private val fontPlain: IFont
     private val wrapperPlain: FontWrapper
-    private val zLevel = 15.0
+    private val zLevel = 5.0
     private val tessellator: Tessellator
     private val buffer: BufferBuilder
 
@@ -265,6 +265,7 @@ open class LPFontRenderer(fontName: String) {
     }
 
     init {
+        // TODO reuse parsed text after it was firstly parsed
         val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName-plain.bdf")
         fontPlain = FontParser.read(fontResourcePlain) ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
         wrapperPlain = FontWrapper(fontPlain)

@@ -44,6 +44,8 @@ import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
 import network.rs485.logisticspipes.util.math.Rectangle
 
+private const val PAGE_VERTICAL_PADDING = 5
+
 class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
 
     val loadedPage = BookContents.get(page)
@@ -53,23 +55,16 @@ class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 
 
     fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         val yOffset = ((height - visibleArea.height) * progress).toInt()
-        /*
-        loadedPage.paragraphs.filter {
-            it.area.overlaps(visibleArea.translate(0 ,yOffset))
-        }.forEach { paragraph ->
-            paragraph.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        }
-        */
-        visibleArea.render(0.0F, 0.0F, 0.0F)
         loadedPage.drawableParagraphs.forEach { paragraph ->
             paragraph.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
     }
 
     fun initDrawables(x: Int, y: Int, maxWidth: Int) {
-        height = loadedPage.drawableParagraphs.fold(y) { currentY, paragraph ->
+        loadedPage.drawableParagraphs.fold(y + PAGE_VERTICAL_PADDING) { currentY, paragraph ->
             currentY + paragraph.setPos(x + 1, currentY + 1, maxWidth - 2) + 3
         }
+        height = loadedPage.drawableParagraphs.last().area.y1 - loadedPage.drawableParagraphs.first().area.y0 + PAGE_VERTICAL_PADDING * 2
     }
 
     /**

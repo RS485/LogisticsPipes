@@ -93,7 +93,7 @@ data class DrawableHorizontalLine(val thickness: Int, val padding: Int = 3) : ID
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         if(DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5, thickness, MinecraftColor.WHITE.colorCode)
+        if(visibleArea.overlaps(area.translated(0, -yOffset))) GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5, thickness, MinecraftColor.WHITE.colorCode)
     }
 }
 

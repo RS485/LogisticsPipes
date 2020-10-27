@@ -47,17 +47,15 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
     override val area = Rectangle(0, 0)
     override var isHovered = true
 
-    // TODO add horizontal line
+    val horizontalLine = DrawableHorizontalLine(1)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        for (textToken in drawables.filter { visibleArea.translated(0, yOffset).overlaps(it.area) }) {
-            if (isHovered && textToken is Link) {
-                textToken.hovering(mouseX, mouseY, yOffset)
-            }
-            textToken.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        drawables.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { drawable ->
+            drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
+        if(visibleArea.overlaps(horizontalLine.area.translated(0, -yOffset))) horizontalLine.draw(mouseX, mouseY, delta, yOffset, visibleArea)
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
@@ -66,8 +64,9 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
     }
 
     override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
-        val textHeight = splitInitialize(drawables, x, y, maxWidth)
-        area.setSize(maxWidth, textHeight)
+        var currentHeight = splitInitialize(drawables, x, y, maxWidth)
+        currentHeight += horizontalLine.setPos(x, currentHeight, maxWidth)
+        area.setSize(maxWidth, currentHeight)
         return area.height
     }
 }

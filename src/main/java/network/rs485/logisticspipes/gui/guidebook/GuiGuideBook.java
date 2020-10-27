@@ -70,6 +70,7 @@ import logisticspipes.utils.OpenGLDebugger;
 import network.rs485.logisticspipes.gui.LPFontRenderer;
 import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
 import network.rs485.logisticspipes.guidebook.BookContents;
+import network.rs485.logisticspipes.util.ColorUtilKt;
 import network.rs485.logisticspipes.util.math.Rectangle;
 import network.rs485.markdown.TextFormat;
 
@@ -125,7 +126,7 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiTabWidth = 24, guiTabHeight = 24, guiFullTabHeight = 32;
 	// Usable area
 	@Getter
-	public static Rectangle usableArea;
+	private static Rectangle usableArea;
 
 	// Texture atlas constants
 	private static final int atlasWidth = 256;
@@ -439,6 +440,8 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	public static void drawBoxedCenteredString(Minecraft mc, String text, int x, int y, int z) {
+		// TODO use LPFonterenderer
+		// TODO clamp to the size of the screen
 		int width = mc.fontRenderer.getStringWidth(text);
 		int x1 = x - (width / 2 + 1);
 		int x0 = x1 - 4;

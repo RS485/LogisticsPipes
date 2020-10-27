@@ -52,7 +52,7 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        for (textToken in drawables.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
+        for (textToken in drawables.filter { visibleArea.translated(0, yOffset).overlaps(it.area) }) {
             if (isHovered && textToken is Link) {
                 textToken.hovering(mouseX, mouseY, yOffset)
             }

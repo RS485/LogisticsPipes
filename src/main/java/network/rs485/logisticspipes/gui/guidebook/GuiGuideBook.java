@@ -137,6 +137,9 @@ public class GuiGuideBook extends GuiScreen {
 	private final Rectangle guiAtlasBg = new Rectangle(64, 0, 32, 32);
 	private final int guiAtlasU0 = 0, guiAtlasU1 = guiBorderWithShadowThickness, guiAtlasU2 = guiAtlasWidth - guiBorderWithShadowThickness, guiAtlasU3 = guiAtlasWidth;
 	private final int guiAtlasV0 = 0, guiAtlasV1 = guiBorderWithShadowThickness, guiAtlasV2 = guiAtlasHeight - guiBorderWithShadowThickness, guiAtlasV3 = guiAtlasHeight;
+	private static final Rectangle btnBackgroundUv = new Rectangle(64, 32, 32, 32);
+	private static final Rectangle btnBorderUv = new Rectangle(0, 64, 16, 16);
+	private static final int btnBorderWidth = 2;
 	private final Rectangle guiAtlasSep = new Rectangle(96, 33, 16, 30);
 
 	protected static Map<String, SavedPage> cachedPages;
@@ -530,6 +533,40 @@ public class GuiGuideBook extends GuiScreen {
 
 	public static void drawCenteredStringStatic(FontRenderer fontRendererIn, String text, int x, int y, int color) {
 		fontRendererIn.drawStringWithShadow(text, (float) (x - fontRendererIn.getStringWidth(text) / 2), (float) y, color);
+	}
+
+	public static void drawRectangleTile(Rectangle btn, int z, boolean isEnabled, boolean isHovered, int color) {
+		// TODO make it cut the shape depending on broken borders
+		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+		GlStateManager.color(ColorUtilKt.redF(color), ColorUtilKt.greenF(color), ColorUtilKt.blueF(color), 1.0F);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		int hovered = isHovered ? 1 : 0;
+		int enabled = isEnabled ? 1 : 2;
+		// Fill: Middle
+		GuiGuideBook.putRepeatingTexturedSquare(bufferbuilder, btn.getX0() + btnBorderWidth, btn.getY0() + btnBorderWidth, btn.getX1() - btnBorderWidth, btn.getY1() - btnBorderWidth, z, btnBackgroundUv.getX0(), btnBackgroundUv.getY0() + (hovered * enabled * btnBackgroundUv.getWidth()), btnBackgroundUv.getX1(),
+				btnBackgroundUv.getY1() + (hovered * enabled * btnBackgroundUv.getWidth()));
+		// Corners: TopLeft, TopRight, BottomLeft & BottomRight
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0(), btn.getY0(), btn.getX0() + btnBorderWidth, btn.getY0() + btnBorderWidth, z, btnBorderUv.getX0(), btnBorderUv.getY0() + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX0() + btnBorderWidth),
+				(btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX1() - btnBorderWidth, btn.getY0(), btn.getX1(), btn.getY0() + btnBorderWidth, z, (btnBorderUv.getX1() - btnBorderWidth), btnBorderUv.getY0() + (hovered * enabled * btnBorderUv.getHeight()), btnBorderUv.getX1(),
+				(btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0(), btn.getY1() - btnBorderWidth, btn.getX0() + btnBorderWidth, btn.getY1(), z, btnBorderUv.getX0(), (btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX0() + btnBorderWidth),
+				btnBorderUv.getY1() + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX1() - btnBorderWidth, btn.getY1() - btnBorderWidth, btn.getX1(), btn.getY1(), z, (btnBorderUv.getX1() - btnBorderWidth), (btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), btnBorderUv.getX1(),
+				btnBorderUv.getY1() + (hovered * enabled * btnBorderUv.getHeight()));
+		// Edges: Top, Bottom, Left & Right
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0() + btnBorderWidth, btn.getY0(), btn.getX1() - btnBorderWidth, btn.getY0() + btnBorderWidth, z, (btnBorderUv.getX0() + btnBorderWidth), btnBorderUv.getY0() + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX1() - btnBorderWidth),
+				(btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0() + btnBorderWidth, btn.getY1() - btnBorderWidth, btn.getX1() - btnBorderWidth, btn.getY1(), z, (btnBorderUv.getX0() + btnBorderWidth), (btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()),
+				(btnBorderUv.getX1() - btnBorderWidth), btnBorderUv.getY1() + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0(), btn.getY0() + btnBorderWidth, btn.getX0() + btnBorderWidth, btn.getY1() - btnBorderWidth, z, btnBorderUv.getX0(), (btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX0() + btnBorderWidth),
+				(btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX1() - btnBorderWidth, btn.getY0() + btnBorderWidth, btn.getX1(), btn.getY1() - btnBorderWidth, z, (btnBorderUv.getX1() - btnBorderWidth), (btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), btnBorderUv.getX1(),
+				(btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		tessellator.draw();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@Override

@@ -68,10 +68,6 @@ class FontWrapper(private val font: IFont) {
     init {
         allocateTextures()
 
-        /*charHeight = font.glyphs.values.maxOfOrNull { it.height + it.offsetY }!!
-        charOffsetY = font.glyphs.values.minOfOrNull { it.offsetY }!!
-        charBottomLine = charHeight + charOffsetY*/
-
         var currMaxCharHeight = 0
         var currMinOffsetY = 0
 
@@ -79,8 +75,6 @@ class FontWrapper(private val font: IFont) {
         var currentY = 0
         var currentMaxHeight = 0
         var currentTex = 0
-
-        // change this init so that it will allocate textures vertically until the right border and then jump into the next row.
 
         for ((character, glyph) in font.glyphs) {
             currMaxCharHeight = maxOf(currMaxCharHeight, glyph.height + glyph.offsetY)
@@ -152,8 +146,6 @@ class FontWrapper(private val font: IFont) {
 
             GlStateManager.bindTexture(texId)
             TextureUtil.allocateTexture(texId, maxTexSize, maxTexSize)
-
-            println("Allocated ${widthMap[i]}*${heightMap[i]} texture id: $texId")
         }
     }
 

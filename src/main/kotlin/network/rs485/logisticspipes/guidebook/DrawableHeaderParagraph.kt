@@ -46,7 +46,6 @@ import network.rs485.logisticspipes.util.math.Rectangle
 data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val headerLevel: Int = 1) : IDrawableParagraph {
     override val area = Rectangle(0, 0)
     override var isHovered = true
-
     val horizontalLine = DrawableHorizontalLine(1)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
@@ -55,7 +54,7 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
         drawables.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { drawable ->
             drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
-        if(visibleArea.overlaps(horizontalLine.area.translated(0, -yOffset))) horizontalLine.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        if (visibleArea.overlaps(horizontalLine.area.translated(0, -yOffset))) horizontalLine.draw(mouseX, mouseY, delta, yOffset, visibleArea)
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
@@ -64,9 +63,9 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
     }
 
     override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
-        var currentHeight = splitInitialize(drawables, x, y, maxWidth)
-        currentHeight += horizontalLine.setPos(x, currentHeight, maxWidth)
-        area.setSize(maxWidth, currentHeight)
+        var currentY = splitInitialize(drawables, x, y, maxWidth)
+        currentY += horizontalLine.setPos(x, y + currentY, maxWidth)
+        area.setSize(maxWidth, currentY)
         return area.height
     }
 }

@@ -150,7 +150,8 @@ public class GuiGuideBook extends GuiScreen {
 	public GuiGuideBook(EnumHand hand) {
 		super();
 		cachedPages = new HashMap<>();
-		lpFontRenderer = new LPFontRenderer("minecraft");
+		//		lpFontRenderer = new LPFontRenderer("minecraft-plain");
+		lpFontRenderer = new LPFontRenderer("ter-u12n");
 		innerGui = new Rectangle();
 		outerGui = new Rectangle();
 		guiSep = new Rectangle();

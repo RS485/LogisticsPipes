@@ -265,8 +265,8 @@ open class LPFontRenderer(fontName: String) {
     }
 
     init {
-        // TODO reuse parsed text after it was firstly parsed
-        val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName-plain.bdf")
+        // TODO reuse parsed font after it was firstly parsed
+        val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
         fontPlain = FontParser.read(fontResourcePlain) ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
         wrapperPlain = FontWrapper(fontPlain)
         tessellator = Tessellator.getInstance()

@@ -42,6 +42,7 @@ import network.rs485.logisticspipes.gui.guidebook.IDrawable
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
 import java.util.*
+import kotlin.math.floor
 
 /**
  * Normal Token that stores the text and the formatting tags of said text.
@@ -56,7 +57,7 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         if (DEBUG_AREAS) area.render(0.1f, 0.1f, 0.1f)
-        GuiGuideBook.lpFontRenderer.drawString(string = str, x = area.x0, y = area.y0, color = color, format = format, scale = scale)
+        GuiGuideBook.lpFontRenderer.drawString(string = str, x = area.x0, y = area.y0 - yOffset, color = color, format = format, scale = scale)
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
@@ -85,7 +86,7 @@ class DrawableSpace(private val scale: Double, state: InlineDrawableState) : Dra
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         if (DEBUG_AREAS) area.render(0.1f, 0.1f, 0.1f)
-        if (area.width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = area.x0, y = area.y0, width = area.width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
+        if (area.width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = area.x0, y = area.y0 - yOffset, width = area.width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
     }
 
     override fun toString(): String {
@@ -99,3 +100,71 @@ object DrawableBreak : DrawableWord("", 1.0, DEFAULT_DRAWABLE_STATE)
  * Link token, stores the linked string, as well as the 'url'.
  */
 data class Link(private val text: String) : DrawableWord(text, 1.0, DEFAULT_DRAWABLE_STATE)
+
+internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
+    var maxHeight = 0
+    var remainder = 0
+    val spacing = if (justified && line.size != 0) {
+        val wordsWidth = (line.fold(0) { i, elem -> i + if (elem !is DrawableSpace) elem.area.width else 0 })
+        val remainingSpace = floor(maxWidth - wordsWidth.toDouble());
+        val numberSpaces = if (line.last() is DrawableSpace) line.count { it is DrawableSpace } - 1 else line.count { it is DrawableSpace }
+        remainder = remainingSpace.rem(numberSpaces).toInt()
+        floor(remainingSpace / numberSpaces.toDouble()).toInt()
+    } else {
+        line.find { it is DrawableSpace }?.area?.width?: GuiGuideBook.lpFontRenderer.getStringWidth(" ")
+    }
+    line.foldIndexed(x) { _, currX, drawableWord ->
+        when (drawableWord) {
+            is DrawableSpace -> {
+                val currentSpacing = when {
+                    (drawableWord == line.last()) -> 0
+                    remainder > 0 -> {
+                        remainder--
+                        spacing + 1
+                    }
+                    else -> spacing
+                }
+                drawableWord.setPos(currX, y, maxWidth)
+                drawableWord.setWidth(currentSpacing)
+            }
+            else -> {
+                drawableWord.setPos(currX, y, maxWidth)
+            }
+        }
+        maxHeight = maxOf(maxHeight, drawableWord.area.height)
+        currX + drawableWord.area.width
+    }
+    return maxHeight
+}
+
+internal fun splitInitialize(drawables: List<DrawableWord>, x: Int, y: Int, maxWidth: Int): Int {
+    var currentY = 1
+    var currentWidth = 0
+    if (maxWidth > 0) {
+        val currentLine = mutableListOf<DrawableWord>()
+        for (currentDrawableWord in drawables) {
+            when (currentDrawableWord) {
+                // Break line and setPos on the queued up words via break signal
+                is DrawableBreak -> {
+                    currentLine.add(currentDrawableWord)
+                    currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
+                    currentLine.clear()
+                    currentWidth = 0
+                }
+                else -> {
+                    // Break line and setPos on the queued up words via line width
+                    if (currentDrawableWord !is DrawableSpace && currentWidth + currentDrawableWord.area.width > maxWidth) {
+                        currentY += initLine(x, y + currentY, currentLine, true, maxWidth)
+                        currentLine.clear()
+                        currentWidth = 0
+                    }
+                    currentLine.add(currentDrawableWord)
+                    currentWidth += if (currentDrawableWord is DrawableSpace) GuiGuideBook.lpFontRenderer.getStringWidth(" ") else currentDrawableWord.area.width
+                    if (currentDrawableWord == drawables.last()) currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
+                }
+            }
+        }
+        currentY += 1
+    }
+    return currentY
+}

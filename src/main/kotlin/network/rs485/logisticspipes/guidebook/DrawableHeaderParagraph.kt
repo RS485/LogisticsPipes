@@ -37,10 +37,8 @@
 
 package network.rs485.logisticspipes.guidebook
 
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
 import network.rs485.logisticspipes.util.math.Rectangle
-import kotlin.math.floor
 
 /**
  * Header token, stores all the tokens that are apart of the header.
@@ -48,16 +46,15 @@ import kotlin.math.floor
 data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val headerLevel: Int = 1) : IDrawableParagraph {
     override val area = Rectangle(0, 0)
     override var isHovered = true
+    val horizontalLine = DrawableHorizontalLine(1)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (DEBUG_AREAS) area.render(0.0F, 1.0F, 0.0F)
-        for (textToken in drawables.filter { visibleArea.translate(0, yOffset).overlaps(it.area) }) {
-            if (isHovered && textToken is Link) {
-                textToken.hovering(mouseX, mouseY, yOffset)
-            }
-            textToken.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
+        drawables.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { drawable ->
+            drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
         }
+        if (visibleArea.overlaps(horizontalLine.area.translated(0, -yOffset))) horizontalLine.draw(mouseX, mouseY, delta, yOffset, visibleArea)
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
@@ -66,71 +63,9 @@ data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val header
     }
 
     override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
-        fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
-            var maxHeight = 0
-            var remainder = 0
-            val spacing = if (justified && line.size != 0) {
-                val wordsWidth = (line.fold(0) { i, elem -> i + if (elem !is DrawableSpace) elem.area.width else 0 })
-                val remainingSpace = floor(maxWidth - wordsWidth.toDouble());
-                val numberSpaces = if (line.last() is DrawableSpace) line.count { it is DrawableSpace } - 1 else line.count { it is DrawableSpace }
-                remainder = remainingSpace.rem(numberSpaces).toInt()
-                floor(remainingSpace / numberSpaces.toDouble()).toInt()
-            } else {
-                GuiGuideBook.lpFontRenderer.getStringWidth(" ")
-            }
-            line.foldIndexed(x) { _, currX, drawableWord ->
-                when (drawableWord) {
-                    is DrawableSpace -> {
-                        val currentSpacing = when {
-                            (drawableWord == line.last()) -> 0
-                            remainder > 0 -> {
-                                remainder--
-                                spacing + 1
-                            }
-                            else -> spacing
-                        }
-                        drawableWord.setPos(currX, y, maxWidth)
-                        drawableWord.setWidth(currentSpacing)
-                    }
-                    else -> {
-                        drawableWord.setPos(currX, y, maxWidth)
-                    }
-                }
-                maxHeight = maxOf(maxHeight, drawableWord.area.height)
-                currX + drawableWord.area.width
-            }
-            return maxHeight
-        }
-
-        var currentY = 1
-        var currentWidth = 0
-        if (maxWidth > 0) {
-            val currentLine = mutableListOf<DrawableWord>()
-            for (currentDrawableWord in drawables) {
-                when (currentDrawableWord) {
-                    // Break line and setPos on the queued up words via break signal
-                    is DrawableBreak -> {
-                        currentLine.add(currentDrawableWord)
-                        currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
-                        currentLine.clear()
-                        currentWidth = 0
-                    }
-                    else -> {
-                        // Break line and setPos on the queued up words via line width
-                        if (currentDrawableWord !is DrawableSpace && currentWidth + currentDrawableWord.area.width > maxWidth) {
-                            currentY += initLine(x, y + currentY, currentLine, true, maxWidth)
-                            currentLine.clear()
-                            currentWidth = 0
-                        }
-                        currentLine.add(currentDrawableWord)
-                        currentWidth += if (currentDrawableWord is DrawableSpace) GuiGuideBook.lpFontRenderer.getStringWidth(" ") else currentDrawableWord.area.width
-                        if (currentDrawableWord == drawables.last()) currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
-                    }
-                }
-            }
-            currentY += 1
-            area.setSize(maxWidth, currentY)
-        }
-        return currentY
+        var currentY = splitInitialize(drawables, x, y, maxWidth)
+        currentY += horizontalLine.setPos(x, y + currentY, maxWidth)
+        area.setSize(maxWidth, currentY)
+        return area.height
     }
 }

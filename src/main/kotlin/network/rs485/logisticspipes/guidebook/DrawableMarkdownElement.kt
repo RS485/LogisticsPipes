@@ -39,17 +39,18 @@ package network.rs485.logisticspipes.guidebook
 
 import logisticspipes.LPConstants
 import logisticspipes.utils.MinecraftColor
-import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
+import network.rs485.markdown.MarkdownParser.splitToInlineElements
 import java.util.*
 
 const val DEBUG_AREAS = false
 
 internal val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
-internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20)
+internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20, 1.00)
 
 /**
  * Image token, stores a token list in case the image is not correctly loaded as well as the image's path
@@ -77,74 +78,22 @@ data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageP
 }
 
 /**
- * Menu token, stores the key and the type of menu in a page.
+ * This draws a line with a given thickness that will span the entire width of the page, minus padding.
  */
-data class DrawableMenuParagraph(val menuId: String, val options: String) : IDrawable {
-    // TODO how to get the actual menu Map in here?
-    override val area: Rectangle = Rectangle(0, 0)
+
+data class DrawableHorizontalLine(val thickness: Int, val padding: Int = 3) : IDrawable {
+    override val area = Rectangle(0, 2 * padding + thickness)
     override var isHovered = false
-
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-    }
-
-    private val menu = mutableMapOf<String, List<DrawableMenuParagraphTile>>()
-
-    fun setContent(map: Map<String, List<String>>): DrawableMenuParagraph {
-        menu.clear()
-        menu.putAll(map.asSequence().associate { div -> div.key to div.value.map { page -> DrawableMenuParagraphTile(BookContents.get(page).metadata) } })
-        return this
-    }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         area.setPos(x, y)
-        var currentX = 0
-        var currentY = 0
-        for (division in menu) {
-            currentY += Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT
-            for (tile in division.value) {
-                // Checks if the tile fits in the current row, if not skips to next row
-                if (currentX + tile.tileSize + tile.tileSpacing > maxWidth) {
-                    currentX = 0
-                    currentY += tile.tileSize + tile.tileSpacing
-                }
-                // Sets the position of the tile
-                tile.setPos(x + currentX, y + currentY, maxWidth)
-                // Checks if the tile is the last on in the current list, if so add the height and spacing for the next division to be correctly drawn
-                if (tile == division.value.last()) {
-                    currentY += tile.tileSize + tile.tileSpacing
-                }
-            }
-        }
-        area.setSize(maxWidth, currentY)
-        TODO("Not yet implemented")
+        area.setSize(maxWidth, area.height)
+        return area.height + padding
     }
 
-    override fun hovering(mouseX: Int, mouseY: Int, yOffset: Int) {
-        super.hovering(mouseX, mouseY, yOffset)
-    }
-
-    // Make a custom inner class for the title of a division?
-
-    private class DrawableMenuParagraphTile(metadata: YamlPageMetadata) : IDrawable {
-        val tileSize = 40
-        val tileSpacing = 5
-
-        // Maybe there needs to be a constant Int defining the size of all the tiles
-        override val area = Rectangle(tileSize, tileSize)
-        override var isHovered = false
-
-        override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-            super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-            // Draw tile bg
-            // Draw icon
-            // Draw tooltip
-        }
-
-        override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-            area.setPos(x, y)
-            return area.height
-        }
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        if(DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
+        if(visibleArea.overlaps(area.translated(0, -yOffset))) GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5, thickness, MinecraftColor.WHITE.colorCode)
     }
 }
 
@@ -163,7 +112,7 @@ data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawa
     }
 }
 
-private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.let { state ->
+private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.copy().let { state ->
     elements.mapNotNull { element ->
         element.changeDrawableState(state)
         when (element) {
@@ -177,9 +126,23 @@ private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_
 
 private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
     is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
-    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, HEADER_LEVELS[paragraph.headerLevel - 1]), paragraph.headerLevel)
-    is HorizontalLineParagraph -> TODO()
-    else -> TODO() // MenuParagraph
+    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, getScaleFromLevel(paragraph.headerLevel)), paragraph.headerLevel)
+    is HorizontalLineParagraph -> DrawableHorizontalLine(2)
+    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(BookContents.get(GuiGuideBook.currentPage.page).metadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")))
+}
+
+fun toMenuGroups(groups: Map<String, List<String>>): List<DrawableMenuTileGroup> {
+    return groups.map {
+        DrawableMenuTileGroup(toDrawables(splitToInlineElements(it.key), getScaleFromLevel(6)), toMenuTiles(it.value))
+    }
+}
+
+fun toMenuTiles(pages: List<String>): List<DrawableMenuTile> {
+    return pages.map {
+        DrawableMenuTile(BookContents.get(it).metadata)
+    }
 }
 
 fun asDrawables(paragraphs: List<Paragraph>) = paragraphs.map(::toDrawable)
+
+fun getScaleFromLevel(headerLevel: Int) = if (headerLevel > 0 && headerLevel < HEADER_LEVELS.size) HEADER_LEVELS[headerLevel - 1] else 1.00

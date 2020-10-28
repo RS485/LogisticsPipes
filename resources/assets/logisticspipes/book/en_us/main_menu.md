@@ -17,6 +17,10 @@ menu:
 --->
 ![Main Menu](menu://main_menu)
 
-# asdasd
+# This is a header
+
+## This is a smaller header
+
+---
 
 This _is_ example **Markdown** text right after the metadata. This ***should*** work.

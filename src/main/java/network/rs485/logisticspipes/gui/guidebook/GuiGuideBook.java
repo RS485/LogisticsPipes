@@ -70,6 +70,7 @@ import logisticspipes.utils.OpenGLDebugger;
 import network.rs485.logisticspipes.gui.LPFontRenderer;
 import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
 import network.rs485.logisticspipes.guidebook.BookContents;
+import network.rs485.logisticspipes.util.ColorUtilKt;
 import network.rs485.logisticspipes.util.math.Rectangle;
 import network.rs485.markdown.TextFormat;
 
@@ -125,7 +126,7 @@ public class GuiGuideBook extends GuiScreen {
 	private final int guiTabWidth = 24, guiTabHeight = 24, guiFullTabHeight = 32;
 	// Usable area
 	@Getter
-	public static Rectangle usableArea;
+	private static Rectangle usableArea;
 
 	// Texture atlas constants
 	private static final int atlasWidth = 256;
@@ -137,11 +138,13 @@ public class GuiGuideBook extends GuiScreen {
 	private final Rectangle guiAtlasBg = new Rectangle(64, 0, 32, 32);
 	private final int guiAtlasU0 = 0, guiAtlasU1 = guiBorderWithShadowThickness, guiAtlasU2 = guiAtlasWidth - guiBorderWithShadowThickness, guiAtlasU3 = guiAtlasWidth;
 	private final int guiAtlasV0 = 0, guiAtlasV1 = guiBorderWithShadowThickness, guiAtlasV2 = guiAtlasHeight - guiBorderWithShadowThickness, guiAtlasV3 = guiAtlasHeight;
+	private static final Rectangle btnBackgroundUv = new Rectangle(64, 32, 32, 32);
+	private static final Rectangle btnBorderUv = new Rectangle(0, 64, 16, 16);
+	private static final int btnBorderWidth = 2;
 	private final Rectangle guiAtlasSep = new Rectangle(96, 33, 16, 30);
 
 	protected static Map<String, SavedPage> cachedPages;
 
-//	public OpenGLDebugger glDebugger;
 	public static LPFontRenderer lpFontRenderer;
 
 	public GuiGuideBook(EnumHand hand) {
@@ -156,8 +159,6 @@ public class GuiGuideBook extends GuiScreen {
 		//setPage(MAIN_MENU_FILE);
 		setPage(DEBUG_FILE);
 		this.tabList = new ArrayList<>();
-//		glDebugger = new OpenGLDebugger(20);
-//		glDebugger.start();
 	}
 
 	public void setPage(String pagePath) {
@@ -165,27 +166,17 @@ public class GuiGuideBook extends GuiScreen {
 		currentPage.initDrawables(usableArea.getX0(), usableArea.getY0(), usableArea.getWidth());
 	}
 
-	/**
-	 * Chooses the appropriate draw methods for the current to be drawn content
-	 */
-	protected void drawCurrentEvent() {
-		//int yOffset = slider.enabled ? -(int) (MathHelper.clamp(slider.getProgress() * (areaCurrentlyDrawnY - areaAcrossY), 0, areaCurrentlyDrawnY - areaAcrossY)) : 0;
-	}
-
 	/*
 	 * Calculates varius coordinates based on current width and height
 	 */
 	protected void calculateConstraints() {
-		outerGui.setPos((int) (1.0D / 8.0D * this.width), (int) (1.0D / 8.0D * this.height))
-				.setSize((int) (6.0D / 8.0D * this.width), (int) (6.0D / 8.0D * this.height));
-		innerGui.setPos(outerGui.getX0() + guiBorderThickness, outerGui.getY0() + guiBorderThickness)
-				.setSize(outerGui.getWidth() - 2 * guiBorderThickness, outerGui.getHeight() - 2 * guiBorderThickness);
+		outerGui.setPos((int) (1.0D / 8.0D * this.width), (int) (1.0D / 8.0D * this.height)).setSize((int) (6.0D / 8.0D * this.width), (int) (6.0D / 8.0D * this.height));
+		innerGui.setPos(outerGui.getX0() + guiBorderThickness, outerGui.getY0() + guiBorderThickness).setSize(outerGui.getWidth() - 2 * guiBorderThickness, outerGui.getHeight() - 2 * guiBorderThickness);
 		guiSliderX = innerGui.getX1() - guiSliderWidth;
 		guiSliderY0 = innerGui.getY0();
 		guiSliderY1 = innerGui.getY1();
 		guiSep.setPos(innerGui.getX1() - guiSliderWidth - guiSeparatorThickness - guiShadowThickness, innerGui.getY0()).setSize(2 * guiShadowThickness + guiSeparatorThickness, innerGui.getHeight());
-		usableArea.setPos(innerGui.getX0() + guiShadowThickness, innerGui.getY0())
-				.setSize(innerGui.getWidth() - 2 * guiShadowThickness - guiSliderWidth - guiSeparatorThickness, innerGui.getHeight());
+		usableArea.setPos(innerGui.getX0() + guiShadowThickness, innerGui.getY0()).setSize(innerGui.getWidth() - 2 * guiShadowThickness - guiSliderWidth - guiSeparatorThickness, innerGui.getHeight());
 		currentPage.initDrawables(usableArea.getX0(), usableArea.getY0(), usableArea.getWidth());
 	}
 
@@ -208,14 +199,10 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-//		glDebugger.cycle();
-		//this.drawTransparentOverlay();
-		//this.drawCurrentEvent();
-		//slider.enabled = areaCurrentlyDrawnY > areaAcrossY;
+		slider.enabled = currentPage.getHeight() > usableArea.getHeight();
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		this.drawGui();
-		innerGui.render(1.0f, 0.5f, 0.0f);
 		currentPage.draw(mouseX, mouseY, partialTicks, usableArea);
+		this.drawGui();
 		for (GuiGuideBookTabButton tab : tabList) tab.drawButton(mc, mouseX, mouseY, partialTicks);
 		this.drawTitle();
 	}
@@ -240,12 +227,11 @@ public class GuiGuideBook extends GuiScreen {
 	public void onGuiClosed() {
 		// TODO THIS IS FOR TESTING ONLY
 		BookContents.INSTANCE.clear();
-		//glDebugger.stop();
 		currentPage.setProgress(slider.getProgress());
 		ArrayList<SavedPage> tabs = new ArrayList<>();
 		for (GuiGuideBookTabButton tab : tabList) tabs.add(tab.getTab());
-//		final ItemStack stack = Minecraft.getMinecraft().player.getHeldItem(hand);
-//		ItemGuideBook.setCurrentPage(stack, currentPage, tabs, hand);
+		//		final ItemStack stack = Minecraft.getMinecraft().player.getHeldItem(hand);
+		//		ItemGuideBook.setCurrentPage(stack, currentPage, tabs, hand);
 		super.onGuiClosed();
 	}
 
@@ -334,7 +320,7 @@ public class GuiGuideBook extends GuiScreen {
 	 * Draws the main title on the centre of the top border of the GUI
 	 */
 	protected void drawTitle() {
-		lpFontRenderer.drawCenteredString(title,this.width / 2, outerGui.getY0() + 4, MinecraftColor.WHITE.getColorCode(), EnumSet.of(TextFormat.Shadow), 1.0D);
+		lpFontRenderer.drawCenteredString(title, this.width / 2, outerGui.getY0() + 4, MinecraftColor.WHITE.getColorCode(), EnumSet.of(TextFormat.Shadow), 1.0D);
 	}
 
 	/**
@@ -352,37 +338,23 @@ public class GuiGuideBook extends GuiScreen {
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 		// Background
-		putRepeatingTexturedSquare(bufferbuilder,innerGui.getX0(), innerGui.getY0(), innerGui.getX1(), innerGui.getY1(), zBackground, guiAtlasBg.getX0(), guiAtlasBg.getY0(), guiAtlasBg.getX1(), guiAtlasBg.getY1());
+		putRepeatingTexturedSquare(bufferbuilder, innerGui.getX0(), innerGui.getY0(), innerGui.getX1(), innerGui.getY1(), zBackground, guiAtlasBg.getX0(), guiAtlasBg.getY0(), guiAtlasBg.getX1(), guiAtlasBg.getY1());
 		// Corners: TopLeft, TopRight, BottomLeft & BottomRight
 		putTexturedSquare(bufferbuilder, outerGui.getX0(), outerGui.getY0(), innerGui.getX0() + guiShadowThickness, innerGui.getY0() + guiShadowThickness, zFrame, guiAtlasU0, guiAtlasV0, guiAtlasU1, guiAtlasV1);
 		putTexturedSquare(bufferbuilder, innerGui.getX1() - guiShadowThickness, outerGui.getY0(), outerGui.getX1(), innerGui.getY0() + guiShadowThickness, zFrame, guiAtlasU2, guiAtlasV0, guiAtlasU3, guiAtlasV1);
 		putTexturedSquare(bufferbuilder, outerGui.getX0(), innerGui.getY1() - guiShadowThickness, innerGui.getX0() + guiShadowThickness, outerGui.getY1(), zFrame, guiAtlasU0, guiAtlasV2, guiAtlasU1, guiAtlasV3);
 		putTexturedSquare(bufferbuilder, innerGui.getX1() - guiShadowThickness, innerGui.getY1() - guiShadowThickness, outerGui.getX1(), outerGui.getY1(), zFrame, guiAtlasU2, guiAtlasV2, guiAtlasU3, guiAtlasV3);
 		// Edges: Top, Bottom, Left & Right
-		putTexturedSquare(bufferbuilder,innerGui.getX0() + guiShadowThickness, outerGui.getY0(), innerGui.getX1() - guiShadowThickness, innerGui.getY0() + guiShadowThickness, zFrame, guiAtlasU1, guiAtlasV0, guiAtlasU2, guiAtlasV1);
-		putTexturedSquare(bufferbuilder,innerGui.getX0() + guiShadowThickness, innerGui.getY1() - guiShadowThickness, innerGui.getX1() - guiShadowThickness, outerGui.getY1(), zFrame, guiAtlasU1, guiAtlasV2, guiAtlasU2, guiAtlasV3);
-		putTexturedSquare(bufferbuilder,outerGui.getX0(), innerGui.getY0() + guiShadowThickness, innerGui.getX0() + guiShadowThickness, innerGui.getY1() - guiShadowThickness, zFrame, guiAtlasU0, guiAtlasV1, guiAtlasU1, guiAtlasV2);
-		putTexturedSquare(bufferbuilder,innerGui.getX1() - guiShadowThickness, innerGui.getY0() + guiShadowThickness, outerGui.getX1(), innerGui.getY1() - guiShadowThickness, zFrame, guiAtlasU2, guiAtlasV1, guiAtlasU3, guiAtlasV2);
+		putTexturedSquare(bufferbuilder, innerGui.getX0() + guiShadowThickness, outerGui.getY0(), innerGui.getX1() - guiShadowThickness, innerGui.getY0() + guiShadowThickness, zFrame, guiAtlasU1, guiAtlasV0, guiAtlasU2, guiAtlasV1);
+		putTexturedSquare(bufferbuilder, innerGui.getX0() + guiShadowThickness, innerGui.getY1() - guiShadowThickness, innerGui.getX1() - guiShadowThickness, outerGui.getY1(), zFrame, guiAtlasU1, guiAtlasV2, guiAtlasU2, guiAtlasV3);
+		putTexturedSquare(bufferbuilder, outerGui.getX0(), innerGui.getY0() + guiShadowThickness, innerGui.getX0() + guiShadowThickness, innerGui.getY1() - guiShadowThickness, zFrame, guiAtlasU0, guiAtlasV1, guiAtlasU1, guiAtlasV2);
+		putTexturedSquare(bufferbuilder, innerGui.getX1() - guiShadowThickness, innerGui.getY0() + guiShadowThickness, outerGui.getX1(), innerGui.getY1() - guiShadowThickness, zFrame, guiAtlasU2, guiAtlasV1, guiAtlasU3, guiAtlasV2);
 		// Slider Separator
-		putTexturedSquare(bufferbuilder,guiSep.getX0(), guiSep.getY0() - 1, guiSep.getX1(), guiSep.getY0(), zFrame, guiAtlasSep.getX0(), guiAtlasSep.getY0() - 1, guiAtlasSep.getX1(), guiAtlasSep.getY0());
-		putTexturedSquare(bufferbuilder,guiSep.getX0(), guiSep.getY0(), guiSep.getX1(), guiSep.getY1(), zFrame, guiAtlasSep.getX0(), guiAtlasSep.getY0(), guiAtlasSep.getX1(), guiAtlasSep.getY1());
-		putTexturedSquare(bufferbuilder,guiSep.getX0(), guiSep.getY1(), guiSep.getX1(), guiSep.getY1() + 1, zFrame, guiAtlasSep.getX0(), guiAtlasSep.getY1(), guiAtlasSep.getX1(), guiAtlasSep.getY1() + 1);
+		putTexturedSquare(bufferbuilder, guiSep.getX0(), guiSep.getY0() - 1, guiSep.getX1(), guiSep.getY0(), zFrame, guiAtlasSep.getX0(), guiAtlasSep.getY0() - 1, guiAtlasSep.getX1(), guiAtlasSep.getY0());
+		putTexturedSquare(bufferbuilder, guiSep.getX0(), guiSep.getY0(), guiSep.getX1(), guiSep.getY1(), zFrame, guiAtlasSep.getX0(), guiAtlasSep.getY0(), guiAtlasSep.getX1(), guiAtlasSep.getY1());
+		putTexturedSquare(bufferbuilder, guiSep.getX0(), guiSep.getY1(), guiSep.getX1(), guiSep.getY1() + 1, zFrame, guiAtlasSep.getX0(), guiAtlasSep.getY1(), guiAtlasSep.getX1(), guiAtlasSep.getY1() + 1);
 		tessellator.draw();
 		GlStateManager.disableBlend();
-	}
-
-	/**
-	 * Draws a text line that separates tile groups.
-	 */
-	public static void drawMenuText(Minecraft mc, int x, int y, int sizeX, int sizeY, String text) {
-		GlStateManager.color(1.0F, 1.0F, 1.0F);
-		int text$size = sizeY / 2;
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(x + 5, ((sizeY - 8) / 2.0) + y, 5);
-		GlStateManager.scale(text$size / 8, text$size / 8, 0);
-		mc.fontRenderer.drawStringWithShadow(text, 0, 0, 0xFFFFFF);
-		GlStateManager.popMatrix();
-		GlStateManager.color(1.0F, 1.0F, 1.0F);
 	}
 
 	/**
@@ -432,27 +404,6 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	public static void putRepeatingTexturedSquare(BufferBuilder bufferbuilder, int x0, int y0, int x1, int y1, int z, double u0, double v0, double u1, double v1) {
-		/*
-		int tileWidth = (int)(u1 - u0);
-		int tileHeight = (int) (v1 - v0);
-		int numberOfFullTilesX = ((x1 - x0) / tileWidth);
-		int numberOfFullTilesY = ((y1 - y0) / tileHeight);
-		int remainingWidth = (x1 - x0) - (tileWidth * numberOfFullTilesX);
-		int remainingHeight = (y1 - y0) - (tileHeight * numberOfFullTilesY);
-		for(int y = 0; y < numberOfFullTilesY; y++){
-			for(int x = 0; x < numberOfFullTilesX; x++){
-				int currX0 = x0 + x * tileWidth;
-				int currY0 = y0 + y * tileHeight;
-				int currX1 = currX0 + tileWidth;
-				int currY1 = currY0 + tileHeight;
-				putTexturedSquare(bufferbuilder, currX0, currY0, currX1, currY1, z, u0, v0, u1, v1);
-			}
-			int currX0 = x0 + tileWidth * numberOfFullTilesX;
-			int currY0 = y0 + y * tileHeight;
-			int currX1 = currX0 + remainingWidth;
-			int currY1 = currY0 + tileHeight;
-			putTexturedSquare(bufferbuilder, currX0,currY0, currX1 , currY1, z, u0, v0, u0 + remainingWidth, v1);
-		}*/
 		int x = x1 - x0;
 		int y = y1 - y0;
 		int u = (int) (u1 - u0);
@@ -464,13 +415,13 @@ public class GuiGuideBook extends GuiScreen {
 		for (int i = 0; i <= timesY; i++) {
 			for (int j = 0; j <= timesX; j++) {
 				if (j == timesX && i == timesY) {
-					putTexturedSquare(bufferbuilder,x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + (i * v) + remainderY, z, u0, v0, u0 + remainderX, v0 + remainderY);
+					putTexturedSquare(bufferbuilder, x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + (i * v) + remainderY, z, u0, v0, u0 + remainderX, v0 + remainderY);
 				} else if (j == timesX) {
-					putTexturedSquare(bufferbuilder,x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + ((i + 1) * v), z, u0, v0, u0 + remainderX, v1);
+					putTexturedSquare(bufferbuilder, x0 + (j * u), y0 + (i * v), x0 + (j * u) + remainderX, y0 + ((i + 1) * v), z, u0, v0, u0 + remainderX, v1);
 				} else if (i == timesY) {
-					putTexturedSquare(bufferbuilder,x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + (i * v) + remainderY, z, u0, v0, u1, v0 + remainderY);
+					putTexturedSquare(bufferbuilder, x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + (i * v) + remainderY, z, u0, v0, u1, v0 + remainderY);
 				} else {
-					putTexturedSquare(bufferbuilder,x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + ((i + 1) * v), z, u0, v0, u1, v1);
+					putTexturedSquare(bufferbuilder, x0 + (j * u), y0 + (i * v), x0 + ((j + 1) * u), y0 + ((i + 1) * v), z, u0, v0, u1, v1);
 				}
 			}
 		}
@@ -489,6 +440,8 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	public static void drawBoxedCenteredString(Minecraft mc, String text, int x, int y, int z) {
+		// TODO use LPFonterenderer
+		// TODO clamp to the size of the screen
 		int width = mc.fontRenderer.getStringWidth(text);
 		int x1 = x - (width / 2 + 1);
 		int x0 = x1 - 4;
@@ -543,24 +496,40 @@ public class GuiGuideBook extends GuiScreen {
 		GlStateManager.popMatrix();
 	}
 
-	public static void drawHorizontalLine(int x0, int x1, int y, int thickness, int color) {
-		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+	public static void drawHorizontalLine(int x0, int x1, int y, int z, int thickness, int color) {
+		int r = ColorUtilKt.red(color);
+		int g = ColorUtilKt.green(color);
+		int b = ColorUtilKt.blue(color);
+		int a = ColorUtilKt.alpha(color);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		putTexturedSquare(bufferbuilder, x0, y, x1, y + thickness, 50, 0, 0, 1, 1);
+		GlStateManager.disableTexture2D();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		bufferbuilder.pos(x0, y + thickness, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x1, y + thickness, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x1, y, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x0, y, z).color(r, g, b, a).endVertex();
 		tessellator.draw();
+		GlStateManager.enableTexture2D();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.disableBlend();
 	}
 
-	public static void drawVerticalLine(int x, int y0, int y1, int thickness, int color) {
-		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+	public static void drawVerticalLine(int x, int y0, int y1, int z, int thickness, int color) {
+		int r = ColorUtilKt.red(color);
+		int g = ColorUtilKt.green(color);
+		int b = ColorUtilKt.blue(color);
+		int a = ColorUtilKt.alpha(color);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
-		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-		putTexturedSquare(bufferbuilder, x, y0, x + thickness, y1, 50, 0, 0, 1, 1);
+		GlStateManager.disableTexture2D();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		bufferbuilder.pos(x, y1, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x + thickness, y1, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x + thickness, y0, z).color(r, g, b, a).endVertex();
+		bufferbuilder.pos(x, y0, z).color(r, g, b, a).endVertex();
 		tessellator.draw();
+		GlStateManager.enableTexture2D();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GlStateManager.disableBlend();
 	}
@@ -569,25 +538,42 @@ public class GuiGuideBook extends GuiScreen {
 		fontRendererIn.drawStringWithShadow(text, (float) (x - fontRendererIn.getStringWidth(text) / 2), (float) y, color);
 	}
 
+	public static void drawRectangleTile(Rectangle btn, int z, boolean isEnabled, boolean isHovered, int color) {
+		// TODO make it cut the shape depending on broken borders
+		Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE);
+		GlStateManager.color(ColorUtilKt.redF(color), ColorUtilKt.greenF(color), ColorUtilKt.blueF(color), 1.0F);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+		int hovered = isHovered ? 1 : 0;
+		int enabled = isEnabled ? 1 : 2;
+		// Fill: Middle
+		GuiGuideBook.putRepeatingTexturedSquare(bufferbuilder, btn.getX0() + btnBorderWidth, btn.getY0() + btnBorderWidth, btn.getX1() - btnBorderWidth, btn.getY1() - btnBorderWidth, z, btnBackgroundUv.getX0(), btnBackgroundUv.getY0() + (hovered * enabled * btnBackgroundUv.getWidth()), btnBackgroundUv.getX1(),
+				btnBackgroundUv.getY1() + (hovered * enabled * btnBackgroundUv.getWidth()));
+		// Corners: TopLeft, TopRight, BottomLeft & BottomRight
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0(), btn.getY0(), btn.getX0() + btnBorderWidth, btn.getY0() + btnBorderWidth, z, btnBorderUv.getX0(), btnBorderUv.getY0() + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX0() + btnBorderWidth),
+				(btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX1() - btnBorderWidth, btn.getY0(), btn.getX1(), btn.getY0() + btnBorderWidth, z, (btnBorderUv.getX1() - btnBorderWidth), btnBorderUv.getY0() + (hovered * enabled * btnBorderUv.getHeight()), btnBorderUv.getX1(),
+				(btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0(), btn.getY1() - btnBorderWidth, btn.getX0() + btnBorderWidth, btn.getY1(), z, btnBorderUv.getX0(), (btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX0() + btnBorderWidth),
+				btnBorderUv.getY1() + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX1() - btnBorderWidth, btn.getY1() - btnBorderWidth, btn.getX1(), btn.getY1(), z, (btnBorderUv.getX1() - btnBorderWidth), (btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), btnBorderUv.getX1(),
+				btnBorderUv.getY1() + (hovered * enabled * btnBorderUv.getHeight()));
+		// Edges: Top, Bottom, Left & Right
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0() + btnBorderWidth, btn.getY0(), btn.getX1() - btnBorderWidth, btn.getY0() + btnBorderWidth, z, (btnBorderUv.getX0() + btnBorderWidth), btnBorderUv.getY0() + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX1() - btnBorderWidth),
+				(btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0() + btnBorderWidth, btn.getY1() - btnBorderWidth, btn.getX1() - btnBorderWidth, btn.getY1(), z, (btnBorderUv.getX0() + btnBorderWidth), (btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()),
+				(btnBorderUv.getX1() - btnBorderWidth), btnBorderUv.getY1() + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX0(), btn.getY0() + btnBorderWidth, btn.getX0() + btnBorderWidth, btn.getY1() - btnBorderWidth, z, btnBorderUv.getX0(), (btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), (btnBorderUv.getX0() + btnBorderWidth),
+				(btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		GuiGuideBook.putTexturedSquare(bufferbuilder, btn.getX1() - btnBorderWidth, btn.getY0() + btnBorderWidth, btn.getX1(), btn.getY1() - btnBorderWidth, z, (btnBorderUv.getX1() - btnBorderWidth), (btnBorderUv.getY0() + btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()), btnBorderUv.getX1(),
+				(btnBorderUv.getY1() - btnBorderWidth) + (hovered * enabled * btnBorderUv.getHeight()));
+		tessellator.draw();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
 	@Override
 	public void drawHorizontalLine(int startX, int endX, int y, int color) {
 		super.drawHorizontalLine(startX, endX, y, color);
-	}
-
-	public static class MenuItemsDivision {
-
-		public String name;
-
-		@Getter
-		final ArrayList<MenuItem> list;
-
-		public MenuItemsDivision(String name, ArrayList<MenuItem> list) {
-			this.list = list;
-			this.name = name;
-		}
-
-		public void add(MenuItem item) {
-			list.add(item);
-		}
 	}
 }

@@ -102,7 +102,7 @@ public class GuiGuideBook extends GuiScreen {
 	public static final ResourceLocation GUI_BOOK_TEXTURE = new ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png");
 
 	// Buttons
-	private GuiGuideBookSlider slider;
+	private SliderButton slider;
 	private GuiGuideBookTexturedButton home;
 	private final int maxTabs = 10;
 	private final ArrayList<GuiGuideBookTabButton> tabList;
@@ -200,7 +200,6 @@ public class GuiGuideBook extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		slider.enabled = currentPage.getHeight() > usableArea.getHeight();
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		currentPage.draw(mouseX, mouseY, partialTicks, usableArea);
 		this.drawGui();
@@ -212,7 +211,7 @@ public class GuiGuideBook extends GuiScreen {
 	public void initGui() {
 		this.calculateConstraints();
 		title = updateTitle();
-		this.slider = this.addButton(new GuiGuideBookSlider(0, innerGui.getX1() - guiSliderWidth, innerGui.getY0(), innerGui.getY1(), zTitleButtons, currentPage.getProgress(), guiSliderWidth, guiSliderHeight));
+		this.slider = this.addButton(new SliderButton(0, innerGui.getX1() - guiSliderWidth, innerGui.getY0(), innerGui.getHeight(), guiSliderWidth, guiSliderHeight, currentPage.getProgress()));
 		this.slider.enabled = false;
 		this.home = this.addButton(new GuiGuideBookTexturedButton(1, outerGui.getX1() - guiTabWidth, outerGui.getY0() - guiTabHeight, guiTabWidth, guiFullTabHeight, 16, 64, zTitleButtons, 128, 0, 16, 16, false, GuiGuideBookTexturedButton.EnumButtonType.TAB));
 		this.button = this.addButton(new GuiGuideBookTexturedButton(4, outerGui.getX1() - 18 - guiTabWidth + 4, outerGui.getY0() - 18, 16, 16, 0, 0, zTitleButtons, 192, 0, 16, 16, true, GuiGuideBookTexturedButton.EnumButtonType.NORMAL));
@@ -299,6 +298,7 @@ public class GuiGuideBook extends GuiScreen {
 
 	protected void updateButtonVisibility() {
 		this.home.visible = !currentPage.getPage().equals(MAIN_MENU_FILE);
+		slider.enabled = currentPage.getHeight() > usableArea.getHeight();
 		int offset = 0;
 		for (GuiGuideBookTabButton tab : tabList) {
 			tab.y = outerGui.getY0();

@@ -37,8 +37,6 @@
 
 package network.rs485.logisticspipes.util.math
 
-import logisticspipes.utils.MinecraftColor
-import logisticspipes.utils.gui.SimpleGraphics
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import java.lang.Integer.max

@@ -64,9 +64,7 @@ import static network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.LPConstants;
-import logisticspipes.items.ItemGuideBook;
 import logisticspipes.utils.MinecraftColor;
-import logisticspipes.utils.OpenGLDebugger;
 import network.rs485.logisticspipes.gui.LPFontRenderer;
 import network.rs485.logisticspipes.guidebook.BookContents;
 import network.rs485.logisticspipes.util.ColorUtilKt;
@@ -149,7 +147,7 @@ public class GuiGuideBook extends GuiScreen {
 	public GuiGuideBook(EnumHand hand) {
 		super();
 		cachedPages = new HashMap<>();
-		//		lpFontRenderer = new LPFontRenderer("minecraft-plain");
+		//lpFontRenderer = new LPFontRenderer("minecraft-plain");
 		lpFontRenderer = new LPFontRenderer("ter-u12n");
 		innerGui = new Rectangle();
 		outerGui = new Rectangle();

@@ -37,14 +37,11 @@
 
 package network.rs485.logisticspipes.guidebook
 
-import buildcraft.api.items.FluidItemDrops.item
-import codechicken.lib.util.ServerUtils.mc
 import logisticspipes.LPItems
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
@@ -152,9 +149,6 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
             renderItem.zLevel = prevZ
             RenderHelper.disableStandardItemLighting();
         }
-        // Draw tile bg
-        // Draw icon
-        // Draw tooltip
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {

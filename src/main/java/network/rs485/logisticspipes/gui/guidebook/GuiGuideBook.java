@@ -68,7 +68,6 @@ import logisticspipes.items.ItemGuideBook;
 import logisticspipes.utils.MinecraftColor;
 import logisticspipes.utils.OpenGLDebugger;
 import network.rs485.logisticspipes.gui.LPFontRenderer;
-import network.rs485.logisticspipes.gui.guidebook.book.MenuItem;
 import network.rs485.logisticspipes.guidebook.BookContents;
 import network.rs485.logisticspipes.util.ColorUtilKt;
 import network.rs485.logisticspipes.util.math.Rectangle;
@@ -282,15 +281,6 @@ public class GuiGuideBook extends GuiScreen {
 		updateButtonVisibility();
 	}
 
-	private void pressedItem(MenuItem item) {
-		selectPage(item);
-	}
-
-	protected void selectPage(MenuItem item) {
-		//currentPage = new SavedPage(item.getTarget(), 0, 0.0F);
-		title = updateTitle();
-		updateButtonVisibility();
-	}
 
 	protected static String updateTitle() {
 		return currentPage.getLoadedPage().getMetadata().getTitle();

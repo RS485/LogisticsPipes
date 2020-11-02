@@ -37,8 +37,6 @@
 
 package network.rs485.logisticspipes.util.math
 
-import logisticspipes.utils.MinecraftColor
-import logisticspipes.utils.gui.SimpleGraphics
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import java.lang.Integer.max
@@ -127,10 +125,10 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         GlStateManager.disableAlpha()
         GlStateManager.disableBlend()
         GlStateManager.color(r, g, b)
-        GuiGuideBook.drawHorizontalLine(x0 - 1, x1, y0 - 1, 500, 1, 1) // TOP
-        GuiGuideBook.drawHorizontalLine(x0, x1 + 1, y1, 500, 1, 1) // BOTTOM
-        GuiGuideBook.drawVerticalLine(x0 - 1, y0, y1 + 1, 500, 1, 1) // LEFT
-        GuiGuideBook.drawVerticalLine(x1, y0 - 1, y1, 500, 1, 1) // RIGHT
+        GuiGuideBook.drawHorizontalLine(x0 - 1, x1, y0 - 1, 500.0, 1, 1) // TOP
+        GuiGuideBook.drawHorizontalLine(x0, x1 + 1, y1, 500.0, 1, 1) // BOTTOM
+        GuiGuideBook.drawVerticalLine(x0 - 1, y0, y1 + 1, 500.0, 1, 1) // LEFT
+        GuiGuideBook.drawVerticalLine(x1, y0 - 1, y1, 500.0, 1, 1) // RIGHT
         GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
         GlStateManager.popMatrix()

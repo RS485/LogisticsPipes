@@ -37,14 +37,11 @@
 
 package network.rs485.logisticspipes.guidebook
 
-import buildcraft.api.items.FluidItemDrops.item
-import codechicken.lib.util.ServerUtils.mc
 import logisticspipes.LPItems
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
@@ -135,9 +132,9 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (isHovered) GuiGuideBook.drawBoxedCenteredString(Minecraft.getMinecraft(), pageName, area.x0 + area.width / 2, area.y1 - yOffset, 15)
+        if (isHovered) GuiGuideBook.drawBoxedCenteredString(Minecraft.getMinecraft(), pageName, area.x0 + area.width / 2, area.y1 - yOffset, 15.0)
         val visibleTile = visibleArea.overlap(area.translated(0, -yOffset))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4, true, isHovered, MinecraftColor.WHITE.colorCode)
+        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, isHovered, MinecraftColor.WHITE.colorCode)
         if (visibleArea.overlaps(iconArea.translated(0, -yOffset))) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
             RenderHelper.enableGUIStandardItemLighting();
@@ -152,9 +149,6 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
             renderItem.zLevel = prevZ
             RenderHelper.disableStandardItemLighting();
         }
-        // Draw tile bg
-        // Draw icon
-        // Draw tooltip
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {

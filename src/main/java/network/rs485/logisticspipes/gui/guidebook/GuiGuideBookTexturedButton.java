@@ -95,7 +95,7 @@ public class GuiGuideBookTexturedButton extends GuiButton {
 		if (this.type == EnumButtonType.TAB) {
 			if (this.visible) {
 				mc.getTextureManager().bindTexture(GUI_BOOK_TEXTURE);
-				GuiGuideBook.drawStretchingSquare(this.x, this.y, this.x + this.width, this.y + this.height, (int) zLevel, u0, v0, u0 + this.width, v0 + this.height);
+				GuiGuideBook.drawStretchingRectangle(this.x, this.y, this.x + this.width, this.y + this.height, (int) zLevel, u0, v0, u0 + this.width, v0 + this.height);
 			}
 			if (sizeX > 0 && sizeY > 0)
 				drawTexturedButtonForegroundLayer(mc, mouseX, mouseY, GUI_BOOK_TEXTURE, u1, v1, sizeX, sizeY);
@@ -115,7 +115,7 @@ public class GuiGuideBookTexturedButton extends GuiButton {
 		int j = (this.hasDisabledState && !this.enabled) ? 2 : 0;
 		int offsetX = (this.width - sizeX) / 2;
 		int offsetY = (this.height - sizeY) / 2;
-		GuiGuideBook.drawStretchingSquare(this.x + offsetX, this.y + offsetY, this.x + offsetX + sizeX, this.y + offsetY + sizeY, (int) zLevel + 1, u0, v0 + (sizeY) * i + (sizeY) * j, u0 + sizeX, v0 + sizeY + (sizeY) * i + (sizeY) * j);
+		GuiGuideBook.drawStretchingRectangle(this.x + offsetX, this.y + offsetY, this.x + offsetX + sizeX, this.y + offsetY + sizeY, (int) zLevel + 1, u0, v0 + (sizeY) * i + (sizeY) * j, u0 + sizeX, v0 + sizeY + (sizeY) * i + (sizeY) * j);
 		this.mouseDragged(mc, mouseX, mouseY);
 
 	}

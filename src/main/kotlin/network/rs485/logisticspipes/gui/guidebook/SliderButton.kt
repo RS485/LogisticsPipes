@@ -61,7 +61,7 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
         val btnAtlasOffsetY = hovered && !dragging || !enabled
         val btnAtlasOffsetX = dragging || !enabled
         // TODO make this draw a bordered rectangle
-        GuiGuideBook.drawStretchingSquare(buttonArea.x0, buttonArea.y0, buttonArea.x1, buttonArea.y1, zLevel.toInt(), (96 + (if (btnAtlasOffsetX) 1 else 0) * 12).toDouble(), (0 + (if (btnAtlasOffsetY) 1 else 0) * 15).toDouble(), (108 + (if (btnAtlasOffsetX) 1 else 0) * 12).toDouble(), ((if (btnAtlasOffsetY) 1 else 0) * 15 + 15).toDouble())
+        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0, buttonArea.x1, buttonArea.y1, zLevel.toDouble(), (96 + (if (btnAtlasOffsetX) 1 else 0) * 12).toDouble(), (0 + (if (btnAtlasOffsetY) 1 else 0) * 15).toDouble(), (108 + (if (btnAtlasOffsetX) 1 else 0) * 12).toDouble(), ((if (btnAtlasOffsetY) 1 else 0) * 15 + 15).toDouble())
         mouseDragged(mc, mouseX, mouseY)
     }
 

@@ -135,9 +135,9 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (isHovered) GuiGuideBook.drawBoxedCenteredString(Minecraft.getMinecraft(), pageName, area.x0 + area.width / 2, area.y1 - yOffset, 15)
+        if (isHovered) GuiGuideBook.drawBoxedCenteredString(Minecraft.getMinecraft(), pageName, area.x0 + area.width / 2, area.y1 - yOffset, 15.0)
         val visibleTile = visibleArea.overlap(area.translated(0, -yOffset))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4, true, isHovered, MinecraftColor.WHITE.colorCode)
+        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, isHovered, MinecraftColor.WHITE.colorCode)
         if (visibleArea.overlaps(iconArea.translated(0, -yOffset))) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
             RenderHelper.enableGUIStandardItemLighting();

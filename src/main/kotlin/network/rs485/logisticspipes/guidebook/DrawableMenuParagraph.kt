@@ -144,9 +144,11 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
             val renderItem = Minecraft.getMinecraft().renderItem
             val prevZ = renderItem.zLevel
             renderItem.zLevel = -145f
-            if(iconScale != 1.0) GlStateManager.scale(iconScale, iconScale, 1.0)
+            if (iconScale != 1.0) GlStateManager.scale(iconScale, iconScale, 1.0)
+            GlStateManager.disableDepth()
             renderItem.renderItemAndEffectIntoGUI(ItemStack(item), floor(iconArea.x0 / iconScale).toInt(), floor((iconArea.y0 - yOffset) / iconScale).toInt())
-            if(iconScale != 1.0)GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
+            if (iconScale != 1.0) GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
+            GlStateManager.enableDepth()
             renderItem.zLevel = prevZ
             RenderHelper.disableStandardItemLighting();
         }

@@ -104,7 +104,7 @@ public class GuiGuideBook extends GuiScreen {
 	private SliderButton slider;
 	private GuiGuideBookTexturedButton home;
 	private final int maxTabs = 10;
-	private final ArrayList<GuiGuideBookTabButton> tabList;
+	private final ArrayList<TabButton> tabList;
 	private GuiButton button;
 	private int tabID = 50;
 
@@ -189,7 +189,7 @@ public class GuiGuideBook extends GuiScreen {
 			NBTTagCompound nbt = bookItemStack.getTagCompound();
 			currentPage = new SavedPage().fromTag(nbt.getCompoundTag("page"));
 			NBTTagList tagList = nbt.getTagList("bookmarks", 10);
-			for (NBTBase tag : tagList) tabList.add(new GuiGuideBookTabButton(tabID++, outerGui.getX1() - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), outerGui.getY0(), new SavedPage().fromTag((NBTTagCompound) tag)));
+			for (NBTBase tag : tagList) tabList.add(new TabButton(tabID++, outerGui.getX1() - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), outerGui.getY0(), new SavedPage().fromTag((NBTTagCompound) tag)));
 		} else {
 			SavedPage defaultPage = new SavedPage();
 			currentPage = new SavedPage(defaultPage);
@@ -202,7 +202,7 @@ public class GuiGuideBook extends GuiScreen {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		currentPage.draw(mouseX, mouseY, partialTicks, usableArea);
 		this.drawGui();
-		for (GuiGuideBookTabButton tab : tabList) tab.drawButton(mc, mouseX, mouseY, partialTicks);
+		for (TabButton tab : tabList) tab.drawButton(mc, mouseX, mouseY, partialTicks);
 		this.drawTitle();
 	}
 
@@ -228,7 +228,7 @@ public class GuiGuideBook extends GuiScreen {
 		BookContents.INSTANCE.clear();
 		currentPage.setProgress(slider.getProgress());
 		ArrayList<SavedPage> tabs = new ArrayList<>();
-		for (GuiGuideBookTabButton tab : tabList) tabs.add(tab.getTab());
+		for (TabButton tab : tabList) tabs.add(tab.getTab());
 		//		final ItemStack stack = Minecraft.getMinecraft().player.getHeldItem(hand);
 		//		ItemGuideBook.setCurrentPage(stack, currentPage, tabs, hand);
 		super.onGuiClosed();
@@ -252,11 +252,11 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	private void tryAddTab(SavedPage currentPage) {
-		tabList.add(new GuiGuideBookTabButton(tabID++, outerGui.getX1() - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), outerGui.getY0(), currentPage));
+		tabList.add(new TabButton(tabID++, outerGui.getX1() - 2 - 2 * guiTabWidth + (tabList.size() * guiTabWidth), outerGui.getY0(), currentPage));
 		updateButtonVisibility();
 	}
 
-	private void tryRemoveTab(GuiGuideBookTabButton tab) {
+	private void tryRemoveTab(TabButton tab) {
 		//tabList.remove(tab);
 		updateButtonVisibility();
 	}
@@ -264,7 +264,7 @@ public class GuiGuideBook extends GuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		if (tabList != null && tabList.size() > 0) {
-			for (GuiGuideBookTabButton tab : tabList) {
+			for (TabButton tab : tabList) {
 				if (tab.mousePressed(mc, mouseX, mouseY)) {
 					if (mouseButton == 0) {
 						//currentPage = new SavedPage(tab.getTab());
@@ -290,11 +290,11 @@ public class GuiGuideBook extends GuiScreen {
 		this.home.visible = !currentPage.getPage().equals(MAIN_MENU_FILE);
 		slider.enabled = currentPage.getHeight() > usableArea.getHeight();
 		int offset = 0;
-		for (GuiGuideBookTabButton tab : tabList) {
+		for (TabButton tab : tabList) {
 			tab.y = outerGui.getY0();
 			tab.x = outerGui.getX1() - 2 - 2 * guiTabWidth - offset;
 			offset += guiTabWidth;
-			tab.isActive = tab.getTab().isEqual(currentPage);
+			tab.setActive(tab.getTab().isEqual(currentPage));
 		}
 		this.button.visible = !currentPage.getPage().equals(MAIN_MENU_FILE) && tabList.size() < maxTabs;
 		this.button.enabled = tabNotFound(currentPage);
@@ -303,7 +303,7 @@ public class GuiGuideBook extends GuiScreen {
 	}
 
 	protected boolean tabNotFound(SavedPage checkTab) {
-		for (GuiGuideBookTabButton tab : tabList) if (tab.getTab().isEqual(checkTab)) return false;
+		for (TabButton tab : tabList) if (tab.getTab().isEqual(checkTab)) return false;
 		return true;
 	}
 

@@ -35,64 +35,50 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.guidebook;
+package network.rs485.logisticspipes.gui.guidebook
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import logisticspipes.utils.MinecraftColor
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.util.math.Rectangle
 
-import lombok.Getter;
-import lombok.Setter;
-import static network.rs485.logisticspipes.gui.guidebook.GuiGuideBook.GUI_BOOK_TEXTURE;
+class TabButton(buttonId: Int, x: Int, y: Int, val tab: SavedPage): GuiButton(buttonId, 24, 24, "") {
+    
+    // TODO look into making the TexturedButton abstract and making this and a Home button extend it
 
-import logisticspipes.utils.MinecraftColor;
+    var isActive = false
+    private val buttonArea = Rectangle(x, y, 24, 24)
 
-public class GuiGuideBookTabButton extends GuiButton {
+    init {
+        visible = true
+    }
 
-	public boolean isActive;
+    fun cycleColor() {
+        if (isActive) return
+        tab.cycleColor(false)
+        playPressSound(Minecraft.getMinecraft().soundHandler)
+    }
 
-	@Getter
-	@Setter
-	private SavedPage tab;
+    fun cycleColorInverted() {
+        if (isActive) return
+        tab.cycleColor(true)
+        playPressSound(Minecraft.getMinecraft().soundHandler)
+    }
 
-	public GuiGuideBookTabButton(int buttonId, int x, int y, SavedPage tab) {
-		super(buttonId, x, y, 24, 24, "");
-		this.tab = tab;
-		this.visible = true;
-		this.isActive = false;
-	}
-
-	@Override
-	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-		return enabled && visible && hovered;
-	}
-
-	public void cycleColor() {
-		if (isActive) return;
-		this.tab.cycleColor(false);
-		playPressSound(Minecraft.getMinecraft().getSoundHandler());
-	}
-
-	public void cycleColorInverted() {
-		if (isActive) return;
-		this.tab.cycleColor(true);
-		playPressSound(Minecraft.getMinecraft().getSoundHandler());
-	}
-
-	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-		if (!this.visible) return;
-		mc.getTextureManager().bindTexture(GUI_BOOK_TEXTURE);
-		int drawHeight = height;
-		int drawY = y;
-		if (!hovered && !isActive) {
-			drawHeight -= 2;
-		} else if (isActive) {
-			drawHeight += 3;
-			drawY += 3;
-		}
-		this.hovered = mouseX > this.x && mouseX <= this.x + this.width && mouseY >= this.y - this.height && mouseY < this.y;
-		GuiGuideBook.drawStretchingSquare(x, drawY - drawHeight, x + width, drawY, 15, 40, 64, 40 + width, 64 + drawHeight, true, this.isActive ? 0xFFFFFF : MinecraftColor.values()[tab.getColor()].getColorCode());
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-	}
+    override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        hovered = buttonArea.contains(mouseX, mouseY)
+        if (!visible) return
+        mc.textureManager.bindTexture(GuiGuideBook.GUI_BOOK_TEXTURE)
+        var drawHeight = buttonArea.height
+        var drawY = buttonArea.y0
+        if (!hovered && !isActive) {
+            drawHeight -= 2
+        } else if (isActive) {
+            drawHeight += 3
+            drawY += 3
+        }
+        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, drawY - drawHeight, buttonArea.x1, drawY, zLevel.toDouble(), 40.0, 64.0, 40 + buttonArea.width.toDouble(), 64 + drawHeight.toDouble(), true, if (isActive) 0xFFFFFF else MinecraftColor.values()[tab.color].colorCode)
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+    }
 }

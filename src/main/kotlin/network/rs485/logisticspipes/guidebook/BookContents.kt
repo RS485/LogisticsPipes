@@ -136,7 +136,7 @@ private fun parseMetadata(metadataString: String, markdownFile: String): YamlPag
             Yaml.default.decodeFromString(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
         } catch (e: YamlException) {
             LogisticsPipes.log.error("Exception: $e")
-            LogisticsPipes.log.error("The following Yaml is malformed! \n$metadataString")
+            LogisticsPipes.log.error("The following Yaml in $markdownFile is malformed! \n$metadataString")
             MISSING_META
         }
     } else MISSING_META

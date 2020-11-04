@@ -75,6 +75,7 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
     // Constructors
     constructor() : this(0, 0, 0, 0)
+    constructor(rect: Rectangle) : this(rect.x0, rect.y0, rect.width, rect.height)
     constructor(width: Int, height: Int) : this(0, 0, width, height)
     private constructor(firstPoint: Pair<Int, Int>, secondPoint: Pair<Int, Int>) : this(firstPoint.first, firstPoint.second, (secondPoint.first - firstPoint.first), (secondPoint.second - firstPoint.second))
 

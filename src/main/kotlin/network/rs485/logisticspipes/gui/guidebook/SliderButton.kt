@@ -40,9 +40,10 @@ package network.rs485.logisticspipes.gui.guidebook
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.GUI_BOOK_TEXTURE
 import network.rs485.logisticspipes.util.math.Rectangle
 
-class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
+class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
     private val rail = Rectangle(x, y, buttonWidth, railHeight)
     private val buttonArea = Rectangle(buttonWidth, buttonHeight)
     private val movementDistance = rail.height - buttonArea.height
@@ -50,18 +51,19 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
 
     init {
         buttonArea.setPos(x, calculateProgressI(progress))
+        enabled = false
         zLevel = 15f
     }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if(!visible) return
-        mc.textureManager.bindTexture(GuiGuideBook.GUI_BOOK_TEXTURE)
+        mc.textureManager.bindTexture(GUI_BOOK_TEXTURE)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         hovered = buttonArea.contains(mouseX, mouseY)
         val btnAtlasOffsetY = hovered && !dragging || !enabled
         val btnAtlasOffsetX = dragging || !enabled
         // TODO make this draw a bordered rectangle
-        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0, buttonArea.x1, buttonArea.y1, zLevel.toDouble(), (96 + (if (btnAtlasOffsetX) 1 else 0) * 12).toDouble(), (0 + (if (btnAtlasOffsetY) 1 else 0) * 15).toDouble(), (108 + (if (btnAtlasOffsetX) 1 else 0) * 12).toDouble(), ((if (btnAtlasOffsetY) 1 else 0) * 15 + 15).toDouble())
+        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0, buttonArea.x1, buttonArea.y1, zLevel.toDouble(), 96 + (if (btnAtlasOffsetX) 1 else 0) * 12, 0 + (if (btnAtlasOffsetY) 1 else 0) * 15, 108 + (if (btnAtlasOffsetX) 1 else 0) * 12, (if (btnAtlasOffsetY) 1 else 0) * 15 + 15, false)
         mouseDragged(mc, mouseX, mouseY)
     }
 
@@ -70,7 +72,7 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
             dragging = false
             setProgressI((mouseY - height / 2.0f).toInt())
             // TODO make proper way to update progress leaving currentPage private.
-            GuiGuideBook.currentPage.progress = progress
+            gui.currentPage.progress = progress
         }
         super.mouseReleased(mouseX, mouseY)
     }
@@ -79,7 +81,7 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
         if (dragging) {
             setProgressI((mouseY - height / 2.0f).toInt())
             // TODO make proper way to update progress leaving currentPage private.
-            GuiGuideBook.currentPage.progress = progress
+            gui.currentPage.progress = progress
         }
     }
 

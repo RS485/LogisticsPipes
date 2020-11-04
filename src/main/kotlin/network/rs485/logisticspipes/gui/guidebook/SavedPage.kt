@@ -60,9 +60,9 @@ class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 
         }
     }
 
-    fun initDrawables(x: Int, y: Int, maxWidth: Int) {
-        loadedPage.drawableParagraphs.fold(y + PAGE_VERTICAL_PADDING) { currentY, paragraph ->
-            currentY + paragraph.setPos(x + 1, currentY + 1, maxWidth - 2) + 3
+    fun initDrawables(area: Rectangle) {
+        loadedPage.drawableParagraphs.fold(area.y0 + PAGE_VERTICAL_PADDING) { currentY, paragraph ->
+            currentY + paragraph.setPos(area.x0 + 1, currentY + 1, area.width - 2) + 3
         }
         height = loadedPage.drawableParagraphs.last().area.y1 - loadedPage.drawableParagraphs.first().area.y0 + PAGE_VERTICAL_PADDING * 2
     }

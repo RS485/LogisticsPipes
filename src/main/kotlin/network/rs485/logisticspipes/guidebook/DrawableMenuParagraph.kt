@@ -45,9 +45,7 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
-import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
+import network.rs485.logisticspipes.gui.guidebook.*
 import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.floor
 
@@ -82,10 +80,6 @@ data class DrawableMenuParagraph(val menuTitle: List<DrawableWord>, val menuGrou
         for (group in menuGroups) currentY += group.setPos(x, currentY + y, maxWidth)
         area.setSize(maxWidth, currentY)
         return area.height
-    }
-
-    override fun hovering(mouseX: Int, mouseY: Int, yOffset: Int) {
-        super.hovering(mouseX, mouseY, yOffset)
     }
 }
 
@@ -131,8 +125,8 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
     private val iconArea = Rectangle(16 * iconScale.toInt(), 16 * iconScale.toInt())
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (isHovered) GuiGuideBook.drawBoxedCenteredString(Minecraft.getMinecraft(), pageName, area.x0 + area.width / 2, area.y1 - yOffset, 15.0)
+        hovering(mouseX, mouseY, yOffset, visibleArea)
+        if (isHovered) GuiGuideBook.drawBoxedCenteredString(pageName, area.x0 + area.width / 2, minOf(area.y1 - yOffset, visibleArea.y1), GuideBookConstants.zTooltip)
         val visibleTile = visibleArea.overlap(area.translated(0, -yOffset))
         GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, isHovered, MinecraftColor.WHITE.colorCode)
         if (visibleArea.overlaps(iconArea.translated(0, -yOffset))) {

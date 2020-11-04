@@ -52,7 +52,7 @@ interface IDrawable {
      * @param visibleArea used to avoid draw calls on non-visible children
      */
     fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle){
-        hovering(mouseX, mouseY, yOffset)
+        hovering(mouseX, mouseY, yOffset, visibleArea)
     }
 
     /**
@@ -71,7 +71,7 @@ interface IDrawable {
      * @param mouseY Y position of the mouse (absolute, screen)
      * @param yOffset The current Y offset on the drawn page.
      */
-    fun hovering(mouseX: Int, mouseY: Int, yOffset: Int) {
-        isHovered = area.contains(mouseX, mouseY + yOffset)
+    fun hovering(mouseX: Int, mouseY: Int, yOffset: Int, visibleArea: Rectangle) {
+        isHovered = area.translated(0, -yOffset).overlap(visibleArea).contains(mouseX, mouseY)
     }
 }

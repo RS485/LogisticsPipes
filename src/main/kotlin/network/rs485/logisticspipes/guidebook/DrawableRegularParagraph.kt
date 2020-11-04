@@ -37,10 +37,8 @@
 
 package network.rs485.logisticspipes.guidebook
 
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
 import network.rs485.logisticspipes.util.math.Rectangle
-import kotlin.math.floor
 
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
@@ -59,7 +57,7 @@ data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawab
             if (visibleArea.overlaps(line.first().area.translated(0, -yOffset))) {
                 for (drawable in line) {
                     if (isHovered && drawable is Link) {
-                        drawable.hovering(mouseX, mouseY, yOffset)
+                        drawable.hovering(mouseX, mouseY, yOffset, visibleArea)
                     }
                     drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
                 }

@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-interface IDrawableParagraph : IDrawable{
+interface IDrawableParagraph : IDrawable {
     /**
      * This function is supposed to update the children's position by giving it the start
      * Y and X placement and iterating through the children while calculating their placement.

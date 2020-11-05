@@ -91,7 +91,6 @@ private val sliderSeparatorTexture = Rectangle(96, 33, 16, 30)
 private val backgroundFrameTexture = Rectangle(64, 0, 32, 32)
 
 
-
 // Slider
 private const val guiSliderWidth = 12
 private const val guiSliderHeight = 15
@@ -220,7 +219,8 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             home -> setPage(MAIN_MENU_FILE)
             addTab -> addBookmark(currentPage)
             is TabButton -> if (!button.isActive) setPage(button.tab.page)
-            else -> {}
+            else -> {
+            }
         }
         updateButtonVisibility()
     }
@@ -228,34 +228,35 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     private fun rightClick(button: GuiButton) {
         when (button) {
             is TabButton -> {
-                if(button.isActive){
-                    if(isCtrlKeyDown() && isShiftKeyDown()){
+                if (button.isActive) {
+                    if (isCtrlKeyDown() && isShiftKeyDown()) {
                         button.cycleColorInverted()
-                    } else if(isShiftKeyDown()) {
+                    } else if (isShiftKeyDown()) {
                         removeBookmark(button)
                     } else {
                         button.cycleColor()
                     }
                 }
             }
-            else -> {}
+            else -> {
+            }
         }
     }
 
     // Bookmark logic
     private fun addBookmark(currentPage: SavedPage) {
-        if(!checkBookmarks(TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, currentPage)) && tabs.size < maxTabs){
+        if (!checkBookmarks(TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, currentPage)) && tabs.size < maxTabs) {
             tabs.add(TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, currentPage))
         }
     }
 
     private fun removeBookmark(tabButton: TabButton) {
-        if(tabs.size < 0 && checkBookmarks(tabButton) && tabs.contains(tabButton)){
+        if (tabs.size < 0 && checkBookmarks(tabButton) && tabs.contains(tabButton)) {
             tabs.remove(tabButton)
         }
     }
 
-    private fun checkBookmarks(tabButtonIn: TabButton): Boolean{
+    private fun checkBookmarks(tabButtonIn: TabButton): Boolean {
         tabs.forEach { tabButton -> tabButton.tab.isEqual(tabButtonIn.tab) }
         return false
     }
@@ -399,7 +400,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
          * @param textureArea   defines position and size of the desired rectangle's texture;
          * @param z             defines z level of the desired rectangle.
          */
-        fun putTexturedRectangle(bufferBuilder: BufferBuilder, area: Rectangle, textureArea: Rectangle, z: Double){
+        fun putTexturedRectangle(bufferBuilder: BufferBuilder, area: Rectangle, textureArea: Rectangle, z: Double) {
             putTexturedRectangle(bufferBuilder, area.x0, area.y0, area.x1, area.y1, z, textureArea.x0, textureArea.y0, textureArea.x1, textureArea.y1)
         }
 
@@ -494,8 +495,8 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
                 outerArea.x1 > screenWidth -> outerArea.translate(screenWidth - outerArea.x1, 0)
             }
             val innerArea = Rectangle(outerArea.x0 + 4, outerArea.y0 + 4, width, height)
-            if(outerArea.x0 < 0) outerArea.translate(-outerArea.x0, 0)
-            if(outerArea.x1 > Minecraft.getMinecraft().currentScreen!!.width) outerArea.translate(-outerArea.x0, 0)
+            if (outerArea.x0 < 0) outerArea.translate(-outerArea.x0, 0)
+            if (outerArea.x1 > Minecraft.getMinecraft().currentScreen!!.width) outerArea.translate(-outerArea.x0, 0)
             val outerAreaTexture = Rectangle(112, 32, 16, 16)
             val innerAreaTexture = Rectangle(116, 36, 8, 8)
             GlStateManager.pushMatrix()

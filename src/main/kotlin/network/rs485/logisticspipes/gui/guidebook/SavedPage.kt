@@ -109,7 +109,7 @@ class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 
     fun cycleColor(invert: Boolean = false) {
         if (invert) color--
         else color++
-        if (color == 16) color = 0;
-        if (color == -1) color = 15;
+        if (color == 16) color = 0
+        if (color == -1) color = 15
     }
 }

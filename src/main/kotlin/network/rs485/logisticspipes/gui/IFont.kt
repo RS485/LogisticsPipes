@@ -44,7 +44,7 @@ interface IFont {
     val defaultChar: Char
 }
 
-interface IGlyph{
+interface IGlyph {
     val name: String
     val charPoint: Char
     val dWidthX: Int

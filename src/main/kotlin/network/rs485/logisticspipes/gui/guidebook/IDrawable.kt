@@ -51,7 +51,7 @@ interface IDrawable {
      * @param yOffset The current Y offset on the drawn page.
      * @param visibleArea used to avoid draw calls on non-visible children
      */
-    fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle){
+    fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         hovering(mouseX, mouseY, yOffset, visibleArea)
     }
 

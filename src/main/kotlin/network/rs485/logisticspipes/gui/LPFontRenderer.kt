@@ -38,14 +38,12 @@
 package network.rs485.logisticspipes.gui
 
 import logisticspipes.LPConstants
-import logisticspipes.utils.MinecraftColor
 import lombok.Getter
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.guidebook.DrawableSpace
 import network.rs485.logisticspipes.util.alpha
 import network.rs485.logisticspipes.util.blue
 import network.rs485.logisticspipes.util.green

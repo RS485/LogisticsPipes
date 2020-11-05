@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.guidebook
 
-import buildcraft.lib.client.guide.GuiGuide
 import logisticspipes.LPConstants
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.util.ResourceLocation
@@ -94,8 +93,8 @@ data class DrawableHorizontalLine(val thickness: Int, val padding: Int = 3) : ID
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        if(DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        if(visibleArea.overlaps(area.translated(0, -yOffset))) GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5.0, thickness, MinecraftColor.WHITE.colorCode)
+        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
+        if (visibleArea.overlaps(area.translated(0, -yOffset))) GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5.0, thickness, MinecraftColor.WHITE.colorCode)
     }
 }
 
@@ -127,7 +126,8 @@ private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
     is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
     is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, getScaleFromLevel(paragraph.headerLevel)), paragraph.headerLevel)
     is HorizontalLineParagraph -> DrawableHorizontalLine(2)
-    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(BookContents.get(MAIN_MENU_FILE).metadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found."))) // TODO have the current page path here to get the proper menu
+    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(BookContents.get(MAIN_MENU_FILE).metadata.menu[paragraph.link]
+            ?: error("Requested menu ${paragraph.link}, not found."))) // TODO have the current page path here to get the proper menu
 }
 
 fun toMenuGroups(groups: Map<String, List<String>>): List<DrawableMenuTileGroup> {

@@ -56,7 +56,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
     }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if(!visible) return
+        if (!visible) return
         mc.textureManager.bindTexture(GUI_BOOK_TEXTURE)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         hovered = buttonArea.contains(mouseX, mouseY)
@@ -68,7 +68,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int) {
-        if(dragging) {
+        if (dragging) {
             dragging = false
             setProgressI((mouseY - height / 2.0f).toInt())
             // TODO make proper way to update progress leaving currentPage private.
@@ -86,7 +86,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {
-        if(visible && enabled && hovered){
+        if (visible && enabled && hovered) {
             dragging = true
             return true
         }

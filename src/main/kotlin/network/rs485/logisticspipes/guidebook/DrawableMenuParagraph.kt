@@ -45,7 +45,10 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.*
+import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
+import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants
+import network.rs485.logisticspipes.gui.guidebook.IDrawable
+import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
 import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.floor
 

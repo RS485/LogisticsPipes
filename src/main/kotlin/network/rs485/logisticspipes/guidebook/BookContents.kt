@@ -46,6 +46,8 @@ import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
+import network.rs485.logisticspipes.gui.guidebook.asDrawables
+import network.rs485.logisticspipes.gui.guidebook.definingPage
 import network.rs485.markdown.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -224,6 +226,7 @@ class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvid
     }
 
     override val drawableParagraphs: List<IDrawable> by lazy {
+        definingPage = this
         asDrawables(paragraphs)
     }
 }

@@ -63,8 +63,8 @@ object GuideBookConstants {
     val GUI_BOOK_TEXTURE = ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png")
 
     // Texture
-    const val atlasWidth = 256.0
-    const val atlasHeight = 256.0
+    private const val atlasWidth = 256.0
+    private const val atlasHeight = 256.0
     const val atlasWidthScale = 1 / atlasWidth
     const val atlasHeightScale = 1 / atlasHeight
 
@@ -83,7 +83,7 @@ object GuideBookConstants {
 private const val guiBorderThickness = 16
 private const val guiShadowThickness = 6
 private const val guiSeparatorThickness = 5
-private const val guiBorderWithShadowThickness = guiBorderThickness + guiShadowThickness;
+private const val guiBorderWithShadowThickness = guiBorderThickness + guiShadowThickness
 private const val guiAtlasSize = 64
 private val innerFrameTexture = Rectangle(guiBorderWithShadowThickness, guiBorderWithShadowThickness, guiAtlasSize - (guiBorderWithShadowThickness * 2), guiAtlasSize - (guiBorderWithShadowThickness * 2))
 private val outerFrameTexture = Rectangle(0, 0, guiAtlasSize, guiAtlasSize)
@@ -129,6 +129,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     fun setPage(path: String) {
         currentPage = cachedPages.getOrPut(path) { SavedPage(path, 0, 0.0f) }
         currentPage.initDrawables(usableArea)
+        if (this::slider.isInitialized) slider.setProgressF(currentPage.progress)
     }
 
     // (Re)calculates gui element sizes and positions, this is run on gui init
@@ -149,7 +150,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         if (this::slider.isInitialized) slider.enabled = currentPage.height > usableArea.height
         var xOffset = 0
         for (tab: TabButton in tabs) {
-            tab.buttonArea.x0 = outerGui.x1 - 2 - 2 * guiTabWidth - xOffset
+            tab.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
             xOffset += guiTabWidth
             tab.isActive = tab.tab.isEqual(currentPage)
         }
@@ -230,9 +231,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             is TabButton -> {
                 if (button.isActive) {
                     if (isCtrlKeyDown() && isShiftKeyDown()) {
-                        button.cycleColorInverted()
-                    } else if (isShiftKeyDown()) {
                         removeBookmark(button)
+                    } else if (isShiftKeyDown()) {
+                        button.cycleColorInverted()
                     } else {
                         button.cycleColor()
                     }
@@ -260,6 +261,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         tabs.forEach { tabButton -> tabButton.tab.isEqual(tabButtonIn.tab) }
         return false
     }
+
 
     // TODO get book state/data from item NBT
 
@@ -309,7 +311,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
         /**
          * Draws a rectangle in which the given texture will be stretched to the given sized. This method assumes the bound texture is 256x256 in size.
-         * @param bufferBuilder buffer that needs to be initialized before it is given to this method.
          * @param x0            left x position of desired rectangle.
          * @param y0            top y position of desired rectangle.
          * @param x1            right position of desired rectangle.
@@ -327,7 +328,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
         /**
          * Draws a rectangle in which the given texture will be repeated to the given size it. This method assumes the bound texture is 256x256 in size.
-         * @param bufferBuilder buffer that needs to be initialized before it is given to this method.
          * @param x0            left x position of desired rectangle.
          * @param y0            top y position of desired rectangle.
          * @param x1            right position of desired rectangle.
@@ -448,30 +448,30 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE)
             GlStateManager.color(redF(color), greenF(color), blueF(color), 1.0f)
             val tessellator = Tessellator.getInstance()
-            val bufferbuilder = tessellator.buffer
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
+            val bufferBuilder = tessellator.buffer
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
             val hovered = if (isHovered) 1 else 0
             val enabled = if (isEnabled) 1 else 2
             // Fill: Middle
-            putRepeatingTexturedRectangle(bufferbuilder, btn.x0 + btnBorderWidth, btn.y0 + btnBorderWidth, btn.x1 - btnBorderWidth, btn.y1 - btnBorderWidth, z, btnBackgroundUv.x0, btnBackgroundUv.y0 + hovered * enabled * btnBackgroundUv.width, btnBackgroundUv.x1,
+            putRepeatingTexturedRectangle(bufferBuilder, btn.x0 + btnBorderWidth, btn.y0 + btnBorderWidth, btn.x1 - btnBorderWidth, btn.y1 - btnBorderWidth, z, btnBackgroundUv.x0, btnBackgroundUv.y0 + hovered * enabled * btnBackgroundUv.width, btnBackgroundUv.x1,
                     btnBackgroundUv.y1 + hovered * enabled * btnBackgroundUv.width)
             // Corners: TopLeft, TopRight, BottomLeft & BottomRight
-            putTexturedRectangle(bufferbuilder, btn.x0, btn.y0, btn.x0 + btnBorderWidth, btn.y0 + btnBorderWidth, z, btnBorderUv.x0, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
+            putTexturedRectangle(bufferBuilder, btn.x0, btn.y0, btn.x0 + btnBorderWidth, btn.y0 + btnBorderWidth, z, btnBorderUv.x0, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
                     btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferbuilder, btn.x1 - btnBorderWidth, btn.y0, btn.x1, btn.y0 + btnBorderWidth, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
+            putTexturedRectangle(bufferBuilder, btn.x1 - btnBorderWidth, btn.y0, btn.x1, btn.y0 + btnBorderWidth, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
                     btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferbuilder, btn.x0, btn.y1 - btnBorderWidth, btn.x0 + btnBorderWidth, btn.y1, z, btnBorderUv.x0, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
+            putTexturedRectangle(bufferBuilder, btn.x0, btn.y1 - btnBorderWidth, btn.x0 + btnBorderWidth, btn.y1, z, btnBorderUv.x0, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
                     btnBorderUv.y1 + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferbuilder, btn.x1 - btnBorderWidth, btn.y1 - btnBorderWidth, btn.x1, btn.y1, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
+            putTexturedRectangle(bufferBuilder, btn.x1 - btnBorderWidth, btn.y1 - btnBorderWidth, btn.x1, btn.y1, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
                     btnBorderUv.y1 + hovered * enabled * btnBorderUv.height)
             // Edges: Top, Bottom, Left & Right
-            putTexturedRectangle(bufferbuilder, btn.x0 + btnBorderWidth, btn.y0, btn.x1 - btnBorderWidth, btn.y0 + btnBorderWidth, z, btnBorderUv.x0 + btnBorderWidth, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x1 - btnBorderWidth,
+            putTexturedRectangle(bufferBuilder, btn.x0 + btnBorderWidth, btn.y0, btn.x1 - btnBorderWidth, btn.y0 + btnBorderWidth, z, btnBorderUv.x0 + btnBorderWidth, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x1 - btnBorderWidth,
                     btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferbuilder, btn.x0 + btnBorderWidth, btn.y1 - btnBorderWidth, btn.x1 - btnBorderWidth, btn.y1, z, btnBorderUv.x0 + btnBorderWidth, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height,
+            putTexturedRectangle(bufferBuilder, btn.x0 + btnBorderWidth, btn.y1 - btnBorderWidth, btn.x1 - btnBorderWidth, btn.y1, z, btnBorderUv.x0 + btnBorderWidth, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height,
                     btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y1 + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferbuilder, btn.x0, btn.y0 + btnBorderWidth, btn.x0 + btnBorderWidth, btn.y1 - btnBorderWidth, z, btnBorderUv.x0, btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
+            putTexturedRectangle(bufferBuilder, btn.x0, btn.y0 + btnBorderWidth, btn.x0 + btnBorderWidth, btn.y1 - btnBorderWidth, z, btnBorderUv.x0, btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
                     btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferbuilder, btn.x1 - btnBorderWidth, btn.y0 + btnBorderWidth, btn.x1, btn.y1 - btnBorderWidth, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
+            putTexturedRectangle(bufferBuilder, btn.x1 - btnBorderWidth, btn.y0 + btnBorderWidth, btn.x1, btn.y1 - btnBorderWidth, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
                     btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height)
             tessellator.draw()
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -509,26 +509,26 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
             val tessellator = Tessellator.getInstance()
-            val bufferbuilder = tessellator.buffer
-            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
-            putTexturedRectangle(bufferbuilder, innerArea, innerAreaTexture, z)
+            val bufferBuilder = tessellator.buffer
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
+            putTexturedRectangle(bufferBuilder, innerArea, innerAreaTexture, z)
             // Corners: TopLeft, TopRight, BottomLeft & BottomRight
-            putTexturedRectangle(bufferbuilder, outerArea.x0, outerArea.y0, innerArea.x0, innerArea.y0, z, outerAreaTexture.x0, outerAreaTexture.y0, innerAreaTexture.x0, innerAreaTexture.y0)
-            putTexturedRectangle(bufferbuilder, innerArea.x1, outerArea.y0, outerArea.x1, innerArea.y0, z, innerAreaTexture.x1, outerAreaTexture.y0, outerAreaTexture.x1, innerAreaTexture.y0)
-            putTexturedRectangle(bufferbuilder, outerArea.x0, innerArea.y1, innerArea.x0, outerArea.y1, z, outerAreaTexture.x0, innerAreaTexture.y1, innerAreaTexture.x0, outerAreaTexture.y1)
-            putTexturedRectangle(bufferbuilder, innerArea.x1, innerArea.y1, outerArea.x1, outerArea.y1, z, innerAreaTexture.x1, innerAreaTexture.y1, outerAreaTexture.x1, outerAreaTexture.y1)
+            putTexturedRectangle(bufferBuilder, outerArea.x0, outerArea.y0, innerArea.x0, innerArea.y0, z, outerAreaTexture.x0, outerAreaTexture.y0, innerAreaTexture.x0, innerAreaTexture.y0)
+            putTexturedRectangle(bufferBuilder, innerArea.x1, outerArea.y0, outerArea.x1, innerArea.y0, z, innerAreaTexture.x1, outerAreaTexture.y0, outerAreaTexture.x1, innerAreaTexture.y0)
+            putTexturedRectangle(bufferBuilder, outerArea.x0, innerArea.y1, innerArea.x0, outerArea.y1, z, outerAreaTexture.x0, innerAreaTexture.y1, innerAreaTexture.x0, outerAreaTexture.y1)
+            putTexturedRectangle(bufferBuilder, innerArea.x1, innerArea.y1, outerArea.x1, outerArea.y1, z, innerAreaTexture.x1, innerAreaTexture.y1, outerAreaTexture.x1, outerAreaTexture.y1)
             // Edges: Top, Bottom, Left & Right
-            putTexturedRectangle(bufferbuilder, innerArea.x0, outerArea.y0, innerArea.x1, innerArea.y0, z, innerAreaTexture.x0, outerAreaTexture.y0, innerAreaTexture.x1, innerAreaTexture.y0)
-            putTexturedRectangle(bufferbuilder, innerArea.x0, innerArea.y1, innerArea.x1, outerArea.y1, z, innerAreaTexture.x0, innerAreaTexture.y1, innerAreaTexture.x1, outerAreaTexture.y1)
-            putTexturedRectangle(bufferbuilder, outerArea.x0, innerArea.y0, innerArea.x0, innerArea.y1, z, outerAreaTexture.x0, innerAreaTexture.y0, innerAreaTexture.x0, innerAreaTexture.y1)
-            putTexturedRectangle(bufferbuilder, innerArea.x1, innerArea.y0, outerArea.x1, innerArea.y1, z, innerAreaTexture.x1, innerAreaTexture.y0, outerAreaTexture.x1, innerAreaTexture.y1)
+            putTexturedRectangle(bufferBuilder, innerArea.x0, outerArea.y0, innerArea.x1, innerArea.y0, z, innerAreaTexture.x0, outerAreaTexture.y0, innerAreaTexture.x1, innerAreaTexture.y0)
+            putTexturedRectangle(bufferBuilder, innerArea.x0, innerArea.y1, innerArea.x1, outerArea.y1, z, innerAreaTexture.x0, innerAreaTexture.y1, innerAreaTexture.x1, outerAreaTexture.y1)
+            putTexturedRectangle(bufferBuilder, outerArea.x0, innerArea.y0, innerArea.x0, innerArea.y1, z, outerAreaTexture.x0, innerAreaTexture.y0, innerAreaTexture.x0, innerAreaTexture.y1)
+            putTexturedRectangle(bufferBuilder, innerArea.x1, innerArea.y0, outerArea.x1, innerArea.y1, z, innerAreaTexture.x1, innerAreaTexture.y0, outerAreaTexture.x1, innerAreaTexture.y1)
             tessellator.draw()
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
         }
 
         /**
-         * Draws a colorable horizontal line.
+         * Draws a colored horizontal line.
          * @param x0        starting position of the line
          * @param x1        ending position of the line
          * @param y         y axis of the line.
@@ -555,7 +555,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         }
 
         /**
-         * Draws a colorable vertical line.
+         * Draws a colored vertical line.
          * @param x         line's x axis
          * @param y0        line's starting position
          * @param y1        line's ending position

@@ -48,7 +48,7 @@ class TabButton(x: Int, yBottom: Int, val tab: SavedPage) : GuiButton(99, 24, 24
     // TODO look into making the TexturedButton abstract and making this and a Home button extend it
 
     var isActive = false
-    val buttonArea = Rectangle(x, yBottom - 24, 24, 32)
+    private val buttonArea = Rectangle(x, yBottom - 24, 24, 32)
     private val buttonTextureArea = Rectangle(40, 64, 24, 32)
     private val circleArea = Rectangle(buttonArea.x0 + 4, buttonArea.y0 + 4, 16, 16)
     private val circleAreaTexture = Rectangle(32, 96, 16, 16)
@@ -75,9 +75,15 @@ class TabButton(x: Int, yBottom: Int, val tab: SavedPage) : GuiButton(99, 24, 24
         mc.textureManager.bindTexture(GuideBookConstants.GUI_BOOK_TEXTURE)
         val z = if (isActive) GuideBookConstants.zFrame else GuideBookConstants.zBackground
         val yOffset = if (isActive) 0 else 3
-        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0 + yOffset, buttonArea.x1, buttonArea.y1 + yOffset, z, buttonTextureArea.x0, buttonTextureArea.y0, buttonTextureArea.x1, buttonTextureArea.y1, true, if (isActive) 0xFFFFFF else MinecraftColor.values()[tab.color].colorCode)
-        if (isActive) GuiGuideBook.drawStretchingRectangle(circleArea.x0, circleArea.y0, circleArea.x1, circleArea.y1, z + 0.5, circleAreaTexture.x0, circleAreaTexture.y0, circleAreaTexture.x1, circleAreaTexture.y1, true, MinecraftColor.values()[tab.color].colorCode)
+        val color: Int = (MinecraftColor.values()[tab.color].colorCode and 0x00FFFFFF) or 0x7F000000
+        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0 + yOffset, buttonArea.x1, buttonArea.y1 + yOffset, z, buttonTextureArea.x0, buttonTextureArea.y0, buttonTextureArea.x1, buttonTextureArea.y1, true, if (isActive) 0xFFFFFFFF.toInt() else color)
+        if (isActive) GuiGuideBook.drawStretchingRectangle(circleArea.x0, circleArea.y0, circleArea.x1, circleArea.y1, z + 0.5, circleAreaTexture.x0, circleAreaTexture.y0, circleAreaTexture.x1, circleAreaTexture.y1, true, color)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+    }
+
+    fun setPos(x0: Int, y0: Int){
+        buttonArea.setPos(x0, y0 - 24)
+        circleArea.setPos(buttonArea.x0 + 4, buttonArea.y0 + 4,)
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {

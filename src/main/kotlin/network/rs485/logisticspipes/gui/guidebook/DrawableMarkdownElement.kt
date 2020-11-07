@@ -35,13 +35,12 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.guidebook
+package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.LPConstants
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
-import network.rs485.logisticspipes.gui.guidebook.IDrawable
+import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
@@ -49,6 +48,8 @@ import network.rs485.markdown.MarkdownParser.splitToInlineElements
 import java.util.*
 
 const val DEBUG_AREAS = false
+
+var definingPage = BookContents.get(MAIN_MENU_FILE)
 
 internal val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
 internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20, 1.00)
@@ -126,7 +127,7 @@ private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
     is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
     is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, getScaleFromLevel(paragraph.headerLevel)), paragraph.headerLevel)
     is HorizontalLineParagraph -> DrawableHorizontalLine(2)
-    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(BookContents.get(MAIN_MENU_FILE).metadata.menu[paragraph.link]
+    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(definingPage.metadata.menu[paragraph.link]
             ?: error("Requested menu ${paragraph.link}, not found."))) // TODO have the current page path here to get the proper menu
 }
 

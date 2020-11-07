@@ -46,10 +46,11 @@ import network.rs485.logisticspipes.util.math.Rectangle
 
 private const val PAGE_VERTICAL_PADDING = 5
 
-class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
+class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
 
     val loadedPage = BookContents.get(page)
     var height: Int = 0
+        private set
 
     constructor(page: SavedPage) : this(page.page, page.color, page.progress)
 

@@ -35,10 +35,8 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.guidebook
+package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
-import network.rs485.logisticspipes.gui.guidebook.IDrawable
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
 import java.util.*

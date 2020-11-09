@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.GUI_BOOK_TEXTURE
+import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.guiBookTexture
 import network.rs485.logisticspipes.util.math.Rectangle
 
 class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
@@ -57,7 +57,7 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!visible) return
-        mc.textureManager.bindTexture(GUI_BOOK_TEXTURE)
+        mc.textureManager.bindTexture(guiBookTexture)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         hovered = buttonArea.contains(mouseX, mouseY)
         val btnAtlasOffsetY = hovered && !dragging || !enabled

@@ -49,7 +49,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.EnumHand
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.LPFontRenderer
-import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.GUI_BOOK_TEXTURE
+import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.guiBookTexture
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.DEBUG_FILE
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
@@ -60,48 +60,45 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 
 object GuideBookConstants {
-    val GUI_BOOK_TEXTURE = ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png")
+    val guiBookTexture = ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png")
 
     // Texture
-    private const val atlasWidth = 256.0
-    private const val atlasHeight = 256.0
-    const val atlasWidthScale = 1 / atlasWidth
-    const val atlasHeightScale = 1 / atlasHeight
-
-    // Tile Constants
-
+    private const val ATLAS_WIDTH = 256.0
+    private const val ATLAS_HEIGHT = 256.0
+    const val ATLAS_WIDTH_SCALE = 1 / ATLAS_WIDTH
+    const val ATLAS_HEIGHT_SCALE = 1 / ATLAS_HEIGHT
 
     // Z Levels
-    const val zTooltip = 20.0 // Tooltip z
-    const val zTitleButtons = 15.0 // Title and Buttons Z
-    const val zFrame = 10.0 // Frame Z
-    const val zText = 5.0 // Text/Information Z
-    const val zBackground = 0.0 // Background Z
+    const val Z_TOOLTIP = 20.0 // Tooltip z
+    const val Z_TITLE_BUTTONS = 15.0 // Title and Buttons Z
+    const val Z_FRAME = 10.0 // Frame Z
+    const val Z_TEXT = 5.0 // Text/Information Z
+    const val Z_BACKGROUND = 0.0 // Background Z
 }
 
-// Gui Frame Constants
-private const val guiBorderThickness = 16
-private const val guiShadowThickness = 6
-private const val guiSeparatorThickness = 5
-private const val guiBorderWithShadowThickness = guiBorderThickness + guiShadowThickness
-private const val guiAtlasSize = 64
-private val innerFrameTexture = Rectangle(guiBorderWithShadowThickness, guiBorderWithShadowThickness, guiAtlasSize - (guiBorderWithShadowThickness * 2), guiAtlasSize - (guiBorderWithShadowThickness * 2))
-private val outerFrameTexture = Rectangle(0, 0, guiAtlasSize, guiAtlasSize)
-private val sliderSeparatorTexture = Rectangle(96, 33, 16, 30)
-private val backgroundFrameTexture = Rectangle(64, 0, 32, 32)
-
-
-// Slider
-private const val guiSliderWidth = 12
-private const val guiSliderHeight = 15
-
-// Tabs
-private const val guiTabWidth = 24
-private const val guiTabHeight = 24
-private const val guiFullTabHeight = 32
-private const val maxTabs = 10
-
 class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
+    // Gui Frame Constants
+    private val guiBorderThickness = 16
+    private val guiShadowThickness = 6
+    private val guiSeparatorThickness = 5
+    private val guiBorderWithShadowThickness = guiBorderThickness + guiShadowThickness
+    private val guiAtlasSize = 64
+    private val innerFrameTexture = Rectangle(guiBorderWithShadowThickness, guiBorderWithShadowThickness, guiAtlasSize - (guiBorderWithShadowThickness * 2), guiAtlasSize - (guiBorderWithShadowThickness * 2))
+    private val outerFrameTexture = Rectangle(0, 0, guiAtlasSize, guiAtlasSize)
+    private val sliderSeparatorTexture = Rectangle(96, 33, 16, 30)
+    private val backgroundFrameTexture = Rectangle(64, 0, 32, 32)
+
+    // Slider
+    private val guiSliderWidth = 12
+    private val guiSliderHeight = 15
+
+    // Tabs
+    private val guiTabWidth = 24
+    private val guiTabHeight = 24
+    private val guiFullTabHeight = 32
+    private val maxTabs = 10
+
+    // Gui constrains
     private val innerGui = Rectangle()
     private val outerGui = Rectangle()
     private val sliderSeparator = Rectangle()
@@ -145,6 +142,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         updateButtonVisibility()
     }
 
+    // Checks each button for visibility and updates tab positions.
     private fun updateButtonVisibility() {
         if (this::home.isInitialized) home.visible = currentPage.page != MAIN_MENU_FILE
         if (this::slider.isInitialized) slider.enabled = currentPage.height > usableArea.height
@@ -161,19 +159,17 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         }
     }
 
+    // Checks if there's already a bookmark pointing to the same page.
     private fun tabNotFound(checkTab: SavedPage): Boolean {
         for (tab in tabs) if (tab.tab.isEqual(checkTab)) return false
         return true
     }
 
-
-    // Overrides
-
     override fun initGui() {
         calculateGuiConstraints()
         slider = addButton(SliderButton(0, innerGui.x1 - guiSliderWidth, innerGui.y0, innerGui.height, guiSliderWidth, guiSliderHeight, currentPage.progress, ::setPageProgress))
-        home = addButton(TexturedButton(1, outerGui.x1 - guiTabWidth, outerGui.y0 - guiTabHeight, guiTabWidth, guiFullTabHeight, GuideBookConstants.zTitleButtons, 16, 64, false, ButtonType.TAB).setOverlayTexture(128, 0, 16, 16))
-        addTab = addButton(TexturedButton(2, outerGui.x1 - 18 - guiTabWidth + 4, outerGui.y0 - 18, 16, 16, GuideBookConstants.zTitleButtons, 192, 0, true, ButtonType.NORMAL))
+        home = addButton(TexturedButton(1, outerGui.x1 - guiTabWidth, outerGui.y0 - guiTabHeight, guiTabWidth, guiFullTabHeight, GuideBookConstants.Z_TITLE_BUTTONS, 16, 64, false, ButtonType.TAB).setOverlayTexture(128, 0, 16, 16))
+        addTab = addButton(TexturedButton(2, outerGui.x1 - 18 - guiTabWidth + 4, outerGui.y0 - 18, 16, 16, GuideBookConstants.Z_TITLE_BUTTONS, 192, 0, true, ButtonType.NORMAL))
         updateButtonVisibility()
     }
 
@@ -270,13 +266,13 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     }
 
     private fun drawTitle() {
-        lpFontRenderer.zLevel = GuideBookConstants.zTitleButtons
+        lpFontRenderer.zLevel = GuideBookConstants.Z_TITLE_BUTTONS
         lpFontRenderer.drawCenteredString(currentPage.loadedPage.metadata.title, width / 2, outerGui.y0 + 4, MinecraftColor.WHITE.colorCode, EnumSet.of(TextFormat.Shadow), 1.0)
-        lpFontRenderer.zLevel = GuideBookConstants.zText
+        lpFontRenderer.zLevel = GuideBookConstants.Z_TEXT
     }
 
     private fun drawGui() {
-        Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE)
+        Minecraft.getMinecraft().renderEngine.bindTexture(guiBookTexture)
         // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
@@ -287,21 +283,21 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         val bufferBuilder = tessellator.buffer
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
         // Background
-        putRepeatingTexturedRectangle(bufferBuilder, innerGui.x0, innerGui.y0, innerGui.x1, innerGui.y1, GuideBookConstants.zBackground, backgroundFrameTexture.x0, backgroundFrameTexture.y0, backgroundFrameTexture.x1, backgroundFrameTexture.y1)
+        putRepeatingTexturedRectangle(bufferBuilder, innerGui.x0, innerGui.y0, innerGui.x1, innerGui.y1, GuideBookConstants.Z_BACKGROUND, backgroundFrameTexture.x0, backgroundFrameTexture.y0, backgroundFrameTexture.x1, backgroundFrameTexture.y1)
         // Corners: TopLeft, TopRight, BottomLeft & BottomRight
-        putTexturedRectangle(bufferBuilder, outerGui.x0, outerGui.y0, innerGui.x0 + guiShadowThickness, innerGui.y0 + guiShadowThickness, GuideBookConstants.zFrame, outerFrameTexture.x0, outerFrameTexture.y0, innerFrameTexture.x0, innerFrameTexture.y0)
-        putTexturedRectangle(bufferBuilder, innerGui.x1 - guiShadowThickness, outerGui.y0, outerGui.x1, innerGui.y0 + guiShadowThickness, GuideBookConstants.zFrame, innerFrameTexture.x1, outerFrameTexture.y0, outerFrameTexture.x1, innerFrameTexture.y0)
-        putTexturedRectangle(bufferBuilder, outerGui.x0, innerGui.y1 - guiShadowThickness, innerGui.x0 + guiShadowThickness, outerGui.y1, GuideBookConstants.zFrame, outerFrameTexture.x0, innerFrameTexture.y1, innerFrameTexture.x0, outerFrameTexture.y1)
-        putTexturedRectangle(bufferBuilder, innerGui.x1 - guiShadowThickness, innerGui.y1 - guiShadowThickness, outerGui.x1, outerGui.y1, GuideBookConstants.zFrame, innerFrameTexture.x1, innerFrameTexture.y1, outerFrameTexture.x1, outerFrameTexture.y1)
+        putTexturedRectangle(bufferBuilder, outerGui.x0, outerGui.y0, innerGui.x0 + guiShadowThickness, innerGui.y0 + guiShadowThickness, GuideBookConstants.Z_FRAME, outerFrameTexture.x0, outerFrameTexture.y0, innerFrameTexture.x0, innerFrameTexture.y0)
+        putTexturedRectangle(bufferBuilder, innerGui.x1 - guiShadowThickness, outerGui.y0, outerGui.x1, innerGui.y0 + guiShadowThickness, GuideBookConstants.Z_FRAME, innerFrameTexture.x1, outerFrameTexture.y0, outerFrameTexture.x1, innerFrameTexture.y0)
+        putTexturedRectangle(bufferBuilder, outerGui.x0, innerGui.y1 - guiShadowThickness, innerGui.x0 + guiShadowThickness, outerGui.y1, GuideBookConstants.Z_FRAME, outerFrameTexture.x0, innerFrameTexture.y1, innerFrameTexture.x0, outerFrameTexture.y1)
+        putTexturedRectangle(bufferBuilder, innerGui.x1 - guiShadowThickness, innerGui.y1 - guiShadowThickness, outerGui.x1, outerGui.y1, GuideBookConstants.Z_FRAME, innerFrameTexture.x1, innerFrameTexture.y1, outerFrameTexture.x1, outerFrameTexture.y1)
         // Edges: Top, Bottom, Left & Right
-        putTexturedRectangle(bufferBuilder, innerGui.x0 + guiShadowThickness, outerGui.y0, innerGui.x1 - guiShadowThickness, innerGui.y0 + guiShadowThickness, GuideBookConstants.zFrame, innerFrameTexture.x0, outerFrameTexture.y0, innerFrameTexture.x1, innerFrameTexture.y0)
-        putTexturedRectangle(bufferBuilder, innerGui.x0 + guiShadowThickness, innerGui.y1 - guiShadowThickness, innerGui.x1 - guiShadowThickness, outerGui.y1, GuideBookConstants.zFrame, innerFrameTexture.x0, innerFrameTexture.y1, innerFrameTexture.x1, outerFrameTexture.y1)
-        putTexturedRectangle(bufferBuilder, outerGui.x0, innerGui.y0 + guiShadowThickness, innerGui.x0 + guiShadowThickness, innerGui.y1 - guiShadowThickness, GuideBookConstants.zFrame, outerFrameTexture.x0, innerFrameTexture.y0, innerFrameTexture.x0, innerFrameTexture.y1)
-        putTexturedRectangle(bufferBuilder, innerGui.x1 - guiShadowThickness, innerGui.y0 + guiShadowThickness, outerGui.x1, innerGui.y1 - guiShadowThickness, GuideBookConstants.zFrame, innerFrameTexture.x1, innerFrameTexture.y0, outerFrameTexture.x1, innerFrameTexture.y1)
+        putTexturedRectangle(bufferBuilder, innerGui.x0 + guiShadowThickness, outerGui.y0, innerGui.x1 - guiShadowThickness, innerGui.y0 + guiShadowThickness, GuideBookConstants.Z_FRAME, innerFrameTexture.x0, outerFrameTexture.y0, innerFrameTexture.x1, innerFrameTexture.y0)
+        putTexturedRectangle(bufferBuilder, innerGui.x0 + guiShadowThickness, innerGui.y1 - guiShadowThickness, innerGui.x1 - guiShadowThickness, outerGui.y1, GuideBookConstants.Z_FRAME, innerFrameTexture.x0, innerFrameTexture.y1, innerFrameTexture.x1, outerFrameTexture.y1)
+        putTexturedRectangle(bufferBuilder, outerGui.x0, innerGui.y0 + guiShadowThickness, innerGui.x0 + guiShadowThickness, innerGui.y1 - guiShadowThickness, GuideBookConstants.Z_FRAME, outerFrameTexture.x0, innerFrameTexture.y0, innerFrameTexture.x0, innerFrameTexture.y1)
+        putTexturedRectangle(bufferBuilder, innerGui.x1 - guiShadowThickness, innerGui.y0 + guiShadowThickness, outerGui.x1, innerGui.y1 - guiShadowThickness, GuideBookConstants.Z_FRAME, innerFrameTexture.x1, innerFrameTexture.y0, outerFrameTexture.x1, innerFrameTexture.y1)
         // Slider Separator
-        putTexturedRectangle(bufferBuilder, sliderSeparator.x0, sliderSeparator.y0 - 1, sliderSeparator.x1, sliderSeparator.y0, GuideBookConstants.zFrame, sliderSeparatorTexture.x0, sliderSeparatorTexture.y0 - 1, sliderSeparatorTexture.x1, sliderSeparatorTexture.y0)
-        putTexturedRectangle(bufferBuilder, sliderSeparator.x0, sliderSeparator.y0, sliderSeparator.x1, sliderSeparator.y1, GuideBookConstants.zFrame, sliderSeparatorTexture.x0, sliderSeparatorTexture.y0, sliderSeparatorTexture.x1, sliderSeparatorTexture.y1)
-        putTexturedRectangle(bufferBuilder, sliderSeparator.x0, sliderSeparator.y1, sliderSeparator.x1, sliderSeparator.y1 + 1, GuideBookConstants.zFrame, sliderSeparatorTexture.x0, sliderSeparatorTexture.y1, sliderSeparatorTexture.x1, sliderSeparatorTexture.y1 + 1)
+        putTexturedRectangle(bufferBuilder, sliderSeparator.x0, sliderSeparator.y0 - 1, sliderSeparator.x1, sliderSeparator.y0, GuideBookConstants.Z_FRAME, sliderSeparatorTexture.x0, sliderSeparatorTexture.y0 - 1, sliderSeparatorTexture.x1, sliderSeparatorTexture.y0)
+        putTexturedRectangle(bufferBuilder, sliderSeparator.x0, sliderSeparator.y0, sliderSeparator.x1, sliderSeparator.y1, GuideBookConstants.Z_FRAME, sliderSeparatorTexture.x0, sliderSeparatorTexture.y0, sliderSeparatorTexture.x1, sliderSeparatorTexture.y1)
+        putTexturedRectangle(bufferBuilder, sliderSeparator.x0, sliderSeparator.y1, sliderSeparator.x1, sliderSeparator.y1 + 1, GuideBookConstants.Z_FRAME, sliderSeparatorTexture.x0, sliderSeparatorTexture.y1, sliderSeparatorTexture.x1, sliderSeparatorTexture.y1 + 1)
         tessellator.draw()
         GlStateManager.disableBlend()
     }
@@ -339,7 +335,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
          * @param y1            bottom correspondent texture position.
          */
         fun drawStretchingRectangle(x0: Int, y0: Int, x1: Int, y1: Int, z: Double, u0: Int, v0: Int, u1: Int, v1: Int, blend: Boolean, color: Int) {
-            Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE)
+            Minecraft.getMinecraft().renderEngine.bindTexture(guiBookTexture)
             val r = redF(color)
             val g = greenF(color)
             val b = blueF(color)
@@ -419,10 +415,10 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
          */
         fun putTexturedRectangle(bufferBuilder: BufferBuilder, x0: Int, y0: Int, x1: Int, y1: Int, z: Double, u0: Int, v0: Int, u1: Int, v1: Int) {
             // Scaled
-            val u0S = u0 * GuideBookConstants.atlasWidthScale
-            val v0S = v0 * GuideBookConstants.atlasHeightScale
-            val u1S = u1 * GuideBookConstants.atlasWidthScale
-            val v1S = v1 * GuideBookConstants.atlasHeightScale
+            val u0S = u0 * GuideBookConstants.ATLAS_WIDTH_SCALE
+            val v0S = v0 * GuideBookConstants.ATLAS_HEIGHT_SCALE
+            val u1S = u1 * GuideBookConstants.ATLAS_WIDTH_SCALE
+            val v1S = v1 * GuideBookConstants.ATLAS_HEIGHT_SCALE
             // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
             bufferBuilder.pos(x0.toDouble(), y1.toDouble(), z).tex(u0S, v1S).endVertex()
             bufferBuilder.pos(x1.toDouble(), y1.toDouble(), z).tex(u1S, v1S).endVertex()
@@ -445,7 +441,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             val btnBackgroundUv = Rectangle(64, 32, 32, 32)
             val btnBorderUv = Rectangle(0, 64, 16, 16)
             val btnBorderWidth = 2
-            Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE)
+            Minecraft.getMinecraft().renderEngine.bindTexture(guiBookTexture)
             GlStateManager.color(redF(color), greenF(color), blueF(color), 1.0f)
             val tessellator = Tessellator.getInstance()
             val bufferBuilder = tessellator.buffer
@@ -505,7 +501,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             lpFontRenderer.zLevel -= z
             GlStateManager.enableAlpha()
             // Background
-            Minecraft.getMinecraft().renderEngine.bindTexture(GUI_BOOK_TEXTURE)
+            Minecraft.getMinecraft().renderEngine.bindTexture(guiBookTexture)
             // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
             val tessellator = Tessellator.getInstance()

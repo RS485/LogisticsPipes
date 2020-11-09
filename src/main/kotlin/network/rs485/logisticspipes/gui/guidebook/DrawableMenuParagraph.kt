@@ -45,9 +45,7 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.guidebook.YamlPageMetadata
 import network.rs485.logisticspipes.util.math.Rectangle
-import kotlin.math.floor
 
 
 private const val tileSize = 40
@@ -56,101 +54,90 @@ private const val tileSpacing = 5
 /**
  * Menu token, stores the key and the type of menu in a page.
  */
-data class DrawableMenuParagraph(val menuTitle: List<DrawableWord>, val menuGroups: List<DrawableMenuTileGroup>) : IDrawableParagraph {
-    override val area: Rectangle = Rectangle(0, 0)
-    override var isHovered = false
-    val horizontalLine = DrawableHorizontalLine(1)
+class DrawableMenuParagraph(private val menuTitle: List<DrawableWord>, private val menuGroups: List<DrawableMenuTileGroup>) : DrawableParagraph() {
+    private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        menuTitle.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { it.draw(mouseX, mouseY, delta, yOffset, visibleArea) }
-        if (visibleArea.overlaps(horizontalLine.area.translated(0, -yOffset))) horizontalLine.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        menuGroups.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { it.draw(mouseX, mouseY, delta, yOffset, visibleArea) }
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        return setChildrenPos(x, y, maxWidth)
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        menuGroups.firstOrNull { it.absBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
-    override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setChildrenPos(): Int {
         var currentY = 0
-        currentY += splitInitialize(menuTitle, x, y + currentY, maxWidth)
-        currentY += horizontalLine.setPos(x, y + currentY, maxWidth)
-        for (group in menuGroups) currentY += group.setPos(x, currentY + y, maxWidth)
-        area.setSize(maxWidth, currentY)
-        return area.height
-    }
-}
-
-class DrawableMenuTileGroup(val groupTitle: List<DrawableWord>, val groupTiles: List<DrawableMenuTile>) : IDrawableParagraph {
-    override val area = Rectangle(0, 0)
-    override var isHovered = false
-
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        return setChildrenPos(x, y, maxWidth)
-    }
-
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        groupTitle.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { it.draw(mouseX, mouseY, delta, yOffset, visibleArea) }
-        groupTiles.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { it.draw(mouseX, mouseY, delta, yOffset, visibleArea) }
-    }
-
-    override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
-        var currentY = tileSpacing
-        var currentX = tileSpacing
-        currentY += splitInitialize(groupTitle, x, y, maxWidth)
-        for (tile in groupTiles) {
-            if (currentX + tile.area.width + tileSpacing > maxWidth) {
-                currentX = tileSpacing
-                currentY += tile.area.height + tileSpacing
-            }
-            tile.setPos(x + currentX, y + currentY, maxWidth)
-            currentX += tile.area.width + tileSpacing
-            if (tile == groupTiles.last()) currentY += tile.area.height + tileSpacing
-        }
-        area.setSize(maxWidth, currentY)
+        currentY += splitInitialize(menuTitle, 0, currentY, width)
+        currentY += horizontalLine.setPos(0, currentY)
+        for (group in menuGroups) currentY += group.setPos(0, currentY)
         return currentY
     }
+
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        (menuTitle + horizontalLine + menuGroups).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
+    }
 }
 
-class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
-    // Maybe there needs to be a constant Int defining the size of all the tiles
-    override val area = Rectangle(tileSize, tileSize)
-    override var isHovered = false
-    private val pageName = metadata.title
-    private val iconScale = 1.0
-    private val icon = metadata.icon
-    private val iconArea = Rectangle(16 * iconScale.toInt(), 16 * iconScale.toInt())
+class DrawableMenuTileGroup(private val groupTitle: List<DrawableWord>, private val groupTiles: List<DrawableMenuTile>) : DrawableParagraph() {
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        drawChildren(mouseX, mouseY, delta, visibleArea)
+    }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        hovering(mouseX, mouseY, yOffset, visibleArea)
-        if (isHovered) GuiGuideBook.drawBoxedCenteredString(pageName, area.x0 + area.width / 2, minOf(area.y1 - yOffset, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
-        val visibleTile = visibleArea.overlap(area.translated(0, -yOffset))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, isHovered, MinecraftColor.WHITE.colorCode)
-        if (visibleArea.overlaps(iconArea.translated(0, -yOffset))) {
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        groupTiles.firstOrNull { it.absBody.contains(mouseX, mouseY) }?.onClick?.invoke(mouseButton)
+    }
+
+    override fun setChildrenPos(): Int {
+        var currentY = tileSpacing
+        var currentX = tileSpacing
+        currentY += splitInitialize(groupTitle, currentX, currentY, width)
+        for (tile in groupTiles) {
+            if (currentX + tile.width + tileSpacing > width) {
+                currentX = tileSpacing
+                currentY += tile.height + tileSpacing
+            }
+            tile.setPos(currentX, currentY)
+            currentX += tile.width + tileSpacing
+            if (tile == groupTiles.last()) currentY += tile.height + tileSpacing
+        }
+        return currentY
+    }
+
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        (groupTitle + groupTiles).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
+    }
+}
+
+class DrawableMenuTile(private val pageName: String, private val icon: String, internal val onClick: (mouseButton: Int) -> Unit) : Drawable() {
+    private val iconScale = 1.0
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        hovered = hovering(mouseX, mouseY, visibleArea)
+        val visibleTile = Rectangle(visibleArea).translate(0, -5).grow(0, 10).overlap(Rectangle(left, top, width, height))
+        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
+        val itemRect = Rectangle(left + (width - 16) / 2, top + (height - 16) / 2, 16, 16)
+        if (itemRect.intersects(visibleArea)) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
-            RenderHelper.enableGUIStandardItemLighting();
+            RenderHelper.enableGUIStandardItemLighting()
             val renderItem = Minecraft.getMinecraft().renderItem
             val prevZ = renderItem.zLevel
             renderItem.zLevel = -145f
             if (iconScale != 1.0) GlStateManager.scale(iconScale, iconScale, 1.0)
             GlStateManager.disableDepth()
-            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), floor(iconArea.x0 / iconScale).toInt(), floor((iconArea.y0 - yOffset) / iconScale).toInt())
+            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), itemRect.left, itemRect.top)
             if (iconScale != 1.0) GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
             GlStateManager.enableDepth()
             renderItem.zLevel = prevZ
-            RenderHelper.disableStandardItemLighting();
+            RenderHelper.disableStandardItemLighting()
         }
+        if (hovered) GuiGuideBook.drawBoxedCenteredString(pageName, mid(), minOf(bottom, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
     }
 
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int): Int {
         area.setPos(x, y)
-        iconArea.setPos(x + (area.width - iconArea.width) / 2, y + (area.height - iconArea.height) / 2)
-        return area.height
+        area.setSize(tileSize, tileSize)
+        return super.setPos(x, y)
     }
+
+    fun mid(): Int = left + (width / 2)
 }
-
-
-

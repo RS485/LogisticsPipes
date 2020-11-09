@@ -37,41 +37,41 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import network.rs485.logisticspipes.guidebook.YamlPageMetadata
 import network.rs485.logisticspipes.util.math.Rectangle
 
-interface IDrawable {
-    val area: Rectangle
-    var isHovered: Boolean
+private const val PAGE_VERTICAL_PADDING = 5
 
-    /**
-     * This is just like the normal draw functions for minecraft Gui classes but with the added current Y offset.
-     * @param mouseX X position of the mouse (absolute, screen)
-     * @param mouseY Y position of the mouse (absolute, screen)
-     * @param delta Timing floating value
-     * @param yOffset The current Y offset on the drawn page.
-     * @param visibleArea used to avoid draw calls on non-visible children
-     */
-    fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        hovering(mouseX, mouseY, yOffset, visibleArea)
+class DrawablePage(internal val metadataProvider: () -> YamlPageMetadata) : DrawableParagraph() {
+    lateinit var drawableParagraphs: List<DrawableParagraph>
+        internal set
+
+    fun setWidth(width: Int){
+        area.setSize(newWidth = width)
     }
 
-    /**
-     * This function is responsible for updating the Drawable's position by giving it the exact X and Y where it
-     * should start and returning it's height as an offset for the next element.
-     * @param x the X position of the Drawable.
-     * @param y the Y position of the Drawable.
-     * @param maxWidth the the width of the parent, meaning the maximum width the child could have.
-     * @return the input Y level plus the current element's height and a preset vertical spacer height.
-     */
-    fun setPos(x: Int, y: Int, maxWidth: Int): Int
-
-    /**
-     * This function is responsible to update the isHovered field
-     * @param mouseX X position of the mouse (absolute, screen)
-     * @param mouseY Y position of the mouse (absolute, screen)
-     * @param yOffset The current Y offset on the drawn page.
-     */
-    fun hovering(mouseX: Int, mouseY: Int, yOffset: Int, visibleArea: Rectangle) {
-        isHovered = area.translated(0, -yOffset).overlap(visibleArea).contains(mouseX, mouseY)
+    override fun setPos(x: Int, y: Int): Int {
+        area.setPos(x, y)
+        area.setSize(newHeight = setChildrenPos())
+        return area.height
     }
+
+    override fun setChildrenPos(): Int {
+        var currentY = PAGE_VERTICAL_PADDING
+        for (paragraph in drawableParagraphs){
+            currentY += paragraph.setPos(0, currentY)
+        }
+        return PAGE_VERTICAL_PADDING + currentY
+    }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        hovered = hovering(mouseX, mouseY, visibleArea)
+        drawChildren(mouseX, mouseY, delta, visibleArea)
+    }
+
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        getVisibleParagraphs(visibleArea).forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
+    }
+
+    fun getVisibleParagraphs(visibleArea: Rectangle) = drawableParagraphs.filter { it.visible(visibleArea) }
 }

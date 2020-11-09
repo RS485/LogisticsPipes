@@ -39,35 +39,27 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import network.rs485.logisticspipes.util.math.Rectangle
 
-/**
- * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
- */
-class DrawableRegularParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
+open class DrawableParagraph : Drawable() {
+
     override fun setPos(x: Int, y: Int): Int {
         area.setPos(x, y)
-        area.setSize(parent!!.width, setChildrenPos())
+        area.setSize(newWidth = parent!!.width)
+        area.setSize(newHeight = setChildrenPos())
         return super.setPos(x, y)
     }
 
-    override fun setChildrenPos(): Int {
-        return splitInitialize(words, 0, 0, width)
+    /**
+     * This function is supposed to update the children's position by starting
+     * Y and X placement at 0 and iterating through the children while calculating their placement.
+     * This function is also responsible for updating the Paragraphs height as it directly
+     * depends on the placement of it's children.
+     * @return the height of all the Paragraph's children combined.
+     */
+    open fun setChildrenPos(): Int {
+        return area.height
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        hovered = hovering(mouseX, mouseY, visibleArea)
-        drawChildren(mouseX, mouseY, delta, visibleArea)
-    }
+    open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Unit {}
 
-    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val lines = words.groupBy { it.top }.values
-        // Split by lines
-        for (line in lines) {
-            // Check if first (representative of the whole line) is visible, aka contained within the visible area.
-            if (line.first().visible(visibleArea)) {
-                for (drawable in line) {
-                    drawable.draw(mouseX, mouseY, delta, visibleArea)
-                }
-            }
-        }
-    }
+    open fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {}
 }

@@ -45,9 +45,8 @@ import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.gui.guidebook.asDrawables
-import network.rs485.logisticspipes.gui.guidebook.definingPage
+import network.rs485.logisticspipes.gui.guidebook.DrawablePage
+import network.rs485.logisticspipes.gui.guidebook.DrawablePageFactory
 import network.rs485.markdown.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -146,7 +145,7 @@ object BookContents {
                     ).flatten(),
                 ),
             )
-            override val drawableParagraphs: List<IDrawable> = asDrawables(paragraphs)
+            override val drawablePage: DrawablePage = DrawablePage { metadata }
         }
     }
 }
@@ -225,14 +224,14 @@ class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvid
         MarkdownParser.parseParagraphs(markdownString)
     }
 
-    override val drawableParagraphs: List<IDrawable> by lazy {
-        definingPage = this
-        asDrawables(paragraphs)
+    override val drawablePage: DrawablePage by lazy {
+        val drawablePageFactory = DrawablePageFactory()
+        drawablePageFactory.createDrawablePage(metadata, paragraphs)
     }
 }
 
 interface PageInfoProvider {
     val metadata: YamlPageMetadata
     val paragraphs: List<Paragraph>
-    val drawableParagraphs: List<IDrawable>
+    val drawablePage: DrawablePage
 }

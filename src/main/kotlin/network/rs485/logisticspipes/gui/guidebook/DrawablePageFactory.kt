@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -37,37 +37,11 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.guidebook.YamlPageMetadata
+import network.rs485.markdown.Paragraph
 
-/**
- * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
- */
-class DrawableRegularParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
-    override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
-        area.setSize(parent!!.width, setChildrenPos())
-        return super.setPos(x, y)
-    }
-
-    override fun setChildrenPos(): Int {
-        return splitInitialize(words, 0, 0, width)
-    }
-
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        hovered = hovering(mouseX, mouseY, visibleArea)
-        drawChildren(mouseX, mouseY, delta, visibleArea)
-    }
-
-    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val lines = words.groupBy { it.top }.values
-        // Split by lines
-        for (line in lines) {
-            // Check if first (representative of the whole line) is visible, aka contained within the visible area.
-            if (line.first().visible(visibleArea)) {
-                for (drawable in line) {
-                    drawable.draw(mouseX, mouseY, delta, visibleArea)
-                }
-            }
-        }
+class DrawablePageFactory {
+    fun createDrawablePage(metadata: YamlPageMetadata, paragraphs: List<Paragraph>) : DrawablePage{
+        return DrawablePage(metadataProvider = {metadata}).also { it.drawableParagraphs = createDrawableParagraphs(it, paragraphs) }
     }
 }

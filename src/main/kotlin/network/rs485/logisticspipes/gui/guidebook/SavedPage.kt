@@ -44,28 +44,28 @@ import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
 import network.rs485.logisticspipes.util.math.Rectangle
 
-private const val PAGE_VERTICAL_PADDING = 5
 
 class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
 
     val loadedPage = BookContents.get(page)
-    var height: Int = 0
-        private set
 
     constructor(page: SavedPage) : this(page.page, page.color, page.progress)
 
     fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val yOffset = ((height - visibleArea.height) * progress).toInt()
-        loadedPage.drawableParagraphs.forEach { paragraph ->
-            paragraph.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        }
+        loadedPage.drawablePage.area.y0 = visibleArea.y0 - ((loadedPage.drawablePage.height - visibleArea.height) * progress).toInt()
+        loadedPage.drawablePage.draw(mouseX, mouseY, delta, visibleArea)
     }
 
-    fun initDrawables(area: Rectangle) {
-        loadedPage.drawableParagraphs.fold(area.y0 + PAGE_VERTICAL_PADDING) { currentY, paragraph ->
-            currentY + paragraph.setPos(area.x0 + 1, currentY + 1, area.width - 2) + 3
-        }
-        height = loadedPage.drawableParagraphs.last().area.y1 - loadedPage.drawableParagraphs.first().area.y0 + PAGE_VERTICAL_PADDING * 2
+    fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int, visibleArea: Rectangle) {
+        loadedPage.drawablePage.getVisibleParagraphs(visibleArea)
+            .firstOrNull { it.absBody.contains(mouseX, mouseY) }
+            ?.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    fun setDrawablesPosition(area: Rectangle) {
+        loadedPage.drawablePage.setWidth(area.width)
+        println("Initialized page: ${loadedPage.drawablePage.width}")
+        loadedPage.drawablePage.setPos(area.x0, area.y0)
     }
 
     /**
@@ -75,9 +75,10 @@ class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 
      */
     fun fromBytes(input: LPDataInput): SavedPage {
         return SavedPage(
-                input.readUTF() ?: error("Oh fuck you!"),
-                input.readInt(),
-                input.readFloat())
+            input.readUTF() ?: "",
+            input.readInt(),
+            input.readFloat()
+        )
     }
 
     /**
@@ -92,9 +93,10 @@ class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 
 
     fun fromTag(nbt: NBTTagCompound): SavedPage {
         return SavedPage(
-                nbt.getString("page"),
-                nbt.getInteger("color"),
-                nbt.getFloat("progress"))
+            nbt.getString("page"),
+            nbt.getInteger("color"),
+            nbt.getFloat("progress")
+        )
     }
 
     fun toTag(): NBTTagCompound {

@@ -38,18 +38,17 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.LPConstants
+import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParent
 import network.rs485.logisticspipes.guidebook.BookContents
-import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
+import network.rs485.logisticspipes.guidebook.YamlPageMetadata
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
-import network.rs485.markdown.MarkdownParser.splitToInlineElements
 import java.util.*
 
 const val DEBUG_AREAS = false
-
-var definingPage = BookContents.get(MAIN_MENU_FILE)
 
 internal val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
 internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20, 1.00)
@@ -57,15 +56,15 @@ internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20, 1.00)
 /**
  * Image token, stores a token list in case the image is not correctly loaded as well as the image's path
  * @param textTokens this is the alt text, only used in case the image provided via the URL fails to load.
- *
+ * TODO
  */
-data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageParameters: String) : IDrawable {
-    // TODO
+class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageParameters: String) : Drawable() {
     private val image: ResourceLocation
     private var imageAvailable: Boolean
 
-    override val area = Rectangle(0, 0)
-    override var isHovered = false
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        TODO("Not yet implemented")
+    }
 
     init {
         val parameters = imageParameters.split(" ")
@@ -73,76 +72,98 @@ data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageP
         imageAvailable = true
     }
 
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
+    override fun setPos(x: Int, y: Int): Int {
         area.setPos(x, y)
-        return area.height
-    }
-}
-
-/**
- * This draws a line with a given thickness that will span the entire width of the page, minus padding.
- */
-
-data class DrawableHorizontalLine(val thickness: Int, val padding: Int = 3) : IDrawable {
-    override val area = Rectangle(0, 2 * padding + thickness)
-    override var isHovered = false
-
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        area.setSize(maxWidth, area.height)
-        return area.height + padding
-    }
-
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        if (visibleArea.overlaps(area.translated(0, -yOffset))) GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5.0, thickness, MinecraftColor.WHITE.colorCode)
+        return super.setPos(x, y)
     }
 }
 
 /**
  * List token, has several items that are shown in a list.
  */
-data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
-    override val area: Rectangle = Rectangle()
-    override var isHovered = false
+class DrawableListParagraph(val entries: List<List<DrawableWord>>) : DrawableParagraph() {
+    override fun setChildrenPos(): Int {
+        TODO("Not yet implemented")
+    }
 
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        TODO("Not yet implemented")
+    }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setPos(x: Int, y: Int): Int {
         TODO("Not yet implemented")
     }
 }
 
-private fun toDrawables(elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.copy().let { state ->
-    elements.mapNotNull { element ->
-        element.changeDrawableState(state)
-        when (element) {
-            is Word -> DrawableWord(element.str, scale, state)
-            is Space -> DrawableSpace(scale, state)
-            Break -> DrawableBreak
-            else -> null
+typealias DrawableWordMap<T> = (List<DrawableWord>) -> T
+
+private fun <T : DrawableParagraph> createDrawableElements(paragraphConstructor: DrawableWordMap<T>, elements: List<InlineElement>, scale: Double) =
+    DEFAULT_DRAWABLE_STATE.copy().let { state ->
+        elements.mapNotNull { element ->
+            element.changeDrawableState(state)
+            when (element) {
+                is Word -> DrawableWord(element.str, scale, state)
+                is Space -> DrawableSpace(scale, state)
+                Break -> DrawableBreak
+                else -> null
+            }
+        }
+    }.let { drawableWords ->
+        drawableWords.createParent { paragraphConstructor(drawableWords) }
+    }
+
+fun createDrawableParagraphs(page: DrawablePage, paragraphs: List<Paragraph>): List<DrawableParagraph> = paragraphs.map { paragraph ->
+    page.createChild {
+        when (paragraph) {
+            is RegularParagraph -> createDrawableElements(
+                paragraphConstructor = ::DrawableRegularParagraph,
+                elements = paragraph.elements,
+                scale = 1.0
+            )
+            is HeaderParagraph -> createDrawableElements(
+                paragraphConstructor = ::DrawableHeaderParagraph,
+                elements = paragraph.elements,
+                scale = getScaleFromLevel(paragraph.headerLevel)
+            )
+            is HorizontalLineParagraph -> DrawableHorizontalLine(2)
+            is MenuParagraph -> createDrawableElements(
+                paragraphConstructor = { drawableMenuTitle ->
+                    createDrawableMenuParagraph(page.metadataProvider(), paragraph, drawableMenuTitle)
+                },
+                elements = MarkdownParser.splitToInlineElements(paragraph.description),
+                scale = getScaleFromLevel(3)
+            )
         }
     }
 }
 
-private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
-    is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
-    is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, getScaleFromLevel(paragraph.headerLevel)), paragraph.headerLevel)
-    is HorizontalLineParagraph -> DrawableHorizontalLine(2)
-    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(definingPage.metadata.menu[paragraph.link]
-            ?: error("Requested menu ${paragraph.link}, not found."))) // TODO have the current page path here to get the proper menu
+private fun createDrawableMenuParagraph(
+    pageMetadata: YamlPageMetadata,
+    paragraph: MenuParagraph,
+    drawableMenuTitle: List<DrawableWord>
+) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
+    createDrawableElements(
+        paragraphConstructor = { drawableGroupTitle -> createDrawableMenuTileGroup(groupEntries, drawableGroupTitle) },
+        elements = MarkdownParser.splitToInlineElements(groupTitle),
+        scale = getScaleFromLevel(6)
+    )
+}.let { drawableMenuGroups ->
+    drawableMenuGroups.createParent { DrawableMenuParagraph(drawableMenuTitle, drawableMenuGroups) }
 }
 
-fun toMenuGroups(groups: Map<String, List<String>>): List<DrawableMenuTileGroup> {
-    return groups.map {
-        DrawableMenuTileGroup(toDrawables(splitToInlineElements(it.key), getScaleFromLevel(6)), toMenuTiles(it.value))
+private fun createDrawableMenuTileGroup(menuGroupEntries: List<String>, drawableGroupTitle: List<DrawableWord>) =
+    menuGroupEntries.map { path ->
+        BookContents.get(path).metadata.let { metadata ->
+            DrawableMenuTile(metadata.title, metadata.icon, onClick = {
+                LogisticsPipes.log.info("You tried to open $path! $it")
+            })
+        }
+    }.let { drawableMenuTiles ->
+        drawableMenuTiles.createParent { DrawableMenuTileGroup(drawableGroupTitle, drawableMenuTiles) }
     }
-}
-
-fun toMenuTiles(pages: List<String>): List<DrawableMenuTile> {
-    return pages.map {
-        DrawableMenuTile(BookContents.get(it).metadata)
-    }
-}
-
-fun asDrawables(paragraphs: List<Paragraph>) = paragraphs.map(::toDrawable)
 
 fun getScaleFromLevel(headerLevel: Int) = if (headerLevel > 0 && headerLevel < HEADER_LEVELS.size) HEADER_LEVELS[headerLevel - 1] else 1.00

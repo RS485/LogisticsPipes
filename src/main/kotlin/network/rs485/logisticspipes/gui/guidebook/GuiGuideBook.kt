@@ -102,7 +102,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     private val innerGui = Rectangle()
     private val outerGui = Rectangle()
     private val sliderSeparator = Rectangle()
-    private val usableArea = Rectangle()
+    private val visibleArea = Rectangle()
 
     private val cachedPages = hashMapOf<String, SavedPage>()
     var currentPage: SavedPage = cachedPages.getOrPut(MAIN_MENU_FILE) { SavedPage(MAIN_MENU_FILE, 0, 0.0f) }
@@ -126,7 +126,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
     fun setPage(path: String) {
         currentPage = cachedPages.getOrPut(path) { SavedPage(path, 0, 0.0f) }
-        currentPage.initDrawables(usableArea)
+        currentPage.setDrawablesPosition(visibleArea)
         if (this::slider.isInitialized) slider.setProgressF(currentPage.progress)
     }
 
@@ -138,15 +138,15 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         guiSliderX = innerGui.x1 - guiSliderWidth
         guiSliderY0 = innerGui.y0
         guiSliderY1 = innerGui.y1
-        usableArea.setPos(innerGui.x0 + guiShadowThickness, innerGui.y0).setSize(innerGui.width - 2 * guiShadowThickness - guiSliderWidth - guiSeparatorThickness, innerGui.height)
-        currentPage.initDrawables(usableArea)
+        visibleArea.setPos(innerGui.x0 + guiShadowThickness, innerGui.y0).setSize(innerGui.width - 2 * guiShadowThickness - guiSliderWidth - guiSeparatorThickness, innerGui.height)
+        currentPage.setDrawablesPosition(visibleArea)
         updateButtonVisibility()
     }
 
     // Checks each button for visibility and updates tab positions.
     private fun updateButtonVisibility() {
         if (this::home.isInitialized) home.visible = currentPage.page != MAIN_MENU_FILE
-        if (this::slider.isInitialized) slider.enabled = currentPage.height > usableArea.height
+        if (this::slider.isInitialized) slider.enabled = currentPage.loadedPage.drawablePage.height > visibleArea.height
         var xOffset = 0
         for (button: TabButton in tabButtons) {
             button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
@@ -179,7 +179,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
-        currentPage.draw(mouseX, mouseY, partialTicks, usableArea)
+        currentPage.draw(mouseX, mouseY, partialTicks, visibleArea)
         drawGui()
         if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         drawTitle()
@@ -205,7 +205,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
                 }
             }
         }
-
+        if (visibleArea.contains(mouseX, mouseY)) {
+            currentPage.mouseClicked(mouseX, mouseY, mouseButton, visibleArea)
+        }
     }
 
     override fun actionPerformed(button: GuiButton) {

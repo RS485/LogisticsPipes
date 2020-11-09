@@ -73,6 +73,12 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
     var y1: Int = y0 + height
         private set
 
+    // Named getters
+    val left get() = x0
+    val right get() = x1
+    val top get() = y0
+    val bottom get() = y1
+
     // Constructors
     constructor() : this(0, 0, 0, 0)
     constructor(rect: Rectangle) : this(rect.x0, rect.y0, rect.width, rect.height)
@@ -80,7 +86,7 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
     private constructor(firstPoint: Pair<Int, Int>, secondPoint: Pair<Int, Int>) : this(firstPoint.first, firstPoint.second, (secondPoint.first - firstPoint.first), (secondPoint.second - firstPoint.second))
 
     // Transformations
-    fun setSize(newWidth: Int, newHeight: Int): Rectangle {
+    fun setSize(newWidth: Int = width, newHeight: Int = height): Rectangle {
         width = newWidth
         height = newHeight
         return this
@@ -99,6 +105,12 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         return this
     }
 
+    fun grow(growX: Int, growY: Int): Rectangle {
+        width += growX
+        height += growY
+        return this
+    }
+
     fun translate(translateX: Int, translateY: Int): Rectangle {
         x0 += translateX
         y0 += translateY
@@ -112,10 +124,10 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
     // Checks
     fun contains(x: Int, y: Int): Boolean = x in x0..x1 && y in y0..y1
-    fun contains(vararg coords: Pair<Int, Int>): Boolean = coords.any { contains(it.first, it.second) }
+    fun containsAny(vararg coords: Pair<Int, Int>): Boolean = coords.any { contains(it.first, it.second) }
     fun containsAll(vararg coords: Pair<Int, Int>): Boolean = coords.all { contains(it.first, it.second) }
     fun contains(rect: Rectangle): Boolean = contains(rect.x0, rect.y0) && contains(rect.x1, rect.y1)
-    fun overlaps(rect: Rectangle): Boolean = contains(rect.x0 to rect.y0, rect.x0 to rect.y1, rect.x1 to rect.y1, rect.x1 to rect.y0)
+    fun intersects(rect: Rectangle): Boolean = !(right < rect.left || rect.right < left || bottom < rect.top || rect.bottom < top)
 
     // Operations
     fun overlap(rect: Rectangle): Rectangle = Rectangle(max(this.x0, rect.x0) to max(this.y0, rect.y0), min(this.x1, rect.x1) to min(this.y1, rect.y1))

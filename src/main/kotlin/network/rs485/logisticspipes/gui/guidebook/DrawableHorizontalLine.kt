@@ -37,16 +37,21 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-interface IDrawableParagraph : IDrawable {
-    /**
-     * This function is supposed to update the children's position by giving it the start
-     * Y and X placement and iterating through the children while calculating their placement.
-     * This function is also responsible for updating the Paragraphs height as it directly
-     * depends on the placement of it's children.
-     * @param x the X position of the Drawable.
-     * @param y the Y position of the Drawable.
-     * @param maxWidth the the width of the parent, meaning the maximum width the child could have.
-     * @return the height of all the Paragraph's children combined.
-     */
-    fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int
-}
+import logisticspipes.utils.MinecraftColor
+import network.rs485.logisticspipes.util.math.Rectangle
+
+/**
+ * This draws a line with a given thickness that will span the entire width of the page, minus padding.
+ */
+
+class DrawableHorizontalLine(private val thickness: Int, private val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : DrawableParagraph() {
+    override fun setPos(x: Int, y: Int): Int {
+        area.setPos(x + padding, y + padding)
+        area.setSize(parent!!.width - 2 * padding, 2 * padding + thickness)
+        return super.setPos(x, y)
+    }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        GuiGuideBook.drawHorizontalLine(left, right, top, 5.0, thickness, color)
+    }
+}    

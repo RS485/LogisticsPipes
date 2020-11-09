@@ -40,10 +40,10 @@ package network.rs485.logisticspipes.gui.guidebook
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.GUI_BOOK_TEXTURE
+import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.guiBookTexture
 import network.rs485.logisticspipes.util.math.Rectangle
 
-class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
+class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
     private val rail = Rectangle(x, y, buttonWidth, railHeight)
     private val buttonArea = Rectangle(buttonWidth, buttonHeight)
     private val movementDistance = rail.height - buttonArea.height
@@ -57,7 +57,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!visible) return
-        mc.textureManager.bindTexture(GUI_BOOK_TEXTURE)
+        mc.textureManager.bindTexture(guiBookTexture)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         hovered = buttonArea.contains(mouseX, mouseY)
         val btnAtlasOffsetY = hovered && !dragging || !enabled
@@ -72,7 +72,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
             dragging = false
             setProgressI((mouseY - height / 2.0f).toInt())
             // TODO make proper way to update progress leaving currentPage private.
-            gui.currentPage.progress = progress
+            setProgressCallback(progress)
         }
         super.mouseReleased(mouseX, mouseY)
     }
@@ -81,7 +81,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
         if (dragging) {
             setProgressI((mouseY - height / 2.0f).toInt())
             // TODO make proper way to update progress leaving currentPage private.
-            gui.currentPage.progress = progress
+            setProgressCallback(progress)
         }
     }
 
@@ -113,5 +113,5 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
     private fun calculateProgressI(progressF: Float): Int = rail.y0 + (movementDistance * progressF).toInt()
 
     // Calculates progress from given y level
-    private fun calculateProgressF(progressI: Int): Float = (1.0f * (buttonArea.y0 - rail.y0)) / (rail.y1 - rail.y0 - buttonArea.height)
+    private fun calculateProgressF(progressI: Int): Float = (1.0f * (progressI - rail.y0)) / (rail.y1 - rail.y0 - buttonArea.height)
 }

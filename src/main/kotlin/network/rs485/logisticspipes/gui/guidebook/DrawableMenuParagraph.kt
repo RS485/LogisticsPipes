@@ -126,7 +126,7 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
         hovering(mouseX, mouseY, yOffset, visibleArea)
-        if (isHovered) GuiGuideBook.drawBoxedCenteredString(pageName, area.x0 + area.width / 2, minOf(area.y1 - yOffset, visibleArea.y1), GuideBookConstants.zTooltip)
+        if (isHovered) GuiGuideBook.drawBoxedCenteredString(pageName, area.x0 + area.width / 2, minOf(area.y1 - yOffset, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
         val visibleTile = visibleArea.overlap(area.translated(0, -yOffset))
         GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, isHovered, MinecraftColor.WHITE.colorCode)
         if (visibleArea.overlaps(iconArea.translated(0, -yOffset))) {

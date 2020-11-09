@@ -57,23 +57,17 @@ class TabButton(x: Int, yBottom: Int, val tab: SavedPage) : GuiButton(99, 24, 24
         visible = true
     }
 
-    fun cycleColor() {
+    fun cycleColor(inverted: Boolean) {
         if (!isActive) return
-        tab.cycleColor(false)
-        playPressSound(Minecraft.getMinecraft().soundHandler)
-    }
-
-    fun cycleColorInverted() {
-        if (!isActive) return
-        tab.cycleColor(true)
+        tab.cycleColor(inverted)
         playPressSound(Minecraft.getMinecraft().soundHandler)
     }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         hovered = buttonArea.contains(mouseX, mouseY)
         if (!visible) return
-        mc.textureManager.bindTexture(GuideBookConstants.GUI_BOOK_TEXTURE)
-        val z = if (isActive) GuideBookConstants.zFrame else GuideBookConstants.zBackground
+        mc.textureManager.bindTexture(GuideBookConstants.guiBookTexture)
+        val z = if (isActive) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
         val yOffset = if (isActive) 0 else 3
         val color: Int = (MinecraftColor.values()[tab.color].colorCode and 0x00FFFFFF) or 0x7F000000
         GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0 + yOffset, buttonArea.x1, buttonArea.y1 + yOffset, z, buttonTextureArea.x0, buttonTextureArea.y0, buttonTextureArea.x1, buttonTextureArea.y1, true, if (isActive) 0xFFFFFFFF.toInt() else color)

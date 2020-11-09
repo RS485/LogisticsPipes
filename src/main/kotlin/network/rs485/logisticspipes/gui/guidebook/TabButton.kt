@@ -57,15 +57,9 @@ class TabButton(x: Int, yBottom: Int, val tab: SavedPage) : GuiButton(99, 24, 24
         visible = true
     }
 
-    fun cycleColor() {
+    fun cycleColor(inverted: Boolean) {
         if (!isActive) return
-        tab.cycleColor(false)
-        playPressSound(Minecraft.getMinecraft().soundHandler)
-    }
-
-    fun cycleColorInverted() {
-        if (!isActive) return
-        tab.cycleColor(true)
+        tab.cycleColor(inverted)
         playPressSound(Minecraft.getMinecraft().soundHandler)
     }
 

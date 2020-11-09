@@ -233,9 +233,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
                     if (isCtrlKeyDown() && isShiftKeyDown()) {
                         removeBookmark(button)
                     } else if (isShiftKeyDown()) {
-                        button.cycleColorInverted()
+                        button.cycleColor(inverted = true)
                     } else {
-                        button.cycleColor()
+                        button.cycleColor(inverted = false)
                     }
                 }
             }

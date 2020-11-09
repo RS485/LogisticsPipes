@@ -113,5 +113,5 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
     private fun calculateProgressI(progressF: Float): Int = rail.y0 + (movementDistance * progressF).toInt()
 
     // Calculates progress from given y level
-    private fun calculateProgressF(progressI: Int): Float = (1.0f * (buttonArea.y0 - rail.y0)) / (rail.y1 - rail.y0 - buttonArea.height)
+    private fun calculateProgressF(progressI: Int): Float = (1.0f * (progressI - rail.y0)) / (rail.y1 - rail.y0 - buttonArea.height)
 }

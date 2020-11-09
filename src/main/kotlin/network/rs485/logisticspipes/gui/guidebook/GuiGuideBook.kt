@@ -216,8 +216,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             home -> setPage(MAIN_MENU_FILE)
             addTab -> addBookmark(currentPage)
             is TabButton -> if (!button.isActive) setPage(button.tab.page)
-            else -> {
-            }
         }
         updateButtonVisibility()
     }
@@ -234,8 +232,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
                         button.cycleColor(inverted = false)
                     }
                 }
-            }
-            else -> {
             }
         }
     }

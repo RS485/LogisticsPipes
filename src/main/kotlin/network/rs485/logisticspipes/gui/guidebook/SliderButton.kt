@@ -43,7 +43,7 @@ import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.GUI_BOOK_TEXTURE
 import network.rs485.logisticspipes.util.math.Rectangle
 
-class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
+class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
     private val rail = Rectangle(x, y, buttonWidth, railHeight)
     private val buttonArea = Rectangle(buttonWidth, buttonHeight)
     private val movementDistance = rail.height - buttonArea.height
@@ -72,7 +72,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
             dragging = false
             setProgressI((mouseY - height / 2.0f).toInt())
             // TODO make proper way to update progress leaving currentPage private.
-            gui.currentPage.progress = progress
+            setProgressCallback(progress)
         }
         super.mouseReleased(mouseX, mouseY)
     }
@@ -81,7 +81,7 @@ class SliderButton(val gui: GuiGuideBook, buttonId: Int, x: Int, y: Int, railHei
         if (dragging) {
             setProgressI((mouseY - height / 2.0f).toInt())
             // TODO make proper way to update progress leaving currentPage private.
-            gui.currentPage.progress = progress
+            setProgressCallback(progress)
         }
     }
 

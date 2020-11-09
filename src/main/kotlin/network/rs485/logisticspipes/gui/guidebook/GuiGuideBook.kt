@@ -171,7 +171,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
     override fun initGui() {
         calculateGuiConstraints()
-        slider = addButton(SliderButton(this, 0, innerGui.x1 - guiSliderWidth, innerGui.y0, innerGui.height, guiSliderWidth, guiSliderHeight, currentPage.progress))
+        slider = addButton(SliderButton(0, innerGui.x1 - guiSliderWidth, innerGui.y0, innerGui.height, guiSliderWidth, guiSliderHeight, currentPage.progress, ::setPageProgress))
         home = addButton(TexturedButton(1, outerGui.x1 - guiTabWidth, outerGui.y0 - guiTabHeight, guiTabWidth, guiFullTabHeight, GuideBookConstants.zTitleButtons, 16, 64, false, ButtonType.TAB).setOverlayTexture(128, 0, 16, 16))
         addTab = addButton(TexturedButton(2, outerGui.x1 - 18 - guiTabWidth + 4, outerGui.y0 - 18, 16, 16, GuideBookConstants.zTitleButtons, 192, 0, true, ButtonType.NORMAL))
         updateButtonVisibility()

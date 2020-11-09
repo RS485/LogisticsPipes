@@ -38,40 +38,46 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.markdown.InlineElement
 
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
  */
-data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawableParagraph {
-    override val area = Rectangle(0, 0)
-    override var isHovered = false
+data class DrawableRegularParagraph(override val parent: IDrawable, val words: List<InlineElement>) : IDrawableParagraph {
+    override var hovered = false
+    override var x = 0
+    override var y = 0
+    override var width = 0
+    override var height = 0
+    val drawables = toDrawables(this, words, 1.0)
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+        this.x
+        this.y
+        this.width = parent.width
+        this.height = setChildrenPos()
+        return super.setPos(x, y)
+    }
+
+    override fun setChildrenPos(): Int {
+        return splitInitialize(drawables, 0, 0, width)
+    }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        hovered = hovering(mouseX, mouseY, visibleArea)
+        drawChildren(mouseX, mouseY, delta, visibleArea)
+    }
+
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        val lines = drawables.groupBy { it.top() }.values
         // Split by lines
-        val lines = drawables.groupBy { it.area.y0 }.values
         for (line in lines) {
             // Check if first (representative of the whole line) is visible, aka contained within the visible area.
-            if (visibleArea.overlaps(line.first().area.translated(0, -yOffset))) {
+            if (line.first().visible(visibleArea)) {
                 for (drawable in line) {
-                    if (isHovered && drawable is Link) {
-                        drawable.hovering(mouseX, mouseY, yOffset, visibleArea)
-                    }
-                    drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+                    drawable.draw(mouseX, mouseY, delta, visibleArea)
                 }
             }
         }
-    }
-
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        return setChildrenPos(x, y, maxWidth)
-    }
-
-    override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
-        val textHeight = splitInitialize(drawables, x, y, maxWidth)
-        area.setSize(maxWidth, textHeight)
-        return area.height
     }
 }

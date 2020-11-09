@@ -38,16 +38,46 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.markdown.Paragraph
 
-interface IDrawableParagraph : IDrawable {
-    /**
-     * This function is supposed to update the children's position by starting
-     * Y and X placement at 0 and iterating through the children while calculating their placement.
-     * This function is also responsible for updating the Paragraphs height as it directly
-     * depends on the placement of it's children.
-     * @return the height of all the Paragraph's children combined.
-     */
-    fun setChildrenPos(): Int
+private const val PAGE_VERTICAL_PADDING = 5
 
-    fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle)
+class DrawablePage(paragraphs: List<Paragraph>) : IDrawableParagraph {
+    override val parent: IDrawable? = null
+    override var hovered = false
+    override var x = 0
+    override var y = 0
+    override var width = 0
+    override var height = 0
+    private val drawableParagraphs = asDrawables(this, paragraphs)
+
+    fun setPosition(x: Int, y: Int, width: Int){
+        this.width = width
+        setPos(x, y)
+    }
+
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+        this.x = x
+        this.y = y
+        this.height = setChildrenPos()
+        return super.setPos(x, y)
+    }
+
+    override fun setChildrenPos(): Int {
+        var currentY = PAGE_VERTICAL_PADDING
+         currentY += drawableParagraphs.fold(currentY) { y, paragraph ->
+             y + paragraph.setPos(0, currentY + y).second
+         }
+        return PAGE_VERTICAL_PADDING + currentY
+    }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        hovered = hovering(mouseX, mouseY, visibleArea)
+        drawChildren(mouseX, mouseY, delta, visibleArea)
+    }
+
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        val visibleParagraphs = drawableParagraphs.filter { it.visible(visibleArea) }
+        visibleParagraphs.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
+    }
 }

@@ -38,33 +38,40 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.markdown.InlineElement
 
 /**
  * Header token, stores all the tokens that are apart of the header.
  */
-data class DrawableHeaderParagraph(val drawables: List<DrawableWord>, val headerLevel: Int = 1) : IDrawableParagraph {
-    override val area = Rectangle(0, 0)
-    override var isHovered = true
-    val horizontalLine = DrawableHorizontalLine(1)
+data class DrawableHeaderParagraph(override val parent: IDrawable, val words: List<InlineElement>, val headerLevel: Int = 1) : IDrawableParagraph {
+    override var hovered = true
+    override var x = 0
+    override var y = 0
+    override var width = parent.width
+    override var height = 0
+    val horizontalLine = DrawableHorizontalLine(this, 1)
+    val drawables = toDrawables(this, words, getScaleFromLevel(headerLevel))
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        drawables.filter { visibleArea.overlaps(it.area.translated(0, -yOffset)) }.forEach { drawable ->
-            drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        drawChildren(mouseX, mouseY, delta, visibleArea)
+    }
+
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        (drawables + horizontalLine).filter { it.visible(visibleArea) }.forEach { drawable ->
+            drawable.draw(mouseX, mouseY, delta, visibleArea)
         }
-        if (visibleArea.overlaps(horizontalLine.area.translated(0, -yOffset))) horizontalLine.draw(mouseX, mouseY, delta, yOffset, visibleArea)
     }
 
-    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
-        area.setPos(x, y)
-        return setChildrenPos(x, y, maxWidth)
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+        this.x = x
+        this.y = y
+        this.height = setChildrenPos()
+        return super.setPos(x, y)
     }
 
-    override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
-        var currentY = splitInitialize(drawables, x, y, maxWidth)
-        currentY += horizontalLine.setPos(x, y + currentY, maxWidth)
-        area.setSize(maxWidth, currentY)
-        return area.height
+    override fun setChildrenPos(): Int {
+        var currentY = splitInitialize(drawables, 0, 0, width)
+        currentY += horizontalLine.setPos(0, currentY).second
+        return currentY
     }
 }

@@ -126,7 +126,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
     fun setPage(path: String) {
         currentPage = cachedPages.getOrPut(path) { SavedPage(path, 0, 0.0f) }
-        currentPage.initDrawables(usableArea)
+        currentPage.setDrawablesPosition(usableArea)
         if (this::slider.isInitialized) slider.setProgressF(currentPage.progress)
     }
 
@@ -139,14 +139,14 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         guiSliderY0 = innerGui.y0
         guiSliderY1 = innerGui.y1
         usableArea.setPos(innerGui.x0 + guiShadowThickness, innerGui.y0).setSize(innerGui.width - 2 * guiShadowThickness - guiSliderWidth - guiSeparatorThickness, innerGui.height)
-        currentPage.initDrawables(usableArea)
+        currentPage.setDrawablesPosition(usableArea)
         updateButtonVisibility()
     }
 
     // Checks each button for visibility and updates tab positions.
     private fun updateButtonVisibility() {
         if (this::home.isInitialized) home.visible = currentPage.page != MAIN_MENU_FILE
-        if (this::slider.isInitialized) slider.enabled = currentPage.height > usableArea.height
+        if (this::slider.isInitialized) slider.enabled = currentPage.loadedPage.drawableParagraphs.height > usableArea.height
         var xOffset = 0
         for (button: TabButton in tabButtons) {
             button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)

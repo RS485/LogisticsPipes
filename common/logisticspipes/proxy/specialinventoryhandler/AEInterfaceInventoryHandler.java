@@ -211,10 +211,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 			initCache();
 		}
 
-		// allow LP putting items into AE, when it's empty
-		if (cached.size() == 0) return 1;
-
-		return cached.size();
+		// allow LP putting items into AE
+		return cached.size() + 1;
 	}
 
 	private void initCache() {
@@ -225,11 +223,14 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 
 	@Override
 	@Nonnull
-	public ItemStack getStackInSlot(int i) {
+	public ItemStack getStackInSlot(int slot) {
 		if (cached == null) {
 			initCache();
 		}
-		Entry<ItemIdentifier, Integer> entry = cached.get(i);
+		if (slot >= cached.size()) {
+			return ItemStack.EMPTY;
+		}
+		Entry<ItemIdentifier, Integer> entry = cached.get(slot);
 		if (entry.getValue() == 0) {
 			return ItemStack.EMPTY;
 		}
@@ -238,14 +239,15 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 
 	@Override
 	@Nonnull
-	public ItemStack decrStackSize(int i, int j) {
+	public ItemStack decrStackSize(int slot, int amount) {
 		if (cached == null) {
 			initCache();
 		}
-		Entry<ItemIdentifier, Integer> entry = cached.get(i);
-		ItemStack extracted = getMultipleItems(entry.getKey(), j);
-		entry.setValue(entry.getValue() - j);
-		return extracted;
+		if (slot >= cached.size()) {
+			return ItemStack.EMPTY;
+		}
+		Entry<ItemIdentifier, Integer> entry = cached.get(slot);
+		return getMultipleItems(entry.getKey(), amount);
 	}
 
 	@Override

@@ -43,11 +43,17 @@ import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.util.math.Rectangle
 
-class TabButton(x: Int, yBottom: Int, val tab: SavedPage) : GuiButton(99, 24, 24, "") {
+interface TabButtonReturn {
+    fun onLeftClick(): Boolean
+    fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean
+    fun getColor(): Int
+    fun isPageActive(): Boolean
+}
+
+class TabButton(x: Int, yBottom: Int, val returny: TabButtonReturn) : GuiButton(99, 24, 24, "") {
 
     // TODO look into making the TexturedButton abstract and making this and a Home button extend it
 
-    var isActive = false
     private val buttonArea = Rectangle(x, yBottom - 24, 24, 32)
     private val buttonTextureArea = Rectangle(40, 64, 24, 32)
     private val circleArea = Rectangle(buttonArea.x0 + 4, buttonArea.y0 + 4, 16, 16)
@@ -57,21 +63,21 @@ class TabButton(x: Int, yBottom: Int, val tab: SavedPage) : GuiButton(99, 24, 24
         visible = true
     }
 
-    fun cycleColor(inverted: Boolean) {
-        if (!isActive) return
-        tab.cycleColor(inverted)
-        playPressSound(Minecraft.getMinecraft().soundHandler)
-    }
+    fun onLeftClick() = returny.onLeftClick()
+
+    fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean) = returny.onRightClick(shiftClick, ctrlClick)
+
+    fun isPageActive(): Boolean = isPageActive()
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         hovered = buttonArea.contains(mouseX, mouseY)
         if (!visible) return
         mc.textureManager.bindTexture(GuideBookConstants.guiBookTexture)
-        val z = if (isActive) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
-        val yOffset = if (isActive) 0 else 3
-        val color: Int = (MinecraftColor.values()[tab.color].colorCode and 0x00FFFFFF) or 0x7F000000
-        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0 + yOffset, buttonArea.x1, buttonArea.y1 + yOffset, z, buttonTextureArea.x0, buttonTextureArea.y0, buttonTextureArea.x1, buttonTextureArea.y1, true, if (isActive) 0xFFFFFFFF.toInt() else color)
-        if (isActive) GuiGuideBook.drawStretchingRectangle(circleArea.x0, circleArea.y0, circleArea.x1, circleArea.y1, z + 0.5, circleAreaTexture.x0, circleAreaTexture.y0, circleAreaTexture.x1, circleAreaTexture.y1, true, color)
+        val z = if (returny.isPageActive()) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
+        val yOffset = if (returny.isPageActive()) 0 else 3
+        val color: Int = (MinecraftColor.values()[returny.getColor()].colorCode and 0x00FFFFFF) or 0x7F000000
+        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0 + yOffset, buttonArea.x1, buttonArea.y1 + yOffset, z, buttonTextureArea.x0, buttonTextureArea.y0, buttonTextureArea.x1, buttonTextureArea.y1, true, if (returny.isPageActive()) 0xFFFFFFFF.toInt() else color)
+        if (returny.isPageActive()) GuiGuideBook.drawStretchingRectangle(circleArea.x0, circleArea.y0, circleArea.x1, circleArea.y1, z + 0.5, circleAreaTexture.x0, circleAreaTexture.y0, circleAreaTexture.x1, circleAreaTexture.y1, true, color)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
@@ -81,7 +87,7 @@ class TabButton(x: Int, yBottom: Int, val tab: SavedPage) : GuiButton(99, 24, 24
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {
-        return if (isActive) Rectangle(buttonArea).setSize(32, 32).contains(mouseX, mouseY)
+        return if (returny.isPageActive()) Rectangle(buttonArea).setSize(32, 32).contains(mouseX, mouseY)
         else Rectangle(buttonArea.x0, buttonArea.y0 + 3, 32, 29).contains(mouseX, mouseY)
     }
 }

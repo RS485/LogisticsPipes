@@ -107,8 +107,8 @@ class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 
 
     fun isEqual(b: SavedPage): Boolean = this.page == b.page
 
-    fun cycleColor(invert: Boolean = false) {
-        if (invert) color--
+    fun cycleColor(inverted: Boolean = false) {
+        if (inverted) color--
         else color++
         if (color == 16) color = 0
         if (color == -1) color = 15

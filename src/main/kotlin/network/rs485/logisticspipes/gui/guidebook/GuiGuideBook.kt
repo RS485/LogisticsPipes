@@ -115,8 +115,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     // Buttons
     private lateinit var slider: SliderButton
     private lateinit var home: TexturedButton
-    private lateinit var addTab: TexturedButton
-    private val tabs = mutableListOf<TabButton>()
+    private lateinit var addTabButton: TexturedButton
+    private val tabs = mutableListOf<SavedPage>()
+    private val tabButtons = mutableListOf<TabButton>()
 
 
     init {
@@ -147,29 +148,26 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         if (this::home.isInitialized) home.visible = currentPage.page != MAIN_MENU_FILE
         if (this::slider.isInitialized) slider.enabled = currentPage.height > usableArea.height
         var xOffset = 0
-        for (tab: TabButton in tabs) {
-            tab.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
+        for (button: TabButton in tabButtons) {
+            button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
             xOffset += guiTabWidth
-            tab.isActive = tab.tab.isEqual(currentPage)
+            // TODO check if current page
         }
-        if (this::addTab.isInitialized) {
-            addTab.visible = currentPage.page != MAIN_MENU_FILE && tabs.size < maxTabs
-            addTab.enabled = tabNotFound(currentPage)
-            addTab.setX(outerGui.x1 - 20 - guiTabWidth - xOffset)
+        if (this::addTabButton.isInitialized) {
+            addTabButton.visible = currentPage.page != MAIN_MENU_FILE && tabButtons.size < maxTabs
+            // Checks if there's already a bookmark pointing to the same page.
+            addTabButton.enabled = isTabAbsent(currentPage)
+            addTabButton.setX(outerGui.x1 - 20 - guiTabWidth - xOffset)
         }
     }
 
-    // Checks if there's already a bookmark pointing to the same page.
-    private fun tabNotFound(checkTab: SavedPage): Boolean {
-        for (tab in tabs) if (tab.tab.isEqual(checkTab)) return false
-        return true
-    }
+    private fun isTabAbsent(page: SavedPage): Boolean = !tabs.any { it.isEqual(page) }
 
     override fun initGui() {
         calculateGuiConstraints()
         slider = addButton(SliderButton(0, innerGui.x1 - guiSliderWidth, innerGui.y0, innerGui.height, guiSliderWidth, guiSliderHeight, currentPage.progress, ::setPageProgress))
         home = addButton(TexturedButton(1, outerGui.x1 - guiTabWidth, outerGui.y0 - guiTabHeight, guiTabWidth, guiFullTabHeight, GuideBookConstants.Z_TITLE_BUTTONS, 16, 64, false, ButtonType.TAB).setOverlayTexture(128, 0, 16, 16))
-        addTab = addButton(TexturedButton(2, outerGui.x1 - 18 - guiTabWidth + 4, outerGui.y0 - 18, 16, 16, GuideBookConstants.Z_TITLE_BUTTONS, 192, 0, true, ButtonType.NORMAL))
+        addTabButton = addButton(TexturedButton(2, outerGui.x1 - 18 - guiTabWidth + 4, outerGui.y0 - 18, 16, 16, GuideBookConstants.Z_TITLE_BUTTONS, 192, 0, true, ButtonType.NORMAL))
         updateButtonVisibility()
     }
 
@@ -183,7 +181,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         currentPage.draw(mouseX, mouseY, partialTicks, usableArea)
         drawGui()
-        if (tabs.isNotEmpty()) tabs.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
+        if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         drawTitle()
     }
 
@@ -193,11 +191,10 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         // TODO if within the usable area pass click and check if links or menu items were clicked
         // TODO Sort buttons by zLevel and filter out inactive buttons for it to work as expected
         // TODO replicate super but without ignoring "non-left-clicks"
-        val allButtons = (buttonList + tabs).sortedBy { it.zLevel }.filter { it.visible && it.enabled }
+        val allButtons = (buttonList + tabButtons).sortedBy { it.zLevel }.filter { it.visible && it.enabled }
         for (button in allButtons) {
             if (button.mousePressed(mc, mouseX, mouseY)) {
                 selectedButton = button
-                button.playPressSound(mc.soundHandler)
                 when (mouseButton) {
                     0 -> {
                         actionPerformed(button)
@@ -213,9 +210,17 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
     override fun actionPerformed(button: GuiButton) {
         when (button) {
-            home -> setPage(MAIN_MENU_FILE)
-            addTab -> addBookmark(currentPage)
-            is TabButton -> if (!button.isActive) setPage(button.tab.page)
+            home -> {
+                setPage(MAIN_MENU_FILE)
+                button.playPressSound(mc.soundHandler)
+            }
+            addTabButton -> {
+                addBookmark(currentPage)
+                button.playPressSound(mc.soundHandler)
+            }
+            is TabButton -> if (button.onLeftClick()) {
+                button.playPressSound(mc.soundHandler)
+            }
         }
         updateButtonVisibility()
     }
@@ -223,37 +228,55 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     private fun rightClick(button: GuiButton) {
         when (button) {
             is TabButton -> {
-                if (button.isActive) {
-                    if (isCtrlKeyDown() && isShiftKeyDown()) {
-                        removeBookmark(button)
-                    } else if (isShiftKeyDown()) {
-                        button.cycleColor(inverted = true)
-                    } else {
-                        button.cycleColor(inverted = false)
-                    }
+                if (button.onRightClick(shiftClick = isShiftKeyDown(), ctrlClick = isCtrlKeyDown())) {
+                    button.playPressSound(mc.soundHandler)
                 }
             }
         }
+        updateButtonVisibility()
     }
 
     // Bookmark logic
-    private fun addBookmark(currentPage: SavedPage) {
-        if (!checkBookmarks(TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, currentPage)) && tabs.size < maxTabs) {
-            tabs.add(TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, currentPage))
+    private fun addBookmark(page: SavedPage) {
+        if (isTabAbsent(page) && tabButtons.size < maxTabs) {
+            tabs.add(page)
+            val tabButton = TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, object : TabButtonReturn {
+                private val tabPage: SavedPage = page
+
+                override fun onLeftClick(): Boolean {
+                    if (!isPageActive()) {
+                        setPage(tabPage.page)
+                        return true
+                    }
+                    return false
+                }
+
+                override fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean {
+                    if (!isPageActive()) return false
+                    if (ctrlClick && shiftClick) {
+                        removeBookmark(tabPage)
+                    } else {
+                        tabPage.cycleColor(inverted = shiftClick)
+                    }
+                    return true
+                }
+
+                override fun getColor(): Int = tabPage.color
+
+                override fun isPageActive(): Boolean = currentPage == tabPage
+
+            })
+            tabButtons.add(tabButton)
         }
     }
 
-    private fun removeBookmark(tabButton: TabButton) {
-        if (tabs.size < 0 && checkBookmarks(tabButton) && tabs.contains(tabButton)) {
-            tabs.remove(tabButton)
+    private fun removeBookmark(page: SavedPage) {
+        val idx: Int = tabs.indexOf(page)
+        if (idx != -1) {
+            tabButtons.removeAt(idx)
+            tabs.removeAt(idx)
         }
     }
-
-    private fun checkBookmarks(tabButtonIn: TabButton): Boolean {
-        tabs.forEach { tabButton -> tabButton.tab.isEqual(tabButtonIn.tab) }
-        return false
-    }
-
 
     // TODO get book state/data from item NBT
 

@@ -35,22 +35,17 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.guidebook
+package network.rs485.logisticspipes.gui.guidebook
 
-import buildcraft.api.items.FluidItemDrops.item
-import codechicken.lib.util.ServerUtils.mc
 import logisticspipes.LPItems
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
-import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
+import network.rs485.logisticspipes.guidebook.YamlPageMetadata
 import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.floor
 
@@ -85,10 +80,6 @@ data class DrawableMenuParagraph(val menuTitle: List<DrawableWord>, val menuGrou
         for (group in menuGroups) currentY += group.setPos(x, currentY + y, maxWidth)
         area.setSize(maxWidth, currentY)
         return area.height
-    }
-
-    override fun hovering(mouseX: Int, mouseY: Int, yOffset: Int) {
-        super.hovering(mouseX, mouseY, yOffset)
     }
 }
 
@@ -134,25 +125,24 @@ class DrawableMenuTile(metadata: YamlPageMetadata) : IDrawable {
     private val iconArea = Rectangle(16 * iconScale.toInt(), 16 * iconScale.toInt())
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
-        if (isHovered) GuiGuideBook.drawBoxedCenteredString(Minecraft.getMinecraft(), pageName, area.x0 + area.width / 2, area.y1 - yOffset, 15)
+        hovering(mouseX, mouseY, yOffset, visibleArea)
+        if (isHovered) GuiGuideBook.drawBoxedCenteredString(pageName, area.x0 + area.width / 2, minOf(area.y1 - yOffset, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
         val visibleTile = visibleArea.overlap(area.translated(0, -yOffset))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4, true, isHovered, MinecraftColor.WHITE.colorCode)
+        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, isHovered, MinecraftColor.WHITE.colorCode)
         if (visibleArea.overlaps(iconArea.translated(0, -yOffset))) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
             RenderHelper.enableGUIStandardItemLighting();
             val renderItem = Minecraft.getMinecraft().renderItem
             val prevZ = renderItem.zLevel
             renderItem.zLevel = -145f
-            if(iconScale != 1.0) GlStateManager.scale(iconScale, iconScale, 1.0)
+            if (iconScale != 1.0) GlStateManager.scale(iconScale, iconScale, 1.0)
+            GlStateManager.disableDepth()
             renderItem.renderItemAndEffectIntoGUI(ItemStack(item), floor(iconArea.x0 / iconScale).toInt(), floor((iconArea.y0 - yOffset) / iconScale).toInt())
-            if(iconScale != 1.0)GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
+            if (iconScale != 1.0) GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
+            GlStateManager.enableDepth()
             renderItem.zLevel = prevZ
             RenderHelper.disableStandardItemLighting();
         }
-        // Draw tile bg
-        // Draw icon
-        // Draw tooltip
     }
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {

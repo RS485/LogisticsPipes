@@ -38,14 +38,12 @@
 package network.rs485.logisticspipes.gui
 
 import logisticspipes.LPConstants
-import logisticspipes.utils.MinecraftColor
 import lombok.Getter
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.guidebook.DrawableSpace
 import network.rs485.logisticspipes.util.alpha
 import network.rs485.logisticspipes.util.blue
 import network.rs485.logisticspipes.util.green
@@ -64,7 +62,7 @@ open class LPFontRenderer(fontName: String) {
     private val shadowColor = 0xEE3C3F41.toInt()
     private val fontPlain: IFont
     private val wrapperPlain: FontWrapper
-    private val zLevel = 5.0
+    var zLevel = 5.0
     private val tessellator: Tessellator
     private val buffer: BufferBuilder
 
@@ -265,8 +263,8 @@ open class LPFontRenderer(fontName: String) {
     }
 
     init {
-        // TODO reuse parsed text after it was firstly parsed
-        val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName-plain.bdf")
+        // TODO reuse parsed font after it was firstly parsed
+        val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
         fontPlain = FontParser.read(fontResourcePlain) ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
         wrapperPlain = FontWrapper(fontPlain)
         tessellator = Tessellator.getInstance()

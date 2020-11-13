@@ -35,5 +35,43 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.gui.guidebook
 
+import network.rs485.logisticspipes.util.math.Rectangle
+
+/**
+ * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
+ */
+data class DrawableRegularParagraph(val drawables: List<DrawableWord>) : IDrawableParagraph {
+    override val area = Rectangle(0, 0)
+    override var isHovered = false
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
+        // Split by lines
+        val lines = drawables.groupBy { it.area.y0 }.values
+        for (line in lines) {
+            // Check if first (representative of the whole line) is visible, aka contained within the visible area.
+            if (visibleArea.overlaps(line.first().area.translated(0, -yOffset))) {
+                for (drawable in line) {
+                    if (isHovered && drawable is Link) {
+                        drawable.hovering(mouseX, mouseY, yOffset, visibleArea)
+                    }
+                    drawable.draw(mouseX, mouseY, delta, yOffset, visibleArea)
+                }
+            }
+        }
+    }
+
+    override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
+        area.setPos(x, y)
+        return setChildrenPos(x, y, maxWidth)
+    }
+
+    override fun setChildrenPos(x: Int, y: Int, maxWidth: Int): Int {
+        val textHeight = splitInitialize(drawables, x, y, maxWidth)
+        area.setSize(maxWidth, textHeight)
+        return area.height
+    }
+}

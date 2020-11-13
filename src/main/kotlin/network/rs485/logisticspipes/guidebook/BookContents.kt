@@ -46,6 +46,8 @@ import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.IDrawable
+import network.rs485.logisticspipes.gui.guidebook.asDrawables
+import network.rs485.logisticspipes.gui.guidebook.definingPage
 import network.rs485.markdown.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -136,7 +138,7 @@ private fun parseMetadata(metadataString: String, markdownFile: String): YamlPag
             Yaml.default.decodeFromString(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
         } catch (e: YamlException) {
             LogisticsPipes.log.error("Exception: $e")
-            LogisticsPipes.log.error("The following Yaml is malformed! \n$metadataString")
+            LogisticsPipes.log.error("The following Yaml in $markdownFile is malformed! \n$metadataString")
             MISSING_META
         }
     } else MISSING_META
@@ -184,6 +186,7 @@ class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvid
     }
 
     override val drawableParagraphs: List<IDrawable> by lazy {
+        definingPage = this
         asDrawables(paragraphs)
     }
 }

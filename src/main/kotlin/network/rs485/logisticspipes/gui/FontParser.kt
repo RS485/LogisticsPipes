@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.gui
 
-import akka.io.Tcp
 import logisticspipes.LogisticsPipes
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
@@ -77,7 +76,6 @@ object FontParser {
         var currentByte = 0 // Used to keep track of how many bits were read.
 
 
-
         fun line(index: Int, line: String) = when (state) {
             State.Font.Start -> handleFontStart(index, line)
             State.Font.Definition -> handleFontDefinition(index, line)
@@ -91,10 +89,10 @@ object FontParser {
         private fun handleCharBitmap(index: Int, line: String) {
             val tokens = line.split(" ")
             val head = tokens.first()
-            when(head){
+            when (head) {
                 "ENDCHAR" -> {
                     state = State.Char.Pre
-                    if(currentByte != currentGlyph.height) throw throw FontParserSyntaxException(state, index, "Current Glyph is missing some Bytes, last byte index is $currentByte, expected: ${currentGlyph.height};")
+                    if (currentByte != currentGlyph.height) throw throw FontParserSyntaxException(state, index, "Current Glyph is missing some Bytes, last byte index is $currentByte, expected: ${currentGlyph.height};")
                     glyphs = glyphs + (currentGlyph.charPoint to currentGlyph)
                 }
                 else -> {
@@ -110,17 +108,17 @@ object FontParser {
 
         private fun handleCharDefinition(index: Int, line: String) {
             val tokens = line.split(" ")
-            when(val head = tokens.first()){
+            when (val head = tokens.first()) {
                 "SWIDTH" -> Unit
 
                 "ENCODING" -> currentGlyph.charPoint = tokens[1].toInt().toChar()
 
-                "DWIDTH" -> currentGlyph.apply{
+                "DWIDTH" -> currentGlyph.apply {
                     dWidthX = tokens[1].toInt()
                     dWidthY = tokens[2].toInt()
                 }
 
-                "BBX" -> currentGlyph.apply{
+                "BBX" -> currentGlyph.apply {
                     width = tokens[1].toInt()
                     height = tokens[2].toInt()
                     offsetX = tokens[3].toInt()
@@ -138,7 +136,7 @@ object FontParser {
 
         private fun handleCharPre(index: Int, line: String) {
             val tokens = line.split(" ")
-            when(val head = tokens.first()){
+            when (val head = tokens.first()) {
                 "STARTCHAR" -> {
                     state = State.Char.Definition
                     currentGlyph = Glyph(tokens[1]).apply {
@@ -150,7 +148,7 @@ object FontParser {
                 }
 
                 "ENDFONT" -> {
-                    if(chars != glyphs.size) println("[@$state][Ln$index] Expected a different amount of Glyphs, got ${glyphs.size}, expected: $chars")
+                    if (chars != glyphs.size) println("[@$state][Ln$index] Expected a different amount of Glyphs, got ${glyphs.size}, expected: $chars")
                     state = State.Font.End
                 }
 

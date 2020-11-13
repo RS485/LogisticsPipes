@@ -46,10 +46,11 @@ import network.rs485.logisticspipes.util.math.Rectangle
 
 private const val PAGE_VERTICAL_PADDING = 5
 
-class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
+class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
 
     val loadedPage = BookContents.get(page)
     var height: Int = 0
+        private set
 
     constructor(page: SavedPage) : this(page.page, page.color, page.progress)
 
@@ -60,9 +61,9 @@ class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 
         }
     }
 
-    fun initDrawables(x: Int, y: Int, maxWidth: Int) {
-        loadedPage.drawableParagraphs.fold(y + PAGE_VERTICAL_PADDING) { currentY, paragraph ->
-            currentY + paragraph.setPos(x + 1, currentY + 1, maxWidth - 2) + 3
+    fun initDrawables(area: Rectangle) {
+        loadedPage.drawableParagraphs.fold(area.y0 + PAGE_VERTICAL_PADDING) { currentY, paragraph ->
+            currentY + paragraph.setPos(area.x0 + 1, currentY + 1, area.width - 2) + 3
         }
         height = loadedPage.drawableParagraphs.last().area.y1 - loadedPage.drawableParagraphs.first().area.y0 + PAGE_VERTICAL_PADDING * 2
     }
@@ -106,10 +107,10 @@ class SavedPage constructor(var page: String = MAIN_MENU_FILE, var color: Int = 
 
     fun isEqual(b: SavedPage): Boolean = this.page == b.page
 
-    fun cycleColor(invert: Boolean = false) {
-        if (invert) color--
+    fun cycleColor(inverted: Boolean = false) {
+        if (inverted) color--
         else color++
-        if (color == 16) color = 0;
-        if (color == -1) color = 15;
+        if (color == 16) color = 0
+        if (color == -1) color = 15
     }
 }

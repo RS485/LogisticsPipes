@@ -80,12 +80,12 @@ class FontWrapper(private val font: IFont) {
             currMaxCharHeight = maxOf(currMaxCharHeight, glyph.height + glyph.offsetY)
             currMinOffsetY = minOf(currMinOffsetY, glyph.offsetY)
 
-            if(currentX + glyph.width > widthMap[currentTex]!!){
+            if (currentX + glyph.width > widthMap[currentTex]!!) {
                 currentX = 0
                 println("New row offset by: $currentMaxHeight")
                 currentY += currentMaxHeight
                 currentMaxHeight = 0
-                if(currentY > heightMap[currentTex]!!){
+                if (currentY > heightMap[currentTex]!!) {
                     currentY = 0
                     currentTex++
                 }
@@ -94,7 +94,7 @@ class FontWrapper(private val font: IFont) {
             glyphPosY = glyphPosY + (character to currentY)
             textureIndex = textureIndex + (character to currentTex)
             setTexture(glyph.bitmap, currentTex, currentX, currentY, glyph.width, glyph.height)
-            println("Char: $character, x: [$currentX-${currentX + glyph.width}], y: [$currentY-${currentY+glyph.height}], height: ")
+            println("Char: $character, x: [$currentX-${currentX + glyph.width}], y: [$currentY-${currentY + glyph.height}], height: ")
             currentX += glyph.width
             currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
             if (currentTex > textures.size)

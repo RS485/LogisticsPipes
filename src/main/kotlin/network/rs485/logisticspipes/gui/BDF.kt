@@ -37,4 +37,4 @@
 
 package network.rs485.logisticspipes.gui
 
-data class BDF(override val glyphs: Map<Char, IGlyph>, override val defaultChar: Char): IFont{}
+data class BDF(override val glyphs: Map<Char, IGlyph>, override val defaultChar: Char) : IFont {}

@@ -35,19 +35,21 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.guidebook
+package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.LPConstants
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
-import network.rs485.logisticspipes.gui.guidebook.IDrawable
+import network.rs485.logisticspipes.guidebook.BookContents
+import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
 import network.rs485.markdown.MarkdownParser.splitToInlineElements
 import java.util.*
 
 const val DEBUG_AREAS = false
+
+var definingPage = BookContents.get(MAIN_MENU_FILE)
 
 internal val DEFAULT_DRAWABLE_STATE = InlineDrawableState(EnumSet.noneOf(TextFormat::class.java), MinecraftColor.WHITE.colorCode)
 internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20, 1.00)
@@ -92,8 +94,8 @@ data class DrawableHorizontalLine(val thickness: Int, val padding: Int = 3) : ID
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, yOffset: Int, visibleArea: Rectangle) {
-        if(DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
-        if(visibleArea.overlaps(area.translated(0, -yOffset))) GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5, thickness, MinecraftColor.WHITE.colorCode)
+        if (DEBUG_AREAS) area.translated(0, -yOffset).render(0.0f, 0.0f, 0.0f)
+        if (visibleArea.overlaps(area.translated(0, -yOffset))) GuiGuideBook.drawHorizontalLine(area.x0 + padding, area.x1 - padding, area.y0 + padding - yOffset, 5.0, thickness, MinecraftColor.WHITE.colorCode)
     }
 }
 
@@ -101,11 +103,8 @@ data class DrawableHorizontalLine(val thickness: Int, val padding: Int = 3) : ID
  * List token, has several items that are shown in a list.
  */
 data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawable {
-    override val area: Rectangle
-        get() = TODO("Not yet implemented")
-    override var isHovered: Boolean
-        get() = TODO("Not yet implemented")
-        set(value) {}
+    override val area: Rectangle = Rectangle()
+    override var isHovered = false
 
     override fun setPos(x: Int, y: Int, maxWidth: Int): Int {
         TODO("Not yet implemented")
@@ -128,7 +127,8 @@ private fun toDrawable(paragraph: Paragraph): IDrawable = when (paragraph) {
     is RegularParagraph -> DrawableRegularParagraph(toDrawables(paragraph.elements, 1.0))
     is HeaderParagraph -> DrawableHeaderParagraph(toDrawables(paragraph.elements, getScaleFromLevel(paragraph.headerLevel)), paragraph.headerLevel)
     is HorizontalLineParagraph -> DrawableHorizontalLine(2)
-    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(BookContents.get(GuiGuideBook.currentPage.page).metadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")))
+    is MenuParagraph -> DrawableMenuParagraph(toDrawables(splitToInlineElements(paragraph.description), getScaleFromLevel(3)), toMenuGroups(definingPage.metadata.menu[paragraph.link]
+            ?: error("Requested menu ${paragraph.link}, not found."))) // TODO have the current page path here to get the proper menu
 }
 
 fun toMenuGroups(groups: Map<String, List<String>>): List<DrawableMenuTileGroup> {

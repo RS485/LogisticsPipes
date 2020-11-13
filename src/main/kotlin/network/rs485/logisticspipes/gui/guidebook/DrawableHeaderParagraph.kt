@@ -35,9 +35,8 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.guidebook
+package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.gui.guidebook.IDrawableParagraph
 import network.rs485.logisticspipes.util.math.Rectangle
 
 /**

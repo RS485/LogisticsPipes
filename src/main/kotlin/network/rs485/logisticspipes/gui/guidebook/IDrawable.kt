@@ -73,8 +73,8 @@ interface IDrawable {
      * @param maxWidth  the the width of the parent, meaning the maximum width the child could have.
      * @return the input Y level plus the current element's height and a preset vertical spacer height.
      */
-    fun setPos(x: Int, y: Int): Pair<Int, Int> {
-        return width to height
+    fun setPos(x: Int, y: Int): Int {
+        return height
     }
 
     /**
@@ -99,7 +99,7 @@ interface IDrawable {
 
     //Returns the absolute position of each constraint
     fun left(): Int = (parent?.left()?: 0) + x
-    fun right(): Int = (parent?.right()?: 0)  + x + width
+    fun right(): Int = left() + width
     fun top(): Int = (parent?.top()?: 0) + y
-    fun bottom(): Int = (parent?.bottom()?: 0) + y + height
+    fun bottom(): Int = top() + height
 }

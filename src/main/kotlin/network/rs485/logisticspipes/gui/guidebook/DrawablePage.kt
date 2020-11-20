@@ -56,7 +56,7 @@ class DrawablePage(paragraphs: List<Paragraph>) : IDrawableParagraph {
         setPos(x, y)
     }
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
         this.height = setChildrenPos()

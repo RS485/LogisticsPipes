@@ -60,10 +60,10 @@ open class DrawableWord(override val parent: IDrawable?, private val str: String
         GuiGuideBook.lpFontRenderer.drawString(string = str, x = left(), y = top(), color = color, format = format, scale = scale)
     }
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
-        return width to height
+        return super.setPos(x, y)
     }
 
     override fun toString(): String {
@@ -76,10 +76,10 @@ open class DrawableWord(override val parent: IDrawable?, private val str: String
  */
 class DrawableSpace(parent: IDrawable, private val scale: Double, state: InlineDrawableState) : DrawableWord(parent," ", scale, state) {
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
-        return width to height
+        return super.setPos(x, y)
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {

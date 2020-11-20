@@ -80,10 +80,10 @@ data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageP
         imageAvailable = true
     }
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
-        return width to height
+        return super.setPos(x, y)
     }
 }
 
@@ -146,7 +146,7 @@ data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawa
         TODO("Not yet implemented")
     }
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         TODO("Not yet implemented")
     }
 }

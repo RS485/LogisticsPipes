@@ -47,7 +47,7 @@ data class DrawableHeaderParagraph(override val parent: IDrawable, val words: Li
     override var hovered = true
     override var x = 0
     override var y = 0
-    override var width = parent.width
+    override var width = 0
     override var height = 0
     val horizontalLine = DrawableHorizontalLine(this, 1)
     val drawables = toDrawables(this, words, getScaleFromLevel(headerLevel))
@@ -62,16 +62,17 @@ data class DrawableHeaderParagraph(override val parent: IDrawable, val words: Li
         }
     }
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
-        this.height = setChildrenPos()
+        width = parent.width
+        height = setChildrenPos()
         return super.setPos(x, y)
     }
 
     override fun setChildrenPos(): Int {
         var currentY = splitInitialize(drawables, 0, 0, width)
-        currentY += horizontalLine.setPos(0, currentY).second
+        currentY += horizontalLine.setPos(0, currentY)
         return currentY
     }
 }

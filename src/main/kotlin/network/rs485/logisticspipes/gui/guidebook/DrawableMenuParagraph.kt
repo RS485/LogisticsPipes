@@ -73,11 +73,11 @@ class DrawableMenuParagraph(override val parent: IDrawable, val description: Str
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
-        this.width = parent.width
-        this.height = setChildrenPos()
+        width = parent.width
+        height = setChildrenPos()
         return super.setPos(x, y)
     }
 
@@ -100,17 +100,17 @@ class DrawableMenuTileGroup(override val parent: IDrawable, title: String, pages
     override var hovered = false
     override var x = 0
     override var y = 0
-    override var width = parent.width
+    override var width = 0
     override var height = 0
 
     val groupTitle = toDrawables(this, MarkdownParser.splitToInlineElements(title), getScaleFromLevel(6))
     val groupTiles = toMenuTiles(this, pages)
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
-        this.width = parent.width
-        this.height = setChildrenPos()
+        width = parent.width
+        height = setChildrenPos()
         return super.setPos(x, y)
     }
 
@@ -173,10 +173,10 @@ class DrawableMenuTile(override val parent: IDrawable?, metadata: YamlPageMetada
         }
     }
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+    override fun setPos(x: Int, y: Int): Int {
         this.x = x
         this.y = y
-        return width to height
+        return super.setPos(x, y)
     }
 
     fun mid(): Int = left() + (width / 2)

@@ -51,11 +51,11 @@ data class DrawableRegularParagraph(override val parent: IDrawable, val words: L
     override var height = 0
     val drawables = toDrawables(this, words, 1.0)
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
-        this.x
-        this.y
-        this.width = parent.width
-        this.height = setChildrenPos()
+    override fun setPos(x: Int, y: Int): Int {
+        this.x = x
+        this.y = y
+        width = parent.width
+        height = setChildrenPos()
         return super.setPos(x, y)
     }
 

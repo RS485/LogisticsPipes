@@ -155,7 +155,8 @@ class DrawableMenuTile(override val parent: IDrawable?, metadata: YamlPageMetada
         if (hovered) GuiGuideBook.drawBoxedCenteredString(pageName, mid(), minOf(bottom(), visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
         val visibleTile = visibleArea.overlap(Rectangle(left(), top(), width, height))
         GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
-        if (visible(visibleArea)) {
+        val itemRect = Rectangle(left() + (width - 16) / 2, top() + (height - 16) / 2, 16, 16)
+        if (itemRect.intersects(visibleArea)) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
             RenderHelper.enableGUIStandardItemLighting()
             val renderItem = Minecraft.getMinecraft().renderItem
@@ -163,7 +164,7 @@ class DrawableMenuTile(override val parent: IDrawable?, metadata: YamlPageMetada
             renderItem.zLevel = -145f
             if (iconScale != 1.0) GlStateManager.scale(iconScale, iconScale, 1.0)
             GlStateManager.disableDepth()
-            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), left() + (width - 16) / 2, top() + (height - 16) / 2)
+            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), itemRect.left, itemRect.top)
             if (iconScale != 1.0) GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
             GlStateManager.enableDepth()
             renderItem.zLevel = prevZ

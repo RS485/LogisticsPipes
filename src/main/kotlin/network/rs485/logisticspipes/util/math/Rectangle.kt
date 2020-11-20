@@ -73,6 +73,12 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
     var y1: Int = y0 + height
         private set
 
+    // Named getters
+    val left get() = x0
+    val right get() = x1
+    val top get() = y0
+    val bottom get() = y1
+
     // Constructors
     constructor() : this(0, 0, 0, 0)
     constructor(rect: Rectangle) : this(rect.x0, rect.y0, rect.width, rect.height)

@@ -65,9 +65,9 @@ class DrawablePage(paragraphs: List<Paragraph>) : IDrawableParagraph {
 
     override fun setChildrenPos(): Int {
         var currentY = PAGE_VERTICAL_PADDING
-         currentY += drawableParagraphs.fold(currentY) { y, paragraph ->
-             y + paragraph.setPos(0, currentY + y).second
-         }
+        for (paragraph in drawableParagraphs){
+            currentY += paragraph.setPos(0, currentY)
+        }
         return PAGE_VERTICAL_PADDING + currentY
     }
 

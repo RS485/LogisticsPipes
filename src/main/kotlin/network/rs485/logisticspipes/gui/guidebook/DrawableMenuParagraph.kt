@@ -84,11 +84,9 @@ class DrawableMenuParagraph(override val parent: IDrawable, val description: Str
     override fun setChildrenPos(): Int {
         var currentY = 0
         currentY += splitInitialize(menuTitle, 0, currentY, width)
-        currentY += horizontalLine.setPos(0, currentY).second
-        for (group in menuGroups) currentY += group.setPos(0, currentY).first
-        return menuGroups.fold(currentY) { currentYSum, group ->
-            currentYSum + group.setPos(x, y).second
-        }
+        currentY += horizontalLine.setPos(0, currentY)
+        for (group in menuGroups) currentY += group.setPos(0, currentY)
+        return currentY
     }
 
     override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {

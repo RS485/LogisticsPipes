@@ -44,7 +44,6 @@ import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
-import network.rs485.markdown.MarkdownParser.splitToInlineElements
 import java.util.*
 
 const val DEBUG_AREAS = false
@@ -84,33 +83,6 @@ data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageP
         this.x = x
         this.y = y
         return super.setPos(x, y)
-    }
-}
-
-/**
- * This draws a line with a given thickness that will span the entire width of the page, minus padding.
- */
-
-data class DrawableHorizontalLine(override val parent: IDrawable, val thickness: Int, val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : IDrawable {
-    override var hovered = false
-    override var x = 0
-    override var y = 0
-    override var width = 0
-    override var height = 2 * padding + thickness
-
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
-        this.x = x + padding
-        this.y = y + padding
-        defineWidth(parent.width)
-        return width to height
-    }
-
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        GuiGuideBook.drawHorizontalLine(left(), right(), top(), 5.0, thickness, color)
-    }
-
-    private fun defineWidth(maxWidth: Int) {
-        this.width = maxWidth - 2 * padding
     }
 }
 

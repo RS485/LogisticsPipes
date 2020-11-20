@@ -56,12 +56,10 @@ data class DrawableHorizontalLine(override val parent: IDrawable, val thickness:
         this.x = x + padding
         this.y = y + padding
         width = parent.width - 2 * padding
-        LogisticsPipes.log.error("LINE PARAGRAPH SET AT: $x, $y, $width, $height")
         return super.setPos(x, y)
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        LogisticsPipes.log.warn("Drawing LP at: ${left()} → ${right()} = $width")
         GuiGuideBook.drawHorizontalLine(left(), right(), top(), 5.0, thickness, color)
     }
 }

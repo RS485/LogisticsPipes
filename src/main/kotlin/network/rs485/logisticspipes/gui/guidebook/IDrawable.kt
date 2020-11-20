@@ -94,7 +94,7 @@ interface IDrawable {
      * @return true if within constraints false otherwise.
      */
     fun visible(visibleArea: Rectangle): Boolean {
-        return top() < visibleArea.y1 || bottom() > visibleArea.y0
+        return visibleArea.intersects(Rectangle(left(), top(), width, height))
     }
 
     //Returns the absolute position of each constraint

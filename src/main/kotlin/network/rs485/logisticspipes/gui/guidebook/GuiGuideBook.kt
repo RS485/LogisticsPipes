@@ -146,7 +146,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     // Checks each button for visibility and updates tab positions.
     private fun updateButtonVisibility() {
         if (this::home.isInitialized) home.visible = currentPage.page != MAIN_MENU_FILE
-        if (this::slider.isInitialized) slider.enabled = currentPage.loadedPage.drawableParagraphs.height > usableArea.height
+        if (this::slider.isInitialized) slider.enabled = currentPage.loadedPage.drawablePage.height > usableArea.height
         var xOffset = 0
         for (button: TabButton in tabButtons) {
             button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)

@@ -45,21 +45,14 @@ import network.rs485.logisticspipes.util.math.Rectangle
  * This draws a line with a given thickness that will span the entire width of the page, minus padding.
  */
 
-data class DrawableHorizontalLine(override val parent: IDrawable, val thickness: Int, val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : IDrawable {
-    override var hovered = false
-    override var x = 0
-    override var y = 0
-    override var width = 0
-    override var height = 2 * padding + thickness
-
+class DrawableHorizontalLine(parent: Drawable, val thickness: Int, val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : Drawable(parent) {
     override fun setPos(x: Int, y: Int): Int {
-        this.x = x + padding
-        this.y = y + padding
-        width = parent.width - 2 * padding
+        area.setPos(x + padding, y + padding)
+        area.setSize(parent!!.width - 2 * padding, 2 * padding + thickness)
         return super.setPos(x, y)
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        GuiGuideBook.drawHorizontalLine(left(), right(), top(), 5.0, thickness, color)
+        GuiGuideBook.drawHorizontalLine(left, right, top, 5.0, thickness, color)
     }
-}
+}    

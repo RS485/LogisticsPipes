@@ -57,13 +57,7 @@ private const val tileSpacing = 5
 /**
  * Menu token, stores the key and the type of menu in a page.
  */
-class DrawableMenuParagraph(override val parent: IDrawable, val description: String, groupsMap: Map<String, List<String>>) : IDrawableParagraph {
-    override var hovered = false
-    override var x = 0
-    override var y = 0
-    override var width = 0
-    override var height = 0
-
+class DrawableMenuParagraph(parent: Drawable, val description: String, groupsMap: Map<String, List<String>>) : DrawableParagraph(parent) {
     val menuGroups = toMenuGroups(this, groupsMap)
 
     val menuTitle = toDrawables(this, MarkdownParser.splitToInlineElements(description), getScaleFromLevel(3))
@@ -71,14 +65,6 @@ class DrawableMenuParagraph(override val parent: IDrawable, val description: Str
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         drawChildren(mouseX, mouseY, delta, visibleArea)
-    }
-
-    override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
-        width = parent.width
-        height = setChildrenPos()
-        return super.setPos(x, y)
     }
 
     override fun setChildrenPos(): Int {
@@ -94,23 +80,9 @@ class DrawableMenuParagraph(override val parent: IDrawable, val description: Str
     }
 }
 
-class DrawableMenuTileGroup(override val parent: IDrawable, title: String, pages: List<String>) : IDrawableParagraph {
-    override var hovered = false
-    override var x = 0
-    override var y = 0
-    override var width = 0
-    override var height = 0
-
+class DrawableMenuTileGroup(parent: Drawable, title: String, pages: List<String>) : DrawableParagraph(parent) {
     val groupTitle = toDrawables(this, MarkdownParser.splitToInlineElements(title), getScaleFromLevel(6))
     val groupTiles = toMenuTiles(this, pages)
-
-    override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
-        width = parent.width
-        height = setChildrenPos()
-        return super.setPos(x, y)
-    }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         drawChildren(mouseX, mouseY, delta, visibleArea)
@@ -137,25 +109,16 @@ class DrawableMenuTileGroup(override val parent: IDrawable, title: String, pages
     }
 }
 
-class DrawableMenuTile(override val parent: IDrawable?, metadata: YamlPageMetadata) : IDrawable {
-    // Maybe there needs to be a constant Int defining the size of all the tiles
-
-    override var hovered = false
-    override var x = 0
-    override var y = 0
-    override var width = tileSize
-    override var height = tileSize
-
+class DrawableMenuTile(parent: Drawable, metadata: YamlPageMetadata) : Drawable(parent) {
     private val pageName = metadata.title
     private val iconScale = 1.0
     private val icon = metadata.icon
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
-        if (hovered) GuiGuideBook.drawBoxedCenteredString(pageName, mid(), minOf(bottom(), visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
-        val visibleTile = visibleArea.overlap(Rectangle(left(), top(), width, height))
+        val visibleTile = Rectangle(visibleArea).translate(0, -5).grow(0, 10).overlap(Rectangle(left, top, width, height))
         GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
-        val itemRect = Rectangle(left() + (width - 16) / 2, top() + (height - 16) / 2, 16, 16)
+        val itemRect = Rectangle(left + (width - 16) / 2, top + (height - 16) / 2, 16, 16)
         if (itemRect.intersects(visibleArea)) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
             RenderHelper.enableGUIStandardItemLighting()
@@ -170,24 +133,25 @@ class DrawableMenuTile(override val parent: IDrawable?, metadata: YamlPageMetada
             renderItem.zLevel = prevZ
             RenderHelper.disableStandardItemLighting()
         }
+        if (hovered) GuiGuideBook.drawBoxedCenteredString(pageName, mid(), minOf(bottom, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
+        area.setPos(x, y)
+        area.setSize(tileSize, tileSize)
         return super.setPos(x, y)
     }
 
-    fun mid(): Int = left() + (width / 2)
+    fun mid(): Int = left + (width / 2)
 }
 
-fun toMenuGroups(parent: IDrawable, groups: Map<String, List<String>>): List<DrawableMenuTileGroup> {
+fun toMenuGroups(parent: Drawable, groups: Map<String, List<String>>): List<DrawableMenuTileGroup> {
     return groups.map {
         DrawableMenuTileGroup(parent, it.key, it.value)
     }
 }
 
-fun toMenuTiles(parent: IDrawable, pages: List<String>): List<DrawableMenuTile> {
+fun toMenuTiles(parent: Drawable, pages: List<String>): List<DrawableMenuTile> {
     return pages.map {
         DrawableMenuTile(parent, BookContents.get(it).metadata)
     }

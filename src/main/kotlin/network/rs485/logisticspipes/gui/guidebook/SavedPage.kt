@@ -52,12 +52,14 @@ class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 
     constructor(page: SavedPage) : this(page.page, page.color, page.progress)
 
     fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        loadedPage.drawableParagraphs.y = visibleArea.y0 - ((loadedPage.drawableParagraphs.height - visibleArea.height) * progress).toInt()
-        loadedPage.drawableParagraphs.draw(mouseX, mouseY, delta, visibleArea)
+        loadedPage.drawablePage.area.y0 = visibleArea.y0 - ((loadedPage.drawablePage.height - visibleArea.height) * progress).toInt()
+        loadedPage.drawablePage.draw(mouseX, mouseY, delta, visibleArea)
     }
 
     fun setDrawablesPosition(area: Rectangle) {
-        loadedPage.drawableParagraphs.setPosition(area.x0, area.y0, area.width)
+        loadedPage.drawablePage.setWidth(area.width)
+        println("Initialized page: ${loadedPage.drawablePage.width}")
+        loadedPage.drawablePage.setPos(area.x0, area.y0)
     }
 
     /**

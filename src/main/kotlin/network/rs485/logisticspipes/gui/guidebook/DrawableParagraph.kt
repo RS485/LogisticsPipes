@@ -39,7 +39,15 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import network.rs485.logisticspipes.util.math.Rectangle
 
-interface IDrawableParagraph : IDrawable {
+open class DrawableParagraph(parent: Drawable?) : Drawable(parent) {
+
+    override fun setPos(x: Int, y: Int): Int {
+        area.setPos(x, y)
+        area.setSize(newWidth = parent!!.width)
+        area.setSize(newHeight = setChildrenPos())
+        return super.setPos(x, y)
+    }
+
     /**
      * This function is supposed to update the children's position by starting
      * Y and X placement at 0 and iterating through the children while calculating their placement.
@@ -47,7 +55,9 @@ interface IDrawableParagraph : IDrawable {
      * depends on the placement of it's children.
      * @return the height of all the Paragraph's children combined.
      */
-    fun setChildrenPos(): Int
+    open fun setChildrenPos(): Int {
+        return area.height
+    }
 
-    fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle)
+    open fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {}
 }

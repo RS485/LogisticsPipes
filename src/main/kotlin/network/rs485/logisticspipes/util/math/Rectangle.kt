@@ -86,7 +86,7 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
     private constructor(firstPoint: Pair<Int, Int>, secondPoint: Pair<Int, Int>) : this(firstPoint.first, firstPoint.second, (secondPoint.first - firstPoint.first), (secondPoint.second - firstPoint.second))
 
     // Transformations
-    fun setSize(newWidth: Int, newHeight: Int): Rectangle {
+    fun setSize(newWidth: Int = width, newHeight: Int = height): Rectangle {
         width = newWidth
         height = newHeight
         return this
@@ -102,6 +102,12 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
     fun scale(dMultiplier: Double): Rectangle {
         width = ceil(dMultiplier * width).toInt()
         height = ceil(dMultiplier * height).toInt()
+        return this
+    }
+
+    fun grow(growX: Int, growY: Int): Rectangle {
+        width += growX
+        height += growY
         return this
     }
 

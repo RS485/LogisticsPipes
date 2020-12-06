@@ -46,8 +46,6 @@ import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.DrawablePage
-import network.rs485.logisticspipes.gui.guidebook.IDrawable
-import network.rs485.logisticspipes.gui.guidebook.asDrawables
 import network.rs485.logisticspipes.gui.guidebook.definingPage
 import network.rs485.markdown.*
 import java.io.File
@@ -107,7 +105,7 @@ object BookContents {
                                     "Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.\n" +
                                     "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."))
             )
-            override val drawableParagraphs: DrawablePage = DrawablePage(paragraphs)
+            override val drawablePage: DrawablePage = DrawablePage(paragraphs)
         }
     }
 }
@@ -186,7 +184,7 @@ class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvid
         MarkdownParser.parseParagraphs(markdownString)
     }
 
-    override val drawableParagraphs: DrawablePage by lazy {
+    override val drawablePage: DrawablePage by lazy {
         definingPage = this
         DrawablePage(paragraphs)
     }
@@ -195,5 +193,5 @@ class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvid
 interface PageInfoProvider {
     val metadata: YamlPageMetadata
     val paragraphs: List<Paragraph>
-    val drawableParagraphs: DrawablePage
+    val drawablePage: DrawablePage
 }

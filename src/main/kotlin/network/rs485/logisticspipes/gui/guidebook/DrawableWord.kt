@@ -45,24 +45,19 @@ import kotlin.math.floor
 /**
  * Normal Token that stores the text and the formatting tags of said text.
  */
-open class DrawableWord(override val parent: IDrawable?, private val str: String, private val scale: Double, state: InlineDrawableState) : IDrawable {
+open class DrawableWord(parent: Drawable?, private val str: String, private val scale: Double, state: InlineDrawableState) : Drawable(parent) {
     val format: EnumSet<TextFormat> = state.format
     val color: Int = state.color
 
-    override var width = GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale)
-    override var height = GuiGuideBook.lpFontRenderer.getFontHeight(scale)
-    override var x = 0
-    override var y = 0
-
-    override var hovered = false
-
+    init {
+        area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
+    }
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        GuiGuideBook.lpFontRenderer.drawString(string = str, x = left(), y = top(), color = color, format = format, scale = scale)
+        GuiGuideBook.lpFontRenderer.drawString(string = str, x = left, y = top, color = color, format = format, scale = scale)
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
+        area.setPos(x, y)
         return super.setPos(x, y)
     }
 
@@ -74,16 +69,9 @@ open class DrawableWord(override val parent: IDrawable?, private val str: String
 /**
  * Space object responsible for drawing the necessary formatting in between words.
  */
-class DrawableSpace(parent: IDrawable, private val scale: Double, state: InlineDrawableState) : DrawableWord(parent," ", scale, state) {
-
-    override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
-        return super.setPos(x, y)
-    }
-
+class DrawableSpace(parent: Drawable, private val scale: Double, state: InlineDrawableState) : DrawableWord(parent," ", scale, state) {
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        if (width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = left(), y =top(), width = width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
+        if (width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = left, y =top, width = width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
     }
 
     override fun toString(): String {
@@ -96,7 +84,7 @@ object DrawableBreak : DrawableWord(null,"", 1.0, DEFAULT_DRAWABLE_STATE)
 /**
  * TODO Link token, stores the linked string, as well as the 'url'.
  */
-class Link(parent: IDrawable?, text: String) : DrawableWord(parent, text, 1.0, DEFAULT_DRAWABLE_STATE)
+class Link(parent: Drawable?, text: String) : DrawableWord(parent, text, 1.0, DEFAULT_DRAWABLE_STATE)
 
 internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
     var maxHeight = 0
@@ -122,7 +110,7 @@ internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified
                     else -> spacing
                 }
                 drawableWord.setPos(currX, y)
-                drawableWord.width = currentSpacing
+                drawableWord.area.width = currentSpacing
             }
             else -> {
                 drawableWord.setPos(currX, y)

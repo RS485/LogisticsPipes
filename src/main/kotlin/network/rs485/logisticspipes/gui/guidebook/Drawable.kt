@@ -39,53 +39,56 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import network.rs485.logisticspipes.util.math.Rectangle
 
-/**
- * @property parent     parent drawable;
- * @property hovered    whether or not the drawable is being hovered;
- * @property x          relative position X, assuming parent position as 0;
- * @property y          relative position Y, assuming parent position as 0;
- * @property width      drawable's width;
- * @property height     drawable's height.
- */
-interface IDrawable {
-    val parent: IDrawable?
-    var hovered: Boolean
-    var x: Int
-    var y: Int
-    var width: Int
-    var height: Int
+open class Drawable(internal open val parent: Drawable?) {
+    var hovered: Boolean = false
+    internal var area: Rectangle = Rectangle()
+
+    // Relative positions/size accessors.
+    val x: Int get() = area.x0
+    val y: Int get() = area.y0
+    val width: Int get() = area.width
+    val height: Int get() = area.height
+
+    // Absolute positions accessors.
+    val left: Int get() = (parent?.left?: 0) + x
+    val right: Int get() = left + width
+    val top: Int get() = (parent?.top?: 0) + y
+    val bottom: Int get() = top + height
+    val absBody: Rectangle get() = Rectangle(left, top, width, height)
+
 
     /**
      * This is just like the normal draw functions for minecraft Gui classes but with the added current Y offset.
      * @param mouseX        X position of the mouse (absolute, screen)
      * @param mouseY        Y position of the mouse (absolute, screen)
      * @param delta         Timing floating value
-     * @param yOffset       The current Y offset on the drawn page.
      * @param visibleArea   used to avoid draw calls on non-visible children
      */
-    fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle)
+    open fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+
+    }
 
     /**
      * This function is responsible for updating the Drawable's position by giving it the exact X and Y where it
      * should start and returning it's height as an offset for the next element.
      * @param x         the X position of the Drawable.
      * @param y         the Y position of the Drawable.
-     * @param maxWidth  the the width of the parent, meaning the maximum width the child could have.
      * @return the input Y level plus the current element's height and a preset vertical spacer height.
      */
-    fun setPos(x: Int, y: Int): Int {
-        return height
+    open fun setPos(x: Int, y: Int): Int {
+        area.setPos(x, y)
+        return area.height
     }
 
     /**
-     * This function is responsible to update the isHovered field
+     * This function is responsible check if the mouse is over the object
      * @param mouseX        X position of the mouse (absolute, screen)
      * @param mouseY        Y position of the mouse (absolute, screen)
      * @param visibleArea   Desired visible area to check
      */
     fun hovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean {
         if(!visibleArea.contains(mouseX, mouseY)) return false
-        return mouseX in left()..right() && mouseY in top()..bottom()
+        return absBody.contains(mouseX, mouseY)
     }
 
     /**
@@ -94,12 +97,6 @@ interface IDrawable {
      * @return true if within constraints false otherwise.
      */
     fun visible(visibleArea: Rectangle): Boolean {
-        return visibleArea.intersects(Rectangle(left(), top(), width, height))
+        return visibleArea.intersects(absBody)
     }
-
-    //Returns the absolute position of each constraint
-    fun left(): Int = (parent?.left()?: 0) + x
-    fun right(): Int = left() + width
-    fun top(): Int = (parent?.top()?: 0) + y
-    fun bottom(): Int = top() + height
 }

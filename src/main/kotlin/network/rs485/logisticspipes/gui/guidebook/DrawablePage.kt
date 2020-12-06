@@ -42,25 +42,17 @@ import network.rs485.markdown.Paragraph
 
 private const val PAGE_VERTICAL_PADDING = 5
 
-class DrawablePage(paragraphs: List<Paragraph>) : IDrawableParagraph {
-    override val parent: IDrawable? = null
-    override var hovered = false
-    override var x = 0
-    override var y = 0
-    override var width = 0
-    override var height = 0
+class DrawablePage(paragraphs: List<Paragraph>) : DrawableParagraph(null) {
     private val drawableParagraphs = asDrawables(this, paragraphs)
 
-    fun setPosition(x: Int, y: Int, width: Int){
-        this.width = width
-        setPos(x, y)
+    fun setWidth(width: Int){
+        area.setSize(newWidth = width)
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
-        this.height = setChildrenPos()
-        return super.setPos(x, y)
+        area.setPos(x, y)
+        area.setSize(newHeight = setChildrenPos())
+        return area.height
     }
 
     override fun setChildrenPos(): Int {

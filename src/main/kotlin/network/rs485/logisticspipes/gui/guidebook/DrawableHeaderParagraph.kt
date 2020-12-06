@@ -43,12 +43,7 @@ import network.rs485.markdown.InlineElement
 /**
  * Header token, stores all the tokens that are apart of the header.
  */
-data class DrawableHeaderParagraph(override val parent: IDrawable, val words: List<InlineElement>, val headerLevel: Int = 1) : IDrawableParagraph {
-    override var hovered = true
-    override var x = 0
-    override var y = 0
-    override var width = 0
-    override var height = 0
+class DrawableHeaderParagraph(parent: Drawable, val words: List<InlineElement>, headerLevel: Int = 1) : DrawableParagraph(parent) {
     val horizontalLine = DrawableHorizontalLine(this, 1)
     val drawables = toDrawables(this, words, getScaleFromLevel(headerLevel))
 
@@ -57,17 +52,7 @@ data class DrawableHeaderParagraph(override val parent: IDrawable, val words: Li
     }
 
     override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        (drawables + horizontalLine).filter { it.visible(visibleArea) }.forEach { drawable ->
-            drawable.draw(mouseX, mouseY, delta, visibleArea)
-        }
-    }
-
-    override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
-        width = parent.width
-        height = setChildrenPos()
-        return super.setPos(x, y)
+        (drawables + horizontalLine).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
 
     override fun setChildrenPos(): Int {

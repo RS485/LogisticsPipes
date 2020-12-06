@@ -58,16 +58,9 @@ internal val HEADER_LEVELS = listOf(2.0, 1.80, 1.60, 1.40, 1.20, 1.00)
  * @param textTokens this is the alt text, only used in case the image provided via the URL fails to load.
  * TODO
  */
-data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageParameters: String) : IDrawable {
+class DrawableImageParagraph(parent: Drawable, val textTokens: List<DrawableWord>, val imageParameters: String) : Drawable(parent) {
     private val image: ResourceLocation
     private var imageAvailable: Boolean
-
-    override val parent: IDrawable? = null
-    override var hovered = false
-    override var x: Int = 0
-    override var y: Int = 0
-    override var width: Int = 0
-    override var height: Int = 0
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         TODO("Not yet implemented")
@@ -80,8 +73,7 @@ data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageP
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
+        area.setPos(x, y)
         return super.setPos(x, y)
     }
 }
@@ -89,7 +81,7 @@ data class DrawableImageParagraph(val textTokens: List<DrawableWord>, val imageP
 /**
  * List token, has several items that are shown in a list.
  */
-data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawableParagraph {
+class DrawableListParagraph(parent: Drawable, val entries: List<List<DrawableWord>>) : DrawableParagraph(parent) {
     override fun setChildrenPos(): Int {
         TODO("Not yet implemented")
     }
@@ -97,22 +89,6 @@ data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawa
     override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         TODO("Not yet implemented")
     }
-
-    override val parent: IDrawable?
-        get() = TODO("Not yet implemented")
-    override var hovered = false
-    override var x: Int
-        get() = TODO("Not yet implemented")
-        set(value) {}
-    override var y: Int
-        get() = TODO("Not yet implemented")
-        set(value) {}
-    override var width: Int
-        get() = TODO("Not yet implemented")
-        set(value) {}
-    override var height: Int
-        get() = TODO("Not yet implemented")
-        set(value) {}
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         TODO("Not yet implemented")
@@ -123,7 +99,7 @@ data class DrawableListParagraph(val entries: List<List<DrawableWord>>) : IDrawa
     }
 }
 
-internal fun toDrawables(parent: IDrawable, elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.copy().let { state ->
+internal fun toDrawables(parent: Drawable, elements: List<InlineElement>, scale: Double) = DEFAULT_DRAWABLE_STATE.copy().let { state ->
     elements.mapNotNull { element ->
         element.changeDrawableState(state)
         when (element) {
@@ -135,13 +111,13 @@ internal fun toDrawables(parent: IDrawable, elements: List<InlineElement>, scale
     }
 }
 
-private fun toDrawable(parent: IDrawable, paragraph: Paragraph): IDrawable = when (paragraph) {
+private fun toDrawable(parent: Drawable, paragraph: Paragraph): Drawable = when (paragraph) {
     is RegularParagraph -> DrawableRegularParagraph(parent, paragraph.elements)
     is HeaderParagraph -> DrawableHeaderParagraph(parent, paragraph.elements, paragraph.headerLevel)
     is HorizontalLineParagraph -> DrawableHorizontalLine(parent, 2)
     is MenuParagraph -> DrawableMenuParagraph(parent, paragraph.description, definingPage.metadata.menu[paragraph.link]?: error("Requested menu ${paragraph.link}, not found.")) // TODO have the current page path here to get the proper menu
 }
 
-fun asDrawables(parent: IDrawable, paragraphs: List<Paragraph>) = paragraphs.map { toDrawable(parent, it) }
+fun asDrawables(parent: Drawable, paragraphs: List<Paragraph>) = paragraphs.map { toDrawable(parent, it) }
 
 fun getScaleFromLevel(headerLevel: Int) = if (headerLevel > 0 && headerLevel < HEADER_LEVELS.size) HEADER_LEVELS[headerLevel - 1] else 1.00

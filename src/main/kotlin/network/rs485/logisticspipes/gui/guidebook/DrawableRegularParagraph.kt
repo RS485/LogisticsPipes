@@ -43,19 +43,12 @@ import network.rs485.markdown.InlineElement
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
  */
-data class DrawableRegularParagraph(override val parent: IDrawable, val words: List<InlineElement>) : IDrawableParagraph {
-    override var hovered = false
-    override var x = 0
-    override var y = 0
-    override var width = 0
-    override var height = 0
+class DrawableRegularParagraph(parent: Drawable, val words: List<InlineElement>) : DrawableParagraph(parent) {
     val drawables = toDrawables(this, words, 1.0)
 
     override fun setPos(x: Int, y: Int): Int {
-        this.x = x
-        this.y = y
-        width = parent.width
-        height = setChildrenPos()
+        area.setPos(x, y)
+        area.setSize(parent!!.width, setChildrenPos())
         return super.setPos(x, y)
     }
 
@@ -69,7 +62,7 @@ data class DrawableRegularParagraph(override val parent: IDrawable, val words: L
     }
 
     override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val lines = drawables.groupBy { it.top() }.values
+        val lines = drawables.groupBy { it.top }.values
         // Split by lines
         for (line in lines) {
             // Check if first (representative of the whole line) is visible, aka contained within the visible area.

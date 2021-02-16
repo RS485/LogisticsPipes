@@ -74,8 +74,34 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
         val z = if (whisky.isPageActive()) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
         val yOffset = if (whisky.isPageActive()) 0 else 3
         val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0x7F000000
-        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0 + yOffset, buttonArea.x1, buttonArea.y1 + yOffset, z, buttonTextureArea.x0, buttonTextureArea.y0, buttonTextureArea.x1, buttonTextureArea.y1, true, if (whisky.isPageActive()) 0xFFFFFFFF.toInt() else color)
-        if (whisky.isPageActive()) GuiGuideBook.drawStretchingRectangle(circleArea.x0, circleArea.y0, circleArea.x1, circleArea.y1, z + 0.5, circleAreaTexture.x0, circleAreaTexture.y0, circleAreaTexture.x1, circleAreaTexture.y1, true, color)
+        GuiGuideBook.drawStretchingRectangle(
+            x0 = buttonArea.x0,
+            y0 = buttonArea.y0 + yOffset,
+            x1 = buttonArea.x1,
+            y1 = buttonArea.y1 + yOffset,
+            z = z,
+            u0 = buttonTextureArea.x0,
+            v0 = buttonTextureArea.y0,
+            u1 = buttonTextureArea.x1,
+            v1 = buttonTextureArea.y1,
+            blend = true,
+            color = if (whisky.isPageActive()) 0xFFFFFFFF.toInt() else color
+        )
+        if (whisky.isPageActive()) {
+            GuiGuideBook.drawStretchingRectangle(
+                x0 = circleArea.x0,
+                y0 = circleArea.y0,
+                x1 = circleArea.x1,
+                y1 = circleArea.y1,
+                z = z + 0.5,
+                u0 = circleAreaTexture.x0,
+                v0 = circleAreaTexture.y0,
+                u1 = circleAreaTexture.x1,
+                v1 = circleAreaTexture.y1,
+                blend = true,
+                color = color
+            )
+        }
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 

@@ -45,8 +45,6 @@ import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.guidebook.DrawablePage
-import network.rs485.logisticspipes.gui.guidebook.DrawablePageFactory
 import network.rs485.markdown.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -70,6 +68,7 @@ object BookContents {
     }
 
     fun get(markdownFile: String): PageInfoProvider {
+        assert(markdownFile.isNotEmpty()) { "Cannot read an empty file" }
         return cachedLoadedPages.computeIfAbsent(markdownFile) {
             LoadedPage(getFileAsString(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode), it)
         }
@@ -145,7 +144,6 @@ object BookContents {
                     ).flatten(),
                 ),
             )
-            override val drawablePage: DrawablePage = DrawablePage { metadata }
         }
     }
 }
@@ -223,15 +221,9 @@ class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvid
     override val paragraphs: List<Paragraph> by lazy {
         MarkdownParser.parseParagraphs(markdownString)
     }
-
-    override val drawablePage: DrawablePage by lazy {
-        val drawablePageFactory = DrawablePageFactory()
-        drawablePageFactory.createDrawablePage(metadata, paragraphs)
-    }
 }
 
 interface PageInfoProvider {
     val metadata: YamlPageMetadata
     val paragraphs: List<Paragraph>
-    val drawablePage: DrawablePage
 }

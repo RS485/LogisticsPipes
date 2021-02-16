@@ -79,12 +79,12 @@ class DrawableSpace(private val scale: Double, state: InlineDrawableState) : Dra
     }
 }
 
-object DrawableBreak : DrawableWord("", 1.0, DEFAULT_DRAWABLE_STATE)
+object DrawableBreak : DrawableWord("", 1.0, defaultDrawableState)
 
 /**
  * TODO Link token, stores the linked string, as well as the 'url'.
  */
-class Link(text: String) : DrawableWord(text, 1.0, DEFAULT_DRAWABLE_STATE)
+class Link(text: String) : DrawableWord(text, 1.0, defaultDrawableState)
 
 internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
     var maxHeight = 0

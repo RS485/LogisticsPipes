@@ -40,32 +40,40 @@ package network.rs485.logisticspipes.gui.guidebook
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
+import network.rs485.logisticspipes.guidebook.PageInfoProvider
 import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
 import network.rs485.logisticspipes.util.math.Rectangle
 
 
-class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 0, var progress: Float = 0.0F) {
+class SavedPage(val page: String) {
+    var color: Int = 0
+        private set
+    var progress: Float = 0.0F
 
-    val loadedPage = BookContents.get(page)
-
-    constructor(page: SavedPage) : this(page.page, page.color, page.progress)
-
-    fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        loadedPage.drawablePage.area.y0 = visibleArea.y0 - ((loadedPage.drawablePage.height - visibleArea.height) * progress).toInt()
-        loadedPage.drawablePage.draw(mouseX, mouseY, delta, visibleArea)
+    constructor(page: String, color: Int, progress: Float) : this(page) {
+        this.color = color
+        this.progress = progress
     }
 
+    private val pageInfo = BookContents.get(page)
+    val drawablePage = DrawablePageFactory.createDrawablePage(pageInfo)
+    val title: String
+        get() = pageInfo.metadata.title
+
+    fun updateScrollPosition(visibleArea: Rectangle) =
+        drawablePage.updateScrollPosition(visibleArea, progress)
+
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int, visibleArea: Rectangle) {
-        loadedPage.drawablePage.getVisibleParagraphs(visibleArea)
+        drawablePage.getVisibleParagraphs(visibleArea)
             .firstOrNull { it.absBody.contains(mouseX, mouseY) }
             ?.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     fun setDrawablesPosition(area: Rectangle) {
-        loadedPage.drawablePage.setWidth(area.width)
-        println("Initialized page: ${loadedPage.drawablePage.width}")
-        loadedPage.drawablePage.setPos(area.x0, area.y0)
+        drawablePage.setWidth(area.width)
+        println("Initialized page: ${drawablePage.width}")
+        drawablePage.setPos(area.x0, area.y0)
     }
 
     /**
@@ -75,9 +83,9 @@ class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 
      */
     fun fromBytes(input: LPDataInput): SavedPage {
         return SavedPage(
-            input.readUTF() ?: "",
-            input.readInt(),
-            input.readFloat()
+            page = input.readUTF() ?: "",
+            color = input.readInt(),
+            progress = input.readFloat()
         )
     }
 
@@ -93,9 +101,9 @@ class SavedPage constructor(val page: String = MAIN_MENU_FILE, var color: Int = 
 
     fun fromTag(nbt: NBTTagCompound): SavedPage {
         return SavedPage(
-            nbt.getString("page"),
-            nbt.getInteger("color"),
-            nbt.getFloat("progress")
+            page = nbt.getString("page"),
+            color = nbt.getInteger("color"),
+            progress = nbt.getFloat("progress")
         )
     }
 

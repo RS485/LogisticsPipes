@@ -105,7 +105,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     private val visibleArea = Rectangle()
 
     private val cachedPages = hashMapOf<String, SavedPage>()
-    var currentPage: SavedPage = cachedPages.getOrPut(MAIN_MENU_FILE) { SavedPage(MAIN_MENU_FILE, 0, 0.0f) }
+    var savagePage: SavedPage = cachedPages.getOrPut(MAIN_MENU_FILE) { SavedPage(MAIN_MENU_FILE, 0, 0.0f) }
 
     // Drawing vars
     private var guiSliderX = 0
@@ -125,9 +125,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     }
 
     fun setPage(path: String) {
-        currentPage = cachedPages.getOrPut(path) { SavedPage(path, 0, 0.0f) }
-        currentPage.setDrawablesPosition(visibleArea)
-        if (this::slider.isInitialized) slider.setProgressF(currentPage.progress)
+        savagePage = cachedPages.getOrPut(path) { SavedPage(path, 0, 0.0f) }
+        savagePage.setDrawablesPosition(visibleArea)
+        if (this::slider.isInitialized) slider.setProgressF(savagePage.progress)
     }
 
     // (Re)calculates gui element sizes and positions, this is run on gui init
@@ -139,14 +139,14 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         guiSliderY0 = innerGui.y0
         guiSliderY1 = innerGui.y1
         visibleArea.setPos(innerGui.x0 + guiShadowThickness, innerGui.y0).setSize(innerGui.width - 2 * guiShadowThickness - guiSliderWidth - guiSeparatorThickness, innerGui.height)
-        currentPage.setDrawablesPosition(visibleArea)
+        savagePage.setDrawablesPosition(visibleArea)
         updateButtonVisibility()
     }
 
     // Checks each button for visibility and updates tab positions.
     private fun updateButtonVisibility() {
-        if (this::home.isInitialized) home.visible = currentPage.page != MAIN_MENU_FILE
-        if (this::slider.isInitialized) slider.enabled = currentPage.loadedPage.drawablePage.height > visibleArea.height
+        if (this::home.isInitialized) home.visible = savagePage.page != MAIN_MENU_FILE
+        if (this::slider.isInitialized) slider.enabled = savagePage.drawablePage.height > visibleArea.height
         var xOffset = 0
         for (button: TabButton in tabButtons) {
             button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
@@ -154,9 +154,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             // TODO check if current page
         }
         if (this::addTabButton.isInitialized) {
-            addTabButton.visible = currentPage.page != MAIN_MENU_FILE && tabButtons.size < maxTabs
+            addTabButton.visible = savagePage.page != MAIN_MENU_FILE && tabButtons.size < maxTabs
             // Checks if there's already a bookmark pointing to the same page.
-            addTabButton.enabled = isTabAbsent(currentPage)
+            addTabButton.enabled = isTabAbsent(savagePage)
             addTabButton.setX(outerGui.x1 - 20 - guiTabWidth - xOffset)
         }
     }
@@ -165,7 +165,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
     override fun initGui() {
         calculateGuiConstraints()
-        slider = addButton(SliderButton(0, innerGui.x1 - guiSliderWidth, innerGui.y0, innerGui.height, guiSliderWidth, guiSliderHeight, currentPage.progress, ::setPageProgress))
+        slider = addButton(SliderButton(0, innerGui.x1 - guiSliderWidth, innerGui.y0, innerGui.height, guiSliderWidth, guiSliderHeight, savagePage.progress, ::setPageProgress))
         home = addButton(TexturedButton(1, outerGui.x1 - guiTabWidth, outerGui.y0 - guiTabHeight, guiTabWidth, guiFullTabHeight, GuideBookConstants.Z_TITLE_BUTTONS, 16, 64, false, ButtonType.TAB).setOverlayTexture(128, 0, 16, 16))
         addTabButton = addButton(TexturedButton(2, outerGui.x1 - 18 - guiTabWidth + 4, outerGui.y0 - 18, 16, 16, GuideBookConstants.Z_TITLE_BUTTONS, 192, 0, true, ButtonType.NORMAL))
         updateButtonVisibility()
@@ -179,7 +179,8 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
-        currentPage.draw(mouseX, mouseY, partialTicks, visibleArea)
+        savagePage.updateScrollPosition(visibleArea)
+        savagePage.drawablePage.draw(mouseX, mouseY, partialTicks, visibleArea)
         drawGui()
         if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         drawTitle()
@@ -188,9 +189,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     override fun doesGuiPauseGame() = false
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        // TODO if within the usable area pass click and check if links or menu items were clicked
-        // TODO Sort buttons by zLevel and filter out inactive buttons for it to work as expected
-        // TODO replicate super but without ignoring "non-left-clicks"
         val allButtons = (buttonList + tabButtons).sortedBy { it.zLevel }.filter { it.visible && it.enabled }
         for (button in allButtons) {
             if (button.mousePressed(mc, mouseX, mouseY)) {
@@ -206,7 +204,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             }
         }
         if (visibleArea.contains(mouseX, mouseY)) {
-            currentPage.mouseClicked(mouseX, mouseY, mouseButton, visibleArea)
+            savagePage.mouseClicked(mouseX, mouseY, mouseButton, visibleArea)
         }
     }
 
@@ -217,7 +215,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
                 button.playPressSound(mc.soundHandler)
             }
             addTabButton -> {
-                addBookmark(currentPage)
+                addBookmark(savagePage)
                 button.playPressSound(mc.soundHandler)
             }
             is TabButton -> if (button.onLeftClick()) {
@@ -265,7 +263,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
                 override fun getColor(): Int = tabPage.color
 
-                override fun isPageActive(): Boolean = currentPage == tabPage
+                override fun isPageActive(): Boolean = savagePage == tabPage
 
             })
             tabButtons.add(tabButton)
@@ -283,12 +281,12 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     // TODO get book state/data from item NBT
 
     fun setPageProgress(progress: Float) {
-        currentPage.progress = progress
+        savagePage.progress = progress
     }
 
     private fun drawTitle() {
         lpFontRenderer.zLevel = GuideBookConstants.Z_TITLE_BUTTONS
-        lpFontRenderer.drawCenteredString(currentPage.loadedPage.metadata.title, width / 2, outerGui.y0 + 4, MinecraftColor.WHITE.colorCode, EnumSet.of(TextFormat.Shadow), 1.0)
+        lpFontRenderer.drawCenteredString(savagePage.title, width / 2, outerGui.y0 + 4, MinecraftColor.WHITE.colorCode, EnumSet.of(TextFormat.Shadow), 1.0)
         lpFontRenderer.zLevel = GuideBookConstants.Z_TEXT
     }
 
@@ -467,29 +465,120 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             val tessellator = Tessellator.getInstance()
             val bufferBuilder = tessellator.buffer
             bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
-            val hovered = if (isHovered) 1 else 0
-            val enabled = if (isEnabled) 1 else 2
+            val uvOffsetModifier = (if (isHovered) 1 else 0) * if (isEnabled) 1 else 2
+            val vOffset = uvOffsetModifier * btnBorderUv.height
+            val uOffset = uvOffsetModifier * btnBackgroundUv.width
             // Fill: Middle
-            putRepeatingTexturedRectangle(bufferBuilder, btn.x0 + btnBorderWidth, btn.y0 + btnBorderWidth, btn.x1 - btnBorderWidth, btn.y1 - btnBorderWidth, z, btnBackgroundUv.x0, btnBackgroundUv.y0 + hovered * enabled * btnBackgroundUv.width, btnBackgroundUv.x1,
-                    btnBackgroundUv.y1 + hovered * enabled * btnBackgroundUv.width)
+            putRepeatingTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x0 + btnBorderWidth,
+                y0 = btn.y0 + btnBorderWidth,
+                x1 = btn.x1 - btnBorderWidth,
+                y1 = btn.y1 - btnBorderWidth,
+                z = z,
+                u0 = btnBackgroundUv.x0,
+                v0 = btnBackgroundUv.y0 + uOffset,
+                u1 = btnBackgroundUv.x1,
+                v1 = btnBackgroundUv.y1 + uOffset
+            )
             // Corners: TopLeft, TopRight, BottomLeft & BottomRight
-            putTexturedRectangle(bufferBuilder, btn.x0, btn.y0, btn.x0 + btnBorderWidth, btn.y0 + btnBorderWidth, z, btnBorderUv.x0, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
-                    btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferBuilder, btn.x1 - btnBorderWidth, btn.y0, btn.x1, btn.y0 + btnBorderWidth, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
-                    btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferBuilder, btn.x0, btn.y1 - btnBorderWidth, btn.x0 + btnBorderWidth, btn.y1, z, btnBorderUv.x0, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
-                    btnBorderUv.y1 + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferBuilder, btn.x1 - btnBorderWidth, btn.y1 - btnBorderWidth, btn.x1, btn.y1, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
-                    btnBorderUv.y1 + hovered * enabled * btnBorderUv.height)
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x0,
+                y0 = btn.y0,
+                x1 = btn.x0 + btnBorderWidth,
+                y1 = btn.y0 + btnBorderWidth,
+                z = z,
+                u0 = btnBorderUv.x0,
+                v0 = btnBorderUv.y0 + vOffset,
+                u1 = btnBorderUv.x0 + btnBorderWidth,
+                v1 = btnBorderUv.y0 + btnBorderWidth + vOffset
+            )
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x1 - btnBorderWidth,
+                y0 = btn.y0,
+                x1 = btn.x1,
+                y1 = btn.y0 + btnBorderWidth,
+                z = z,
+                u0 = btnBorderUv.x1 - btnBorderWidth,
+                v0 = btnBorderUv.y0 + vOffset,
+                u1 = btnBorderUv.x1,
+                v1 = btnBorderUv.y0 + btnBorderWidth + vOffset
+            )
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x0,
+                y0 = btn.y1 - btnBorderWidth,
+                x1 = btn.x0 + btnBorderWidth,
+                y1 = btn.y1,
+                z = z,
+                u0 = btnBorderUv.x0,
+                v0 = btnBorderUv.y1 - btnBorderWidth + vOffset,
+                u1 = btnBorderUv.x0 + btnBorderWidth,
+                v1 = btnBorderUv.y1 + vOffset
+            )
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x1 - btnBorderWidth,
+                y0 = btn.y1 - btnBorderWidth,
+                x1 = btn.x1,
+                y1 = btn.y1,
+                z = z,
+                u0 = btnBorderUv.x1 - btnBorderWidth,
+                v0 = btnBorderUv.y1 - btnBorderWidth + vOffset,
+                u1 = btnBorderUv.x1,
+                v1 = btnBorderUv.y1 + vOffset
+            )
             // Edges: Top, Bottom, Left & Right
-            putTexturedRectangle(bufferBuilder, btn.x0 + btnBorderWidth, btn.y0, btn.x1 - btnBorderWidth, btn.y0 + btnBorderWidth, z, btnBorderUv.x0 + btnBorderWidth, btnBorderUv.y0 + hovered * enabled * btnBorderUv.height, btnBorderUv.x1 - btnBorderWidth,
-                    btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferBuilder, btn.x0 + btnBorderWidth, btn.y1 - btnBorderWidth, btn.x1 - btnBorderWidth, btn.y1, z, btnBorderUv.x0 + btnBorderWidth, btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height,
-                    btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y1 + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferBuilder, btn.x0, btn.y0 + btnBorderWidth, btn.x0 + btnBorderWidth, btn.y1 - btnBorderWidth, z, btnBorderUv.x0, btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x0 + btnBorderWidth,
-                    btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height)
-            putTexturedRectangle(bufferBuilder, btn.x1 - btnBorderWidth, btn.y0 + btnBorderWidth, btn.x1, btn.y1 - btnBorderWidth, z, btnBorderUv.x1 - btnBorderWidth, btnBorderUv.y0 + btnBorderWidth + hovered * enabled * btnBorderUv.height, btnBorderUv.x1,
-                    btnBorderUv.y1 - btnBorderWidth + hovered * enabled * btnBorderUv.height)
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x0 + btnBorderWidth,
+                y0 = btn.y0,
+                x1 = btn.x1 - btnBorderWidth,
+                y1 = btn.y0 + btnBorderWidth,
+                z = z,
+                u0 = btnBorderUv.x0 + btnBorderWidth,
+                v0 = btnBorderUv.y0 + vOffset,
+                u1 = btnBorderUv.x1 - btnBorderWidth,
+                v1 = btnBorderUv.y0 + btnBorderWidth + vOffset
+            )
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x0 + btnBorderWidth,
+                y0 = btn.y1 - btnBorderWidth,
+                x1 = btn.x1 - btnBorderWidth,
+                y1 = btn.y1,
+                z = z,
+                u0 = btnBorderUv.x0 + btnBorderWidth,
+                v0 = btnBorderUv.y1 - btnBorderWidth + vOffset,
+                u1 = btnBorderUv.x1 - btnBorderWidth,
+                v1 = btnBorderUv.y1 + vOffset
+            )
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x0,
+                y0 = btn.y0 + btnBorderWidth,
+                x1 = btn.x0 + btnBorderWidth,
+                y1 = btn.y1 - btnBorderWidth,
+                z = z,
+                u0 = btnBorderUv.x0,
+                v0 = btnBorderUv.y0 + btnBorderWidth + vOffset,
+                u1 = btnBorderUv.x0 + btnBorderWidth,
+                v1 = btnBorderUv.y1 - btnBorderWidth + vOffset
+            )
+            putTexturedRectangle(
+                bufferBuilder = bufferBuilder,
+                x0 = btn.x1 - btnBorderWidth,
+                y0 = btn.y0 + btnBorderWidth,
+                x1 = btn.x1,
+                y1 = btn.y1 - btnBorderWidth,
+                z = z,
+                u0 = btnBorderUv.x1 - btnBorderWidth,
+                v0 = btnBorderUv.y0 + btnBorderWidth + vOffset,
+                u1 = btnBorderUv.x1,
+                v1 = btnBorderUv.y1 - btnBorderWidth + vOffset
+            )
             tessellator.draw()
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         }

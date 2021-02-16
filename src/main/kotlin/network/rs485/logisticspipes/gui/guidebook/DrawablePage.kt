@@ -37,17 +37,17 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.guidebook.YamlPageMetadata
 import network.rs485.logisticspipes.util.math.Rectangle
 
 private const val PAGE_VERTICAL_PADDING = 5
 
-class DrawablePage(internal val metadataProvider: () -> YamlPageMetadata) : DrawableParagraph() {
-    lateinit var drawableParagraphs: List<DrawableParagraph>
-        internal set
+class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : DrawableParagraph() {
 
-    fun setWidth(width: Int){
+    fun setWidth(width: Int) =
         area.setSize(newWidth = width)
+
+    fun updateScrollPosition(visibleArea: Rectangle, progress: Float) {
+        area.y0 = visibleArea.y0 - ((height - visibleArea.height) * progress).toInt()
     }
 
     override fun setPos(x: Int, y: Int): Int {
@@ -58,7 +58,7 @@ class DrawablePage(internal val metadataProvider: () -> YamlPageMetadata) : Draw
 
     override fun setChildrenPos(): Int {
         var currentY = PAGE_VERTICAL_PADDING
-        for (paragraph in drawableParagraphs){
+        for (paragraph in drawableParagraphs) {
             currentY += paragraph.setPos(0, currentY)
         }
         return PAGE_VERTICAL_PADDING + currentY
@@ -69,9 +69,9 @@ class DrawablePage(internal val metadataProvider: () -> YamlPageMetadata) : Draw
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) =
         getVisibleParagraphs(visibleArea).forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
-    }
 
-    fun getVisibleParagraphs(visibleArea: Rectangle) = drawableParagraphs.filter { it.visible(visibleArea) }
+    fun getVisibleParagraphs(visibleArea: Rectangle) =
+        drawableParagraphs.filter { it.visible(visibleArea) }
 }

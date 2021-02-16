@@ -37,11 +37,86 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import logisticspipes.LogisticsPipes
+import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParent
+import network.rs485.logisticspipes.guidebook.BookContents
+import network.rs485.logisticspipes.guidebook.PageInfoProvider
 import network.rs485.logisticspipes.guidebook.YamlPageMetadata
-import network.rs485.markdown.Paragraph
+import network.rs485.markdown.*
+import java.lang.Double.min
 
-class DrawablePageFactory {
-    fun createDrawablePage(metadata: YamlPageMetadata, paragraphs: List<Paragraph>) : DrawablePage{
-        return DrawablePage(metadataProvider = {metadata}).also { it.drawableParagraphs = createDrawableParagraphs(it, paragraphs) }
+private typealias DrawableWordMap<T> = (List<DrawableWord>) -> T
+
+object DrawablePageFactory {
+    /**
+     * Calculates the scale from level 1 (2.0), reducing 0.2 for each level with a minimum of 1.0.
+     */
+    private fun getScaleFromLevel(headerLevel: Int): Double = min(1.0, 2.0 - ((headerLevel - 1) / 5.0))
+
+    fun createDrawablePage(page: PageInfoProvider): DrawablePage =
+        createDrawableParagraphs(page).let { it.createParent { DrawablePage(it) } }
+
+    private fun <T : DrawableParagraph> createDrawableParagraph(paragraphConstructor: DrawableWordMap<T>, elements: List<InlineElement>, scale: Double) =
+        defaultDrawableState.copy().let { state ->
+            elements.mapNotNull { element ->
+                element.changeDrawableState(state)
+                when (element) {
+                    is Word -> DrawableWord(element.str, scale, state)
+                    is Space -> DrawableSpace(scale, state)
+                    Break -> DrawableBreak
+                    else -> null
+                }
+            }
+        }.let { drawableWords ->
+            drawableWords.createParent { paragraphConstructor(drawableWords) }
+        }
+
+    private fun createDrawableParagraphs(page: PageInfoProvider): List<DrawableParagraph> =
+        page.paragraphs.map { paragraph ->
+            when (paragraph) {
+                is RegularParagraph -> createDrawableParagraph(
+                    paragraphConstructor = ::DrawableRegularParagraph,
+                    elements = paragraph.elements,
+                    scale = 1.0
+                )
+                is HeaderParagraph -> createDrawableParagraph(
+                    paragraphConstructor = ::DrawableHeaderParagraph,
+                    elements = paragraph.elements,
+                    scale = getScaleFromLevel(paragraph.headerLevel)
+                )
+                is HorizontalLineParagraph -> DrawableHorizontalLine(2)
+                is MenuParagraph -> createDrawableParagraph(
+                    paragraphConstructor = { drawableMenuTitle ->
+                        createDrawableMenuParagraph(page.metadata, paragraph, drawableMenuTitle)
+                    },
+                    elements = MarkdownParser.splitToInlineElements(paragraph.description),
+                    scale = getScaleFromLevel(3)
+                )
+            }
+        }
+
+    private fun createDrawableMenuParagraph(
+        pageMetadata: YamlPageMetadata,
+        paragraph: MenuParagraph,
+        drawableMenuTitle: List<DrawableWord>
+    ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
+        createDrawableParagraph(
+            paragraphConstructor = { drawableGroupTitle -> createDrawableMenuTileGroup(groupEntries, drawableGroupTitle) },
+            elements = MarkdownParser.splitToInlineElements(groupTitle),
+            scale = getScaleFromLevel(6)
+        )
+    }.let { drawableMenuGroups ->
+        drawableMenuGroups.createParent { DrawableMenuParagraph(drawableMenuTitle, drawableMenuGroups) }
     }
+
+    private fun createDrawableMenuTileGroup(menuGroupEntries: List<String>, drawableGroupTitle: List<DrawableWord>) =
+        menuGroupEntries.map { path ->
+            BookContents.get(path).metadata.let { metadata ->
+                DrawableMenuTile(metadata.title, metadata.icon, onClick = {
+                    LogisticsPipes.log.info("You tried to open $path! $it")
+                })
+            }
+        }.let { drawableMenuTiles ->
+            drawableMenuTiles.createParent { DrawableMenuTileGroup(drawableGroupTitle, drawableMenuTiles) }
+        }
 }

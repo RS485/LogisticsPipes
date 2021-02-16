@@ -107,7 +107,7 @@ object BookContents {
                     listOf(
                         listOf(ColorFormatting(randomColor())),
                         listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic))),
-                        MarkdownParser.splitSpacesAndWords(
+                        MarkdownParser.splitWhitespaceCharactersAndWords(
                             "Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa. Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.  \n" +
                                     "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."
                         ),
@@ -136,7 +136,7 @@ object BookContents {
                     listOf(
                         listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Italic))),
                         listOf(ColorFormatting(randomColor())),
-                        MarkdownParser.splitSpacesAndWords(
+                        MarkdownParser.splitWhitespaceCharactersAndWords(
                             "Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa.\n" +
                                     "Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.\n" +
                                     "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."

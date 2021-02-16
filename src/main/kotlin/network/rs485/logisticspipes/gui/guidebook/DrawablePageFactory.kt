@@ -61,6 +61,7 @@ object DrawablePageFactory {
             elements.mapNotNull { element ->
                 element.changeDrawableState(state)
                 when (element) {
+                    is LinkWord -> TODO()
                     is Word -> DrawableWord(element.str, scale, state)
                     is Space -> DrawableSpace(scale, state)
                     Break -> DrawableBreak
@@ -89,9 +90,10 @@ object DrawablePageFactory {
                     paragraphConstructor = { drawableMenuTitle ->
                         createDrawableMenuParagraph(page.metadata, paragraph, drawableMenuTitle)
                     },
-                    elements = MarkdownParser.splitToInlineElements(paragraph.description),
+                    elements = MarkdownParser.splitSpacesAndWords(paragraph.description),
                     scale = getScaleFromLevel(3)
                 )
+                is ImageParagraph -> TODO()
             }
         }
 
@@ -102,7 +104,7 @@ object DrawablePageFactory {
     ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
             paragraphConstructor = { drawableGroupTitle -> createDrawableMenuTileGroup(groupEntries, drawableGroupTitle) },
-            elements = MarkdownParser.splitToInlineElements(groupTitle),
+            elements = MarkdownParser.splitSpacesAndWords(groupTitle),
             scale = getScaleFromLevel(6)
         )
     }.let { drawableMenuGroups ->

@@ -39,8 +39,6 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.guidebook.BookContents
-import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
-import network.rs485.logisticspipes.guidebook.PageInfoProvider
 import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
 import network.rs485.logisticspipes.util.math.Rectangle
@@ -72,7 +70,6 @@ class SavedPage(val page: String) {
 
     fun setDrawablesPosition(area: Rectangle) {
         drawablePage.setWidth(area.width)
-        println("Initialized page: ${drawablePage.width}")
         drawablePage.setPos(area.x0, area.y0)
     }
 

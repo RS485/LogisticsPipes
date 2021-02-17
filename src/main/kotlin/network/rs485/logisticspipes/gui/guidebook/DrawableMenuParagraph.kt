@@ -108,7 +108,7 @@ class DrawableMenuTileGroup(private val groupTitle: List<DrawableWord>, private 
     }
 }
 
-class DrawableMenuTile(private val pageName: String, private val icon: String, internal val onClick: (mouseButton: Int) -> Unit) : Drawable() {
+class DrawableMenuTile(private val pageName: String, private val icon: String, val onClick: (mouseButton: Int) -> Unit) : Drawable() {
     private val iconScale = 1.0
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
@@ -130,7 +130,10 @@ class DrawableMenuTile(private val pageName: String, private val icon: String, i
             renderItem.zLevel = prevZ
             RenderHelper.disableStandardItemLighting()
         }
-        if (hovered) GuiGuideBook.drawBoxedCenteredString(pageName, mid(), minOf(bottom, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
+        if (hovered){
+            GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
+            GuiGuideBook.drawBoxedCenteredString(pageName, mid(), minOf(bottom, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
+        }
     }
 
     override fun setPos(x: Int, y: Int): Int {

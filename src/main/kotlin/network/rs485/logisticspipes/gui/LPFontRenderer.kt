@@ -176,8 +176,7 @@ open class LPFontRenderer(fontName: String) {
      * Draws the given string with all the possible parameters applied to it.
      */
     fun drawString(string: String, x: Int, y: Int, color: Int, format: EnumSet<TextFormat>, scale: Double): Int =
-            drawString(string = string, x = x, y = y, color = color, italic = format.italic(), bold = format.bold(),
-                    shadow = format.shadow(), underline = format.underline(), strikethrough = format.strikethrough(), scale = scale)
+            drawString(string = string, x = x, y = y, color = color, italic = format.italic(), bold = format.bold(), shadow = format.shadow(), underline = format.underline(), strikethrough = format.strikethrough(), scale = scale)
 
     /**
      * Draws the given string with all the possible parameters applied to it.
@@ -251,19 +250,14 @@ open class LPFontRenderer(fontName: String) {
     fun getStringWidth(string: String): Int = getStringWidth(string = string, italics = false, bold = false, scale = 1.0)
 
     private fun putHorizontalLine(x: Double, y: Double, width: Double, thickness: Double, color: Int, italics: Boolean) {
-        // TODO implement italics slight tilt. Done?
-        // TODO try to apply this directly to the buffer before drawing, difficult right now because this is untextured quads and I don't know how to mix them.
         val italicsOffset = if (italics) thickness else 0.0
-        //GlStateManager.disableTexture2D()
         buffer.pos(x, y, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
         buffer.pos(x, y + thickness, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
         buffer.pos(x + width + italicsOffset, y + thickness, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
         buffer.pos(x + width + italicsOffset, y, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
-        //GlStateManager.enableTexture2D()
     }
 
     init {
-        // TODO reuse parsed font after it was firstly parsed
         val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
         fontPlain = FontParser.read(fontResourcePlain) ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
         wrapperPlain = FontWrapper(fontPlain)

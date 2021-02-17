@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
 import java.util.*
@@ -84,7 +85,14 @@ object DrawableBreak : DrawableWord("", 1.0, defaultDrawableState)
 /**
  * TODO Link token, stores the linked string, as well as the 'url'.
  */
-class Link(text: String) : DrawableWord(text, 1.0, defaultDrawableState)
+class DrawableLinkWord(val str: String, val scale: Double, val state: InlineDrawableState, val onClick: (mouseButton: Int) -> Unit) : DrawableWord(str, scale, defaultDrawableState){
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        hovered = this.hovering(mouseX, mouseY, visibleArea)
+        val currentColor = if(hovered) MinecraftColor.BLUE.colorCode else state.color
+        GuiGuideBook.lpFontRenderer.drawString(string = str, x = left, y = top, color = currentColor, format = format, scale = scale)
+    }
+    // TODO "link" all words connected to the same link synced when hovered.
+}
 
 internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
     var maxHeight = 0

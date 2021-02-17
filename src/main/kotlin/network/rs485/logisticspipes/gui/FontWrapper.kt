@@ -48,16 +48,16 @@ private val buffer = ByteBuffer.allocateDirect(10000000).asIntBuffer()
 class FontWrapper(private val font: IFont) {
     var textures: List<Int> = emptyList(); private set
 
-    var glyphPosX: Map<Char, Int> = emptyMap()
-    var glyphPosY: Map<Char, Int> = emptyMap()
-    var textureIndex: Map<Char, Int> = emptyMap(); private set
+    private var glyphPosX: Map<Char, Int> = emptyMap()
+    private var glyphPosY: Map<Char, Int> = emptyMap()
+    private var textureIndex: Map<Char, Int> = emptyMap()
 
-    var widthMap: Map<Int, Int> = emptyMap(); private set
-    var heightMap: Map<Int, Int> = emptyMap(); private set
+    private var widthMap: Map<Int, Int> = emptyMap()
+    private var heightMap: Map<Int, Int> = emptyMap()
 
     val charHeight: Int
     val charOffsetY: Int
-    val charBottomLine: Int
+    private val charBottomLine: Int
 
     val defaultChar = font.defaultChar
 
@@ -82,7 +82,6 @@ class FontWrapper(private val font: IFont) {
 
             if (currentX + glyph.width > widthMap[currentTex]!!) {
                 currentX = 0
-                println("New row offset by: $currentMaxHeight")
                 currentY += currentMaxHeight
                 currentMaxHeight = 0
                 if (currentY > heightMap[currentTex]!!) {
@@ -94,7 +93,6 @@ class FontWrapper(private val font: IFont) {
             glyphPosY = glyphPosY + (character to currentY)
             textureIndex = textureIndex + (character to currentTex)
             setTexture(glyph.bitmap, currentTex, currentX, currentY, glyph.width, glyph.height)
-            println("Char: $character, x: [$currentX-${currentX + glyph.width}], y: [$currentY-${currentY + glyph.height}], height: ")
             currentX += glyph.width
             currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
             if (currentTex > textures.size)
@@ -117,7 +115,6 @@ class FontWrapper(private val font: IFont) {
 
     // Creates the necessary textures with all the glyphs in them
     private fun allocateTextures() {
-        // TODO always check for height!
         var currentWidth = 0
         var currentHeight = 0
         var currentMaxHeight = 0

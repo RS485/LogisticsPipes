@@ -55,7 +55,7 @@ object FontParser {
     }
 
     fun read(lines: List<String>): BDF {
-        val parser = LineParser();
+        val parser = LineParser()
         lines.asSequence().filter { it.isNotBlank() }.withIndex().forEach { (index, line) -> parser.line(index, line) }
         return BDF(glyphs = parser.glyphs, defaultChar = parser.defaultChar)
     }
@@ -88,8 +88,7 @@ object FontParser {
 
         private fun handleCharBitmap(index: Int, line: String) {
             val tokens = line.split(" ")
-            val head = tokens.first()
-            when (head) {
+            when (val head = tokens.first()) {
                 "ENDCHAR" -> {
                     state = State.Char.Pre
                     if (currentByte != currentGlyph.height) throw throw FontParserSyntaxException(state, index, "Current Glyph is missing some Bytes, last byte index is $currentByte, expected: ${currentGlyph.height};")
@@ -130,7 +129,7 @@ object FontParser {
                     currentByte = 0
                 }
 
-                else -> println("[@$state][Ln$index] Declaration start not recognized: $head")
+                else -> if(LogisticsPipes.isDEBUG()) LogisticsPipes.log.warn("[@$state][Ln$index] Declaration start not recognized: $head")
             }
         }
 
@@ -158,8 +157,7 @@ object FontParser {
 
         private fun handleFontDefinition(index: Int, line: String) {
             val tokens = line.split(" ")
-            val head = tokens.first()
-            when (head) {
+            when (val head = tokens.first()) {
                 "SIZE", "STARTPROPERTIES", "FONT_ASCENT", "FONT_DESCENT", "CAP_HEIGHT",
                 "COPYRIGHT", "FACE_NAME", "FONT", "FONT_VERSION", "FOUNDRY", "FAMILY_NAME",
                 "NOTICE", "POINT_SIZE", "RESOLUTION_X", "RESOLUTION_Y", "SLANT",

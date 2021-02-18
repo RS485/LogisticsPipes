@@ -81,6 +81,8 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     TODO after first deployment:
     - Page history with back and forwards functionality.
     - Crafting recipes?
+    - Use translatable names or block/item identifiers as text?
+    - DrawableListParagraph
      */
 
     // Gui Frame Constants

@@ -82,8 +82,21 @@ object BookContents {
     private fun addDebugPages() {
         fun randomColor(): Int = MinecraftColor.values()[Random.nextInt(MinecraftColor.values().size)].colorCode
         cachedLoadedPages[DEBUG_FILE] = object : PageInfoProvider {
-            override val metadata: YamlPageMetadata = YamlPageMetadata("Debug Page")
+            override val metadata: YamlPageMetadata = YamlPageMetadata(
+                title = "Debug Page",
+                icon = "logisticspipes:itemcard",
+                menu = mapOf(
+                    "listed" to mapOf(
+                        "Guides:" to listOf("/guides/quickstart_guide.md", "/guides/start_guide.md", "/guides/intermediate_guide.md", "/guides/advanced_guide.md", "/guides/in_depth.md")
+                    )
+                )
+            )
             override val paragraphs: List<Paragraph> = listOf(
+                MenuParagraph(
+                    description = "A listed menu.",
+                    link = "listed",
+                    MenuParagraphType.LIST,
+                ),
                 HeaderParagraph(
                     listOf(
                         listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow))),

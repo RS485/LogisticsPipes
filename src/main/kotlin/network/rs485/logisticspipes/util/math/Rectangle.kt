@@ -37,8 +37,6 @@
 
 package network.rs485.logisticspipes.util.math
 
-import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import java.lang.Integer.max
 import java.lang.Integer.min
 import kotlin.math.ceil
@@ -131,21 +129,6 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
     // Operations
     fun overlap(rect: Rectangle): Rectangle = Rectangle(max(this.x0, rect.x0) to max(this.y0, rect.y0), min(this.x1, rect.x1) to min(this.y1, rect.y1))
-
-    // Debug placement
-    fun render(r: Float, g: Float, b: Float) {
-        GlStateManager.pushMatrix()
-        GlStateManager.disableAlpha()
-        GlStateManager.disableBlend()
-        GlStateManager.color(r, g, b)
-        GuiGuideBook.drawHorizontalLine(x0 - 1, x1, y0 - 1, 500.0, 1, 1) // TOP
-        GuiGuideBook.drawHorizontalLine(x0, x1 + 1, y1, 500.0, 1, 1) // BOTTOM
-        GuiGuideBook.drawVerticalLine(x0 - 1, y0, y1 + 1, 500.0, 1, 1) // LEFT
-        GuiGuideBook.drawVerticalLine(x1, y0 - 1, y1, 500.0, 1, 1) // RIGHT
-        GlStateManager.enableAlpha()
-        GlStateManager.enableBlend()
-        GlStateManager.popMatrix()
-    }
 
     override fun toString(): String {
         return "Rectangle(x = $x0, y = $y0, width = $width, height = $height)"

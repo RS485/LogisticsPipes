@@ -865,5 +865,18 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             drawVerticalLine(mouseX + 3, mouseY - 5, mouseY - 2, GuideBookConstants.Z_TOOLTIP, 1, MinecraftColor.WHITE.colorCode)
             drawHorizontalLine(mouseX + 2, mouseX + 5, mouseY - 4, GuideBookConstants.Z_TOOLTIP, 1, MinecraftColor.WHITE.colorCode)
         }
+
+        fun drawRectangleOutline(rect: Rectangle, color: Int) {
+            GlStateManager.pushMatrix()
+            GlStateManager.disableAlpha()
+            GlStateManager.disableBlend()
+            drawHorizontalLine(rect.x0 - 1, rect.x1, rect.y0 - 1, 500.0, 1, color) // TOP
+            drawHorizontalLine(rect.x0, rect.x1 + 1, rect.y1, 500.0, 1, color) // BOTTOM
+            drawVerticalLine(rect.x0 - 1, rect.y0, rect.y1 + 1, 500.0, 1, color) // LEFT
+            drawVerticalLine(rect.x1, rect.y0 - 1, rect.y1, 500.0, 1, color) // RIGHT
+            GlStateManager.enableAlpha()
+            GlStateManager.enableBlend()
+            GlStateManager.popMatrix()
+        }
     }
 }

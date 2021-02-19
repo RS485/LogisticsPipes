@@ -64,7 +64,7 @@ class SavedPage(val page: String) {
 
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int, visibleArea: Rectangle) {
         drawablePage.getVisibleParagraphs(visibleArea)
-            .firstOrNull { it.absBody.contains(mouseX, mouseY) }
+            .firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }
             ?.mouseClicked(mouseX, mouseY, mouseButton)
     }
 

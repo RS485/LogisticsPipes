@@ -46,8 +46,8 @@ import network.rs485.logisticspipes.util.math.Rectangle
 
 class DrawableHorizontalLine(private val thickness: Int, private val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : DrawableParagraph() {
     override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x + padding, y + padding)
-        area.setSize(parent!!.width - 2 * padding, 2 * padding + thickness)
+        relativeBody.setPos(x + padding, y + padding)
+        relativeBody.setSize(parent!!.width - 2 * padding, 2 * padding + thickness)
         return super.setPos(x, y)
     }
 

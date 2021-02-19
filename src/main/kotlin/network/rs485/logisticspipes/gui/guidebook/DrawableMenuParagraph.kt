@@ -62,7 +62,7 @@ class DrawableMenuParagraph(private val menuTitle: List<DrawableWord>, private v
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        menuGroups.firstOrNull { it.absBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton)
+        menuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     override fun setChildrenPos(): Int {
@@ -84,7 +84,7 @@ class DrawableMenuTileGroup(private val groupTitle: List<DrawableWord>, private 
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        groupTiles.firstOrNull { it.absBody.contains(mouseX, mouseY) }?.onClick?.invoke(mouseButton)
+        groupTiles.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.onClick?.invoke(mouseButton)
     }
 
     override fun setChildrenPos(): Int {
@@ -137,8 +137,8 @@ class DrawableMenuTile(private val pageName: String, private val icon: String, v
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
-        area.setSize(tileSize, tileSize)
+        relativeBody.setPos(x, y)
+        relativeBody.setSize(tileSize, tileSize)
         return super.setPos(x, y)
     }
 

@@ -51,14 +51,14 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
     val color: Int = state.color
 
     init {
-        area.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
+        relativeBody.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
     }
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         GuiGuideBook.lpFontRenderer.drawString(string = str, x = left, y = top, color = color, format = format, scale = scale)
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
+        relativeBody.setPos(x, y)
         return super.setPos(x, y)
     }
 
@@ -118,7 +118,7 @@ internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified
                     else -> spacing
                 }
                 drawableWord.setPos(currX, y)
-                drawableWord.area.width = currentSpacing
+                drawableWord.relativeBody.width = currentSpacing
             }
             else -> {
                 drawableWord.setPos(currX, y)

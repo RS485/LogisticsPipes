@@ -44,8 +44,8 @@ import network.rs485.logisticspipes.util.math.Rectangle
  */
 class DrawableRegularParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
     override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
-        area.setSize(parent!!.width, setChildrenPos())
+        relativeBody.setPos(x, y)
+        relativeBody.setSize(parent!!.width, setChildrenPos())
         return super.setPos(x, y)
     }
 

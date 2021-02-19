@@ -49,23 +49,24 @@ open class Drawable {
     }
 
     var hovered: Boolean = false
-    internal var area: Rectangle = Rectangle()
+    internal var relativeBody: Rectangle = Rectangle()
 
     var parent: Drawable? = null
         private set
 
     // Relative positions/size accessors.
-    val x: Int get() = area.x0
-    val y: Int get() = area.y0
-    val width: Int get() = area.width
-    val height: Int get() = area.height
+
+    val x: Int get() = relativeBody.x0
+    val y: Int get() = relativeBody.y0
+    val width: Int get() = relativeBody.width
+    val height: Int get() = relativeBody.height
 
     // Absolute positions accessors.
     val left: Int get() = (parent?.left?: 0) + x
     val right: Int get() = left + width
     val top: Int get() = (parent?.top?: 0) + y
     val bottom: Int get() = top + height
-    val absBody: Rectangle get() = Rectangle(left, top, width, height)
+    val absoluteBody: Rectangle get() = Rectangle(left, top, width, height)
 
     /**
      * Assigns a new child's parent to this.
@@ -91,8 +92,8 @@ open class Drawable {
      * @return the input Y level plus the current element's height and a preset vertical spacer height.
      */
     open fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
-        return area.height
+        relativeBody.setPos(x, y)
+        return relativeBody.height
     }
 
     /**
@@ -103,7 +104,7 @@ open class Drawable {
      */
     fun hovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean {
         if(!visibleArea.contains(mouseX, mouseY)) return false
-        return absBody.contains(mouseX, mouseY)
+        return absoluteBody.contains(mouseX, mouseY)
     }
 
     /**
@@ -112,6 +113,6 @@ open class Drawable {
      * @return true if within constraints false otherwise.
      */
     fun visible(visibleArea: Rectangle): Boolean {
-        return visibleArea.intersects(absBody)
+        return visibleArea.intersects(absoluteBody)
     }
 }

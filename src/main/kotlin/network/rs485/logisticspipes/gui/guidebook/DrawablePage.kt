@@ -44,16 +44,16 @@ private const val PAGE_VERTICAL_PADDING = 5
 class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : DrawableParagraph() {
 
     fun setWidth(width: Int) =
-        area.setSize(newWidth = width)
+        relativeBody.setSize(newWidth = width)
 
     fun updateScrollPosition(visibleArea: Rectangle, progress: Float) {
-        area.y0 = visibleArea.y0 - ((height - visibleArea.height) * progress).toInt()
+        relativeBody.y0 = visibleArea.y0 - ((height - visibleArea.height) * progress).toInt()
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
-        area.setSize(newHeight = setChildrenPos())
-        return area.height
+        relativeBody.setPos(x, y)
+        relativeBody.setSize(newHeight = setChildrenPos())
+        return relativeBody.height
     }
 
     override fun setChildrenPos(): Int {

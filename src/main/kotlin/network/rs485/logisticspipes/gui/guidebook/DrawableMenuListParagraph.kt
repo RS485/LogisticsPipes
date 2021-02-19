@@ -63,7 +63,7 @@ class DrawableMenuListParagraph(private val menuTitle: List<DrawableWord>, priva
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        listMenuGroups.firstOrNull { it.absBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton)
+        listMenuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     override fun setChildrenPos(): Int {
@@ -85,7 +85,7 @@ class DrawableMenuListGroup(private val groupTitle: List<DrawableWord>, private 
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        groupListEntries.firstOrNull { it.absBody.contains(mouseX, mouseY) }?.onClick?.invoke(mouseButton)
+        groupListEntries.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.onClick?.invoke(mouseButton)
     }
 
     override fun setChildrenPos(): Int {
@@ -117,7 +117,7 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
-        val visibleTile = Rectangle(visibleArea).translate(0, -5).grow(0, 10).overlap(Rectangle(absBody))
+        val visibleTile = Rectangle(visibleArea).translate(0, -5).grow(0, 10).overlap(Rectangle(absoluteBody))
         GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
@@ -148,8 +148,8 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
     }
 
     override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
-        area.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), entryHeight)
+        relativeBody.setPos(x, y)
+        relativeBody.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), entryHeight)
         itemRect.setPos(left + itemOffset, top + itemOffset)
         itemRect.setSize(iconSize, iconSize)
         return super.setPos(x, y)

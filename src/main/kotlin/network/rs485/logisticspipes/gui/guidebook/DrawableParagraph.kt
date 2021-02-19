@@ -42,9 +42,9 @@ import network.rs485.logisticspipes.util.math.Rectangle
 open class DrawableParagraph : Drawable() {
 
     override fun setPos(x: Int, y: Int): Int {
-        area.setPos(x, y)
-        area.setSize(newWidth = parent!!.width)
-        area.setSize(newHeight = setChildrenPos())
+        relativeBody.setPos(x, y)
+        relativeBody.setSize(newWidth = parent!!.width)
+        relativeBody.setSize(newHeight = setChildrenPos())
         return super.setPos(x, y)
     }
 
@@ -56,10 +56,10 @@ open class DrawableParagraph : Drawable() {
      * @return the height of all the Paragraph's children combined.
      */
     open fun setChildrenPos(): Int {
-        return area.height
+        return relativeBody.height
     }
 
-    open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Unit {}
+    open fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {}
 
     open fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {}
 }

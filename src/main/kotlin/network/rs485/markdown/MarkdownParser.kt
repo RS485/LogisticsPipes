@@ -38,10 +38,20 @@
 package network.rs485.markdown
 
 import java.lang.Integer.min
+import java.util.*
+import java.util.stream.IntStream
+import kotlin.collections.ArrayList
+
+typealias WordCreator = (String) -> Word?
+
+typealias TextToElements = (CharSequence) -> List<InlineElement>
 
 object MarkdownParser {
     private val linkRegex = Regex("!?\\[(.+?)]\\((.+?)\\)")
     private val webLinkRegex = Regex("^https?://", RegexOption.IGNORE_CASE)
+    private val boldItalicRegexes = (3 downTo 1)
+        .flatMap { times -> listOf("_", "\\*").map { times to it.repeat(times) } }
+        .map { (times, formatChain) -> times to Regex("(?!\\\\)$formatChain(.+?)(?!\\\\)$formatChain") }
 
     private class LinkMatcher(val match: MatchResult) {
         val text: String?
@@ -75,30 +85,170 @@ object MarkdownParser {
             .dropLast(1)
     }
 
-    internal fun splitSpacesAndWords(inputChars: CharSequence, makeWord: (String) -> Word? = ::parseTextElement): List<InlineElement> {
-        val mappedWords = inputChars
-            .split(' ')
-            .flatMap { word -> listOfNotNull(makeWord(word)) }
-        return if (mappedWords.isEmpty()) {
-            emptyList()
-        } else {
-            mappedWords
-                .plus(Space) // appended Space to be removed as the last right element in the following zipWithNext
-                .zipWithNext { left, right ->
-                    // adds Spaces in between, makes sure Space always follows a Word
-                    when {
-                        left is Word && right is Word -> listOf(left, Space)
-                        else -> listOf(left)
+    class ReplacedCharSequence(val original: CharSequence) : CharSequence {
+        private val formattingStart = mutableListOf<Pair<Int, EnumSet<TextFormat>>>()
+        private val replacementMap = mutableListOf<Pair<IntRange, InlineElement>>()
+        private val stagingReplacementMap = mutableListOf<Triple<Int, IntRange, InlineElement>>()
+        private var cache: String? = null
+        val current: String
+            get() = cache ?: updateCachedSequence()
+
+        private fun updateCachedSequence(): String {
+            val sb = StringBuilder()
+            val append = { range: IntRange -> range.takeIf { !it.isEmpty() }?.also { sb.append(original.subSequence(it)) } }
+            var lastIdx = 0
+            replacementMap.forEach { (range, _) ->
+                assert(range.first >= lastIdx) { "trying to replace already replaced index $lastIdx in $replacementMap" }
+                append(lastIdx until range.first)
+                lastIdx = range.last + 1
+            }
+            append(lastIdx until original.length)
+            return sb.toString().also { cache = it }
+        }
+
+        fun addReplacement(range: IntRange, element: InlineElement) {
+            val (replacementMapIdx, translatedIdx) = translateIndex(range.first)
+            stagingReplacementMap.add(
+                Triple(replacementMapIdx + 1, translatedIdx..(range.last + translatedIdx - range.first), element)
+            )
+            if (element is TextFormatting) {
+                val newFormat = (translatedIdx to element.format)
+                if (formattingStart.isEmpty()) {
+                    formattingStart.add(newFormat)
+                } else {
+                    val formatIdx = formattingStart.binarySearch(newFormat, comparator = { o1, o2 ->
+                        o1.first.compareTo(o2.first)
+                    })
+                    if (formatIdx < 0) {
+                        formattingStart.add(-formatIdx - 1, newFormat)
+                    } else if (formattingStart[formatIdx].second != newFormat.second) {
+                        formattingStart.add(formatIdx + 1, newFormat)
                     }
                 }
-                .flatten()
+            }
         }
+
+        fun getFormatting(range: IntRange): EnumSet<TextFormat> {
+            if (formattingStart.isEmpty()) return TextFormat.none
+            val (_, translatedIdx) = translateIndex(range.first)
+            val formatIdx = formattingStart.binarySearch(translatedIdx to null, comparator = { o1, o2 ->
+                o1.first.compareTo(o2.first)
+            })
+            return when {
+                formatIdx == -1 -> TextFormat.none
+                formatIdx < -1 -> formattingStart[-formatIdx - 2].second
+                else -> formattingStart[formatIdx].second
+            }
+        }
+
+        private fun translateIndex(start: Int): Pair<Int, Int> {
+            var translatedIdx = start
+            var replacementMapIdx = -1
+            replacementMap.asSequence()
+                .takeWhile { translatedIdx >= it.first.first }
+                .forEachIndexed { curry, (range, _) ->
+                    translatedIdx += range.count()
+                    replacementMapIdx = curry
+                }
+            return replacementMapIdx to translatedIdx
+        }
+
+        fun commit() {
+            if (stagingReplacementMap.isNotEmpty()) {
+                stagingReplacementMap.reversed().forEach {
+                    replacementMap.add(it.first, it.second to it.third)
+                }
+                cache = null
+                stagingReplacementMap.clear()
+            }
+        }
+
+        fun forEachReplace(action: (Pair<IntRange, InlineElement>) -> Unit) = replacementMap.forEach(action)
+
+        override val length: Int
+            get() = current.length
+
+        override fun get(index: Int): Char = current[index]
+        override fun subSequence(startIndex: Int, endIndex: Int): CharSequence = current.subSequence(startIndex, endIndex)
+        override fun chars(): IntStream = current.chars()
+        override fun codePoints(): IntStream = current.codePoints()
+        override fun equals(other: Any?): Boolean =
+            other is ReplacedCharSequence && original == other.original && replacementMap == other.replacementMap
+
+        override fun hashCode(): Int = original.hashCode() + replacementMap.hashCode()
+        override fun toString(): String =
+            "${super.toString()}(original=\"${original.take(16)}[…]\"," +
+                    "replacementMap=${replacementMap.toString().take(16)}[…])"
+
+    }
+
+    internal fun splitSpacesAndWords(inputChars: CharSequence, makeWord: WordCreator = ::parseTextElement): List<InlineElement> {
+        val textLine = inputChars.trimEnd()
+        val replacingChars = ReplacedCharSequence(textLine)
+        boldItalicRegexes.forEach { (level, regex) ->
+            regex.findAll(replacingChars).forEach { match ->
+                val lastFormat = replacingChars.getFormatting(match.range)
+                val format = when (level) {
+                    3 -> EnumSet.of(TextFormat.Italic, TextFormat.Bold)
+                    2 -> EnumSet.of(TextFormat.Bold)
+                    1 -> EnumSet.of(TextFormat.Italic)
+                    else -> TextFormat.none
+                }.also { it.addAll(lastFormat) }
+                val textGroup = match.groups[1]!!
+                if (match.range.first > 0 && !textLine[textGroup.range.first].isWhitespace() && textLine[match.range.first - 1].isWhitespace()) {
+                    replacingChars.addReplacement((match.range.first - 1) until match.range.first, Space)
+                }
+                replacingChars.addReplacement(match.range.first until textGroup.range.first, TextFormatting(format))
+                if (match.range.first > 0 && textLine[textGroup.range.first].isWhitespace()) {
+                    replacingChars.addReplacement(textGroup.range.first..textGroup.range.first, Space)
+                }
+                if ((match.range.last + 1) < textLine.length && textLine[textGroup.range.last].isWhitespace()) {
+                    replacingChars.addReplacement(textGroup.range.last..textGroup.range.last, Space)
+                }
+                replacingChars.addReplacement((textGroup.range.last + 1)..match.range.last, TextFormatting(lastFormat))
+                if ((match.range.last + 1) < textLine.length && !textLine[textGroup.range.last].isWhitespace() && textLine[match.range.last + 1].isWhitespace()) {
+                    replacingChars.addReplacement((match.range.last + 1)..(match.range.last + 1), Space)
+                }
+            }
+            replacingChars.commit()
+        }
+        // TODO: add parsing for underline, strikethrough and shadow (with ~)
+        // TODO: add color parsing
+        val mappedWords = arrayListOf<InlineElement>()
+        fun addMappedWords(originalRange: IntRange) {
+            if (originalRange.isEmpty()) return
+            mappedWords.addAll(
+                textLine.subSequence(originalRange)
+                    .split(' ')
+                    .flatMap { word -> listOfNotNull(makeWord(word)) }
+                    .plus(Space) // appended Space to be removed as the last right element in the following zipWithNext
+                    .zipWithNext { left, right ->
+                        // adds Spaces in between, makes sure Space always follows a Word
+                        when {
+                            left is Word && right is Word -> listOf(left, Space)
+                            else -> listOf(left)
+                        }
+                    }
+                    .flatten()
+            )
+        }
+        var startIdx = 0
+        replacingChars.forEachReplace { (range, inlineElem) ->
+            addMappedWords(startIdx until range.first)
+            mappedWords.add(inlineElem)
+            startIdx = range.last + 1
+        }
+        addMappedWords(startIdx..replacingChars.original.lastIndex)
+        return mappedWords
     }
 
     private fun parseTextElement(word: String) = if (word.isNotBlank()) Word(word) else null
 
-    private fun elements(inputChars: CharSequence): List<InlineElement> {
-        // TODO: parse colors, formatting
+    private fun parseLinks(
+        inputChars: CharSequence,
+        splitSpacesAndWords: (CharSequence, WordCreator) -> List<InlineElement>,
+        splitWhitespaceCharactersAndWords: TextToElements,
+    ): List<InlineElement> {
         var lastCharLookedAt = 0
         val postfixGetter = { if (lastCharLookedAt < inputChars.length) inputChars.subSequence(lastCharLookedAt, inputChars.length) else "" }
         val isLastWhitespace = { lastCharLookedAt in 1 until inputChars.length && inputChars[lastCharLookedAt].isWhitespace() }
@@ -141,7 +291,12 @@ object MarkdownParser {
 
         fun completeParagraph() {
             if (sb.isNotBlank()) {
-                paragraphs.add(RegularParagraph(elements(sb)))
+                val parsedInlineElements = parseLinks(
+                    inputChars = sb,
+                    splitSpacesAndWords = ::splitSpacesAndWords,
+                    splitWhitespaceCharactersAndWords = ::splitWhitespaceCharactersAndWords
+                )
+                paragraphs.add(RegularParagraph(parsedInlineElements))
             }
             sb.clear()
         }

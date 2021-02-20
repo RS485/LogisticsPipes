@@ -37,10 +37,12 @@
 
 package network.rs485.markdown
 
+import com.google.common.collect.ImmutableSet
 import logisticspipes.utils.MinecraftColor
 import java.util.*
+import javax.xml.soap.Text
 
-data class InlineDrawableState(var format: EnumSet<TextFormat>, var color: Int)
+data class InlineDrawableState(var format: Set<TextFormat>, var color: Int)
 
 sealed class Link
 
@@ -124,20 +126,25 @@ enum class TextFormat {
     Bold,
     Strikethrough,
     Underline,
-    Shadow
+    Shadow;
+
+    companion object {
+        val none: EnumSet<TextFormat>
+            get() = EnumSet.noneOf(TextFormat::class.java)
+    }
 }
 
-fun EnumSet<TextFormat>.italic() = this.contains(TextFormat.Italic)
+fun Set<TextFormat>.italic() = this.contains(TextFormat.Italic)
 
-fun EnumSet<TextFormat>.bold() = this.contains(TextFormat.Bold)
+fun Set<TextFormat>.bold() = this.contains(TextFormat.Bold)
 
-fun EnumSet<TextFormat>.strikethrough() = this.contains(TextFormat.Strikethrough)
+fun Set<TextFormat>.strikethrough() = this.contains(TextFormat.Strikethrough)
 
-fun EnumSet<TextFormat>.underline() = this.contains(TextFormat.Underline)
+fun Set<TextFormat>.underline() = this.contains(TextFormat.Underline)
 
-fun EnumSet<TextFormat>.shadow() = this.contains(TextFormat.Shadow)
+fun Set<TextFormat>.shadow() = this.contains(TextFormat.Shadow)
 
 val defaultDrawableState = InlineDrawableState(
-    format = EnumSet.noneOf(TextFormat::class.java),
+    format = ImmutableSet.of(),
     color = MinecraftColor.WHITE.colorCode,
 )

@@ -38,8 +38,10 @@
 package network.rs485.markdown
 
 import network.rs485.markdown.MarkdownParser.parseParagraphs
-import network.rs485.markdown.MarkdownParser.splitWhitespaceCharactersAndWords
 import network.rs485.markdown.MarkdownParser.splitSpacesAndWords
+import network.rs485.markdown.MarkdownParser.splitWhitespaceCharactersAndWords
+import java.util.*
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -566,7 +568,7 @@ internal class MarkdownParserTest {
         val paragraphs = parseParagraphs("$test1 $test2")
 
         val expectedParagraphs = listOf(
-                RegularParagraph(listOf(Word(test1), Space, Word(test2)))
+                RegularParagraph(splitSpacesAndWords("$test1 $test2"))
         )
         assertEquals(expectedParagraphs, paragraphs)
     }
@@ -712,6 +714,120 @@ internal class MarkdownParserTest {
                     listOf(Space),
                     splitWhitespaceCharactersAndWords(str2),
                 ).flatten()
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse single italic formatting`() {
+        val str = "a word"
+        val paragraphs = parseParagraphs("*$str*")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    listOf(TextFormatting(EnumSet.of(TextFormat.Italic))),
+                    splitSpacesAndWords(str),
+                    listOf(TextFormatting(TextFormat.none)),
+                ).flatten()
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse simple nested formatting`() {
+        val paragraphs = parseParagraphs("*a___b___*")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Word("a"),
+                    TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
+                    Word("b"),
+                    TextFormatting(TextFormat.none),
+                    TextFormatting(TextFormat.none), // TODO: should be removed
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse simple nested formatting 2`() {
+        val paragraphs = parseParagraphs("**a_b_**")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    Word("a"),
+                    TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
+                    Word("b"),
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    TextFormatting(TextFormat.none), // TODO: should be removed
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Ignore
+    @Test
+    fun `parse advanced nested formatting`() {
+        val paragraphs = parseParagraphs("*a__b__c*")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Word("a"),
+                    TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
+                    Word("b"),
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Word("c"),
+                    TextFormatting(TextFormat.none),
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse simple formatted string`() {
+        val paragraphs = parseParagraphs("This _is_ example **Markdown**. This ***should*** work.")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    Word("This"),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Word("is"),
+                    TextFormatting(TextFormat.none),
+                    Space,
+                    Word("example"),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    Word("Markdown"),
+                    TextFormatting(TextFormat.none),
+                    Word("."),
+                    Space,
+                    Word("This"),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic)),
+                    Word("should"),
+                    TextFormatting(TextFormat.none),
+                    Space,
+                    Word("work."),
+                )
             )
         )
 

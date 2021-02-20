@@ -48,6 +48,7 @@ import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
 import java.util.*
+import kotlin.math.max
 
 private const val entryHeight = 24
 private const val entrySpacing = 5
@@ -59,6 +60,7 @@ class DrawableMenuListParagraph(private val menuTitle: List<DrawableWord>, priva
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
@@ -117,8 +119,11 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
-        val visibleTile = Rectangle(visibleArea).translate(0, -5).grow(0, 10).overlap(Rectangle(absoluteBody))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
+        val visibleTile = Rectangle.fromRectangle(visibleArea)
+            .translate(0, -5)
+            .grow(0, 10)
+            .overlap(Rectangle.fromRectangle(absoluteBody))
+        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode, max(0, visibleArea.x0 - absoluteBody.x0), max(0, visibleArea.y0 - absoluteBody.y0))
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
             val textColor = if (!hovered) MinecraftColor.WHITE.colorCode else MinecraftColor.YELLOW.colorCode

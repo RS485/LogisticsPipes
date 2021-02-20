@@ -37,6 +37,8 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import logisticspipes.utils.MinecraftColor
+import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.math.Rectangle
 
 open class Drawable {
@@ -52,10 +54,8 @@ open class Drawable {
     internal var relativeBody: Rectangle = Rectangle()
 
     var parent: Drawable? = null
-        private set
 
     // Relative positions/size accessors.
-
     val x: Int get() = relativeBody.x0
     val y: Int get() = relativeBody.y0
     val width: Int get() = relativeBody.width
@@ -81,7 +81,10 @@ open class Drawable {
      * @param visibleArea   used to avoid draw calls on non-visible children
      */
     open fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-
+        if(DRAW_BODY_WIREFRAME){
+            val visibleAbsoluteBody = visibleArea.translated(0, -5).grow(0, 10).overlap(absoluteBody)
+            GuiGuideBook.drawRectangleOutline(visibleAbsoluteBody, GuideBookConstants.Z_TEXT.toInt(), MinecraftColor.WHITE.colorCode)
+        }
     }
 
     /**

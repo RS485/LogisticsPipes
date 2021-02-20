@@ -52,6 +52,7 @@ class DrawableHorizontalLine(private val thickness: Int, private val padding: In
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, visibleArea)
         GuiGuideBook.drawHorizontalLine(left, right, top, 5.0, thickness, color)
     }
 }    

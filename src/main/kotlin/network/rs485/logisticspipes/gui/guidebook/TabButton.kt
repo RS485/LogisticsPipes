@@ -111,7 +111,9 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {
-        return if (whisky.isPageActive()) Rectangle(buttonArea).setSize(32, 32).contains(mouseX, mouseY)
+        return if (whisky.isPageActive()) Rectangle.fromRectangle(buttonArea)
+            .setSize(32, 32)
+            .contains(mouseX, mouseY)
         else Rectangle(buttonArea.x0, buttonArea.y0 + 3, 32, 29).contains(mouseX, mouseY)
     }
 }

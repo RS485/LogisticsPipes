@@ -46,6 +46,7 @@ class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableP
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+        super.draw(mouseX, mouseY, delta, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 

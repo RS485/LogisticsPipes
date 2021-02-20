@@ -57,6 +57,7 @@ import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
 import org.lwjgl.opengl.GL11
 import java.util.*
+import kotlin.math.min
 
 object GuideBookConstants {
     val guiBookTexture = ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png")
@@ -73,6 +74,9 @@ object GuideBookConstants {
     const val Z_FRAME = 10.0 // Frame Z
     const val Z_TEXT = 5.0 // Text/Information Z
     const val Z_BACKGROUND = 0.0 // Background Z
+
+    // Debug constant
+    const val DRAW_BODY_WIREFRAME = false
 }
 
 class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
@@ -352,7 +356,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             u0 = backgroundFrameTexture.x0,
             v0 = backgroundFrameTexture.y0,
             u1 = backgroundFrameTexture.x1,
-            v1 = backgroundFrameTexture.y1
+            v1 = backgroundFrameTexture.y1,
+            xStartOffset = 7,
+            yStartOffset = 8
         )
         // Corners: TopLeft, TopRight, BottomLeft & BottomRight
         putTexturedRectangle(
@@ -542,6 +548,19 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         }
 
+        private fun putTexturedImage(bufferBuilder: BufferBuilder, x0: Int, y0: Int, x1: Int, y1: Int, z: Double, uw: Int, vh: Int, u0: Int, v0: Int, u1: Int, v1: Int) {
+            val atlasWidthScale = 1 / uw.toDouble()
+            val atlasHeightScale = 1 / vh.toDouble()
+            val u0S = u0 * atlasWidthScale
+            val v0S = v0 * atlasHeightScale
+            val u1S = u1 * atlasWidthScale
+            val v1S = v1 * atlasHeightScale
+            bufferBuilder.pos(x0.toDouble(), y1.toDouble(), z).tex(u0S, v1S).endVertex()
+            bufferBuilder.pos(x1.toDouble(), y1.toDouble(), z).tex(u1S, v1S).endVertex()
+            bufferBuilder.pos(x1.toDouble(), y0.toDouble(), z).tex(u1S, v0S).endVertex()
+            bufferBuilder.pos(x0.toDouble(), y0.toDouble(), z).tex(u0S, v0S).endVertex()
+        }
+
         /**
          * Adds multiple repeating textured rectangles to fill the specified area without stretching the given texture to the buffer. This method assumes the bound texture is 256x256 in size.
          * @param bufferBuilder buffer that needs to be initialized before it is given to this method;
@@ -555,25 +574,164 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
          * @param x1            right correspondent texture position;
          * @param y1            bottom correspondent texture position.
          */
-        private fun putRepeatingTexturedRectangle(bufferBuilder: BufferBuilder, x0: Int, y0: Int, x1: Int, y1: Int, z: Double, u0: Int, v0: Int, u1: Int, v1: Int) {
-            val x = x1 - x0
-            val y = y1 - y0
+        private fun putRepeatingTexturedRectangle(bufferBuilder: BufferBuilder, x0: Int, y0: Int, x1: Int, y1: Int, z: Double, u0: Int, v0: Int, u1: Int, v1: Int, xStartOffset: Int = 0, yStartOffset: Int = 0) {
+            // Size of texture in atlas.
             val u = u1 - u0
             val v = v1 - v0
-            val timesX = x / u
-            val timesY = y / v
-            val remainderX = x % u
-            val remainderY = y % v
+            // Size of drawn rectangle
+            val x = x1 - x0
+            val y = y1 - y0
+            // Actual size of offsets (remainder of the positions)
+            val leftRemainder = xStartOffset % u
+            val topRemainder = yStartOffset % v
+            val rightRemainder = (x - leftRemainder) % u
+            val bottomRemainder = (y - topRemainder) % v
+            // Area of full textures to be drawn
+            val width = x - leftRemainder - rightRemainder
+            val height = y - topRemainder - bottomRemainder
+
+            val timesX = width / u
+            val timesY = height / v
             for (i in 0..timesY) {
                 for (j in 0..timesX) {
+                    val xOffset = j * u
+                    val yOffset = i * v
                     if (j == timesX && i == timesY) {
-                        putTexturedRectangle(bufferBuilder, x0 + j * u, y0 + i * v, x0 + j * u + remainderX, y0 + i * v + remainderY, z, u0, v0, u0 + remainderX, v0 + remainderY)
+                        // Corners
+                        if (rightRemainder > 0) {
+                            if(bottomRemainder > 0){
+                                putTexturedRectangle(
+                                    bufferBuilder = bufferBuilder,
+                                    x0 = x0 + leftRemainder + xOffset,
+                                    y0 = y0 + topRemainder + yOffset,
+                                    x1 = x0 + leftRemainder + xOffset + rightRemainder,
+                                    y1 = y0 + topRemainder + yOffset + bottomRemainder,
+                                    z = z,
+                                    u0 = u0,
+                                    v0 = v0,
+                                    u1 = u0 + rightRemainder,
+                                    v1 = v0 + bottomRemainder
+                                )
+                            }
+                            if(topRemainder > 0){
+                                putTexturedRectangle(
+                                    bufferBuilder = bufferBuilder,
+                                    x0 = x0 + leftRemainder + xOffset,
+                                    y0 = y0,
+                                    x1 = x0 + leftRemainder + xOffset + rightRemainder,
+                                    y1 = y0 + topRemainder,
+                                    z = z,
+                                    u0 = u0,
+                                    v0 = v1 - topRemainder,
+                                    u1 = u0 + rightRemainder,
+                                    v1 = v1
+                                )
+                            }
+                        }
+                        if(leftRemainder > 0){
+                            if(bottomRemainder > 0){
+                                putTexturedRectangle(
+                                    bufferBuilder = bufferBuilder,
+                                    x0 = x0,
+                                    y0 = y0 + topRemainder + yOffset,
+                                    x1 = x0 + leftRemainder,
+                                    y1 = y0 + topRemainder + yOffset + bottomRemainder,
+                                    z = z,
+                                    u0 = u1 - leftRemainder,
+                                    v0 = v0,
+                                    u1 = u1,
+                                    v1 = v0 + bottomRemainder
+                                )
+                            }
+                            if(topRemainder > 0){
+                                putTexturedRectangle(
+                                    bufferBuilder = bufferBuilder,
+                                    x0 = x0,
+                                    y0 = y0,
+                                    x1 = x0 + leftRemainder,
+                                    y1 = y0 + topRemainder,
+                                    z = z,
+                                    u0 = u1 - leftRemainder,
+                                    v0 = v1 - topRemainder,
+                                    u1 = u1,
+                                    v1 = v1
+                                )
+                            }
+                        }
                     } else if (j == timesX) {
-                        putTexturedRectangle(bufferBuilder, x0 + j * u, y0 + i * v, x0 + j * u + remainderX, y0 + (i + 1) * v, z, u0, v0, u0 + remainderX, v1)
+                        // Right and Left remainders
+                        if (rightRemainder > 0) {
+                            putTexturedRectangle(
+                                bufferBuilder = bufferBuilder,
+                                x0 = x0 + leftRemainder + xOffset,
+                                y0 = y0 + topRemainder + yOffset,
+                                x1 = x0 + leftRemainder + xOffset + rightRemainder,
+                                y1 = y0 + topRemainder + yOffset + v,
+                                z = z,
+                                u0 = u0,
+                                v0 = v0,
+                                u1 = u0 + rightRemainder,
+                                v1 = v1
+                            )
+                        }
+                        if (leftRemainder > 0) {
+                            putTexturedRectangle(
+                                bufferBuilder = bufferBuilder,
+                                x0 = x0,
+                                y0 = y0 + topRemainder + yOffset,
+                                x1 = x0 + leftRemainder,
+                                y1 = y0 + topRemainder + yOffset + v,
+                                z = z,
+                                u0 = u1 - leftRemainder,
+                                v0 = v0,
+                                u1 = u1,
+                                v1 = v1
+                            )
+                        }
                     } else if (i == timesY) {
-                        putTexturedRectangle(bufferBuilder, x0 + j * u, y0 + i * v, x0 + (j + 1) * u, y0 + i * v + remainderY, z, u0, v0, u1, v0 + remainderY)
+                        // Top and bottom remainders
+                        if (topRemainder > 0) {
+                            putTexturedRectangle(
+                                bufferBuilder = bufferBuilder,
+                                x0 = x0 + leftRemainder + xOffset,
+                                y0 = y0,
+                                x1 = x0 + leftRemainder + xOffset + u,
+                                y1 = y0 + topRemainder,
+                                z = z,
+                                u0 = u0,
+                                v0 = v1 - topRemainder,
+                                u1 = u1,
+                                v1 = v1
+                            )
+                        }
+                        if (bottomRemainder > 0) {
+                            putTexturedRectangle(
+                                bufferBuilder = bufferBuilder,
+                                x0 = x0 + leftRemainder + xOffset,
+                                y0 = y0 + topRemainder + yOffset,
+                                x1 = x0 + leftRemainder + xOffset + u,
+                                y1 = y0 + topRemainder + yOffset + bottomRemainder,
+                                z = z,
+                                u0 = u0,
+                                v0 = v0,
+                                u1 = u1,
+                                v1 = v0 + bottomRemainder
+                            )
+                        }
                     } else {
-                        putTexturedRectangle(bufferBuilder, x0 + j * u, y0 + i * v, x0 + (j + 1) * u, y0 + (i + 1) * v, z, u0, v0, u1, v1)
+                        // Center area, full texture dimensions.
+                        putTexturedRectangle(
+                            bufferBuilder = bufferBuilder,
+                            x0 = x0 + leftRemainder + xOffset,
+                            y0 = y0 + topRemainder + yOffset,
+                            x1 = x0 + leftRemainder + xOffset + u,
+                            y1 = y0 + topRemainder + yOffset + v,
+                            z = z,
+                            u0 = u0,
+                            v0 = v0,
+                            u1 = u1,
+                            v1 = v1
+                        )
                     }
                 }
             }
@@ -624,9 +782,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
          * @param isHovered defines whether or not the tile is being hovered, this will make the like have a blue tint;
          * @param color     color to apply to the whole tile.
          */
-        fun drawRectangleTile(btn: Rectangle, z: Double, isEnabled: Boolean, isHovered: Boolean, color: Int) {
-            // TODO make it cut the shape depending on broken borders
-
+        fun drawRectangleTile(btn: Rectangle, z: Double, isEnabled: Boolean, isHovered: Boolean, color: Int, uCutOffset: Int, vCutOffset: Int) {
             // Tile drawing constants
             val btnBackgroundUv = Rectangle(64, 32, 32, 32)
             val btnBorderUv = Rectangle(0, 64, 16, 16)
@@ -650,7 +806,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
                 u0 = btnBackgroundUv.x0,
                 v0 = btnBackgroundUv.y0 + uOffset,
                 u1 = btnBackgroundUv.x1,
-                v1 = btnBackgroundUv.y1 + uOffset
+                v1 = btnBackgroundUv.y1 + uOffset,
+                xStartOffset = uCutOffset,
+                yStartOffset = vCutOffset
             )
             // Corners: TopLeft, TopRight, BottomLeft & BottomRight
             putTexturedRectangle(
@@ -836,7 +994,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
          * @param thickness line's thickness which will be added to the right of the x axis
          * @param color     color of the line formatted as #aarrggbb integer.
          */
-        fun drawVerticalLine(x: Int, y0: Int, y1: Int, z: Double, thickness: Int, color: Int) {
+        private fun drawVerticalLine(x: Int, y0: Int, y1: Int, z: Double, thickness: Int, color: Int) {
             val r = red(color)
             val g = green(color)
             val b = blue(color)
@@ -898,14 +1056,14 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             GlStateManager.popMatrix()
         }
 
-        fun drawRectangleOutline(rect: Rectangle, color: Int) {
+        fun drawRectangleOutline(rect: Rectangle, z: Int, color: Int) {
             GlStateManager.pushMatrix()
             GlStateManager.disableAlpha()
             GlStateManager.disableBlend()
-            drawHorizontalLine(rect.x0 - 1, rect.x1, rect.y0 - 1, 500.0, 1, color) // TOP
-            drawHorizontalLine(rect.x0, rect.x1 + 1, rect.y1, 500.0, 1, color) // BOTTOM
-            drawVerticalLine(rect.x0 - 1, rect.y0, rect.y1 + 1, 500.0, 1, color) // LEFT
-            drawVerticalLine(rect.x1, rect.y0 - 1, rect.y1, 500.0, 1, color) // RIGHT
+            drawHorizontalLine(rect.x0 - 1, rect.x1, rect.y0 - 1, z.toDouble(), 1, color) // TOP
+            drawHorizontalLine(rect.x0, rect.x1 + 1, rect.y1, z.toDouble(), 1, color) // BOTTOM
+            drawVerticalLine(rect.x0 - 1, rect.y0, rect.y1 + 1, z.toDouble(), 1, color) // LEFT
+            drawVerticalLine(rect.x1, rect.y0 - 1, rect.y1, z.toDouble(), 1, color) // RIGHT
             GlStateManager.enableAlpha()
             GlStateManager.enableBlend()
             GlStateManager.popMatrix()

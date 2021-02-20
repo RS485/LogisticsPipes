@@ -43,6 +43,12 @@ import kotlin.math.ceil
 
 class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
+    companion object {
+        fun fromRectangle(rect: Rectangle): Rectangle{
+            return Rectangle(rect.x0, rect.y0, rect.width, rect.height)
+        }
+    }
+
     // All variables have custom setters that will update the tied variables (x1, y1)
     var x0 = x
         set(newX) {
@@ -79,7 +85,6 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
     // Constructors
     constructor() : this(0, 0, 0, 0)
-    constructor(rect: Rectangle) : this(rect.x0, rect.y0, rect.width, rect.height)
     constructor(width: Int, height: Int) : this(0, 0, width, height)
     private constructor(firstPoint: Pair<Int, Int>, secondPoint: Pair<Int, Int>) : this(firstPoint.first, firstPoint.second, (secondPoint.first - firstPoint.first), (secondPoint.second - firstPoint.second))
 
@@ -90,9 +95,19 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         return this
     }
 
+    fun setSizeFromRectangle(rect: Rectangle): Rectangle{
+        setSize(rect.width, rect.height)
+        return this
+    }
+
     fun setPos(newX: Int, newY: Int): Rectangle {
         x0 = newX
         y0 = newY
+        return this
+    }
+
+    fun setPosFromRectangle(rect: Rectangle): Rectangle{
+        setPos(rect.x0, rect.y0)
         return this
     }
 

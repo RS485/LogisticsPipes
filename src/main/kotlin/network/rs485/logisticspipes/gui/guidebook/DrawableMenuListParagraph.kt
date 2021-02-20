@@ -118,11 +118,7 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
-        val visibleTile = Rectangle.fromRectangle(visibleArea)
-            .translate(0, -5)
-            .grow(0, 10)
-            .overlap(Rectangle.fromRectangle(absoluteBody))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
+        GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
             val textColor = if (!hovered) MinecraftColor.WHITE.colorCode else MinecraftColor.YELLOW.colorCode

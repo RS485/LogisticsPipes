@@ -114,11 +114,7 @@ class DrawableMenuTile(private val pageName: String, private val icon: String, v
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
-        val visibleTile = Rectangle.fromRectangle(visibleArea)
-            .translate(0, -2)
-            .grow(0, 4)
-            .overlap(Rectangle.fromRectangle(absoluteBody))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
+        GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         val itemRect = Rectangle(left + (width - 16) / 2, top + (height - 16) / 2, 16, 16)
         if (itemRect.intersects(visibleArea)) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule

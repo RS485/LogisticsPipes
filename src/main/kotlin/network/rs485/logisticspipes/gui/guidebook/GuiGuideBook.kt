@@ -866,6 +866,38 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             drawHorizontalLine(mouseX + 2, mouseX + 5, mouseY - 4, GuideBookConstants.Z_TOOLTIP, 1, MinecraftColor.WHITE.colorCode)
         }
 
+        fun drawImage(imageBody: Rectangle, visibleArea: Rectangle, image: ResourceLocation) {
+            // TODO work out how to only draw what is visible.
+            val visibleImageBody = imageBody.overlap(visibleArea)
+            val xOffset = min(imageBody.x0 - visibleArea.x0, 0)
+            val yOffset = min(imageBody.y0 - visibleArea.y0, 0)
+            val visibleImageTexture = Rectangle.fromRectangle(visibleImageBody)
+                .setPos(0, 0)
+                .translate(xOffset, -yOffset)
+            GlStateManager.pushMatrix()
+            Minecraft.getMinecraft().textureManager.bindTexture(image)
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+            val tessellator = Tessellator.getInstance()
+            val bufferBuilder = tessellator.buffer
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
+            putTexturedImage(
+                bufferBuilder = bufferBuilder,
+                x0 = visibleImageBody.x0,
+                y0 = visibleImageBody.y0,
+                x1 = visibleImageBody.x1,
+                y1 = visibleImageBody.y1,
+                z = GuideBookConstants.Z_TEXT,
+                uw = imageBody.width,
+                vh = imageBody.height,
+                u0 = visibleImageTexture.x0,
+                v0 = visibleImageTexture.y0,
+                u1 = visibleImageTexture.x1,
+                v1 = visibleImageTexture.y1,
+            )
+            tessellator.draw()
+            GlStateManager.popMatrix()
+        }
+
         fun drawRectangleOutline(rect: Rectangle, color: Int) {
             GlStateManager.pushMatrix()
             GlStateManager.disableAlpha()

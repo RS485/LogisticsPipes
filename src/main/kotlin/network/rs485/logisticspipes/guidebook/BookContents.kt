@@ -97,6 +97,10 @@ object BookContents {
                     link = "listed",
                     MenuParagraphType.LIST,
                 ),
+                ImageParagraph(
+                    "This image failed loading",
+                    "book/en_us/guides/test_image.png"
+                ),
                 HeaderParagraph(
                     listOf(
                         listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow))),

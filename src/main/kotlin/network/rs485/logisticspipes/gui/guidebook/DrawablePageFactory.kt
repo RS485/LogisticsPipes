@@ -37,7 +37,9 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
+import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParent
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.PageInfoProvider
@@ -72,6 +74,7 @@ object DrawablePageFactory {
             drawableWords.createParent { paragraphConstructor(drawableWords) }
         }
 
+    // TODO normalize page/image links to be able to use .. ./ /
     private fun createDrawableParagraphs(page: PageInfoProvider): List<DrawableParagraph> =
         page.paragraphs.map { paragraph ->
             when (paragraph) {
@@ -93,7 +96,22 @@ object DrawablePageFactory {
                     elements = MarkdownParser.splitSpacesAndWords(paragraph.description),
                     scale = getScaleFromLevel(3)
                 )
-                is ImageParagraph -> TODO()
+                is MenuListParagraph -> createDrawableParagraph(
+                    paragraphConstructor = { drawableMenuTitle ->
+                        createDrawableMenuListParagraph(page.metadata, paragraph, drawableMenuTitle)
+                    },
+                    elements = MarkdownParser.splitSpacesAndWords(paragraph.description),
+                    scale = getScaleFromLevel(3)
+                )
+                is ImageParagraph -> createDrawableParagraph(
+                    paragraphConstructor = { drawableAlternativeText ->
+                        DrawableImageParagraph(drawableAlternativeText, DrawableImage(ResourceLocation(LPConstants.LP_MOD_ID, paragraph.link))).also {
+                            drawableImageParagraph ->  drawableImageParagraph.image.parent = drawableImageParagraph
+                        }
+                    },
+                    elements = MarkdownParser.splitSpacesAndWords(paragraph.alternative),
+                    scale = 1.0
+                )
             }
         }
 
@@ -111,6 +129,21 @@ object DrawablePageFactory {
         drawableMenuGroups.createParent { DrawableMenuParagraph(drawableMenuTitle, drawableMenuGroups) }
     }
 
+    // TODO stop shamelessly duplicating code
+    private fun createDrawableMenuListParagraph(
+        pageMetadata: YamlPageMetadata,
+        paragraph: MenuListParagraph,
+        drawableMenuTitle: List<DrawableWord>
+    ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found in ${pageMetadata.menu}.")).map { (groupTitle: String, groupEntries: List<String>) ->
+        createDrawableParagraph(
+            paragraphConstructor = { drawableGroupTitle -> createDrawableMenuListGroup(groupEntries, drawableGroupTitle) },
+            elements = MarkdownParser.splitSpacesAndWords(groupTitle),
+            scale = getScaleFromLevel(6)
+        )
+    }.let { drawableMenuGroups ->
+        drawableMenuGroups.createParent { DrawableMenuListParagraph(drawableMenuTitle, drawableMenuGroups) }
+    }
+
     private fun createDrawableMenuTileGroup(menuGroupEntries: List<String>, drawableGroupTitle: List<DrawableWord>) =
         menuGroupEntries.map { path ->
             BookContents.get(path).metadata.let { metadata ->
@@ -120,5 +153,17 @@ object DrawablePageFactory {
             }
         }.let { drawableMenuTiles ->
             drawableMenuTiles.createParent { DrawableMenuTileGroup(drawableGroupTitle, drawableMenuTiles) }
+        }
+
+    // TODO stop shamelessly duplicating code
+    private fun createDrawableMenuListGroup(menuGroupEntries: List<String>, drawableGroupTitle: List<DrawableWord>) =
+        menuGroupEntries.map { path ->
+            BookContents.get(path).metadata.let { metadata ->
+                DrawableMenuListEntry(metadata.title, metadata.icon, onClick = {
+                    LogisticsPipes.log.info("You tried to open $path! $it")
+                })
+            }
+        }.let { drawableMenuTiles ->
+            drawableMenuTiles.createParent { DrawableMenuListGroup(drawableGroupTitle, drawableMenuTiles) }
         }
 }

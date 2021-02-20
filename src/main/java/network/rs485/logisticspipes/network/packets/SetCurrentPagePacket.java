@@ -48,7 +48,6 @@ import net.minecraft.util.EnumHand;
 
 import lombok.Getter;
 import lombok.Setter;
-import static network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE;
 
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
@@ -94,10 +93,10 @@ public class SetCurrentPagePacket extends ModernPacket {
 		super.readData(input);
 		try {
 			hand = input.readEnum(EnumHand.class);
-			page = new SavedPage(MAIN_MENU_FILE).fromBytes(input);
+			page = SavedPage.fromBytes(input);
 			int size = input.readInt();
 			for (int i = 0; i < size; i++) {
-				savedPages.add(new SavedPage(MAIN_MENU_FILE).fromBytes(input));
+				savedPages.add(SavedPage.fromBytes(input));
 			}
 		} catch (IllegalStateException e) {
 			LogisticsPipes.log.warn("Couldn't read SetCurrentPagePacket data", e);

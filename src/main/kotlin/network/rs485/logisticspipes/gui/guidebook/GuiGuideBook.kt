@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.LPConstants
+import logisticspipes.items.ItemGuideBook
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
@@ -46,6 +47,8 @@ import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.inventory.EntityEquipmentSlot
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumHand
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.LPFontRenderer
@@ -60,6 +63,7 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+
 
 object GuideBookConstants {
     val guiBookTexture = ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/guide_book.png")
@@ -135,11 +139,27 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
 
     init {
-        setPage(DEBUG_FILE)
+        mc = Minecraft.getMinecraft()
+        if (!getDataFromNBT()) setPage(DEBUG_FILE, 0, 0.0f)
     }
 
-    fun setPage(path: String) {
-        savagePage = cachedPages.getOrPut(path) { SavedPage(path, 0, 0.0f) }
+    private fun getDataFromNBT(): Boolean {
+        val bookItemStack = mc.player.getItemStackFromSlot(if (hand == EnumHand.MAIN_HAND) EntityEquipmentSlot.MAINHAND else EntityEquipmentSlot.OFFHAND)
+        if (bookItemStack.hasTagCompound()) {
+            val nbt = bookItemStack.tagCompound
+            savagePage = SavedPage.fromTag(nbt!!.getCompoundTag("page"))
+            val tagList = nbt.getTagList("bookmarks", 10)
+            tagList.forEach { tag ->
+                addBookmark(SavedPage.fromTag(tag as NBTTagCompound))
+            }
+        } else {
+            setPage(DEBUG_FILE, 0, 0.0f)
+        }
+        return true
+    }
+
+    fun setPage(path: String, color: Int = 0, progress: Float = 0.0f) {
+        savagePage = cachedPages.getOrPut(path) { SavedPage(path, color, progress) }
         savagePage.setDrawablesPosition(visibleArea)
         if (this::slider.isInitialized) slider.setProgressF(savagePage.progress)
     }
@@ -219,7 +239,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
     }
 
     override fun onGuiClosed() {
-        // TODO store book state/data to item NBT
+        ItemGuideBook.setCurrentPage(Minecraft.getMinecraft().player.getHeldItem(hand), savagePage, ArrayList(tabs), hand)
         BookContents.clear()
         super.onGuiClosed()
     }
@@ -325,8 +345,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             tabs.removeAt(idx)
         }
     }
-
-    // TODO get book state/data from item NBT
 
     private fun setPageProgress(progress: Float) {
         savagePage.progress = progress
@@ -889,7 +907,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
             val tessellator = Tessellator.getInstance()
             val bufferBuilder = tessellator.buffer
-            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
             putTexturedRectangle(bufferBuilder, innerArea, innerAreaTexture, z)
             // Corners: TopLeft, TopRight, BottomLeft & BottomRight
             putTexturedRectangle(bufferBuilder, outerArea.x0, outerArea.y0, innerArea.x0, innerArea.y0, z, outerAreaTexture.x0, outerAreaTexture.y0, innerAreaTexture.x0, innerAreaTexture.y0)

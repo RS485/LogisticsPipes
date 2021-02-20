@@ -46,7 +46,6 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.util.math.Rectangle
-import kotlin.math.max
 
 
 private const val tileSize = 40
@@ -116,10 +115,10 @@ class DrawableMenuTile(private val pageName: String, private val icon: String, v
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
         val visibleTile = Rectangle.fromRectangle(visibleArea)
-            .translate(0, -5)
-            .grow(0, 10)
+            .translate(0, -2)
+            .grow(0, 4)
             .overlap(Rectangle.fromRectangle(absoluteBody))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode, max(0, visibleArea.x0 - absoluteBody.x0), max(0, visibleArea.y0 - absoluteBody.y0))
+        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         val itemRect = Rectangle(left + (width - 16) / 2, top + (height - 16) / 2, 16, 16)
         if (itemRect.intersects(visibleArea)) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule

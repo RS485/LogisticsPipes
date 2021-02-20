@@ -48,7 +48,6 @@ import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
 import java.util.*
-import kotlin.math.max
 
 private const val entryHeight = 24
 private const val entrySpacing = 5
@@ -123,7 +122,7 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
             .translate(0, -5)
             .grow(0, 10)
             .overlap(Rectangle.fromRectangle(absoluteBody))
-        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode, max(0, visibleArea.x0 - absoluteBody.x0), max(0, visibleArea.y0 - absoluteBody.y0))
+        GuiGuideBook.drawRectangleTile(visibleTile, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
             val textColor = if (!hovered) MinecraftColor.WHITE.colorCode else MinecraftColor.YELLOW.colorCode

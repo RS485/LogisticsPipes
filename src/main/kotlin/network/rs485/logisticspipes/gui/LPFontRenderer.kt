@@ -175,7 +175,7 @@ open class LPFontRenderer(fontName: String) {
     /**
      * Draws the given string with all the possible parameters applied to it.
      */
-    fun drawString(string: String, x: Int, y: Int, color: Int, format: EnumSet<TextFormat>, scale: Double): Int =
+    fun drawString(string: String, x: Int, y: Int, color: Int, format: Set<TextFormat>, scale: Double): Int =
             drawString(string = string, x = x, y = y, color = color, italic = format.italic(), bold = format.bold(), shadow = format.shadow(), underline = format.underline(), strikethrough = format.strikethrough(), scale = scale)
 
     /**
@@ -216,7 +216,7 @@ open class LPFontRenderer(fontName: String) {
         return width
     }
 
-    fun drawCenteredString(string: String, x: Int, y: Int, color: Int, tags: EnumSet<TextFormat>, scale: Double): Int {
+    fun drawCenteredString(string: String, x: Int, y: Int, color: Int, tags: Set<TextFormat>, scale: Double): Int {
         return drawString(string, x - (getStringWidth(string, tags, scale) / 2.0).toInt(), y, color, tags, scale)
     }
 
@@ -243,8 +243,8 @@ open class LPFontRenderer(fontName: String) {
         return (string.fold(0.0) { currentX, char -> currentX + getCharWidth(char, bold, scale) } + italicsOffset).toInt()
     }
 
-    fun getStringWidth(string: String, tags: EnumSet<TextFormat>, scale: Double): Int {
-        return getStringWidth(string, tags.contains(TextFormat.Italic), tags.contains(TextFormat.Bold), scale)
+    fun getStringWidth(string: String, tags: Set<TextFormat>, scale: Double): Int {
+        return getStringWidth(string, tags.italic(), tags.bold(), scale)
     }
 
     fun getStringWidth(string: String): Int = getStringWidth(string = string, italics = false, bold = false, scale = 1.0)

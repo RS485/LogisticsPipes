@@ -55,6 +55,7 @@ import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import network.rs485.logisticspipes.util.*
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
+import network.rs485.markdown.defaultDrawableState
 import org.lwjgl.opengl.GL11
 import java.util.*
 import kotlin.math.min
@@ -933,7 +934,7 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             val innerAreaTexture = Rectangle(116, 36, 8, 8)
             GlStateManager.pushMatrix()
             lpFontRenderer.zLevel += z
-            lpFontRenderer.drawString(text, innerArea.x0 + 4, innerArea.y0 + 1, MinecraftColor.WHITE.colorCode, EnumSet.noneOf(TextFormat::class.java), 1.0)
+            lpFontRenderer.drawString(text, innerArea.x0 + 4, innerArea.y0 + 1, defaultDrawableState.color, defaultDrawableState.format, 1.0)
             lpFontRenderer.zLevel -= z
             GlStateManager.enableAlpha()
             // Background

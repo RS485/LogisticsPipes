@@ -47,7 +47,7 @@ import kotlin.math.floor
  * Normal Token that stores the text and the formatting tags of said text.
  */
 open class DrawableWord(private val str: String, private val scale: Double, state: InlineDrawableState) : Drawable() {
-    val format: EnumSet<TextFormat> = state.format
+    val format: Set<TextFormat> = state.format
     val color: Int = state.color
 
     init {

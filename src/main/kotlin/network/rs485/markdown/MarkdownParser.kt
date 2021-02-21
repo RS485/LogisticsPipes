@@ -38,41 +38,243 @@
 package network.rs485.markdown
 
 import java.lang.Integer.min
+import java.util.*
+import java.util.stream.IntStream
+import kotlin.collections.ArrayList
+
+typealias WordCreator = (String) -> Word?
+
+typealias TextToElements = (CharSequence) -> List<InlineElement>
 
 object MarkdownParser {
+    private val linkRegex = Regex("!?\\[(.+?)]\\((.+?)\\)")
+    private val webLinkRegex = Regex("^https?://", RegexOption.IGNORE_CASE)
+    private val boldItalicRegexes = (3 downTo 1)
+        .flatMap { times -> listOf("_", "\\*").map { times to it.repeat(times) } }
+        .map { (times, formatChain) -> times to Regex("(?!\\\\)$formatChain(.+?)(?!\\\\)$formatChain") }
+
+    private class LinkMatcher(val match: MatchResult) {
+        val text: String?
+            get() = match.groups[1]?.value
+        val link: String?
+            get() = match.groups[2]?.value
+        val linkWithoutProtocol: String?
+            get() = link?.run { substring(indexOf("://") + 3) }
+        val imageLinkFlag: Boolean
+            get() = match.value.trimStart().startsWith('!')
+
+        fun isMenuLink() = link?.startsWith("menu://", ignoreCase = true) ?: false
+        fun isPageLink() = link?.startsWith("page://", ignoreCase = true) ?: false
+        fun isWebLink() = link?.matches(webLinkRegex) ?: false
+        fun isImageLink() = link?.startsWith("image://", ignoreCase = true) ?: false
+    }
+
     private val htmlBreakRegex = Regex("<br(\\s*/)?>")
 
-    internal fun splitToInlineElements(inputChars: CharSequence): List<InlineElement> {
-        // TODO: parse colors, links, formatting
-
+    internal fun splitWhitespaceCharactersAndWords(inputChars: CharSequence): List<InlineElement> {
         // newlines are already handled as special break characters at this point
         val chars = htmlBreakRegex.replace(inputChars, "\n")
 
         // breaks up all the words and returns them as inline elements without spaces
-        return chars.split(' ')
-                .flatMap { word ->
-                    when {
-                        word.contains('\n') -> {
-                            // newline character is replaced with a Break element
-                            word.split('\n').zipWithNext { a, b ->
-                                listOfNotNull(parseTextElement(a), Break, parseTextElement(b))
-                            }.flatten()
-                        }
-                        // parse anything else as text element
-                        else -> listOfNotNull(parseTextElement(word))
-                    }
-                }
-                .plus(Break) // appended Break to be removed as the last right element in the following zipWithNext
-                .zipWithNext { left, right ->
-                    return@zipWithNext when {
-                        left is Word && right is Word -> listOf(left, Space)
-                        else -> listOf(left)
-                    }
-                }
-                .flatten()
+        return chars
+            .split('\n')
+            .map { words ->
+                splitSpacesAndWords(words) + listOf(Break)
+            }
+            .flatten()
+            .dropLast(1)
     }
 
-    private fun parseTextElement(word: String) = Word(word).takeIf { word.isNotBlank() }
+    class ReplacedCharSequence(val original: CharSequence) : CharSequence {
+        private val formattingStart = mutableListOf<Pair<Int, EnumSet<TextFormat>>>()
+        private val replacementMap = mutableListOf<Pair<IntRange, InlineElement>>()
+        private val stagingReplacementMap = mutableListOf<Triple<Int, IntRange, InlineElement>>()
+        private var cache: String? = null
+        val current: String
+            get() = cache ?: updateCachedSequence()
+
+        private fun updateCachedSequence(): String {
+            val sb = StringBuilder()
+            val append = { range: IntRange -> range.takeIf { !it.isEmpty() }?.also { sb.append(original.subSequence(it)) } }
+            var lastIdx = 0
+            replacementMap.forEach { (range, _) ->
+                assert(range.first >= lastIdx) { "trying to replace already replaced index $lastIdx in $replacementMap" }
+                append(lastIdx until range.first)
+                lastIdx = range.last + 1
+            }
+            append(lastIdx until original.length)
+            return sb.toString().also { cache = it }
+        }
+
+        fun addReplacement(range: IntRange, element: InlineElement) {
+            val (replacementMapIdx, translatedIdx) = translateIndex(range.first)
+            stagingReplacementMap.add(
+                Triple(replacementMapIdx + 1, translatedIdx..(range.last + translatedIdx - range.first), element)
+            )
+            if (element is TextFormatting) {
+                val newFormat = (translatedIdx to element.format)
+                if (formattingStart.isEmpty()) {
+                    formattingStart.add(newFormat)
+                } else {
+                    val formatIdx = formattingStart.binarySearch(newFormat, comparator = { o1, o2 ->
+                        o1.first.compareTo(o2.first)
+                    })
+                    if (formatIdx < 0) {
+                        formattingStart.add(-formatIdx - 1, newFormat)
+                    } else if (formattingStart[formatIdx].second != newFormat.second) {
+                        formattingStart.add(formatIdx + 1, newFormat)
+                    }
+                }
+            }
+        }
+
+        fun getFormatting(range: IntRange): EnumSet<TextFormat> {
+            if (formattingStart.isEmpty()) return TextFormat.none
+            val (_, translatedIdx) = translateIndex(range.first)
+            val formatIdx = formattingStart.binarySearch(translatedIdx to null, comparator = { o1, o2 ->
+                o1.first.compareTo(o2.first)
+            })
+            return when {
+                formatIdx == -1 -> TextFormat.none
+                formatIdx < -1 -> formattingStart[-formatIdx - 2].second
+                else -> formattingStart[formatIdx].second
+            }
+        }
+
+        private fun translateIndex(start: Int): Pair<Int, Int> {
+            var translatedIdx = start
+            var replacementMapIdx = -1
+            replacementMap.asSequence()
+                .takeWhile { translatedIdx >= it.first.first }
+                .forEachIndexed { curry, (range, _) ->
+                    translatedIdx += range.count()
+                    replacementMapIdx = curry
+                }
+            return replacementMapIdx to translatedIdx
+        }
+
+        fun commit() {
+            if (stagingReplacementMap.isNotEmpty()) {
+                stagingReplacementMap.reversed().forEach {
+                    replacementMap.add(it.first, it.second to it.third)
+                }
+                cache = null
+                stagingReplacementMap.clear()
+            }
+        }
+
+        fun forEachReplace(action: (Pair<IntRange, InlineElement>) -> Unit) = replacementMap.forEach(action)
+
+        override val length: Int
+            get() = current.length
+
+        override fun get(index: Int): Char = current[index]
+        override fun subSequence(startIndex: Int, endIndex: Int): CharSequence = current.subSequence(startIndex, endIndex)
+        override fun chars(): IntStream = current.chars()
+        override fun codePoints(): IntStream = current.codePoints()
+        override fun equals(other: Any?): Boolean =
+            other is ReplacedCharSequence && original == other.original && replacementMap == other.replacementMap
+
+        override fun hashCode(): Int = original.hashCode() + replacementMap.hashCode()
+        override fun toString(): String =
+            "${super.toString()}(original=\"${original.take(16)}[…]\"," +
+                    "replacementMap=${replacementMap.toString().take(16)}[…])"
+
+    }
+
+    internal fun splitSpacesAndWords(inputChars: CharSequence, makeWord: WordCreator = ::parseTextElement): List<InlineElement> {
+        val textLine = inputChars.trimEnd()
+        val replacingChars = ReplacedCharSequence(textLine)
+        boldItalicRegexes.forEach { (level, regex) ->
+            regex.findAll(replacingChars).forEach { match ->
+                val lastFormat = replacingChars.getFormatting(match.range)
+                val format = when (level) {
+                    3 -> EnumSet.of(TextFormat.Italic, TextFormat.Bold)
+                    2 -> EnumSet.of(TextFormat.Bold)
+                    1 -> EnumSet.of(TextFormat.Italic)
+                    else -> TextFormat.none
+                }.also { it.addAll(lastFormat) }
+                val textGroup = match.groups[1]!!
+                if (match.range.first > 0 && !textLine[textGroup.range.first].isWhitespace() && textLine[match.range.first - 1].isWhitespace()) {
+                    replacingChars.addReplacement((match.range.first - 1) until match.range.first, Space)
+                }
+                replacingChars.addReplacement(match.range.first until textGroup.range.first, TextFormatting(format))
+                if (match.range.first > 0 && textLine[textGroup.range.first].isWhitespace()) {
+                    replacingChars.addReplacement(textGroup.range.first..textGroup.range.first, Space)
+                }
+                if ((match.range.last + 1) < textLine.length && textLine[textGroup.range.last].isWhitespace()) {
+                    replacingChars.addReplacement(textGroup.range.last..textGroup.range.last, Space)
+                }
+                replacingChars.addReplacement((textGroup.range.last + 1)..match.range.last, TextFormatting(lastFormat))
+                if ((match.range.last + 1) < textLine.length && !textLine[textGroup.range.last].isWhitespace() && textLine[match.range.last + 1].isWhitespace()) {
+                    replacingChars.addReplacement((match.range.last + 1)..(match.range.last + 1), Space)
+                }
+            }
+            replacingChars.commit()
+        }
+        // TODO: add parsing for underline, strikethrough and shadow (with ~)
+        // TODO: add color parsing
+        val mappedWords = arrayListOf<InlineElement>()
+        fun addMappedWords(originalRange: IntRange) {
+            if (originalRange.isEmpty()) return
+            mappedWords.addAll(
+                textLine.subSequence(originalRange)
+                    .split(' ')
+                    .flatMap { word -> listOfNotNull(makeWord(word)) }
+                    .plus(Space) // appended Space to be removed as the last right element in the following zipWithNext
+                    .zipWithNext { left, right ->
+                        // adds Spaces in between, makes sure Space always follows a Word
+                        when {
+                            left is Word && right is Word -> listOf(left, Space)
+                            else -> listOf(left)
+                        }
+                    }
+                    .flatten()
+            )
+        }
+        var startIdx = 0
+        replacingChars.forEachReplace { (range, inlineElem) ->
+            addMappedWords(startIdx until range.first)
+            mappedWords.add(inlineElem)
+            startIdx = range.last + 1
+        }
+        addMappedWords(startIdx..replacingChars.original.lastIndex)
+        return mappedWords
+    }
+
+    private fun parseTextElement(word: String) = if (word.isNotBlank()) Word(word) else null
+
+    private fun parseLinks(
+        inputChars: CharSequence,
+        splitSpacesAndWords: (CharSequence, WordCreator) -> List<InlineElement>,
+        splitWhitespaceCharactersAndWords: TextToElements,
+    ): List<InlineElement> {
+        var lastCharLookedAt = 0
+        val postfixGetter = { if (lastCharLookedAt < inputChars.length) inputChars.subSequence(lastCharLookedAt, inputChars.length) else "" }
+        val isLastWhitespace = { lastCharLookedAt in 1 until inputChars.length && inputChars[lastCharLookedAt].isWhitespace() }
+        return linkRegex.findAll(inputChars)
+            .map { LinkMatcher(it) }
+            .flatMap { link ->
+                // checks link
+                val before = inputChars.subSequence(lastCharLookedAt, link.match.range.first)
+                listOf(
+                    splitWhitespaceCharactersAndWords(before).let { if (!isLastWhitespace() && it.isEmpty()) emptyList() else it + listOf(Space) },
+                    when {
+                        link.isPageLink() -> PageLink(link.linkWithoutProtocol!!)
+                        link.isWebLink() -> WebLink(link.link!!)
+                        else -> null
+                    }?.let { linkRef ->
+                        listOf(
+                            listOfNotNull(Word("!").takeIf { link.imageLinkFlag }),
+                            splitSpacesAndWords(link.text!!) { word -> if (word.isNotBlank()) LinkWord(word, linkRef) else null }
+                        ).flatten()
+                    } ?: splitWhitespaceCharactersAndWords(link.match.value),
+                ).flatten().also { lastCharLookedAt = link.match.range.last + 1 }
+            }
+            .toList()
+            .plus(if (isLastWhitespace()) listOf(Space) else emptyList())
+            .plus(splitWhitespaceCharactersAndWords(postfixGetter()))
+    }
 
     private fun countChars(char: Char, str: String, index: Int = 0, maximum: Int = str.length): Int {
         if (str[index] != char) return 0
@@ -89,8 +291,12 @@ object MarkdownParser {
 
         fun completeParagraph() {
             if (sb.isNotBlank()) {
-                paragraphs.add(RegularParagraph(splitToInlineElements(sb)))
-                // TODO: add ImageParagraph
+                val parsedInlineElements = parseLinks(
+                    inputChars = sb,
+                    splitSpacesAndWords = ::splitSpacesAndWords,
+                    splitWhitespaceCharactersAndWords = ::splitWhitespaceCharactersAndWords
+                )
+                paragraphs.add(RegularParagraph(parsedInlineElements))
             }
             sb.clear()
         }
@@ -106,7 +312,11 @@ object MarkdownParser {
                 sb.append(line)
             }
 
+            val lineLinkMatch: LinkMatcher? by lazy {
+                linkRegex.find(line)?.takeIf { it.value == line }?.let { LinkMatcher(it) }
+            }
             when {
+                // every handling that is creating paragraphs
                 line.isEmpty() -> completeParagraph()
                 line.startsWith('#') -> {
                     val charCount = countChars('#', line, maximum = 6)
@@ -117,20 +327,27 @@ object MarkdownParser {
                         text[0] == ' ' -> {
                             // it's an header!
                             completeParagraph()
-                            paragraphs.add(HeaderParagraph(splitToInlineElements(text.trimEnd('#')), charCount))
+                            paragraphs.add(HeaderParagraph(splitWhitespaceCharactersAndWords(text.trimEnd('#')), charCount))
                         }
                         else -> dumpLineToBuffer()
                     }
                 }
                 line.startsWith("===") -> {
-                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitToInlineElements(sb.toString()), 1))
+                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitWhitespaceCharactersAndWords(sb.toString()), 1))
                     sb.clear()
                 }
                 line.startsWith("---") -> {
-                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitToInlineElements(sb.toString()), 2))
+                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitWhitespaceCharactersAndWords(sb.toString()), 2))
                     sb.clear()
                 }
-                // TODO: add MenuParagraph
+                lineLinkMatch?.isMenuLink() == true && !lineLinkMatch!!.imageLinkFlag -> {
+                    completeParagraph()
+                    paragraphs.add(MenuParagraph(lineLinkMatch!!.text!!, lineLinkMatch!!.linkWithoutProtocol!!))
+                }
+                lineLinkMatch?.isImageLink() == true && lineLinkMatch!!.imageLinkFlag -> {
+                    completeParagraph()
+                    paragraphs.add(ImageParagraph(lineLinkMatch!!.text!!, lineLinkMatch!!.linkWithoutProtocol!!))
+                }
                 // TODO: add ListParagraph
                 else -> dumpLineToBuffer()
             }

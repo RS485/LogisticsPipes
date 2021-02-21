@@ -37,21 +37,86 @@
 
 package network.rs485.markdown
 
+import com.google.common.collect.ImmutableSet
+import logisticspipes.utils.MinecraftColor
 import java.util.*
+import javax.xml.soap.Text
 
-sealed class InlineElement
+data class InlineDrawableState(var format: Set<TextFormat>, var color: Int)
 
-data class TextFormatting(val elements: List<InlineElement>,
-                          val format: EnumSet<TextFormat>)
+sealed class Link
 
-data class ColorFormatting(val elements: List<InlineElement>,
-                           val color: Int)
+data class WebLink(val url: String) : Link() {
+    init {
+        assert(url.isNotEmpty())
+    }
+}
 
-data class Word(val str: String) : InlineElement()
+data class PageLink(val page: String) : Link() {
+    init {
+        assert(page.isNotEmpty())
+    }
+}
 
-object Space : InlineElement()
+sealed class InlineElement {
+    open fun changeDrawableState(state: InlineDrawableState) {}
+}
 
-object Break : InlineElement()
+data class TextFormatting(val format: EnumSet<TextFormat>) : InlineElement() {
+    override fun changeDrawableState(state: InlineDrawableState) {
+        state.format = this.format
+    }
+}
+
+data class ColorFormatting(val color: Int) : InlineElement() {
+    override fun changeDrawableState(state: InlineDrawableState) {
+        state.color = this.color
+    }
+}
+
+object Space : InlineElement() {
+    override fun toString(): String {
+        return "Markdown Space Element"
+    }
+}
+
+object Break : InlineElement() {
+    override fun toString(): String {
+        return "Markdown Break Element"
+    }
+}
+
+open class Word(val str: String) : InlineElement() {
+    init {
+        assert(str.isNotEmpty())
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Word && other.str == this.str
+    }
+
+    override fun hashCode(): Int {
+        return str.hashCode()
+    }
+
+    override fun toString(): String {
+        return "Word($str)"
+    }
+}
+
+class LinkWord(str: String, val link: Link) : Word(str) {
+    override fun equals(other: Any?): Boolean {
+        return other is LinkWord && other.str == this.str && other.link == this.link
+    }
+
+    override fun hashCode(): Int {
+        return str.hashCode() + link.hashCode()
+    }
+
+    override fun toString(): String {
+        return "LinkWord($str, $link)"
+    }
+}
 
 /**
  * Used to track the tags a token has so the renderer knows how to draw said token.
@@ -61,5 +126,25 @@ enum class TextFormat {
     Bold,
     Strikethrough,
     Underline,
-    Shadow
+    Shadow;
+
+    companion object {
+        val none: EnumSet<TextFormat>
+            get() = EnumSet.noneOf(TextFormat::class.java)
+    }
 }
+
+fun Set<TextFormat>.italic() = this.contains(TextFormat.Italic)
+
+fun Set<TextFormat>.bold() = this.contains(TextFormat.Bold)
+
+fun Set<TextFormat>.strikethrough() = this.contains(TextFormat.Strikethrough)
+
+fun Set<TextFormat>.underline() = this.contains(TextFormat.Underline)
+
+fun Set<TextFormat>.shadow() = this.contains(TextFormat.Shadow)
+
+val defaultDrawableState = InlineDrawableState(
+    format = ImmutableSet.of(),
+    color = MinecraftColor.WHITE.colorCode,
+)

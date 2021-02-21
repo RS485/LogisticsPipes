@@ -116,6 +116,11 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
     private val itemRect = Rectangle()
     private val itemOffset = (entryHeight - iconSize) / 2
 
+    init {
+        relativeBody.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), entryHeight)
+        itemRect.setSize(iconSize, iconSize)
+    }
+
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
         GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
@@ -149,9 +154,7 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
-        relativeBody.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), entryHeight)
         itemRect.setPos(left + itemOffset, top + itemOffset)
-        itemRect.setSize(iconSize, iconSize)
         return super.setPos(x, y)
     }
 }

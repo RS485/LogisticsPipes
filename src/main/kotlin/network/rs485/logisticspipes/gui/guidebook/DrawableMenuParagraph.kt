@@ -112,6 +112,10 @@ class DrawableMenuTileGroup(private val groupTitle: List<DrawableWord>, private 
 class DrawableMenuTile(private val pageName: String, private val icon: String, val onClick: (mouseButton: Int) -> Unit) : Drawable() {
     private val iconScale = 1.0
 
+    init {
+        relativeBody.setSize(tileSize, tileSize)
+    }
+
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)
         GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
@@ -138,7 +142,6 @@ class DrawableMenuTile(private val pageName: String, private val icon: String, v
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
-        relativeBody.setSize(tileSize, tileSize)
         return super.setPos(x, y)
     }
 

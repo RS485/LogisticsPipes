@@ -187,7 +187,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         for (button: TabButton in tabButtons) {
             button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
             xOffset += guiTabWidth
-            // TODO check if current page
         }
         if (this::addTabButton.isInitialized) {
             addTabButton.visible = savagePage.page != MAIN_MENU_FILE && tabButtons.size < maxTabs
@@ -222,7 +221,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             v = 64,
             hasDisabledState = false,
             type = ButtonType.TAB
-        ).setOverlayTexture(u = 128, v = 0, w = 16, h = 16))
+        )
+            .setOnHoverTextGetter { BookContents.get(MAIN_MENU_FILE).metadata.title }
+            .setOverlayTexture(u = 128, v = 0, w = 16, h = 16))
         addTabButton = addButton(TexturedButton(
             buttonId = 2,
             x = outerGui.x1 - 18 - guiTabWidth + 4,
@@ -304,7 +305,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         updateButtonVisibility()
     }
 
-    // Bookmark logic
     private fun addBookmark(page: SavedPage) {
         if (isTabAbsent(page) && tabButtons.size < maxTabs) {
             tabs.add(page)
@@ -331,8 +331,9 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
 
                 override fun getColor(): Int = tabPage.color
 
-                override fun isPageActive(): Boolean = savagePage == tabPage
+                override fun isPageActive(): Boolean = savagePage.isEqual(tabPage)
 
+                override fun getOnHoverText(): String = tabPage.title
             })
             tabButtons.add(tabButton)
         }
@@ -884,14 +885,29 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
          * @param y     y position of the top of the tooltip;
          * @param z     z position of the tooltip.
          */
-        fun drawBoxedCenteredString(text: String, x: Int, y: Int, z: Double) {
+        fun drawBoxedString(text: String, x: Int, y: Int, z: Double, horizontalAlign: HorizontalAlignement, verticalAlign: VerticalAlignement) {
             val width = lpFontRenderer.getStringWidth(text) + 8
             val height = lpFontRenderer.getFontHeight()
-            val outerArea = Rectangle(x - width / 2 - 4, y, width + 8, height + 8)
-            val screenWidth = Minecraft.getMinecraft().currentScreen!!.width
+            val outerArea = Rectangle(
+                x = when (horizontalAlign) {
+                    HorizontalAlignement.CENTER -> x - width / 2 - 4
+                    HorizontalAlignement.LEFT -> x
+                    HorizontalAlignement.RIGHT -> x - width - 8
+                },
+                y = when (verticalAlign) {
+                    VerticalAlignement.CENTER -> y - height / 2 - 4
+                    VerticalAlignement.TOP -> y
+                    VerticalAlignement.BOTTOM -> y - height - 8
+                },
+                width = width + 8,
+                height = height + 8
+            )
+            val screen = Rectangle(Minecraft.getMinecraft().currentScreen!!.width, Minecraft.getMinecraft().currentScreen!!.height)
             when {
                 outerArea.x0 < 0 -> outerArea.translate(-outerArea.x0, 0)
-                outerArea.x1 > screenWidth -> outerArea.translate(screenWidth - outerArea.x1, 0)
+                outerArea.x1 > screen.width -> outerArea.translate(screen.width - outerArea.x1, 0)
+                outerArea.y0 < 0 -> outerArea.translate(0, -outerArea.y0)
+                outerArea.y1 > screen.height -> outerArea.translate(0, screen.height - outerArea.y1)
             }
             val innerArea = Rectangle(outerArea.x0 + 4, outerArea.y0 + 4, width, height)
             val outerAreaTexture = Rectangle(112, 32, 16, 16)
@@ -990,7 +1006,6 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
         }
 
         fun drawImage(imageBody: Rectangle, visibleArea: Rectangle, image: ResourceLocation) {
-            // TODO work out how to only draw what is visible.
             val visibleImageBody = imageBody.overlap(visibleArea)
             val xOffset = min(imageBody.x0 - visibleArea.x0, 0)
             val yOffset = min(imageBody.y0 - visibleArea.y0, 0)
@@ -1033,5 +1048,17 @@ class GuiGuideBook(val hand: EnumHand) : GuiScreen() {
             GlStateManager.enableBlend()
             GlStateManager.popMatrix()
         }
+    }
+
+    enum class HorizontalAlignement {
+        CENTER,
+        LEFT,
+        RIGHT;
+    }
+
+    enum class VerticalAlignement {
+        CENTER,
+        TOP,
+        BOTTOM;
     }
 }

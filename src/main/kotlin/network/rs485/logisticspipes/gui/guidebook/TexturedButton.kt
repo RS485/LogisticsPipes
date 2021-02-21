@@ -48,6 +48,7 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
     private val buttonOverlayTextureArea = Rectangle()
     private val buttonArea = Rectangle(x, y, width, height)
     private val buttonTextureArea = Rectangle(u, v, width, height)
+    private lateinit var onHoverTextGetter: () -> String
 
     init {
         zLevel = z.toFloat()
@@ -57,6 +58,16 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
         if (!visible) return
         hovered = buttonArea.contains(mouseX, mouseY)
         val j = if (hasDisabledState && !enabled) 2 else if (hovered) 1 else 0
+        if(::onHoverTextGetter.isInitialized && hovered) {
+            GuiGuideBook.drawBoxedString(
+                text = onHoverTextGetter(),
+                x = buttonArea.x1,
+                y = buttonArea.y0,
+                z = GuideBookConstants.Z_TOOLTIP,
+                horizontalAlign = GuiGuideBook.HorizontalAlignement.RIGHT,
+                verticalAlign = GuiGuideBook.VerticalAlignement.BOTTOM
+            )
+        }
         when (type) {
             ButtonType.TAB -> {
                 drawStretchingRectangle(buttonArea.x0, buttonArea.y0, buttonArea.x1, buttonArea.y1, zLevel.toDouble(), buttonTextureArea.x0, buttonTextureArea.y0, buttonTextureArea.x1, buttonTextureArea.y1, false)
@@ -79,6 +90,11 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
 
     fun setOverlayTexture(u: Int, v: Int, size: Int): TexturedButton {
         return setOverlayTexture(u, v, size, size)
+    }
+
+    fun setOnHoverTextGetter(newOnHoverTextGetter: () -> String): TexturedButton{
+        onHoverTextGetter = newOnHoverTextGetter
+        return this
     }
 
     fun setOverlayTexture(u: Int, v: Int, w: Int, h: Int): TexturedButton {

@@ -62,7 +62,6 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
         hovered = buttonArea.contains(mouseX, mouseY)
         val btnAtlasOffsetY = hovered && !dragging || !enabled
         val btnAtlasOffsetX = dragging || !enabled
-        // TODO make this draw a bordered rectangle
         GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0, buttonArea.x1, buttonArea.y1, zLevel.toDouble(), 96 + (if (btnAtlasOffsetX) 1 else 0) * 12, 0 + (if (btnAtlasOffsetY) 1 else 0) * 15, 108 + (if (btnAtlasOffsetX) 1 else 0) * 12, (if (btnAtlasOffsetY) 1 else 0) * 15 + 15, false)
         mouseDragged(mc, mouseX, mouseY)
     }
@@ -71,7 +70,6 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
         if (dragging) {
             dragging = false
             setProgressI((mouseY - height / 2.0f).toInt())
-            // TODO make proper way to update progress leaving currentPage private.
             setProgressCallback(progress)
         }
         super.mouseReleased(mouseX, mouseY)
@@ -80,7 +78,6 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
     override fun mouseDragged(mc: Minecraft, mouseX: Int, mouseY: Int) {
         if (dragging) {
             setProgressI((mouseY - height / 2.0f).toInt())
-            // TODO make proper way to update progress leaving currentPage private.
             setProgressCallback(progress)
         }
     }

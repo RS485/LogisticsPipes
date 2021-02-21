@@ -132,7 +132,7 @@ class DrawableMenuTile(private val pageName: String, private val icon: String, v
         }
         if (hovered){
             GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
-            GuiGuideBook.drawBoxedCenteredString(pageName, mid(), minOf(bottom, visibleArea.y1), GuideBookConstants.Z_TOOLTIP)
+            GuiGuideBook.drawBoxedString(pageName, mid(), minOf(bottom, visibleArea.y1), GuideBookConstants.Z_TOOLTIP, GuiGuideBook.HorizontalAlignement.CENTER, GuiGuideBook.VerticalAlignement.TOP)
         }
     }
 

@@ -40,7 +40,6 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.util.math.Rectangle
 
 interface TabButtonReturn {
@@ -48,12 +47,10 @@ interface TabButtonReturn {
     fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean
     fun getColor(): Int
     fun isPageActive(): Boolean
+    fun getOnHoverText(): String
 }
 
 class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : GuiButton(99, 24, 24, "") {
-
-    // TODO look into making the TexturedButton abstract and making this and a Home button extend it
-
     private val buttonArea = Rectangle(x, yBottom - 24, 24, 32)
     private val buttonTextureArea = Rectangle(40, 64, 24, 32)
     private val circleArea = Rectangle(buttonArea.x0 + 4, buttonArea.y0 + 4, 16, 16)
@@ -73,7 +70,15 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
         mc.textureManager.bindTexture(GuideBookConstants.guiBookTexture)
         val z = if (whisky.isPageActive()) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
         val yOffset = if (whisky.isPageActive()) 0 else 3
-        val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0x7F000000
+        val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
+        if(hovered) GuiGuideBook.drawBoxedString(
+            text = whisky.getOnHoverText(),
+            x = buttonArea.x1,
+            y = buttonArea.y0,
+            z = GuideBookConstants.Z_TOOLTIP,
+            horizontalAlign = GuiGuideBook.HorizontalAlignement.RIGHT,
+            verticalAlign = GuiGuideBook.VerticalAlignement.BOTTOM
+        )
         GuiGuideBook.drawStretchingRectangle(
             x0 = buttonArea.x0,
             y0 = buttonArea.y0 + yOffset,
@@ -102,7 +107,6 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
                 color = color
             )
         }
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
     fun setPos(x0: Int, y0: Int){

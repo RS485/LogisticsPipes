@@ -62,9 +62,8 @@ class DrawableMenuParagraph(private val menuTitle: List<DrawableWord>, private v
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        menuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton)
-    }
+    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+        menuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
         var currentY = 0
@@ -84,9 +83,8 @@ class DrawableMenuTileGroup(private val groupTitle: List<DrawableWord>, private 
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        groupTiles.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.onClick?.invoke(mouseButton)
-    }
+    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+        groupTiles.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
         var currentY = tileSpacing
@@ -109,12 +107,15 @@ class DrawableMenuTileGroup(private val groupTitle: List<DrawableWord>, private 
     }
 }
 
-class DrawableMenuTile(private val pageName: String, private val icon: String, val onClick: (mouseButton: Int) -> Unit) : Drawable() {
+class DrawableMenuTile(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable() {
     private val iconScale = 1.0
 
     init {
         relativeBody.setSize(tileSize, tileSize)
     }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+        guideActionListener.onMenuButtonClick(linkedPage)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)

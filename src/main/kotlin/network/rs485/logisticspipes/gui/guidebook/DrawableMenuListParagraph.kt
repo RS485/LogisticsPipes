@@ -63,9 +63,8 @@ class DrawableMenuListParagraph(private val menuTitle: List<DrawableWord>, priva
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        listMenuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton)
-    }
+    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+        listMenuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
         var currentY = 0
@@ -85,9 +84,8 @@ class DrawableMenuListGroup(private val groupTitle: List<DrawableWord>, private 
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        groupListEntries.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.onClick?.invoke(mouseButton)
-    }
+    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+        groupListEntries.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
         var currentY = entrySpacing
@@ -110,7 +108,7 @@ class DrawableMenuListGroup(private val groupTitle: List<DrawableWord>, private 
     }
 }
 
-class DrawableMenuListEntry(private val pageName: String, private val icon: String, val onClick: (mouseButton: Int) -> Unit) : Drawable() {
+class DrawableMenuListEntry(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable() {
     private val iconScale = 1.0
     private val iconSize = (16 * iconScale).toInt()
     private val itemRect = Rectangle()
@@ -120,6 +118,9 @@ class DrawableMenuListEntry(private val pageName: String, private val icon: Stri
         relativeBody.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), entryHeight)
         itemRect.setSize(iconSize, iconSize)
     }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+        guideActionListener.onMenuButtonClick(linkedPage)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         hovered = hovering(mouseX, mouseY, visibleArea)

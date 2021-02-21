@@ -10,7 +10,6 @@ import com.google.common.collect.HashBiMap;
 
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
-import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsProgrammer;
@@ -18,6 +17,7 @@ import logisticspipes.items.ItemPipeController;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.RemoteOrderer;
+import network.rs485.logisticspipes.guidebook.ItemGuideBook;
 
 public class LPItems {
 

@@ -38,7 +38,6 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.LPConstants
-import logisticspipes.LogisticsPipes
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParent
 import network.rs485.logisticspipes.guidebook.BookContents
@@ -118,10 +117,10 @@ object DrawablePageFactory {
     private fun createDrawableMenuParagraph(
         pageMetadata: YamlPageMetadata,
         paragraph: MenuParagraph,
-        drawableMenuTitle: List<DrawableWord>
+        drawableMenuTitle: List<DrawableWord>,
     ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
-            paragraphConstructor = { drawableGroupTitle -> createDrawableMenuTileGroup(groupEntries, drawableGroupTitle) },
+            paragraphConstructor = { drawableGroupTitle -> createDrawableMenu(groupEntries, drawableGroupTitle) },
             elements = MarkdownParser.splitSpacesAndWords(groupTitle),
             scale = getScaleFromLevel(6)
         )
@@ -133,7 +132,7 @@ object DrawablePageFactory {
     private fun createDrawableMenuListParagraph(
         pageMetadata: YamlPageMetadata,
         paragraph: MenuListParagraph,
-        drawableMenuTitle: List<DrawableWord>
+        drawableMenuTitle: List<DrawableWord>,
     ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found in ${pageMetadata.menu}.")).map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
             paragraphConstructor = { drawableGroupTitle -> createDrawableMenuListGroup(groupEntries, drawableGroupTitle) },
@@ -144,24 +143,24 @@ object DrawablePageFactory {
         drawableMenuGroups.createParent { DrawableMenuListParagraph(drawableMenuTitle, drawableMenuGroups) }
     }
 
-    private fun createDrawableMenuTileGroup(menuGroupEntries: List<String>, drawableGroupTitle: List<DrawableWord>) =
-        menuGroupEntries.map { path ->
+    private fun createDrawableMenu(
+        menuGroupEntries: List<String>,
+        drawableGroupTitle: List<DrawableWord>,
+    ) = menuGroupEntries.map { path ->
             BookContents.get(path).metadata.let { metadata ->
-                DrawableMenuTile(metadata.title, metadata.icon, onClick = {
-                    LogisticsPipes.log.info("You tried to open $path! $it")
-                })
+                DrawableMenuTile(path, metadata.title, metadata.icon)
             }
         }.let { drawableMenuTiles ->
             drawableMenuTiles.createParent { DrawableMenuTileGroup(drawableGroupTitle, drawableMenuTiles) }
         }
 
     // TODO stop shamelessly duplicating code
-    private fun createDrawableMenuListGroup(menuGroupEntries: List<String>, drawableGroupTitle: List<DrawableWord>) =
-        menuGroupEntries.map { path ->
+    private fun createDrawableMenuListGroup(
+        menuGroupEntries: List<String>,
+        drawableGroupTitle: List<DrawableWord>,
+    ) = menuGroupEntries.map { path ->
             BookContents.get(path).metadata.let { metadata ->
-                DrawableMenuListEntry(metadata.title, metadata.icon, onClick = {
-                    LogisticsPipes.log.info("You tried to open $path! $it")
-                })
+                DrawableMenuListEntry(path, metadata.title, metadata.icon)
             }
         }.let { drawableMenuTiles ->
             drawableMenuTiles.createParent { DrawableMenuListGroup(drawableGroupTitle, drawableMenuTiles) }

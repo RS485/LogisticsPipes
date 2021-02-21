@@ -141,10 +141,10 @@ open class LPFontRenderer(fontName: String) {
         // Bind the texture atlas where the current character is to GL11
         GlStateManager.bindTexture(wrapper.textures[texIndex])
         // Add character quad to buffer
-        buffer.pos(x0 + italicsOffset, y0, zLevel).tex(u0, v0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
-        buffer.pos(x0, y1, zLevel).tex(u0, v1).color(red(color), green(color), blue(color), alpha(color)).endVertex()
-        buffer.pos(x1, y1, zLevel).tex(u1, v1).color(red(color), green(color), blue(color), alpha(color)).endVertex()
-        buffer.pos(x1 + italicsOffset, y0, zLevel).tex(u1, v0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
+        buffer.pos(x0 + italicsOffset, y0, zLevel).tex(u0, v0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        buffer.pos(x0, y1, zLevel).tex(u0, v1).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        buffer.pos(x1, y1, zLevel).tex(u1, v1).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        buffer.pos(x1 + italicsOffset, y0, zLevel).tex(u1, v0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
         // Return the final width of the character, including the spacing for the next character, while being scaled or bypassing scaling in case the scale is set to 1.
         return glyph.dWidthX * scale
     }
@@ -251,10 +251,10 @@ open class LPFontRenderer(fontName: String) {
 
     private fun putHorizontalLine(x: Double, y: Double, width: Double, thickness: Double, color: Int, italics: Boolean) {
         val italicsOffset = if (italics) thickness else 0.0
-        buffer.pos(x, y, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
-        buffer.pos(x, y + thickness, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
-        buffer.pos(x + width + italicsOffset, y + thickness, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
-        buffer.pos(x + width + italicsOffset, y, 5.0).tex(0.0, 0.0).color(red(color), green(color), blue(color), alpha(color)).endVertex()
+        buffer.pos(x, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        buffer.pos(x, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        buffer.pos(x + width + italicsOffset, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        buffer.pos(x + width + italicsOffset, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
     }
 
     init {

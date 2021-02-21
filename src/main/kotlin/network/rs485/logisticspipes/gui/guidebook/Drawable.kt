@@ -118,4 +118,6 @@ open class Drawable {
     fun visible(visibleArea: Rectangle): Boolean {
         return visibleArea.intersects(absoluteBody)
     }
+
+    open fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) {}
 }

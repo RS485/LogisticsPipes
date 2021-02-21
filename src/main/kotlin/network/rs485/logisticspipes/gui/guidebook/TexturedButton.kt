@@ -104,6 +104,7 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
     }
 
     fun setX(x: Int) {
+        super.x = x
         val xOffset = x - buttonArea.x0
         buttonArea.translate(xOffset, 0)
         buttonOverlayArea.translate(xOffset, 0)

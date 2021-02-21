@@ -45,6 +45,8 @@ import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.guidebook.DrawablePage
+import network.rs485.logisticspipes.gui.guidebook.DrawablePageFactory
 import network.rs485.markdown.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -62,6 +64,7 @@ object BookContents {
     const val DEBUG_FILE = "/debug/debug_page.md"
 
     private val cachedLoadedPages = hashMapOf<String, PageInfoProvider>()
+    private val cachedDrawablePages = hashMapOf<String, DrawablePage>()
 
     init {
         if (LogisticsPipes.isDEBUG()) addDebugPages()
@@ -74,8 +77,13 @@ object BookContents {
         }
     }
 
+    fun getDrawablePage(page: String): DrawablePage = cachedDrawablePages.getOrPut(page) {
+        DrawablePageFactory.createDrawablePage(get(page))
+    }
+
     fun clear() {
         cachedLoadedPages.clear()
+        cachedDrawablePages.clear()
         if (LogisticsPipes.isDEBUG()) addDebugPages()
     }
 

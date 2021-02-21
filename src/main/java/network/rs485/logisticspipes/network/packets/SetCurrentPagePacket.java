@@ -37,40 +37,30 @@
 
 package network.rs485.logisticspipes.network.packets;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumHand;
-
-import lombok.Getter;
-import lombok.Setter;
 
 import logisticspipes.LPItems;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.gui.guidebook.SavedPage;
+import network.rs485.logisticspipes.guidebook.ItemGuideBook;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 @StaticResolve
 public class SetCurrentPagePacket extends ModernPacket {
 
-	@Getter
-	@Setter
-	private SavedPage page;
+	private SavedPage currentPage;
 
-	@Getter
-	@Setter
-	private EnumHand hand;
+	private EntityEquipmentSlot equipmentSlot;
 
-	@Getter
-	@Setter
-	private ArrayList<SavedPage> savedPages = new ArrayList<>();
+	private List<SavedPage> bookmarks;
 
 	public SetCurrentPagePacket(int id) {
 		super(id);
@@ -78,13 +68,9 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		ItemStack book = player.getHeldItem(hand);
-		if (book.isEmpty() || book.getItem() != LPItems.itemGuideBook) return;
-		NBTTagCompound nbt = book.hasTagCompound() ? Objects.requireNonNull(book.getTagCompound()) : new NBTTagCompound();
-		nbt.setTag("page", page.toTag());
-		NBTTagList tagList = new NBTTagList();
-		for (SavedPage tab : savedPages) tagList.appendTag(tab.toTag());
-		nbt.setTag("bookmarks", tagList);
+		ItemStack book = player.getItemStackFromSlot(equipmentSlot);
+		if (book.isEmpty() || !(book.getItem() instanceof ItemGuideBook)) return;
+		final NBTTagCompound nbt = LPItems.itemGuideBook.updateNBT(currentPage, bookmarks);
 		book.setTagCompound(nbt);
 	}
 
@@ -92,12 +78,9 @@ public class SetCurrentPagePacket extends ModernPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		try {
-			hand = input.readEnum(EnumHand.class);
-			page = SavedPage.fromBytes(input);
-			int size = input.readInt();
-			for (int i = 0; i < size; i++) {
-				savedPages.add(SavedPage.fromBytes(input));
-			}
+			equipmentSlot = input.readEnum(EntityEquipmentSlot.class);
+			currentPage = SavedPage.fromBytes(input);
+			bookmarks = input.readArrayList(SavedPage::fromBytes);
 		} catch (IllegalStateException e) {
 			LogisticsPipes.log.warn("Couldn't read SetCurrentPagePacket data", e);
 		}
@@ -106,14 +89,28 @@ public class SetCurrentPagePacket extends ModernPacket {
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
-		output.writeEnum(hand);
-		page.toBytes(output);
-		output.writeInt(savedPages.size());
-		for (SavedPage tab : savedPages) tab.toBytes(output);
+		output.writeEnum(equipmentSlot);
+		currentPage.write(output);
+		output.writeCollection(bookmarks);
 	}
 
 	@Override
 	public ModernPacket template() {
 		return new SetCurrentPagePacket(getId());
+	}
+
+	public SetCurrentPagePacket setCurrentPage(SavedPage currentPage) {
+		this.currentPage = currentPage;
+		return this;
+	}
+
+	public SetCurrentPagePacket setEquipmentSlot(EntityEquipmentSlot equipmentSlot) {
+		this.equipmentSlot = equipmentSlot;
+		return this;
+	}
+
+	public SetCurrentPagePacket setBookmarks(List<SavedPage> bookmarks) {
+		this.bookmarks = bookmarks;
+		return this;
 	}
 }

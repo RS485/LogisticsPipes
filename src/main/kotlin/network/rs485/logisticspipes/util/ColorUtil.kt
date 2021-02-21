@@ -41,62 +41,63 @@ package network.rs485.logisticspipes.util
  * Extracts the 8 bits of alpha value information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Alpha channel.
  */
-fun alpha(colorCode: Int): Int {
-    return colorCode shr 24 and 0xff
-}
+fun Int.alpha(): Int = this shr 24 and 0xff
 
 /**
  * Extracts the 8 bits of alpha value information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Alpha channel as a float (0.0f - 1.0f).
  */
-fun alphaF(colorCode: Int): Float {
-    return alpha(colorCode) / 255.0f
-}
+fun Int.alphaF(): Float = alpha() / 255.0f
 
 /**
  * Extracts the 8 bits of red color information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Red channel.
  */
-fun red(colorCode: Int): Int {
-    return colorCode shr 16 and 0xff
-}
+fun Int.red(): Int = this shr 16 and 0xff
 
 /**
  * Extracts the 8 bits of red color information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Red channel as a float (0.0f - 1.0f).
  */
-fun redF(colorCode: Int): Float {
-    return red(colorCode) / 255.0f
-}
+fun Int.redF(): Float = red() / 255.0f
 
 /**
  * Extracts the 8 bits of green color information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Green channel.
  */
-fun green(colorCode: Int): Int {
-    return colorCode shr 8 and 0xff
-}
+fun Int.green(): Int = this shr 8 and 0xff
 
 /**
  * Extracts the 8 bits of green color information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Green channel as a float (0.0f - 1.0f).
  */
-fun greenF(colorCode: Int): Float {
-    return green(colorCode) / 255.0f
-}
+fun Int.greenF(): Float = green() / 255.0f
 
 /**
  * Extracts the 8 bits of blue color information from the color code and returns them as an integer.
  * @return 8 bit (0-255) value of the Blue channel.
  */
-fun blue(colorCode: Int): Int {
-    return colorCode and 0xFF
-}
+fun Int.blue(): Int = this and 0xFF
 
 /**
  * Extracts the 8 bits of blue color information from the color code and returns them as an percentage float.
  * @return 8 bit (0-255) value of the Blue channel as a float (0.0f - 1.0f).
  */
-fun blueF(colorCode: Int): Float {
-    return blue(colorCode) / 255.0f
+fun Int.blueF(): Float = blue() / 255.0f
+
+/**
+ * Cycles the input color in the range of 0..15. Descending when inverted is true.
+ */
+fun cycleMinecraftColorId(color: Int, inverted: Boolean = false): Int {
+    var col = color
+    if (inverted) {
+        col--
+    } else {
+        col++
+    }
+    return when (col) {
+        16 -> 0
+        -1 -> 15
+        else -> col
+    }
 }

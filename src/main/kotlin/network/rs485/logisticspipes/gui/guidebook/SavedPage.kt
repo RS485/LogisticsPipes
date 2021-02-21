@@ -41,31 +41,32 @@ import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.util.LPDataInput
 import network.rs485.logisticspipes.util.LPDataOutput
+import network.rs485.logisticspipes.util.LPFinalSerializable
+import network.rs485.logisticspipes.util.cycleMinecraftColorId
 import network.rs485.logisticspipes.util.math.Rectangle
 
 
-class SavedPage(val page: String) {
-    var color: Int = 0
-        private set
+class SavedPage(val page: String) : LPFinalSerializable {
+    var color: Int? = null
     var progress: Float = 0.0F
 
-    constructor(page: String, color: Int, progress: Float) : this(page) {
+    constructor(page: String, color: Int?, progress: Float) : this(page) {
         this.color = color
         this.progress = progress
     }
 
     private val pageInfo = BookContents.get(page)
-    val drawablePage = DrawablePageFactory.createDrawablePage(pageInfo)
+    val drawablePage = BookContents.getDrawablePage(page)
     val title: String
         get() = pageInfo.metadata.title
 
     fun updateScrollPosition(visibleArea: Rectangle) =
         drawablePage.updateScrollPosition(visibleArea, progress)
 
-    fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int, visibleArea: Rectangle) {
+    fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
         drawablePage.getVisibleParagraphs(visibleArea)
             .firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }
-            ?.mouseClicked(mouseX, mouseY, mouseButton)
+            ?.mouseClicked(mouseX, mouseY, guideActionListener)
     }
 
     fun setDrawablesPosition(area: Rectangle) {
@@ -77,23 +78,23 @@ class SavedPage(val page: String) {
      * Takes in an LPDataOutput buffer and turns a SavedPage object into bytes and puts them inside the buffer.
      * @param output data to send
      */
-    fun toBytes(output: LPDataOutput) {
-        output.writeNBTTagCompound(toTag())
-    }
+    override fun write(output: LPDataOutput) = output.writeNBTTagCompound(toTag())
 
     fun toTag(): NBTTagCompound {
         val nbt = NBTTagCompound()
         nbt.setString("page", page)
-        nbt.setInteger("color", color)
+        color?.also {
+            nbt.setInteger("color", it)
+        }
         nbt.setFloat("progress", progress)
         return nbt
     }
 
-    companion object{
+    companion object {
         fun fromTag(nbt: NBTTagCompound?): SavedPage {
-            return if(nbt != null) SavedPage(
+            return if (nbt != null) SavedPage(
                 page = nbt.getString("page"),
-                color = nbt.getInteger("color"),
+                color = if (nbt.hasKey("color")) nbt.getInteger("color") else null,
                 progress = nbt.getFloat("progress")
             ) else SavedPage(BookContents.DEBUG_FILE)
         }
@@ -109,12 +110,8 @@ class SavedPage(val page: String) {
         }
     }
 
-    fun isEqual(b: SavedPage): Boolean = this.page == b.page
+    fun pageEquals(other: SavedPage): Boolean = this.page == other.page
 
-    fun cycleColor(inverted: Boolean = false) {
-        if (inverted) color--
-        else color++
-        if (color == 16) color = 0
-        if (color == -1) color = 15
-    }
+    fun cycleColor(inverted: Boolean = false) = cycleMinecraftColorId((color ?: 0), inverted).also { color = it }
+
 }

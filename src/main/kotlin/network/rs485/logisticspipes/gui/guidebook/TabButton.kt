@@ -47,7 +47,7 @@ interface TabButtonReturn {
     fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean
     fun getColor(): Int
     fun isPageActive(): Boolean
-    fun getOnHoverText(): String
+    fun getHoverText(): String
 }
 
 class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : GuiButton(99, 24, 24, "") {
@@ -63,7 +63,7 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
     fun onLeftClick() = whisky.onLeftClick()
 
     fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean) = whisky.onRightClick(shiftClick, ctrlClick)
-    
+
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         hovered = buttonArea.contains(mouseX, mouseY)
         if (!visible) return
@@ -71,8 +71,8 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
         val z = if (whisky.isPageActive()) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
         val yOffset = if (whisky.isPageActive()) 0 else 3
         val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
-        if(hovered) GuiGuideBook.drawBoxedString(
-            text = whisky.getOnHoverText(),
+        if (hovered) GuiGuideBook.drawBoxedString(
+            text = whisky.getHoverText(),
             x = buttonArea.x1,
             y = buttonArea.y0,
             z = GuideBookConstants.Z_TOOLTIP,
@@ -109,9 +109,9 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
         }
     }
 
-    fun setPos(x0: Int, y0: Int){
+    fun setPos(x0: Int, y0: Int) {
         buttonArea.setPos(x0, y0 - 24)
-        circleArea.setPos(buttonArea.x0 + 4, buttonArea.y0 + 4,)
+        circleArea.setPos(buttonArea.x0 + 4, buttonArea.y0 + 4)
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {

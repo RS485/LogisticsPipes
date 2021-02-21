@@ -86,7 +86,6 @@ import logisticspipes.config.Configs;
 import logisticspipes.datafixer.LPDataFixer;
 import logisticspipes.items.ItemBlankModule;
 import logisticspipes.items.ItemDisk;
-import logisticspipes.items.ItemGuideBook;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsPipe;
@@ -190,6 +189,7 @@ import logisticspipes.utils.tuples.Pair;
 import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.ServerConfigurationManager;
+import network.rs485.logisticspipes.guidebook.ItemGuideBook;
 
 //@formatter:off
 //CHECKSTYLE:OFF

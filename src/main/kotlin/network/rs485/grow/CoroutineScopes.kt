@@ -41,6 +41,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 object CoroutineScopes {
+    val ioScope = CoroutineScope(Dispatchers.IO)
     val asynchronousScope = CoroutineScope(Dispatchers.Default)
     val serverScope = CoroutineScope(ServerTickDispatcher)
 }

@@ -63,8 +63,6 @@ class FontWrapper(private val font: IFont) {
 
     private val maxTexSize = 256
 
-    private var destroyed = false
-
     init {
         allocateTextures()
 

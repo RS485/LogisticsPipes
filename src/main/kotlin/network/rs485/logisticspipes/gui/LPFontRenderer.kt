@@ -37,13 +37,16 @@
 
 package network.rs485.logisticspipes.gui
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import logisticspipes.LPConstants
-import lombok.Getter
-import net.minecraft.client.renderer.BufferBuilder
+import logisticspipes.LogisticsPipes
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
+import network.rs485.grow.CoroutineScopes.ioScope
 import network.rs485.logisticspipes.util.alpha
 import network.rs485.logisticspipes.util.blue
 import network.rs485.logisticspipes.util.green
@@ -51,28 +54,59 @@ import network.rs485.logisticspipes.util.red
 import network.rs485.markdown.*
 import org.lwjgl.opengl.GL11
 import java.io.IOException
-import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.tan
 
-@Suppress("DuplicatedCode")
-open class LPFontRenderer(fontName: String) {
+class LPFontRenderer(private val fontName: String) {
+    companion object Factory {
+        private val fontRenderersOfThisWorld = ConcurrentHashMap<String, LPFontRenderer>()
+        private val preloadFonts = listOf("ter-u12n")
+        fun get(fontName: String): LPFontRenderer = fontRenderersOfThisWorld.getOrPut(fontName) { LPFontRenderer(fontName) }
 
-    @Getter
+        @ExperimentalCoroutinesApi
+        fun asyncPreload() {
+            preloadFonts.map {
+                ioScope.async {
+                    get(it).apply { ::fontPlain.get() }
+                }
+            }.forEach { deferred ->
+                deferred.invokeOnCompletion {
+                    if (it != null) {
+                        LogisticsPipes.log.error("Error while preloading fonts:\n${it.stackTraceToString()}")
+                    } else {
+                        val fontRenderer = deferred.getCompleted()
+                        LogisticsPipes.log.info("Preloaded font files: ${fontRenderer.fontName}")
+                        Minecraft.getMinecraft().addScheduledTask {
+                            fontRenderer::wrapperPlain.get()
+                            LogisticsPipes.log.info("Created font textures for: ${fontRenderer.fontName}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private val fontPlain: IFont by lazy {
+        val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
+        FontParser.read(fontResourcePlain) ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
+    }
+
+    private val wrapperPlain: FontWrapper by lazy {
+        FontWrapper(fontPlain)
+    }
+
     private val shadowColor = 0xEE3C3F41.toInt()
-    private val fontPlain: IFont
-    private val wrapperPlain: FontWrapper
     var zLevel = 5.0
-    private val tessellator: Tessellator
-    private val buffer: BufferBuilder
+
+    private val tessellator
+        get() = Tessellator.getInstance()
 
     private fun start() {
         GlStateManager.enableTexture2D()
         GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
-        val tessellator = Tessellator.getInstance()
-        val buffer = tessellator.buffer
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+        tessellator.buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
     }
 
     private fun render() {
@@ -141,10 +175,10 @@ open class LPFontRenderer(fontName: String) {
         // Bind the texture atlas where the current character is to GL11
         GlStateManager.bindTexture(wrapper.textures[texIndex])
         // Add character quad to buffer
-        buffer.pos(x0 + italicsOffset, y0, zLevel).tex(u0, v0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        buffer.pos(x0, y1, zLevel).tex(u0, v1).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        buffer.pos(x1, y1, zLevel).tex(u1, v1).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        buffer.pos(x1 + italicsOffset, y0, zLevel).tex(u1, v0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x0 + italicsOffset, y0, zLevel).tex(u0, v0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x0, y1, zLevel).tex(u0, v1).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x1, y1, zLevel).tex(u1, v1).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x1 + italicsOffset, y0, zLevel).tex(u1, v0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
         // Return the final width of the character, including the spacing for the next character, while being scaled or bypassing scaling in case the scale is set to 1.
         return glyph.dWidthX * scale
     }
@@ -251,17 +285,10 @@ open class LPFontRenderer(fontName: String) {
 
     private fun putHorizontalLine(x: Double, y: Double, width: Double, thickness: Double, color: Int, italics: Boolean) {
         val italicsOffset = if (italics) thickness else 0.0
-        buffer.pos(x, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        buffer.pos(x, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        buffer.pos(x + width + italicsOffset, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        buffer.pos(x + width + italicsOffset, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x + width + italicsOffset, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x + width + italicsOffset, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
     }
 
-    init {
-        val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
-        fontPlain = FontParser.read(fontResourcePlain) ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
-        wrapperPlain = FontWrapper(fontPlain)
-        tessellator = Tessellator.getInstance()
-        buffer = tessellator.buffer
-    }
 }

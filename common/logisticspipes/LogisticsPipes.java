@@ -189,6 +189,7 @@ import logisticspipes.utils.tuples.Pair;
 import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.ServerConfigurationManager;
+import network.rs485.logisticspipes.gui.LPFontRenderer;
 import network.rs485.logisticspipes.guidebook.ItemGuideBook;
 
 //@formatter:off
@@ -367,6 +368,8 @@ public class LogisticsPipes {
 
 		if (event.getSide() == Side.SERVER) {
 			LogisticsPipes.textures.registerBlockIcons(null);
+		} else if (event.getSide() == Side.CLIENT) {
+			LPFontRenderer.Factory.asyncPreload();
 		}
 	}
 

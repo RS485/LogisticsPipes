@@ -508,7 +508,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     }
 
     companion object {
-        val lpFontRenderer = LPFontRenderer("ter-u12n")
+        val lpFontRenderer = LPFontRenderer.get("ter-u12n")
 
         /**
          * Draws a rectangle in which the given texture will be stretched to the given sized. This method assumes the bound texture is 256x256 in size.

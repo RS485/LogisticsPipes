@@ -59,7 +59,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	//public int satelliteId;
 	@Getter
-	public String satellitePipeName;
+	public String satellitePipeName = "";
 
 	public PipeFluidSatellite(Item item) {
 		super(item);

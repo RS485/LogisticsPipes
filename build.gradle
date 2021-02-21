@@ -303,19 +303,15 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
 
-project.afterEvaluate {
-    final minecraftConf = configurations.minecraft
+import net.minecraftforge.gradle.userdev.MinecraftUserRepo
 
-    configurations.each { Configuration conf ->
-        if (conf != minecraftConf) {
-            conf.dependencies.each { Dependency dep ->
-                if (dep.group == 'net.minecraftforge' && dep.name == 'forge') {
-                    conf.dependencies.remove(dep)
-                    minecraftConf.dependencies.each { Dependency minecraftDep ->
-                        conf.dependencies.add(dependencies.create(group: minecraftDep.group, name: minecraftDep.name, version: minecraftDep.version))
-                    }
-                }
-            }
+final nonMinecraftConfigurations = configurations.findAll { conf -> conf != configurations.minecraft }
+if (!nonMinecraftConfigurations.empty) {
+    final fgextension = project.getExtensions().findByName("minecraft")
+    final mcrepo = new MinecraftUserRepo(project, 'net.minecraftforge', 'forge', "$forge_version", fgextension.getAccessTransformers(), fgextension.getMappings())
+    nonMinecraftConfigurations.each {
+        it.resolutionStrategy.dependencySubstitution {
+            substitute module('net.minecraftforge:forge') with module(mcrepo.getDependencyString())
         }
     }
 }

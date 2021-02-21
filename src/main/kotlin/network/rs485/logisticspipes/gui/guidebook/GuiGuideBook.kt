@@ -90,6 +90,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     - Crafting recipes?
     - Use translatable names or block/item identifiers as text?
     - DrawableListParagraph
+    - Scroll Wheel functionality
      */
 
     // Gui Frame Constants
@@ -127,6 +128,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     // Buttons
     private lateinit var slider: SliderButton
     private lateinit var home: TexturedButton
+    // TODO make button have add and remove states.
     private lateinit var addTabButton: TexturedButton
 
     // initialize tabs from the stack NBT
@@ -260,9 +262,11 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                 when (mouseButton) {
                     0 -> {
                         actionPerformed(button)
+                        return
                     }
                     1 -> {
                         rightClick(button)
+                        return
                     }
                 }
             }
@@ -873,19 +877,19 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
          * @param y     y position of the top of the tooltip;
          * @param z     z position of the tooltip.
          */
-        fun drawBoxedString(text: String, x: Int, y: Int, z: Double, horizontalAlign: HorizontalAlignement, verticalAlign: VerticalAlignement) {
+        fun drawBoxedString(text: String, x: Int, y: Int, z: Double, horizontalAlign: HorizontalAlignment, verticalAlign: VerticalAlignment) {
             val width = lpFontRenderer.getStringWidth(text) + 8
             val height = lpFontRenderer.getFontHeight()
             val outerArea = Rectangle(
                 x = when (horizontalAlign) {
-                    HorizontalAlignement.CENTER -> x - width / 2 - 4
-                    HorizontalAlignement.LEFT -> x
-                    HorizontalAlignement.RIGHT -> x - width - 8
+                    HorizontalAlignment.CENTER -> x - width / 2 - 4
+                    HorizontalAlignment.LEFT -> x
+                    HorizontalAlignment.RIGHT -> x - width - 8
                 },
                 y = when (verticalAlign) {
-                    VerticalAlignement.CENTER -> y - height / 2 - 4
-                    VerticalAlignement.TOP -> y
-                    VerticalAlignement.BOTTOM -> y - height - 8
+                    VerticalAlignment.CENTER -> y - height / 2 - 4
+                    VerticalAlignment.TOP -> y
+                    VerticalAlignment.BOTTOM -> y - height - 8
                 },
                 width = width + 8,
                 height = height + 8
@@ -1040,13 +1044,13 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         }
     }
 
-    enum class HorizontalAlignement {
+    enum class HorizontalAlignment {
         CENTER,
         LEFT,
         RIGHT;
     }
 
-    enum class VerticalAlignement {
+    enum class VerticalAlignment {
         CENTER,
         TOP,
         BOTTOM;

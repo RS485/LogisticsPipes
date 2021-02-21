@@ -100,7 +100,7 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
         return this
     }
 
-    fun setPos(newX: Int, newY: Int): Rectangle {
+    fun setPos(newX: Int = x0, newY: Int = y0): Rectangle {
         x0 = newX
         y0 = newY
         return this

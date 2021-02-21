@@ -54,6 +54,8 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
         zLevel = z.toFloat()
     }
 
+
+
     override fun drawButton(mc: Minecraft?, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!visible) return
         hovered = buttonArea.contains(mouseX, mouseY)
@@ -64,8 +66,8 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
                 x = buttonArea.x1,
                 y = buttonArea.y0,
                 z = GuideBookConstants.Z_TOOLTIP,
-                horizontalAlign = GuiGuideBook.HorizontalAlignement.RIGHT,
-                verticalAlign = GuiGuideBook.VerticalAlignement.BOTTOM
+                horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
+                verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
             )
         }
         when (type) {
@@ -83,15 +85,6 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
         }
     }
 
-    fun setBackgroundTexture(u: Int, v: Int): TexturedButton {
-        buttonTextureArea.setPos(u, v)
-        return this
-    }
-
-    fun setOverlayTexture(u: Int, v: Int, size: Int): TexturedButton {
-        return setOverlayTexture(u, v, size, size)
-    }
-
     fun setOnHoverTextGetter(newOnHoverTextGetter: () -> String): TexturedButton{
         onHoverTextGetter = newOnHoverTextGetter
         return this
@@ -99,15 +92,20 @@ class TexturedButton(buttonId: Int, x: Int, y: Int, widthIn: Int, heighIn: Int, 
 
     fun setOverlayTexture(u: Int, v: Int, w: Int, h: Int): TexturedButton {
         buttonOverlayTextureArea.setPos(u, v).setSize(w, h)
-        buttonOverlayArea.setPos(buttonArea.x0, buttonArea.y0).translate((buttonArea.width - buttonOverlayTextureArea.width) / 2, (buttonArea.height - buttonOverlayTextureArea.height) / 2).setSize(w, h)
+        val offset = (buttonArea.width - buttonOverlayTextureArea.width) / 2
+        buttonOverlayArea.setPos(buttonArea.x0, buttonArea.y0).translate(offset, offset).setSize(w, h)
         return this
+    }
+
+    override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {
+        return visible && !(hasDisabledState && !enabled) && Rectangle.fromRectangle(buttonArea).grow(0, -5).contains(mouseX, mouseY)
     }
 
     fun setX(x: Int) {
         super.x = x
-        val xOffset = x - buttonArea.x0
-        buttonArea.translate(xOffset, 0)
-        buttonOverlayArea.translate(xOffset, 0)
+        buttonArea.setPos(newX = x)
+        buttonOverlayArea.setPos(buttonArea.x0, 0).translate((buttonArea.width - buttonOverlayTextureArea.width) / 2, 0)
+        Minecraft.getMinecraft().fontRenderer
     }
 }
 

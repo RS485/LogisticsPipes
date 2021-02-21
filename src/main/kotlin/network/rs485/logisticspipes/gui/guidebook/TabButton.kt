@@ -76,8 +76,8 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
             x = buttonArea.x1,
             y = buttonArea.y0,
             z = GuideBookConstants.Z_TOOLTIP,
-            horizontalAlign = GuiGuideBook.HorizontalAlignement.RIGHT,
-            verticalAlign = GuiGuideBook.VerticalAlignement.BOTTOM
+            horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
+            verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
         )
         GuiGuideBook.drawStretchingRectangle(
             x0 = buttonArea.x0,
@@ -114,10 +114,6 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
         circleArea.setPos(buttonArea.x0 + 4, buttonArea.y0 + 4)
     }
 
-    override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {
-        return if (whisky.isPageActive()) Rectangle.fromRectangle(buttonArea)
-            .setSize(32, 32)
-            .contains(mouseX, mouseY)
-        else Rectangle(buttonArea.x0, buttonArea.y0 + 3, 32, 29).contains(mouseX, mouseY)
-    }
+    override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean =
+        buttonArea.translated(0, if(whisky.isPageActive()) -3 else 0).contains(mouseX, mouseY)
 }

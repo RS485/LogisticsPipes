@@ -187,7 +187,7 @@ import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.StaticResolverUtil;
 import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Pair;
-import network.rs485.grow.TickExecutor;
+import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.ServerConfigurationManager;
 
@@ -269,12 +269,6 @@ public class LogisticsPipes {
 
 	@Mod.Instance("logisticspipes")
 	public static LogisticsPipes instance;
-
-	public static TickExecutor getGlobalTickExecutor() {
-		return globalTickExecutor;
-	}
-
-	private static TickExecutor globalTickExecutor;
 
 	private static boolean certificateError = false;
 
@@ -596,7 +590,7 @@ public class LogisticsPipes {
 
 	@Mod.EventHandler
 	public void beforeStart(FMLServerAboutToStartEvent event) {
-		globalTickExecutor = new TickExecutor();
+		ServerTickDispatcher.INSTANCE.serverStart();
 	}
 
 	@Mod.EventHandler
@@ -610,9 +604,7 @@ public class LogisticsPipes {
 		if (event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();
 		}
-		if (globalTickExecutor != null) {
-			globalTickExecutor.shutdownNow();
-		}
+		ServerTickDispatcher.INSTANCE.cleanup();
 		LogisticsPipes.serverConfigManager = null;
 	}
 

@@ -42,6 +42,7 @@ import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.LogisticsModule
 import net.minecraft.tileentity.TileEntity
+import network.rs485.grow.CoroutineScopes
 import java.time.Duration
 
 abstract class AsyncModule<S, C> : LogisticsModule() {
@@ -76,7 +77,7 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
             }
             else -> if (_service.isNthTick(everyNthTick)) {
                 val setup = tickSetup()
-                currentTask = GlobalScope.async {
+                currentTask = CoroutineScopes.asynchronousScope.async {
                     try {
                         return@async withTimeout(Duration.ofSeconds(90)) {
                             tickAsync(setup)

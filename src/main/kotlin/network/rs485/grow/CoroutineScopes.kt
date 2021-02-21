@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,34 +35,12 @@
  * SOFTWARE.
  */
 
-package logisticspipes.routing
+package network.rs485.grow
 
-import kotlinx.coroutines.withContext
-import network.rs485.grow.ServerTickDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
-object AsyncRouting {
-    fun getDistance(sourceRouter: ServerRouter, destinationRouter: IRouter): List<ExitRoute>? {
-        return if (sourceRouter._routeTable.size <= destinationRouter.simpleID) {
-            null
-        } else {
-            sourceRouter._routeTable[destinationRouter.simpleID]
-        }
-    }
-
-    fun routingTableNeedsUpdate(serverRouter: ServerRouter): Boolean {
-        return serverRouter.connectionNeedsChecking != 0 && serverRouter._LSAVersion > ServerRouter._lastLSAVersion[serverRouter.simpleID]
-    }
-
-    suspend fun updateRoutingTable(serverRouter: ServerRouter) {
-        if (serverRouter.connectionNeedsChecking != 0) {
-            withContext(ServerTickDispatcher) {
-                if (serverRouter.checkAdjacentUpdate()) {
-                    serverRouter.updateLsa()
-                }
-            }
-        }
-        if (serverRouter._LSAVersion > ServerRouter._lastLSAVersion[serverRouter.simpleID]) {
-            serverRouter.CreateRouteTable(serverRouter._LSAVersion)
-        }
-    }
+object CoroutineScopes {
+    val asynchronousScope = CoroutineScope(Dispatchers.Default)
+    val serverScope = CoroutineScope(ServerTickDispatcher)
 }

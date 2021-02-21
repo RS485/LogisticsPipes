@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,34 +35,48 @@
  * SOFTWARE.
  */
 
-package logisticspipes.routing
+package network.rs485.grow
 
-import kotlinx.coroutines.withContext
-import network.rs485.grow.ServerTickDispatcher
+import kotlinx.coroutines.*
+import logisticspipes.LogisticsPipes
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.coroutines.CoroutineContext
 
-object AsyncRouting {
-    fun getDistance(sourceRouter: ServerRouter, destinationRouter: IRouter): List<ExitRoute>? {
-        return if (sourceRouter._routeTable.size <= destinationRouter.simpleID) {
-            null
-        } else {
-            sourceRouter._routeTable[destinationRouter.simpleID]
+internal object ServerTickDispatcher : CoroutineDispatcher() {
+    private val coroutineQueue = ConcurrentLinkedQueue<Runnable>()
+
+    fun serverStart() {
+        val startupJob = CoroutineScopes.serverScope.launch {
+            LogisticsPipes.log.info("Hello from the server tick")
         }
-    }
-
-    fun routingTableNeedsUpdate(serverRouter: ServerRouter): Boolean {
-        return serverRouter.connectionNeedsChecking != 0 && serverRouter._LSAVersion > ServerRouter._lastLSAVersion[serverRouter.simpleID]
-    }
-
-    suspend fun updateRoutingTable(serverRouter: ServerRouter) {
-        if (serverRouter.connectionNeedsChecking != 0) {
-            withContext(ServerTickDispatcher) {
-                if (serverRouter.checkAdjacentUpdate()) {
-                    serverRouter.updateLsa()
-                }
+        CoroutineScopes.asynchronousScope.async {
+            LogisticsPipes.log.info("Waiting for server tick")
+            startupJob.join()
+            LogisticsPipes.log.info("Server tick complete! Hello from the async scope")
+        }.invokeOnCompletion { throwable ->
+            throwable?.stackTraceToString()?.also { stacktrace ->
+                LogisticsPipes.log.fatal("Error when greeting server tick scope:\n$stacktrace")
             }
         }
-        if (serverRouter._LSAVersion > ServerRouter._lastLSAVersion[serverRouter.simpleID]) {
-            serverRouter.CreateRouteTable(serverRouter._LSAVersion)
+    }
+
+    fun cleanup() =
+        cancelChildren(CancellationException("cleanup was called on ServerTickContext"))
+
+    fun tick() {
+        val start = System.nanoTime()
+        // failsafe to exit after 1 second
+        while (coroutineQueue.isNotEmpty() && (System.nanoTime() - start) < 1_000_000_000) {
+            coroutineQueue.poll().run()
+        }
+        if (System.nanoTime() - start >= 1_000_000_000) {
+            println("Logistics Pipes ServerTickContext hang for a second. Dumping coroutines:")
+            coroutineQueue.forEach(::println)
         }
     }
+
+    override fun dispatch(context: CoroutineContext, block: Runnable) {
+        coroutineQueue.add(block)
+    }
+
 }

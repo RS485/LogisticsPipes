@@ -19,12 +19,12 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.commands.debug.DebugGuiController;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.pathfinder.changedetection.LPWorldAccess;
 import logisticspipes.utils.FluidIdentifier;
+import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LPTickHandler {
@@ -49,7 +49,7 @@ public class LPTickHandler {
 			MainProxy.proxy.tickServer();
 			LPTickHandler.adjChecksDone = 0;
 			DebugGuiController.instance().execServer();
-			LogisticsPipes.getGlobalTickExecutor().tick();
+			ServerTickDispatcher.INSTANCE.tick();
 		}
 	}
 

@@ -127,9 +127,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     // Buttons
     private lateinit var slider: SliderButton
-    private lateinit var home: TexturedButton
+    private lateinit var home: HomeButton
+
     // TODO make button have add and remove states.
-    private lateinit var addTabButton: TexturedButton
+    private lateinit var addTabButton: BookmarkManagingButton
 
     // initialize tabs from the stack NBT
     private val tabButtons = state.bookmarks.map(::createGuiTabButton).toMutableList()
@@ -177,9 +178,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             xOffset += guiTabWidth
         }
         if (this::addTabButton.isInitialized) {
-            addTabButton.visible = state.currentPage.page != MAIN_MENU_FILE && tabButtons.size < maxTabs
-            // Checks if there's already a bookmark pointing to the same page.
-            addTabButton.enabled = isTabAbsent(state.currentPage)
+            addTabButton.updateState()
             addTabButton.setX(outerGui.x1 - 20 - guiTabWidth - xOffset)
         }
     }
@@ -201,33 +200,37 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             )
         )
         home = addButton(
-            TexturedButton(
-                buttonId = 1,
-                x = outerGui.x1 - guiTabWidth,
-                y = outerGui.y0 - guiTabHeight,
-                widthIn = guiTabWidth,
-                heighIn = guiFullTabHeight,
-                z = GuideBookConstants.Z_TITLE_BUTTONS,
-                u = 16,
-                v = 64,
-                hasDisabledState = false,
-                type = ButtonType.TAB
-            )
-            .setOnHoverTextGetter { BookContents.get(MAIN_MENU_FILE).metadata.title }
-            .setOverlayTexture(u = 128, v = 0, w = 16, h = 16)
+            HomeButton(
+                x = outerGui.x1,
+                y = outerGui.y0
+            ) { mouseButton ->
+                if (mouseButton == 0) {
+                    changePage(MAIN_MENU_FILE)
+                }
+                return@HomeButton true
+            }
         )
         addTabButton = addButton(
-            TexturedButton(
-                buttonId = 2,
+            BookmarkManagingButton(
                 x = outerGui.x1 - 18 - guiTabWidth + 4,
-                y = outerGui.y0 - 18,
-                widthIn = 16,
-                heighIn = 16,
-                z = GuideBookConstants.Z_TITLE_BUTTONS,
-                u = 192,
-                v = 0,
-                hasDisabledState = true,
-                type = ButtonType.NORMAL
+                y = outerGui.y0 - 2,
+                onClickAction = { buttonState ->
+                    when (buttonState) {
+                        BookmarkManagingButton.ButtonState.ADD -> {
+                            addBookmark()
+                            true
+                        }
+                        BookmarkManagingButton.ButtonState.REMOVE -> removeBookmark(state.currentPage)
+                        BookmarkManagingButton.ButtonState.DISABLED -> false
+                    }
+                },
+                additionStateUpdater = {
+                    when {
+                        state.currentPage.page == MAIN_MENU_FILE -> BookmarkManagingButton.ButtonState.DISABLED
+                        isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.ADD
+                        else -> BookmarkManagingButton.ButtonState.REMOVE
+                    }
+                }
             )
         )
         updateButtonVisibility()
@@ -278,15 +281,12 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     override fun actionPerformed(button: GuiButton) {
         when (button) {
-            home -> {
-                changePage(MAIN_MENU_FILE)
+            home -> if (home.click(0)) {
                 button.playPressSound(mc.soundHandler)
             }
-            addTabButton -> {
-                addBookmark()
+            addTabButton -> if (addTabButton.click(0)) {
                 button.playPressSound(mc.soundHandler)
             }
-            // TODO: fix the hitbox of the tab buttons
             is TabButton -> if (button.onLeftClick()) {
                 button.playPressSound(mc.soundHandler)
             }
@@ -305,8 +305,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         updateButtonVisibility()
     }
 
-    private fun addBookmark() =
-        state.currentPage.takeIf { isTabAbsent(it) && tabButtons.size < maxTabs }?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
+    private fun addBookmark() = state.currentPage.takeIf { isTabAbsent(it) && tabButtons.size < maxTabs }?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
 
     private fun createGuiTabButton(tabPage: SavedPage): TabButton =
         TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, object : TabButtonReturn {
@@ -335,11 +334,15 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             override fun getHoverText(): String = tabPage.title
         })
 
-    private fun removeBookmark(page: SavedPage) {
-        val idx: Int = state.bookmarks.indexOf(page)
-        if (idx != -1) {
+    private fun removeBookmark(page: SavedPage): Boolean {
+        val bookmarkedPage: SavedPage? = state.bookmarks.find { it.pageEquals(page) }
+        val idx = state.bookmarks.indexOf(bookmarkedPage)
+        return if (idx != -1) {
             tabButtons.removeAt(idx)
             state.bookmarks.removeAt(idx)
+            true
+        } else {
+            false
         }
     }
 
@@ -528,6 +531,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
          */
         fun drawStretchingRectangle(x0: Int, y0: Int, x1: Int, y1: Int, z: Double, u0: Int, v0: Int, u1: Int, v1: Int, blend: Boolean) {
             drawStretchingRectangle(x0, y0, x1, y1, z, u0, v0, u1, v1, blend, MinecraftColor.WHITE.colorCode)
+        }
+
+        fun drawStretchingRectangle(rectangle: Rectangle, z: Double, texture: Rectangle, blend: Boolean, color: Int) {
+            drawStretchingRectangle(rectangle.x0, rectangle.y0, rectangle.x1, rectangle.y1, z, texture.x0, texture.y0, texture.x1, texture.y1, blend, color)
         }
 
         /**

@@ -132,7 +132,10 @@ class Rectangle constructor(x: Int = 0, y: Int = 0, width: Int, height: Int) {
 
     // Non-destructive transformations
     fun translated(translateX: Int, translateY: Int): Rectangle {
-        return Rectangle(x0 + translateX, y0 + translateY, width, height)
+        return fromRectangle(this).translate(translateX, translateY)
+    }
+    fun translated(rect: Rectangle): Rectangle{
+        return fromRectangle(this).translate(rect.x0, rect.y0)
     }
 
     // Checks

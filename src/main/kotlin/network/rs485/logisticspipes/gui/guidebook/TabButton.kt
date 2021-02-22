@@ -39,7 +39,6 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiButton
 import network.rs485.logisticspipes.util.math.Rectangle
 
 interface TabButtonReturn {
@@ -50,14 +49,15 @@ interface TabButtonReturn {
     fun getHoverText(): String
 }
 
-class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : GuiButton(99, 24, 24, "") {
-    private val buttonArea = Rectangle(x, yBottom - 24, 24, 32)
-    private val buttonTextureArea = Rectangle(40, 64, 24, 32)
-    private val circleArea = Rectangle(buttonArea.x0 + 4, buttonArea.y0 + 4, 16, 16)
-    private val circleAreaTexture = Rectangle(32, 96, 16, 16)
+private val buttonTextureArea = Rectangle(40, 64, 24, 32)
+private val circleAreaTexture = Rectangle(32, 96, 16, 16)
+
+class TabButton(x: Int, y: Int, private val whisky: TabButtonReturn) : LPGuiButton(99, x, y - 24, 24, 32) {
+    override val bodyTrigger = Rectangle(1, 1, 22, 22)
+    private val circleArea = Rectangle(4, 4, 16, 16)
 
     init {
-        visible = true
+        zLevel = GuideBookConstants.Z_TITLE_BUTTONS.toFloat()
     }
 
     fun onLeftClick() = whisky.onLeftClick()
@@ -65,7 +65,7 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
     fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean) = whisky.onRightClick(shiftClick, ctrlClick)
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        hovered = buttonArea.contains(mouseX, mouseY)
+        hovered = isHovered(mouseX, mouseY)
         if (!visible) return
         mc.textureManager.bindTexture(GuideBookConstants.guiBookTexture)
         val z = if (whisky.isPageActive()) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
@@ -73,47 +73,39 @@ class TabButton(x: Int, yBottom: Int, private val whisky: TabButtonReturn) : Gui
         val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
         if (hovered) GuiGuideBook.drawBoxedString(
             text = whisky.getHoverText(),
-            x = buttonArea.x1,
-            y = buttonArea.y0,
+            x = body.x1,
+            y = body.y0,
             z = GuideBookConstants.Z_TOOLTIP,
             horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
             verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
         )
         GuiGuideBook.drawStretchingRectangle(
-            x0 = buttonArea.x0,
-            y0 = buttonArea.y0 + yOffset,
-            x1 = buttonArea.x1,
-            y1 = buttonArea.y1 + yOffset,
+            rectangle = body.translated(0, yOffset),
             z = z,
-            u0 = buttonTextureArea.x0,
-            v0 = buttonTextureArea.y0,
-            u1 = buttonTextureArea.x1,
-            v1 = buttonTextureArea.y1,
+            texture = buttonTextureArea,
             blend = true,
             color = if (whisky.isPageActive()) 0xFFFFFFFF.toInt() else color
         )
+        drawButtonForegroundLayer(mouseX, mouseY)
+    }
+
+    override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
         if (whisky.isPageActive()) {
+            val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
             GuiGuideBook.drawStretchingRectangle(
-                x0 = circleArea.x0,
-                y0 = circleArea.y0,
-                x1 = circleArea.x1,
-                y1 = circleArea.y1,
-                z = z + 0.5,
-                u0 = circleAreaTexture.x0,
-                v0 = circleAreaTexture.y0,
-                u1 = circleAreaTexture.x1,
-                v1 = circleAreaTexture.y1,
+                rectangle = circleArea.translated(body),
+                z = zLevel.toDouble(),
+                texture = circleAreaTexture,
                 blend = true,
                 color = color
             )
         }
     }
 
-    fun setPos(x0: Int, y0: Int) {
-        buttonArea.setPos(x0, y0 - 24)
-        circleArea.setPos(buttonArea.x0 + 4, buttonArea.y0 + 4)
+    override fun setPos(newX: Int, newY: Int) {
+        body.setPos(newX, newY - 24)
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean =
-        buttonArea.translated(0, if(whisky.isPageActive()) -3 else 0).contains(mouseX, mouseY)
+        bodyTrigger.translated(body).translated(0, if(whisky.isPageActive()) -3 else 0).contains(mouseX, mouseY)
 }

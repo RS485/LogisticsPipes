@@ -60,8 +60,10 @@ class SavedPage(val page: String) : LPFinalSerializable {
     val title: String
         get() = pageInfo.metadata.title
 
-    fun updateScrollPosition(visibleArea: Rectangle) =
-        drawablePage.updateScrollPosition(visibleArea, progress)
+    fun updateScrollPosition(visibleArea: Rectangle, currentProgress: Float) =
+        drawablePage.updateScrollPosition(visibleArea, currentProgress)
+
+    fun getExtraHeight(visibleArea: Rectangle) = if(visibleArea.height < drawablePage.height) drawablePage.height - visibleArea.height else 0
 
     fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
         drawablePage.getVisibleParagraphs(visibleArea)

@@ -49,15 +49,6 @@ open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiBu
     open val bodyTrigger = Rectangle(width, height)
     private var onClickAction: ((Int) -> Boolean)? = null
 
-    val x: Int
-        get() = body.x0
-    val y: Int
-        get() = body.y0
-    val width: Int
-        get() = body.width
-    val height: Int
-        get() = body.height
-
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean = isHovered(mouseX, mouseY)
 
     override fun isMouseOver(): Boolean = hovered
@@ -70,7 +61,8 @@ open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiBu
 
     override fun getHoverState(mouseOver: Boolean): Int = if (!enabled) 2 else if (hovered) 1 else 0
 
-    internal fun isHovered(mouseX: Int, mouseY: Int): Boolean = enabled && visible && bodyTrigger.translated(body.x0, body.y0).contains(mouseX, mouseY)
+    internal fun isHovered(mouseX: Int, mouseY: Int): Boolean =
+        enabled && visible && bodyTrigger.translated(body.x0, body.y0).contains(mouseX, mouseY)
 
     open fun setPos(newX: Int, newY: Int) {
         body.setPos(newX, newY)

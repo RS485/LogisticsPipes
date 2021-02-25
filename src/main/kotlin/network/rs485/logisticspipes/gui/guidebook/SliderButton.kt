@@ -38,38 +38,36 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.guiBookTexture
 import network.rs485.logisticspipes.util.math.Rectangle
+import kotlin.math.floor
 
-class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: Int, buttonHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : GuiButton(buttonId, x, y, buttonWidth, buttonHeight, "") {
-    private val rail = Rectangle(x, y, buttonWidth, railHeight)
-    private val buttonArea = Rectangle(buttonWidth, buttonHeight)
-    private val movementDistance = rail.height - buttonArea.height
+private const val minimumHeight = 16
+private val texture = Rectangle(96, 0, 12, 16)
+
+class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : LPGuiButton(0, x, y, width, railHeight) {
+    private val sliderButton = Rectangle()
+    private val movementDistance get() = body.height - sliderButton.height
     private var dragging = false
+    private var initialMouseYOffset = 0
 
     init {
-        buttonArea.setPos(x, calculateProgressI(progress))
-        enabled = false
-        zLevel = 15f
+        zLevel = GuideBookConstants.Z_TITLE_BUTTONS.toFloat()
     }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!visible) return
-        mc.textureManager.bindTexture(guiBookTexture)
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-        hovered = buttonArea.contains(mouseX, mouseY)
-        val btnAtlasOffsetY = hovered && !dragging || !enabled
-        val btnAtlasOffsetX = dragging || !enabled
-        GuiGuideBook.drawStretchingRectangle(buttonArea.x0, buttonArea.y0, buttonArea.x1, buttonArea.y1, zLevel.toDouble(), 96 + (if (btnAtlasOffsetX) 1 else 0) * 12, 0 + (if (btnAtlasOffsetY) 1 else 0) * 15, 108 + (if (btnAtlasOffsetX) 1 else 0) * 12, (if (btnAtlasOffsetY) 1 else 0) * 15 + 15, false)
+        hovered = sliderButton.translated(body).contains(mouseX, mouseY)
+        GuiGuideBook.drawSliderButton(sliderButton.translated(body), texture.translated(0, getHoverState(hovered) * texture.height))
         mouseDragged(mc, mouseX, mouseY)
     }
+
+    override fun getHoverState(mouseOver: Boolean): Int = if (dragging) 3 else if (!enabled) 2 else if (hovered) 1 else 0
 
     override fun mouseReleased(mouseX: Int, mouseY: Int) {
         if (dragging) {
             dragging = false
-            setProgressI((mouseY - height / 2.0f).toInt())
+            setProgressI((mouseY - body.y0) - initialMouseYOffset)
+            initialMouseYOffset = 0
             setProgressCallback(progress)
         }
         super.mouseReleased(mouseX, mouseY)
@@ -77,7 +75,7 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
 
     override fun mouseDragged(mc: Minecraft, mouseX: Int, mouseY: Int) {
         if (dragging) {
-            setProgressI((mouseY - height / 2.0f).toInt())
+            setProgressI((mouseY - body.y0) - initialMouseYOffset)
             setProgressCallback(progress)
         }
     }
@@ -85,30 +83,53 @@ class SliderButton(buttonId: Int, x: Int, y: Int, railHeight: Int, buttonWidth: 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {
         if (visible && enabled && hovered) {
             dragging = true
+            initialMouseYOffset = mouseY - sliderButton.translated(body).y0
             return true
         }
         return false
     }
 
-    fun reset() = setProgressF(0.0f)
-
-    fun getProgress(): Float = progress
-
-    // Set button y level as well as update progress value.
-    fun setProgressI(progressI: Int) {
-        buttonArea.y0 = progressI.coerceIn(rail.y0, rail.y1 - buttonArea.height)
-        progress = calculateProgressF(buttonArea.y0)
+    private fun updateButtonY() {
+        val y = floor(movementDistance * progress).toInt()
+        sliderButton.setPos(newY = y)
     }
 
-    // Set progress value as well as update button y level.
-    fun setProgressF(progressF: Float) {
-        progress = progressF.coerceIn(0.0f, 1.0f)
-        buttonArea.y0 = calculateProgressI(progress)
+    fun updateSlider(extraHeight: Int, newProgress: Float): SliderButton {
+        if (extraHeight > 0) {
+            enabled = true
+            sliderButton.setPos(0, calculateProgressI())
+            val possibleHeight = body.height - extraHeight
+            sliderButton.setSize(
+                newWidth = body.width,
+                newHeight = (if ((possibleHeight % 2) == 0) possibleHeight - 1 else possibleHeight).coerceIn(minimumHeight..body.height)
+            )
+            progress = newProgress
+            updateButtonY()
+        } else {
+            enabled = false
+            sliderButton.setPos(0, 0)
+            sliderButton.setSize(body.width, newHeight = minimumHeight)
+            progress = 0.0f
+            updateButtonY()
+        }
+        return this
+    }
+
+    // Set button y level as well as update progress value.
+    private fun setProgressI(progressI: Int) {
+        sliderButton.y0 = progressI.coerceIn(0, movementDistance)
+        progress = calculateProgressF()
+    }
+
+    fun changeProgress(amount: Int) {
+        sliderButton.y0 = (sliderButton.y0 + amount).coerceIn(0, movementDistance)
+        progress = calculateProgressF()
+        setProgressCallback(progress)
     }
 
     // Calculates y level from given progress
-    private fun calculateProgressI(progressF: Float): Int = rail.y0 + (movementDistance * progressF).toInt()
+    private fun calculateProgressI(): Int = (movementDistance * progress).toInt()
 
     // Calculates progress from given y level
-    private fun calculateProgressF(progressI: Int): Float = (1.0f * (progressI - rail.y0)) / (rail.y1 - rail.y0 - buttonArea.height)
+    private fun calculateProgressF(): Float = sliderButton.y0 / movementDistance.toFloat()
 }

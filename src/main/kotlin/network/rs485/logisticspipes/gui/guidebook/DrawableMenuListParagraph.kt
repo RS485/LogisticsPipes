@@ -52,9 +52,6 @@ import java.util.*
 private const val entryHeight = 24
 private const val entrySpacing = 5
 
-/**
- *
- */
 class DrawableMenuListParagraph(private val menuTitle: List<DrawableWord>, private val listMenuGroups: List<DrawableMenuListGroup>) : DrawableParagraph() {
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
@@ -127,14 +124,14 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
         GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
-            val textColor = if (!hovered) MinecraftColor.WHITE.colorCode else MinecraftColor.YELLOW.colorCode
+            val textColor: Int = if (!hovered) MinecraftColor.WHITE.colorCode else 0xffffffa0.toInt()
             val textVerticalOffset = (height - GuiGuideBook.lpFontRenderer.getFontHeight(1.0)) / 2
             GuiGuideBook.lpFontRenderer.drawString(
                 string = pageName,
                 x = itemRect.right + itemOffset,
                 y = top + textVerticalOffset + 1,
                 color = textColor,
-                format = EnumSet.noneOf(TextFormat::class.java),
+                format = EnumSet.of(TextFormat.Shadow),
                 scale = 1.0
             )
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule

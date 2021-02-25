@@ -56,6 +56,7 @@ import network.rs485.logisticspipes.util.*
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
 import network.rs485.markdown.defaultDrawableState
+import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.util.*
 import kotlin.math.max
@@ -101,7 +102,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private val guiAtlasSize = 64
     private val innerFrameTexture = Rectangle(guiBorderWithShadowThickness, guiBorderWithShadowThickness, guiAtlasSize - (guiBorderWithShadowThickness * 2), guiAtlasSize - (guiBorderWithShadowThickness * 2))
     private val outerFrameTexture = Rectangle(0, 0, guiAtlasSize, guiAtlasSize)
-    private val sliderSeparatorTexture = Rectangle(96, 33, 16, 30)
+    private val sliderSeparatorTexture = Rectangle(96, 65, 16, 30)
     private val backgroundFrameTexture = Rectangle(64, 0, 32, 32)
 
     // Slider
@@ -141,6 +142,8 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     private val actionListener = ActionListener()
 
+    private var currentProgress = 0.0f
+
     inner class ActionListener {
         fun onMenuButtonClick(newPage: String) = changePage(newPage)
     }
@@ -149,7 +152,6 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         val newPage = cachedPages.getOrPut(path) { SavedPage(path) }
         state.currentPage = newPage
         newPage.setDrawablesPosition(visibleArea)
-        if (this::slider.isInitialized) slider.setProgressF(newPage.progress)
         updateButtonVisibility()
     }
 
@@ -171,7 +173,9 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     // Checks each button for visibility and updates tab positions.
     private fun updateButtonVisibility() {
         if (this::home.isInitialized) home.visible = state.currentPage.page != MAIN_MENU_FILE
-        if (this::slider.isInitialized) slider.enabled = state.currentPage.drawablePage.height > visibleArea.height
+        if (this::slider.isInitialized) {
+            slider.updateSlider(state.currentPage.getExtraHeight(visibleArea), state.currentPage.progress)
+        }
         var xOffset = 0
         for (button: TabButton in tabButtons) {
             button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
@@ -189,12 +193,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         calculateGuiConstraints()
         slider = addButton(
             SliderButton(
-                buttonId = 0,
                 x = innerGui.x1 - guiSliderWidth,
                 y = innerGui.y0,
                 railHeight = innerGui.height,
-                buttonWidth = guiSliderWidth,
-                buttonHeight = guiSliderHeight,
+                width = guiSliderWidth,
                 progress = state.currentPage.progress,
                 setProgressCallback = { progress -> state.currentPage.progress = progress }
             )
@@ -243,11 +245,16 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         super.onGuiClosed()
     }
 
+    override fun onResize(mcIn: Minecraft, w: Int, h: Int) {
+        state.currentPage.progress = 0.0f
+        super.onResize(mcIn, w, h)
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         state.currentPage.run {
-            updateScrollPosition(visibleArea)
+            updateScrollPosition(visibleArea, currentProgress)
             drawablePage.draw(mouseX, mouseY, partialTicks, visibleArea)
         }
         drawGui()
@@ -276,6 +283,25 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         }
         if (visibleArea.contains(mouseX, mouseY)) {
             state.currentPage.mouseClicked(mouseX, mouseY, visibleArea, actionListener)
+        }
+    }
+
+    // TODO change smoothing method to non-linear
+    override fun updateScreen() {
+        if (currentProgress < state.currentPage.progress) {
+            currentProgress = min(currentProgress + 0.05f, state.currentPage.progress)
+        } else if (currentProgress > state.currentPage.progress) {
+            currentProgress = max(currentProgress - 0.05f, state.currentPage.progress)
+        }
+    }
+
+    override fun handleMouseInput() {
+        super.handleMouseInput()
+        if (state.currentPage.getExtraHeight(visibleArea) > 0) {
+            val mouseDWheel = Mouse.getDWheel() / -120
+            if (mouseDWheel != 0) {
+                slider.changeProgress(mouseDWheel * lpFontRenderer.getFontHeight(1.0))
+            }
         }
     }
 
@@ -517,6 +543,51 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     companion object {
         val lpFontRenderer = LPFontRenderer.get("ter-u12n")
 
+        fun drawSliderButton(body: Rectangle, texture: Rectangle) {
+            val z = GuideBookConstants.Z_TITLE_BUTTONS
+            val bufferBuilder = startBuffer()
+            putTexturedRectangle(
+                bufferBuilder,
+                body.x0,
+                body.y0,
+                body.x1,
+                body.y0 + 2,
+                z,
+                texture.x0,
+                texture.y0,
+                texture.x1,
+                texture.y0 + 2
+            )
+            putRepeatingTexturedRectangle(
+                bufferBuilder,
+                body.x0,
+                body.y0 + 2,
+                body.x1,
+                body.y1 - 2,
+                z,
+                texture.x0,
+                texture.y0 + 2,
+                texture.x1,
+                texture.y1 - 2,
+                MinecraftColor.WHITE.colorCode,
+                0,
+                0
+            )
+            putTexturedRectangle(
+                bufferBuilder,
+                body.x0,
+                body.y1 - 2,
+                body.x1,
+                body.y1,
+                z,
+                texture.x0,
+                texture.y1 - 2,
+                texture.x1,
+                texture.y1
+            )
+            drawBuffer()
+        }
+
         /**
          * Draws a rectangle in which the given texture will be stretched to the given sized. This method assumes the bound texture is 256x256 in size.
          * @param x0            left x position of desired rectangle.
@@ -549,7 +620,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
          * @param x1            right correspondent texture position.
          * @param y1            bottom correspondent texture position.
          */
-        fun drawStretchingRectangle(x0: Int, y0: Int, x1: Int, y1: Int, z: Double, u0: Int, v0: Int, u1: Int, v1: Int, blend: Boolean, color: Int) {
+        private fun drawStretchingRectangle(x0: Int, y0: Int, x1: Int, y1: Int, z: Double, u0: Int, v0: Int, u1: Int, v1: Int, blend: Boolean, color: Int) {
             Minecraft.getMinecraft().renderEngine.bindTexture(GuideBookConstants.guiBookTexture)
             // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
             if (blend) GlStateManager.enableBlend()
@@ -916,13 +987,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             lpFontRenderer.drawString(text, innerArea.x0 + 4, innerArea.y0 + 1, defaultDrawableState.color, defaultDrawableState.format, 1.0)
             lpFontRenderer.zLevel -= z
             GlStateManager.enableAlpha()
-            // Background
-            Minecraft.getMinecraft().renderEngine.bindTexture(GuideBookConstants.guiBookTexture)
-            // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
-            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-            val tessellator = Tessellator.getInstance()
-            val bufferBuilder = tessellator.buffer
-            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
+            val bufferBuilder = startBuffer()
             putTexturedRectangle(bufferBuilder, innerArea, innerAreaTexture, z)
             // Corners: TopLeft, TopRight, BottomLeft & BottomRight
             putTexturedRectangle(bufferBuilder, outerArea.x0, outerArea.y0, innerArea.x0, innerArea.y0, z, outerAreaTexture.x0, outerAreaTexture.y0, innerAreaTexture.x0, innerAreaTexture.y0)
@@ -934,9 +999,23 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             putTexturedRectangle(bufferBuilder, innerArea.x0, innerArea.y1, innerArea.x1, outerArea.y1, z, innerAreaTexture.x0, innerAreaTexture.y1, innerAreaTexture.x1, outerAreaTexture.y1)
             putTexturedRectangle(bufferBuilder, outerArea.x0, innerArea.y0, innerArea.x0, innerArea.y1, z, outerAreaTexture.x0, innerAreaTexture.y0, innerAreaTexture.x0, innerAreaTexture.y1)
             putTexturedRectangle(bufferBuilder, innerArea.x1, innerArea.y0, outerArea.x1, innerArea.y1, z, innerAreaTexture.x1, innerAreaTexture.y0, outerAreaTexture.x1, innerAreaTexture.y1)
-            tessellator.draw()
+            drawBuffer()
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
+        }
+
+        private fun startBuffer(): BufferBuilder {
+            Minecraft.getMinecraft().renderEngine.bindTexture(GuideBookConstants.guiBookTexture)
+            // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+            val tessellator = Tessellator.getInstance()
+            val bufferBuilder = tessellator.buffer
+            bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
+            return bufferBuilder
+        }
+
+        private fun drawBuffer() {
+            Tessellator.getInstance().draw()
         }
 
         /**

@@ -49,6 +49,7 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
     private val movementDistance get() = body.height - sliderButton.height
     private var dragging = false
     private var initialMouseYOffset = 0
+    private var hoveredBar = false
 
     init {
         zLevel = GuideBookConstants.Z_TITLE_BUTTONS.toFloat()
@@ -56,12 +57,13 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!visible) return
-        hovered = sliderButton.translated(body).contains(mouseX, mouseY)
-        GuiGuideBook.drawSliderButton(sliderButton.translated(body), texture.translated(0, getHoverState(hovered) * texture.height))
+        hoveredBar = sliderButton.translated(body).contains(mouseX, mouseY)
+        hovered = body.contains(mouseX, mouseY)
+        GuiGuideBook.drawSliderButton(sliderButton.translated(body), texture.translated(0, getHoverState(hoveredBar) * texture.height))
         mouseDragged(mc, mouseX, mouseY)
     }
 
-    override fun getHoverState(mouseOver: Boolean): Int = if (dragging) 3 else if (!enabled) 2 else if (hovered) 1 else 0
+    override fun getHoverState(mouseOver: Boolean): Int = if (dragging) 3 else if (!enabled) 2 else if (hoveredBar) 1 else 0
 
     override fun mouseReleased(mouseX: Int, mouseY: Int) {
         if (dragging) {
@@ -81,10 +83,15 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean {
-        if (visible && enabled && hovered) {
-            dragging = true
-            initialMouseYOffset = mouseY - sliderButton.translated(body).y0
-            return true
+        if (visible && enabled) {
+            if (hoveredBar) {
+                dragging = true
+                initialMouseYOffset = mouseY - sliderButton.translated(body).y0
+                return true
+            } else if(hovered) {
+                setProgressI(mouseY - body.y0 - (sliderButton.height / 2))
+                setProgressCallback(progress)
+            }
         }
         return false
     }

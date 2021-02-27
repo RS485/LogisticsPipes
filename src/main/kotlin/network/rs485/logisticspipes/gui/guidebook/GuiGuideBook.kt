@@ -130,8 +130,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private lateinit var slider: SliderButton
     private lateinit var home: HomeButton
 
-    // TODO make button have add and remove states.
-    private lateinit var addTabButton: BookmarkManagingButton
+    private lateinit var addOrRemoveTabButton: BookmarkManagingButton
 
     // initialize tabs from the stack NBT
     private val tabButtons = state.bookmarks.map(::createGuiTabButton).toMutableList()
@@ -142,7 +141,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     private val actionListener = ActionListener()
 
-    private var currentProgress = 0.0f
+    private var currentProgress = state.currentPage.progress
 
     inner class ActionListener {
         fun onMenuButtonClick(newPage: String) = changePage(newPage)
@@ -151,6 +150,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private fun changePage(path: String) {
         val newPage = cachedPages.getOrPut(path) { SavedPage(path) }
         state.currentPage = newPage
+        currentProgress = state.currentPage.progress
         newPage.setDrawablesPosition(visibleArea)
         updateButtonVisibility()
     }
@@ -181,9 +181,9 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             button.setPos(outerGui.x1 - 2 - 2 * guiTabWidth - xOffset, outerGui.y0)
             xOffset += guiTabWidth
         }
-        if (this::addTabButton.isInitialized) {
-            addTabButton.updateState()
-            addTabButton.setX(outerGui.x1 - 20 - guiTabWidth - xOffset)
+        if (this::addOrRemoveTabButton.isInitialized) {
+            addOrRemoveTabButton.updateState()
+            addOrRemoveTabButton.setX(outerGui.x1 - 20 - guiTabWidth - xOffset)
         }
     }
 
@@ -212,7 +212,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                 return@HomeButton true
             }
         )
-        addTabButton = addButton(
+        addOrRemoveTabButton = addButton(
             BookmarkManagingButton(
                 x = outerGui.x1 - 18 - guiTabWidth + 4,
                 y = outerGui.y0 - 2,
@@ -288,10 +288,12 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     // TODO change smoothing method to non-linear
     override fun updateScreen() {
-        if (currentProgress < state.currentPage.progress) {
-            currentProgress = min(currentProgress + 0.05f, state.currentPage.progress)
-        } else if (currentProgress > state.currentPage.progress) {
-            currentProgress = max(currentProgress - 0.05f, state.currentPage.progress)
+        val progressDiff = currentProgress - state.currentPage.progress
+        val speedModifier = 0.5f
+        if (progressDiff < 0.0f) {
+            currentProgress = min(currentProgress - (progressDiff * speedModifier), state.currentPage.progress)
+        } else if (progressDiff > 0.0f) {
+            currentProgress = max(currentProgress - (progressDiff * speedModifier), state.currentPage.progress)
         }
     }
 
@@ -310,7 +312,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             home -> if (home.click(0)) {
                 button.playPressSound(mc.soundHandler)
             }
-            addTabButton -> if (addTabButton.click(0)) {
+            addOrRemoveTabButton -> if (addOrRemoveTabButton.click(0)) {
                 button.playPressSound(mc.soundHandler)
             }
             is TabButton -> if (button.onLeftClick()) {

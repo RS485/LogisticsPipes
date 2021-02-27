@@ -38,7 +38,7 @@
 package network.rs485.markdown
 
 import network.rs485.markdown.MarkdownParser.parseParagraphs
-import network.rs485.markdown.MarkdownParser.splitSpacesAndWords
+import network.rs485.markdown.MarkdownParser.splitAndFormatWords
 import network.rs485.markdown.MarkdownParser.splitWhitespaceCharactersAndWords
 import java.util.*
 import kotlin.test.Ignore
@@ -50,7 +50,7 @@ internal class MarkdownParserTest {
     @Test
     fun `default text case in splitToInlineElements`() {
         val str = "Split this please"
-        val splitElements = splitSpacesAndWords(str)
+        val splitElements = splitAndFormatWords(str)
 
         assertEquals(listOf(Word("Split"), Space, Word("this"), Space, Word("please")), splitElements)
     }
@@ -66,7 +66,7 @@ internal class MarkdownParserTest {
     @Test
     fun `too many spaces in splitToInlineElements`() {
         val str = "  two text    nodes   "
-        val splitElements = splitSpacesAndWords(str)
+        val splitElements = splitAndFormatWords(str)
 
         assertEquals(listOf(Word("two"), Space, Word("text"), Space, Word("nodes")), splitElements)
     }
@@ -74,7 +74,7 @@ internal class MarkdownParserTest {
     @Test
     fun `single word in splitToInlineElements`() {
         val str = "word"
-        val splitElements = splitSpacesAndWords(str)
+        val splitElements = splitAndFormatWords(str)
 
         assertEquals(listOf(Word(str)), splitElements)
     }
@@ -153,7 +153,7 @@ internal class MarkdownParserTest {
         val str = "Just some text"
         val paragraphs = parseParagraphs(str)
 
-        assertEquals(listOf(RegularParagraph(splitSpacesAndWords(str))), paragraphs)
+        assertEquals(listOf(RegularParagraph(splitAndFormatWords(str))), paragraphs)
     }
 
     @Test
@@ -539,13 +539,37 @@ internal class MarkdownParserTest {
     }
 
     @Test
-    fun `parse a simple menu tag`() {
+    fun `parse a simple tile menu tag`() {
+        val text = "Main Menu"
+        val link = "main_menu"
+        val paragraphs = parseParagraphs("[$text](menu://$link?type=tile)")
+
+        val expectedParagraphs = listOf(
+            MenuParagraph(text, link, MenuParagraphType.TILE)
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse a simple list menu tag`() {
+        val text = "Main Menu"
+        val link = "main_menu"
+        val paragraphs = parseParagraphs("[$text](menu://$link?type=list)")
+
+        val expectedParagraphs = listOf(
+            MenuParagraph(text, link, MenuParagraphType.LIST)
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse a list menu tag as default`() {
         val text = "Main Menu"
         val link = "main_menu"
         val paragraphs = parseParagraphs("[$text](menu://$link)")
 
         val expectedParagraphs = listOf(
-                MenuParagraph(text, link)
+            MenuParagraph(text, link, MenuParagraphType.LIST)
         )
         assertEquals(expectedParagraphs, paragraphs)
     }
@@ -568,14 +592,14 @@ internal class MarkdownParserTest {
         val paragraphs = parseParagraphs("$test1 $test2")
 
         val expectedParagraphs = listOf(
-                RegularParagraph(splitSpacesAndWords("$test1 $test2"))
+                RegularParagraph(splitAndFormatWords("$test1 $test2"))
         )
         assertEquals(expectedParagraphs, paragraphs)
     }
 
     @Test
     fun `parse a couple of menu tags`() {
-        val expectedParagraphs = (1..5).map { n -> MenuParagraph("Test $n", "test_menu_$n") }.toList()
+        val expectedParagraphs = (1..5).map { n -> MenuParagraph("Test $n", "test_menu_$n", MenuParagraphType.LIST) }.toList()
         val str = expectedParagraphs.joinToString(separator = "\n") { "[${it.description}](menu://${it.link})" }
 
         val paragraphs = parseParagraphs(str)
@@ -591,7 +615,7 @@ internal class MarkdownParserTest {
         val paragraphs = parseParagraphs(str)
 
         val expectedParagraphs = listOf(
-            ImageParagraph(alternative = alt, link = link)
+            ImageParagraph(alternative = alt, imagePath = link)
         )
 
         assertEquals(expectedParagraphs, paragraphs)
@@ -729,7 +753,7 @@ internal class MarkdownParserTest {
             RegularParagraph(
                 listOf(
                     listOf(TextFormatting(EnumSet.of(TextFormat.Italic))),
-                    splitSpacesAndWords(str),
+                    splitAndFormatWords(str),
                     listOf(TextFormatting(TextFormat.none)),
                 ).flatten()
             )

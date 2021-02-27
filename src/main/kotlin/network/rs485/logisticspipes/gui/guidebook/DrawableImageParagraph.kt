@@ -75,14 +75,13 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
     }
 }
 
-class DrawableImage(imageSource: ResourceLocation) : Drawable() {
+class DrawableImage(private var imageResource: ResourceLocation) : Drawable() {
 
-    private var image: ResourceLocation = imageSource
     private var imageSize: PngSizeInfo? = try {
-        val resource = Minecraft.getMinecraft().resourceManager.getResource(image)
+        val resource = Minecraft.getMinecraft().resourceManager.getResource(imageResource)
         PngSizeInfo.makeFromResource(resource)
     } catch (e: IOException) {
-        LogisticsPipes.log.error("File not found: ${image.resourcePath}")
+        LogisticsPipes.log.error("File not found: ${imageResource.resourcePath}")
         e.printStackTrace()
         null
     }
@@ -90,7 +89,7 @@ class DrawableImage(imageSource: ResourceLocation) : Drawable() {
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         if (imageSize != null) {
-            GuiGuideBook.drawImage(absoluteBody, visibleArea, image)
+            GuiGuideBook.drawImage(absoluteBody, visibleArea, imageResource)
         } else {
             GuiGuideBook.drawRectangleOutline(absoluteBody, GuideBookConstants.Z_TEXT.toInt(), MinecraftColor.WHITE.colorCode)
         }

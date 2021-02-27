@@ -37,8 +37,6 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import logisticspipes.LPConstants
-import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParent
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.PageInfoProvider
@@ -62,7 +60,6 @@ object DrawablePageFactory {
             elements.mapNotNull { element ->
                 element.changeDrawableState(state)
                 when (element) {
-                    is LinkWord -> TODO()
                     is Word -> DrawableWord(element.str, scale, state)
                     is Space -> DrawableSpace(scale, state)
                     Break -> DrawableBreak
@@ -80,36 +77,33 @@ object DrawablePageFactory {
                 is RegularParagraph -> createDrawableParagraph(
                     paragraphConstructor = ::DrawableRegularParagraph,
                     elements = paragraph.elements,
-                    scale = 1.0
+                    scale = 1.0,
                 )
                 is HeaderParagraph -> createDrawableParagraph(
                     paragraphConstructor = ::DrawableHeaderParagraph,
                     elements = paragraph.elements,
-                    scale = getScaleFromLevel(paragraph.headerLevel)
+                    scale = getScaleFromLevel(paragraph.headerLevel),
                 )
                 is HorizontalLineParagraph -> DrawableHorizontalLine(2)
                 is MenuParagraph -> createDrawableParagraph(
                     paragraphConstructor = { drawableMenuTitle ->
-                        createDrawableMenuParagraph(page.metadata, paragraph, drawableMenuTitle)
+                        when (paragraph.type) {
+                            MenuParagraphType.TILE -> createDrawableMenuParagraph(page.metadata, paragraph, drawableMenuTitle)
+                            MenuParagraphType.LIST -> createDrawableMenuListParagraph(page.metadata, paragraph, drawableMenuTitle)
+                        }
                     },
-                    elements = MarkdownParser.splitSpacesAndWords(paragraph.description),
-                    scale = getScaleFromLevel(3)
-                )
-                is MenuListParagraph -> createDrawableParagraph(
-                    paragraphConstructor = { drawableMenuTitle ->
-                        createDrawableMenuListParagraph(page.metadata, paragraph, drawableMenuTitle)
-                    },
-                    elements = MarkdownParser.splitSpacesAndWords(paragraph.description),
-                    scale = getScaleFromLevel(3)
+                    elements = MarkdownParser.splitAndFormatWords(paragraph.description),
+                    scale = getScaleFromLevel(3),
                 )
                 is ImageParagraph -> createDrawableParagraph(
                     paragraphConstructor = { drawableAlternativeText ->
-                        DrawableImageParagraph(drawableAlternativeText, DrawableImage(ResourceLocation(LPConstants.LP_MOD_ID, paragraph.link))).also {
-                            drawableImageParagraph ->  drawableImageParagraph.image.parent = drawableImageParagraph
+                        val imageResource = page.resolveResource(paragraph.imagePath)
+                        DrawableImageParagraph(drawableAlternativeText, DrawableImage(imageResource)).also { drawableImageParagraph ->
+                            drawableImageParagraph.image.parent = drawableImageParagraph
                         }
                     },
-                    elements = MarkdownParser.splitSpacesAndWords(paragraph.alternative),
-                    scale = 1.0
+                    elements = MarkdownParser.splitAndFormatWords(paragraph.alternative),
+                    scale = 1.0,
                 )
             }
         }
@@ -121,7 +115,7 @@ object DrawablePageFactory {
     ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
             paragraphConstructor = { drawableGroupTitle -> createDrawableMenu(groupEntries, drawableGroupTitle) },
-            elements = MarkdownParser.splitSpacesAndWords(groupTitle),
+            elements = MarkdownParser.splitAndFormatWords(groupTitle),
             scale = getScaleFromLevel(6)
         )
     }.let { drawableMenuGroups ->
@@ -131,12 +125,12 @@ object DrawablePageFactory {
     // TODO stop shamelessly duplicating code
     private fun createDrawableMenuListParagraph(
         pageMetadata: YamlPageMetadata,
-        paragraph: MenuListParagraph,
+        paragraph: MenuParagraph,
         drawableMenuTitle: List<DrawableWord>,
     ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found in ${pageMetadata.menu}.")).map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
             paragraphConstructor = { drawableGroupTitle -> createDrawableMenuListGroup(groupEntries, drawableGroupTitle) },
-            elements = MarkdownParser.splitSpacesAndWords(groupTitle),
+            elements = MarkdownParser.splitAndFormatWords(groupTitle),
             scale = getScaleFromLevel(6)
         )
     }.let { drawableMenuGroups ->
@@ -147,22 +141,22 @@ object DrawablePageFactory {
         menuGroupEntries: List<String>,
         drawableGroupTitle: List<DrawableWord>,
     ) = menuGroupEntries.map { path ->
-            BookContents.get(path).metadata.let { metadata ->
-                DrawableMenuTile(path, metadata.title, metadata.icon)
-            }
-        }.let { drawableMenuTiles ->
-            drawableMenuTiles.createParent { DrawableMenuTileGroup(drawableGroupTitle, drawableMenuTiles) }
+        BookContents.get(path).metadata.let { metadata ->
+            DrawableMenuTile(path, metadata.title, metadata.icon)
         }
+    }.let { drawableMenuTiles ->
+        drawableMenuTiles.createParent { DrawableMenuTileGroup(drawableGroupTitle, drawableMenuTiles) }
+    }
 
     // TODO stop shamelessly duplicating code
     private fun createDrawableMenuListGroup(
         menuGroupEntries: List<String>,
         drawableGroupTitle: List<DrawableWord>,
     ) = menuGroupEntries.map { path ->
-            BookContents.get(path).metadata.let { metadata ->
-                DrawableMenuListEntry(path, metadata.title, metadata.icon)
-            }
-        }.let { drawableMenuTiles ->
-            drawableMenuTiles.createParent { DrawableMenuListGroup(drawableGroupTitle, drawableMenuTiles) }
+        BookContents.get(path).metadata.let { metadata ->
+            DrawableMenuListEntry(path, metadata.title, metadata.icon)
         }
+    }.let { drawableMenuTiles ->
+        drawableMenuTiles.createParent { DrawableMenuListGroup(drawableGroupTitle, drawableMenuTiles) }
+    }
 }

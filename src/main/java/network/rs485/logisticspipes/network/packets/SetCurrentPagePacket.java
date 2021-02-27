@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.network.packets;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -45,7 +46,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LPItems;
-import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.gui.guidebook.SavedPage;
@@ -56,6 +56,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 @StaticResolve
 public class SetCurrentPagePacket extends ModernPacket {
 
+	@Nullable
 	private SavedPage currentPage;
 
 	private EntityEquipmentSlot equipmentSlot;
@@ -68,6 +69,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
+		if (currentPage == null) return;
 		ItemStack book = player.getItemStackFromSlot(equipmentSlot);
 		if (book.isEmpty() || !(book.getItem() instanceof ItemGuideBook)) return;
 		final NBTTagCompound nbt = LPItems.itemGuideBook.updateNBT(currentPage, bookmarks);
@@ -77,18 +79,15 @@ public class SetCurrentPagePacket extends ModernPacket {
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		try {
-			equipmentSlot = input.readEnum(EntityEquipmentSlot.class);
-			currentPage = SavedPage.fromBytes(input);
-			bookmarks = input.readArrayList(SavedPage::fromBytes);
-		} catch (IllegalStateException e) {
-			LogisticsPipes.log.warn("Couldn't read SetCurrentPagePacket data", e);
-		}
+		equipmentSlot = input.readEnum(EntityEquipmentSlot.class);
+		currentPage = SavedPage.fromBytes(input);
+		bookmarks = input.readArrayList(SavedPage::fromBytes);
 	}
 
 	@Override
 	public void writeData(LPDataOutput output) {
 		super.writeData(output);
+		if (currentPage == null) throw new NullPointerException("Current page may not be null");
 		output.writeEnum(equipmentSlot);
 		currentPage.write(output);
 		output.writeCollection(bookmarks);

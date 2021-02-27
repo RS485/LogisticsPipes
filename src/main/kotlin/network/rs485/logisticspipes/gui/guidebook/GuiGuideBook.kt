@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.LPConstants
 import logisticspipes.LPItems
+import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
@@ -51,6 +52,7 @@ import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.LPFontRenderer
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
+import network.rs485.logisticspipes.guidebook.DebugPage
 import network.rs485.logisticspipes.guidebook.ItemGuideBook
 import network.rs485.logisticspipes.util.*
 import network.rs485.logisticspipes.util.math.Rectangle
@@ -147,6 +149,14 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         fun onMenuButtonClick(newPage: String) = changePage(newPage)
     }
 
+    init {
+        if (LogisticsPipes.isDEBUG()) {
+            val debugSavedPage = cachedPages.getOrPut(DebugPage.FILE) { SavedPage(DebugPage.FILE) }
+            debugSavedPage.color = 0
+            tabButtons.add(createGuiTabButton(debugSavedPage))
+        }
+    }
+
     private fun changePage(path: String) {
         val newPage = cachedPages.getOrPut(path) { SavedPage(path) }
         state.currentPage = newPage
@@ -240,8 +250,9 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     override fun onGuiClosed() {
         LPItems.itemGuideBook.saveState(state)
-        // TODO remove this for release
-        BookContents.clear()
+        if (LogisticsPipes.isDEBUG()) {
+            BookContents.clear()
+        }
         super.onGuiClosed()
     }
 

@@ -93,12 +93,14 @@ class SavedPage(val page: String) : LPFinalSerializable {
     }
 
     companion object {
-        fun fromTag(nbt: NBTTagCompound?): SavedPage {
-            return if (nbt != null) SavedPage(
-                page = nbt.getString("page"),
-                color = if (nbt.hasKey("color")) nbt.getInteger("color") else null,
-                progress = nbt.getFloat("progress")
-            ) else SavedPage(BookContents.DEBUG_FILE)
+        fun fromTag(nbt: NBTTagCompound?): SavedPage? {
+            return nbt?.run {
+                SavedPage(
+                    page = getString("page"),
+                    color = if (hasKey("color")) getInteger("color") else null,
+                    progress = getFloat("progress")
+                )
+            }
         }
 
         /**
@@ -107,7 +109,7 @@ class SavedPage(val page: String) : LPFinalSerializable {
          * @return SavedPage object created from the buffered data
          */
         @JvmStatic
-        fun fromBytes(input: LPDataInput): SavedPage {
+        fun fromBytes(input: LPDataInput): SavedPage? {
             return fromTag(input.readNBTTagCompound())
         }
     }

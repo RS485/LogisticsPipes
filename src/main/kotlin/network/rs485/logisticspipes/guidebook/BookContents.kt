@@ -42,18 +42,20 @@ import com.charleskorn.kaml.YamlException
 import kotlinx.serialization.Serializable
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
-import logisticspipes.utils.MinecraftColor
+import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.DrawablePage
 import network.rs485.logisticspipes.gui.guidebook.DrawablePageFactory
-import network.rs485.markdown.*
+import network.rs485.markdown.HeaderParagraph
+import network.rs485.markdown.ImageParagraph
+import network.rs485.markdown.MarkdownParser
+import network.rs485.markdown.Paragraph
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
+import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
-import kotlin.random.Random
+import java.text.MessageFormat
 
 
 val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon = "logisticspipes:unrouted_pipe")
@@ -61,20 +63,23 @@ val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon 
 object BookContents {
 
     const val MAIN_MENU_FILE = "/main_menu.md"
-    const val DEBUG_FILE = "/debug/debug_page.md"
+
+    internal val specialImages = mapOf(
+        "guide_book_404" to "textures/gui/guide_book_404.png"
+    )
+
+    private val specialPages = mapOf<String, PageInfoProvider>(
+        DebugPage.FILE to DebugPage
+    )
 
     private val cachedLoadedPages = hashMapOf<String, PageInfoProvider>()
     private val cachedDrawablePages = hashMapOf<String, DrawablePage>()
 
-    init {
-        if (LogisticsPipes.isDEBUG()) addDebugPages()
-    }
-
     fun get(markdownFile: String): PageInfoProvider {
         assert(markdownFile.isNotEmpty()) { "Cannot read an empty file" }
-        return cachedLoadedPages.computeIfAbsent(markdownFile) {
-            LoadedPage(getFileAsString(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode), it)
-        }
+        return specialPages.getOrDefault(markdownFile, cachedLoadedPages.getOrPut(markdownFile) {
+            loadPage(markdownFile, Minecraft.getMinecraft().languageManager.currentLanguage.languageCode)
+        })
     }
 
     fun getDrawablePage(page: String): DrawablePage = cachedDrawablePages.getOrPut(page) {
@@ -84,115 +89,47 @@ object BookContents {
     fun clear() {
         cachedLoadedPages.clear()
         cachedDrawablePages.clear()
-        if (LogisticsPipes.isDEBUG()) addDebugPages()
-    }
-
-    private fun addDebugPages() {
-        fun randomColor(): Int = MinecraftColor.values()[Random.nextInt(MinecraftColor.values().size)].colorCode
-        cachedLoadedPages[DEBUG_FILE] = object : PageInfoProvider {
-            override val metadata: YamlPageMetadata = YamlPageMetadata(
-                title = "Debug Page",
-                icon = "logisticspipes:itemcard",
-                menu = mapOf(
-                    "listed" to mapOf(
-                        "Guides:" to listOf("/guides/quickstart_guide.md", "/guides/start_guide.md", "/guides/intermediate_guide.md", "/guides/advanced_guide.md", "/guides/in_depth.md")
-                    )
-                )
-            )
-            override val paragraphs: List<Paragraph> = listOf(
-                MenuParagraph(
-                    description = "A listed menu.",
-                    link = "listed",
-                    MenuParagraphType.LIST,
-                ),
-                MenuParagraph(
-                    description = "A menu.",
-                    link = "listed"
-                ),
-                ImageParagraph(
-                    "This image failed loading",
-                    "book/en_us/guides/test_image.png"
-                ),
-                HeaderParagraph(
-                    listOf(
-                        listOf(TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Shadow))),
-                        MarkdownParser.splitSpacesAndWords(
-                            "Nulla faucibus cursus bibendum."
-                        ).map {
-                            if (it is Word) listOf(ColorFormatting(randomColor()), it) else listOf(it)
-                        }.flatten(),
-                    ).flatten(), headerLevel = 4
-                ),
-                RegularParagraph(
-                    listOf(
-                        listOf(ColorFormatting(randomColor())),
-                        listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Shadow))),
-                        MarkdownParser.splitSpacesAndWords(
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl."
-                        ),
-                    ).flatten()
-                ),
-                RegularParagraph(
-                    listOf(
-                        listOf(ColorFormatting(randomColor())),
-                        listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Italic))),
-                        MarkdownParser.splitWhitespaceCharactersAndWords(
-                            "Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa. Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.  \n" +
-                                    "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."
-                        ),
-                    ).flatten()
-                ),
-                HeaderParagraph(
-                    listOf(
-                        listOf(TextFormatting(EnumSet.of(TextFormat.Strikethrough))),
-                        MarkdownParser.splitSpacesAndWords(
-                            "Nulla faucibus cursus bibendum."
-                        ).map {
-                            if (it is Word) listOf(ColorFormatting(randomColor()), it) else listOf(it)
-                        }.flatten(),
-                    ).flatten(), headerLevel = 4
-                ),
-                RegularParagraph(
-                    listOf(
-                        listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow))),
-                        listOf(ColorFormatting(randomColor())),
-                        MarkdownParser.splitSpacesAndWords(
-                            "Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante."
-                        ),
-                    ).flatten(),
-                ),
-                RegularParagraph(
-                    listOf(
-                        listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Italic))),
-                        listOf(ColorFormatting(randomColor())),
-                        MarkdownParser.splitWhitespaceCharactersAndWords(
-                            "Phasellus ut ipsum quis metus rutrum tempus eget in lacus. Nam at sollicitudin massa.\n" +
-                                    "Curabitur fringilla nisl ut quam lacinia, vel laoreet leo placerat. Aliquam erat volutpat. Nulla faucibus cursus bibendum.\n" +
-                                    "Etiam porttitor sed nulla vitae vehicula. Mauris nec dolor ipsum. In eget leo malesuada, faucibus turpis a, convallis neque."
-                        ),
-                    ).flatten(),
-                ),
-            )
-        }
     }
 }
 
 private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(RegexOption.DOT_MATCHES_ALL)
 
-fun getFileAsString(path: String, lang: String): String {
+fun loadPage(path: String, lang: String): PageInfoProvider {
+    val resolvedLocation = resolveLocation(resolvedLocation = Paths.get(path), language = lang)
     return try {
-        val bookFile = Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(LPConstants.LP_MOD_ID, "book/$lang$path"))
-        bookFile.inputStream.bufferedReader().readLines().joinToString("\n")
-    } catch (e: IOException) {
+        val bookFile = Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(LPConstants.LP_MOD_ID, resolvedLocation))
+        LoadedPage(
+            language = lang,
+            fileLocation = path,
+            unformattedText = bookFile.inputStream.bufferedReader().readLines().joinToString("\n")
+        )
+    } catch (error: IOException) {
         if (lang != "en_us") {
             // Didn't find current file, checking for english version.
-            if (LogisticsPipes.isDEBUG()) LogisticsPipes.log.error("Language $lang for the current file (book/$lang$path) was not found. Defaulting to en_us.")
-            getFileAsString(path, "en_us")
+            if (LogisticsPipes.isDEBUG()) LogisticsPipes.log.error("Language $lang for the current file ($resolvedLocation) was not found. Defaulting to en_us.")
+            loadPage(path, "en_us")
         } else {
             // English not found, this may be normal. Maybe the previous language file pointed to a non-existent file.
-            val errorMsg = "The requested file (book/$lang$path) was not found"
-            if (LogisticsPipes.isDEBUG()) LogisticsPipes.log.error("$errorMsg. Make sure it exists or if the path is correct.")
-            throw FileNotFoundException(errorMsg)
+            val translatedError = MessageFormat.format(StringUtils.translate("misc.guide_book.missing_page"), resolvedLocation)
+            object : PageInfoProvider {
+                override val language: String = lang
+                override val fileLocation: String = ""
+                override val metadata: YamlPageMetadata = YamlPageMetadata(
+                    title = "Page not found",
+                    icon = "logisticspipes:itemcard",
+                    menu = emptyMap()
+                )
+                override val paragraphs: List<Paragraph> = listOf(
+                    ImageParagraph(
+                        alternative = "Not found image not found?",
+                        imagePath = "guide_book_404"
+                    ),
+                    HeaderParagraph(
+                        elements = MarkdownParser.splitSpacesAndWords(translatedError),
+                        headerLevel = 1
+                    ),
+                )
+            }
         }
     }
 }
@@ -203,8 +140,7 @@ private fun parseMetadata(metadataString: String, markdownFile: String): YamlPag
         try {
             Yaml.default.decodeFromString(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
         } catch (e: YamlException) {
-            LogisticsPipes.log.error("Exception: $e")
-            LogisticsPipes.log.error("The following Yaml in $markdownFile is malformed! \n$metadataString")
+            LogisticsPipes.log.error("The following Yaml in $markdownFile is malformed! \n$metadataString", e)
             MISSING_META
         }
     } else MISSING_META
@@ -228,11 +164,13 @@ fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
  * @param menu menus of the page: Map of id to (category to entries)
  */
 @Serializable
-data class YamlPageMetadata(val title: String,
-                            val icon: String = "logisticspipes:itemcard",
-                            val menu: Map<String, Map<String, List<String>>> = emptyMap())
+data class YamlPageMetadata(
+    val title: String,
+    val icon: String = "logisticspipes:itemcard",
+    val menu: Map<String, Map<String, List<String>>> = emptyMap()
+)
 
-class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvider {
+class LoadedPage(override val fileLocation: String, override val language: String, unformattedText: String) : PageInfoProvider {
     private val metadataString: String
     private val markdownString: String
 
@@ -252,7 +190,30 @@ class LoadedPage(unformattedText: String, fileLocation: String) : PageInfoProvid
     }
 }
 
+fun resolveLocation(resolvedLocation: Path, language: String) =
+    Paths.get("book/$language").let { base ->
+        if (resolvedLocation.isAbsolute) {
+            "$base$resolvedLocation"
+        } else {
+            base.resolve(resolvedLocation).toString()
+        }
+    }
+
 interface PageInfoProvider {
+    fun resolveLocation(location: String): String = resolveLocation(Paths.get(fileLocation).resolveSibling(location), language)
+    fun resolveResource(location: String): ResourceLocation =
+        location.lastIndexOf(':').let { idx ->
+            val resourceDomain = when (idx) {
+                -1 -> LPConstants.LP_MOD_ID
+                else -> location.substring(0 until idx)
+            }
+            var resourcePath = ((idx + 1)..location.lastIndex).let { if (it.isEmpty()) "" else location.substring(it) }
+            resourcePath = BookContents.specialImages.getOrDefault(resourcePath, resolveLocation(resourcePath))
+            ResourceLocation(resourceDomain, resourcePath)
+        }
+
+    val language: String
+    val fileLocation: String
     val metadata: YamlPageMetadata
     val paragraphs: List<Paragraph>
 }

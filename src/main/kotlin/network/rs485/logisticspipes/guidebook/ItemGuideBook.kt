@@ -77,7 +77,7 @@ class ItemGuideBook : LogisticsItem() {
                         currentPage = SavedPage.fromTag(nbt.getCompoundTag("page"))
                         // type 10 = NBTTagCompound, see net.minecraft.nbt.NBTBase.createNewByType
                         val tagList = nbt.getTagList("bookmarks", 10)
-                        tabPages = tagList.map { tag -> SavedPage.fromTag(tag as NBTTagCompound) }
+                        tabPages = tagList.mapNotNull { tag -> SavedPage.fromTag(tag as NBTTagCompound) }
                     }
                 }
             }

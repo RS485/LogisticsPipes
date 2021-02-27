@@ -40,7 +40,6 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
-import java.util.*
 import kotlin.math.floor
 
 /**
@@ -72,7 +71,15 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
  */
 class DrawableSpace(private val scale: Double, state: InlineDrawableState) : DrawableWord(" ", scale, state) {
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        if (width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = left, y =top, width = width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
+        if (width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = left, y = top, width = width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
+    }
+
+    fun setWidth(newWidth: Int) {
+        relativeBody.setSize(newWidth = newWidth)
+    }
+
+    fun resetWidth() {
+        setWidth(newWidth = GuiGuideBook.lpFontRenderer.getStringWidth(" ", format.italic(), format.bold(), scale))
     }
 
     override fun toString(): String {
@@ -130,34 +137,71 @@ internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified
     return maxHeight
 }
 
-internal fun splitInitialize(drawables: List<DrawableWord>, x: Int, y: Int, maxWidth: Int): Int {
-    var currentY = 1
-    var currentWidth = 0
-    if (maxWidth > 0) {
-        val currentLine = mutableListOf<DrawableWord>()
-        for (currentDrawableWord in drawables) {
-            when (currentDrawableWord) {
-                // Break line and setPos on the queued up words via break signal
-                is DrawableBreak -> {
-                    currentLine.add(currentDrawableWord)
-                    currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
-                    currentLine.clear()
-                    currentWidth = 0
-                }
-                else -> {
-                    // Break line and setPos on the queued up words via line width
-                    if (currentDrawableWord !is DrawableSpace && currentWidth + currentDrawableWord.width > maxWidth) {
-                        currentY += initLine(x, y + currentY, currentLine, true, maxWidth)
-                        currentLine.clear()
-                        currentWidth = 0
-                    }
-                    currentLine.add(currentDrawableWord)
-                    currentWidth += if (currentDrawableWord is DrawableSpace) GuiGuideBook.lpFontRenderer.getStringWidth(" ") else currentDrawableWord.width
-                    if (currentDrawableWord == drawables.last()) currentY += initLine(x, y + currentY, currentLine, false, maxWidth)
-                }
-            }
+internal fun splitAndInitialize(drawables: List<DrawableWord>, x: Int, y: Int, maxWidth: Int, justify: Boolean): Int {
+    var currentHeight = 0
+    val splitLines = splitLines(drawables, maxWidth)
+    for (line in splitLines){
+        currentHeight += if(justify && (line != splitLines.last() || line.contains(DrawableBreak))){
+            initializeJustifiedLine(line, x, y + currentHeight, maxWidth)
+        } else {
+            initializeLine(line, x, y + currentHeight)
         }
-        currentY += 1
     }
-    return currentY
+    return currentHeight
+}
+
+private fun initializeJustifiedLine(line: List<DrawableWord>, x: Int, y: Int, maxWidth: Int): Int {
+    val spacesExceptIfLast = line.filterIsInstance<DrawableSpace>().filterNot { it == line.last() }
+    val spaceIfLast: DrawableSpace? = line.find { it is DrawableSpace && it == line.last() } as DrawableSpace?
+    val totalSpaceWidth = maxWidth - line.filterNot { it is DrawableSpace }.fold(0) { currentWidth, word -> currentWidth + word.width }
+    val spaceWidthBase = floor(totalSpaceWidth.toFloat() / spacesExceptIfLast.size).toInt()
+    var remainder = if(spacesExceptIfLast.isNotEmpty()) totalSpaceWidth % spacesExceptIfLast.size else 0
+    spacesExceptIfLast.forEach { space ->
+        val currentSpaceWidth = if(remainder > 0) {
+            remainder--
+            spaceWidthBase + 1
+        } else {
+            spaceWidthBase
+        }
+        space.setWidth(currentSpaceWidth)
+    }
+    spaceIfLast?.setWidth(0)
+    return initializeLine(line, x, y)
+}
+
+private fun initializeLine(line: List<DrawableWord>, x: Int, y: Int): Int {
+    if(line.isEmpty()) return 0
+    line.fold(x) { currentX, word ->
+        word.setPos(currentX, y)
+        currentX + word.width
+    }
+    return line.maxOf { word -> word.height }
+}
+
+private fun splitLines(originalWords: List<DrawableWord>, maxWidth: Int): List<List<DrawableWord>> {
+    val line = mutableListOf<DrawableWord>()
+    val lines = mutableListOf<List<DrawableWord>>()
+    var currentWidth = 0
+
+    fun breakLine() {
+        currentWidth = 0
+        lines.add(line.toMutableList())
+        line.clear()
+    }
+
+    fun addWordToLine(word: DrawableWord) {
+        currentWidth += word.width
+        line.add(word)
+    }
+
+    for (word in originalWords) {
+        if (word is DrawableSpace) word.resetWidth()
+        if (currentWidth + word.width > maxWidth && word !is DrawableSpace) {
+            breakLine()
+        }
+        addWordToLine(word)
+        if (word is DrawableBreak || word == originalWords.last()) breakLine()
+    }
+
+    return lines
 }

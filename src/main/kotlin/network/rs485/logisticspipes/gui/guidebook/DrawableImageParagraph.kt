@@ -56,7 +56,7 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
     override fun setChildrenPos(): Int {
         var currentY = 5
         currentY += if (image.broken) {
-            splitInitialize(alternativeText, 5, currentY, width - 10)
+            splitAndInitialize(alternativeText, 5, currentY, width - 10, false)
         } else {
             image.setPos(0, currentY)
         }

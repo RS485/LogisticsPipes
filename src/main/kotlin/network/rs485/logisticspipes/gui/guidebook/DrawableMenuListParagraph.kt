@@ -65,7 +65,7 @@ class DrawableMenuListParagraph(private val menuTitle: List<DrawableWord>, priva
 
     override fun setChildrenPos(): Int {
         var currentY = 0
-        currentY += splitInitialize(menuTitle, 0, currentY, width)
+        currentY += splitAndInitialize(menuTitle, 0, currentY, width, true)
         currentY += horizontalLine.setPos(0, currentY)
         for (group in listMenuGroups) currentY += group.setPos(0, currentY)
         return currentY + entrySpacing
@@ -87,7 +87,7 @@ class DrawableMenuListGroup(private val groupTitle: List<DrawableWord>, private 
     override fun setChildrenPos(): Int {
         var currentY = entrySpacing
         var currentX = entrySpacing
-        currentY += splitInitialize(groupTitle, currentX, currentY, width)
+        currentY += splitAndInitialize(groupTitle, currentX, currentY, width, false)
         for (entry in groupListEntries) {
             if (currentX + entry.width + entrySpacing > width) {
                 currentX = entrySpacing

@@ -50,7 +50,7 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
     }
 
     override fun setChildrenPos(): Int {
-        return splitInitialize(words, 0, 0, width)
+        return splitAndInitialize(words, 0, 0, width, true)
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {

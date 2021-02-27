@@ -101,50 +101,18 @@ class DrawableLinkWord(val str: String, val scale: Double, val state: InlineDraw
     // TODO "link" all words connected to the same link synced when hovered.
 }
 
-internal fun initLine(x: Int, y: Int, line: MutableList<DrawableWord>, justified: Boolean, maxWidth: Int): Int {
-    var maxHeight = 0
-    var remainder = 0
-    val spacing = if (justified && line.size != 0) {
-        val wordsWidth = (line.fold(0) { i, elem -> i + if (elem !is DrawableSpace) elem.width else 0 })
-        val remainingSpace = floor(maxWidth - wordsWidth.toDouble())
-        val numberSpaces = if (line.last() is DrawableSpace) line.count { it is DrawableSpace } - 1 else line.count { it is DrawableSpace }
-        remainder = remainingSpace.rem(numberSpaces).toInt()
-        floor(remainingSpace / numberSpaces.toDouble()).toInt()
-    } else {
-        line.find { it is DrawableSpace }?.width ?: GuiGuideBook.lpFontRenderer.getStringWidth(" ")
-    }
-    line.foldIndexed(x) { _, currX, drawableWord ->
-        when (drawableWord) {
-            is DrawableSpace -> {
-                val currentSpacing = when {
-                    (drawableWord == line.last()) -> 0
-                    remainder > 0 -> {
-                        remainder--
-                        spacing + 1
-                    }
-                    else -> spacing
-                }
-                drawableWord.setPos(currX, y)
-                drawableWord.relativeBody.width = currentSpacing
-            }
-            else -> {
-                drawableWord.setPos(currX, y)
-            }
-        }
-        maxHeight = maxOf(maxHeight, drawableWord.height)
-        currX + drawableWord.width
-    }
-    return maxHeight
-}
-
 internal fun splitAndInitialize(drawables: List<DrawableWord>, x: Int, y: Int, maxWidth: Int, justify: Boolean): Int {
     var currentHeight = 0
     val splitLines = splitLines(drawables, maxWidth)
+
+    fun isLastLine(line: List<DrawableWord>) = line == splitLines.last()
+    fun hasBreak(line: List<DrawableWord>) = line.contains(DrawableBreak)
+
     for (line in splitLines){
-        currentHeight += if(justify && (line != splitLines.last() || line.contains(DrawableBreak))){
-            initializeJustifiedLine(line, x, y + currentHeight, maxWidth)
-        } else {
+        currentHeight += if(!justify || isLastLine(line) || hasBreak(line)){
             initializeLine(line, x, y + currentHeight)
+        } else {
+            initializeJustifiedLine(line, x, y + currentHeight, maxWidth)
         }
     }
     return currentHeight

@@ -60,4 +60,5 @@ open class DrawableParagraph : Drawable() {
     }
 
     open fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {}
+
 }

@@ -68,7 +68,7 @@ class SavedPage(val page: String) : LPFinalSerializable {
     fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
         drawablePage.getVisibleParagraphs(visibleArea)
             .firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }
-            ?.mouseClicked(mouseX, mouseY, guideActionListener)
+            ?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener)
     }
 
     fun setDrawablesPosition(area: Rectangle) {

@@ -64,8 +64,8 @@ class DrawableMenuParagraph<T: Drawable>(private val menuTitle: List<DrawableWor
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
-        menuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, guideActionListener) ?: Unit
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
+        menuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
         var currentY = 0
@@ -85,8 +85,8 @@ class DrawableMenuGroup<T: Drawable>(private val groupTitle: List<DrawableWord>,
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
-        groupTiles.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, guideActionListener) ?: Unit
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
+        groupTiles.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
         var currentY = tileSpacing
@@ -116,11 +116,11 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         relativeBody.setSize(tileSize, tileSize)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
         guideActionListener.onMenuButtonClick(linkedPage)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        hovered = hovering(mouseX, mouseY, visibleArea)
+        val hovered = isHovering(mouseX, mouseY, visibleArea)
         GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         val itemRect = Rectangle(left + (width - 16) / 2, top + (height - 16) / 2, 16, 16)
         if (itemRect.intersects(visibleArea)) {
@@ -162,11 +162,11 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
         itemRect.setSize(iconSize, iconSize)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) =
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
         guideActionListener.onMenuButtonClick(linkedPage)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        hovered = hovering(mouseX, mouseY, visibleArea)
+        val hovered = isHovering(mouseX, mouseY, visibleArea)
         GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {

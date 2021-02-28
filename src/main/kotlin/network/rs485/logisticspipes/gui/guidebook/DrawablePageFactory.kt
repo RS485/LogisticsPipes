@@ -55,13 +55,21 @@ object DrawablePageFactory {
     fun createDrawablePage(page: PageInfoProvider): DrawablePage =
         createDrawableParagraphs(page).let { it.createParent { DrawablePage(it) } }
 
+    private fun getLinkGroup(linkGroups: MutableMap<Link, LinkGroup>, state: InlineDrawableState) = state.link?.let { link ->
+        linkGroups.getOrPut(link) { LinkGroup(link) }
+    }
+
+    private fun LinkGroup?.createChild(constructor: (linkGroup: LinkGroup?) -> DrawableWord): DrawableWord =
+        constructor(this).also { this?.addChild(it) }
+
     private fun <T : DrawableParagraph> createDrawableParagraph(paragraphConstructor: DrawableWordMap<T>, elements: List<InlineElement>, scale: Double) =
         defaultDrawableState.copy().let { state ->
+            val linkGroups = mutableMapOf<Link, LinkGroup>()
             elements.mapNotNull { element ->
                 element.changeDrawableState(state)
                 when (element) {
-                    is Word -> DrawableWord(element.str, scale, state)
-                    is Space -> DrawableSpace(scale, state)
+                    is Word -> getLinkGroup(linkGroups, state).createChild { DrawableWord(element.str, scale, state, it) }
+                    is Space -> getLinkGroup(linkGroups, state).createChild { DrawableSpace(scale, state, it) }
                     Break -> DrawableBreak
                     else -> null
                 }

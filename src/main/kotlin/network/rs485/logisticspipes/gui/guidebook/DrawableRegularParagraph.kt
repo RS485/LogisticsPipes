@@ -43,6 +43,10 @@ import network.rs485.logisticspipes.util.math.Rectangle
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
  */
 class DrawableRegularParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
+        words.find { it.isHovering(mouseX, mouseY, visibleArea) }?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: Unit
+
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
         relativeBody.setSize(parent!!.width, setChildrenPos())
@@ -55,7 +59,7 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
-        hovered = hovering(mouseX, mouseY, visibleArea)
+        val hovered = isHovering(mouseX, mouseY, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 

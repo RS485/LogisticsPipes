@@ -40,17 +40,43 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.markdown.TextFormat
 
-open class Drawable {
+interface MouseInteractable {
+    /**
+     * This function is responsible check if the mouse is over the object.
+     * @param mouseX        X position of the mouse (absolute, screen)
+     * @param mouseY        Y position of the mouse (absolute, screen)
+     * @param visibleArea   Desired visible area to check
+     */
+    fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean
+
+    /**
+     * A mouse click event should run this and the implementation checks if
+     * any actions on guideActionListener should be run.
+     */
+    fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener)
+
+    /**
+     * Returns an updated color depending on any mouse interaction.
+     */
+    fun updateColor(baseColor: Int): Int
+
+    /**
+     * Returns an updated format depending on any mouse interaction.
+     */
+    fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat>
+}
+
+open class Drawable : MouseInteractable {
     companion object {
         /**
          * Assigns the parent of all children to this.
          */
-        fun <T: Drawable> List<Drawable>.createParent(parentGetter: () -> T) =
+        fun <T : Drawable> List<Drawable>.createParent(parentGetter: () -> T) =
             parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
     }
 
-    var hovered: Boolean = false
     internal var relativeBody: Rectangle = Rectangle()
 
     var parent: Drawable? = null
@@ -62,16 +88,16 @@ open class Drawable {
     val height: Int get() = relativeBody.height
 
     // Absolute positions accessors.
-    val left: Int get() = (parent?.left?: 0) + x
+    val left: Int get() = (parent?.left ?: 0) + x
     val right: Int get() = left + width
-    val top: Int get() = (parent?.top?: 0) + y
+    val top: Int get() = (parent?.top ?: 0) + y
     val bottom: Int get() = top + height
     val absoluteBody: Rectangle get() = Rectangle(left, top, width, height)
 
     /**
      * Assigns a new child's parent to this.
      */
-    fun <T: Drawable> createChild(childGetter: () -> T) = childGetter().also { it.parent = this }
+    fun <T : Drawable> createChild(childGetter: () -> T) = childGetter().also { it.parent = this }
 
     /**
      * This is just like the normal draw functions for minecraft Gui classes but with the added current Y offset.
@@ -81,7 +107,7 @@ open class Drawable {
      * @param visibleArea   used to avoid draw calls on non-visible children
      */
     open fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        if(DRAW_BODY_WIREFRAME){
+        if (DRAW_BODY_WIREFRAME) {
             val visibleAbsoluteBody = visibleArea.translated(0, -5).grow(0, 10).overlap(absoluteBody)
             GuiGuideBook.drawRectangleOutline(visibleAbsoluteBody, GuideBookConstants.Z_TEXT.toInt(), MinecraftColor.WHITE.colorCode)
         }
@@ -105,10 +131,8 @@ open class Drawable {
      * @param mouseY        Y position of the mouse (absolute, screen)
      * @param visibleArea   Desired visible area to check
      */
-    fun hovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean {
-        if(!visibleArea.contains(mouseX, mouseY)) return false
-        return absoluteBody.contains(mouseX, mouseY)
-    }
+    override fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean =
+        visibleArea.contains(mouseX, mouseY) && absoluteBody.contains(mouseX, mouseY)
 
     /**
      * This function is responsible to check if the current Drawable is within the vertical constrains of the given area.
@@ -119,5 +143,10 @@ open class Drawable {
         return visibleArea.intersects(absoluteBody)
     }
 
-    open fun mouseClicked(mouseX: Int, mouseY: Int, guideActionListener: GuiGuideBook.ActionListener) {}
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {}
+
+    override fun updateColor(baseColor: Int): Int = baseColor
+
+    override fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat> = baseFormat
+
 }

@@ -65,7 +65,7 @@ class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : Dr
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        hovered = hovering(mouseX, mouseY, visibleArea)
+        val hovered = isHovering(mouseX, mouseY, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 

@@ -45,15 +45,31 @@ import kotlin.math.floor
 /**
  * Normal Token that stores the text and the formatting tags of said text.
  */
-open class DrawableWord(private val str: String, private val scale: Double, state: InlineDrawableState) : Drawable() {
+open class DrawableWord(
+    private val str: String,
+    private val scale: Double,
+    state: InlineDrawableState,
+    protected val mouseInteractable: MouseInteractable?,
+) : Drawable() {
+
     val format: Set<TextFormat> = state.format
     val color: Int = state.color
 
     init {
         relativeBody.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
     }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
+        mouseInteractable?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener)
+
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        GuiGuideBook.lpFontRenderer.drawString(string = str, x = left, y = top, color = color, format = format, scale = scale)
+        val hovering = mouseInteractable?.isHovering(mouseX, mouseY, visibleArea)?:false
+        val updatedColor = mouseInteractable?.updateColor(color) ?: color
+        val updatedFormat = mouseInteractable?.updateFormat(format) ?: format
+        if (hovering) {
+            GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
+        }
+        GuiGuideBook.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
     }
 
     override fun setPos(x: Int, y: Int): Int {
@@ -69,9 +85,29 @@ open class DrawableWord(private val str: String, private val scale: Double, stat
 /**
  * Space object responsible for drawing the necessary formatting in between words.
  */
-class DrawableSpace(private val scale: Double, state: InlineDrawableState) : DrawableWord(" ", scale, state) {
+class DrawableSpace(
+    private val scale: Double,
+    state: InlineDrawableState,
+    mouseInteractable: MouseInteractable?,
+) : DrawableWord(" ", scale, state, mouseInteractable) {
+
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        if (width > 0) GuiGuideBook.lpFontRenderer.drawSpace(x = left, y = top, width = width, color = color, italic = format.italic(), underline = format.underline(), strikethrough = format.strikethrough(), shadow = format.shadow(), scale = scale)
+        if (width > 0) {
+            mouseInteractable?.isHovering(mouseX, mouseY, visibleArea)
+            val updatedColor = mouseInteractable?.updateColor(color) ?: color
+            val updatedFormat = mouseInteractable?.updateFormat(format) ?: format
+            GuiGuideBook.lpFontRenderer.drawSpace(
+                x = left,
+                y = top,
+                width = width,
+                color = updatedColor,
+                italic = updatedFormat.italic(),
+                underline = updatedFormat.underline(),
+                strikethrough = updatedFormat.strikethrough(),
+                shadow = updatedFormat.shadow(),
+                scale = scale,
+            )
+        }
     }
 
     fun setWidth(newWidth: Int) {
@@ -87,18 +123,29 @@ class DrawableSpace(private val scale: Double, state: InlineDrawableState) : Dra
     }
 }
 
-object DrawableBreak : DrawableWord("", 1.0, defaultDrawableState)
+object DrawableBreak : DrawableWord("", 1.0, defaultDrawableState, null)
 
-/**
- * TODO Link token, stores the linked string, as well as the 'url'.
- */
-class DrawableLinkWord(val str: String, val scale: Double, val state: InlineDrawableState, val onClick: (mouseButton: Int) -> Unit) : DrawableWord(str, scale, defaultDrawableState){
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        hovered = this.hovering(mouseX, mouseY, visibleArea)
-        val currentColor = if(hovered) MinecraftColor.BLUE.colorCode else state.color
-        GuiGuideBook.lpFontRenderer.drawString(string = str, x = left, y = top, color = currentColor, format = format, scale = scale)
+class LinkGroup(private val link: Link) : MouseInteractable {
+    private val orderedChildren: MutableList<DrawableWord> = mutableListOf()
+    var hovered: Boolean = false
+        internal set
+
+    fun addChild(linkWord: DrawableWord) = orderedChildren.add(linkWord)
+
+    override fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean =
+        orderedChildren.any { it.isHovering(mouseX, mouseY, visibleArea) }.also { hovered = it } // BIG TODO: needs some way to update from above (maybe callback to the DrawableParagraph to update state for the paragraph)
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
+        when (link) {
+            is PageLink -> guideActionListener.onPageLinkClick(link.page)
+            is WebLink -> TODO()
+        }
     }
-    // TODO "link" all words connected to the same link synced when hovered.
+
+    override fun updateColor(baseColor: Int): Int = MinecraftColor.BLUE.colorCode
+
+    override fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat> =
+        (if (hovered) baseFormat::minusElement else baseFormat::plusElement).invoke(TextFormat.Underline)
 }
 
 internal fun splitAndInitialize(drawables: List<DrawableWord>, x: Int, y: Int, maxWidth: Int, justify: Boolean): Int {
@@ -108,8 +155,8 @@ internal fun splitAndInitialize(drawables: List<DrawableWord>, x: Int, y: Int, m
     fun isLastLine(line: List<DrawableWord>) = line == splitLines.last()
     fun hasBreak(line: List<DrawableWord>) = line.contains(DrawableBreak)
 
-    for (line in splitLines){
-        currentHeight += if(!justify || isLastLine(line) || hasBreak(line)){
+    for (line in splitLines) {
+        currentHeight += if (!justify || isLastLine(line) || hasBreak(line)) {
             initializeLine(line, x, y + currentHeight)
         } else {
             initializeJustifiedLine(line, x, y + currentHeight, maxWidth)
@@ -123,9 +170,9 @@ private fun initializeJustifiedLine(line: List<DrawableWord>, x: Int, y: Int, ma
     val spaceIfLast: DrawableSpace? = line.find { it is DrawableSpace && it == line.last() } as DrawableSpace?
     val totalSpaceWidth = maxWidth - line.filterNot { it is DrawableSpace }.fold(0) { currentWidth, word -> currentWidth + word.width }
     val spaceWidthBase = floor(totalSpaceWidth.toFloat() / spacesExceptIfLast.size).toInt()
-    var remainder = if(spacesExceptIfLast.isNotEmpty()) totalSpaceWidth % spacesExceptIfLast.size else 0
+    var remainder = if (spacesExceptIfLast.isNotEmpty()) totalSpaceWidth % spacesExceptIfLast.size else 0
     spacesExceptIfLast.forEach { space ->
-        val currentSpaceWidth = if(remainder > 0) {
+        val currentSpaceWidth = if (remainder > 0) {
             remainder--
             spaceWidthBase + 1
         } else {
@@ -138,7 +185,7 @@ private fun initializeJustifiedLine(line: List<DrawableWord>, x: Int, y: Int, ma
 }
 
 private fun initializeLine(line: List<DrawableWord>, x: Int, y: Int): Int {
-    if(line.isEmpty()) return 0
+    if (line.isEmpty()) return 0
     line.fold(x) { currentX, word ->
         word.setPos(currentX, y)
         currentX + word.width

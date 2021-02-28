@@ -3,6 +3,8 @@ package logisticspipes.interfaces;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -11,6 +13,7 @@ public interface ISecurityStationManager {
 
 	void add(LogisticsSecurityTileEntity tile);
 
+	@Nullable
 	LogisticsSecurityTileEntity getStation(UUID id);
 
 	void remove(LogisticsSecurityTileEntity tile);

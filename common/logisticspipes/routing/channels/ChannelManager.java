@@ -47,11 +47,13 @@ public class ChannelManager implements IChannelManager {
 			case PUBLIC:
 				return true;
 			case SECURED:
-				UUID secUUID = channel.getResponsibleSecurityID();
-				LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(secUUID);
-				SecuritySettings settings = station.getSecuritySettingsForPlayer(player, false);
-				if (settings != null) {
-					return settings.accessRoutingChannels;
+				final UUID secUUID = channel.getResponsibleSecurityID();
+				final LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(secUUID);
+				if (station != null) {
+					final SecuritySettings settings = station.getSecuritySettingsForPlayer(player, false);
+					if (settings != null) {
+						return settings.accessRoutingChannels;
+					}
 				}
 			case PRIVATE:
 				return channel.getOwner().equals(PlayerIdentifier.get(player));
@@ -155,11 +157,10 @@ public class ChannelManager implements IChannelManager {
 			if (o == this) return true;
 			if (!(o instanceof SavedData)) return false;
 			final SavedData other = (SavedData) o;
-			if (!other.canEqual((Object) this)) return false;
+			if (!other.canEqual(this)) return false;
 			final Object this$channels = this.getChannels();
 			final Object other$channels = other.getChannels();
-			if (this$channels == null ? other$channels != null : !this$channels.equals(other$channels)) return false;
-			return true;
+			return Objects.equals(this$channels, other$channels);
 		}
 
 		protected boolean canEqual(final Object other) {

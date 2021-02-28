@@ -1182,27 +1182,20 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return false;
 	}
 
+	@Nullable
 	public ISecurityProvider getSecurityProvider() {
 		return SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
 	}
 
 	public boolean canBeDestroyedByPlayer(EntityPlayer entityPlayer) {
 		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
-		if (station != null) {
-			return station.getSecuritySettingsForPlayer(entityPlayer, true).removePipes;
-		}
-		return true;
+		return station == null || station.getSecuritySettingsForPlayer(entityPlayer, true).removePipes;
 	}
 
 	@Override
 	public boolean canBeDestroyed() {
 		ISecurityProvider sec = getSecurityProvider();
-		if (sec != null) {
-			if (!sec.canAutomatedDestroy()) {
-				return false;
-			}
-		}
-		return true;
+		return sec == null || sec.canAutomatedDestroy();
 	}
 
 	public void setDestroyByPlayer() {

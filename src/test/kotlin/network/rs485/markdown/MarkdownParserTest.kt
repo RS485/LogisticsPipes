@@ -654,14 +654,11 @@ internal class MarkdownParserTest {
         val paragraphs = parseParagraphs("$str1 [$linkText](page://$pageLink) $str2")
         val linkObject = PageLink(pageLink)
 
-        val linkElements = listOf(LinkWord("page", linkObject), Space, LinkWord("link", linkObject))
         val expectedParagraphs = listOf(
             RegularParagraph(
                 listOf(
                     splitWhitespaceCharactersAndWords(str1),
-                    listOf(Space),
-                    linkElements,
-                    listOf(Space),
+                    listOf(Space, LinkFormatting(linkObject), Word("page"), Space, Word("link"), LinkFormatting(null), Space),
                     splitWhitespaceCharactersAndWords(str2),
                 ).flatten()
             )
@@ -685,9 +682,9 @@ internal class MarkdownParserTest {
                 listOf(
                     splitWhitespaceCharactersAndWords(str1),
                     listOf(Space),
-                    listOf(LinkWord("page", linkObject), Space, LinkWord("link", linkObject), Space, LinkWord("1", linkObject)),
+                    listOf(LinkFormatting(linkObject), Word("page"), Space, Word("link"), Space, Word("1"), LinkFormatting(null)),
                     listOf(Space),
-                    listOf(LinkWord("page", linkObject), Space, LinkWord("link", linkObject), Space, LinkWord("2", linkObject)),
+                    listOf(LinkFormatting(linkObject), Word("page"), Space, Word("link"), Space, Word("2"), LinkFormatting(null)),
                     listOf(Space),
                     splitWhitespaceCharactersAndWords(str2),
                 ).flatten()
@@ -708,8 +705,8 @@ internal class MarkdownParserTest {
         val expectedParagraphs = listOf(
             RegularParagraph(
                 listOf(
-                    listOf(LinkWord("page", linkObject), Space, LinkWord("link", linkObject), Space, LinkWord("1", linkObject)),
-                    listOf(LinkWord("page", linkObject), Space, LinkWord("link", linkObject), Space, LinkWord("2", linkObject)),
+                    listOf(LinkFormatting(linkObject), Word("page"), Space, Word("link"), Space, Word("1"), LinkFormatting(null)),
+                    listOf(LinkFormatting(linkObject), Word("page"), Space, Word("link"), Space, Word("2"), LinkFormatting(null)),
                 ).flatten()
             )
         )
@@ -732,9 +729,9 @@ internal class MarkdownParserTest {
                 listOf(
                     splitWhitespaceCharactersAndWords(str1),
                     listOf(Space),
-                    listOf(LinkWord("page", linkObject), Space, LinkWord("link", linkObject), Space, LinkWord("1", linkObject)),
+                    listOf(LinkFormatting(linkObject), Word("page"), Space, Word("link"), Space, Word("1"), LinkFormatting(null)),
                     listOf(Space),
-                    listOf(LinkWord("page", linkObject), Space, LinkWord("link", linkObject), Space, LinkWord("2", linkObject)),
+                    listOf(LinkFormatting(linkObject), Word("page"), Space, Word("link"), Space, Word("2"), LinkFormatting(null)),
                     listOf(Space),
                     splitWhitespaceCharactersAndWords(str2),
                 ).flatten()

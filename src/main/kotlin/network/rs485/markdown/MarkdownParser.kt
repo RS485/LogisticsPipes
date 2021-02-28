@@ -47,7 +47,6 @@ import java.util.stream.IntStream
 import kotlin.collections.ArrayList
 
 typealias WordCreator = (String) -> Word?
-typealias WordFormatter = (CharSequence, wordSplitter: TextToElements) -> List<InlineElement>
 typealias TextToElements = (CharSequence) -> List<InlineElement>
 
 object MarkdownParser {
@@ -277,11 +276,7 @@ object MarkdownParser {
 
     private fun parseTextElement(word: String) = if (word.isNotBlank()) Word(word) else null
 
-    private fun parseLinks(
-        inputChars: CharSequence,
-        splitAndFormatWordsPar: WordFormatter,
-        splitWhitespaceCharactersAndWordsPar: TextToElements,
-    ): List<InlineElement> {
+    private fun parseLinks(inputChars: CharSequence): List<InlineElement> {
         var lastCharLookedAt = 0
         val postfixGetter = { if (lastCharLookedAt < inputChars.length) inputChars.subSequence(lastCharLookedAt, inputChars.length) else "" }
         val isLastWhitespace = { lastCharLookedAt in 1 until inputChars.length && inputChars[lastCharLookedAt].isWhitespace() }
@@ -291,7 +286,7 @@ object MarkdownParser {
                 // checks link
                 val before = inputChars.subSequence(lastCharLookedAt, link.match.range.first)
                 listOf(
-                    splitWhitespaceCharactersAndWordsPar(before).let { if (!isLastWhitespace() && it.isEmpty()) emptyList() else it + listOf(Space) },
+                    splitWhitespaceCharactersAndWords(before).let { if (!isLastWhitespace() && it.isEmpty()) emptyList() else it + listOf(Space) },
                     when {
                         link.isPageLink() -> PageLink(link.path!!)
                         link.isWebLink() -> WebLink(link.link!!)
@@ -299,18 +294,16 @@ object MarkdownParser {
                     }?.let { linkRef ->
                         listOf(
                             listOfNotNull(Word("!").takeIf { link.imageLinkFlag }),
-                            splitAndFormatWordsPar(link.text!!) { wordsToSplit ->
-                                splitSpacesAndWords(wordsToSplit) { word ->
-                                    if (word.isNotBlank()) LinkWord(word, linkRef) else null
-                                }
-                            }
+                            listOf(LinkFormatting(linkRef)),
+                            splitAndFormatWords(link.text!!),
+                            listOf(LinkFormatting(null)),
                         ).flatten()
-                    } ?: splitWhitespaceCharactersAndWordsPar(link.match.value),
+                    } ?: splitWhitespaceCharactersAndWords(link.match.value),
                 ).flatten().also { lastCharLookedAt = link.match.range.last + 1 }
             }
             .toList()
             .plus(if (isLastWhitespace()) listOf(Space) else emptyList())
-            .plus(splitWhitespaceCharactersAndWordsPar(postfixGetter()))
+            .plus(splitWhitespaceCharactersAndWords(postfixGetter()))
     }
 
     private fun countChars(char: Char, str: String, index: Int = 0, maximum: Int = str.length): Int {
@@ -328,12 +321,7 @@ object MarkdownParser {
 
         fun completeParagraph() {
             if (sb.isNotBlank()) {
-                val parsedInlineElements = parseLinks(
-                    inputChars = sb,
-                    splitAndFormatWordsPar = ::splitAndFormatWords,
-                    splitWhitespaceCharactersAndWordsPar = ::splitWhitespaceCharactersAndWords
-                )
-                paragraphs.add(RegularParagraph(parsedInlineElements))
+                paragraphs.add(RegularParagraph(parseLinks(sb)))
             }
             sb.clear()
         }

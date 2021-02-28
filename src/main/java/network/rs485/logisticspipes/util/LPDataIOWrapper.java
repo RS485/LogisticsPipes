@@ -131,6 +131,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	public static void provideData(ByteBuf dataBuffer, LPDataInputConsumer dataInputConsumer) {
+		// ignore empty data
+		if (dataBuffer.readableBytes() == 0) return;
 		LPDataIOWrapper lpData = getInstance(dataBuffer);
 
 		dataInputConsumer.accept(lpData);
@@ -139,6 +141,8 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	}
 
 	public static void writeData(ByteBuf dataBuffer, LPDataOutputConsumer dataOutputConsumer) {
+		// ignore unwritable data
+		if (dataBuffer.writableBytes() == 0) return;
 		LPDataIOWrapper lpData = getInstance(dataBuffer);
 
 		dataOutputConsumer.accept(lpData);

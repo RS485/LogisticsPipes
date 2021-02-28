@@ -210,9 +210,9 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 
 	@Override
 	public int compareTo(ExitRoute o) {
-		int c = (int) Math.floor(distanceToDestination - o.distanceToDestination);
+		final int c = Double.compare(distanceToDestination, o.distanceToDestination);
 		if (c == 0) {
-			return destination.getSimpleID() - o.destination.getSimpleID();
+			return Integer.compare(destination.getSimpleID(), o.destination.getSimpleID());
 		}
 		return c;
 	}

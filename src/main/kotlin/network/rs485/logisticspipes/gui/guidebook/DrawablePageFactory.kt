@@ -40,7 +40,6 @@ package network.rs485.logisticspipes.gui.guidebook
 import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParent
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.PageInfoProvider
-import network.rs485.logisticspipes.guidebook.YamlPageMetadata
 import network.rs485.markdown.*
 import java.lang.Double.min
 
@@ -71,7 +70,6 @@ object DrawablePageFactory {
             drawableWords.createParent { paragraphConstructor(drawableWords) }
         }
 
-    // TODO normalize page/image links to be able to use .. ./ /
     private fun createDrawableParagraphs(page: PageInfoProvider): List<DrawableParagraph> =
         page.paragraphs.map { paragraph ->
             when (paragraph) {
@@ -92,7 +90,7 @@ object DrawablePageFactory {
                             MenuParagraphType.LIST -> ::DrawableMenuListEntry
                             MenuParagraphType.TILE -> ::DrawableMenuTile
                         }
-                        createDrawableMenuParagraph(page.metadata, paragraph, drawableMenuTitle, factory)
+                        createDrawableMenuParagraph(page, paragraph, drawableMenuTitle, factory)
                     },
                     elements = MarkdownParser.splitAndFormatWords(paragraph.description),
                     scale = getScaleFromLevel(3),
@@ -110,26 +108,32 @@ object DrawablePageFactory {
             }
         }
 
-    private fun <T: Drawable> createDrawableMenuParagraph(
-        pageMetadata: YamlPageMetadata,
+    private fun resolvePaths(page: PageInfoProvider, groupEntries: List<String>) =
+        groupEntries.map { loc -> page.resolveLocation(loc).let { if (it.isAbsolute) it.toString() else "/$it" } }
+
+    private fun <T : Drawable> createDrawableMenuParagraph(
+        page: PageInfoProvider,
         paragraph: MenuParagraph,
         drawableMenuTitle: List<DrawableWord>,
         drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
-    ) = (pageMetadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
+    ) = (page.metadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
-            paragraphConstructor = { drawableGroupTitle -> createDrawableMenu<T>(groupEntries, drawableGroupTitle, drawableMenuEntryConstructor) },
+            paragraphConstructor = { drawableGroupTitle ->
+                createDrawableMenu(resolvePaths(page, groupEntries), drawableGroupTitle, drawableMenuEntryConstructor)
+            },
             elements = MarkdownParser.splitAndFormatWords(groupTitle),
-            scale = getScaleFromLevel(6)
+            scale = getScaleFromLevel(6),
         )
     }.let { drawableMenuGroups ->
         drawableMenuGroups.createParent { DrawableMenuParagraph(drawableMenuTitle, drawableMenuGroups) }
     }
 
-    private fun <T: Drawable> createDrawableMenu(
+    private fun <T : Drawable> createDrawableMenu(
         menuGroupEntries: List<String>,
         drawableGroupTitle: List<DrawableWord>,
         drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
-    ) = menuGroupEntries.map { path ->
+    ) = menuGroupEntries
+        .map { path ->
             BookContents.get(path).metadata.let { metadata ->
                 drawableMenuEntryConstructor(path, metadata.title, metadata.icon)
             }

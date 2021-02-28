@@ -51,7 +51,6 @@ import network.rs485.markdown.HeaderParagraph
 import network.rs485.markdown.ImageParagraph
 import network.rs485.markdown.MarkdownParser
 import network.rs485.markdown.Paragraph
-import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -95,7 +94,7 @@ object BookContents {
 private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(RegexOption.DOT_MATCHES_ALL)
 
 fun loadPage(path: String, lang: String): PageInfoProvider {
-    val resolvedLocation = resolveLocation(resolvedLocation = Paths.get(path), language = lang)
+    val resolvedLocation = resolveAbsoluteLocation(resolvedLocation = Paths.get(path), language = lang)
     return try {
         val bookFile = Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(LPConstants.LP_MOD_ID, resolvedLocation))
         LoadedPage(
@@ -115,7 +114,7 @@ fun loadPage(path: String, lang: String): PageInfoProvider {
                 override val language: String = lang
                 override val fileLocation: String = ""
                 override val metadata: YamlPageMetadata = YamlPageMetadata(
-                    title = "Page not found",
+                    title = StringUtils.translate("misc.guide_book.missing_page_title"),
                     icon = "logisticspipes:itemcard",
                     menu = emptyMap()
                 )
@@ -138,24 +137,12 @@ private fun parseMetadata(metadataString: String, markdownFile: String): YamlPag
     return if (metadataString.isNotEmpty()) {
         // Takes the metadata string and parses the YAML information
         try {
-            Yaml.default.decodeFromString(YamlPageMetadata.serializer(), metadataString).normalizeMetadata(markdownFile)
+            Yaml.default.decodeFromString(YamlPageMetadata.serializer(), metadataString)
         } catch (e: YamlException) {
             LogisticsPipes.log.error("The following Yaml in $markdownFile is malformed! \n$metadataString", e)
             MISSING_META
         }
     } else MISSING_META
-}
-
-fun YamlPageMetadata.normalizeMetadata(markdownFile: String): YamlPageMetadata {
-    // Normalize the given paths, replacing any ./.. with the appropriate absolute (resource location) paths
-    val menu = this.menu.entries.associate {
-        it.key to it.value.mapValues { menuMap ->
-            menuMap.value.map { pagePath ->
-                Paths.get(File(markdownFile).parent ?: "", pagePath).normalize().toString()
-            }
-        }
-    }
-    return YamlPageMetadata(this.title, this.icon, menu)
 }
 
 /**
@@ -190,17 +177,16 @@ class LoadedPage(override val fileLocation: String, override val language: Strin
     }
 }
 
-fun resolveLocation(resolvedLocation: Path, language: String) =
+fun resolveAbsoluteLocation(resolvedLocation: Path, language: String) =
     Paths.get("book/$language").let { base ->
-        if (resolvedLocation.isAbsolute) {
-            "$base$resolvedLocation"
-        } else {
-            base.resolve(resolvedLocation).toString()
-        }
+        resolvedLocation.normalize()
+            .filter { path -> !path.startsWith("..") }
+            .fold(base, Path::resolve).toString()
     }
 
 interface PageInfoProvider {
-    fun resolveLocation(location: String): String = resolveLocation(Paths.get(fileLocation).resolveSibling(location), language)
+    fun resolveLocation(location: String): Path = Paths.get(fileLocation).resolveSibling(location).normalize()
+    fun resolveAbsoluteLocation(location: String): String = resolveAbsoluteLocation(resolveLocation(location), language)
     fun resolveResource(location: String): ResourceLocation =
         location.lastIndexOf(':').let { idx ->
             val resourceDomain = when (idx) {
@@ -208,7 +194,7 @@ interface PageInfoProvider {
                 else -> location.substring(0 until idx)
             }
             var resourcePath = ((idx + 1)..location.lastIndex).let { if (it.isEmpty()) "" else location.substring(it) }
-            resourcePath = BookContents.specialImages.getOrDefault(resourcePath, resolveLocation(resourcePath))
+            resourcePath = BookContents.specialImages.getOrDefault(resourcePath, resolveAbsoluteLocation(resourcePath))
             ResourceLocation(resourceDomain, resourcePath)
         }
 

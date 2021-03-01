@@ -47,6 +47,7 @@ object DebugPage : PageInfoProvider {
 
     const val FILE = "/debug/debug_page.md"
 
+    override val bookmarkable: Boolean = false
     override val fileLocation = FILE
     override val language = "en_us"
     override val metadata = YamlPageMetadata(

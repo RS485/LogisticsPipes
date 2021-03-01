@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.guidebook
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlException
+import com.sun.org.apache.xpath.internal.operations.Bool
 import kotlinx.serialization.Serializable
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
@@ -98,9 +99,9 @@ fun loadPage(path: String, lang: String): PageInfoProvider {
     return try {
         val bookFile = Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(LPConstants.LP_MOD_ID, resolvedLocation))
         LoadedPage(
-            language = lang,
             fileLocation = path,
-            unformattedText = bookFile.inputStream.bufferedReader().readLines().joinToString("\n")
+            language = lang,
+            unformattedText = bookFile.inputStream.bufferedReader().readLines().joinToString("\n"),
         )
     } catch (error: IOException) {
         if (lang != "en_us") {
@@ -111,6 +112,7 @@ fun loadPage(path: String, lang: String): PageInfoProvider {
             // English not found, this may be normal. Maybe the previous language file pointed to a non-existent file.
             val translatedError = MessageFormat.format(StringUtils.translate("misc.guide_book.missing_page"), resolvedLocation)
             object : PageInfoProvider {
+                override val bookmarkable: Boolean = false
                 override val language: String = lang
                 override val fileLocation: String = ""
                 override val metadata: YamlPageMetadata = YamlPageMetadata(
@@ -175,6 +177,8 @@ class LoadedPage(override val fileLocation: String, override val language: Strin
     override val paragraphs: List<Paragraph> by lazy {
         MarkdownParser.parseParagraphs(markdownString)
     }
+
+    override val bookmarkable: Boolean = fileLocation != BookContents.MAIN_MENU_FILE
 }
 
 fun resolveAbsoluteLocation(resolvedLocation: Path, language: String) =
@@ -202,4 +206,5 @@ interface PageInfoProvider {
     val fileLocation: String
     val metadata: YamlPageMetadata
     val paragraphs: List<Paragraph>
+    val bookmarkable: Boolean
 }

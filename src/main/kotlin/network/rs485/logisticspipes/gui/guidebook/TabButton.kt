@@ -46,13 +46,18 @@ interface TabButtonReturn {
     fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean
     fun getColor(): Int
     fun isPageActive(): Boolean
-    fun getHoverText(): String
 }
 
 private val buttonTextureArea = Rectangle(40, 64, 24, 32)
 private val circleAreaTexture = Rectangle(32, 96, 16, 16)
 
-class TabButton(x: Int, y: Int, private val whisky: TabButtonReturn) : LPGuiButton(99, x, y - 24, 24, 32) {
+class TabButton(
+    internal val tabPage: SavedPage,
+    x: Int,
+    y: Int,
+    private val whisky: TabButtonReturn,
+) : LPGuiButton(99, x, y - 24, 24, 32) {
+
     override val bodyTrigger = Rectangle(1, 1, 22, 22)
     private val circleArea = Rectangle(4, 4, 16, 16)
 
@@ -72,7 +77,7 @@ class TabButton(x: Int, y: Int, private val whisky: TabButtonReturn) : LPGuiButt
         val yOffset = if (whisky.isPageActive()) 0 else 3
         val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
         if (hovered) GuiGuideBook.drawBoxedString(
-            text = whisky.getHoverText(),
+            text = tabPage.title,
             x = body.x1,
             y = body.y0,
             z = GuideBookConstants.Z_TOOLTIP,

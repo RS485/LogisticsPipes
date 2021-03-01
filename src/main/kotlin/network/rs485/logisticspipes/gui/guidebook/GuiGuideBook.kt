@@ -229,19 +229,16 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                 y = outerGui.y0 - 2,
                 onClickAction = { buttonState ->
                     when (buttonState) {
-                        BookmarkManagingButton.ButtonState.ADD -> {
-                            addBookmark()
-                            true
-                        }
+                        BookmarkManagingButton.ButtonState.ADD -> addBookmark().let { true }
                         BookmarkManagingButton.ButtonState.REMOVE -> removeBookmark(state.currentPage)
                         BookmarkManagingButton.ButtonState.DISABLED -> false
                     }
                 },
                 additionStateUpdater = {
                     when {
-                        state.currentPage.page == MAIN_MENU_FILE -> BookmarkManagingButton.ButtonState.DISABLED
-                        isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.ADD
-                        else -> BookmarkManagingButton.ButtonState.REMOVE
+                        state.currentPage.isBookmarkable() && isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.ADD
+                        !isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.REMOVE
+                        else -> BookmarkManagingButton.ButtonState.DISABLED
                     }
                 }
             )
@@ -347,7 +344,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private fun addBookmark() = state.currentPage.takeIf { isTabAbsent(it) && tabButtons.size < maxTabs }?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
 
     private fun createGuiTabButton(tabPage: SavedPage): TabButton =
-        TabButton(outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, object : TabButtonReturn {
+        TabButton(tabPage, outerGui.x1 - 2 - 2 * guiTabWidth, outerGui.y0, object : TabButtonReturn {
             override fun onLeftClick(): Boolean {
                 if (!isPageActive()) {
                     changePage(tabPage.page)
@@ -369,20 +366,12 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             override fun getColor(): Int = tabPage.color ?: cycleMinecraftColorId(freeColor).also { freeColor = it; tabPage.color = it }
 
             override fun isPageActive(): Boolean = tabPage.pageEquals(state.currentPage)
-
-            override fun getHoverText(): String = tabPage.title
         })
 
     private fun removeBookmark(page: SavedPage): Boolean {
-        val bookmarkedPage: SavedPage? = state.bookmarks.find { it.pageEquals(page) }
-        val idx = state.bookmarks.indexOf(bookmarkedPage)
-        return if (idx != -1) {
-            tabButtons.removeAt(idx)
-            state.bookmarks.removeAt(idx)
-            true
-        } else {
-            false
-        }
+        val removedFromState = state.bookmarks.removeIf { it.pageEquals(page) }
+        val removedFromButtons = tabButtons.removeIf { it.tabPage.pageEquals(page) }
+        return removedFromState || removedFromButtons
     }
 
     private fun drawTitle() {

@@ -76,6 +76,8 @@ class SavedPage(val page: String) : LPFinalSerializable {
         drawablePage.setPos(area.x0, area.y0)
     }
 
+    fun isBookmarkable() = pageInfo.bookmarkable
+
     /**
      * Takes in an LPDataOutput buffer and turns a SavedPage object into bytes and puts them inside the buffer.
      * @param output data to send

@@ -56,6 +56,7 @@ class FontWrapper(private val font: IFont) {
     private var heightMap: Map<Int, Int> = emptyMap()
 
     val charHeight: Int
+    val fullCharHeight: Int
     val charOffsetY: Int
     private val charBottomLine: Int
 
@@ -74,30 +75,42 @@ class FontWrapper(private val font: IFont) {
         var currentMaxHeight = 0
         var currentTex = 0
 
+        // Iterate through every parsed glyph
         for ((character, glyph) in font.glyphs) {
+            // Keeping track of maximum height and minimum offset for the whole font
             currMaxCharHeight = maxOf(currMaxCharHeight, glyph.height + glyph.offsetY)
             currMinOffsetY = minOf(currMinOffsetY, glyph.offsetY)
 
+            // Check if current glyph can be added in current texture row
             if (currentX + glyph.width > widthMap[currentTex]!!) {
                 currentX = 0
-                currentY += currentMaxHeight
+                // Keeps track of current position in Y Axis
+                currentY += currentMaxHeight.powerOf2()
                 currentMaxHeight = 0
-                if (currentY > heightMap[currentTex]!!) {
+                // Check if current glyph can be added in current texture (last row)
+                if (currentY + glyph.height > heightMap[currentTex]!!) {
+                    currentX = 0
                     currentY = 0
                     currentTex++
                 }
             }
+            // Store allocated positions of current glyph to the appropriate maps
             glyphPosX = glyphPosX + (character to currentX)
             glyphPosY = glyphPosY + (character to currentY)
+            // Store current texture to a the character-texture map
             textureIndex = textureIndex + (character to currentTex)
+            // Writes current glyph bitmap onto the current texture.
             setTexture(glyph.bitmap, currentTex, currentX, currentY, glyph.width, glyph.height)
-            currentX += glyph.width
+            // Keeps track of latest position in X axis
+            currentX += glyph.width.powerOf2()
             currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
             if (currentTex > textures.size)
                 error("A fatal error occurred while writing texture sheet. This shouldn't ever happen unless this code has a bug. RIP")
         }
 
+        // Store max values for the Renderer to use
         charHeight = currMaxCharHeight
+        fullCharHeight = currMaxCharHeight - currMinOffsetY
         charOffsetY = currMinOffsetY
         charBottomLine = charHeight + charOffsetY
     }
@@ -113,18 +126,20 @@ class FontWrapper(private val font: IFont) {
 
     // Creates the necessary textures with all the glyphs in them
     private fun allocateTextures() {
+        // TODO change character-texture map to texture-IntRange relation.
+        // TODO allocate texture and write it on the same pass.
         var currentWidth = 0
         var currentHeight = 0
         var currentMaxHeight = 0
         var texCount = 1
         for (glyph in font.glyphs.values) {
             if (currentWidth + glyph.width < maxTexSize) {
-                currentWidth += glyph.width
+                currentWidth += glyph.width.powerOf2()
                 currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
             } else {
                 if (currentHeight + glyph.height < maxTexSize) {
                     currentWidth = 0
-                    currentHeight += currentMaxHeight
+                    currentHeight += currentMaxHeight.powerOf2()
                 } else {
                     currentWidth = 0
                     currentHeight = 0

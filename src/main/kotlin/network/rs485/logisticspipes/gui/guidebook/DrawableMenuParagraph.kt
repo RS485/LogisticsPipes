@@ -72,7 +72,7 @@ class DrawableMenuParagraph<T: Drawable>(private val menuTitle: List<DrawableWor
         currentY += splitAndInitialize(menuTitle, 0, currentY, width, false)
         currentY += horizontalLine.setPos(0, currentY)
         for (group in menuGroups) currentY += group.setPos(0, currentY)
-        return currentY + tileSpacing
+        return currentY
     }
 
     override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
@@ -89,7 +89,7 @@ class DrawableMenuGroup<T: Drawable>(private val groupTitle: List<DrawableWord>,
         groupTiles.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
-        var currentY = tileSpacing
+        var currentY = 0
         var currentX = tileSpacing
         currentY += splitAndInitialize(groupTitle, currentX, currentY, width, false)
         for (tile in groupTiles) {
@@ -110,10 +110,13 @@ class DrawableMenuGroup<T: Drawable>(private val groupTitle: List<DrawableWord>,
 }
 
 class DrawableMenuTile(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable() {
-    private val iconScale = 1.0
+    private val iconScale = 1.5
+    private val iconBody = Rectangle()
 
     init {
         relativeBody.setSize(tileSize, tileSize)
+        iconBody.setSize((16 * iconScale).toInt(), (16 * iconScale).toInt())
+        iconBody.setPos((tileSize - iconBody.width) / 2, (tileSize - iconBody.height) / 2)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
@@ -122,17 +125,17 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         val hovered = isHovering(mouseX, mouseY, visibleArea)
         GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
-        val itemRect = Rectangle(left + (width - 16) / 2, top + (height - 16) / 2, 16, 16)
-        if (itemRect.intersects(visibleArea)) {
+        val itemRect = Rectangle.fromRectangle(iconBody.translated(absoluteBody))
+        if (visibleArea.intersects(iconBody.translated(absoluteBody))) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
             RenderHelper.enableGUIStandardItemLighting()
             val renderItem = Minecraft.getMinecraft().renderItem
             val prevZ = renderItem.zLevel
             renderItem.zLevel = -145f
-            if (iconScale != 1.0) GlStateManager.scale(iconScale, iconScale, 1.0)
+            GlStateManager.scale(iconScale, iconScale, 1.0)
             GlStateManager.disableDepth()
-            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), itemRect.left, itemRect.top)
-            if (iconScale != 1.0) GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
+            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), (itemRect.left / iconScale).toInt(), (itemRect.top / iconScale).toInt())
+            GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
             GlStateManager.enableDepth()
             renderItem.zLevel = prevZ
             RenderHelper.disableStandardItemLighting()
@@ -156,6 +159,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
     private val iconSize = (16 * iconScale).toInt()
     private val itemRect = Rectangle()
     private val itemOffset = (listEntryHeight - iconSize) / 2
+    // TODO replace item rendering with LP itemstack renderer
 
     init {
         relativeBody.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), listEntryHeight)

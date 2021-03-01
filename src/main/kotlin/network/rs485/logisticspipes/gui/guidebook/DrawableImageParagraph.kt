@@ -54,13 +54,13 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
     }
 
     override fun setChildrenPos(): Int {
-        var currentY = 5
+        var currentY = 0
         currentY += if (image.broken) {
             splitAndInitialize(alternativeText, 5, currentY, width - 10, false)
         } else {
             image.setPos(0, currentY)
         }
-        return currentY + 5
+        return currentY
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {

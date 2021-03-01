@@ -44,10 +44,12 @@ import network.rs485.logisticspipes.util.math.Rectangle
  * This draws a line with a given thickness that will span the entire width of the page, minus padding.
  */
 
+private const val horizontalPadding: Int = 3
+
 class DrawableHorizontalLine(private val thickness: Int, private val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : DrawableParagraph() {
     override fun setPos(x: Int, y: Int): Int {
-        relativeBody.setPos(x + padding, y + padding)
-        relativeBody.setSize(parent!!.width - 2 * padding, 2 * padding + thickness)
+        relativeBody.setPos(x, y + padding)
+        relativeBody.setSize(parent!!.width - 2 * horizontalPadding, padding + thickness)
         return super.setPos(x, y)
     }
 

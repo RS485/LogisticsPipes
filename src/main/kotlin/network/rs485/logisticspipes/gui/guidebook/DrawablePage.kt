@@ -59,13 +59,12 @@ class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : Dr
     override fun setChildrenPos(): Int {
         var currentY = PAGE_VERTICAL_PADDING
         for (paragraph in drawableParagraphs) {
-            currentY += paragraph.setPos(0, currentY)
+            currentY += paragraph.setPos(0, currentY) + PAGE_VERTICAL_PADDING
         }
-        return PAGE_VERTICAL_PADDING + currentY
+        return currentY
     }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val hovered = isHovering(mouseX, mouseY, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 

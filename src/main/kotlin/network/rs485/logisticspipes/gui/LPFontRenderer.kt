@@ -109,9 +109,17 @@ class LPFontRenderer(private val fontName: String) {
         tessellator.buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
     }
 
+    private fun startUntextured() {
+        GlStateManager.enableAlpha()
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        tessellator.buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
+    }
+
     private fun render() {
         tessellator.draw()
         GlStateManager.disableAlpha()
+        GlStateManager.enableTexture2D()
     }
 
     /**
@@ -219,8 +227,22 @@ class LPFontRenderer(private val fontName: String) {
         start()
         var stringSize = string.fold(0.0) { currentX, char -> currentX + putChar(char, x + currentX, y.toDouble(), color, italic, bold, shadow, scale) }
         // Lines...
-        putOverlayFormatting(x = x, y = y, width = stringSize, color = color, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
         render()
+        if(underline || strikethrough) {
+            startUntextured()
+            putOverlayFormatting(
+                x = x,
+                y = y,
+                width = stringSize,
+                color = color,
+                italic = italic,
+                underline = underline,
+                strikethrough = strikethrough,
+                shadow = shadow,
+                scale = scale
+            )
+            render()
+        }
         if (italic) stringSize += scale
         return ceil(stringSize).toInt()
     }
@@ -243,7 +265,7 @@ class LPFontRenderer(private val fontName: String) {
 
     fun drawSpace(x: Int, y: Int, width: Int, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double): Int {
         if (width > 0 && (underline || strikethrough)) {
-            start()
+            startUntextured()
             putOverlayFormatting(x = x, y = y, width = width.toDouble(), color = color, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
             render()
         }
@@ -255,7 +277,7 @@ class LPFontRenderer(private val fontName: String) {
     }
 
     fun getFontHeight(scale: Double = 1.0): Int {
-        return (wrapperPlain.charHeight * scale).toInt()
+        return (wrapperPlain.fullCharHeight * scale).toInt()
     }
 
     private fun getCharWidth(char: Char, wrapper: FontWrapper, scale: Double): Double {
@@ -271,7 +293,6 @@ class LPFontRenderer(private val fontName: String) {
         }
     }
 
-
     fun getStringWidth(string: String, italics: Boolean, bold: Boolean, scale: Double): Int {
         val italicsOffset = if (italics) scale else 0.0
         return (string.fold(0.0) { currentX, char -> currentX + getCharWidth(char, bold, scale) } + italicsOffset).toInt()
@@ -285,10 +306,10 @@ class LPFontRenderer(private val fontName: String) {
 
     private fun putHorizontalLine(x: Double, y: Double, width: Double, thickness: Double, color: Int, italics: Boolean) {
         val italicsOffset = if (italics) thickness else 0.0
-        tessellator.buffer.pos(x, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        tessellator.buffer.pos(x, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        tessellator.buffer.pos(x + width + italicsOffset, y + thickness, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        tessellator.buffer.pos(x + width + italicsOffset, y, 5.0).tex(0.0, 0.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x, y, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x, y + thickness, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x + width + italicsOffset, y + thickness, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x + width + italicsOffset, y, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
     }
 
 }

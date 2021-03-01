@@ -115,7 +115,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private val guiTabWidth = 24
     private val guiTabHeight = 24
     private val guiFullTabHeight = 32
-    private val maxTabs = 10
+    private val maxTabs = 100
 
     // Gui constrains
     private val innerGui = Rectangle()
@@ -975,12 +975,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                 height = height + 8
             )
             val screen = Rectangle(Minecraft.getMinecraft().currentScreen!!.width, Minecraft.getMinecraft().currentScreen!!.height)
-            when {
-                outerArea.x0 < 0 -> outerArea.translate(-outerArea.x0, 0)
-                outerArea.x1 > screen.width -> outerArea.translate(screen.width - outerArea.x1, 0)
-                outerArea.y0 < 0 -> outerArea.translate(0, -outerArea.y0)
-                outerArea.y1 > screen.height -> outerArea.translate(0, screen.height - outerArea.y1)
-            }
+            if (outerArea.x0 < 0) outerArea.translate(-outerArea.x0, 0)
+            if (outerArea.x1 > screen.width) outerArea.translate(screen.width - outerArea.x1, 0)
+            if (outerArea.y0 < 0) outerArea.translate(0, -outerArea.y0)
+            if (outerArea.y1 > screen.height) outerArea.translate(0, screen.height - outerArea.y1)
             val innerArea = Rectangle(outerArea.x0 + 4, outerArea.y0 + 4, width, height)
             val outerAreaTexture = Rectangle(112, 32, 16, 16)
             val innerAreaTexture = Rectangle(116, 36, 8, 8)

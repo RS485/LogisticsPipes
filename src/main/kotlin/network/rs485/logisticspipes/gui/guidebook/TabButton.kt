@@ -76,14 +76,14 @@ class TabButton(
         val z = if (whisky.isPageActive()) GuideBookConstants.Z_FRAME else GuideBookConstants.Z_BACKGROUND
         val yOffset = if (whisky.isPageActive()) 0 else 3
         val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
-        if (hovered) GuiGuideBook.drawBoxedString(
-            text = tabPage.title,
-            x = body.x1,
-            y = body.y0,
-            z = GuideBookConstants.Z_TOOLTIP,
-            horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
-            verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
-        )
+        if (hovered) {
+            drawTooltip(
+                x = body.x1,
+                y = body.y0,
+                horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
+                verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
+            )
+        }
         GuiGuideBook.drawStretchingRectangle(
             rectangle = body.translated(0, yOffset),
             z = z,
@@ -92,6 +92,10 @@ class TabButton(
             color = if (whisky.isPageActive()) 0xFFFFFFFF.toInt() else color
         )
         drawButtonForegroundLayer(mouseX, mouseY)
+    }
+
+    override fun getTooltipText(): String {
+        return tabPage.title
     }
 
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {

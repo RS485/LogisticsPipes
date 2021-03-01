@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
+import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.util.math.Rectangle
@@ -49,7 +50,7 @@ val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(addi
 * This button's position is set based on the right and bottom constraints
 */
 class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boolean, val additionStateUpdater: (() -> ButtonState)): LPGuiButton(2, x - additionTexture.width, y - additionTexture.height, additionTexture.width, additionTexture.height) {
-    var buttonState: ButtonState = ButtonState.ADD
+    private var buttonState: ButtonState = ButtonState.ADD
     var onClickActionStated: (ButtonState) -> Boolean = onClickAction
 
     init {
@@ -59,6 +60,14 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if(buttonState != ButtonState.DISABLED) {
             hovered = isHovered(mouseX, mouseY)
+            if (hovered) {
+                drawTooltip(
+                    x = body.x1 + body.height / 2,
+                    y = body.y0,
+                    horizontalAlign = GuiGuideBook.HorizontalAlignment.CENTER,
+                    verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
+                )
+            }
             val yOffset = getHoverState(hovered) * additionTexture.height
             GlStateManager.enableAlpha()
             GuiGuideBook.drawStretchingRectangle(body, zLevel.toDouble(), (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), false, MinecraftColor.WHITE.colorCode)
@@ -72,6 +81,11 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
 
     fun updateState(){
         buttonState = additionStateUpdater()
+    }
+
+    override fun getTooltipText(): String = when(buttonState){
+        ButtonState.ADD, ButtonState.REMOVE -> StringUtils.translate("misc.guide_book.bookmark_button.${buttonState.toString().toLowerCase()}")
+        ButtonState.DISABLED -> ""
     }
 
     override fun getHoverState(mouseOver: Boolean): Int = if(buttonState == ButtonState.DISABLED) 2 else if (hovered) 1 else 0

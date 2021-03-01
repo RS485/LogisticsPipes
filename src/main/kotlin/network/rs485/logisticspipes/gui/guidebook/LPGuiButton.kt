@@ -42,7 +42,6 @@ import net.minecraft.client.gui.GuiButton
 import network.rs485.logisticspipes.util.math.Rectangle
 
 open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiButton(id, 24, 24, "") {
-    // TODO move tooltip functionality to here
     val body = Rectangle(x, y, width, height)
 
     // Position relative to body.
@@ -75,4 +74,13 @@ open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiBu
 
     open fun click(mouseButton: Int): Boolean = onClickAction?.invoke(mouseButton) ?: false
 
+    open fun getTooltipText(): String = ""
+
+    open fun drawTooltip(x: Int, y: Int, horizontalAlign: GuiGuideBook.HorizontalAlignment, verticalAlign: GuiGuideBook.VerticalAlignment){
+        getTooltipText().let { tooltipText ->
+            if(tooltipText.isNotBlank()){
+                GuiGuideBook.drawBoxedString(getTooltipText(), x, y, GuideBookConstants.Z_TOOLTIP, horizontalAlign, verticalAlign)
+            }
+        }
+    }
 }

@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
+import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.util.math.Rectangle
 
@@ -65,9 +66,21 @@ class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (this.visible) {
             hovered = isHovered(mouseX, mouseY)
+            if (hovered) {
+                drawTooltip(
+                    x = body.x1,
+                    y = body.y0,
+                    horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
+                    verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
+                )
+            }
             GuiGuideBook.drawStretchingRectangle(body, zLevel.toDouble(), homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
             drawButtonForegroundLayer(mouseX, mouseY)
         }
+    }
+
+    override fun getTooltipText(): String {
+        return StringUtils.translate("misc.guide_book.home_button")
     }
 
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {

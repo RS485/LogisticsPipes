@@ -82,7 +82,6 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable() {
         PngSizeInfo.makeFromResource(resource)
     } catch (e: IOException) {
         LogisticsPipes.log.error("File not found: ${imageResource.resourcePath}")
-        e.printStackTrace()
         null
     }
     val broken: Boolean get() = imageSize == null

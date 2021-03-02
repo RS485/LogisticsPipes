@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
 import kotlin.math.floor
@@ -49,7 +48,7 @@ open class DrawableWord(
     private val str: String,
     private val scale: Double,
     state: InlineDrawableState,
-    protected val mouseInteractable: MouseInteractable?,
+    protected val linkInteractable: LinkInteractable?,
 ) : Drawable() {
 
     val format: Set<TextFormat> = state.format
@@ -67,16 +66,16 @@ open class DrawableWord(
         }
 
     private fun setupParent(drawableParagraph: DrawableParagraph) {
-        if (mouseInteractable != null) drawableParagraph.registerPreRenderCallback(mouseInteractable::preRender)
+        if (linkInteractable != null) drawableParagraph.registerPreRenderCallback(linkInteractable::updateState)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
-        mouseInteractable?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener)
+        linkInteractable?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val hovering = mouseInteractable?.isHovering(mouseX, mouseY, visibleArea) ?: false
-        val updatedColor = mouseInteractable?.updateColor(color) ?: color
-        val updatedFormat = mouseInteractable?.updateFormat(format) ?: format
+        val hovering = linkInteractable?.isHovering(mouseX, mouseY, visibleArea) ?: false
+        val updatedColor = linkInteractable?.updateColor(color) ?: color
+        val updatedFormat = linkInteractable?.updateFormat(format) ?: format
         if (hovering) {
             GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
         }
@@ -99,14 +98,14 @@ open class DrawableWord(
 class DrawableSpace(
     private val scale: Double,
     state: InlineDrawableState,
-    mouseInteractable: MouseInteractable?,
-) : DrawableWord(" ", scale, state, mouseInteractable) {
+    linkInteractable: LinkInteractable?,
+) : DrawableWord(" ", scale, state, linkInteractable) {
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         if (width > 0) {
-            mouseInteractable?.isHovering(mouseX, mouseY, visibleArea)
-            val updatedColor = mouseInteractable?.updateColor(color) ?: color
-            val updatedFormat = mouseInteractable?.updateFormat(format) ?: format
+            linkInteractable?.isHovering(mouseX, mouseY, visibleArea)
+            val updatedColor = linkInteractable?.updateColor(color) ?: color
+            val updatedFormat = linkInteractable?.updateFormat(format) ?: format
             GuiGuideBook.lpFontRenderer.drawSpace(
                 x = left,
                 y = top,
@@ -135,33 +134,6 @@ class DrawableSpace(
 }
 
 object DrawableBreak : DrawableWord("", 1.0, defaultDrawableState, null)
-
-class LinkGroup(private val link: Link) : MouseInteractable {
-    // TODO: add updateColor & updateFormat & preRender (renamed to updateState) on another interface and use that on DrawableWord, then remove preRender from MouseInteractable
-    private val orderedChildren: MutableList<DrawableWord> = mutableListOf()
-    var hovered: Boolean = false
-        internal set
-
-    fun addChild(linkWord: DrawableWord) = orderedChildren.add(linkWord)
-
-    override fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean =
-        orderedChildren.any { it.isHovering(mouseX, mouseY, visibleArea) }
-
-    override fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) =
-        isHovering(mouseX, mouseY, visibleArea).let { hovered = it }
-
-    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
-        when (link) {
-            is PageLink -> guideActionListener.onPageLinkClick(link.page)
-            is WebLink -> TODO()
-        }
-    }
-
-    override fun updateColor(baseColor: Int): Int = MinecraftColor.BLUE.colorCode
-
-    override fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat> =
-        (if (hovered) baseFormat::minusElement else baseFormat::plusElement).invoke(TextFormat.Underline)
-}
 
 internal fun splitAndInitialize(drawables: List<DrawableWord>, x: Int, y: Int, maxWidth: Int, justify: Boolean): Int {
     var currentHeight = 0

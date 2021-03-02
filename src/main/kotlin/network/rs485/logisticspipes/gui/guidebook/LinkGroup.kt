@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2021  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -37,41 +37,54 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.markdown.Link
+import network.rs485.markdown.PageLink
+import network.rs485.markdown.TextFormat
+import network.rs485.markdown.WebLink
 
-open class DrawableParagraph : Drawable() {
-    private val preRenderCallbacks = mutableSetOf<(mouseX: Int, mouseY: Int, visibleArea: Rectangle) -> Unit>()
-
-    override fun setPos(x: Int, y: Int): Int {
-        relativeBody.setPos(x, y)
-        relativeBody.setSize(newWidth = parent!!.width)
-        relativeBody.setSize(newHeight = setChildrenPos())
-        return super.setPos(x, y)
-    }
+interface LinkInteractable : MouseInteractable {
+    /**
+     * Returns an updated color depending on any mouse interaction.
+     */
+    fun updateColor(baseColor: Int): Int
 
     /**
-     * This function is supposed to update the children's position by starting
-     * Y and X placement at 0 and iterating through the children while calculating their placement.
-     * This function is also responsible for updating the Paragraphs height as it directly
-     * depends on the placement of it's children.
-     * @return the height of all the Paragraph's children combined.
+     * Returns an updated format depending on any mouse interaction.
      */
-    open fun setChildrenPos(): Int {
-        return relativeBody.height
-    }
-
-    open fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {}
+    fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat>
 
     /**
-     * Registers a preRender callback to call on preRender.
+     * Update mouse state for any state changes.
      */
-    fun registerPreRenderCallback(callable: (mouseX: Int, mouseY: Int, visibleArea: Rectangle) -> Unit) {
-        preRenderCallbacks.add(callable)
-    }
+    fun updateState(mouseX: Int, mouseY: Int, visibleArea: Rectangle)
 
-    open fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) =
-        preRenderCallbacks.forEach { function ->
-            function.invoke(mouseX, mouseY, visibleArea)
+}
+
+class LinkGroup(private val link: Link) : LinkInteractable {
+    private val orderedChildren: MutableList<DrawableWord> = mutableListOf()
+    var hovered: Boolean = false
+        internal set
+
+    fun addChild(linkWord: DrawableWord) = orderedChildren.add(linkWord)
+
+    override fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean =
+        orderedChildren.any { it.isHovering(mouseX, mouseY, visibleArea) }
+
+    override fun updateState(mouseX: Int, mouseY: Int, visibleArea: Rectangle) =
+        isHovering(mouseX, mouseY, visibleArea).let { hovered = it }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
+        when (link) {
+            is PageLink -> guideActionListener.onPageLinkClick(link.page)
+            is WebLink -> TODO()
         }
+    }
+
+    override fun updateColor(baseColor: Int): Int = MinecraftColor.BLUE.colorCode
+
+    override fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat> =
+        (if (hovered) baseFormat::minusElement else baseFormat::plusElement).invoke(TextFormat.Underline)
 
 }

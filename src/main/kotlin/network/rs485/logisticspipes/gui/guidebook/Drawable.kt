@@ -40,7 +40,6 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.math.Rectangle
-import network.rs485.markdown.TextFormat
 
 interface MouseInteractable {
     /**
@@ -57,20 +56,6 @@ interface MouseInteractable {
      */
     fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener)
 
-    /**
-     * Returns an updated color depending on any mouse interaction.
-     */
-    fun updateColor(baseColor: Int): Int
-
-    /**
-     * Returns an updated format depending on any mouse interaction.
-     */
-    fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat>
-
-    /**
-     * Pre-render callback for any state changes.
-     */
-    fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) {}
 }
 
 open class Drawable : MouseInteractable {
@@ -149,9 +134,5 @@ open class Drawable : MouseInteractable {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {}
-
-    override fun updateColor(baseColor: Int): Int = baseColor
-
-    override fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat> = baseFormat
 
 }

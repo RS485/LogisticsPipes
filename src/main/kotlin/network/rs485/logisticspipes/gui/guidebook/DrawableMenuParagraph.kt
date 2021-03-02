@@ -179,7 +179,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
             GuiGuideBook.lpFontRenderer.drawString(
                 string = pageName,
                 x = itemRect.right + itemOffset,
-                y = top + textVerticalOffset + 1,
+                y = top + textVerticalOffset,
                 color = textColor,
                 format = EnumSet.of(TextFormat.Shadow),
                 scale = 1.0

@@ -42,6 +42,10 @@ import java.util.*
 interface IFont {
     val glyphs: Map<Char, IGlyph>
     val defaultChar: Char
+    val width: Int
+    val height: Int
+    val offsetX: Int
+    var offsetY: Int
 }
 
 interface IGlyph {

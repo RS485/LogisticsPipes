@@ -37,82 +37,35 @@
 
 package network.rs485.logisticspipes.gui
 
+import logisticspipes.LogisticsPipes
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import org.lwjgl.opengl.GL11
 import java.nio.ByteBuffer
 import java.util.*
+import kotlin.math.max
 
 private val buffer = ByteBuffer.allocateDirect(10000000).asIntBuffer()
 
 class FontWrapper(private val font: IFont) {
-    var textures: List<Int> = emptyList(); private set
+    val textures: List<Int> get() = textureIndex.keys.toList()
 
     private var glyphPosX: Map<Char, Int> = emptyMap()
     private var glyphPosY: Map<Char, Int> = emptyMap()
-    private var textureIndex: Map<Char, Int> = emptyMap()
+    private var textureIndex: Map<Int, CharRange> = emptyMap()
 
-    private var widthMap: Map<Int, Int> = emptyMap()
-    private var heightMap: Map<Int, Int> = emptyMap()
-
-    val charHeight: Int
-    val fullCharHeight: Int
-    val charOffsetY: Int
-    private val charBottomLine: Int
+    val fontWidth: Int get() = font.width
+    val fontHeight: Int get() = font.height
+    val fontXOffset: Int get() = font.offsetX
+    val fontYOffset: Int get() = font.offsetY
+    val fontLineOffset: Int get() = fontHeight + fontYOffset
 
     val defaultChar = font.defaultChar
 
-    private val maxTexSize = 256
+    private val maxTexSize = 512
 
     init {
         allocateTextures()
-
-        var currMaxCharHeight = 0
-        var currMinOffsetY = 0
-
-        var currentX = 0
-        var currentY = 0
-        var currentMaxHeight = 0
-        var currentTex = 0
-
-        // Iterate through every parsed glyph
-        for ((character, glyph) in font.glyphs) {
-            // Keeping track of maximum height and minimum offset for the whole font
-            currMaxCharHeight = maxOf(currMaxCharHeight, glyph.height + glyph.offsetY)
-            currMinOffsetY = minOf(currMinOffsetY, glyph.offsetY)
-
-            // Check if current glyph can be added in current texture row
-            if (currentX + glyph.width > widthMap[currentTex]!!) {
-                currentX = 0
-                // Keeps track of current position in Y Axis
-                currentY += currentMaxHeight.powerOf2()
-                currentMaxHeight = 0
-                // Check if current glyph can be added in current texture (last row)
-                if (currentY + glyph.height > heightMap[currentTex]!!) {
-                    currentX = 0
-                    currentY = 0
-                    currentTex++
-                }
-            }
-            // Store allocated positions of current glyph to the appropriate maps
-            glyphPosX = glyphPosX + (character to currentX)
-            glyphPosY = glyphPosY + (character to currentY)
-            // Store current texture to a the character-texture map
-            textureIndex = textureIndex + (character to currentTex)
-            // Writes current glyph bitmap onto the current texture.
-            setTexture(glyph.bitmap, currentTex, currentX, currentY, glyph.width, glyph.height)
-            // Keeps track of latest position in X axis
-            currentX += glyph.width.powerOf2()
-            currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
-            if (currentTex > textures.size)
-                error("A fatal error occurred while writing texture sheet. This shouldn't ever happen unless this code has a bug. RIP")
-        }
-
-        // Store max values for the Renderer to use
-        charHeight = currMaxCharHeight
-        fullCharHeight = currMaxCharHeight - currMinOffsetY
-        charOffsetY = currMinOffsetY
-        charBottomLine = charHeight + charOffsetY
     }
 
     private fun setTexture(bitmap: BitSet, texture: Int, x: Int, y: Int, width: Int, height: Int) {
@@ -120,73 +73,112 @@ class FontWrapper(private val font: IFont) {
         for (i in 0 until width * height)
             buffer.put(if (bitmap[i]) -1 else 0)
         buffer.flip()
-        GlStateManager.bindTexture(textures[texture])
+        GlStateManager.bindTexture(texture)
         GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, x, y, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer)
     }
 
     // Creates the necessary textures with all the glyphs in them
-    private fun allocateTextures() {
+    private fun allocateTextures(): Pair<Int, Int> {
         // TODO change character-texture map to texture-IntRange relation.
         // TODO allocate texture and write it on the same pass.
+
+        fun generateTexture(): Int{
+            val texId = GL11.glGenTextures()
+            GlStateManager.bindTexture(texId)
+            TextureUtil.allocateTexture(texId, maxTexSize, maxTexSize)
+            LogisticsPipes.log.warn("Created new texture: $texId")
+            return texId
+        }
+
         var currentWidth = 0
         var currentHeight = 0
+        var currentRowMaxHeight = 0
         var currentMaxHeight = 0
-        var texCount = 1
-        for (glyph in font.glyphs.values) {
-            if (currentWidth + glyph.width < maxTexSize) {
-                currentWidth += glyph.width.powerOf2()
-                currentMaxHeight = maxOf(currentMaxHeight, glyph.height)
-            } else {
-                if (currentHeight + glyph.height < maxTexSize) {
-                    currentWidth = 0
-                    currentHeight += currentMaxHeight.powerOf2()
-                } else {
-                    currentWidth = 0
-                    currentHeight = 0
-                    texCount++
-                }
+        var currentMinOffset = 0
+        var currentTexId = 0
+        val firstChar = font.glyphs.keys.first()
+        var startingChar = firstChar
+
+        fun startNewRow(){
+            // Use gathered row data to keep track of highest character.
+            currentMaxHeight = max(currentMaxHeight, currentRowMaxHeight)
+            // Use gathered row data to safely start the next row with interfering with the previous ones.
+            currentHeight += currentRowMaxHeight.powerOf2()
+            // Reset row variables.
+            currentWidth = 0
+            currentRowMaxHeight = 0
+        }
+
+        fun addTextureRange(character: Char) {
+            textureIndex = textureIndex + (currentTexId to (startingChar..character))
+            LogisticsPipes.log.warn("Finished texture, covering characters ${startingChar.toInt()}..${character.toInt()}")
+        }
+
+        fun startNewTexture(character: Char) {
+            if(character != firstChar){
+                // Store texture-character relation
+                addTextureRange(character)
+            }
+            startingChar = character
+            // Reset texture positional characters.
+            currentWidth = 0
+            currentHeight = 0
+            // Create a new texture and get it's id.
+            currentTexId = generateTexture()
+        }
+
+        fun allocateGlyph(character: Char, glyph: IGlyph){
+            if(currentWidth + glyph.width > maxTexSize)
+                error("Cannot write a texture of width=${glyph.width} at x=$currentWidth")
+            if(currentHeight + glyph.height > maxTexSize)
+                error("Cannot write a texture of height=${glyph.height} at y=$currentHeight")
+            // Store the location of the glyph
+            glyphPosX = glyphPosX + (character to currentWidth)
+            glyphPosY = glyphPosY + (character to currentHeight)
+            // Draw the glyph into the texture
+            setTexture(glyph.bitmap, currentTexId, currentWidth, currentHeight, glyph.width, glyph.height)
+            // After allocation
+            currentWidth += glyph.width.powerOf2()
+            currentRowMaxHeight = maxOf(currentRowMaxHeight, glyph.height)
+            currentMinOffset = minOf(currentMinOffset, glyph.offsetY)
+        }
+
+        fun start() {
+            startNewTexture(font.glyphs.keys.first())
+        }
+
+        fun finish(){
+            val lastChar = font.glyphs.keys.last()
+            if(startingChar != lastChar){
+                addTextureRange(lastChar)
             }
         }
 
-        for (i in 0 until texCount) {
-            val texId = GL11.glGenTextures()
-            textures = textures + texId
-            widthMap = widthMap + (i to maxTexSize)
-            heightMap = heightMap + (i to maxTexSize)
-
-            GlStateManager.bindTexture(texId)
-            TextureUtil.allocateTexture(texId, maxTexSize, maxTexSize)
+        start()
+        for ((character, glyph) in font.glyphs) {
+            if(currentWidth + glyph.width > maxTexSize) startNewRow()
+            if(currentHeight + glyph.height > maxTexSize) startNewTexture(character)
+            allocateGlyph(character, glyph)
         }
+        finish()
+
+        return currentMaxHeight to currentMinOffset
     }
 
     // Getter for the texture indexes, returns -1 if null.
-    fun getTextureIndex(c: Char): Int {
-        return textureIndex[c] ?: -1
-    }
+    fun getTextureIndex(c: Char): Int = textureIndex.entries.find { entry -> entry.value.contains(c) }?.key ?: -1
 
-    // Getter for width and height, return -1 if null.
-    fun getCharWidth(textureIndex: Int): Int {
-        return widthMap[textureIndex] ?: -1
-    }
-
-    fun getCharHeight(textureIndex: Int): Int {
-        return heightMap[textureIndex] ?: -1
-    }
+    // Getter for width, return -1 if char not found.
+    fun getFontTextureSize(): Int = maxTexSize
 
     // Getter for the glyph's X coordinate
-    fun getGlyphX(c: Char): Int {
-        return glyphPosX[c] ?: -1
-    }
+    fun getGlyphX(c: Char): Int = glyphPosX[c] ?: -1
 
     // Getter for the glyph's Y coordinate
-    fun getGlyphY(c: Char): Int {
-        return glyphPosY[c] ?: -1
-    }
+    fun getGlyphY(c: Char): Int = glyphPosY[c] ?: -1
 
     // Getter for the Glyph object
-    fun getGlyph(c: Char): IGlyph? {
-        return font.glyphs[c] ?: font.glyphs[font.defaultChar]
-    }
+    fun getGlyph(c: Char): IGlyph? = font.glyphs[c] ?: font.glyphs[font.defaultChar]
 
     // No idea how this works, found on StackOverflow :P This returns the closest greatest power of 2.
     private fun Int.powerOf2(): Int {

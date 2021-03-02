@@ -57,7 +57,14 @@ object FontParser {
     fun read(lines: List<String>): BDF {
         val parser = LineParser()
         lines.asSequence().filter { it.isNotBlank() }.withIndex().forEach { (index, line) -> parser.line(index, line) }
-        return BDF(glyphs = parser.glyphs, defaultChar = parser.defaultChar)
+        return BDF(
+            glyphs = parser.glyphs,
+            defaultChar = parser.defaultChar,
+            width = parser.gWidth,
+            height = parser.gHeight,
+            offsetX = parser.gOffsetX,
+            offsetY = parser.gOffsetY,
+        )
     }
 
     private class LineParser {

@@ -376,7 +376,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     private fun drawTitle() {
         lpFontRenderer.zLevel = GuideBookConstants.Z_TITLE_BUTTONS
-        lpFontRenderer.drawCenteredString(state.currentPage.title, width / 2, outerGui.y0 + 4, MinecraftColor.WHITE.colorCode, EnumSet.of(TextFormat.Shadow), 1.0)
+        lpFontRenderer.drawCenteredString(state.currentPage.title, width / 2, outerGui.y0 + (innerGui.y0 - outerGui.y0 - lpFontRenderer.getFontHeight()) / 2, MinecraftColor.WHITE.colorCode, EnumSet.of(TextFormat.Shadow), 1.0)
         lpFontRenderer.zLevel = GuideBookConstants.Z_TEXT
     }
 
@@ -958,33 +958,37 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
          * @param z     z position of the tooltip.
          */
         fun drawBoxedString(text: String, x: Int, y: Int, z: Double, horizontalAlign: HorizontalAlignment, verticalAlign: VerticalAlignment) {
-            val width = lpFontRenderer.getStringWidth(text) + 8
-            val height = lpFontRenderer.getFontHeight()
+            val outlineThickness = 4
+            val horizontalPadding = 2
+            val verticalPadding = 1
+            val width = lpFontRenderer.getStringWidth(text) + 2 * horizontalPadding
+            val height = lpFontRenderer.getFontHeight() + 2 * verticalPadding
             val outerArea = Rectangle(
-                x = when (horizontalAlign) {
-                    HorizontalAlignment.CENTER -> x - width / 2 - 4
-                    HorizontalAlignment.LEFT -> x
-                    HorizontalAlignment.RIGHT -> x - width - 8
-                },
-                y = when (verticalAlign) {
-                    VerticalAlignment.CENTER -> y - height / 2 - 4
-                    VerticalAlignment.TOP -> y
-                    VerticalAlignment.BOTTOM -> y - height - 8
-                },
-                width = width + 8,
-                height = height + 8
+                width = width + 2 * outlineThickness,
+                height = height + 2 * outlineThickness
             )
+            outerArea.setPos(
+                newX = when (horizontalAlign) {
+                    HorizontalAlignment.CENTER -> x - outerArea.width / 2
+                    HorizontalAlignment.LEFT -> x
+                    HorizontalAlignment.RIGHT -> x - outerArea.width
+                },
+                newY = when (verticalAlign) {
+                    VerticalAlignment.CENTER -> y - outerArea.height / 2
+                    VerticalAlignment.TOP -> y
+                    VerticalAlignment.BOTTOM -> y - outerArea.height
+                })
             val screen = Rectangle(Minecraft.getMinecraft().currentScreen!!.width, Minecraft.getMinecraft().currentScreen!!.height)
             if (outerArea.x0 < 0) outerArea.translate(-outerArea.x0, 0)
             if (outerArea.x1 > screen.width) outerArea.translate(screen.width - outerArea.x1, 0)
             if (outerArea.y0 < 0) outerArea.translate(0, -outerArea.y0)
             if (outerArea.y1 > screen.height) outerArea.translate(0, screen.height - outerArea.y1)
-            val innerArea = Rectangle(outerArea.x0 + 4, outerArea.y0 + 4, width, height)
+            val innerArea = Rectangle(width, height).translated(outerArea).translated(outlineThickness, outlineThickness)
             val outerAreaTexture = Rectangle(112, 32, 16, 16)
             val innerAreaTexture = Rectangle(116, 36, 8, 8)
             GlStateManager.pushMatrix()
             lpFontRenderer.zLevel += z
-            lpFontRenderer.drawString(text, innerArea.x0 + 4, innerArea.y0 + 1, defaultDrawableState.color, defaultDrawableState.format, 1.0)
+            lpFontRenderer.drawString(text, innerArea.x0 + horizontalPadding, innerArea.y0 + verticalPadding, defaultDrawableState.color, defaultDrawableState.format, 1.0)
             lpFontRenderer.zLevel -= z
             GlStateManager.enableAlpha()
             val bufferBuilder = startBuffer()

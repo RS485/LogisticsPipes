@@ -88,12 +88,14 @@ class LPFontRenderer(private val fontName: String) {
     }
 
     private val fontPlain: IFont by lazy {
+        val initialTime = System.currentTimeMillis()
         val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
-        FontParser.read(fontResourcePlain) ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
+        FontParser.read(fontResourcePlain).also {  LogisticsPipes.log.info("Elapsed time parsing font: ${System.currentTimeMillis() - initialTime}ms") } ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
     }
 
     private val wrapperPlain: FontWrapper by lazy {
-        FontWrapper(fontPlain)
+        val initialTime = System.currentTimeMillis()
+        FontWrapper(fontPlain).also {  LogisticsPipes.log.info("Elapsed time wrapping font: ${System.currentTimeMillis() - initialTime}ms") }
     }
 
     private val shadowColor = 0xEE3C3F41.toInt()
@@ -151,9 +153,9 @@ class LPFontRenderer(private val fontName: String) {
             else -> return 0.0
         }
         // Width of the drawn character texture
-        val width = wrapper.getCharWidth(texIndex)
+        val width = wrapper.getFontTextureSize()
         // Height of the drawn character texture
-        val height = wrapper.getCharHeight(texIndex)
+        val height = wrapper.getFontTextureSize()
         // X position of the drawn character
         val textureX = wrapper.getGlyphX(c)
         // Y position of the drawn character
@@ -167,7 +169,7 @@ class LPFontRenderer(private val fontName: String) {
         val sHeight = (glyph.height * scale)
         // Character draw coordinate calculation based on scale
         val x0 = x - (glyph.offsetX * scale)
-        val y1 = y + ((wrapper.charHeight + wrapper.charOffsetY - glyph.offsetY) * scale)
+        val y1 = y + ((wrapper.fontLineOffset - glyph.offsetY) * scale)
         val x1 = x0 + sWidth
         val y0 = y1 - sHeight
         // Texture coordinates calculation (0.0 - 1.0 depending on the position relative to the size of the full texture)
@@ -181,7 +183,7 @@ class LPFontRenderer(private val fontName: String) {
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
         // Bind the texture atlas where the current character is to GL11
-        GlStateManager.bindTexture(wrapper.textures[texIndex])
+        GlStateManager.bindTexture(texIndex)
         // Add character quad to buffer
         tessellator.buffer.pos(x0 + italicsOffset, y0, zLevel).tex(u0, v0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
         tessellator.buffer.pos(x0, y1, zLevel).tex(u0, v1).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
@@ -252,12 +254,12 @@ class LPFontRenderer(private val fontName: String) {
      */
     private fun putOverlayFormatting(x: Int, y: Int, width: Double, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double) {
         if (underline) {
-            val underlineY = (wrapperPlain.charHeight + wrapperPlain.charOffsetY + 1) * scale
+            val underlineY = (wrapperPlain.fontHeight - 1) * scale
             if (shadow) putHorizontalLine(x = x + scale, y = y + underlineY + scale, width = width, thickness = scale, color = shadowColor, italics = italic)
             putHorizontalLine(x = x + 0.0, y = y + underlineY + 0.0, width = width, thickness = scale, color = color, italics = italic)
         }
         if (strikethrough) {
-            val strikethroughY = ((wrapperPlain.charHeight + wrapperPlain.charOffsetY + 2) / 2) * scale
+            val strikethroughY = ((wrapperPlain.fontHeight) / 2) * scale
             if (shadow) putHorizontalLine(x = x + scale, y = y + strikethroughY + scale, width = width, thickness = scale, color = shadowColor, italics = italic)
             putHorizontalLine(x = x + 0.0, y = y + strikethroughY + 0.0, width = width, thickness = scale, color = color, italics = italic)
         }
@@ -277,7 +279,7 @@ class LPFontRenderer(private val fontName: String) {
     }
 
     fun getFontHeight(scale: Double = 1.0): Int {
-        return (wrapperPlain.fullCharHeight * scale).toInt()
+        return (wrapperPlain.fontHeight * scale).toInt()
     }
 
     private fun getCharWidth(char: Char, wrapper: FontWrapper, scale: Double): Double {

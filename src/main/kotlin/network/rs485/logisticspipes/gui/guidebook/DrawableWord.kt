@@ -59,11 +59,22 @@ open class DrawableWord(
         relativeBody.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
     }
 
+    override var parent: Drawable?
+        get() = super.parent
+        set(value) {
+            super.parent = value
+            (value as? DrawableParagraph)?.run(::setupParent)
+        }
+
+    private fun setupParent(drawableParagraph: DrawableParagraph) {
+        if (mouseInteractable != null) drawableParagraph.registerPreRenderCallback(mouseInteractable::preRender)
+    }
+
     override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
         mouseInteractable?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener)
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val hovering = mouseInteractable?.isHovering(mouseX, mouseY, visibleArea)?:false
+        val hovering = mouseInteractable?.isHovering(mouseX, mouseY, visibleArea) ?: false
         val updatedColor = mouseInteractable?.updateColor(color) ?: color
         val updatedFormat = mouseInteractable?.updateFormat(format) ?: format
         if (hovering) {
@@ -126,6 +137,7 @@ class DrawableSpace(
 object DrawableBreak : DrawableWord("", 1.0, defaultDrawableState, null)
 
 class LinkGroup(private val link: Link) : MouseInteractable {
+    // TODO: add updateColor & updateFormat & preRender (renamed to updateState) on another interface and use that on DrawableWord, then remove preRender from MouseInteractable
     private val orderedChildren: MutableList<DrawableWord> = mutableListOf()
     var hovered: Boolean = false
         internal set
@@ -133,7 +145,10 @@ class LinkGroup(private val link: Link) : MouseInteractable {
     fun addChild(linkWord: DrawableWord) = orderedChildren.add(linkWord)
 
     override fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean =
-        orderedChildren.any { it.isHovering(mouseX, mouseY, visibleArea) }.also { hovered = it } // BIG TODO: needs some way to update from above (maybe callback to the DrawableParagraph to update state for the paragraph)
+        orderedChildren.any { it.isHovering(mouseX, mouseY, visibleArea) }
+
+    override fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) =
+        isHovering(mouseX, mouseY, visibleArea).let { hovered = it }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
         when (link) {

@@ -66,6 +66,11 @@ interface MouseInteractable {
      * Returns an updated format depending on any mouse interaction.
      */
     fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat>
+
+    /**
+     * Pre-render callback for any state changes.
+     */
+    fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) {}
 }
 
 open class Drawable : MouseInteractable {
@@ -79,7 +84,7 @@ open class Drawable : MouseInteractable {
 
     internal var relativeBody: Rectangle = Rectangle()
 
-    var parent: Drawable? = null
+    open var parent: Drawable? = null
 
     // Relative positions/size accessors.
     val x: Int get() = relativeBody.x0

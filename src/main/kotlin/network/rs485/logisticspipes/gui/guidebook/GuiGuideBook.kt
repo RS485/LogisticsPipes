@@ -264,6 +264,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         state.currentPage.run {
             updateScrollPosition(visibleArea, currentProgress)
+            drawablePage.preRender(mouseX, mouseY, visibleArea)
             drawablePage.draw(mouseX, mouseY, partialTicks, visibleArea)
         }
         drawGui()

@@ -64,13 +64,17 @@ class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : Dr
         return currentY
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        drawChildren(mouseX, mouseY, delta, visibleArea)
+    override fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) = getVisibleParagraphs(visibleArea).forEach {
+        it.preRender(mouseX, mouseY, visibleArea)
     }
+
+    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) =
+        drawChildren(mouseX, mouseY, delta, visibleArea)
 
     override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) =
         getVisibleParagraphs(visibleArea).forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
 
     fun getVisibleParagraphs(visibleArea: Rectangle) =
         drawableParagraphs.filter { it.visible(visibleArea) }
+
 }

@@ -59,7 +59,6 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
-        val hovered = isHovering(mouseX, mouseY, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 

@@ -3,10 +3,11 @@ title: Logistics Pipes Quick Start
 --->
 *"It's been a long time. How have you been?"*
 
-First off, thanks for playing Logistics Pipes. A lot of changes have been made since the last release of LP in Minecraft 1.7.10. We'll try to explain some of these in this book. Read the next pages, if you'd like to know them.
+First off, thanks for playing Logistics Pipes.<br>
+A lot of changes have been made since the last release of LP in Minecraft 1.7.10. We'll try to explain some of these in this book. Read the next pages, if you'd like to know them.
 
-I hope you already have your Logistics Power Junction set up and crafted your first Basic Logistics Pipes :) \
-If not, go for it. \
+I hope you already have your Logistics Power Junction set up and crafted your first Basic Logistics Pipes :)<br>
+If not, go for it.<br>
 You might have recognized that all other types of pipes and modules now need something called a Logistics Programmer.
 
 The Logistics Programmer is an item that wont be used up in any crafting recipes, but you need to set it up first. That is to be done with a Logistics Program Compiler. I know, I know, it sounds complicated. But it really isn't. Craft both of these and a Logistics Disk.

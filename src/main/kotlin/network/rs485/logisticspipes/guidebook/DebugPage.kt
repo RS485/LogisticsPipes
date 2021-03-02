@@ -93,8 +93,9 @@ object DebugPage : PageInfoProvider {
         ),
         RegularParagraph(
             listOf(
-                listOf(ColorFormatting(randomColor())),
                 listOf(TextFormatting(EnumSet.of(TextFormat.Bold, TextFormat.Shadow))),
+                listOf(LinkFormatting(PageLink("/cantfindme.md")), Word("Hello"), Space, Word("World"), LinkFormatting(null), Break),
+                listOf(ColorFormatting(randomColor())),
                 MarkdownParser.splitSpacesAndWords(
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris vel sapien nisl."
                 ),

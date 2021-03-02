@@ -4,12 +4,12 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.xml.bind.DatatypeConverter;
 
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 
+import com.google.common.io.BaseEncoding;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -53,7 +53,7 @@ public class LogisticsPipesClassInjector implements IClassTransformer {
 											isObfEnv = true;
 										}
 									}
-									bytes = transform(name, transformedName, DatatypeConverter.parseBase64Binary(isObfEnv ? classData : classDataDev));
+									bytes = transform(name, transformedName, BaseEncoding.base64().decode(isObfEnv ? classData : classDataDev));
 								}
 							} else {
 								throw new UnsupportedOperationException("Can't parse the annotations correctly");

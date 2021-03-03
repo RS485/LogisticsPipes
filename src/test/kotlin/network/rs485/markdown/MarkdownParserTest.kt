@@ -609,6 +609,21 @@ internal class MarkdownParserTest {
     }
 
     @Test
+    fun `parse menu tag with blank appendix`() {
+        val menuText = "Menu"
+        val menuReference = "theMenu"
+        val word = "Well"
+        val str = "[$menuText](menu://$menuReference?type=tile)  \n$word"
+        val paragraphs = parseParagraphs(str)
+
+        val expectedParagraphs = listOf(
+            MenuParagraph(menuText, menuReference, MenuParagraphType.TILE),
+            RegularParagraph(listOf(Word(word)))
+        )
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
     fun `parse a correct ImageParagraph`() {
         val alt = "Alternative Text"
         val link = "logisticspipes:itemcard"

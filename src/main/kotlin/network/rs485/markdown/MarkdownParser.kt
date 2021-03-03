@@ -338,7 +338,7 @@ object MarkdownParser {
             }
 
             val lineLinkMatch: LinkMatcher? by lazy {
-                linkRegex.find(line)?.takeIf { it.value == line }?.let { LinkMatcher(it) }
+                linkRegex.find(line)?.takeIf { it.value == line.trimEnd() }?.let { LinkMatcher(it) }
             }
             when {
                 // every handling that is creating paragraphs

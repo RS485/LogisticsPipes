@@ -92,17 +92,27 @@ object DrawablePageFactory {
                     scale = getScaleFromLevel(paragraph.headerLevel),
                 )
                 is HorizontalLineParagraph -> DrawableHorizontalLine(2)
-                is MenuParagraph -> createDrawableParagraph(
-                    paragraphConstructor = { drawableMenuTitle ->
-                        val factory = when (paragraph.type) {
-                            MenuParagraphType.LIST -> ::DrawableMenuListEntry
-                            MenuParagraphType.TILE -> ::DrawableMenuTile
-                        }
-                        createDrawableMenuParagraph(page, paragraph, drawableMenuTitle, factory)
-                    },
-                    elements = MarkdownParser.splitAndFormatWords(paragraph.description),
-                    scale = getScaleFromLevel(3),
-                )
+                is MenuParagraph -> {
+                    if (page.metadata.menu.containsKey(paragraph.link)) {
+                        createDrawableParagraph(
+                            paragraphConstructor = { drawableMenuTitle ->
+                                val factory = when (paragraph.type) {
+                                    MenuParagraphType.LIST -> ::DrawableMenuListEntry
+                                    MenuParagraphType.TILE -> ::DrawableMenuTile
+                                }
+                                createDrawableMenuParagraph(page, page.metadata.menu[paragraph.link]!!, drawableMenuTitle, factory)
+                            },
+                            elements = MarkdownParser.splitAndFormatWords(paragraph.description),
+                            scale = getScaleFromLevel(3),
+                        )
+                    } else {
+                        createDrawableParagraph(
+                            paragraphConstructor = ::DrawableRegularParagraph,
+                            elements = MarkdownParser.splitSpacesAndWords("Menu `${paragraph.link}` not found"),
+                            scale = 1.0,
+                        )
+                    }
+                }
                 is ImageParagraph -> createDrawableParagraph(
                     paragraphConstructor = { drawableAlternativeText ->
                         val imageResource = page.resolveResource(paragraph.imagePath)
@@ -121,10 +131,10 @@ object DrawablePageFactory {
 
     private fun <T : Drawable> createDrawableMenuParagraph(
         page: PageInfoProvider,
-        paragraph: MenuParagraph,
+        menuStructure: Map<String, List<String>>,
         drawableMenuTitle: List<DrawableWord>,
         drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
-    ) = (page.metadata.menu[paragraph.link] ?: error("Requested menu ${paragraph.link}, not found.")).map { (groupTitle: String, groupEntries: List<String>) ->
+    ) = menuStructure.map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
             paragraphConstructor = { drawableGroupTitle ->
                 createDrawableMenu(resolvePaths(page, groupEntries), drawableGroupTitle, drawableMenuEntryConstructor)

@@ -78,7 +78,7 @@ class LinkGroup(private val link: Link) : LinkInteractable {
     override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
         when (link) {
             is PageLink -> guideActionListener.onPageLinkClick(link.page)
-            is WebLink -> TODO()
+            is WebLink -> guideActionListener.onWebLinkClick(link.url)
         }
     }
 

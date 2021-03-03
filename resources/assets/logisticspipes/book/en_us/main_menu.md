@@ -26,3 +26,17 @@ To upgrade your modules, you need an upgrade for your chassis pipe called the 'M
 
 I hope you got a good overview on how to start with this brand-new LP version. While you're at it you can also check out our new Highspeed Tubes. \
 ***But most importantly: Have fun!***
+
+---
+
+[Bug Reports](https://github.com/RS485/LogisticsPipes/issues)
+
+---
+
+[Official Builds](https://ci.rs485.network)
+
+---
+
+[Help us improve this book](https://github.com/RS485/LogisticsPipes/wiki/How-does-the-guide-book-work-and-how-to-create-content)
+
+---

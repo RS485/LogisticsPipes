@@ -43,6 +43,7 @@ import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiConfirmOpenLink
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
@@ -60,6 +61,8 @@ import network.rs485.markdown.TextFormat
 import network.rs485.markdown.defaultDrawableState
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -148,6 +151,14 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     inner class ActionListener {
         fun onMenuButtonClick(newPage: String) = changePage(newPage)
         fun onPageLinkClick(newPage: String) = changePage(newPage)
+        fun onWebLinkClick(webLink: String) {
+            try {
+                this@GuiGuideBook.clickedLinkURI = URI(webLink)
+                mc.displayGuiScreen(GuiConfirmOpenLink(this@GuiGuideBook, webLink, 31102009, false))
+            } catch (error: URISyntaxException) {
+                LogisticsPipes.log.warn("Could not parse link $webLink in GuiGuideBook", error)
+            }
+        }
     }
 
     init {

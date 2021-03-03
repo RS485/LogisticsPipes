@@ -39,6 +39,7 @@ package network.rs485.markdown
 
 import network.rs485.markdown.MarkdownParser.parseParagraphs
 import network.rs485.markdown.MarkdownParser.splitAndFormatWords
+import network.rs485.markdown.MarkdownParser.splitSpacesAndWords
 import network.rs485.markdown.MarkdownParser.splitWhitespaceCharactersAndWords
 import java.util.*
 import kotlin.test.Ignore
@@ -735,6 +736,58 @@ internal class MarkdownParserTest {
                     listOf(Space),
                     splitWhitespaceCharactersAndWords(str2),
                 ).flatten()
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse https web link`() {
+        val url = "https://example.com"
+        val linkText = "My Link"
+        val paragraphs = parseParagraphs("[$linkText]($url)")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(LinkFormatting(WebLink(url = url)))
+                    .plus(splitSpacesAndWords(linkText))
+                    .plus(LinkFormatting(null))
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse http web link`() {
+        val url = "http://example.com"
+        val linkText = "My Link"
+        val paragraphs = parseParagraphs("[$linkText]($url)")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(LinkFormatting(WebLink(url = url)))
+                    .plus(splitSpacesAndWords(linkText))
+                    .plus(LinkFormatting(null))
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse web link in header`() {
+        val url = "https://example.com"
+        val linkText = "My Link"
+        val paragraphs = parseParagraphs("# [$linkText]($url)")
+
+        val expectedParagraphs = listOf(
+            HeaderParagraph(
+                listOf(LinkFormatting(WebLink(url = url)))
+                    .plus(splitSpacesAndWords(linkText))
+                    .plus(LinkFormatting(null)),
+                headerLevel = 1,
             )
         )
 

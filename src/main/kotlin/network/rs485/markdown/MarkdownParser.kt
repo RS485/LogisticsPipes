@@ -51,7 +51,7 @@ typealias TextToElements = (CharSequence) -> List<InlineElement>
 
 object MarkdownParser {
     private val linkRegex = Regex("!?\\[(.+?)]\\((.+?)\\)")
-    private val webLinkRegex = Regex("^https?://", RegexOption.IGNORE_CASE)
+    private val webLinkRegex = Regex("^https?://.+", RegexOption.IGNORE_CASE)
     private val boldItalicRegexes = (3 downTo 1)
         .flatMap { times -> listOf("_", "\\*").map { times to it.repeat(times) } }
         .map { (times, formatChain) -> times to Regex("(?!\\\\)$formatChain(.+?)(?!\\\\)$formatChain") }
@@ -352,17 +352,17 @@ object MarkdownParser {
                         text[0] == ' ' -> {
                             // it's an header!
                             completeParagraph()
-                            paragraphs.add(HeaderParagraph(splitWhitespaceCharactersAndWords(text.trimEnd('#')), charCount))
+                            paragraphs.add(HeaderParagraph(parseLinks(text.trimEnd('#')), charCount))
                         }
                         else -> dumpLineToBuffer()
                     }
                 }
                 line.startsWith("===") -> {
-                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitWhitespaceCharactersAndWords(sb.toString()), 1))
+                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(parseLinks(sb.toString()), 1))
                     sb.clear()
                 }
                 line.startsWith("---") -> {
-                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(splitWhitespaceCharactersAndWords(sb.toString()), 2))
+                    paragraphs.add(if (sb.isBlank()) HorizontalLineParagraph else HeaderParagraph(parseLinks(sb.toString()), 2))
                     sb.clear()
                 }
                 lineLinkMatch?.getMenuType() != null && !lineLinkMatch!!.imageLinkFlag ->

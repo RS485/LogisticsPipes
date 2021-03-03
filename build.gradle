@@ -179,8 +179,10 @@ shadowJar {
         include(dependency(group: 'org.jetbrains', name: 'annotations', version: kannotations_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version))
-        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json-jvm', version: '1.0.0'))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-core-jvm', version: '1.0.0'))
         include(dependency(group: 'com.charleskorn.kaml', name: 'kaml', version: kaml_version))
+        include(dependency(group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '2.1'))
     }
 
     relocate 'kotlin', 'logisticspipes.kotlin'

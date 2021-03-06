@@ -838,8 +838,8 @@ internal class MarkdownParserTest {
                     Word("a"),
                     TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
                     Word("b"),
-                    TextFormatting(TextFormat.none),
                     TextFormatting(TextFormat.none), // TODO: should be removed
+                    TextFormatting(TextFormat.none),
                 )
             )
         )
@@ -858,8 +858,8 @@ internal class MarkdownParserTest {
                     Word("a"),
                     TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
                     Word("b"),
-                    TextFormatting(EnumSet.of(TextFormat.Bold)),
-                    TextFormatting(TextFormat.none), // TODO: should be removed
+                    TextFormatting(EnumSet.of(TextFormat.Bold)), // TODO: should be removed
+                    TextFormatting(TextFormat.none),
                 )
             )
         )
@@ -922,4 +922,43 @@ internal class MarkdownParserTest {
 
         assertEquals(expectedParagraphs, paragraphs)
     }
+
+    @Test
+    fun `parse formatted text next to each other`() {
+        val paragraphs = parseParagraphs("*a* __b__")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Word("a"),
+                    TextFormatting(TextFormat.none),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    Word("b"),
+                    TextFormatting(TextFormat.none),
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse formatting with spaces to trim`() {
+        val paragraphs = parseParagraphs(" * a * ")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Word("a"),
+                    TextFormatting(TextFormat.none),
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
 }

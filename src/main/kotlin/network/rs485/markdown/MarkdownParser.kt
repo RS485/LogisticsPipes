@@ -131,7 +131,22 @@ object MarkdownParser {
             return sb.toString().also { cache = it }
         }
 
-        fun addReplacement(range: IntRange, element: InlineElement) {
+        private fun spaceReplacement(cutIndex: Int) = isWhitespaceAt(cutIndex).also { isSpace ->
+            if (isSpace) stageReplacingElement(cutIndex..cutIndex, Space)
+        }
+
+        fun addReplacement(fullRange: IntRange, innerRange: IntRange, innerFormat: EnumSet<TextFormat>, outerFormat: EnumSet<TextFormat>) {
+            if (fullRange.first > 0) {
+                if (!spaceReplacement(innerRange.first)) spaceReplacement(fullRange.first - 1)
+            }
+            stageReplacingElement(fullRange.first until innerRange.first, TextFormatting(innerFormat))
+            if (fullRange.last + 1 < length) {
+                if (!spaceReplacement(innerRange.last)) spaceReplacement(fullRange.last + 1)
+            }
+            stageReplacingElement((innerRange.last + 1)..fullRange.last, TextFormatting(outerFormat))
+        }
+
+        private fun stageReplacingElement(range: IntRange, element: InlineElement) {
             val (replacementMapIdx, translatedIdx) = translateIndex(range.first)
             stagingReplacementMap.add(
                 Triple(replacementMapIdx + 1, translatedIdx..(range.last + translatedIdx - range.first), element)
@@ -180,7 +195,11 @@ object MarkdownParser {
 
         fun commit() {
             if (stagingReplacementMap.isNotEmpty()) {
-                stagingReplacementMap.reversed().forEach {
+                stagingReplacementMap.sortedByDescending {
+                    // insertion into replacementMap needs to be ordered,
+                    // because the replacements' indices are translated
+                    it.second.last
+                }.forEach {
                     replacementMap.add(it.first, it.second to it.third)
                 }
                 cache = null
@@ -193,6 +212,7 @@ object MarkdownParser {
         override val length: Int
             get() = current.length
 
+        fun isWhitespaceAt(index: Int): Boolean = get(index).isWhitespace()
         override fun get(index: Int): Char = current[index]
         override fun subSequence(startIndex: Int, endIndex: Int): CharSequence = current.subSequence(startIndex, endIndex)
         override fun chars(): IntStream = current.chars()
@@ -220,20 +240,7 @@ object MarkdownParser {
                     else -> TextFormat.none
                 }.also { it.addAll(lastFormat) }
                 val textGroup = match.groups[1]!!
-                if (match.range.first > 0 && !textLine[textGroup.range.first].isWhitespace() && textLine[match.range.first - 1].isWhitespace()) {
-                    replacingChars.addReplacement((match.range.first - 1) until match.range.first, Space)
-                }
-                replacingChars.addReplacement(match.range.first until textGroup.range.first, TextFormatting(format))
-                if (match.range.first > 0 && textLine[textGroup.range.first].isWhitespace()) {
-                    replacingChars.addReplacement(textGroup.range.first..textGroup.range.first, Space)
-                }
-                if ((match.range.last + 1) < textLine.length && textLine[textGroup.range.last].isWhitespace()) {
-                    replacingChars.addReplacement(textGroup.range.last..textGroup.range.last, Space)
-                }
-                replacingChars.addReplacement((textGroup.range.last + 1)..match.range.last, TextFormatting(lastFormat))
-                if ((match.range.last + 1) < textLine.length && !textLine[textGroup.range.last].isWhitespace() && textLine[match.range.last + 1].isWhitespace()) {
-                    replacingChars.addReplacement((match.range.last + 1)..(match.range.last + 1), Space)
-                }
+                replacingChars.addReplacement(match.range, textGroup.range, format, lastFormat)
             }
             replacingChars.commit()
         }

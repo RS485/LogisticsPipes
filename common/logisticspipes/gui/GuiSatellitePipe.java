@@ -20,6 +20,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.satpipe.SatelliteSetNamePacket;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.pipes.SatelliteNamingResult;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.InputBar;
@@ -31,6 +32,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	private PipeItemsSatelliteLogistics _satellite;
 	private PipeFluidSatellite _liquidSatellite;
+	private String response = "";
 	private InputBar input;
 
 	private GuiSatellitePipe(EntityPlayer player) {
@@ -90,7 +92,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRenderer.drawString(StringUtils.translate("gui.satellite.SatelliteName"), 33, 10, 0x404040);
+		drawCenteredString(StringUtils.translate("gui.satellite.SatelliteName"), 59, 7, 0x404040);
 		String name = "";
 		if (_satellite != null) {
 			name = StringUtils.getCuttedString(_satellite.satellitePipeName, 100, mc.fontRenderer);
@@ -98,7 +100,12 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 		if (_liquidSatellite != null) {
 			name = StringUtils.getCuttedString(_liquidSatellite.satellitePipeName, 100, mc.fontRenderer);
 		}
-		mc.fontRenderer.drawString(name, 59 - mc.fontRenderer.getStringWidth(name) / 2, 24, 0x404040);
+		int yOffset = 0;
+		if (!response.isEmpty()) {
+			drawCenteredString(StringUtils.translate("gui.satellite.naming_result." + response), xSize / 2, 30, response.equals("success") ? 0x404040 : 0x5c1111);
+			yOffset = 4;
+		}
+		drawCenteredString(name, xSize / 2, 24 - yOffset, 0x404040);
 	}
 
 	@Override
@@ -122,4 +129,14 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 		}
 	}
 
+	public void handleResponse(SatelliteNamingResult result, String newName) {
+		response = result.toString();
+		if (result == SatelliteNamingResult.SUCCESS) {
+			if (_satellite != null) {
+				_satellite.satellitePipeName = newName;
+			} else if (_liquidSatellite != null) {
+				_liquidSatellite.satellitePipeName = newName;
+			}
+		}
+	}
 }

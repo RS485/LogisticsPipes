@@ -634,4 +634,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 			el.onUpdateScreen();
 	}
 
+	public void drawCenteredString(String text, int x, int y, int color) {
+		int actualX = x - mc.fontRenderer.getStringWidth(text) / 2;
+		mc.fontRenderer.drawString(text, actualX, y, color);
+	}
 }

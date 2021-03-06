@@ -242,12 +242,15 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		}
 	}
 
-	public void setSatelliteName(String name) {
+	public SatelliteNamingResult setSatelliteName(String name) {
+		if (name.trim().isEmpty()) return SatelliteNamingResult.BLANK_NAME;
+		if (AllSatellites.stream().anyMatch(it -> it.satellitePipeName.equals(name))) return SatelliteNamingResult.DUPLICATE_NAME;
 		satellitePipeName = name;
 		if (MainProxy.isServer(this.getWorld())) {
 			updateWatchers();
 		}
 		ensureAllSatelliteStatus();
+		return SatelliteNamingResult.SUCCESS;
 	}
 
 	@Override

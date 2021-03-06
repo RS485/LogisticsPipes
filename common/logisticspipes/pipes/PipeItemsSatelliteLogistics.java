@@ -239,13 +239,17 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {}
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	}
 
-	public void setSatelliteName(String name) {
+	public SatelliteNamingResult setSatelliteName(String name) {
+		if (name.trim().isEmpty()) return SatelliteNamingResult.BLANK_NAME;
+		if (AllSatellites.stream().anyMatch(it -> it.satellitePipeName.equals(name))) return SatelliteNamingResult.DUPLICATE_NAME;
 		satellitePipeName = name;
 		if (MainProxy.isServer(this.getWorld())) {
 			updateWatchers();
+			ensureAllSatelliteStatus();
 		}
-		ensureAllSatelliteStatus();
+		return SatelliteNamingResult.SUCCESS;
 	}
 }

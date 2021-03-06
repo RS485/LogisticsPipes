@@ -419,6 +419,9 @@ gui.routingstats.RoutingTableSize=RoutingTableSize
 gui.routingstats.exit=Press <ESC> to exit
 
 gui.satellite.SatelliteName=Satellite Name
+gui.satellite.naming_result.success=Success
+gui.satellite.naming_result.duplicate_name=Name already used.
+gui.satellite.naming_result.blank_name=Name can't be blank.
 
 gui.securitystation.Open=Open
 gui.securitystation.EditTable=Edit Table

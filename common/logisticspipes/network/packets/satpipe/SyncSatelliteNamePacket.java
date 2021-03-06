@@ -41,10 +41,10 @@ public class SyncSatelliteNamePacket extends StringCoordinatesPacket {
 		}
 
 		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics) pipe.pipe).setSatelliteName(getString());
+			((PipeItemsSatelliteLogistics) pipe.pipe).satellitePipeName = getString();
 		}
 		if (pipe.pipe instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe).setSatelliteName(getString());
+			((PipeFluidSatellite) pipe.pipe).satellitePipeName = getString();
 		}
 	}
 }

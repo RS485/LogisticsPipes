@@ -838,7 +838,6 @@ internal class MarkdownParserTest {
                     Word("a"),
                     TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
                     Word("b"),
-                    TextFormatting(TextFormat.none), // TODO: should be removed
                     TextFormatting(TextFormat.none),
                 )
             )
@@ -858,7 +857,6 @@ internal class MarkdownParserTest {
                     Word("a"),
                     TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
                     Word("b"),
-                    TextFormatting(EnumSet.of(TextFormat.Bold)), // TODO: should be removed
                     TextFormatting(TextFormat.none),
                 )
             )
@@ -867,7 +865,6 @@ internal class MarkdownParserTest {
         assertEquals(expectedParagraphs, paragraphs)
     }
 
-    @Ignore
     @Test
     fun `parse advanced nested formatting`() {
         val paragraphs = parseParagraphs("*a__b__c*")
@@ -882,6 +879,81 @@ internal class MarkdownParserTest {
                     TextFormatting(EnumSet.of(TextFormat.Italic)),
                     Word("c"),
                     TextFormatting(TextFormat.none),
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse unnecessary format enhancements`() {
+        val paragraphs = parseParagraphs("__a***b***c__")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    Word("a"),
+                    TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
+                    Word("b"),
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    Word("c"),
+                    TextFormatting(TextFormat.none),
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse overlapping format enhancements`() {
+        val paragraphs = parseParagraphs("This _is **weirdly_ abnormal** markdown")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    Word("This"),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Word("is"),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
+                    Word("weirdly"),
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    Space,
+                    Word("abnormal"),
+                    TextFormatting(TextFormat.none),
+                    Space,
+                    Word("markdown"),
+                )
+            )
+        )
+
+        assertEquals(expectedParagraphs, paragraphs)
+    }
+
+    @Test
+    fun `parse overlapping format enhancements 2`() {
+        val paragraphs = parseParagraphs("This __is *weirdly__ abnormal* markdown")
+
+        val expectedParagraphs = listOf(
+            RegularParagraph(
+                listOf(
+                    Word("This"),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Bold)),
+                    Word("is"),
+                    Space,
+                    TextFormatting(EnumSet.of(TextFormat.Italic, TextFormat.Bold)),
+                    Word("weirdly"),
+                    TextFormatting(EnumSet.of(TextFormat.Italic)),
+                    Space,
+                    Word("abnormal"),
+                    TextFormatting(TextFormat.none),
+                    Space,
+                    Word("markdown"),
                 )
             )
         )

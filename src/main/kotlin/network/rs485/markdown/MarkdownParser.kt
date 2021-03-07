@@ -135,15 +135,26 @@ object MarkdownParser {
             if (isSpace) stageReplacingElement(cutIndex..cutIndex, Space)
         }
 
-        fun addReplacement(fullRange: IntRange, innerRange: IntRange, innerFormat: EnumSet<TextFormat>, outerFormat: EnumSet<TextFormat>) {
+        fun addReplacement(fullRange: IntRange, innerRange: IntRange, format: EnumSet<TextFormat>) {
             if (fullRange.first > 0) {
                 if (!spaceReplacement(innerRange.first)) spaceReplacement(fullRange.first - 1)
             }
-            stageReplacingElement(fullRange.first until innerRange.first, TextFormatting(innerFormat))
+            // add format end before start, so that $format is not detected as existing formatting and added here
+            stageReplacingElement((innerRange.last + 1)..fullRange.last, TextFormatting(TextFormat.none))
+            stageReplacingElement(fullRange.first until innerRange.first, TextFormatting(format.clone()))
+            enhanceExistingReplacements(innerRange, format)
             if (fullRange.last + 1 < length) {
                 if (!spaceReplacement(innerRange.last)) spaceReplacement(fullRange.last + 1)
             }
-            stageReplacingElement((innerRange.last + 1)..fullRange.last, TextFormatting(outerFormat))
+        }
+
+        private fun enhanceExistingReplacements(range: IntRange, format: Set<TextFormat>) {
+            val (endReplacementMapIdx, _) = translateIndex(range.last)
+            if (endReplacementMapIdx == -1) return
+            val (startReplacementMapIdx, _) = translateIndex(range.first)
+            replacementMap.subList(startReplacementMapIdx + 1, endReplacementMapIdx + 1).forEach {
+                (it.second as? TextFormatting)?.format?.addAll(format)
+            }
         }
 
         private fun stageReplacingElement(range: IntRange, element: InlineElement) {
@@ -159,25 +170,11 @@ object MarkdownParser {
                     val formatIdx = formattingStart.binarySearch(newFormat, comparator = { o1, o2 ->
                         o1.first.compareTo(o2.first)
                     })
-                    if (formatIdx < 0) {
-                        formattingStart.add(-formatIdx - 1, newFormat)
-                    } else if (formattingStart[formatIdx].second != newFormat.second) {
-                        formattingStart.add(formatIdx + 1, newFormat)
-                    }
+                    val index = if (formatIdx < 0) -formatIdx - 1 else formatIdx + 1
+                    // add previous formatting, if applicable
+                    if (index > 0) newFormat.second.addAll(formattingStart[index - 1].second)
+                    formattingStart.add(index, newFormat)
                 }
-            }
-        }
-
-        fun getFormatting(range: IntRange): EnumSet<TextFormat> {
-            if (formattingStart.isEmpty()) return TextFormat.none
-            val (_, translatedIdx) = translateIndex(range.first)
-            val formatIdx = formattingStart.binarySearch(translatedIdx to null, comparator = { o1, o2 ->
-                o1.first.compareTo(o2.first)
-            })
-            return when {
-                formatIdx == -1 -> TextFormat.none
-                formatIdx < -1 -> formattingStart[-formatIdx - 2].second
-                else -> formattingStart[formatIdx].second
             }
         }
 
@@ -199,13 +196,30 @@ object MarkdownParser {
                     // insertion into replacementMap needs to be ordered,
                     // because the replacements' indices are translated
                     it.second.last
-                }.forEach {
-                    replacementMap.add(it.first, it.second to it.third)
+                }.forEach { (index: Int, replaceRange: IntRange, element: InlineElement) ->
+                    (index - 1).takeIf { replacementIndexIsTextFormatting(it, element) }
+                        ?.let { previousIdx -> replaceFormattingIfApplicable(previousIdx, replacementMap[previousIdx].first, replaceRange, element) }
+                    ?: index.takeIf { replacementIndexIsTextFormatting(index, element) }
+                        ?.let { idx -> replaceFormattingIfApplicable(idx, replaceRange, replacementMap[idx].first, replacementMap[idx].second) }
+                    ?: replacementMap.add(index, replaceRange to element)
                 }
                 cache = null
                 stagingReplacementMap.clear()
             }
         }
+
+        private fun replacementIndexIsTextFormatting(index: Int, element: InlineElement): Boolean =
+            index in replacementMap.indices && element is TextFormatting && replacementMap[index].second is TextFormatting
+
+        private fun replaceFormattingIfApplicable(
+            index: Int,
+            lowRange: IntRange,
+            highRange: IntRange,
+            element: InlineElement,
+        ): Pair<IntRange, InlineElement>? =
+            if (lowRange.last + 1 == highRange.first) {
+                (lowRange.first..highRange.last to element).also { replacementMap[index] = it }
+            } else null
 
         fun forEachReplace(action: (Pair<IntRange, InlineElement>) -> Unit) = replacementMap.forEach(action)
 
@@ -231,16 +245,15 @@ object MarkdownParser {
         val textLine = inputChars.trimEnd()
         val replacingChars = ReplacedCharSequence(textLine)
         boldItalicRegexes.forEach { (level, regex) ->
+            val format = when (level) {
+                3 -> EnumSet.of(TextFormat.Italic, TextFormat.Bold)
+                2 -> EnumSet.of(TextFormat.Bold)
+                1 -> EnumSet.of(TextFormat.Italic)
+                else -> TextFormat.none
+            }
             regex.findAll(replacingChars).forEach { match ->
-                val lastFormat = replacingChars.getFormatting(match.range)
-                val format = when (level) {
-                    3 -> EnumSet.of(TextFormat.Italic, TextFormat.Bold)
-                    2 -> EnumSet.of(TextFormat.Bold)
-                    1 -> EnumSet.of(TextFormat.Italic)
-                    else -> TextFormat.none
-                }.also { it.addAll(lastFormat) }
                 val textGroup = match.groups[1]!!
-                replacingChars.addReplacement(match.range, textGroup.range, format, lastFormat)
+                replacingChars.addReplacement(match.range, textGroup.range, format)
             }
             replacingChars.commit()
         }

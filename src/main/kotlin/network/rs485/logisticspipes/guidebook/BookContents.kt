@@ -39,7 +39,6 @@ package network.rs485.logisticspipes.guidebook
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlException
-import com.sun.org.apache.xpath.internal.operations.Bool
 import kotlinx.serialization.Serializable
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes

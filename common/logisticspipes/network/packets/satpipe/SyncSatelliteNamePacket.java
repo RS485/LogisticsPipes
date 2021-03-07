@@ -35,16 +35,16 @@ public class SyncSatelliteNamePacket extends StringCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final LogisticsTileGenericPipe pipe = getPipe(player.world);
-		if (pipe == null) {
+		final LogisticsTileGenericPipe pipe = getPipe(player.world, LTGPCompletionCheck.PIPE);
+		if (pipe == null || pipe.pipe == null) {
 			return;
 		}
 
 		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics) pipe.pipe).satellitePipeName = getString();
+			((PipeItemsSatelliteLogistics) pipe.pipe).setSatellitePipeName(getString());
 		}
 		if (pipe.pipe instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe).satellitePipeName = getString();
+			((PipeFluidSatellite) pipe.pipe).setSatellitePipeName(getString());
 		}
 	}
 }

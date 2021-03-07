@@ -41,6 +41,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.SatellitePipe;
 
 public class GuiHandler implements IGuiHandler {
 
@@ -276,11 +277,8 @@ public class GuiHandler implements IGuiHandler {
 					return new GuiProviderPipe(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getprovidingInventory(), (PipeItemsProviderLogistics) pipe.pipe);
 
 				case GuiIDs.GUI_SatellitePipe_ID:
-					if (pipe != null && pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-						return new GuiSatellitePipe((PipeItemsSatelliteLogistics) pipe.pipe, player);
-					}
-					if (pipe != null && pipe.pipe instanceof PipeFluidSatellite) {
-						return new GuiSatellitePipe((PipeFluidSatellite) pipe.pipe, player);
+					if (pipe != null && pipe.pipe instanceof SatellitePipe) {
+						return new GuiSatellitePipe(((SatellitePipe) pipe.pipe));
 					}
 					return null;
 

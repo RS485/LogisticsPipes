@@ -136,11 +136,11 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	// from PipeItemsCraftingLogistics
 	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
 	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
-	protected ItemIdentifierInventory _cleanupInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filer Items", 1);
+	protected ItemIdentifierInventory _cleanupInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filter Items", 1);
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
 	protected SinkReply _sinkReply;
 	private IRequestItems _invRequester;
-	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<TileEntity>(null);
+	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<>(null);
 	private boolean cachedAreAllOrderesToBuffer;
 	private List<NeighborTileEntity<TileEntity>> cachedCrafters = null;
 	private UpgradeSatelliteFromIDs updateSatelliteFromIDs = null;
@@ -471,7 +471,6 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	public void registerExtras(IPromise promise) {
 		if (promise instanceof LogisticsDictPromise) {
 			_service.getItemOrderManager().addExtra(((LogisticsDictPromise) promise).getResource());
-			return;
 		} else {
 			ItemIdentifierStack stack = new ItemIdentifierStack(promise.getItemType(), promise.getAmount());
 			_service.getItemOrderManager().addExtra(new DictResource(stack, null));
@@ -870,7 +869,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		} else {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
-			for (NeighborTileEntity adjacent : worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).collect(Collectors.toList())) {
+			for (NeighborTileEntity<TileEntity> adjacent : worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).collect(Collectors.toList())) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 					if (provider.importRecipe(adjacent.getTileEntity(), _dummyInventory)) {
 						if (provider instanceof IFuzzyRecipeProvider) {

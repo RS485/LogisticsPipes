@@ -5,12 +5,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringCoordinatesPacket;
-import logisticspipes.pipes.PipeFluidSatellite;
-import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.SatelliteNamingResult;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.SatellitePipe;
 
 @StaticResolve
 public class SatelliteSetNamePacket extends StringCoordinatesPacket {
@@ -22,30 +21,25 @@ public class SatelliteSetNamePacket extends StringCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.PIPE);
-		if (pipe == null) {
+		if (pipe == null || pipe.pipe == null) {
 			return;
 		}
 		String newName = getString();
-		SatelliteNamingResult result;
-		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-			if (newName.trim().isEmpty()) {
-				result = SatelliteNamingResult.BLANK_NAME;
-			} else if (PipeItemsSatelliteLogistics.AllSatellites.stream().anyMatch(it -> it.satellitePipeName.equals(newName))) {
+		SatelliteNamingResult result = null;
+		if (newName.trim().isEmpty()) {
+			result = SatelliteNamingResult.BLANK_NAME;
+		} else if (pipe.pipe instanceof SatellitePipe) {
+			final SatellitePipe satellitePipe = (SatellitePipe) pipe.pipe;
+			if (satellitePipe.getSatellitesOfType().stream().anyMatch(it -> it.getSatellitePipeName().equals(newName))) {
 				result = SatelliteNamingResult.DUPLICATE_NAME;
 			} else {
 				result = SatelliteNamingResult.SUCCESS;
-				((PipeItemsSatelliteLogistics) pipe.pipe).satellitePipeName = newName;
+				satellitePipe.setSatellitePipeName(newName);
+				satellitePipe.updateWatchers();
+				satellitePipe.ensureAllSatelliteStatus();
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SetNameResult.class).setResult(result).setNewName(getString()), player);
-		} else if (pipe.pipe instanceof PipeFluidSatellite) {
-			if (newName.trim().isEmpty()) {
-				result = SatelliteNamingResult.BLANK_NAME;
-			} else if (PipeFluidSatellite.AllSatellites.stream().anyMatch(it -> it.satellitePipeName.equals(newName))) {
-				result = SatelliteNamingResult.DUPLICATE_NAME;
-			} else {
-				result = SatelliteNamingResult.SUCCESS;
-				((PipeFluidSatellite) pipe.pipe).satellitePipeName = newName;
-			}
+		}
+		if (result != null) {
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SetNameResult.class).setResult(result).setNewName(getString()), player);
 		}
 	}

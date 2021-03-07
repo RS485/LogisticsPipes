@@ -13,13 +13,12 @@ import javax.annotation.Nonnull;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.input.Keyboard;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.satpipe.SatelliteSetNamePacket;
-import logisticspipes.pipes.PipeFluidSatellite;
-import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.SatelliteNamingResult;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -27,15 +26,19 @@ import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.SatellitePipe;
 
 public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
-	private PipeItemsSatelliteLogistics _satellite;
-	private PipeFluidSatellite _liquidSatellite;
+	@Nonnull
+	private final SatellitePipe satellitePipe;
+
+	@Nonnull
 	private String response = "";
+
 	private InputBar input;
 
-	private GuiSatellitePipe(EntityPlayer player) {
+	public GuiSatellitePipe(@Nonnull SatellitePipe satellitePipe) {
 		super(new Container() {
 
 			@Override
@@ -45,16 +48,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 		});
 		xSize = 116;
 		ySize = 77;
-	}
-
-	public GuiSatellitePipe(PipeItemsSatelliteLogistics satellite, EntityPlayer player) {
-		this(player);
-		_satellite = satellite;
-	}
-
-	public GuiSatellitePipe(PipeFluidSatellite satellite, EntityPlayer player) {
-		this(player);
-		_liquidSatellite = satellite;
+		this.satellitePipe = satellitePipe;
 	}
 
 	@Override
@@ -74,18 +68,13 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
-		if (_satellite != null) {
-			if (guibutton.id == 0) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.getText()).setTilePos(_satellite.getContainer()));
-			} else {
-				super.actionPerformed(guibutton);
+		if (guibutton.id == 0) {
+			final TileEntity container = satellitePipe.getContainer();
+			if (container != null) {
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.getText()).setTilePos(container));
 			}
-		} else if (_liquidSatellite != null) {
-			if (guibutton.id == 0) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SatelliteSetNamePacket.class).setString(input.getText()).setTilePos(_liquidSatellite.getContainer()));
-			} else {
-				super.actionPerformed(guibutton);
-			}
+		} else {
+			super.actionPerformed(guibutton);
 		}
 	}
 
@@ -93,13 +82,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		drawCenteredString(StringUtils.translate("gui.satellite.SatelliteName"), 59, 7, 0x404040);
-		String name = "";
-		if (_satellite != null) {
-			name = StringUtils.getCuttedString(_satellite.satellitePipeName, 100, mc.fontRenderer);
-		}
-		if (_liquidSatellite != null) {
-			name = StringUtils.getCuttedString(_liquidSatellite.satellitePipeName, 100, mc.fontRenderer);
-		}
+		String name = StringUtils.getCuttedString(satellitePipe.getSatellitePipeName(), 100, mc.fontRenderer);
 		int yOffset = 0;
 		if (!response.isEmpty()) {
 			drawCenteredString(StringUtils.translate("gui.satellite.naming_result." + response), xSize / 2, 30, response.equals("success") ? 0x404040 : 0x5c1111);
@@ -132,11 +115,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	public void handleResponse(SatelliteNamingResult result, String newName) {
 		response = result.toString();
 		if (result == SatelliteNamingResult.SUCCESS) {
-			if (_satellite != null) {
-				_satellite.satellitePipeName = newName;
-			} else if (_liquidSatellite != null) {
-				_liquidSatellite.satellitePipeName = newName;
-			}
+			satellitePipe.setSatellitePipeName(newName);
 		}
 	}
 }

@@ -11,8 +11,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
+
+import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -47,10 +50,11 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.SatellitePipe;
 
-public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
+public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver, SatellitePipe {
 
-	public static Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<>());
+	public static final Set<PipeItemsSatelliteLogistics> AllSatellites = Collections.newSetFromMap(new WeakHashMap<>());
 
 	// called only on server shutdown
 	public static void cleanup() {
@@ -58,13 +62,13 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
+	private final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
+	private final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
 
 	@Getter
-	public String satellitePipeName = "";
+	private String satellitePipeName = "";
 
 	public PipeItemsSatelliteLogistics(Item item) {
 		super(item);
@@ -170,7 +174,9 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		} else {
 			satellitePipeName = nbttagcompound.getString("satellitePipeName");
 		}
-		ensureAllSatelliteStatus();
+		if (MainProxy.isServer(getWorld())) {
+			ensureAllSatelliteStatus();
+		}
 	}
 
 	@Override
@@ -179,10 +185,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		super.writeToNBT(nbttagcompound);
 	}
 
-	protected void ensureAllSatelliteStatus() {
-		if (MainProxy.isClient()) {
-			return;
-		}
+	public void ensureAllSatelliteStatus() {
 		if (satellitePipeName.isEmpty()) {
 			PipeItemsSatelliteLogistics.AllSatellites.remove(this);
 		}
@@ -191,7 +194,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		}
 	}
 
-	private void updateWatchers() {
+	public void updateWatchers() {
 		CoordinatesPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setTilePos(this.getContainer());
 		MainProxy.sendToPlayerList(packet, localModeWatchers);
 		MainProxy.sendPacketToAllWatchingChunk(this.getContainer(), packet);
@@ -242,14 +245,20 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 	}
 
-	public SatelliteNamingResult setSatelliteName(String name) {
-		if (name.trim().isEmpty()) return SatelliteNamingResult.BLANK_NAME;
-		if (AllSatellites.stream().anyMatch(it -> it.satellitePipeName.equals(name))) return SatelliteNamingResult.DUPLICATE_NAME;
-		satellitePipeName = name;
-		if (MainProxy.isServer(this.getWorld())) {
-			updateWatchers();
-			ensureAllSatelliteStatus();
-		}
-		return SatelliteNamingResult.SUCCESS;
+	@Nonnull
+	@Override
+	public Set<SatellitePipe> getSatellitesOfType() {
+		return Collections.unmodifiableSet(AllSatellites);
+	}
+
+	@Override
+	public void setSatellitePipeName(@Nonnull String satellitePipeName) {
+		this.satellitePipeName = satellitePipeName;
+	}
+
+	@Nonnull
+	@Override
+	public List<ItemIdentifierStack> getItemList() {
+		return itemList;
 	}
 }

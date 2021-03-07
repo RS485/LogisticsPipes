@@ -121,18 +121,6 @@ public final class StringUtils {
 		return s;
 	}
 
-	public static String toPercent(double value) {
-		if (value > 1) {
-			value = 1;
-		}
-		if (value < 0) {
-			value = 0;
-		}
-		value *= 100;
-		int percent = (int) value;
-		return percent + "%";
-	}
-
 	public static String getWithMaxWidth(String name, int width, FontRenderer fontRenderer) {
 		boolean changed = false;
 		while (fontRenderer.getStringWidth(name) > width) {

@@ -8,8 +8,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.translation.I18n;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -74,7 +74,7 @@ public final class StringUtils {
 	}
 
 	public static String translate(String key) {
-		String result = StringUtils.handleColor(I18n.translateToLocal(key));
+		String result = StringUtils.handleColor(I18n.format(key));
 		if (result.equals(key) && !StringUtils.UNTRANSLATED_STRINGS.contains(key) && !key.contains(".tip")) {
 			StringUtils.UNTRANSLATED_STRINGS.add(key);
 		}

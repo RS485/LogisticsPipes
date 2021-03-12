@@ -40,6 +40,8 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.gui.Label;
+import network.rs485.logisticspipes.gui.VerticalLabel;
 
 public class GuiCraftingPipe extends ModuleBaseGui {
 
@@ -60,6 +62,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	private final int[] cleanupSlotIDs;
 
 	private GuiButton cleanupModeButton;
+	private final Label[] satellitePipeLabels;
+	private Label satellitePipeLabel;
 
 	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter module, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy, int cleanupSize, boolean cleanupExclude) {
 		super(null, module);
@@ -137,6 +141,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		for (int i = 0; i < 9; i++) {
 			advancedSatButtonArray[i] = new GuiButton[2];
 		}
+		satellitePipeLabels = new Label[9];
 	}
 
 	@Override
@@ -158,9 +163,11 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			if (liquidCrafter != 0) {
 				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[5] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 - 18, guiTop + 158, 37, 10, StringUtils.translate(PREFIX + "Select")))));
 			}
+			satellitePipeLabel = new Label(craftingModule.clientSideSatelliteNames.satelliteName, 115, 43, 55, 0x404040, 0xff8b8b8b);
 		} else {
 			for (int i = 0; i < 9; i++) {
 				addButton(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 9 + 18 * i, (height - ySize) / 2 + 75, 17, 10, StringUtils.translate(PREFIX + "Sel")));
+				satellitePipeLabels[i] = new VerticalLabel(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i], 11 + (i * 18), 35, 40, 0x404040, 0xffc6c6c6);
 			}
 			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
 			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
@@ -308,10 +315,10 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		super.drawGuiContainerForegroundLayer(par1, par2);
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		GlStateManager.color(1.0F,1.0F,1.0F,1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Inputs"), 18, 7, 0x404040);
 		mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
 
@@ -321,9 +328,10 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			if (craftingModule.clientSideSatelliteNames.satelliteName.isEmpty()) {
 				mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 135, 43, 0x404040);
 			} else {
-				String name = craftingModule.clientSideSatelliteNames.satelliteName;
-				name = StringUtils.getCuttedString(name, 55, mc.fontRenderer);
-				mc.fontRenderer.drawString(name, 143 - (mc.fontRenderer.getStringWidth(name) / 2), 43, 0x404040);
+				if (!satellitePipeLabel.isTextEqual(craftingModule.clientSideSatelliteNames.satelliteName)) {
+					satellitePipeLabel.setText(craftingModule.clientSideSatelliteNames.satelliteName);
+				}
+				satellitePipeLabel.draw(mouseX - guiLeft, mouseY - guiTop);
 			}
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 75, 0x404040);
 			mc.fontRenderer.drawString("" + craftingModule.priority, 143 - (mc.fontRenderer.getStringWidth("" + craftingModule.priority) / 2), 87, 0x404040);
@@ -332,13 +340,10 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				if (craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i].isEmpty()) {
 					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 9 + (i * 18), 57, 0x404040);
 				} else {
-					String name = craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i];
-					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
-					GlStateManager.pushMatrix();
-					GlStateManager.translate(20 + (i * 18), 39, 0);
-					GlStateManager.rotate(90, 0, 0, 1);
-					mc.fontRenderer.drawString(name, 0, 0, 0x404040);
-					GL11.glPopMatrix();
+					if (!satellitePipeLabels[i].isTextEqual(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i])) {
+						satellitePipeLabels[i].setText(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i]);
+					}
+					satellitePipeLabels[i].draw(mouseX - guiLeft, mouseY - guiTop);
 				}
 			}
 			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 90, 0x404040);

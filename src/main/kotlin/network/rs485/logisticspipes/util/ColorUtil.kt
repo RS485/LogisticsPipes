@@ -86,6 +86,19 @@ fun Int.blue(): Int = this and 0xFF
 fun Int.blueF(): Float = blue() / 255.0f
 
 /**
+ * Prepends the pre-defined value of 255 on the alpha channel to ensure an opaque color.
+ * @return the same left-most 24 bits but with the right 8 bits all being 1.
+ */
+fun Int.opaque(): Int = prependAlpha(255)
+
+/**
+ * Prepends the given value to the first 8 bits of a 32 bit integer.
+ * @param alpha value of alpha that should be prepended. (0-255)
+ * @return original int with the given alpha prepended.
+ */
+fun Int.prependAlpha(alpha: Int) = (this and 0x00FFFFFF) or (alpha shl 24)
+
+/**
  * Cycles the input color in the range of 0..15. Descending when inverted is true.
  */
 fun cycleMinecraftColorId(color: Int, inverted: Boolean = false): Int {

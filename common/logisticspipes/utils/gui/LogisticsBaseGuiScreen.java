@@ -24,8 +24,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -637,5 +640,61 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 	public void drawCenteredString(String text, int x, int y, int color) {
 		int actualX = x - mc.fontRenderer.getStringWidth(text) / 2;
 		mc.fontRenderer.drawString(text, actualX, y, color);
+	}
+
+	public static void drawHorizontalGradientRect(int left, int top, int right, int bottom, int z, int colorLeft, int colorRight){
+		float aL = (float)(colorLeft >> 24 & 255) / 255.0F;
+		float rL = (float)(colorLeft >> 16 & 255) / 255.0F;
+		float gL = (float)(colorLeft >> 8 & 255) / 255.0F;
+		float bL = (float)(colorLeft & 255) / 255.0F;
+		float aR = (float)(colorRight >> 24 & 255) / 255.0F;
+		float rR = (float)(colorRight >> 16 & 255) / 255.0F;
+		float gR = (float)(colorRight >> 8 & 255) / 255.0F;
+		float bR = (float)(colorRight & 255) / 255.0F;
+		GlStateManager.disableTexture2D();
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlpha();
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.shadeModel(7425);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		bufferbuilder.pos((double)right, (double)top, (double)z).color(rR, gR, bR, aR).endVertex();
+		bufferbuilder.pos((double)left, (double)top, (double)z).color(rL, gL, bL, aL).endVertex();
+		bufferbuilder.pos((double)left, (double)bottom, (double)z).color(rL, gL, bL, aL).endVertex();
+		bufferbuilder.pos((double)right, (double)bottom, (double)z).color(rR, gR, bR, aR).endVertex();
+		tessellator.draw();
+		GlStateManager.shadeModel(7424);
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlpha();
+		GlStateManager.enableTexture2D();
+	}
+
+	public static void drawVerticalGradientRect(int left, int top, int right, int bottom, int z, int colorTop, int colorBottom){
+		float aT = (float)(colorTop >> 24 & 255) / 255.0F;
+		float rT = (float)(colorTop >> 16 & 255) / 255.0F;
+		float gT = (float)(colorTop >> 8 & 255) / 255.0F;
+		float bT = (float)(colorTop & 255) / 255.0F;
+		float aB = (float)(colorBottom >> 24 & 255) / 255.0F;
+		float rB = (float)(colorBottom >> 16 & 255) / 255.0F;
+		float gB = (float)(colorBottom >> 8 & 255) / 255.0F;
+		float bB = (float)(colorBottom & 255) / 255.0F;
+		GlStateManager.disableTexture2D();
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlpha();
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.shadeModel(7425);
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferbuilder = tessellator.getBuffer();
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		bufferbuilder.pos((double)right, (double)top, (double)z).color(rT, gT, bT, aT).endVertex();
+		bufferbuilder.pos((double)left, (double)top, (double)z).color(rT, gT, bT, aT).endVertex();
+		bufferbuilder.pos((double)left, (double)bottom, (double)z).color(rB, gB, bB, aB).endVertex();
+		bufferbuilder.pos((double)right, (double)bottom, (double)z).color(rB, gB, bB, aB).endVertex();
+		tessellator.draw();
+		GlStateManager.shadeModel(7424);
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlpha();
+		GlStateManager.enableTexture2D();
 	}
 }

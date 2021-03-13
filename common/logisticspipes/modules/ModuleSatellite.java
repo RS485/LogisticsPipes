@@ -1,13 +1,11 @@
 package logisticspipes.modules;
 
-import java.util.Collection;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -18,13 +16,7 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 //IHUDModuleHandler,
 public class ModuleSatellite extends LogisticsModule {
 
-	private final CoreRoutedPipe pipe;
-
-	public ModuleSatellite(CoreRoutedPipe pipeItemsSatelliteLogistics) {
-		pipe = pipeItemsSatelliteLogistics;
-	}
-
-	private SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
 
 	@Override
 	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
@@ -40,7 +32,7 @@ public class ModuleSatellite extends LogisticsModule {
 	}
 
 	private int spaceFor(@Nonnull ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(pipe.container);
+		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), _service.getPos());
 
 		int count = worldCoordinates.connectedTileEntities(ConnectionType.ITEM)
 				.map(adjacent -> adjacent.sneakyInsertion().from(getUpgradeManager()))
@@ -50,7 +42,7 @@ public class ModuleSatellite extends LogisticsModule {
 				.reduce(Integer::sum).orElse(0);
 
 		if (includeInTransit) {
-			count -= pipe.countOnRoute(item);
+			count -= _service.countOnRoute(item);
 		}
 		return count;
 	}
@@ -67,12 +59,6 @@ public class ModuleSatellite extends LogisticsModule {
 	@Override
 	public boolean hasGenericInterests() {
 		return false;
-	}
-
-	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		// always a satellite pipe
-		pipe.collectSpecificInterests(itemidCollection);
 	}
 
 	@Override

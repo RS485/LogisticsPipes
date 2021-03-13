@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -66,6 +65,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
+	private final LogisticsModule moduleSatellite;
 
 	@Getter
 	private String satellitePipeName = "";
@@ -73,6 +73,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public PipeItemsSatelliteLogistics(Item item) {
 		super(item);
 		throttleTime = 40;
+		moduleSatellite = new ModuleSatellite();
+		moduleSatellite.registerHandler(this, this);
 	}
 
 	@Override
@@ -90,7 +92,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	@Override
 	public LogisticsModule getLogisticsModule() {
-		return new ModuleSatellite(this);
+		return moduleSatellite;
 	}
 
 	@Override

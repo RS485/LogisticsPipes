@@ -61,6 +61,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	private final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<>();
+	private final ModuleSatellite moduleSatellite;
 
 	@Getter
 	private String satellitePipeName = "";
@@ -68,6 +69,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public PipeFluidSatellite(Item item) {
 		super(item);
 		throttleTime = 40;
+		moduleSatellite = new ModuleSatellite();
+		moduleSatellite.registerHandler(this, this);
 	}
 
 	@Override
@@ -87,7 +90,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	@Override
 	public LogisticsModule getLogisticsModule() {
-		return new ModuleSatellite(this);
+		return moduleSatellite;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -171,12 +170,9 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		return this;
 	}
 
-	@Nullable
+	@Nonnull
 	protected ISlotUpgradeManager getUpgradeManager() {
-		if (_service == null) {
-			return null;
-		}
-		return _service.getUpgradeManager(slot, positionInt);
+		return Objects.requireNonNull(_service, "service object was null in " + toString()).getUpgradeManager(slot, positionInt);
 	}
 
 	/**

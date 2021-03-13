@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -32,7 +34,7 @@ import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.gui.GuiChassiPipe;
+import logisticspipes.gui.GuiChassisPipe;
 import logisticspipes.gui.hud.HudChassisPipe;
 import logisticspipes.interfaces.IBufferItems;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -49,18 +51,18 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemModule;
-import logisticspipes.logisticspipes.ChassiTransportLayer;
+import logisticspipes.logisticspipes.ChassisTransportLayer;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.ChassiModule;
+import logisticspipes.modules.ChassisModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
-import logisticspipes.network.packets.pipe.ChassiOrientationPacket;
-import logisticspipes.network.packets.pipe.ChassiePipeModuleContent;
-import logisticspipes.network.packets.pipe.RequestChassiOrientationPacket;
+import logisticspipes.network.packets.pipe.ChassisOrientationPacket;
+import logisticspipes.network.packets.pipe.ChassisPipeModuleContent;
+import logisticspipes.network.packets.pipe.RequestChassisOrientationPacket;
 import logisticspipes.network.packets.pipe.SendQueueContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -94,28 +96,28 @@ import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 @CCType(name = "LogisticsChassiePipe")
-public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
+public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
-	private final ChassiModule _module;
+	private final ChassisModule _module;
 	private final ItemIdentifierInventory _moduleInventory;
-	private final ModuleUpgradeManager[] _upgradeManagers;
+	private final NonNullList<ModuleUpgradeManager> slotUpgradeManagers = NonNullList.create();
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
 
 	// HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	private HudChassisPipe hud;
+	private final HudChassisPipe hud;
 
-	public PipeLogisticsChassi(Item item) {
+	public PipeLogisticsChassis(Item item) {
 		super(item);
-		_moduleInventory = new ItemIdentifierInventory(getChassiSize(), "Chassi pipe", 1);
+		_moduleInventory = new ItemIdentifierInventory(getChassisSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
-		_upgradeManagers = new ModuleUpgradeManager[getChassiSize()];
-		for (int i = 0; i < getChassiSize(); i++) {
-			_upgradeManagers[i] = new ModuleUpgradeManager(this, upgradeManager);
+		assert slotUpgradeManagers.size() == 0; // starting at index 0
+		for (int i = 0; i < getChassisSize(); i++) {
+			addModuleUpgradeManager();
 		}
-		_module = new ChassiModule(getChassiSize(), this);
+		_module = new ChassisModule(getChassisSize(), this);
 		_module.registerHandler(this, this);
 		hud = new HudChassisPipe(this, _moduleInventory);
 		pointedDirection = null;
@@ -150,7 +152,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 		if (pointedDirection != oldOrientation) {
 			clearCache();
-			MainProxy.sendPacketToAllWatchingChunk(_module, PacketHandler.getPacket(ChassiOrientationPacket.class).setDir(pointedDirection).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToAllWatchingChunk(_module, PacketHandler.getPacket(ChassisOrientationPacket.class).setDir(pointedDirection).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			refreshRender(true);
 		}
 	}
@@ -184,8 +186,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		return _moduleInventory;
 	}
 
+	@Nonnull
 	public ModuleUpgradeManager getModuleUpgradeManager(int slot) {
-		return _upgradeManagers[slot];
+		return slotUpgradeManagers.get(slot);
 	}
 
 	@Override
@@ -241,12 +244,19 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				pointedDirection = EnumFacingUtil.getOrientation(tmp % 6);
 			}
 			switchOrientationOnTick = (pointedDirection == null);
-			for (int i = 0; i < getChassiSize(); i++) {
-				_upgradeManagers[i].readFromNBT(nbttagcompound, Integer.toString(i));
+			for (int i = 0; i < getChassisSize(); i++) {
+				if (i >= slotUpgradeManagers.size()) {
+					addModuleUpgradeManager();
+				}
+				slotUpgradeManagers.get(i).readFromNBT(nbttagcompound, Integer.toString(i));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void addModuleUpgradeManager() {
+		slotUpgradeManagers.add(new ModuleUpgradeManager(this, upgradeManager));
 	}
 
 	@Override
@@ -255,8 +265,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
 		nbttagcompound.setInteger("Orientation", pointedDirection == null ? -1 : pointedDirection.ordinal());
-		for (int i = 0; i < getChassiSize(); i++) {
-			_upgradeManagers[i].writeToNBT(nbttagcompound, Integer.toString(i));
+		for (int i = 0; i < getChassisSize(); i++) {
+			slotUpgradeManagers.get(i).writeToNBT(nbttagcompound, Integer.toString(i));
 		}
 	}
 
@@ -264,7 +274,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public void onAllowedRemoval() {
 		_moduleInventory.removeListener(this);
 		if (MainProxy.isServer(getWorld())) {
-			for (int i = 0; i < getChassiSize(); i++) {
+			for (int i = 0; i < getChassisSize(); i++) {
 				LogisticsModule x = getSubModule(i);
 				if (x instanceof ILegacyActiveModule) {
 					ILegacyActiveModule y = (ILegacyActiveModule) x;
@@ -281,7 +291,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			}
 			_moduleInventory.dropContents(getWorld(), getX(), getY(), getZ());
 
-			for (int i = 0; i < getChassiSize(); i++) {
+			for (int i = 0; i < getChassisSize(); i++) {
 				getModuleUpgradeManager(i).dropUpgrades();
 			}
 		}
@@ -358,6 +368,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			if (stack.getItem() instanceof ItemModule) {
 				LogisticsModule current = _module.getModule(i);
 				LogisticsModule next = ((ItemModule) stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this);
+				Objects.requireNonNull(next, "getModuleForItem returned null for " + stack.toString());
 				next.registerPosition(ModulePositionType.SLOT, i);
 				next.registerCCEventQueuer(this);
 				if (current != next) {
@@ -371,14 +382,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		}
 		if (reInitGui) {
 			if (MainProxy.isClient(getWorld())) {
-				if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiChassiPipe) {
+				if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiChassisPipe) {
 					FMLClientHandler.instance().getClient().currentScreen.initGui();
 				}
 			}
 		}
 		if (MainProxy.isServer(getWorld())) {
 			if (!localModeWatchers.isEmpty()) {
-				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassisPipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 			}
 		}
 	}
@@ -394,12 +405,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (!init) {
 			init = true;
 			if (MainProxy.isClient(getWorld())) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestChassiOrientationPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestChassisOrientationPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			}
 		}
 	}
 
-	public abstract int getChassiSize();
+	public abstract int getChassisSize();
 
 	@Override
 	public final LogisticsModule getLogisticsModule() {
@@ -410,15 +421,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {
-			_transportLayer = new ChassiTransportLayer(this);
+			_transportLayer = new ChassisTransportLayer(this);
 		}
 		return _transportLayer;
 	}
 
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
 		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++) {
-			ItemStack item = _moduleInventory.getStackInSlot(i);
-			if (item.isEmpty()) {
+			if (_moduleInventory.getIDStackInSlot(i) == null) {
 				_moduleInventory.setInventorySlotContents(i, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).splitStack(1));
 				InventoryChanged(_moduleInventory);
 				return true;
@@ -436,7 +446,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (entityplayer.isSneaking() && SimpleServiceLocator.configToolHandler.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
 			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openGui) {
-					((PipeLogisticsChassi) container.pipe).nextOrientation();
+					((PipeLogisticsChassis) container.pipe).nextOrientation();
 				} else {
 					entityplayer.sendMessage(new TextComponentTranslation("lp.chat.permissiondenied"));
 				}
@@ -470,7 +480,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				return;
 			}
 		}
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
 				ILegacyActiveModule y = (ILegacyActiveModule) x;
@@ -484,7 +494,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (!isEnabled()) {
 			return null;
 		}
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
 				ILegacyActiveModule y = (ILegacyActiveModule) x;
@@ -503,7 +513,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (!isEnabled()) {
 			return;
 		}
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
 				ILegacyActiveModule y = (ILegacyActiveModule) x;
@@ -537,7 +547,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if (mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassisPipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendQueueContent.class).setIdentList(ItemIdentifierStack.getListSendQueue(_sendQueue)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -564,7 +574,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			if (Configs.MULTI_THREAD_NUMBER > 0 && !force) {
 				HudUpdateTick.add(getRouter());
 			} else {
-				if (localModeWatchers != null && localModeWatchers.size() > 0) {
+				if (localModeWatchers.size() > 0) {
 					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);
 					MainProxy.sendToPlayerList(PacketHandler.getPacket(SendQueueContent.class).setIdentList(items).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 					return items.size();
@@ -580,7 +590,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		displayList.addAll(_allItems);
 	}
 
-	public ChassiModule getModules() {
+	public ChassisModule getModules() {
 		return _module;
 	}
 
@@ -607,7 +617,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 			return;
 		}
 
-		for (int moduleIndex = 0; moduleIndex < getChassiSize(); moduleIndex++) {
+		for (int moduleIndex = 0; moduleIndex < getChassisSize(); moduleIndex++) {
 			LogisticsModule module = getSubModule(moduleIndex);
 			if (module != null && module.interestedInAttachedInventory()) {
 				IInventoryUtil inv = getSneakyInventory(module.getSlot(), module.getPositionInt());
@@ -621,7 +631,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				items.stream().map(ItemIdentifier::getIgnoringNBT).forEach(itemidCollection::add);
 
 				boolean modulesInterestedInUndamged = false;
-				for (int i = 0; i < getChassiSize(); i++) {
+				for (int i = 0; i < getChassisSize(); i++) {
 					if (getSubModule(moduleIndex).interestedInUndamagedID()) {
 						modulesInterestedInUndamged = true;
 						break;
@@ -633,7 +643,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.
 			}
 		}
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule module = getSubModule(i);
 			if (module != null) {
 				module.collectSpecificInterests(itemidCollection);
@@ -646,7 +656,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		if (getPointedItemHandler() == null) {
 			return false;
 		}
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);
 
 			if (x != null && x.hasGenericInterests()) {
@@ -663,7 +673,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@CCCommand(description = "Returns the size of this Chassie pipe")
 	public Integer getChassieSize() {
-		return getChassiSize();
+		return getChassisSize();
 	}
 
 	/** ICraftItems */
@@ -680,7 +690,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public ICraftingTemplate addCrafting(IResource toCraft) {
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);
 
 			if (x instanceof ICraftItems) {
@@ -697,7 +707,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 	@Override
 	public List<ItemIdentifierStack> getCraftedItems() {
 		List<ItemIdentifierStack> craftables = null;
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);
 
 			if (x instanceof ICraftItems) {
@@ -712,7 +722,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 
 	@Override
 	public boolean canCraft(IResource toCraft) {
-		for (int i = 0; i < getChassiSize(); i++) {
+		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);
 
 			if (x instanceof ICraftItems) {
@@ -724,15 +734,16 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ICra
 		return false;
 	}
 
+	@Nonnull
 	@Override
 	public ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt) {
-		if (slot != ModulePositionType.SLOT || positionInt >= _upgradeManagers.length) {
+		if (slot != ModulePositionType.SLOT || positionInt >= slotUpgradeManagers.size()) {
 			if (LogisticsPipes.isDEBUG()) {
-				new UnsupportedOperationException("Position info arn't for a chassi pipe. (" + slot + "/" + positionInt + ")").printStackTrace();
+				new UnsupportedOperationException("Position info aren't for a chassis pipe. (" + slot + "/" + positionInt + ")").printStackTrace();
 			}
 			return super.getUpgradeManager(slot, positionInt);
 		}
-		return _upgradeManagers[positionInt];
+		return slotUpgradeManagers.get(positionInt);
 	}
 
 	@Override

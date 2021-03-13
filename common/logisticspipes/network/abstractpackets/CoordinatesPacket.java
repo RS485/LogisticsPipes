@@ -150,6 +150,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		return getPipe(world, LTGPCompletionCheck.NONE);
 	}
 
+	@Nonnull
 	public LogisticsTileGenericPipe getPipe(World world, LTGPCompletionCheck check) {
 		LogisticsTileGenericPipe pipe = getTileAs(world, LogisticsTileGenericPipe.class);
 		if (check == LTGPCompletionCheck.PIPE || check == LTGPCompletionCheck.TRANSPORT) {

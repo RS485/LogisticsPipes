@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -31,7 +31,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
@@ -98,7 +98,6 @@ public class LogisticsManager implements ILogisticsManager {
 				result.setValue2(reply);
 				List<IFilter> list = new LinkedList<>();
 				result.setValue3(list);
-				continue;
 			}
 		}
 		if (result.getValue1() != null) {
@@ -240,7 +239,7 @@ public class LogisticsManager implements ILogisticsManager {
 			return ("Provider");
 		}
 
-		if (r.getPipe() instanceof PipeLogisticsChassi) {
+		if (r.getPipe() instanceof PipeLogisticsChassis) {
 			return "Chassis";
 		}
 		if (r.getPipe() instanceof PipeItemsRequestLogistics) {
@@ -289,12 +288,7 @@ public class LogisticsManager implements ILogisticsManager {
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<>();
 		for (Map<ItemIdentifier, Integer> allItems : items) {
 			for (Entry<ItemIdentifier, Integer> item : allItems.entrySet()) {
-				Integer currentItem = allAvailableItems.get(item.getKey());
-				if (currentItem == null) {
-					allAvailableItems.put(item.getKey(), item.getValue());
-				} else {
-					allAvailableItems.put(item.getKey(), currentItem + item.getValue());
-				}
+				allAvailableItems.merge(item.getKey(), item.getValue(), Integer::sum);
 			}
 		}
 		return allAvailableItems;

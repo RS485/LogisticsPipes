@@ -11,16 +11,17 @@ import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.modules.LogisticsModule;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
 
 public class HudChassisPipe extends BasicHUDGui {
 
-	private final PipeLogisticsChassi pipe;
+	private final PipeLogisticsChassis pipe;
 	private final ItemIdentifierInventory moduleInventory;
 
 	private int selected = -1;
@@ -29,10 +30,10 @@ public class HudChassisPipe extends BasicHUDGui {
 	private int xCursor;
 	private int yCursor;
 
-	public HudChassisPipe(PipeLogisticsChassi pipeLogisticsChassi, ItemIdentifierInventory _moduleInventory) {
-		pipe = pipeLogisticsChassi;
+	public HudChassisPipe(PipeLogisticsChassis pipeLogisticsChassis, ItemIdentifierInventory _moduleInventory) {
+		pipe = pipeLogisticsChassis;
 		moduleInventory = _moduleInventory;
-		for (int i = 0; i < pipe.getChassiSize(); i++) {
+		for (int i = 0; i < pipe.getChassisSize(); i++) {
 			addButton(new ItemButton(moduleInventory, i, -45, -35 + ((i % 3) * 27), 20, 25));
 		}
 
@@ -67,7 +68,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 			@Override
 			public boolean buttonEnabled() {
-				return modulePage < ((pipe.getChassiSize() - 1) / 3);
+				return modulePage < ((pipe.getChassisSize() - 1) / 3);
 			}
 		});
 		addButton(new BasicHUDButton("x", 37, -45, 8, 8) {
@@ -157,12 +158,11 @@ public class HudChassisPipe extends BasicHUDGui {
 
 	@Override
 	public boolean display(IHUDConfig config) {
-		if (!config.isHUDChassie()) {
+		if (!config.isChassisHUD()) {
 			return false;
 		}
 		for (int i = 0; i < moduleInventory.getSizeInventory(); i++) {
-			ItemStack stack = moduleInventory.getStackInSlot(i);
-			if (!stack.isEmpty()) {
+			if (moduleInventory.getIDStackInSlot(i) != null) {
 				return true;
 			}
 		}
@@ -254,12 +254,12 @@ public class HudChassisPipe extends BasicHUDGui {
 			GL11.glScaled(2.0D, 2.0D, 1.0D);
 			GL11.glTranslatef(0.0F, 0.0F, 0.001F);
 
-			ItemStack module = inv.getStackInSlot(position);
+			ItemIdentifierStack module = inv.getIDStackInSlot(position);
 
 			if (module != null) {
 				boolean renderInColor = buttonEnabled() || isSlotSelected(position);
 				ItemStackRenderer itemStackRenderer = new ItemStackRenderer(posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), -0.002F, shifted, renderInColor);
-				itemStackRenderer.setItemstack(module).setDisplayAmount(DisplayAmount.NEVER);
+				itemStackRenderer.setItemIdentStack(module).setDisplayAmount(DisplayAmount.NEVER);
 
 				itemStackRenderer.renderInGui();
 			}
@@ -267,7 +267,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 		@Override
 		public void renderAlways(boolean shifted) {
-			if (inv.getStackInSlot(position) == null && shouldDisplayButton(position)) {
+			if (inv.getIDStackInSlot(position) == null && shouldDisplayButton(position)) {
 				GL11.glEnable(GL11.GL_BLEND);
 				if (shifted) {
 					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -282,7 +282,7 @@ public class HudChassisPipe extends BasicHUDGui {
 
 		@Override
 		public boolean shouldRenderButton() {
-			return inv.getStackInSlot(position) != null && shouldDisplayButton(position);
+			return inv.getIDStackInSlot(position) != null && shouldDisplayButton(position);
 		}
 
 		@Override

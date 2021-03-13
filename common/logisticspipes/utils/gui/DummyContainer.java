@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -34,10 +34,10 @@ import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.ChassiModule;
+import logisticspipes.modules.ChassisModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.resources.DictResource;
@@ -72,7 +72,7 @@ public class DummyContainer extends Container {
 		_playerInventory = player.inventory;
 		_dummyInventory = dummyInventory;
 		_controler = controler;
-		if (MainProxy.isServer()) {
+		if (MainProxy.isServer(player.world)) {
 			for (IGuiOpenControler element : _controler) {
 				element.guiOpenedByPlayer(player);
 			}
@@ -86,9 +86,6 @@ public class DummyContainer extends Container {
 
 	/***
 	 * Adds all slots for the player inventory and hotbar
-	 *
-	 * @param xOffset
-	 * @param yOffset
 	 */
 	public void addNormalSlotsForPlayerInventory(int xOffset, int yOffset) {
 		if (_playerInventory == null) {
@@ -153,7 +150,7 @@ public class DummyContainer extends Container {
 		return addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
 	}
 
-	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
+	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassis pipe) {
 		transferTop.add(addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe)));
 	}
 
@@ -195,7 +192,7 @@ public class DummyContainer extends Container {
 
 	@Nonnull
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer pl, int i) {
+	public ItemStack transferStackInSlot(@Nonnull EntityPlayer player, int i) {
 		if (transferTop.isEmpty() || transferBottom.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
@@ -204,11 +201,11 @@ public class DummyContainer extends Container {
 			return ItemStack.EMPTY;
 		}
 		if (transferTop.contains(slot)) {
-			handleShiftClickLists(slot, transferBottom, true, pl);
-			handleShiftClickLists(slot, transferBottom, false, pl);
+			handleShiftClickLists(slot, transferBottom, true, player);
+			handleShiftClickLists(slot, transferBottom, false, player);
 		} else if (transferBottom.contains(slot)) {
-			handleShiftClickLists(slot, transferTop, true, pl);
-			handleShiftClickLists(slot, transferTop, false, pl);
+			handleShiftClickLists(slot, transferTop, true, player);
+			handleShiftClickLists(slot, transferTop, false, player);
 		}
 		return ItemStack.EMPTY;
 	}
@@ -532,7 +529,7 @@ public class DummyContainer extends Container {
 
 	private void handleSwitch(Slot slot2, @Nonnull ItemStack out, @Nonnull ItemStack in, EntityPlayer player) {
 		if (slot2 instanceof ModuleSlot) {
-			ChassiModule chassis = (ChassiModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
+			ChassisModule chassis = (ChassisModule) ((ModuleSlot) slot2).get_pipe().getLogisticsModule();
 			int moduleIndex = ((ModuleSlot) slot2).get_moduleIndex();
 			if (out.getItem() instanceof ItemModule) {
 				if (chassis.hasModule(moduleIndex)) {
@@ -548,31 +545,32 @@ public class DummyContainer extends Container {
 	 */
 	@Nonnull
 	@Override
-	public ItemStack slotClick(int slotId, int mouseButton, ClickType shiftMode, EntityPlayer entityplayer) {
+	public ItemStack slotClick(int slotId, int mouseButton, @Nonnull ClickType shiftMode, @Nonnull EntityPlayer player) {
 		lastClicked = System.currentTimeMillis();
 		if (slotId < 0) {
-			return superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
+			return superSlotClick(slotId, mouseButton, shiftMode, player);
 		}
 		Slot slot = inventorySlots.get(slotId);
 		//debug dump
 		if (LogisticsPipes.isDEBUG() && slot != null) {
 			ItemStack stack = slot.getStack();
 			if (!stack.isEmpty()) {
-				ItemIdentifier.get(stack).debugDumpData(entityplayer.world.isRemote);
+				ItemIdentifier.get(stack).debugDumpData(player.world.isRemote);
 			}
 		}
+		if (slot == null) return ItemStack.EMPTY;
 		if ((!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
-			ItemStack stack1 = superSlotClick(slotId, mouseButton, shiftMode, entityplayer);
+			ItemStack stack1 = superSlotClick(slotId, mouseButton, shiftMode, player);
 			ItemStack stack2 = slot.getStack();
 			if (!stack2.isEmpty() && stack2.getItem() instanceof ItemModule) {
-				if (entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.world)) {
-					((EntityPlayerMP) entityplayer).sendSlotContents(this, slotId, stack2);
+				if (player instanceof EntityPlayerMP && MainProxy.isServer(player.world)) {
+					((EntityPlayerMP) player).sendSlotContents(this, slotId, stack2);
 				}
 			}
 			return stack1;
 		}
 
-		InventoryPlayer inventoryplayer = entityplayer.inventory;
+		InventoryPlayer inventoryplayer = player.inventory;
 
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
 
@@ -594,7 +592,7 @@ public class DummyContainer extends Container {
 			return currentlyEquippedStack;
 		}
 
-		handleDummyClick(slot, slotId, currentlyEquippedStack, mouseButton, shiftMode, entityplayer);
+		handleDummyClick(slot, slotId, currentlyEquippedStack, mouseButton, shiftMode, player);
 		return currentlyEquippedStack;
 	}
 
@@ -736,13 +734,13 @@ public class DummyContainer extends Container {
 	}
 
 	@Override
-	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
+	public void onContainerClosed(@Nonnull EntityPlayer player) {
 		if (_controler != null) {
 			for (IGuiOpenControler element : _controler) {
-				element.guiClosedByPlayer(par1EntityPlayer);
+				element.guiClosedByPlayer(player);
 			}
 		}
-		super.onContainerClosed(par1EntityPlayer);
+		super.onContainerClosed(player);
 	}
 
 	public void addRestrictedHotbarForPlayerInventory(int xOffset, int yOffset) {
@@ -765,8 +763,8 @@ public class DummyContainer extends Container {
 	}
 
 	@Override
-	public boolean canDragIntoSlot(Slot slot) {
-		if (slot == null || slot instanceof UnmodifiableSlot || slot instanceof FluidSlot || slot instanceof ColorSlot || slot instanceof HandelableSlot) {
+	public boolean canDragIntoSlot(@Nonnull Slot slot) {
+		if (slot instanceof UnmodifiableSlot || slot instanceof FluidSlot || slot instanceof ColorSlot || slot instanceof HandelableSlot) {
 			return false;
 		}
 		if (lastDragnDropLockup <= lastClicked) { // Slot was clicked after last lookup

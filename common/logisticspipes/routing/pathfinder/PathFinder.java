@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -64,9 +64,7 @@ public class PathFinder {
 	 * @param maxLength
 	 *            - The maximum recurse depth, i.e. the maximum length pipe that
 	 *            is supported
-	 * @return
 	 */
-
 	public static HashMap<CoreRoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileEntity startPipe, EnumFacing startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter, EnumSet<PipeRoutingConnectionType> connectionType) {
 		IPipeInformationProvider startProvider = SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(startPipe);
 		if (startProvider == null) {
@@ -304,13 +302,13 @@ public class PathFinder {
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canRequestFrom);
 				}
 				if (startPipe.isOnewayPipe()) {
-					if (!startPipe.isOutputOpen(direction)) {
+					if (startPipe.isOutputClosed(direction)) {
 						nextConnectionFlags.remove(PipeRoutingConnectionType.canRouteTo);
 					}
 				}
 				if (currentPipe.isOnewayPipe()) {
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerSubSystemFrom);
-					if (!currentPipe.isOutputOpen(direction.getOpposite())) {
+					if (currentPipe.isOutputClosed(direction.getOpposite())) {
 						nextConnectionFlags.remove(PipeRoutingConnectionType.canRequestFrom);
 						nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
 					}

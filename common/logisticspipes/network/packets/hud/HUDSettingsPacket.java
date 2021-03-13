@@ -1,11 +1,13 @@
 package logisticspipes.network.packets.hud;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import logisticspipes.LPItems;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -39,14 +41,13 @@ public class HUDSettingsPacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if (player.inventory.getStackInSlot(slot) == null) {
-			return;
-		}
-		IHUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
+		final ItemStack equipment = player.inventory.getStackInSlot(slot);
+		if (equipment.getItem() != LPItems.hudGlasses) return;
+		IHUDConfig config = new HUDConfig(equipment);
 		switch (buttonId) {
 			case 0:
-				config.setHUDChassie(state);
-				if (config.isHUDChassie()) {
+				config.setChassisHUD(state);
+				if (config.isChassisHUD()) {
 					player.sendMessage(new TextComponentTranslation("lp.hud.config.chassie.enabled"));
 				} else {
 					player.sendMessage(new TextComponentTranslation("lp.hud.config.chassie.disabled"));

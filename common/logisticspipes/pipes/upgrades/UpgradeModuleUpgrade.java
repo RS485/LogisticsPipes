@@ -1,7 +1,7 @@
 package logisticspipes.pipes.upgrades;
 
 import logisticspipes.modules.LogisticsModule;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class UpgradeModuleUpgrade implements IPipeUpgrade {
@@ -17,7 +17,7 @@ public class UpgradeModuleUpgrade implements IPipeUpgrade {
 
 	@Override
 	public boolean isAllowedForPipe(CoreRoutedPipe pipe) {
-		return pipe instanceof PipeLogisticsChassi;
+		return pipe instanceof PipeLogisticsChassis;
 	}
 
 	@Override

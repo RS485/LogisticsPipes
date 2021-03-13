@@ -46,7 +46,7 @@ public interface IPipeInformationProvider {
 
 	boolean isOnewayPipe();
 
-	boolean isOutputOpen(EnumFacing direction);
+	boolean isOutputClosed(EnumFacing direction);
 
 	boolean canConnect(TileEntity to, EnumFacing direction, boolean flag);
 

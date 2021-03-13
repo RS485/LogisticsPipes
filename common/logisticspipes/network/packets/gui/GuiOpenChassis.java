@@ -6,29 +6,28 @@ import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.guis.pipe.ChassiGuiProvider;
+import logisticspipes.network.guis.pipe.ChassisGuiProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
-public class GuiOpenChassie extends CoordinatesPacket {
+public class GuiOpenChassis extends CoordinatesPacket {
 
-	public GuiOpenChassie(int id) {
+	public GuiOpenChassis(int id) {
 		super(id);
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
-			return;
+		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.PIPE);
+		if (pipe.pipe instanceof CoreRoutedPipe) {
+			NewGuiHandler.getGui(ChassisGuiProvider.class).setFlag(pipe.pipe.getUpgradeManager().hasUpgradeModuleUpgrade()).setSlot(ModulePositionType.IN_PIPE).setPositionInt(0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 		}
-		NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(pipe.pipe.getUpgradeManager().hasUpgradeModuleUpgrade()).setSlot(ModulePositionType.IN_PIPE).setPositionInt(0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 	}
 
 	@Override
 	public ModernPacket template() {
-		return new GuiOpenChassie(getId());
+		return new GuiOpenChassis(getId());
 	}
 }

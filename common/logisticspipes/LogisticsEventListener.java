@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,7 +54,7 @@ import logisticspipes.network.packets.PlayerConfigToClientPacket;
 import logisticspipes.network.packets.chassis.ChestGuiClosed;
 import logisticspipes.network.packets.chassis.ChestGuiOpened;
 import logisticspipes.network.packets.gui.GuiReopenPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -88,7 +89,7 @@ public class LogisticsEventListener {
 				event.setCanceled(true);
 			}
 			if (stack.hasTagCompound()) {
-				for (String key : stack.getTagCompound().getKeySet()) {
+				for (String key : Objects.requireNonNull(stack.getTagCompound(), "nbt for stack must be non-null").getKeySet()) {
 					if (key.startsWith("logisticspipes:routingdata")) {
 						ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(stack.getTagCompound().getCompoundTag(key));
 						info.setItemTimedout();
@@ -132,11 +133,11 @@ public class LogisticsEventListener {
 			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
 				List<WeakReference<AsyncQuicksortModule>> list = worldCoordinates.allNeighborTileEntities()
 						.filter(NeighborTileEntity::isLogisticsPipe)
-						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof PipeLogisticsChassi)
-						.filter(adjacent -> ((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe).getPointedOrientation()
+						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof PipeLogisticsChassis)
+						.filter(adjacent -> ((PipeLogisticsChassis) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe).getPointedOrientation()
 								== adjacent.getOurDirection())
-						.map(adjacent -> (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe)
-						.flatMap(pipeLogisticsChassi -> Arrays.stream(pipeLogisticsChassi.getModules().getModules()))
+						.map(adjacent -> (PipeLogisticsChassis) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe)
+						.flatMap(chassis -> Arrays.stream(chassis.getModules().getModules()))
 						.filter(logisticsModule -> logisticsModule instanceof AsyncQuicksortModule)
 						.map(logisticsModule -> new WeakReference<>((AsyncQuicksortModule) logisticsModule))
 						.collect(Collectors.toList());

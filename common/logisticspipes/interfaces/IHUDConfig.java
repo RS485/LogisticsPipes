@@ -2,7 +2,7 @@ package logisticspipes.interfaces;
 
 public interface IHUDConfig {
 
-	boolean isHUDChassie();
+	boolean isChassisHUD();
 
 	boolean isHUDCrafting();
 
@@ -14,7 +14,7 @@ public interface IHUDConfig {
 
 	boolean isHUDSatellite();
 
-	void setHUDChassie(boolean state);
+	void setChassisHUD(boolean state);
 
 	void setHUDCrafting(boolean state);
 

@@ -277,6 +277,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		return !isMultiBlock() && (pipe == null || pipe.isMultipartAllowedInPipe());
 	}
 
+	@Nonnull
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		sendInitPacket = true;
@@ -291,7 +292,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void handleUpdateTag(NBTTagCompound tag) {
+	public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
 		PacketHandler.queueAndRemovePacketFromNBT(tag);
 		super.handleUpdateTag(tag);
 	}
@@ -320,28 +321,28 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	}
 
 	@Override
-	public void addInfoToCrashReport(CrashReportCategory par1CrashReportCategory) {
+	public void addInfoToCrashReport(@Nonnull CrashReportCategory reportCategory) {
 		try {
-			super.addInfoToCrashReport(par1CrashReportCategory);
+			super.addInfoToCrashReport(reportCategory);
 		} catch (Exception e) {
 			if (LogisticsPipes.isDEBUG()) {
 				e.printStackTrace();
 			}
 		}
-		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.getVersionString());
+		reportCategory.addCrashSection("LP-Version", LogisticsPipes.getVersionString());
 		if (pipe != null) {
-			par1CrashReportCategory.addCrashSection("Pipe", pipe.getClass().getCanonicalName());
+			reportCategory.addCrashSection("Pipe", pipe.getClass().getCanonicalName());
 			if (pipe.transport != null) {
-				par1CrashReportCategory.addCrashSection("Transport", pipe.transport.getClass().getCanonicalName());
+				reportCategory.addCrashSection("Transport", pipe.transport.getClass().getCanonicalName());
 			} else {
-				par1CrashReportCategory.addCrashSection("Transport", "null");
+				reportCategory.addCrashSection("Transport", "null");
 			}
 
 			if (pipe instanceof CoreRoutedPipe) {
 				try {
-					((CoreRoutedPipe) pipe).addCrashReport(par1CrashReportCategory);
+					((CoreRoutedPipe) pipe).addCrashReport(reportCategory);
 				} catch (Exception e) {
-					par1CrashReportCategory.addCrashSectionThrowable("Internal LogisticsPipes Error", e);
+					reportCategory.addCrashSectionThrowable("Internal LogisticsPipes Error", e);
 				}
 			}
 		}
@@ -363,6 +364,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 	/* IPipeInformationProvider */
 
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 		nbt = super.writeToNBT(nbt);
@@ -413,7 +415,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		if (pipe != null) {
 			pipe.readFromNBT(nbt);
 		} else {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at {0},{1},{2}", getPos().getX(), getPos().getY(), getPos().getZ());
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at " + getPos().toString());
 			deletePipe = true;
 		}
 
@@ -438,7 +440,8 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 			return false;
 		}
 
-		if (SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) {
+		final EnumFacing neighborOrientation = OrientationsUtil.getOrientationOfTilewithTile(this, with);
+		if (SimpleServiceLocator.ccProxy.isTurtle(with) && (neighborOrientation == null || !turtleConnect[neighborOrientation.ordinal()])) {
 			return false;
 		}
 
@@ -589,8 +592,8 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	}
 
 	@Override
-	public boolean isOutputOpen(EnumFacing direction) {
-		return true;
+	public boolean isOutputClosed(EnumFacing direction) {
+		return false;
 	}
 
 	@Override
@@ -689,7 +692,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	@Override
 	@ModDependentMethod(modId = LPConstants.openComputersModID)
 	public Object[] invoke(String s, Context context, Arguments arguments) {
-		BaseWrapperClass object = (BaseWrapperClass) CCObjectWrapper.getWrappedObject(pipe, BaseWrapperClass.WRAPPER);
+		BaseWrapperClass object = (BaseWrapperClass) Objects.requireNonNull(CCObjectWrapper.getWrappedObject(pipe, BaseWrapperClass.WRAPPER), "wrapped object returned null in " + toString());
 		object.isDirectCall = true;
 		return CCObjectWrapper.createArray(object);
 	}
@@ -726,7 +729,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		blockType = getBlockType();
 
 		if (pipe == null) {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to initialize at {0},{1},{2}, deleting", getPos().getX(), getPos().getY(), getPos().getZ());
+			LogisticsPipes.log.warn("Pipe failed to initialize at " + getPos().toString() + ", deleting");
 			world.setBlockToAir(getPos());
 			return;
 		}
@@ -976,7 +979,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	}
 
 	@Override
-	public void setWorld(World world) {
+	public void setWorld(@Nonnull World world) {
 		super.setWorld(world);
 		tdPart.setWorld_LP(world);
 	}

@@ -9,7 +9,7 @@ import lombok.Getter;
 
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.SimpleStackInventory;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -18,9 +18,9 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	private final UpgradeManager parent;
 	@Getter
-	private SimpleStackInventory inv = new SimpleStackInventory(2, "UpgradeInventory", 16);
-	private IPipeUpgrade[] upgrades = new IPipeUpgrade[2];
-	private PipeLogisticsChassi pipe;
+	private final SimpleStackInventory inv = new SimpleStackInventory(2, "UpgradeInventory", 16);
+	private final IPipeUpgrade[] upgrades = new IPipeUpgrade[2];
+	private final PipeLogisticsChassis pipe;
 
 	private EnumFacing sneakyOrientation = null;
 	private boolean isAdvancedCrafter = false;
@@ -35,7 +35,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	private boolean[] guiUpgrades = new boolean[2];
 
-	public ModuleUpgradeManager(PipeLogisticsChassi pipe, UpgradeManager parent) {
+	public ModuleUpgradeManager(PipeLogisticsChassis pipe, UpgradeManager parent) {
 		this.pipe = pipe;
 		this.parent = parent;
 		inv.addListener(this);

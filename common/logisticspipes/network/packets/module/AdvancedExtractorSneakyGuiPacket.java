@@ -9,7 +9,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.network.guis.module.inhand.SneakyModuleInHandGuiProvider;
 import logisticspipes.network.guis.module.inpipe.SneakyModuleInSlotGuiProvider;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
@@ -39,7 +39,7 @@ public class AdvancedExtractorSneakyGuiPacket extends ModuleCoordinatesPacket {
 			return;
 		}
 
-		PipeLogisticsChassi pipe = getTileOrPipe(player.world, PipeLogisticsChassi.class);
+		PipeLogisticsChassis pipe = getTileOrPipe(player.world, PipeLogisticsChassis.class);
 		LogisticsModule subModule = pipe.getSubModule(getPositionInt());
 		if (subModule instanceof AsyncAdvancedExtractor) {
 			NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider.class)

@@ -3,7 +3,9 @@ package logisticspipes.proxy.td;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -122,8 +124,10 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	}
 
 	@Override
-	public boolean isOutputOpen(EnumFacing direction) {
-		return duct.getDuct(DuctToken.ITEMS).isSideConnected((byte) direction.ordinal());
+	public boolean isOutputClosed(EnumFacing direction) {
+		final DuctUnitItem duct = this.duct.getDuct(DuctToken.ITEMS);
+		if (duct == null) return true;
+		return !duct.isSideConnected((byte) direction.ordinal());
 	}
 
 	@Override
@@ -136,21 +140,28 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			return false;
 		}
 		DuctUnitItem connectedDuct = ((IDuctHolder) connection).getDuct(DuctToken.ITEMS);
-		if (connectedDuct instanceof LPDuctUnitItem) {
+		if (connectedDuct == null) {
+			return false;
+		} else if (connectedDuct instanceof LPDuctUnitItem) {
 			return !((LPDuctUnitItem) connectedDuct).isLPBlockedSide(direction.getOpposite().ordinal(), ignoreSystemDisconnect);
 		} else {
 			return !connectedDuct.parent.isSideBlocked(direction.getOpposite().ordinal());
 		}
 	}
 
+	@Nonnull
+	private DuctUnitItem getDuct() {
+		return Objects.requireNonNull(this.duct.getDuct(DuctToken.ITEMS), "duct must be non-null");
+	}
+
 	@Override
 	public double getDistance() {
-		return Math.max(duct.getDuct(DuctToken.ITEMS).getDuctLength(), 0);
+		return Math.max(getDuct().getDuctLength(), 0);
 	}
 
 	@Override
 	public double getDistanceWeight() {
-		return Math.max(duct.getDuct(DuctToken.ITEMS).getWeight(), 0);
+		return Math.max(getDuct().getWeight(), 0);
 	}
 
 	@Override
@@ -178,8 +189,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 		if (destination == null) {
 			return Integer.MAX_VALUE;
 		}
-		LinkedList<Route<DuctUnitItem, GridItem>> paramIterable = duct.getDuct(DuctToken.ITEMS)
-				.getCache(true).outputRoutes;
+		LinkedList<Route<DuctUnitItem, GridItem>> paramIterable = getDuct().getCache(true).outputRoutes;
 		double closesedConnection = Integer.MAX_VALUE;
 		for (Route<DuctUnitItem, GridItem> localRoute1 : paramIterable) {
 			if (localRoute1.endPoint instanceof LPDuctUnitItem) {
@@ -221,9 +231,9 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			if (destination == null) {
 				return false;
 			}
-			RouteCache routes = duct.getDuct(DuctToken.ITEMS).getCache(true);
-			Iterable<Route> paramIterable = routes.outputRoutes;
-			Route route = null;
+			RouteCache<DuctUnitItem, GridItem> routes = getDuct().getCache(true);
+			Iterable<Route<DuctUnitItem, GridItem>> paramIterable = routes.outputRoutes;
+			Route<DuctUnitItem, GridItem> route = null;
 			Object cache = null;
 			Triplet<Integer, ItemIdentifier, Boolean> key = new Triplet<>(id, item.getItemIdentifierStack()
 					.getItem(), serverItem.getInfo()._transportMode == TransportMode.Active);
@@ -231,16 +241,17 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				cache = ((ILPTEInformation) duct).getObject().getCacheHolder().getCacheFor(CacheTypes.Routing, key);
 			}
 			if (cache instanceof Route) {
-				route = (Route) cache;
+				//noinspection unchecked
+				route = (Route<DuctUnitItem, GridItem>) cache;
 				if (!routes.outputRoutes.contains(route)) {
 					route = null;
 				}
 			}
 			if (route == null) {
-				Pair<Double, Route> closesedConnection = null;
+				Pair<Double, Route<DuctUnitItem, GridItem>> closesedConnection = null;
 				List<DoubleCoordinates> visited = new ArrayList<>();
 				visited.add(new DoubleCoordinates(from));
-				for (Route localRoute1 : paramIterable) {
+				for (Route<DuctUnitItem, GridItem> localRoute1 : paramIterable) {
 					if (localRoute1.endPoint instanceof LPDuctUnitItem) {
 						LPDuctUnitItem lpDuct = (LPDuctUnitItem) localRoute1.endPoint;
 
@@ -277,9 +288,10 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getObject() != null) {
 					((ILPTEInformation) duct).getObject().getCacheHolder().setCache(CacheTypes.Routing, key, route);
 				}
-				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), duct.getDuct(DuctToken.ITEMS), route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 /* Speed */);
+				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), getDuct(), route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 /* Speed */);
+				//noinspection ConstantConditions
 				((ILPTravelingItemInfo) travelItem).setLPRoutingInfoAddition(serverItem.getInfo());
-				duct.getDuct(DuctToken.ITEMS).insertNewItem(travelItem);
+				getDuct().insertNewItem(travelItem);
 				return true;
 			}
 		} else {
@@ -290,8 +302,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 
 	@Override
 	public void refreshTileCacheOnSide(EnumFacing side) {
-		if (duct.getDuct(DuctToken.ITEMS).getGrid() == null) return;
-		duct.getDuct(DuctToken.ITEMS).getGrid().destroyAndRecreate();
+		if (duct.getDuct(DuctToken.ITEMS) == null || getDuct().getGrid() == null) return;
+		getDuct().getGrid().destroyAndRecreate();
 	}
 
 	@Override
@@ -307,10 +319,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 	@Override
 	public List<RouteInfo> getConnectedPipes(EnumFacing from) {
 		List<RouteInfo> list = new ArrayList<>();
-		if (duct.getDuct(DuctToken.ITEMS).getGrid() == null) {
-			return null;
-		}
-		LinkedList<Route<DuctUnitItem, GridItem>> paramIterable = duct.getDuct(DuctToken.ITEMS).getCache(true).outputRoutes;
+		if (duct.getDuct(DuctToken.ITEMS) == null || getDuct().getGrid() == null) return null;
+		LinkedList<Route<DuctUnitItem, GridItem>> paramIterable = getDuct().getCache(true).outputRoutes;
 		for (Route<DuctUnitItem, GridItem> localRoute1 : paramIterable) {
 			if (localRoute1.endPoint instanceof LPDuctUnitItem) {
 				LPDuctUnitItem lpDuct = (LPDuctUnitItem) localRoute1.endPoint;

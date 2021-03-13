@@ -18,8 +18,8 @@ public class TransportInvConnection extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected boolean isItemExitable(ItemIdentifierStack stack) {
-		return true;
+	protected boolean isItemUnwanted(ItemIdentifierStack stack) {
+		return false;
 	}
 
 	@Override

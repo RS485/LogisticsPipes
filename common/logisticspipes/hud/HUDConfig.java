@@ -33,7 +33,7 @@ public class HUDConfig implements IHUDConfig {
 	}
 
 	@Override
-	public boolean isHUDChassie() {
+	public boolean isChassisHUD() {
 		return configTag.getBoolean("HUDChassie");
 	}
 
@@ -63,7 +63,7 @@ public class HUDConfig implements IHUDConfig {
 	}
 
 	@Override
-	public void setHUDChassie(boolean flag) {
+	public void setChassisHUD(boolean flag) {
 		configTag.setBoolean("HUDChassie", flag);
 	}
 

@@ -8,32 +8,31 @@ import lombok.Setter;
 
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.StaticResolve;
 
 @StaticResolve
-public class ChassiOrientationPacket extends CoordinatesPacket {
+public class ChassisOrientationPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
 	private EnumFacing dir;
 
-	public ChassiOrientationPacket(int id) {
+	public ChassisOrientationPacket(int id) {
 		super(id);
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsTileGenericPipe pipe = this.getPipe(player.world);
-		if (pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) {
-			return;
+		LogisticsTileGenericPipe pipe = this.getPipe(player.world, LTGPCompletionCheck.PIPE);
+		if (pipe.pipe instanceof PipeLogisticsChassis) {
+			((PipeLogisticsChassis) pipe.pipe).setClientOrientation(dir);
 		}
-		((PipeLogisticsChassi) pipe.pipe).setClientOrientation(dir);
 	}
 
 	@Override
 	public ModernPacket template() {
-		return new ChassiOrientationPacket(getId());
+		return new ChassisOrientationPacket(getId());
 	}
 }

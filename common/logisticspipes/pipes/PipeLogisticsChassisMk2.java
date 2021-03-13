@@ -6,9 +6,9 @@ import logisticspipes.config.Configs;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
-public class PipeLogisticsChassiMk2 extends PipeLogisticsChassi {
+public class PipeLogisticsChassisMk2 extends PipeLogisticsChassis {
 
-	public PipeLogisticsChassiMk2(Item item) {
+	public PipeLogisticsChassisMk2(Item item) {
 		super(item);
 	}
 
@@ -18,7 +18,7 @@ public class PipeLogisticsChassiMk2 extends PipeLogisticsChassi {
 	}
 
 	@Override
-	public int getChassiSize() {
+	public int getChassisSize() {
 		return Configs.CHASSIS_SLOTS_ARRAY[1];
 	}
 

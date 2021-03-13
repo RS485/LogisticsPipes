@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -49,8 +49,8 @@ import logisticspipes.network.packets.pipe.PipeContentPacket;
 import logisticspipes.network.packets.pipe.PipeContentRequest;
 import logisticspipes.network.packets.pipe.PipePositionPacket;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
+import logisticspipes.pipes.PipeLogisticsChassis;
+import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -350,7 +350,7 @@ public class PipeTransportLogistics {
 		}
 
 		if (value != null && !getRoutedPipe().getRouter().isRoutedExit(value)) {
-			if (!isItemExitable(data.getItemIdentifierStack())) {
+			if (isItemUnwanted(data.getItemIdentifierStack())) {
 				return new RoutingResult(null, false);
 			}
 		}
@@ -488,7 +488,7 @@ public class PipeTransportLogistics {
 
 				// items.scheduleRemoval(arrivingItem);
 				// destroy the item on exit if it isn't exitable
-				if (!isSpecialConnectionInformationTransition && !isItemExitable(arrivingItem.getItemIdentifierStack())) {
+				if (!isSpecialConnectionInformationTransition && isItemUnwanted(arrivingItem.getItemIdentifierStack())) {
 					return;
 				}
 				// last chance for chassi to back out
@@ -496,14 +496,14 @@ public class PipeTransportLogistics {
 					reverseItem(arrivingItem);
 					return;
 				}
-				ISlotUpgradeManager slotManager;
+				final ISlotUpgradeManager slotManager;
 				{
 					ModulePositionType slot = null;
 					int positionInt = -1;
 					if (arrivingItem.getInfo().targetInfo instanceof ChassiTargetInformation) {
 						positionInt = ((ChassiTargetInformation) arrivingItem.getInfo().targetInfo).getModuleSlot();
 						slot = ModulePositionType.SLOT;
-					} else if (LogisticsPipes.isDEBUG() && container.pipe instanceof PipeLogisticsChassi) {
+					} else if (LogisticsPipes.isDEBUG() && container.pipe instanceof PipeLogisticsChassis) {
 						System.out.println(arrivingItem);
 						new RuntimeException("[ItemInsertion] Information weren't ment for a chassi pipe").printStackTrace();
 					}
@@ -593,11 +593,11 @@ public class PipeTransportLogistics {
 		// Just ignore any other case
 	}
 
-	protected boolean isItemExitable(ItemIdentifierStack itemIdentifierStack) {
+	protected boolean isItemUnwanted(ItemIdentifierStack itemIdentifierStack) {
 		if (itemIdentifierStack != null && itemIdentifierStack.makeNormalStack().getItem() instanceof IItemAdvancedExistance) {
-			return ((IItemAdvancedExistance) itemIdentifierStack.makeNormalStack().getItem()).canExistInNormalInventory(itemIdentifierStack.makeNormalStack());
+			return !((IItemAdvancedExistance) itemIdentifierStack.makeNormalStack().getItem()).canExistInNormalInventory(itemIdentifierStack.makeNormalStack());
 		}
-		return true;
+		return false;
 	}
 
 	protected void inventorySystemConnectorHook(ItemRoutingInformation info, TileEntity tile) {}

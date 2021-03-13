@@ -1,5 +1,6 @@
 package logisticspipes.utils.gui;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +25,7 @@ public class DummyModuleContainer extends DummyContainer {
 		ItemStack moduleStack = player.inventory.mainInventory.get(slot);
 		if (moduleStack.isEmpty()) throw new IllegalStateException("Module stack is empty");
 		module = ((ItemModule) moduleStack.getItem()).getModuleForItem(moduleStack, null, new DummyWorldProvider(player.world), null);
+		Objects.requireNonNull(module, "module was null for item " + moduleStack.toString());
 		module.registerPosition(ModulePositionType.IN_HAND, slot);
 		ItemModuleInformationManager.readInformation(moduleStack, module);
 	}
@@ -46,9 +48,9 @@ public class DummyModuleContainer extends DummyContainer {
 	}
 
 	@Override
-	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
-		super.onContainerClosed(par1EntityPlayer);
-		ItemModuleInformationManager.saveInformation(par1EntityPlayer.inventory.mainInventory.get(slot), module);
-		par1EntityPlayer.inventory.markDirty();
+	public void onContainerClosed(@Nonnull EntityPlayer player) {
+		super.onContainerClosed(player);
+		ItemModuleInformationManager.saveInformation(player.inventory.mainInventory.get(slot), module);
+		player.inventory.markDirty();
 	}
 }

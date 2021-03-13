@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -127,11 +128,11 @@ import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
-import logisticspipes.pipes.PipeLogisticsChassiMk1;
-import logisticspipes.pipes.PipeLogisticsChassiMk2;
-import logisticspipes.pipes.PipeLogisticsChassiMk3;
-import logisticspipes.pipes.PipeLogisticsChassiMk4;
-import logisticspipes.pipes.PipeLogisticsChassiMk5;
+import logisticspipes.pipes.PipeLogisticsChassisMk1;
+import logisticspipes.pipes.PipeLogisticsChassisMk2;
+import logisticspipes.pipes.PipeLogisticsChassisMk3;
+import logisticspipes.pipes.PipeLogisticsChassisMk4;
+import logisticspipes.pipes.PipeLogisticsChassisMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -641,11 +642,11 @@ public class LogisticsPipes {
 		registerPipe(registry, "crafting", PipeItemsCraftingLogistics::new);
 		registerPipe(registry, "satellite", PipeItemsSatelliteLogistics::new);
 		registerPipe(registry, "supplier", PipeItemsSupplierLogistics::new);
-		registerPipe(registry, "chassis_mk1", PipeLogisticsChassiMk1::new);
-		registerPipe(registry, "chassis_mk2", PipeLogisticsChassiMk2::new);
-		registerPipe(registry, "chassis_mk3", PipeLogisticsChassiMk3::new);
-		registerPipe(registry, "chassis_mk4", PipeLogisticsChassiMk4::new);
-		registerPipe(registry, "chassis_mk5", PipeLogisticsChassiMk5::new);
+		registerPipe(registry, "chassis_mk1", PipeLogisticsChassisMk1::new);
+		registerPipe(registry, "chassis_mk2", PipeLogisticsChassisMk2::new);
+		registerPipe(registry, "chassis_mk3", PipeLogisticsChassisMk3::new);
+		registerPipe(registry, "chassis_mk4", PipeLogisticsChassisMk4::new);
+		registerPipe(registry, "chassis_mk5", PipeLogisticsChassisMk5::new);
 		registerPipe(registry, "request_mk2", PipeItemsRequestLogisticsMk2::new);
 		registerPipe(registry, "remote_orderer", PipeItemsRemoteOrdererLogistics::new);
 		registerPipe(registry, "inventory_system_connector", PipeItemsInvSysConnector::new);
@@ -675,7 +676,7 @@ public class LogisticsPipes {
 
 	protected void registerPipe(IForgeRegistry<Item> registry, String name, Function<Item, ? extends CoreUnroutedPipe> constructor) {
 		final ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(registry, name, constructor);
-		final CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.createPipe(res);
+		final CoreUnroutedPipe pipe = Objects.requireNonNull(LogisticsBlockGenericPipe.createPipe(res), "created a null pipe from " + res.toString());
 		if (pipe instanceof CoreRoutedPipe) {
 			postInitRun.add(() -> res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(null).normal, ((CoreRoutedPipe) pipe).getTextureType(null).newTexture));
 		}

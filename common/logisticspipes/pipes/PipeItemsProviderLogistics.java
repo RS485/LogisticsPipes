@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -97,7 +97,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	protected LogisticsItemOrderManager _orderManager = new LogisticsItemOrderManager(this, this);
 	private boolean doContentUpdate = true;
 
-	protected ModuleProvider myModule;
+	protected ModuleProvider providerModule;
 
 	public PipeItemsProviderLogistics(Item item) {
 		super(item);
@@ -106,8 +106,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public PipeItemsProviderLogistics(Item item, LogisticsItemOrderManager logisticsOrderManager) {
 		this(item);
 		_orderManager = logisticsOrderManager;
-		myModule = new ModuleProvider();
-		myModule.registerHandler(this, this);
+		providerModule = new ModuleProvider();
+		providerModule.registerHandler(this, this);
+		providerModule.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override

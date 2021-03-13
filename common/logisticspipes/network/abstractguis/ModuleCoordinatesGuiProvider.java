@@ -5,7 +5,7 @@ import net.minecraft.world.World;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -50,14 +50,14 @@ public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvide
 		} else if (slot == ModulePositionType.IN_HAND) {
 			throw new UnsupportedOperationException("NO IN_HAND FOR THIS PACKET TYPE");
 		} else {
-			if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
+			if (!(pipe.pipe instanceof PipeLogisticsChassis)) {
 				if (LogisticsPipes.isDEBUG()) {
 					LogisticsPipes.log.fatal(toString());
 					new RuntimeException("Couldn't find " + clazz.getName() + ", pipe wasn't a chassi pipe").printStackTrace();
 				}
 				return null;
 			}
-			module = ((PipeLogisticsChassi) pipe.pipe).getSubModule(positionInt);
+			module = ((PipeLogisticsChassis) pipe.pipe).getSubModule(positionInt);
 		}
 		if (module != null) {
 			if (!(clazz.isAssignableFrom(module.getClass()))) {

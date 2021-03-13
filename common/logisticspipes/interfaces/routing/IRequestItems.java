@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -16,5 +16,6 @@ public interface IRequestItems extends Comparable<IRequestItems>, IRequest {
 	void itemCouldNotBeSend(ItemIdentifierStack item, IAdditionalTargetInformation info);
 
 	@Override
-	int compareTo(@Nonnull IRequestItems value2);
+	int compareTo(@Nonnull IRequestItems other);
+
 }

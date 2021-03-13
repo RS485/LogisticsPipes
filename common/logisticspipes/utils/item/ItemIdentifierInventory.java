@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * <p>
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
@@ -80,7 +80,6 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 	@Override
 	@Deprecated
 	@Nonnull
-	//NOTE: this is a clone, changing the return of this function does not altet the inventory
 	public ItemStack getStackInSlot(int i) {
 		if (_contents[i] == null) {
 			return ItemStack.EMPTY;

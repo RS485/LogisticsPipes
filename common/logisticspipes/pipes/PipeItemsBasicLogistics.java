@@ -1,4 +1,4 @@
-/**
+/*
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -45,23 +45,18 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 				}
 				if (tile instanceof LogisticsSecurityTileEntity) {
 					EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
-					if (ori == null || ori == EnumFacing.DOWN || ori == EnumFacing.UP) {
-						return false;
-					}
-					return true;
+					return ori != null && ori != EnumFacing.DOWN && ori != EnumFacing.UP;
 				}
 				if (tile instanceof LogisticsProgramCompilerTileEntity) {
 					EnumFacing ori = OrientationsUtil.getOrientationOfTilewithTile(container, tile);
-					if (ori == null || ori == EnumFacing.DOWN) {
-						return false;
-					}
-					return true;
+					return ori != null && ori != EnumFacing.DOWN;
 				}
 				return false;
 			}
 		}, item);
 		itemSinkModule = new ModuleItemSink();
 		itemSinkModule.registerHandler(this, this);
+		itemSinkModule.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override
@@ -86,10 +81,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 			return false;
 		}
 
-		if (tilePipe instanceof LogisticsPowerJunctionTileEntity) {
-			return true;
-		}
-		return false;
+		return tilePipe instanceof LogisticsPowerJunctionTileEntity;
 	}
 
 	private boolean isSecurityProvider(EnumFacing ori) {
@@ -97,10 +89,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
 			return false;
 		}
-		if (tilePipe instanceof LogisticsSecurityTileEntity) {
-			return true;
-		}
-		return false;
+		return tilePipe instanceof LogisticsSecurityTileEntity;
 	}
 
 	@Override

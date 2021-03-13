@@ -10,16 +10,16 @@ import lombok.Getter;
 
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 
 public class ModuleSlot extends RestrictedSlot {
 
 	@Getter
-	private PipeLogisticsChassi _pipe;
+	private final PipeLogisticsChassis _pipe;
 	@Getter
-	private int _moduleIndex;
+	private final int _moduleIndex;
 
-	public ModuleSlot(IInventory iinventory, int i, int j, int k, PipeLogisticsChassi pipe) {
+	public ModuleSlot(IInventory iinventory, int i, int j, int k, PipeLogisticsChassis pipe) {
 		super(iinventory, i, j, k, ItemModule.class);
 		_pipe = pipe;
 		_moduleIndex = i;
@@ -27,8 +27,8 @@ public class ModuleSlot extends RestrictedSlot {
 
 	@Nonnull
 	@Override
-	public ItemStack onTake(EntityPlayer pl, @Nonnull ItemStack itemStack) {
+	public ItemStack onTake(@Nonnull EntityPlayer player, @Nonnull ItemStack itemStack) {
 		ItemModuleInformationManager.saveInformation(itemStack, _pipe.getSubModule(_moduleIndex));
-		return super.onTake(pl, itemStack);
+		return super.onTake(player, itemStack);
 	}
 }

@@ -3,15 +3,15 @@ package logisticspipes.logisticspipes;
 import net.minecraft.util.EnumFacing;
 
 import logisticspipes.modules.LogisticsModule;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-public class ChassiTransportLayer extends TransportLayer {
+public class ChassisTransportLayer extends TransportLayer {
 
-	private final PipeLogisticsChassi _chassiPipe;
+	private final PipeLogisticsChassis _chassiPipe;
 
-	public ChassiTransportLayer(PipeLogisticsChassi chassiPipe) {
+	public ChassisTransportLayer(PipeLogisticsChassis chassiPipe) {
 		_chassiPipe = chassiPipe;
 	}
 

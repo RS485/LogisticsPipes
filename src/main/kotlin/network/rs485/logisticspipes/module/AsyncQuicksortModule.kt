@@ -79,9 +79,9 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     private var stallSlot = 0
 
     private val stacksToExtract: Int
-        get() = 1 + (upgradeManager?.itemStackExtractionUpgrade ?: 0)
+        get() = 1 + upgradeManager.itemStackExtractionUpgrade
     private val energyPerStack: Int
-        get() = upgradeManager?.let { 500 + 1000 * it.itemStackExtractionUpgrade }?.toInt() ?: 5
+        get() = upgradeManager.let { 500 + 1000 * it.itemStackExtractionUpgrade }.toInt()
     override val everyNthTick: Int
         get() = if (stalled) STALLED_DELAY else NORMAL_DELAY
 

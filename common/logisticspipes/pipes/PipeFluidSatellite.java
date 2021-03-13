@@ -71,6 +71,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		throttleTime = 40;
 		moduleSatellite = new ModuleSatellite();
 		moduleSatellite.registerHandler(this, this);
+		moduleSatellite.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override

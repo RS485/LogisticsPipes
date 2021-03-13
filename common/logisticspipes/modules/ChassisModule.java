@@ -11,21 +11,21 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
-import logisticspipes.network.guis.pipe.ChassiGuiProvider;
-import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
+import logisticspipes.network.guis.pipe.ChassisGuiProvider;
+import logisticspipes.pipes.PipeLogisticsChassis;
+import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
 
-public class ChassiModule extends LogisticsModule implements Gui {
+public class ChassisModule extends LogisticsModule implements Gui {
 
 	private final LogisticsModule[] modules;
-	private final PipeLogisticsChassi parentChassis;
+	private final PipeLogisticsChassis parentChassis;
 
-	public ChassiModule(int moduleCount, PipeLogisticsChassi parentChassis) {
+	public ChassisModule(int moduleCount, PipeLogisticsChassis parentChassis) {
 		modules = new LogisticsModule[moduleCount];
 		this.parentChassis = parentChassis;
 		registerPosition(ModulePositionType.IN_PIPE, 0);
@@ -99,9 +99,8 @@ public class ChassiModule extends LogisticsModule implements Gui {
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < modules.length; i++) {
 			if (modules[i] != null) {
-				NBTTagCompound slot = nbttagcompound.getCompoundTag("slot" + i);
-				if (slot != null) {
-					modules[i].readFromNBT(slot);
+				if (nbttagcompound.hasKey("slot" + i)) {
+					modules[i].readFromNBT(nbttagcompound.getCompoundTag("slot" + i));
 				}
 			}
 		}
@@ -167,7 +166,7 @@ public class ChassiModule extends LogisticsModule implements Gui {
 	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ChassiGuiProvider.class).setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
+		return NewGuiHandler.getGui(ChassisGuiProvider.class).setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}
 
 	@Nonnull

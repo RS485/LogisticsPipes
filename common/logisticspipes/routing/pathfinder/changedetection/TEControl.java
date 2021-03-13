@@ -24,9 +24,6 @@ public class TEControl {
 
 	public static void validate(final TileEntity tile) {
 		final World world = tile.getWorld();
-		if (world == null) {
-			return;
-		}
 		if (!MainProxy.isServer(world)) {
 			return;
 		}
@@ -75,9 +72,6 @@ public class TEControl {
 
 	public static void invalidate(final TileEntity tile) {
 		final World world = tile.getWorld();
-		if (world == null) {
-			return;
-		}
 		if (!MainProxy.isServer(world)) {
 			return;
 		}

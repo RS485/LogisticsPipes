@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -26,13 +26,13 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
-	private ModuleActiveSupplier module;
+	private ModuleActiveSupplier supplierModule;
 
 	public PipeItemsSupplierLogistics(Item item) {
 		super(item);
-		module = new ModuleActiveSupplier();
-		module.registerHandler(this, this);
-		module.registerPosition(ModulePositionType.IN_PIPE, 0);
+		supplierModule = new ModuleActiveSupplier();
+		supplierModule.registerHandler(this, this);
+		supplierModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override
@@ -42,12 +42,12 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 	/* TRIGGER INTERFACE */
 	public boolean isRequestFailed() {
-		return module.isRequestFailed();
+		return supplierModule.isRequestFailed();
 	}
 
 	@Override
 	public LogisticsModule getLogisticsModule() {
-		return module;
+		return supplierModule;
 	}
 
 	@Override
@@ -58,28 +58,28 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-		module.readFromNBT(nbttagcompound);
+		supplierModule.readFromNBT(nbttagcompound);
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
-		module.writeToNBT(nbttagcompound);
+		supplierModule.writeToNBT(nbttagcompound);
 	}
 
 	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
-		module.itemLost(item, info);
+		supplierModule.itemLost(item, info);
 	}
 
 	@Override
 	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
-		module.itemArrived(item, info);
+		supplierModule.itemArrived(item, info);
 	}
 
 	@Override
 	public void addStatusInformation(List<StatusEntry> status) {
 		super.addStatusInformation(status);
-		module.addStatusInformation(status);
+		supplierModule.addStatusInformation(status);
 	}
 }

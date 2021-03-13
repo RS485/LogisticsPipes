@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -70,8 +70,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	public PipeItemsCraftingLogistics(Item item) {
 		super(item);
-		// module still relies on this for some code
-		craftingModule = new ModuleCrafter(this);
+		craftingModule = new ModuleCrafter();
+		craftingModule.registerHandler(this, this);
 		craftingModule.registerPosition(ModulePositionType.IN_PIPE, 0);
 		throttleTime = 40;
 		_orderItemManager = new LogisticsItemOrderManager(this, this); // null by default when not needed

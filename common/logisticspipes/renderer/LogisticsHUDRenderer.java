@@ -1,7 +1,7 @@
 package logisticspipes.renderer;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -133,15 +133,7 @@ public class LogisticsHUDRenderer {
 			clearList(true);
 			return;
 		}
-		Collections.sort(newList, (o1, o2) -> {
-			if (o1.getValue1() < o2.getValue1()) {
-				return -1;
-			} else if (o1.getValue1() > o2.getValue1()) {
-				return 1;
-			} else {
-				return 0;
-			}
-		});
+		newList.sort(Comparator.comparing(Pair::getValue1));
 		for (IHeadUpDisplayRendererProvider part : list) {
 			boolean contains = false;
 			for (Pair<Double, IHeadUpDisplayRendererProvider> inpart : newList) {
@@ -242,12 +234,12 @@ public class LogisticsHUDRenderer {
 				}
 
 				@Override
-				public boolean isHUDChassie() {
+				public boolean isChassisHUD() {
 					return false;
 				}
 
 				@Override
-				public void setHUDChassie(boolean state) {}
+				public void setChassisHUD(boolean state) {}
 
 				@Override
 				public void setHUDCrafting(boolean state) {}
@@ -325,14 +317,11 @@ public class LogisticsHUDRenderer {
 				progress = Math.max(progress - (2 * Math.max(1, (int) Math.floor((System.currentTimeMillis() - last) / 50.0D))), 0);
 			}
 			if (progress != 0) {
-				List<String> textData = new ArrayList<>();
+				List<String> textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.world, player, box);
 
 				//TileEntity tile = new DoubleCoordinates(box.blockX, box.blockY, box.blockZ).getTileEntity(DimensionManager.getWorld(0));
 				//Insert debug code here
 
-				if (textData.isEmpty()) {
-					textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.world, player, box);
-				}
 				if (!textData.isEmpty()) {
 					double xCoord = box.getBlockPos().getX() + 0.5D;
 					double yCoord = box.getBlockPos().getY() + 0.5D;

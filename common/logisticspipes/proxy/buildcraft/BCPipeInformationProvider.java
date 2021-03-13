@@ -127,9 +127,9 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean isOutputOpen(EnumFacing direction) {
+	public boolean isOutputClosed(EnumFacing direction) {
 		EnumFacing point = ReflectionHelper.invokePrivateMethod(PipeBehaviourDirectional.class, pipe.getPipe().getBehaviour(), "getCurrentDir", "getCurrentDir", new Class[0], new Object[0]);
-		return point == direction;
+		return point != direction;
 	}
 
 	@Override

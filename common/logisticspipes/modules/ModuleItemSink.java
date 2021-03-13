@@ -33,7 +33,7 @@ import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.network.packets.modules.ItemSinkFuzzy;
-import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
+import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
@@ -114,7 +114,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 			return null;
 		}
 		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
-		if (upgradeManager != null && upgradeManager.isFuzzyUpgrade()) {
+		if (upgradeManager.isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> filter : _filterInventory) {
 				if (filter == null) {
 					continue;
@@ -235,7 +235,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
 		itemidCollection.addAll(mapIC.keySet());
 		mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
-		if (getUpgradeManager() != null && getUpgradeManager().isFuzzyUpgrade()) {
+		if (getUpgradeManager().isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> stack : _filterInventory) {
 				if (stack.getValue1() == null) {
 					continue;

@@ -39,7 +39,7 @@ import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.PipeLogisticsChassi.ChassiTargetInformation;
+import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
@@ -167,14 +167,15 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
+		final ISlotUpgradeManager upgradeManager = Objects.requireNonNull(getUpgradeManager(), "UpgradeManager was null on module tick of " + toString());
 		worldCoordinates.connectedTileEntities(ConnectionType.ITEM)
 				.filter(adjacent -> !adjacent.isLogisticsPipe())
-				.map(neighbor -> neighbor.sneakyInsertion().from(getUpgradeManager()))
+				.map(neighbor -> neighbor.sneakyInsertion().from(upgradeManager))
 				.map(NeighborTileEntity::getInventoryUtil)
 				.filter(Objects::nonNull)
 				.filter(invUtil -> invUtil.getSizeInventory() > 0)
 				.forEach(invUtil -> {
-					if (getUpgradeManager().hasPatternUpgrade()) {
+					if (upgradeManager.hasPatternUpgrade()) {
 						createPatternRequest(invUtil);
 					} else {
 						createSupplyRequest(invUtil);
@@ -276,7 +277,7 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 		//How many do I have?
 		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<>();
 		for (Entry<ItemIdentifier, Integer> item : have.entrySet()) {
-			haveUndamaged.merge(item.getKey().getUndamaged(), item.getValue(), (a, b) -> a + b);
+			haveUndamaged.merge(item.getKey().getUndamaged(), item.getValue(), Integer::sum);
 		}
 
 		//Reduce what I have and what have been requested already
@@ -529,21 +530,17 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 	}
 
 	@Override
+	public int compareTo(@Nonnull IRequestItems other) {
+		return Integer.compare(getID(), other.getID());
+	}
+
+	@Override
 	public int getID() {
 		return _service.getRouter().getSimpleID();
 	}
 
-	@Override
-	public int compareTo(IRequestItems value2) {
-		return 0;
-	}
-
 	public boolean hasPatternUpgrade() {
-		final ISlotUpgradeManager upgradeManager = getUpgradeManager();
-		if (upgradeManager != null) {
-			return upgradeManager.hasPatternUpgrade();
-		}
-		return false;
+		return getUpgradeManager().hasPatternUpgrade();
 	}
 
 	public enum SupplyMode {

@@ -238,15 +238,11 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 
 			if (prev == null && current == null) {
 				continue;
-			}
-
-			if (prev == null && current != null) {
+			} else if (prev == null) {
 				changed = true;
 				renderCache[dir.ordinal()] = current.copy();
 				continue;
-			}
-
-			if (prev != null && current == null) {
+			} else if (current == null) {
 				changed = true;
 				renderCache[dir.ordinal()] = null;
 				continue;
@@ -275,8 +271,8 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected boolean isItemExitable(ItemIdentifierStack stack) {
-		return true;
+	protected boolean isItemUnwanted(ItemIdentifierStack stack) {
+		return false;
 	}
 
 	@Override

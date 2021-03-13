@@ -10,7 +10,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.exception.TargetNotFoundException;
-import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -73,9 +73,9 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 		LogisticsModule module;
 		if (type == ModulePositionType.IN_PIPE) {
 			moduleBased = true;
-			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.NONE);
 			moduleBased = false;
-			if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
+			if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 				throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", pipe didn't exsist", this);
 			}
 			module = ((CoreRoutedPipe) pipe.pipe).getLogisticsModule();
@@ -95,17 +95,17 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 			}
 		} else {
 			moduleBased = true;
-			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
+			LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld(), LTGPCompletionCheck.NONE);
 			moduleBased = false;
-			if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) {
+			if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 				throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", pipe didn't exsist", this);
 			} else if (!pipe.isInitialized()) {
 				return null;
 			}
-			if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
+			if (!(pipe.pipe instanceof PipeLogisticsChassis)) {
 				throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", pipe wasn't a chassi pipe", this);
 			}
-			module = ((PipeLogisticsChassi) pipe.pipe).getSubModule(positionInt);
+			module = ((PipeLogisticsChassis) pipe.pipe).getSubModule(positionInt);
 		}
 		if (module != null) {
 			if (!(clazz.isAssignableFrom(module.getClass()))) {

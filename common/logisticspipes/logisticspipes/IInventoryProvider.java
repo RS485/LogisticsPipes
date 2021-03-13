@@ -39,6 +39,7 @@ public interface IInventoryProvider extends ISendRoutedItem {
 
 	void queueRoutedItem(IRoutedItem routedItem, EnumFacing from);
 
+	@Nonnull
 	ISlotUpgradeManager getUpgradeManager(ModulePositionType slot, int positionInt);
 
 	int countOnRoute(ItemIdentifier item);

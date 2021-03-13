@@ -100,16 +100,16 @@ class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -
     override val pipeGuiProvider: ModuleCoordinatesGuiProvider = NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider::class.java).setSneakyOrientation(_sneakyDirection)
     override val inHandGuiProvider: ModuleInHandGuiProvider = NewGuiHandler.getGui(SneakyModuleInHandGuiProvider::class.java)
     override val everyNthTick: Int
-        get() = (80 / (upgradeManager?.let { 2.0.pow(it.actionSpeedUpgrade) } ?: 1.0)).toInt().coerceAtLeast(2)
+        get() = (80 / upgradeManager.let { 2.0.pow(it.actionSpeedUpgrade) }).toInt().coerceAtLeast(2)
 
     private val stacksToExtract: Int
-        get() = 1 + (upgradeManager?.itemStackExtractionUpgrade ?: 0)
+        get() = 1 + upgradeManager.itemStackExtractionUpgrade
     private val itemsToExtract: Int
-        get() = upgradeManager?.let { 2.0.pow(it.itemExtractionUpgrade) }?.toInt() ?: 0
+        get() = upgradeManager.let { 2.0.pow(it.itemExtractionUpgrade) }.toInt()
     private val energyPerItem: Int
-        get() = upgradeManager?.let { 5 * 1.1.pow(it.itemExtractionUpgrade) * 1.2.pow(it.itemStackExtractionUpgrade) }?.toInt() ?: 5
+        get() = upgradeManager.let { 5 * 1.1.pow(it.itemExtractionUpgrade) * 1.2.pow(it.itemStackExtractionUpgrade) }.toInt()
     private val itemSendMode: CoreRoutedPipe.ItemSendMode
-        get() = upgradeManager?.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } } ?: CoreRoutedPipe.ItemSendMode.Normal
+        get() = upgradeManager.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } } ?: CoreRoutedPipe.ItemSendMode.Normal
     private val connectedInventory: IInventoryUtil?
         get() = sneakyDirection?.let { _service.getSneakyInventory(it) } ?: _service.pointedInventory
 

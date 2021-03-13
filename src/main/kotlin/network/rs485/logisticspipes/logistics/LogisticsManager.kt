@@ -83,7 +83,7 @@ object LogisticsManager {
                     it.destination.logisticsModule.recievePassive() &&
                     it.destination.pipe != null &&
                     it.destination.pipe.isEnabled &&
-                    !it.destination.pipe.sharesInterestWith(sourceRouter.pipe)
+                    !it.destination.pipe.isOnSameContainer(sourceRouter.pipe)
         }.sorted().forEachOrdered {
             val reply: SinkReply?
             val module: LogisticsModule = it.destination.logisticsModule

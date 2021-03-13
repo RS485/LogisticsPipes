@@ -1,7 +1,6 @@
 package logisticspipes.pipes;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -37,7 +36,8 @@ import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
@@ -150,16 +150,9 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		}
 		super.throttledUpdateEntity();
 
-		Iterator<ITankUtil> iterator = new WorldCoordinatesWrapper(container).connectedTileEntities()
-				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity()))
-				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()))
-				.filter(Objects::nonNull)
-				.iterator();
-
-		while (iterator.hasNext()) {
-			ITankUtil next = iterator.next();
-
-			if (!next.containsTanks()) {
+		for (NeighborTileEntity<TileEntity> neighbor : getAdjacent().fluidTanks()) {
+			final ITankUtil tankUtil = LPNeighborTileEntityKt.getTankUtil(neighbor);
+			if (tankUtil == null || !tankUtil.containsTanks()) {
 				continue;
 			}
 
@@ -178,9 +171,9 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
-			next.forEachFluid(fluid -> {
+			tankUtil.forEachFluid(fluid -> {
 				if (wantFluids.containsKey(fluid.getFluid())) {
-					haveFluids.merge(fluid.getFluid(), fluid.getAmount(), (a, b) -> a + b);
+					haveFluids.merge(fluid.getFluid(), fluid.getAmount(), Integer::sum);
 				}
 			});
 

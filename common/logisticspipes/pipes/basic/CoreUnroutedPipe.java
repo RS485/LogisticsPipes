@@ -18,14 +18,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import logisticspipes.LPBlocks;
 import logisticspipes.api.ILPPipe;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
 import logisticspipes.interfaces.IPipeUpgradeManager;
 import logisticspipes.pipes.basic.debug.DebugLogController;
 import logisticspipes.pipes.basic.debug.StatusEntry;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.renderer.IIconProvider;
@@ -48,8 +46,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public DebugLogController debug = new DebugLogController(this);
 
 	private boolean initialized = false;
-
-	private boolean oldRendererState;
 
 	public CoreUnroutedPipe(PipeTransportLogistics transport, Item item) {
 		this.transport = transport;
@@ -138,23 +134,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		initialized = true;
 	}
 
-	protected void notifyBlockOfNeighborChange(EnumFacing side) {
-		container.getWorld().notifyNeighborsOfStateChange(CoordinateUtils.add(new DoubleCoordinates(container.getPos()), side).getBlockPos(), LPBlocks.pipe, true);
-	}
-
-	public void updateNeighbors(boolean needSelf) {
-		if (needSelf) {
-			container.getWorld().notifyNeighborsOfStateChange(container.getPos(), LPBlocks.pipe, true);
-		}
-		for (EnumFacing side : EnumFacing.VALUES) {
-			notifyBlockOfNeighborChange(side);
-		}
-	}
-
-	public void dropItem(@Nonnull ItemStack stack) {
-		MainProxy.dropItems(container.getWorld(), stack, getX(), getY(), getZ());
-	}
-
 	public void onBlockRemoval() {}
 
 	public LogisticsTileGenericPipe getContainer() {
@@ -164,32 +143,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public NonNullList<ItemStack> dropContents() {
 		return transport.dropContents();
 	}
-
-	/**
-	 * If this pipe is open on one side, return it.
-	 * /
-	 public EnumFacing getOpenOrientation() {
-	 int connectionsNum = 0;
-
-	 EnumFacing targetOrientation = null;
-
-	 for (EnumFacing o : EnumFacing.VALUES) {
-	 if (container.isPipeConnectedCached(o)) {
-
-	 connectionsNum++;
-
-	 if (connectionsNum == 1) {
-	 targetOrientation = o;
-	 }
-	 }
-	 }
-
-	 if (connectionsNum > 1 || connectionsNum == 0) {
-	 return null;
-	 }
-
-	 return targetOrientation.getOpposite();
-	 } */
 
 	/**
 	 * Called when TileGenericPipe.invalidate() is called
@@ -456,4 +409,5 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return ccTypeHolder;
 	}
 
+	protected abstract void updateAdjacentCache();
 }

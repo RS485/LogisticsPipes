@@ -37,61 +37,45 @@
 
 package network.rs485.logisticspipes.connection
 
-import logisticspipes.LogisticsPipes
 import logisticspipes.interfaces.IInventoryUtil
+import logisticspipes.interfaces.ITankUtil
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe
 import logisticspipes.proxy.SimpleServiceLocator
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
-import net.minecraftforge.common.capabilities.Capability
 import java.util.*
 import javax.annotation.Nonnull
 import javax.annotation.Nullable
 
-open class NeighborTileEntity<T : TileEntity>(val tileEntity: T, val direction: EnumFacing) {
-    open fun getOurDirection(): EnumFacing {
-        return direction.opposite
+@Nullable
+fun <T : TileEntity> NeighborTileEntity<T>.getInventoryUtil(): IInventoryUtil? =
+    SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(tileEntity, getOurDirection())
+
+@Nullable
+fun <T : TileEntity> NeighborTileEntity<T>.getTankUtil(): ITankUtil? =
+    SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tileEntity, getOurDirection())
+
+@Nonnull
+fun <T : TileEntity> NeighborTileEntity<T>.sneakyInsertion(): LPNeighborTileEntitySneakyInsertion<T> =
+    LPNeighborTileEntitySneakyInsertion(tileEntity, direction)
+
+@Nonnull
+fun <T : TileEntity, C : T> NeighborTileEntity<T>.optionalIs(clazz: Class<C>): Optional<LPNeighborTileEntity<C>> =
+    if (clazz.isInstance(tileEntity)) {
+        Optional.of(LPNeighborTileEntity(clazz.cast(tileEntity), direction))
+    } else {
+        Optional.empty()
     }
 
-    fun hasCapability(capability: Capability<*>): Boolean {
-        return tileEntity.hasCapability(capability, getOurDirection())
-    }
+open class LPNeighborTileEntity<T : TileEntity>(
+    tileEntity: T,
+    direction: EnumFacing,
+) : NeighborTileEntity<T>(tileEntity, direction) {
 
-    inline fun <reified C : T> getInstanceOf(): NeighborTileEntity<C>? {
-        return if (tileEntity is C) NeighborTileEntity(tileEntity, direction) else null
-    }
+    override fun isLogisticsPipe(): Boolean = tileEntity is LogisticsTileGenericPipe
 
-    fun <C : T> getJavaInstanceOf(clazz: Class<C>): Optional<NeighborTileEntity<C>> {
-        return if (clazz.isInstance(tileEntity)) {
-            Optional.of(NeighborTileEntity(clazz.cast(tileEntity), direction))
-        } else {
-            Optional.empty()
-        }
-    }
+    override fun canHandleItems(): Boolean = getInventoryUtil() != null
 
-    @Nullable
-    fun getInventoryUtil(): IInventoryUtil? {
-        return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(tileEntity, getOurDirection())
-    }
+    override fun canHandleFluids(): Boolean = getTankUtil() != null
 
-    @Nonnull
-    fun getUtilForItemHandler(): IInventoryUtil {
-        if (!hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY)) {
-            error("Constraint broken: getUtilForItemHandler was called, but adjacent tile entity is not an item handler")
-        }
-        return getInventoryUtil() ?: throw NullPointerException("IInventoryUtil is null for an item handler")
-    }
-
-    fun isLogisticsPipe(): Boolean {
-        return tileEntity is LogisticsTileGenericPipe
-    }
-
-    fun isItemHandler(): Boolean {
-        return hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY) // david said to use LogisticsPipes.ITEM_HANDLER_CAPABILITY
-    }
-
-    fun sneakyInsertion(): NeighborTileEntitySneakyInsertion<T> {
-        return NeighborTileEntitySneakyInsertion(tileEntity, direction)
-    }
 }
-

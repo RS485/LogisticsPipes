@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019  RS485
+ * Copyright (c) 2021  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2019  RS485
+ * Copyright (c) 2021  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -37,43 +37,26 @@
 
 package network.rs485.logisticspipes.connection
 
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.tileentity.TileEntityHopper
-import net.minecraftforge.fml.common.Loader
+import logisticspipes.pipes.basic.CoreRoutedPipe
+import logisticspipes.proxy.SimpleServiceLocator
+import net.minecraft.util.EnumFacing
+import network.rs485.logisticspipes.world.WorldCoordinatesWrapper
 
-class PipeInventoryConnectionChecker {
-    private val allowedConnectionClasses = mutableSetOf<Class<*>>()
-    private val cachedClasses = mutableMapOf<Class<TileEntity>, Boolean>()
+object AdjacentFactory {
+    fun createAdjacentCache(parent: CoreRoutedPipe): Adjacent {
+        val connectedTileEntities = WorldCoordinatesWrapper(parent.container).connectedTileEntities()
+            .filter { SimpleServiceLocator.pipeInformationManager.isNotAPipe(it.tileEntity) && !parent.isSideBlocked(it.direction, false) }
 
-    init {
-        allowedConnectionClasses.add(TileEntityHopper::class.java)
-        checkAndAddClass("gregtech", "gregtech.api.block.BlockStateTileEntity")
-    }
-
-    private fun checkAndAddClass(modId: String, className: String) {
-        if (Loader.isModLoaded(modId)) {
-            try {
-                val clazz = Class.forName(className)
-                addSupportedClassType(clazz)
-            } catch (_: ClassNotFoundException) {
-            }
-        }
-    }
-
-    fun addSupportedClassType(clazz: Class<*>) {
-        allowedConnectionClasses.add(clazz)
-    }
-
-    fun shouldLPProvideInventoryTo(tile: TileEntity): Boolean {
-        return cachedClasses.computeIfAbsent(tile.javaClass) {
-            var clazz = it as Class<*>
-            while (clazz.superclass != Object::class.java) {
-                if (allowedConnectionClasses.contains(clazz)) {
-                    return@computeIfAbsent true
-                }
-                clazz = clazz.superclass
-            }
-            return@computeIfAbsent false
+        // FIXME: container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()))
+        // the above will check InventoryUtil.getSizeInventory() > 0 (which is wrong)
+        // it is similar to SimpleServiceLocator.pipeInformationManager.isNotAPipe
+        return when {
+            connectedTileEntities.isEmpty() -> NoAdjacent
+            // FIXME: check when to use FLUID/ITEM/UNDEFINED
+            connectedTileEntities.size == 1 -> SingleAdjacent(parent, connectedTileEntities[0].direction, ConnectionType.UNDEFINED)
+            else -> DynamicAdjacent(parent, arrayOfNulls<ConnectionType>(EnumFacing.VALUES.size).also { arr ->
+                connectedTileEntities.forEach { neighbor -> arr[neighbor.direction.index] = ConnectionType.UNDEFINED }
+            })
         }
     }
 }

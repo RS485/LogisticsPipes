@@ -200,8 +200,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void ensureAllSatelliteStatus() {
 		if (satellitePipeName.isEmpty()) {
 			PipeFluidSatellite.AllSatellites.remove(this);
-		}
-		if (!satellitePipeName.isEmpty()) {
+		} else {
 			PipeFluidSatellite.AllSatellites.add(this);
 		}
 	}

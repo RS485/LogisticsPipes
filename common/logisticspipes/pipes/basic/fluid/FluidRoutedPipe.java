@@ -95,7 +95,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 */
 
 	public final List<ITankUtil> getAdjacentTanks(boolean flag) {
-		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
+		return new WorldCoordinatesWrapper(container).allNeighborTileEntities().stream()
 				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
 				.map(adjacent -> SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()))
 				.filter(Objects::nonNull)
@@ -108,7 +108,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	 */
 
 	public final List<Triplet<ITankUtil, TileEntity, EnumFacing>> getAdjacentTanksAdvanced(boolean flag) {
-		return new WorldCoordinatesWrapper(container).allNeighborTileEntities()
+		return new WorldCoordinatesWrapper(container).allNeighborTileEntities().stream()
 				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
 				.map(adjacent -> new Triplet<>(
 						SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()),
@@ -304,7 +304,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public boolean sharesInterestWith(CoreRoutedPipe other) {
+	public boolean isOnSameContainer(CoreRoutedPipe other) {
 		if (!(other instanceof FluidRoutedPipe)) {
 			return false;
 		}

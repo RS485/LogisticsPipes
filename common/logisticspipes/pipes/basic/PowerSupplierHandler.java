@@ -1,7 +1,6 @@
 package logisticspipes.pipes.basic;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagFloat;
@@ -14,6 +13,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cofh.subproxies.ICoFHEnergyReceiver;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntity;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -65,7 +65,7 @@ public class PowerSupplierHandler {
 	private void requestICPower() {
 		//Use Buffer
 
-		final List<NeighborTileEntity<TileEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
+		final List<LPNeighborTileEntity<TileEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities();
 
 		double globalNeed = 0;
 		double[] need = new double[adjacentTileEntities.size()];
@@ -153,7 +153,7 @@ public class PowerSupplierHandler {
 	private boolean requestRFPower() {
 		//Use Buffer
 
-		final List<NeighborTileEntity<TileEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities().collect(Collectors.toList());
+		final List<LPNeighborTileEntity<TileEntity>> adjacentTileEntities = new WorldCoordinatesWrapper(pipe.container).allNeighborTileEntities();
 
 		double globalNeed = 0;
 		double[] need = new double[adjacentTileEntities.size()];

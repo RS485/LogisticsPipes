@@ -8,7 +8,6 @@ package logisticspipes.pipes;
 
 import java.util.Collection;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -17,7 +16,6 @@ import net.minecraft.util.EnumFacing;
 import logisticspipes.blocks.LogisticsProgramCompilerTileEntity;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.modules.ModuleItemSink;
@@ -27,13 +25,10 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.connection.ConnectionType;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
-	private ModuleItemSink itemSinkModule;
+	private final ModuleItemSink itemSinkModule;
 
 	public PipeItemsBasicLogistics(Item item) {
 		super(new PipeTransportLogistics(true) {
@@ -111,21 +106,6 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
 		itemSinkModule.registerPosition(ModulePositionType.IN_PIPE, 0);
-	}
-
-	@Nullable
-	@Override
-	public IInventoryUtil getPointedInventory() {
-		IInventoryUtil invUtil = super.getPointedInventory();
-		if (invUtil == null) {
-			invUtil = new WorldCoordinatesWrapper(container)
-					.connectedTileEntities(ConnectionType.ITEM)
-					.filter(NeighborTileEntity::isItemHandler)
-					.findFirst()
-					.map(NeighborTileEntity::getUtilForItemHandler)
-					.orElse(null);
-		}
-		return invUtil;
 	}
 
 	@Override

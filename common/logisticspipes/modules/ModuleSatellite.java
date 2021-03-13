@@ -9,9 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.connection.ConnectionType;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 
 //IHUDModuleHandler,
 public class ModuleSatellite extends LogisticsModule {
@@ -32,15 +30,12 @@ public class ModuleSatellite extends LogisticsModule {
 	}
 
 	private int spaceFor(@Nonnull ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), _service.getPos());
-
-		int count = worldCoordinates.connectedTileEntities(ConnectionType.ITEM)
-				.map(adjacent -> adjacent.sneakyInsertion().from(getUpgradeManager()))
-				.map(NeighborTileEntity::getInventoryUtil)
+		int count = _service.getAvailableAdjacent().inventories().stream()
+				.map(neighbor -> LPNeighborTileEntityKt.sneakyInsertion(neighbor).from(getUpgradeManager()))
+				.map(LPNeighborTileEntityKt::getInventoryUtil)
 				.filter(Objects::nonNull)
 				.map(util -> util.roomForItem(stack))
 				.reduce(Integer::sum).orElse(0);
-
 		if (includeInTransit) {
 			count -= _service.countOnRoute(item);
 		}

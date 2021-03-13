@@ -131,7 +131,7 @@ public class LogisticsEventListener {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(event.getEntityPlayer().world, event.getPos());
 			TileEntity tileEntity = worldCoordinates.getTileEntity();
 			if (tileEntity instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tileEntity)) {
-				List<WeakReference<AsyncQuicksortModule>> list = worldCoordinates.allNeighborTileEntities()
+				List<WeakReference<AsyncQuicksortModule>> list = worldCoordinates.allNeighborTileEntities().stream()
 						.filter(NeighborTileEntity::isLogisticsPipe)
 						.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof PipeLogisticsChassis)
 						.filter(adjacent -> ((PipeLogisticsChassis) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe).getPointedOrientation()

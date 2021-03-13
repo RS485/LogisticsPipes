@@ -65,7 +65,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
-	private final LogisticsModule moduleSatellite;
+	private final ModuleSatellite moduleSatellite;
 
 	@Getter
 	private String satellitePipeName = "";

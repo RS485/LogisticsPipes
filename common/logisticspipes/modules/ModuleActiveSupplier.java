@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +23,6 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
-import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -49,10 +47,8 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.connection.ConnectionType;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.connection.AdjacentUtilKt;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class ModuleActiveSupplier extends LogisticsModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
 
@@ -165,17 +161,10 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 
 		_requestedItems.values().stream().filter(amount -> amount > 0).forEach(amount -> _service.spawnParticle(Particles.VioletParticle, 2));
 
-		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
-
-		final ISlotUpgradeManager upgradeManager = Objects.requireNonNull(getUpgradeManager(), "UpgradeManager was null on module tick of " + toString());
-		worldCoordinates.connectedTileEntities(ConnectionType.ITEM)
-				.filter(adjacent -> !adjacent.isLogisticsPipe())
-				.map(neighbor -> neighbor.sneakyInsertion().from(upgradeManager))
-				.map(NeighborTileEntity::getInventoryUtil)
-				.filter(Objects::nonNull)
-				.filter(invUtil -> invUtil.getSizeInventory() > 0)
+		AdjacentUtilKt.sneakyInventoryUtils(_service.getAvailableAdjacent(), getUpgradeManager()).stream()
+				.filter(invUtil -> invUtil != null && invUtil.getSizeInventory() > 0)
 				.forEach(invUtil -> {
-					if (upgradeManager.hasPatternUpgrade()) {
+					if (getUpgradeManager().hasPatternUpgrade()) {
 						createPatternRequest(invUtil);
 					} else {
 						createSupplyRequest(invUtil);

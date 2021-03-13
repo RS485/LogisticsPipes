@@ -22,9 +22,9 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
-import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 @StaticResolve
 public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
@@ -69,8 +69,8 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 		boolean openedGui = false;
 		final LogisticsTileGenericPipe genericPipe = getPipe(player.world, LTGPCompletionCheck.PIPE);
 		if (genericPipe.isRoutingPipe()) {
-			openedGui = new WorldCoordinatesWrapper(genericPipe).connectedTileEntities()
-					.filter(neighbor -> neighbor.getInventoryUtil() instanceof ISpecialInsertion)
+			openedGui = genericPipe.getRoutingPipe().getAvailableAdjacent().inventories().stream()
+					.filter(neighbor -> LPNeighborTileEntityKt.getInventoryUtil(neighbor) instanceof ISpecialInsertion)
 					.anyMatch(neighbor -> {
 						for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 							if (provider.canOpenGui(neighbor.getTileEntity())) {

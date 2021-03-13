@@ -1,17 +1,13 @@
 package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -33,26 +29,18 @@ public class PipeTransportLayer extends TransportLayer {
 	}
 
 	@Override
-	public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
+	public EnumFacing itemArrived(IRoutedItem item, EnumFacing denied) {
 		if (item.getItemIdentifierStack() != null) {
 			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
 
-		final List<NeighborTileEntity<TileEntity>> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
-				.connectedTileEntities(ConnectionType.ITEM)
-				.collect(Collectors.toList());
+		// 1st prio, deliver to adjacent inventories
 		LinkedList<EnumFacing> possibleEnumFacing = new LinkedList<>();
-
-		// 1st prio, deliver to adjacent IInventories
-
-		for (NeighborTileEntity<TileEntity> adjacent : adjacentEntities) {
-			if (SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity())) {
-				continue;
-			}
+		for (NeighborTileEntity<TileEntity> adjacent : routedPipe.getAvailableAdjacent().inventories()) {
 			if (_router.isRoutedExit(adjacent.getDirection())) {
 				continue;
 			}
-			if (denyed != null && denyed.equals(adjacent.getDirection())) {
+			if (denied != null && denied.equals(adjacent.getDirection())) {
 				continue;
 			}
 
@@ -70,32 +58,25 @@ public class PipeTransportLayer extends TransportLayer {
 		}
 
 		// 2nd prio, deliver to non-routed exit
-		for (NeighborTileEntity<TileEntity> adjacent : adjacentEntities) {
-			if (_router.isRoutedExit(adjacent.getDirection())) {
-				continue;
-			}
-			CoreRoutedPipe pipe = _router.getPipe();
-
-			if (pipe != null) {
-				if (pipe.isLockedExit(adjacent.getDirection())) {
-					continue;
-				}
-			}
-
-			possibleEnumFacing.add(adjacent.getDirection());
-		}
-		// 3rd prio, drop item
+		new WorldCoordinatesWrapper(routedPipe.container).connectedTileEntities().stream()
+				.filter(neighbor -> {
+					if (_router.isRoutedExit(neighbor.getDirection())) return false;
+					final CoreRoutedPipe routerPipe = _router.getPipe();
+					return routerPipe == null || !routerPipe.isLockedExit(neighbor.getDirection());
+				})
+				.forEach(neighbor -> possibleEnumFacing.add(neighbor.getDirection()));
 
 		if (possibleEnumFacing.size() == 0) {
+			// last resort, drop item
 			return null;
+		} else {
+			return possibleEnumFacing.get(routedPipe.getWorld().rand.nextInt(possibleEnumFacing.size()));
 		}
-
-		return possibleEnumFacing.get(routedPipe.getWorld().rand.nextInt(possibleEnumFacing.size()));
 	}
 
-	//Pipes are dumb and always want the item
 	@Override
 	public boolean stillWantItem(IRoutedItem item) {
+		// pipes are dumb and always want the item
 		return true;
 	}
 

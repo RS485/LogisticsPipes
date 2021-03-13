@@ -29,6 +29,7 @@ public interface IRouter extends LPFinalSerializable {
 
 	void update(boolean doFullRefresh, CoreRoutedPipe pipe);
 
+	// TODO: Check if all usages (non-texture related) are OK.
 	boolean isRoutedExit(EnumFacing connection);
 
 	boolean isSubPoweredExit(EnumFacing connection);

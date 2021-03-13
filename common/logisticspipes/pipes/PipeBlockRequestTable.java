@@ -531,7 +531,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public boolean sharesInterestWith(CoreRoutedPipe other) {
+	public boolean isOnSameContainer(CoreRoutedPipe other) {
 		return false;
 	}
 

@@ -37,4 +37,8 @@ public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 	public IHighlightPlacementRenderer getHighlightRenderer() {
 		return LogisticsRenderPipe.secondRenderer;
 	}
+
+	@Override
+	protected void updateAdjacentCache() {}
+
 }

@@ -56,7 +56,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.transactor.ITransactor;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
-import network.rs485.logisticspipes.connection.ConnectionType;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannelRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver,
@@ -129,10 +129,13 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	private void checkConnectedInvs() {
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
-			final boolean shouldUpdate = new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionType.ITEM)
-					.anyMatch(neighbor -> neighbor.isItemHandler() &&
-							container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()) &&
-							checkOneConnectedInv(neighbor.getUtilForItemHandler(), neighbor.getDirection()));
+			final boolean shouldUpdate = getAvailableAdjacent().inventories().stream()
+					.anyMatch(neighbor -> {
+						final IInventoryUtil invUtil = LPNeighborTileEntityKt.getInventoryUtil(neighbor);
+						return invUtil != null &&
+								container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()) &&
+								checkOneConnectedInv(invUtil, neighbor.getDirection());
+					});
 
 			if (shouldUpdate) updateContentListener();
 		}
@@ -286,9 +289,9 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	private boolean isInventoryConnected(@Nullable TileEntity tileEntityFilter) {
 		return new WorldCoordinatesWrapper(this.container)
-				.allNeighborTileEntities()
+				.allNeighborTileEntities().stream()
 				.anyMatch(neighbor -> (tileEntityFilter == null || neighbor.getTileEntity() == tileEntityFilter) &&
-						neighbor.isItemHandler() &&
+						neighbor.canHandleItems() &&
 						this.container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()));
 	}
 

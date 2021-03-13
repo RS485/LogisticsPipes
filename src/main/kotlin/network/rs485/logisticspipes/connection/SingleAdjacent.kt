@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019  RS485
+ * Copyright (c) 2021  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2019  RS485
+ * Copyright (c) 2021  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -37,43 +37,35 @@
 
 package network.rs485.logisticspipes.connection
 
+import logisticspipes.pipes.basic.CoreRoutedPipe
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.tileentity.TileEntityHopper
-import net.minecraftforge.fml.common.Loader
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
+import java.util.*
 
-class PipeInventoryConnectionChecker {
-    private val allowedConnectionClasses = mutableSetOf<Class<*>>()
-    private val cachedClasses = mutableMapOf<Class<TileEntity>, Boolean>()
+class SingleAdjacent(private val parent: CoreRoutedPipe, val dir: EnumFacing, private val adjacentType: ConnectionType) : Adjacent {
+    override fun connectedPos(): Map<BlockPos, ConnectionType> = mapOf(parent.pos.offset(dir) to adjacentType)
 
-    init {
-        allowedConnectionClasses.add(TileEntityHopper::class.java)
-        checkAndAddClass("gregtech", "gregtech.api.block.BlockStateTileEntity")
-    }
+    override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> = Optional.of(adjacentType)
 
-    private fun checkAndAddClass(modId: String, className: String) {
-        if (Loader.isModLoaded(modId)) {
-            try {
-                val clazz = Class.forName(className)
-                addSupportedClassType(clazz)
-            } catch (_: ClassNotFoundException) {
-            }
-        }
-    }
+    override fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType> =
+        parent.world.getTileEntity(parent.pos.offset(dir))
+            ?.let { mapOf(LPNeighborTileEntity(it, dir) to adjacentType) }
+            ?: emptyMap()
 
-    fun addSupportedClassType(clazz: Class<*>) {
-        allowedConnectionClasses.add(clazz)
-    }
+    override fun inventories(): List<NeighborTileEntity<TileEntity>> =
+        if (adjacentType.isItem()) {
+            listOfNotNull(parent.world.getTileEntity(parent.pos.offset(dir))?.let { tile ->
+                LPNeighborTileEntity(tile, dir).takeIf { it.canHandleItems() }
+            })
+        } else emptyList()
 
-    fun shouldLPProvideInventoryTo(tile: TileEntity): Boolean {
-        return cachedClasses.computeIfAbsent(tile.javaClass) {
-            var clazz = it as Class<*>
-            while (clazz.superclass != Object::class.java) {
-                if (allowedConnectionClasses.contains(clazz)) {
-                    return@computeIfAbsent true
-                }
-                clazz = clazz.superclass
-            }
-            return@computeIfAbsent false
-        }
-    }
+    override fun fluidTanks(): List<NeighborTileEntity<TileEntity>> =
+        if (adjacentType.isFluid()) {
+            listOfNotNull(parent.world.getTileEntity(parent.pos.offset(dir))?.let { tile ->
+                LPNeighborTileEntity(tile, dir).takeIf { it.canHandleFluids() }
+            })
+        } else emptyList()
+
+    override fun toString(): String = "SingleAdjacent(${dir.name2}: $adjacentType)"
 }

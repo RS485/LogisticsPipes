@@ -39,4 +39,7 @@ package network.rs485.logisticspipes.connection
 
 enum class ConnectionType {
     ITEM, FLUID, MULTIBLOCK, UNDEFINED;
+
+    fun isItem(): Boolean = this == ITEM || this == UNDEFINED
+    fun isFluid(): Boolean = this == FLUID || this == UNDEFINED
 }

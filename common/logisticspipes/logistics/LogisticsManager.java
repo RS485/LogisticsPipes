@@ -127,7 +127,7 @@ public class LogisticsManager implements ILogisticsManager {
 			return null;
 		}
 		if (excludeSource && sourceRouter != null) {
-			if (destination.getPipe().sharesInterestWith(sourceRouter.getPipe())) {
+			if (destination.getPipe().isOnSameContainer(sourceRouter.getPipe())) {
 				return null;
 			}
 		}

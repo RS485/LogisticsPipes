@@ -8,7 +8,6 @@
 package logisticspipes.pipes;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -91,9 +90,12 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.Adjacent;
+import network.rs485.logisticspipes.connection.ConnectionType;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
-import network.rs485.logisticspipes.world.CoordinateUtils;
-import network.rs485.logisticspipes.world.DoubleCoordinates;
+import network.rs485.logisticspipes.connection.SingleAdjacent;
 
 @CCType(name = "LogisticsChassiePipe")
 public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
@@ -101,7 +103,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 	private final ChassisModule _module;
 	private final ItemIdentifierInventory _moduleInventory;
 	private final NonNullList<ModuleUpgradeManager> slotUpgradeManagers = NonNullList.create();
-	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
 
 	// HUD
@@ -120,66 +121,72 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		_module = new ChassisModule(getChassisSize(), this);
 		_module.registerHandler(this, this);
 		hud = new HudChassisPipe(this, _moduleInventory);
-		pointedDirection = null;
 	}
 
+	/**
+	 * @return the adjacent this chassis points at or no adjacent.
+	 */
+	@Nonnull
 	@Override
-	protected List<TileEntity> getConnectedRawInventories() {
-		if (_cachedAdjacentInventories != null) {
-			return _cachedAdjacentInventories;
-		}
-		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
-		if (pointedItemHandler == null) {
-			_cachedAdjacentInventories = Collections.emptyList();
+	public Adjacent getAvailableAdjacent() {
+		return getPointedAdjacentOrNoAdjacent();
+	}
+
+	/**
+	 * Updates pointedAdjacent on {@link CoreRoutedPipe}.
+	 */
+	@Override
+	protected void updateAdjacentCache() {
+		super.updateAdjacentCache();
+		final Adjacent adjacent = getAdjacent();
+		if (adjacent instanceof SingleAdjacent) {
+			setPointedAdjacent(((SingleAdjacent) adjacent));
 		} else {
-			_cachedAdjacentInventories = Collections.singletonList(pointedItemHandler.getTileEntity());
-		}
-		return _cachedAdjacentInventories;
-	}
-
-	public void nextOrientation() {
-		boolean found = false;
-		EnumFacing oldOrientation = pointedDirection;
-		for (int l = 0; l < 6; ++l) {
-			pointedDirection = EnumFacing.values()[(pointedDirection == null ? 6 : pointedDirection.ordinal() + 1) % 6];
-			if (isValidOrientation(pointedDirection)) {
-				found = true;
-				break;
+			final SingleAdjacent oldPointedAdjacent = getPointedAdjacent();
+			SingleAdjacent newPointedAdjacent = null;
+			if (oldPointedAdjacent != null) {
+				// update pointed adjacent with connection type or reset it
+				newPointedAdjacent = adjacent.optionalGet(oldPointedAdjacent.getDir()).map(connectionType -> new SingleAdjacent(this, oldPointedAdjacent.getDir(), connectionType)).orElse(null);
 			}
-		}
-		if (!found) {
-			pointedDirection = null;
-		}
-		if (pointedDirection != oldOrientation) {
-			clearCache();
-			MainProxy.sendPacketToAllWatchingChunk(_module, PacketHandler.getPacket(ChassisOrientationPacket.class).setDir(pointedDirection).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
-			refreshRender(true);
+			if (newPointedAdjacent == null) {
+				newPointedAdjacent = adjacent.neighbors().entrySet().stream().findAny().map(connectedNeighbor -> new SingleAdjacent(this, connectedNeighbor.getKey().getDirection(), connectedNeighbor.getValue())).orElse(null);
+			}
+			setPointedAdjacent(newPointedAdjacent);
 		}
 	}
 
-	public void setClientOrientation(EnumFacing dir) {
-		if (MainProxy.isClient(getWorld())) {
-			pointedDirection = dir;
+	private void nextOrientation() {
+		final SingleAdjacent pointedAdjacent = getPointedAdjacent();
+		Pair<NeighborTileEntity<TileEntity>, ConnectionType> newNeighbor;
+		if (pointedAdjacent == null) {
+			newNeighbor = nextPointedOrientation(null);
+		} else {
+			newNeighbor = nextPointedOrientation(pointedAdjacent.getDir());
+		}
+		final ChassisOrientationPacket packet = PacketHandler.getPacket(ChassisOrientationPacket.class);
+		if (newNeighbor == null) {
+			setPointedAdjacent(null);
+			packet.setDir(null);
+		} else {
+			setPointedAdjacent(new SingleAdjacent(this, newNeighbor.getValue1().getDirection(), newNeighbor.getValue2()));
+			packet.setDir(newNeighbor.getValue1().getDirection());
+		}
+		MainProxy.sendPacketToAllWatchingChunk(_module, packet.setTilePos(container));
+		refreshRender(true);
+	}
+
+	public void setPointedOrientation(@Nullable EnumFacing dir) {
+		if (dir == null) {
+			setPointedAdjacent(null);
+		} else {
+			setPointedAdjacent(new SingleAdjacent(this, dir, ConnectionType.UNDEFINED));
 		}
 	}
 
-	private boolean isValidOrientation(EnumFacing connection) {
-		if (connection == null) {
-			return false;
-		}
-		if (getRouter().isRoutedExit(connection)) {
-			return false;
-		}
-		DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(this), connection);
-		TileEntity tile = pos.getTileEntity(getWorld());
-
-		if (tile == null) {
-			return false;
-		}
-		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
-			return false;
-		}
-		return MainProxy.checkPipesConnections(container, tile, connection);
+	@Nullable
+	@Override
+	public IInventoryUtil getPointedInventory() {
+		return getPointedAdjacentOrNoAdjacent().inventories().stream().map(LPNeighborTileEntityKt::getInventoryUtil).findFirst().orElse(null);
 	}
 
 	public IInventory getModuleInventory() {
@@ -206,28 +213,13 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 
 	@Override
 	public TextureType getNonRoutedTexture(EnumFacing connection) {
-		if (connection.equals(pointedDirection)) {
+		if (getPointedAdjacent() != null && connection.equals(getPointedAdjacent().getDir())) {
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
 		if (isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
-	}
-
-	@Override
-	public void onNeighborBlockChange_Logistics() {
-		if (!isValidOrientation(pointedDirection)) {
-			if (MainProxy.isServer(getWorld())) {
-				nextOrientation();
-			}
-		}
-	}
-
-	@Override
-	public void onBlockPlaced() {
-		super.onBlockPlaced();
-		switchOrientationOnTick = true;
 	}
 
 	@Override
@@ -238,12 +230,9 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound);
 			int tmp = nbttagcompound.getInteger("Orientation");
-			if (tmp == -1) {
-				pointedDirection = null;
-			} else {
-				pointedDirection = EnumFacingUtil.getOrientation(tmp % 6);
+			if (tmp != -1) {
+				setPointedOrientation(EnumFacingUtil.getOrientation(tmp % 6));
 			}
-			switchOrientationOnTick = (pointedDirection == null);
 			for (int i = 0; i < getChassisSize(); i++) {
 				if (i >= slotUpgradeManagers.size()) {
 					addModuleUpgradeManager();
@@ -264,7 +253,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
-		nbttagcompound.setInteger("Orientation", pointedDirection == null ? -1 : pointedDirection.ordinal());
+		nbttagcompound.setInteger("Orientation", getPointedAdjacent() == null ? -1 : getPointedAdjacent().getDir().ordinal());
 		for (int i = 0; i < getChassisSize(); i++) {
 			slotUpgradeManagers.get(i).writeToNBT(nbttagcompound, Integer.toString(i));
 		}
@@ -396,12 +385,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 
 	@Override
 	public void ignoreDisableUpdateEntity() {
-		if (switchOrientationOnTick) {
-			switchOrientationOnTick = false;
-			if (MainProxy.isServer(getWorld())) {
-				nextOrientation();
-			}
-		}
 		if (!init) {
 			init = true;
 			if (MainProxy.isClient(getWorld())) {

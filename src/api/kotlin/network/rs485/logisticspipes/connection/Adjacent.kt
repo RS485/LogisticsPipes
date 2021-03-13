@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019  RS485
+ * Copyright (c) 2021  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2019  RS485
+ * Copyright (c) 2021  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -37,25 +37,20 @@
 
 package network.rs485.logisticspipes.connection
 
-import logisticspipes.interfaces.ISlotUpgradeManager
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.math.BlockPos
+import java.util.*
 
-class NeighborTileEntitySneakyInsertion<T : TileEntity>(tileEntity: T, direction: EnumFacing) :
-        NeighborTileEntity<T>(tileEntity, direction) {
-    private var sneakyDirection: EnumFacing = super.getOurDirection()
+interface Adjacent {
+    fun connectedPos(): Map<BlockPos, ConnectionType>
 
-    override fun getOurDirection(): EnumFacing {
-        return sneakyDirection
-    }
+    fun optionalGet(direction: EnumFacing): Optional<ConnectionType>
 
-    fun from(direction: EnumFacing): NeighborTileEntitySneakyInsertion<T> {
-        sneakyDirection = direction
-        return this
-    }
+    fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType>
 
-    fun from(upgradeManager: ISlotUpgradeManager?): NeighborTileEntitySneakyInsertion<T> {
-        if (upgradeManager?.hasSneakyUpgrade() == true) sneakyDirection = upgradeManager.sneakyOrientation
-        return this
-    }
+    fun inventories(): List<NeighborTileEntity<TileEntity>>
+
+    fun fluidTanks(): List<NeighborTileEntity<TileEntity>>
+
 }

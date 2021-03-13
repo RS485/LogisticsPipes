@@ -24,6 +24,7 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 
 	@Override
 	public void notifyOfBlockChange() {
+		super.notifyOfBlockChange();
 		cachedConnectedPipe = null;
 	}
 
@@ -75,7 +76,7 @@ public class LogisticsStatisticsTileEntity extends LogisticsSolidTileEntity impl
 
 	public CoreRoutedPipe getConnectedPipe() {
 		if (cachedConnectedPipe == null) {
-			new WorldCoordinatesWrapper(this).allNeighborTileEntities()
+			new WorldCoordinatesWrapper(this).allNeighborTileEntities().stream()
 					.filter(NeighborTileEntity::isLogisticsPipe)
 					.filter(adjacent -> ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe instanceof CoreRoutedPipe)
 					.map(adjacent -> (CoreRoutedPipe) (((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe))

@@ -46,6 +46,7 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -97,8 +98,8 @@ public abstract class LogisticsPowerProviderTileEntity extends LogisticsSolidTil
 								Math.min(internalStorage, routerIdToOrderCount.getValue() * fullfillRatio)))
 						.filter(destinationToPower -> destinationToPower.getValue1() != null && destinationToPower.getValue1().getPipe() != null)
 						.forEach(destinationToPower -> new WorldCoordinatesWrapper(this)
-								.allNeighborTileEntities()
-								.flatMap(neighbor -> neighbor.getJavaInstanceOf(LogisticsTileGenericPipe.class).map(Stream::of).orElseGet(Stream::empty))
+								.allNeighborTileEntities().stream()
+								.flatMap(neighbor -> LPNeighborTileEntityKt.optionalIs(neighbor, LogisticsTileGenericPipe.class).map(Stream::of).orElseGet(Stream::empty))
 								.filter(neighbor -> neighbor.getTileEntity().pipe instanceof CoreRoutedPipe &&
 										!getPipe.apply(neighbor).stillNeedReplace())
 								.flatMap(neighbor -> getPipe.apply(neighbor).getRouter().getDistanceTo(destinationToPower.getValue1()).stream()

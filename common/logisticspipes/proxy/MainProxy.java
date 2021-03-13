@@ -1,6 +1,5 @@
 package logisticspipes.proxy;
 
-import java.io.File;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -45,7 +44,6 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.routing.debug.RoutingTableDebugUpdateThread;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 import logisticspipes.ticks.RoutingTableUpdateThread;
-import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 
 public class MainProxy {
@@ -58,8 +56,8 @@ public class MainProxy {
 	private static int globalTick;
 	public static EnumMap<Side, FMLEmbeddedChannel> channels;
 
-	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<>();
-	private static Map<Integer, FakePlayerLP> fakePlayers = Maps.newHashMap();
+	private static final WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<>();
+	private static final Map<Integer, FakePlayerLP> fakePlayers = Maps.newHashMap();
 
 	public static final String networkChannelName = "LogisticsPipes";
 
@@ -99,11 +97,10 @@ public class MainProxy {
 		return MainProxy.isClient();
 	}
 
-	@Deprecated
 	/**
 	 * isClient is slow, find a world and check isClient(world)
-	 * @return
 	 */
+	@Deprecated
 	public static boolean isClient() {
 		return MainProxy.getEffectiveSide() == Side.CLIENT;
 	}
@@ -121,11 +118,10 @@ public class MainProxy {
 		return MainProxy.isServer();
 	}
 
-	@Deprecated
 	/**
 	 * isServer is slow, find a world and check isServer(world)
-	 * @return
 	 */
+	@Deprecated
 	public static boolean isServer() {
 		return MainProxy.getEffectiveSide() == Side.SERVER;
 	}
@@ -297,10 +293,6 @@ public class MainProxy {
 		return null;
 	}
 
-	public static File getLPFolder() {
-		return new File(DimensionManager.getCurrentSaveRootDirectory(), "LogisticsPipes");
-	}
-
 	public static void addTick() {
 		MainProxy.globalTick++;
 	}
@@ -309,10 +301,6 @@ public class MainProxy {
 		EntityItem item = new EntityItem(world, xCoord, yCoord, zCoord, stack);
 		world.spawnEntity(item);
 		return item;
-	}
-
-	public static boolean checkPipesConnections(TileEntity from, TileEntity to) {
-		return MainProxy.checkPipesConnections(from, to, OrientationsUtil.getOrientationOfTilewithTile(from, to));
 	}
 
 	public static boolean checkPipesConnections(TileEntity from, TileEntity to, EnumFacing way) {
@@ -334,15 +322,15 @@ public class MainProxy {
 			}
 		}
 		if (toInfo != null) {
-			if (!toInfo.canConnect(from, way.getOpposite(), ignoreSystemDisconnection)) {
-				return false;
-			}
+			return toInfo.canConnect(from, way.getOpposite(), ignoreSystemDisconnection);
 		}
 		return true;
 	}
 
 	public static boolean isPipeControllerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND) != null && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
+		return entityplayer != null &&
+				!entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).isEmpty() &&
+				entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem() == LPItems.pipeController;
 	}
 
 	@SubscribeEvent

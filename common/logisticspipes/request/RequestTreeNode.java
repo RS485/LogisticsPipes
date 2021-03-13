@@ -351,7 +351,7 @@ public class RequestTreeNode {
 			if (provider.getValue1() == null || provider.getValue1().getRouter().getPipe() == null) {
 				continue;
 			}
-			if (!thisPipe.sharesInterestWith(provider.getValue1().getRouter().getPipe())) {
+			if (!thisPipe.isOnSameContainer(provider.getValue1().getRouter().getPipe())) {
 				provider.getValue1().canProvide(this, root, provider.getValue2());
 			}
 		}

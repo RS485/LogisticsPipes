@@ -175,11 +175,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		return Objects.requireNonNull(_service, "service object was null in " + toString()).getUpgradeManager(slot, positionInt);
 	}
 
-	/**
-	 * typically used when the neighboring block changes
-	 */
-	public void clearCache() {}
-
 	@Override
 	public String toString() {
 		String at = "{service is null}";

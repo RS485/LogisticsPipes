@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * <p>
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
@@ -22,6 +22,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -692,6 +693,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		return item instanceof LogisticsFluidContainer;
 	}
 
+	@Nullable
 	public DictItemIdentifier getDictIdentifiers() {
 		if (_dict == null && canHaveDict) {
 			_dict = DictItemIdentifier.getDictItemIdentifier(this);

@@ -11,18 +11,12 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public interface IPipeInformationProvider {
 
-	enum ConnectionPipeType {
-		ITEM,
-		FLUID,
-		MULTI,
-		UNDEFINED
-	}
-
-	boolean isCorrect(ConnectionPipeType type);
+	boolean isCorrect(ConnectionType type);
 
 	int getX();
 

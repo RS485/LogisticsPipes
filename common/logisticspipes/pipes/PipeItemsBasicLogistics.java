@@ -22,12 +22,12 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -130,7 +130,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		IInventoryUtil invUtil = super.getPointedInventory();
 		if (invUtil == null) {
 			invUtil = new WorldCoordinatesWrapper(container)
-					.connectedTileEntities(ConnectionPipeType.ITEM)
+					.connectedTileEntities(ConnectionType.ITEM)
 					.filter(NeighborTileEntity::isItemHandler)
 					.findFirst()
 					.map(NeighborTileEntity::getUtilForItemHandler)

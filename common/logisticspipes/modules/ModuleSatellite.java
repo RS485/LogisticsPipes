@@ -8,10 +8,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -42,7 +42,7 @@ public class ModuleSatellite extends LogisticsModule {
 	private int spaceFor(@Nonnull ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(pipe.container);
 
-		int count = worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
+		int count = worldCoordinates.connectedTileEntities(ConnectionType.ITEM)
 				.map(adjacent -> adjacent.sneakyInsertion().from(getUpgradeManager()))
 				.map(NeighborTileEntity::getInventoryUtil)
 				.filter(Objects::nonNull)

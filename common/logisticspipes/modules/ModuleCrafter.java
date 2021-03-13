@@ -97,7 +97,6 @@ import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.FluidIdentifier;
@@ -109,6 +108,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
@@ -211,7 +211,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		}
 		final ItemStack finalStack = stack;
 		int count = worldCoordinates
-				.connectedTileEntities(ConnectionPipeType.ITEM)
+				.connectedTileEntities(ConnectionType.ITEM)
 				.map(neighbor -> neighbor.sneakyInsertion().from(getUpgradeManager()))
 				.filter(NeighborTileEntity::isItemHandler)
 				.map(NeighborTileEntity::getUtilForItemHandler)
@@ -869,7 +869,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		} else {
 			WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
-			for (NeighborTileEntity<TileEntity> adjacent : worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).collect(Collectors.toList())) {
+			for (NeighborTileEntity<TileEntity> adjacent : worldCoordinates.connectedTileEntities(ConnectionType.ITEM).collect(Collectors.toList())) {
 				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 					if (provider.importRecipe(adjacent.getTileEntity(), _dummyInventory)) {
 						if (provider instanceof IFuzzyRecipeProvider) {
@@ -997,7 +997,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
-		worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).anyMatch(adjacent -> {
+		worldCoordinates.connectedTileEntities(ConnectionType.ITEM).anyMatch(adjacent -> {
 			boolean found = SimpleServiceLocator.craftingRecipeProviders.stream()
 					.anyMatch(provider -> provider.canOpenGui(adjacent.getTileEntity()));
 
@@ -1320,7 +1320,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	public List<NeighborTileEntity<TileEntity>> locateCraftersForExtraction() {
 		if (cachedCrafters == null) {
 			cachedCrafters = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos())
-					.connectedTileEntities(ConnectionPipeType.ITEM)
+					.connectedTileEntities(ConnectionType.ITEM)
 					.filter(neighbor -> neighbor.isItemHandler() || neighbor.getInventoryUtil() != null)
 					.collect(Collectors.toList());
 		}

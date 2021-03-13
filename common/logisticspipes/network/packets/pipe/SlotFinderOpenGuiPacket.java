@@ -21,8 +21,8 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.StaticResolve;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -70,7 +70,7 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 		}
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(player.world, new BlockPos(getPosX(), getPosY(), getPosZ()));
-		Iterator<NeighborTileEntity<TileEntity>> adjacentIter = worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM).iterator();
+		Iterator<NeighborTileEntity<TileEntity>> adjacentIter = worldCoordinates.connectedTileEntities(ConnectionType.ITEM).iterator();
 
 		boolean found = false;
 		while (adjacentIter.hasNext()) {

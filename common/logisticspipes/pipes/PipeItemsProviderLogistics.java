@@ -70,7 +70,6 @@ import logisticspipes.routing.order.IOrderInfoProvider.ResourceType;
 import logisticspipes.routing.order.LogisticsItemOrder;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
@@ -79,6 +78,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -127,7 +127,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			return 0;
 		}
 
-		return new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
+		return new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionType.ITEM)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity()))
 				.map(this::getAdaptedInventoryUtil)
 				.filter(Objects::nonNull)
@@ -151,7 +151,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		ItemIdentifier item = stack.getItem();
 
 		final Iterator<Pair<IInventoryUtil, EnumFacing>> iterator = new WorldCoordinatesWrapper(container)
-				.connectedTileEntities(ConnectionPipeType.ITEM)
+				.connectedTileEntities(ConnectionType.ITEM)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity()))
 				.flatMap(adjacent -> {
 					final IInventoryUtil invUtil = getAdaptedInventoryUtil(adjacent);
@@ -319,7 +319,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<>();
 
 		final Iterator<Map<ItemIdentifier, Integer>> iterator = new WorldCoordinatesWrapper(container)
-				.connectedTileEntities(ConnectionPipeType.ITEM)
+				.connectedTileEntities(ConnectionType.ITEM)
 				.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity()))
 				.map(this::getAdaptedInventoryUtil)
 				.filter(Objects::nonNull)
@@ -453,7 +453,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 	@Override
 	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
+		new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionType.ITEM)
 				.flatMap(adjacent -> {
 					if (!SimpleServiceLocator.pipeInformationManager.isItemPipe(adjacent.getTileEntity())) {
 						final IInventoryUtil adjacentInventoryUtil = this.getAdaptedInventoryUtil(adjacent);

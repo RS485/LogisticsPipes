@@ -27,6 +27,7 @@ import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.ReflectionHelper;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class BCPipeInformationProvider implements IPipeInformationProvider {
@@ -38,17 +39,17 @@ public class BCPipeInformationProvider implements IPipeInformationProvider {
 	}
 
 	@Override
-	public boolean isCorrect(ConnectionPipeType type) {
+	public boolean isCorrect(ConnectionType type) {
 		if (pipe == null || pipe.getPipe() == null || !SimpleServiceLocator.buildCraftProxy.isActive()) {
 			return false;
 		}
 
 		boolean precheck = false;
-		if (type == ConnectionPipeType.UNDEFINED) {
+		if (type == ConnectionType.UNDEFINED) {
 			precheck = pipe.getPipe().getDefinition().flowType == PipeApi.flowItems || pipe.getPipe().getDefinition().flowType == PipeApi.flowFluids;
-		} else if (type == ConnectionPipeType.ITEM) {
+		} else if (type == ConnectionType.ITEM) {
 			precheck = pipe.getPipe().getDefinition().flowType == PipeApi.flowItems;
-		} else if (type == ConnectionPipeType.FLUID) {
+		} else if (type == ConnectionType.FLUID) {
 			precheck = pipe.getPipe().getDefinition().flowType == PipeApi.flowFluids;
 		}
 		return precheck;

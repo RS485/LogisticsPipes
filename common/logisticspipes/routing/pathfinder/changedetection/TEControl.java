@@ -13,10 +13,10 @@ import logisticspipes.asm.te.LPTileEntityObject;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
 import logisticspipes.ticks.QueuedTasks;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -39,14 +39,14 @@ public class TEControl {
 			return;
 		}
 
-		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile, false, ConnectionPipeType.UNDEFINED) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
+		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile, false, ConnectionType.UNDEFINED) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
 			((ILPTEInformation) tile).setObject(new LPTileEntityObject());
 			((ILPTEInformation) tile).getObject().initialised = LPTickHandler.getWorldInfo(world).getWorldTick();
 			if (((ILPTEInformation) tile).getObject().initialised < 5) {
 				return;
 			}
 			QueuedTasks.queueTask(() -> {
-				if (!SimpleServiceLocator.pipeInformationManager.isPipe(tile, true, ConnectionPipeType.UNDEFINED)) {
+				if (!SimpleServiceLocator.pipeInformationManager.isPipe(tile, true, ConnectionType.UNDEFINED)) {
 					return null;
 				}
 				for (EnumFacing dir : EnumFacing.VALUES) {

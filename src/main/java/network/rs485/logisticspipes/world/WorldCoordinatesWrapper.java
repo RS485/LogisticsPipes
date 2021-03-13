@@ -53,7 +53,7 @@ import lombok.Data;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 
 @Data
@@ -88,7 +88,7 @@ public class WorldCoordinatesWrapper {
 		return allNeighborTileEntities().filter(adjacent -> MainProxy.checkPipesConnections(pipe, adjacent.getTileEntity(), adjacent.getDirection()));
 	}
 
-	public Stream<NeighborTileEntity<TileEntity>> connectedTileEntities(ConnectionPipeType pipeType) {
+	public Stream<NeighborTileEntity<TileEntity>> connectedTileEntities(ConnectionType pipeType) {
 		TileEntity pipe = getTileEntity();
 		if (!SimpleServiceLocator.pipeInformationManager.isPipe(pipe, true, pipeType)) {
 			if (LogisticsPipes.isDEBUG()) {

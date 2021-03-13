@@ -7,7 +7,7 @@ import java.util.Map;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
+import network.rs485.logisticspipes.connection.ConnectionType;
 
 public class PipeInformationManager {
 
@@ -26,7 +26,7 @@ public class PipeInformationManager {
 				if (type.isAssignableFrom(tile.getClass())) {
 					try {
 						IPipeInformationProvider provider = infoProvider.get(type).getDeclaredConstructor(type).newInstance(type.cast(tile));
-						if (provider.isCorrect(ConnectionPipeType.UNDEFINED)) {
+						if (provider.isCorrect(ConnectionType.UNDEFINED)) {
 							return provider;
 						}
 					} catch (InstantiationException | IllegalAccessException | InvocationTargetException | IllegalArgumentException | SecurityException | NoSuchMethodException e) {
@@ -52,21 +52,21 @@ public class PipeInformationManager {
 	}
 
 	public boolean isItemPipe(TileEntity tile) {
-		return isPipe(tile, true, ConnectionPipeType.ITEM);
+		return isPipe(tile, true, ConnectionType.ITEM);
 	}
 
 	public boolean isPipe(TileEntity tile) {
-		return isPipe(tile, true, ConnectionPipeType.UNDEFINED);
+		return isPipe(tile, true, ConnectionType.UNDEFINED);
 	}
 
-	public boolean isPipe(TileEntity tile, boolean check, ConnectionPipeType pipeType) {
+	public boolean isPipe(TileEntity tile, boolean check, ConnectionType pipeType) {
 		if (tile == null) {
 			return false;
 		}
 		if (tile instanceof IPipeInformationProvider) {
 			return true;
 		} else if (tile instanceof ISubMultiBlockPipeInformationProvider) {
-			return pipeType == ConnectionPipeType.MULTI;
+			return pipeType == ConnectionType.MULTIBLOCK;
 		} else {
 			for (Class<?> type : infoProvider.keySet()) {
 				if (type.isAssignableFrom(tile.getClass())) {

@@ -11,7 +11,7 @@ import net.minecraft.util.EnumFacing;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
@@ -39,7 +39,7 @@ public class PipeTransportLayer extends TransportLayer {
 		}
 
 		final List<NeighborTileEntity<TileEntity>> adjacentEntities = new WorldCoordinatesWrapper(routedPipe.container)
-				.connectedTileEntities(IPipeInformationProvider.ConnectionPipeType.ITEM)
+				.connectedTileEntities(ConnectionType.ITEM)
 				.collect(Collectors.toList());
 		LinkedList<EnumFacing> possibleEnumFacing = new LinkedList<>();
 

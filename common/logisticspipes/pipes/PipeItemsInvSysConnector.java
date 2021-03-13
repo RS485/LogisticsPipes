@@ -47,7 +47,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.channels.ChannelInformation;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
@@ -57,6 +56,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.transactor.ITransactor;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannelRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver,
@@ -129,7 +129,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	private void checkConnectedInvs() {
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
-			final boolean shouldUpdate = new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionPipeType.ITEM)
+			final boolean shouldUpdate = new WorldCoordinatesWrapper(container).connectedTileEntities(ConnectionType.ITEM)
 					.anyMatch(neighbor -> neighbor.isItemHandler() &&
 							container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()) &&
 							checkOneConnectedInv(neighbor.getUtilForItemHandler(), neighbor.getDirection()));

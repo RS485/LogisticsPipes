@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -15,12 +15,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.function.BiFunction;
@@ -109,7 +107,6 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.order.IOrderInfoProvider;
 import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrderManager;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -126,6 +123,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -299,8 +297,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	 * Designed to help protect against routing loops - if both pipes are on the
 	 * same block, and of ISided overlapps, return true
 	 *
-	 * @param other
-	 * @return boolean indicating if both pull from the same inventory.
+	 * @return boolean indicating if other and this pull from the same inventory.
 	 */
 	public boolean sharesInterestWith(CoreRoutedPipe other) {
 		List<TileEntity> others = other.getConnectedRawInventories();
@@ -318,7 +315,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	protected List<TileEntity> getConnectedRawInventories() {
 		if (_cachedAdjacentInventories == null) {
 			_cachedAdjacentInventories = new WorldCoordinatesWrapper(container)
-					.connectedTileEntities(ConnectionPipeType.ITEM)
+					.connectedTileEntities(ConnectionType.ITEM)
 					.filter(adjacent -> adjacent.isItemHandler() && !adjacent.isLogisticsPipe())
 					.map(NeighborTileEntity::getTileEntity)
 					.collect(Collectors.toList());
@@ -1581,7 +1578,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	public EnumFacing getPointedOrientation() {
 		if (pointedDirection == null) {
 			final Optional<EnumFacing> firstDirection = new WorldCoordinatesWrapper(container)
-					.connectedTileEntities(ConnectionPipeType.ITEM)
+					.connectedTileEntities(ConnectionType.ITEM)
 					.filter(adjacent -> !SimpleServiceLocator.pipeInformationManager.isPipe(adjacent.getTileEntity()))
 					.map(NeighborTileEntity::getDirection)
 					.findFirst();

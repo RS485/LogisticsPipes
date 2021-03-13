@@ -44,12 +44,12 @@ import logisticspipes.pipes.basic.debug.StatusEntry;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.pathfinder.IPipeInformationProvider.ConnectionPipeType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
@@ -167,7 +167,7 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 
 		WorldCoordinatesWrapper worldCoordinates = new WorldCoordinatesWrapper(_world.getWorld(), getBlockPos());
 
-		worldCoordinates.connectedTileEntities(ConnectionPipeType.ITEM)
+		worldCoordinates.connectedTileEntities(ConnectionType.ITEM)
 				.filter(adjacent -> !adjacent.isLogisticsPipe())
 				.map(neighbor -> neighbor.sneakyInsertion().from(getUpgradeManager()))
 				.map(NeighborTileEntity::getInventoryUtil)

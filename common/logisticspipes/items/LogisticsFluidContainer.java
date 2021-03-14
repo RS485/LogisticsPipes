@@ -8,6 +8,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -19,7 +20,6 @@ import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtils;
 
 public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvancedExistance {
 
@@ -57,7 +57,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
 		String unlocalizedName = getUnlocalizedName(itemstack);
 		String unlocalizedNameInefficiently = getUnlocalizedNameInefficiently(itemstack); // Fix for Logistics fluid container naming
-		return StringUtils.translate(unlocalizedName + (unlocalizedName.equals(unlocalizedNameInefficiently) ? ".name" : "")).trim();
+		return I18n.translateToLocal(unlocalizedName + (unlocalizedName.equals(unlocalizedNameInefficiently) ? ".name" : "")).trim();
 	}
 
 	@Override

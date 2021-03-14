@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -82,6 +83,6 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 	@Nonnull
 	@Override
 	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
+		return I18n.translateToLocal(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 }

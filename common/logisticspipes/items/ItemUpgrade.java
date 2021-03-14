@@ -198,6 +198,7 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private String join(List<String> join) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < join.size() - 2; i++) {

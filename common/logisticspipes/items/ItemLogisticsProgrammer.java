@@ -11,6 +11,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import logisticspipes.utils.string.StringUtils;
 
 public class ItemLogisticsProgrammer extends LogisticsItem {
@@ -32,6 +35,7 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		if (!stack.isEmpty()) {
 			if (stack.hasTagCompound()) {

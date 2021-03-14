@@ -363,7 +363,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add(!isExcludeFilter ? "Included" : "Excluded");
-		list.add("Mode: " + _extractionMode.getExtractionModeString());
+		list.add("Mode: " + _extractionMode.name());
 		list.add("Filter: ");
 		list.add("<inventory>");
 		list.add("<that>");

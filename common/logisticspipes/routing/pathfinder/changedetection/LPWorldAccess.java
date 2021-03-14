@@ -62,7 +62,7 @@ public class LPWorldAccess implements IWorldEventListener {
 	public void broadcastSound(int soundID, @Nonnull BlockPos pos, int data) {}
 
 	@Override
-	public void playEvent(@Nonnull EntityPlayer player, int type, @Nonnull BlockPos blockPosIn, int data) {}
+	public void playEvent(@Nullable EntityPlayer player, int type, @Nonnull BlockPos blockPosIn, int data) {}
 
 	@Override
 	public void sendBlockBreakProgress(int breakerId, @Nonnull BlockPos pos, int progress) {}

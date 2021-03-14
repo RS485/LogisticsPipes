@@ -15,6 +15,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.ISpecialArmor;
@@ -24,7 +25,6 @@ import logisticspipes.api.IHUDArmor;
 import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.string.StringUtils;
 
 public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor, ILogisticsItem {
 
@@ -97,7 +97,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 	@Nonnull
 	@Override
 	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
-		return StringUtils.translate(getUnlocalizedName(itemstack) + ".name").trim();
+		return I18n.translateToLocal(getUnlocalizedName(itemstack) + ".name").trim();
 	}
 
 }

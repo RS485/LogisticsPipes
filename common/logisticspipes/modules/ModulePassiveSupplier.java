@@ -17,6 +17,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -33,6 +34,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
+import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
 public class ModulePassiveSupplier extends LogisticsModule implements Gui, SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
@@ -68,7 +70,8 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 			return null;
 		}
 
-		IInventoryUtil targetUtil = _service.getSneakyInventory(slot, positionInt);
+		final ISlotUpgradeManager upgradeManager = _service.getUpgradeManager(slot, positionInt);
+		IInventoryUtil targetUtil = PipeServiceProviderUtilKt.availableSneakyInventories(_service, upgradeManager).stream().findFirst().orElse(null);
 		if (targetUtil == null) {
 			return null;
 		}

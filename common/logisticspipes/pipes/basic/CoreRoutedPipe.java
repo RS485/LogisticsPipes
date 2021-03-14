@@ -22,7 +22,6 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -53,7 +52,6 @@ import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IClientState;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILPPositionProvider;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IPipeUpgradeManager;
@@ -69,7 +67,6 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemPipeSignCreator;
-import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -128,8 +125,6 @@ import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.connection.Adjacent;
 import network.rs485.logisticspipes.connection.AdjacentFactory;
 import network.rs485.logisticspipes.connection.ConnectionType;
-import network.rs485.logisticspipes.connection.LPNeighborTileEntity;
-import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.connection.NoAdjacent;
 import network.rs485.logisticspipes.connection.SingleAdjacent;
@@ -198,6 +193,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return adjacent;
 	}
 
+	/**
+	 * Returns all adjacents on a regular routed pipe.
+	 */
 	@Nonnull
 	@Override
 	public Adjacent getAvailableAdjacent() {
@@ -373,6 +371,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	 * @return boolean indicating if other and this are attached to the same inventory.
 	 */
 	public boolean isOnSameContainer(CoreRoutedPipe other) {
+		// FIXME: Same TileEntity? Same Inventory view?
 		return adjacent.connectedPos().keySet().stream().anyMatch(
 			other.adjacent.connectedPos().keySet()::contains
 		);
@@ -1037,10 +1036,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return false;
 	}
 
-	public boolean disconnectPipe(TileEntity tile, EnumFacing dir) {
-		return false;
-	}
-
 	@Override
 	public final boolean canPipeConnect(TileEntity tile, EnumFacing dir) {
 		return canPipeConnect(tile, dir, false);
@@ -1052,7 +1047,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (isSideBlocked(side, ignoreSystemDisconnection)) {
 			return false;
 		}
-		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile, dir)) && !disconnectPipe(tile, dir);
+		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile, dir));
 	}
 
 	@Override
@@ -1485,96 +1480,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		powerHandler.addIC2Power(toSend);
 	}
 
-	/* IInventoryProvider */
-
-	@Nullable
-	@Override
-	public IInventoryUtil getPointedInventory() {
-		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandler();
-		if (pointedItemHandler == null) return null;
-		return LPNeighborTileEntityKt.getInventoryUtil(pointedItemHandler);
-	}
-
-	@Nullable
-	@Override
-	public IInventoryUtil getPointedInventory(ExtractionMode mode) {
-		final NeighborTileEntity<TileEntity> neighborItemHandler = getPointedItemHandler();
-		if (neighborItemHandler == null) return null;
-		return getInventoryForExtractionMode(mode, neighborItemHandler);
-	}
-
-	@Nullable
-	public static IInventoryUtil getInventoryForExtractionMode(ExtractionMode mode, NeighborTileEntity<TileEntity> neighborItemHandler) {
-		switch (mode) {
-			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
-						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
-						false, false, 1, 0);
-			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
-						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
-						false, false, 0, 1);
-			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
-						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
-						false, false, 1, 1);
-			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
-						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
-						true, false, 0, 0);
-			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
-						neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
-						false, true, 0, 0);
-			default:
-				break;
-		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(
-				neighborItemHandler.getTileEntity(), neighborItemHandler.getOurDirection(),
-				false, false, 0, 0);
-	}
-
-	@Nullable
-	@Override
-	public IInventoryUtil getSneakyInventory(ModulePositionType slot, int positionInt) {
-		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandlerCustom(
-				(tile, pointed) -> LPNeighborTileEntityKt.sneakyInsertion(new LPNeighborTileEntity<>(tile, pointed)).from(getUpgradeManager(slot, positionInt)));
-		if (pointedItemHandler == null) return null;
-		return LPNeighborTileEntityKt.getInventoryUtil(pointedItemHandler);
-	}
-
-	@Nullable
-	@Override
-	public IInventoryUtil getSneakyInventory(@Nonnull EnumFacing direction) {
-		final NeighborTileEntity<TileEntity> pointedItemHandler = getPointedItemHandlerCustom(
-				(tile, pointed) -> LPNeighborTileEntityKt.sneakyInsertion(new LPNeighborTileEntity<>(tile, pointed)).from(direction));
-		if (pointedItemHandler == null) {
-			return null;
-		}
-		return LPNeighborTileEntityKt.getInventoryUtil(pointedItemHandler);
-	}
-
-	@Nullable
-	public NeighborTileEntity<TileEntity> getPointedItemHandlerCustom(@Nonnull BiFunction<TileEntity, EnumFacing, LPNeighborTileEntity<TileEntity>> neighbourFactory) {
-		final EnumFacing pointedOrientation = getPointedOrientation();
-		if (pointedOrientation == null) return null;
-		final TileEntity tile = getContainer().getTile(pointedOrientation);
-		if (tile == null) return null;
-		final NeighborTileEntity<TileEntity> neighbor = neighbourFactory.apply(tile, pointedOrientation);
-		if (!neighbor.canHandleItems()) return null;
-		return neighbor;
-	}
-
-	@Nullable
-	@Override
-	public NeighborTileEntity<TileEntity> getPointedItemHandler() {
-		return getPointedItemHandlerCustom(LPNeighborTileEntity::new);
-	}
-
 	/* ISendRoutedItem */
 
 	@Override
-	public IRoutedItem sendStack(@Nonnull ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
+	public IRoutedItem sendStack(@Nonnull ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode, EnumFacing direction) {
 		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive) {
@@ -1585,17 +1494,17 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			}
 		}
 		itemToSend.setAdditionalTargetInformation(reply.getValue2().addInfo);
-		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		queueRoutedItem(itemToSend, direction, mode);
 		return itemToSend;
 	}
 
 	@Override
-	public IRoutedItem sendStack(@Nonnull ItemStack stack, int destination, ItemSendMode mode, IAdditionalTargetInformation info) {
+	public IRoutedItem sendStack(@Nonnull ItemStack stack, int destination, ItemSendMode mode, IAdditionalTargetInformation info, EnumFacing direction) {
 		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		itemToSend.setAdditionalTargetInformation(info);
-		queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+		queueRoutedItem(itemToSend, direction, mode);
 		return itemToSend;
 	}
 

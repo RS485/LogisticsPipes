@@ -51,6 +51,7 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.versioning.ArtifactVersion
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion
 import net.minecraftforge.fml.common.versioning.VersionRange
+import network.rs485.logisticspipes.inventory.ProviderMode
 import network.rs485.logisticspipes.util.equalsWithNBT
 import kotlin.math.min
 
@@ -59,10 +60,10 @@ class StorageDrawersProxyImpl : SpecialInventoryHandler.Factory {
     @CapabilityInject(IDrawerGroup::class)
     val drawerGroupCapability: Capability<IDrawerGroup>? = null
 
-    override fun getUtilForTile(tile: TileEntity, dir: EnumFacing?, hideOnePerStack: Boolean, hideOne: Boolean, cropStart: Int, cropEnd: Int): SpecialInventoryHandler? =
-            StorageDrawersInventoryHandler(tile.getCapability(drawerGroupCapability!!, dir)!!, hideOnePerStack, hideOne, cropStart, cropEnd)
-
     override fun isType(tile: TileEntity, dir: EnumFacing?): Boolean = tile.hasCapability(drawerGroupCapability!!, dir)
+
+    override fun getUtilForTile(tile: TileEntity, direction: EnumFacing?, mode: ProviderMode): SpecialInventoryHandler? =
+        drawerGroupCapability?.let { StorageDrawersInventoryHandler(tile.getCapability(drawerGroupCapability, direction)!!, mode) }
 
     override fun init(): Boolean = Loader.instance().modList.firstOrNull { it.modId == LPConstants.storagedrawersModID }?.let {
         val validVersions = VersionRange.createFromVersionSpec("[1.12.2-5.4.0,1.12.3)")
@@ -72,13 +73,12 @@ class StorageDrawersProxyImpl : SpecialInventoryHandler.Factory {
 
 }
 
-class StorageDrawersInventoryHandler(private val drawerGroup: IDrawerGroup,
-                                     private val hideOnePerStack: Boolean,
-                                     private val hideOnePerType: Boolean,
-                                     private val cropStart: Int,
-                                     private val cropEnd: Int) : SpecialInventoryHandler() {
+class StorageDrawersInventoryHandler(
+    private val drawerGroup: IDrawerGroup,
+    private val mode: ProviderMode,
+) : SpecialInventoryHandler() {
 
-    private fun checkSlot(slot: Int) = slot in cropStart until (drawerGroup.drawerCount - cropEnd)
+    private fun checkSlot(slot: Int) = slot in mode.cropStart until (drawerGroup.drawerCount - mode.cropEnd)
 
     private fun <T> fullDrawerApply(slot: Int, apply: (IDrawer) -> T) = drawerGroup.getDrawer(slot).takeIf { it.isEnabled && !it.isEmpty }?.let(apply)
 
@@ -86,13 +86,13 @@ class StorageDrawersInventoryHandler(private val drawerGroup: IDrawerGroup,
 
     private fun slotMachine() = accessibleDrawerSlots().flatMap { slot -> fullDrawerApply(slot) { listOf(slot to it.storedItemPrototype) } ?: emptyList() }
 
-    private fun Int.hideSinglePerTypeOrStack(): Int = (if (hideOnePerType || hideOnePerStack) minus(1) else this).coerceAtLeast(0)
+    private fun Int.hideSinglePerTypeOrStack(): Int = (if (mode.hideOnePerStack || mode.hideOnePerType) minus(1) else this).coerceAtLeast(0)
 
-    private fun Int.hideSinglePerStack(): Int = if (hideOnePerStack) minus(1) else this
+    private fun Int.hideSinglePerStack(): Int = if (mode.hideOnePerStack) minus(1) else this
 
     private fun enabledDrawerSequence(): Sequence<IDrawer> = accessibleDrawerSlots().asSequence().map { slot -> drawerGroup.getDrawer(slot) }.filter { drawer -> drawer.isEnabled }
 
-    override fun getItems(): MutableSet<ItemIdentifier> = accessibleDrawerSlots().flatMapTo(HashSet<ItemIdentifier>()) { slot ->
+    override fun getItems(): MutableSet<ItemIdentifier> = accessibleDrawerSlots().flatMapTo(HashSet()) { slot ->
         fullDrawerApply(slot) { listOf(ItemIdentifier.get(it.storedItemPrototype)) } ?: emptyList()
     }
 
@@ -107,11 +107,11 @@ class StorageDrawersInventoryHandler(private val drawerGroup: IDrawerGroup,
     override fun itemCount(itemid: ItemIdentifier): Int = slotMachine()
             .filter { (_, stack) -> itemid.equalsWithNBT(stack) }
             .map { (_, stack) -> stack.count.hideSinglePerStack() }.sum()
-            .apply { if (hideOnePerType && !hideOnePerStack) minus(1) }
+            .apply { if (mode.hideOnePerType && !mode.hideOnePerStack) minus(1) }
             .coerceAtLeast(0)
 
     override fun getItemsAndCount(): MutableMap<ItemIdentifier, Int> = HashMap<ItemIdentifier, Int>().also { map ->
-        slotMachine().forEach { (_, stack) -> map.compute(ItemIdentifier.get(stack)) { _, existing -> (stack.count + (existing?.hideSinglePerStack() ?: if (hideOnePerType) -1 else 0)) } }
+        slotMachine().forEach { (_, stack) -> map.compute(ItemIdentifier.get(stack)) { _, existing -> (stack.count + (existing?.hideSinglePerStack() ?: if (mode.hideOnePerType) -1 else 0)) } }
         map.forEach { (k, v) -> map[k] = v.coerceAtLeast(0) }
     }
 

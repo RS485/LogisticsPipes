@@ -109,7 +109,7 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !(pipe.pipe instanceof PipeItemsProviderLogistics)) {
 						return null;
 					}
-					dummy = new DummyContainer(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getprovidingInventory());
+					dummy = new DummyContainer(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getFilterInventory());
 					dummy.addNormalSlotsForPlayerInventory(18, 97);
 
 					xOffset = 72;
@@ -274,7 +274,7 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !(pipe.pipe instanceof PipeItemsProviderLogistics)) {
 						return null;
 					}
-					return new GuiProviderPipe(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getprovidingInventory(), (PipeItemsProviderLogistics) pipe.pipe);
+					return new GuiProviderPipe(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getFilterInventory(), (PipeItemsProviderLogistics) pipe.pipe);
 
 				case GuiIDs.GUI_SatellitePipe_ID:
 					if (pipe != null && pipe.pipe instanceof SatellitePipe) {

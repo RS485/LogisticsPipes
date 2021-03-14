@@ -90,7 +90,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if (doContentUpdate) {
 			checkContentUpdate();
 		}
-		//craftingModule.enabledUpdateEntity();
 	}
 
 	@Override
@@ -236,19 +235,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-		craftingModule.readFromNBT(nbttagcompound);
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
-		craftingModule.writeToNBT(nbttagcompound);
-	}
-
-	@Override
-	public void throttledUpdateEntity() {
-		super.throttledUpdateEntity();
-		craftingModule.tick();
 	}
 
 	@Override

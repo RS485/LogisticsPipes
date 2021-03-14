@@ -16,20 +16,21 @@ import net.minecraft.util.EnumFacing;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.inventory.ProviderMode;
 
 public class CrateInventoryHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
-	private final ICrateStorageProxy _tile;
-	private final boolean _hideOnePerStack;
+	private final ICrateStorageProxy tile;
+	private final boolean hideOne;
 
-	private CrateInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = SimpleServiceLocator.betterStorageProxy.getCrateStorageProxy(tile);
-		_hideOnePerStack = hideOnePerStack || hideOne;
+	private CrateInventoryHandler(TileEntity tile, ProviderMode mode) {
+		this.tile = SimpleServiceLocator.betterStorageProxy.getCrateStorageProxy(tile);
+		hideOne = mode.getHideOnePerStack() || mode.getHideOnePerType();
 	}
 
 	public CrateInventoryHandler() {
-		_tile = null;
-		_hideOnePerStack = false;
+		tile = null;
+		hideOne = false;
 	}
 
 	@Override
@@ -42,16 +43,17 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 		return SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
 	}
 
+	@Nullable
 	@Override
-	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		return new CrateInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
+	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing direction, @Nonnull ProviderMode mode) {
+		return new CrateInventoryHandler(tile, mode);
 	}
 
 	@Override
 	@Nonnull
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<>();
-		for (ItemStack stack : _tile.getContents()) {
+		for (ItemStack stack : tile.getContents()) {
 			result.add(ItemIdentifier.get(stack));
 		}
 		return result;
@@ -64,10 +66,10 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 	}
 
 	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
-		HashMap<ItemIdentifier, Integer> map = new HashMap<>((int) (_tile.getUniqueItems() * 1.5));
-		for (ItemStack stack : _tile.getContents()) {
+		HashMap<ItemIdentifier, Integer> map = new HashMap<>((int) (tile.getUniqueItems() * 1.5));
+		for (ItemStack stack : tile.getContents()) {
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
-			int stackSize = stack.getCount() - (_hideOnePerStack ? 1 : 0);
+			int stackSize = stack.getCount() - (hideOne ? 1 : 0);
 			map.merge(itemId, stackSize, Integer::sum);
 		}
 		return map;
@@ -76,20 +78,20 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 	@Override
 	@Nonnull
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
-		int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
-		if (count <= (_hideOnePerStack ? 1 : 0)) {
+		int count = tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
+		if (count <= (hideOne ? 1 : 0)) {
 			return ItemStack.EMPTY;
 		}
-		return _tile.extractItems(itemIdent.makeNormalStack(1), 1);
+		return tile.extractItems(itemIdent.makeNormalStack(1), 1);
 	}
 
 	@Override
 	public boolean containsUndamagedItem(@Nonnull ItemIdentifier itemIdent) {
 		if (!itemIdent.isDamageable()) {
-			int count = _tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
+			int count = tile.getItemCount(itemIdent.unsafeMakeNormalStack(1));
 			return (count > 0);
 		}
-		for (ItemStack stack : _tile.getContents()) {
+		for (ItemStack stack : tile.getContents()) {
 			ItemIdentifier itemId = ItemIdentifier.get(stack).getUndamaged();
 			if (itemId.equals(itemIdent)) {
 				return true;
@@ -100,7 +102,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 
 	@Override
 	public int roomForItem(@Nonnull ItemStack stack) {
-		return _tile.getSpaceForItem(stack);
+		return tile.getSpaceForItem(stack);
 	}
 
 	@Override
@@ -110,7 +112,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 		st.setCount(0);
 		if (doAdd) {
 			ItemStack tst = stack.copy();
-			ItemStack overflow = _tile.insertItems(tst);
+			ItemStack overflow = tile.insertItems(tst);
 			st.setCount(stack.getCount());
 			if (!overflow.isEmpty()) {
 				st.shrink(overflow.getCount());
@@ -158,11 +160,11 @@ public class CrateInventoryHandler extends SpecialInventoryHandler implements Sp
 		}
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		ItemStack stack = entry.getKey().makeNormalStack(j);
-		int count = _tile.getItemCount(stack);
-		if (count <= (_hideOnePerStack ? 1 : 0)) {
+		int count = tile.getItemCount(stack);
+		if (count <= (hideOne ? 1 : 0)) {
 			return ItemStack.EMPTY;
 		}
-		ItemStack extracted = _tile.extractItems(stack, 1);
+		ItemStack extracted = tile.extractItems(stack, 1);
 		entry.setValue(entry.getValue() - j);
 		return extracted;
 	}

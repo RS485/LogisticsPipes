@@ -12,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.transactor.ITransactor;
+import network.rs485.logisticspipes.inventory.ProviderMode;
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 
@@ -40,7 +41,6 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 		boolean isType(@Nonnull TileEntity tile, @Nullable EnumFacing dir);
 
 		@Nullable
-		SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
-
+		SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing direction, @Nonnull ProviderMode mode);
 	}
 }

@@ -9,13 +9,14 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.transactor.ITransactor;
 import logisticspipes.utils.transactor.TransactorSimple;
+import network.rs485.logisticspipes.inventory.ProviderMode;
 
 public class InventoryHelper {
 
 	//BC getTransactorFor using our getInventory
 	public static ITransactor getTransactorFor(Object object, EnumFacing dir) {
 		if (object instanceof TileEntity) {
-			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getUtilForInv((TileEntity) object, dir, false, false, 0, 0);
+			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getSpecialHandlerFor((TileEntity) object, dir, ProviderMode.DEFAULT);
 			if (t != null) {
 				return t;
 			}

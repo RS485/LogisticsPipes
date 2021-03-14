@@ -3,8 +3,11 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -45,6 +48,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
@@ -325,17 +329,15 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		if (_service == null) {
 			return;
 		}
-		IInventoryUtil inv = _service.getPointedInventory();
-		if (inv == null) {
-			return;
-		}
-		int count = 0;
-		for (ItemIdentifier item : inv.getItems()) {
-			_filterInventory.setInventorySlotContents(count, item.makeStack(1));
-			count++;
-			if (count >= _filterInventory.getSizeInventory()) {
-				break;
-			}
+		Iterator<ItemIdentifier> items = _service.getAvailableAdjacent().inventories().stream()
+				.map(LPNeighborTileEntityKt::getInventoryUtil)
+				.filter(Objects::nonNull)
+				.flatMap(invUtil -> invUtil.getItems().stream())
+				.limit(_filterInventory.getSizeInventory())
+				.iterator();
+		int idx = 0;
+		for (ItemIdentifier item = items.next(); items.hasNext(); ++idx) {
+			_filterInventory.setInventorySlotContents(idx, item.makeStack(1));
 		}
 	}
 

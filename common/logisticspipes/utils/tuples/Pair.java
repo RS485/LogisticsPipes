@@ -1,8 +1,14 @@
 package logisticspipes.utils.tuples;
 
+import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import lombok.Data;
 
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
+import logisticspipes.utils.item.ItemIdentifier;
 
 @Data
 public class Pair<T1, T2> implements ILPCCTypeHolder {
@@ -29,4 +35,11 @@ public class Pair<T1, T2> implements ILPCCTypeHolder {
 		return ccTypeHolder;
 	}
 
+	public static <T1, T2> Collector<Pair<T1, T2>, ?, Map<T1, T2>> toMap() {
+		return Collectors.toMap(Pair::getValue1, Pair::getValue2);
+	}
+
+	public static <T1, T2> Collector<Pair<T1, T2>, ?, Map<T1, T2>> toMap(BinaryOperator<T2> mergeFunction) {
+		return Collectors.toMap(Pair::getValue1, Pair::getValue2, mergeFunction);
+	}
 }

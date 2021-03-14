@@ -14,6 +14,7 @@ import buildcraft.api.inventory.IItemTransactor;
 import buildcraft.lib.misc.CapUtil;
 
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.inventory.ProviderMode;
 
 public class BuildCraftTransactorHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
@@ -35,9 +36,10 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler impleme
 		return tile.hasCapability(CapUtil.CAP_ITEM_TRANSACTOR, dir);
 	}
 
+	@Nullable
 	@Override
-	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		IItemTransactor cap = tile.getCapability(CapUtil.CAP_ITEM_TRANSACTOR, dir);
+	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing direction, @Nonnull ProviderMode mode) {
+		IItemTransactor cap = tile.getCapability(CapUtil.CAP_ITEM_TRANSACTOR, direction);
 		if (cap != null) {
 			return new BuildCraftTransactorHandler(cap);
 		}

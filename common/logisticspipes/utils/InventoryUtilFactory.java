@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -19,6 +19,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.inventory.ProviderMode;
 
 public class InventoryUtilFactory {
 
@@ -34,10 +35,10 @@ public class InventoryUtilFactory {
 	}
 
 	@Nullable
-	public SpecialInventoryHandler getUtilForInv(@Nonnull TileEntity inv, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getSpecialHandlerFor(TileEntity tile, EnumFacing direction, ProviderMode mode) {
 		return handlerFactories.stream()
-				.filter(factory -> factory.isType(inv, dir))
-				.map(factory -> factory.getUtilForTile(inv, dir, hideOnePerStack, hideOne, cropStart, cropEnd))
+				.filter(factory -> factory.isType(tile, direction))
+				.map(factory -> factory.getUtilForTile(tile, direction, mode))
 				.filter(Objects::nonNull)
 				.findAny()
 				.orElse(null);
@@ -45,22 +46,22 @@ public class InventoryUtilFactory {
 
 	@Nullable
 	public IInventoryUtil getInventoryUtil(@Nonnull NeighborTileEntity<TileEntity> adj) {
-		return getHidingInventoryUtil(adj.getTileEntity(), adj.getOurDirection(), false, false, 0, 0);
+		return getHidingInventoryUtil(adj.getTileEntity(), adj.getOurDirection(), ProviderMode.DEFAULT);
 	}
 
 	@Nullable
 	public IInventoryUtil getInventoryUtil(TileEntity inv, EnumFacing dir) {
-		return getHidingInventoryUtil(inv, dir, false, false, 0, 0);
+		return getHidingInventoryUtil(inv, dir, ProviderMode.DEFAULT);
 	}
 
 	@Nullable
-	public IInventoryUtil getHidingInventoryUtil(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public IInventoryUtil getHidingInventoryUtil(@Nullable TileEntity tile, @Nullable EnumFacing direction, @Nonnull ProviderMode mode) {
 		if (tile != null) {
-			IInventoryUtil util = getUtilForInv(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
+			IInventoryUtil util = getSpecialHandlerFor(tile, direction, mode);
 			if (util != null) {
 				return util;
-			} else if (tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir)) {
-				return new InventoryUtil(tile.getCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, dir), hideOnePerStack, hideOne, cropStart, cropEnd);
+			} else if (tile.hasCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, direction)) {
+				return new InventoryUtil(tile.getCapability(LogisticsPipes.ITEM_HANDLER_CAPABILITY, direction), mode);
 			}
 		}
 		return null;

@@ -87,7 +87,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
 
     override fun tickSetup(): Pair<Int, ItemStack>? {
         val serverRouter = this._service.router as? ServerRouter ?: return null
-        val inventory = _service.pointedInventory ?: return null
+        val inventory = _service.availableInventories().firstOrNull() ?: return null
         if (inventory.sizeInventory == 0) return null
         if (currentSlot >= inventory.sizeInventory) currentSlot = 0
         val slot = currentSlot++
@@ -116,7 +116,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     @ExperimentalCoroutinesApi
     override fun completeTick(task: Deferred<QuicksortAsyncResult?>) {
         val result = task.getCompleted() ?: return
-        val inventory = _service.pointedInventory ?: return
+        val inventory = _service.availableInventories().firstOrNull() ?: return
         if (result.slot >= inventory.sizeInventory) return
         val stack = inventory.getStackInSlot(result.slot)
         if (result.itemid.equalsWithNBT(stack)) {
@@ -132,7 +132,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         stallSlot = slot
         val extracted = inventory.decrStackSize(slot, toExtract)
         if (extracted.isEmpty) return
-        _service.sendStack(extracted, destRouterId, sinkReply, CoreRoutedPipe.ItemSendMode.Fast)
+        _service.sendStack(extracted, destRouterId, sinkReply, CoreRoutedPipe.ItemSendMode.Fast, _service.pointedOrientation)
         _service.spawnParticle(Particles.OrangeParticle, 8)
     }
 

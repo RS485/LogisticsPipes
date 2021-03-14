@@ -6,10 +6,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
 
 public class ModulePolymorphicItemSink extends LogisticsModule {
 
@@ -32,7 +34,8 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		IInventoryUtil targetInventory = _service.getSneakyInventory(slot, positionInt);
+		final ISlotUpgradeManager upgradeManager = _service.getUpgradeManager(slot, positionInt);
+		IInventoryUtil targetInventory = PipeServiceProviderUtilKt.availableSneakyInventories(_service, upgradeManager).stream().findFirst().orElse(null);
 		if (targetInventory == null) {
 			return null;
 		}

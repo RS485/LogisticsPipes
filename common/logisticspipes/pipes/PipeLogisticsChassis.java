@@ -93,9 +93,9 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.Adjacent;
 import network.rs485.logisticspipes.connection.ConnectionType;
-import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.connection.SingleAdjacent;
+import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
 
 @CCType(name = "LogisticsChassiePipe")
 public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
@@ -124,7 +124,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 	}
 
 	/**
-	 * @return the adjacent this chassis points at or no adjacent.
+	 * Returns just the adjacent this chassis points at or no adjacent.
 	 */
 	@Nonnull
 	@Override
@@ -181,12 +181,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		} else {
 			setPointedAdjacent(new SingleAdjacent(this, dir, ConnectionType.UNDEFINED));
 		}
-	}
-
-	@Nullable
-	@Override
-	public IInventoryUtil getPointedInventory() {
-		return getPointedAdjacentOrNoAdjacent().inventories().stream().map(LPNeighborTileEntityKt::getInventoryUtil).findFirst().orElse(null);
 	}
 
 	public IInventory getModuleInventory() {
@@ -596,14 +590,15 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 	@Override
 	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		// if we don't have a pointed inventory we can't be interested in anything
-		if (getPointedItemHandler() == null) {
+		if (getPointedAdjacentOrNoAdjacent().inventories().isEmpty()) {
 			return;
 		}
 
 		for (int moduleIndex = 0; moduleIndex < getChassisSize(); moduleIndex++) {
 			LogisticsModule module = getSubModule(moduleIndex);
 			if (module != null && module.interestedInAttachedInventory()) {
-				IInventoryUtil inv = getSneakyInventory(module.getSlot(), module.getPositionInt());
+				final ISlotUpgradeManager upgradeManager = getUpgradeManager(module.getSlot(), module.getPositionInt());
+				IInventoryUtil inv = PipeServiceProviderUtilKt.availableSneakyInventories(this, upgradeManager).stream().findFirst().orElse(null);
 				if (inv == null) {
 					continue;
 				}
@@ -636,7 +631,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 
 	@Override
 	public boolean hasGenericInterests() {
-		if (getPointedItemHandler() == null) {
+		if (getPointedAdjacentOrNoAdjacent().inventories().isEmpty()) {
 			return false;
 		}
 		for (int i = 0; i < getChassisSize(); i++) {

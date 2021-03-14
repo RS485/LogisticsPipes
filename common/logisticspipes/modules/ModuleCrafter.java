@@ -1107,7 +1107,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 						ItemStack stackToSend = extracted.splitStack(numtosend);
 						//Route the unhandled item
 
-						_service.sendStack(stackToSend, -1, ItemSendMode.Normal, null);
+						_service.sendStack(stackToSend, -1, ItemSendMode.Normal, null, _service.getPointedOrientation());
 						continue;
 					}
 				}
@@ -1132,7 +1132,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 					_service.queueRoutedItem(item, adjacent.getDirection());
 					_service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), defersend, item);
 				} else {
-					_service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation());
+					_service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation(), _service.getPointedOrientation());
 					_service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), false, null);
 				}
 				if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {

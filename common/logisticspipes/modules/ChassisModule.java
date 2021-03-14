@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -19,6 +20,7 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
+import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
 
 public class ChassisModule extends LogisticsModule implements Gui {
 
@@ -71,7 +73,8 @@ public class ChassisModule extends LogisticsModule implements Gui {
 			return null;
 		}
 		//Always deny items when we can't put the item anywhere
-		IInventoryUtil invUtil = parentChassis.getSneakyInventory(ModulePositionType.SLOT, ((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
+		final ISlotUpgradeManager upgradeManager = parentChassis.getUpgradeManager(ModulePositionType.SLOT, ((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
+		IInventoryUtil invUtil = PipeServiceProviderUtilKt.availableSneakyInventories(parentChassis, upgradeManager).stream().findFirst().orElse(null);
 		if (invUtil == null) {
 			return null;
 		}

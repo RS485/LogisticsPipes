@@ -8,7 +8,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.debug.DebugLogController;
@@ -36,23 +35,11 @@ public interface IPipeServiceProvider extends IRoutedPowerProvider, ISpawnPartic
 	@Nonnull
 	Adjacent getAvailableAdjacent();
 
-	@Nullable
-	IInventoryUtil getPointedInventory();
-
-	@Nullable
-	IInventoryUtil getPointedInventory(ExtractionMode mode);
-
-	@Nullable
-	NeighborTileEntity<TileEntity> getPointedItemHandler();
-
+	/**
+	 * Only makes sense to use this on pipes that use pointed orientation, like the chassis pipe.
+	 */
 	@Nullable
 	EnumFacing getPointedOrientation();
-
-	@Nullable
-	IInventoryUtil getSneakyInventory(LogisticsModule.ModulePositionType slot, int positionInt);
-
-	@Nullable
-	IInventoryUtil getSneakyInventory(@Nonnull EnumFacing direction);
 
 	/**
 	 * to interact and send items you need to know about orders, upgrades, and have the ability to send

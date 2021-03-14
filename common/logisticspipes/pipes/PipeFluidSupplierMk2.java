@@ -109,7 +109,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			return;
 		}
 		super.throttledUpdateEntity();
-		if (dummyInventory.getStackInSlot(0) == null) {
+		if (dummyInventory.getIDStackInSlot(0) == null) {
 			return;
 		}
 
@@ -129,20 +129,20 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
 			//Check what is inside the connected tank
-			fluidHandlerDirectionPair.getValue1().forEachFluid(fluid -> haveFluids.merge(fluid.getFluid(), fluid.getAmount(), (a, b) -> a + b));
+			fluidHandlerDirectionPair.getValue1().forEachFluid(fluid -> haveFluids.merge(fluid.getFluid(), fluid.getAmount(), Integer::sum));
 
 			//What does our sided internal tank have
 			if (fluidHandlerDirectionPair.getValue3().ordinal() < ((PipeFluidTransportLogistics) transport).sideTanks.length) {
 				FluidTank sideTank = ((PipeFluidTransportLogistics) transport).sideTanks[fluidHandlerDirectionPair.getValue3().ordinal()];
 				if (sideTank != null && sideTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(sideTank.getFluid()))) {
-					haveFluids.merge(FluidIdentifier.get(sideTank.getFluid()), sideTank.getFluid().amount, (a, b) -> a + b);
+					haveFluids.merge(FluidIdentifier.get(sideTank.getFluid()), sideTank.getFluid().amount, Integer::sum);
 				}
 			}
 
 			//What does our center internal tank have
 			FluidTank centerTank = ((PipeFluidTransportLogistics) transport).internalTank;
 			if (centerTank != null && centerTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(centerTank.getFluid()))) {
-				haveFluids.merge(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount, (a, b) -> a + b);
+				haveFluids.merge(FluidIdentifier.get(centerTank.getFluid()), centerTank.getFluid().amount, Integer::sum);
 			}
 
 			//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();

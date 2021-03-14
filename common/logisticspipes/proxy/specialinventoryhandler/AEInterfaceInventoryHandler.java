@@ -35,34 +35,35 @@ import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
 
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.inventory.ProviderMode;
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
 	public boolean init = false;
-	private final boolean hideOnePerStack;
 	private final TileEntity tile;
 	private final EnumFacing dir;
 	private final LPActionSource source;
-	private IStorageMonitorableAccessor acc = null;
+	private IStorageMonitorableAccessor acc;
 	IGridHost host;
 	public IGridNode node;
 	private LinkedList<Entry<ItemIdentifier, Integer>> cached;
+	private final boolean hideOne;
 
-	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, ProviderMode mode) {
 		this.tile = tile;
-		this.hideOnePerStack = hideOnePerStack || hideOne;
+		this.dir = dir;
+		hideOne = mode.getHideOnePerStack() || mode.getHideOnePerType();
 		this.acc = tile.getCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
 		node = ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir));
 		host = node.getMachine();
 		source = new LPActionSource(this);
-		this.dir = dir;
 	}
 
 	public AEInterfaceInventoryHandler() {
 		tile = null;
-		hideOnePerStack = false;
-		source = null;
 		dir = null;
+		source = null;
+		hideOne = false;
 	}
 
 	@Override
@@ -80,9 +81,10 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 		return true;
 	}
 
+	@Nonnull
 	@Override
-	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing dir, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		return new AEInterfaceInventoryHandler(tile, dir, hideOnePerStack, hideOne, cropStart, cropEnd);
+	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing direction, @Nonnull ProviderMode mode) {
+		return new AEInterfaceInventoryHandler(tile, dir, mode);
 	}
 
 	@Override
@@ -110,9 +112,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 			ItemIdentifier ident = ItemIdentifier.get(item.createItemStack());
 			Integer count = result.get(ident);
 			if (count != null) {
-				result.put(ident, (int) (count + item.getStackSize() - (hideOnePerStack ? 1 : 0)));
+				result.put(ident, (int) (count + item.getStackSize() - (hideOne ? 1 : 0)));
 			} else {
-				result.put(ident, (int) (item.getStackSize() - (hideOnePerStack ? 1 : 0)));
+				result.put(ident, (int) (item.getStackSize() - (hideOne ? 1 : 0)));
 			}
 		}
 		return result;

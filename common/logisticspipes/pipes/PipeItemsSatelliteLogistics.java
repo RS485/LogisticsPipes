@@ -7,13 +7,16 @@
 
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
@@ -50,6 +54,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.SatellitePipe;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver, SatellitePipe {
 
@@ -62,7 +67,6 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
-	private final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
 	private final ModuleSatellite moduleSatellite;
@@ -122,19 +126,16 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	private void updateInv(boolean force) {
+		ArrayList<ItemIdentifierStack> oldList = new ArrayList<>(itemList);
 		itemList.clear();
-		IInventoryUtil inv = this.getPointedInventory();
-		if (inv != null) {
-			for (int i = 0; i < inv.getSizeInventory(); i++) {
-				ItemStack stackInSlot = inv.getStackInSlot(i);
-				if (!stackInSlot.isEmpty()) {
-					addToList(ItemIdentifierStack.getFromStack(stackInSlot));
-				}
-			}
-		}
-		if (!itemList.equals(oldList) || force) {
-			oldList.clear();
-			oldList.addAll(itemList);
+		itemList.addAll(
+				getAvailableAdjacent().inventories().stream()
+						.map(LPNeighborTileEntityKt::getInventoryUtil)
+						.filter(Objects::nonNull)
+						.flatMap(invUtil -> invUtil.getItemsAndCount().entrySet().stream().map(itemIdentifierAndCount -> new ItemIdentifierStack(itemIdentifierAndCount.getKey(), itemIdentifierAndCount.getValue())))
+						.collect(Collectors.toList())
+		);
+		if (!oldList.equals(itemList) || force) {
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(itemList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
 	}

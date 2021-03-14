@@ -111,7 +111,7 @@ class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -
     private val itemSendMode: CoreRoutedPipe.ItemSendMode
         get() = upgradeManager.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } } ?: CoreRoutedPipe.ItemSendMode.Normal
     private val connectedInventory: IInventoryUtil?
-        get() = sneakyDirection?.let { _service.getSneakyInventory(it) } ?: _service.pointedInventory
+        get() = _service.availableSneakyInventories(sneakyDirection).first()
 
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? =
@@ -224,7 +224,7 @@ class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -
         }
         val toSend = inventory.decrStackSize(slot, extract)
         if (toSend.isEmpty) return 0
-        _service.sendStack(toSend, destRouterId, sinkReply, itemSendMode)
+        _service.sendStack(toSend, destRouterId, sinkReply, itemSendMode, _service.getPointedOrientation())
         return toSend.count
     }
 

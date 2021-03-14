@@ -63,7 +63,7 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
      * available.
      */
     private val connectedEntity: TileEntity?
-        get() = _service?.pointedItemHandler?.tileEntity
+        get() = _service?.availableAdjacent?.inventories()?.firstOrNull()?.tileEntity
 
     @ExperimentalCoroutinesApi
     override fun tick() {

@@ -40,8 +40,6 @@ import network.rs485.logisticspipes.inventory.ProviderMode;
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
 	public boolean init = false;
-	private final TileEntity tile;
-	private final EnumFacing dir;
 	private final LPActionSource source;
 	private IStorageMonitorableAccessor acc;
 	IGridHost host;
@@ -50,8 +48,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	private final boolean hideOne;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, EnumFacing dir, ProviderMode mode) {
-		this.tile = tile;
-		this.dir = dir;
 		hideOne = mode.getHideOnePerStack() || mode.getHideOnePerType();
 		this.acc = tile.getCapability(LPStorageMonitorableAccessor.STORAGE_MONITORABLE_ACCESSOR_CAPABILITY, dir);
 		node = ((IGridHost) tile).getGridNode(AEPartLocation.fromFacing(dir));
@@ -60,8 +56,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	}
 
 	public AEInterfaceInventoryHandler() {
-		tile = null;
-		dir = null;
 		source = null;
 		hideOne = false;
 	}
@@ -84,7 +78,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 	@Nonnull
 	@Override
 	public SpecialInventoryHandler getUtilForTile(@Nonnull TileEntity tile, @Nullable EnumFacing direction, @Nonnull ProviderMode mode) {
-		return new AEInterfaceInventoryHandler(tile, dir, mode);
+		return new AEInterfaceInventoryHandler(tile, direction, mode);
 	}
 
 	@Override
@@ -273,7 +267,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 class LPStorageMonitorableAccessor implements ICapabilitySerializable<NBTBase> {
 
 	@CapabilityInject(IStorageMonitorableAccessor.class)
-	public static final Capability<IStorageMonitorableAccessor> STORAGE_MONITORABLE_ACCESSOR_CAPABILITY = null;
+	public static Capability<IStorageMonitorableAccessor> STORAGE_MONITORABLE_ACCESSOR_CAPABILITY;
 
 	private final IStorageMonitorableAccessor instance = STORAGE_MONITORABLE_ACCESSOR_CAPABILITY.getDefaultInstance();
 

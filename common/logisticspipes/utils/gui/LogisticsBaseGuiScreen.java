@@ -655,6 +655,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		mc.fontRenderer.drawString(text, actualX, y, color);
 	}
 
+	@Deprecated
 	public static void drawHorizontalGradientRect(int left, int top, int right, int bottom, int z, int colorLeft, int colorRight){
 		float aL = (float)(colorLeft >> 24 & 255) / 255.0F;
 		float rL = (float)(colorLeft >> 16 & 255) / 255.0F;
@@ -683,6 +684,7 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 		GlStateManager.enableTexture2D();
 	}
 
+	@Deprecated
 	public static void drawVerticalGradientRect(int left, int top, int right, int bottom, int z, int colorTop, int colorBottom){
 		float aT = (float)(colorTop >> 24 & 255) / 255.0F;
 		float rT = (float)(colorTop >> 16 & 255) / 255.0F;

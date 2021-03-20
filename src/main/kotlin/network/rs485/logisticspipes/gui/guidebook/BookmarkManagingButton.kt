@@ -44,12 +44,12 @@ import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
 
 val additionTexture = Rectangle(192, 0, 16, 16)
-val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(translateX = additionTexture.width)
+val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(additionTexture.width, 0)
 
 /*
 * This button's position is set based on the right and bottom constraints
 */
-class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boolean, val additionStateUpdater: (() -> ButtonState)): LPGuiButton(2, x - additionTexture.roundedWidth, y - additionTexture.roundedHeight, additionTexture.roundedWidth, additionTexture.roundedHeight) {
+class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boolean, val additionStateUpdater: (() -> ButtonState)): LPGuiButton(2, x - additionTexture.width, y - additionTexture.height, additionTexture.width, additionTexture.height) {
     private var buttonState: ButtonState = ButtonState.ADD
     var onClickActionStated: (ButtonState) -> Boolean = onClickAction
 
@@ -64,8 +64,8 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
                 drawTooltip(
                     x = body.roundedLeft + body.roundedHeight / 2,
                     y = body.roundedTop,
-                    horizontalAlign = GuiGuideBook.HorizontalAlignment.CENTER,
-                    verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
+                    horizontalAlign = HorizontalAlignment.CENTER,
+                    verticalAlign = VerticalAlignment.BOTTOM
                 )
             }
             val yOffset = getHoverState(hovered) * additionTexture.roundedHeight
@@ -76,7 +76,7 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
     }
 
     fun setX(newX: Int){
-        body.setPos(newX.toFloat(), body.y0)
+        body.setPos(newX = newX)
     }
 
     fun updateState(){

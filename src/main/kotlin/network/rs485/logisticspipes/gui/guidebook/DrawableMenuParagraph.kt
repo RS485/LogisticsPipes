@@ -47,6 +47,8 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
 import java.util.*
@@ -140,7 +142,7 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         }
         if (hovered) {
             GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
-            GuiGuideBook.drawBoxedString(pageName, mid(), minOf(bottom, visibleArea.y1).toInt(), GuideBookConstants.Z_TOOLTIP, GuiGuideBook.HorizontalAlignment.CENTER, GuiGuideBook.VerticalAlignment.TOP)
+            GuiGuideBook.drawBoxedString(pageName, mid(), minOf(bottom, visibleArea.roundedBottom), GuideBookConstants.Z_TOOLTIP, HorizontalAlignment.CENTER, VerticalAlignment.TOP)
         }
     }
 

@@ -39,6 +39,8 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
+import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 
 interface TabButtonReturn {
@@ -80,8 +82,8 @@ class TabButton(
             drawTooltip(
                 x = body.roundedRight,
                 y = body.roundedTop,
-                horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
-                verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
+                horizontalAlign = HorizontalAlignment.RIGHT,
+                verticalAlign = VerticalAlignment.BOTTOM
             )
         }
         GuiGuideBook.drawStretchingRectangle(

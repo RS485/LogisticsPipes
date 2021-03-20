@@ -50,7 +50,9 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPFontRenderer
+import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import network.rs485.logisticspipes.guidebook.DebugPage
@@ -1023,17 +1025,6 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         }
     }
 
-    enum class HorizontalAlignment {
-        CENTER,
-        LEFT,
-        RIGHT;
-    }
-
-    enum class VerticalAlignment {
-        CENTER,
-        TOP,
-        BOTTOM;
-    }
 }
 
 fun BufferBuilder.pos(x: Float, y: Float, z: Float): BufferBuilder = pos(x.toDouble(), y.toDouble(), z.toDouble())

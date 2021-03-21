@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2012
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -101,8 +101,4 @@ public class GuiSneakyConfigurator extends ModuleBaseGui {
 		return s.toLowerCase(Locale.US);
 	}
 
-	public void setMode(EnumFacing o) {
-		directionReceiver.setSneakyDirection(o);
-		refreshButtons();
-	}
 }

@@ -18,7 +18,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -28,15 +27,11 @@ import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
-import network.rs485.logisticspipes.inventory.ProviderMode;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
-import logisticspipes.network.packets.modules.ProviderPipeInclude;
-import logisticspipes.network.packets.modules.ProviderPipeMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
@@ -47,7 +42,6 @@ import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IOrderManagerContentReceiver {
@@ -68,13 +62,6 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public PipeItemsProviderLogistics(Item item) {
 		super(item);
 		orderManager = new LogisticsItemOrderManager(this);
-		providerModule.registerHandler(this, this);
-		providerModule.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
-	}
-
-	public PipeItemsProviderLogistics(Item item, @Nonnull LogisticsItemOrderManager logisticsOrderManager) {
-		this(item);
-		orderManager = logisticsOrderManager;
 		providerModule.registerHandler(this, this);
 		providerModule.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
@@ -183,38 +170,6 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	@Override
 	public double getLoadFactor() {
 		return (orderManager.totalAmountCountInAllOrders() + 63) / 64.0;
-	}
-
-	@Override
-	public void onWrenchClicked(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, getWorld(), getX(), getY(), getZ());
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), entityplayer);
-	}
-
-	/*** GUI ***/
-	public ItemIdentifierInventory getFilterInventory() {
-		return providerModule._filterInventory;
-	}
-
-	public boolean isExcludeFilter() {
-		return providerModule.isExcludeFilter;
-	}
-
-	public void setFilterExcluded(boolean isExcluded) {
-		providerModule.isExcludeFilter = isExcluded;
-	}
-
-	public ProviderMode getExtractionMode() {
-		return providerModule.providerMode;
-	}
-
-	public void setExtractionMode(int id) {
-		providerModule.setExtractionMode(id);
-	}
-
-	public void nextExtractionMode() {
-		providerModule.nextExtractionMode();
 	}
 
 }

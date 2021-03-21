@@ -27,7 +27,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	private int mouseX = 0;
 	private int mouseY = 0;
 
-	private List<String> unsunkNames = new ArrayList<>();
+	private final List<String> unsunkNames = new ArrayList<>();
 	private int currentOffset = 0;
 
 	public GuiOreDictItemSink(IInventory playerInventory, ModuleOreDictItemSink itemSink) {
@@ -87,7 +87,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 
-		if (!tmpInv.getStackInSlot(0).isEmpty()) {
+		if (tmpInv.getIDStackInSlot(0) != null) {
 			List<String> oreNames = getOreNames(tmpInv.getStackInSlot(0));
 			oreNames.stream().filter(name -> !unsunkNames.contains(name)).forEach(name -> unsunkNames.add(name));
 			tmpInv.clearInventorySlotContents(0);

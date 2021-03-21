@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -80,7 +80,4 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
-	public void setInclude(boolean flag) {
-		_advancedExtractor.setItemsIncluded(flag);
-	}
 }

@@ -47,14 +47,6 @@ public class GuiProvider extends ModuleBaseGui {
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 40, height / 2 - 59, 45, 20, () -> _provider.isExcludeFilter() ? "Exclude" : "Include"));
-		/*
-		buttonList.add(new GuiStringHandlerButton(2, width / 2 + 50, height / 2 - 38, 45, 20, new GuiStringHandlerButton.StringHandler() {
-		@Override
-		public String getContent() {
-			return _provider.isActive() ? "Send" : "Hold";
-		}
-		}));
-		 */
 		buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
 	}
 

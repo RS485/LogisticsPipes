@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -37,13 +36,14 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
-public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTypeHolder, Iterable<Pair<ItemIdentifierStack, Integer>>, IClientInformationProvider {
+public class ItemIdentifierInventory implements ISaveState, Iterable<Pair<ItemIdentifierStack, Integer>>,
+		IClientInformationProvider, IItemIdentifierInventory {
 
 	private final Object[] ccTypeHolder = new Object[1];
 	private final ItemIdentifierStack[] _contents;
@@ -87,6 +87,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		return _contents[i].makeNormalStack();
 	}
 
+	@Override
 	public ItemIdentifierStack getIDStackInSlot(int i) {
 		return _contents[i];
 	}
@@ -126,6 +127,7 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		updateContents();
 	}
 
+	@Override
 	public void setInventorySlotContents(int i, ItemIdentifierStack itemstack) {
 		if (itemstack == null) {
 			_contents[i] = null;
@@ -367,10 +369,12 @@ public class ItemIdentifierInventory implements IInventory, ISaveState, ILPCCTyp
 		return _contentsMap.getOrDefault(item, 0);
 	}
 
+	@Override
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return _contentsMap;
 	}
 
+	@Override
 	public boolean containsItem(final ItemIdentifier item) {
 		return _contentsMap.containsKey(item);
 	}

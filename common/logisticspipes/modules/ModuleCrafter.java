@@ -109,6 +109,7 @@ import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.AdjacentUtilKt;
 import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 
 public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver, IGuiOpenControler, Gui {
@@ -832,11 +833,11 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	 *
 	 * @return the dummy inventory
 	 */
-	public ItemIdentifierInventory getDummyInventory() {
+	public IItemIdentifierInventory getDummyInventory() {
 		return _dummyInventory;
 	}
 
-	public ItemIdentifierInventory getFluidInventory() {
+	public IItemIdentifierInventory getFluidInventory() {
 		return _liquidInventory;
 	}
 

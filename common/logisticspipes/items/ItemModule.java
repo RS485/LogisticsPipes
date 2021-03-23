@@ -62,8 +62,8 @@ public class ItemModule extends LogisticsItem {
 
 	private static class Module {
 
-		private Supplier<? extends LogisticsModule> moduleConstructor;
-		private Class<? extends LogisticsModule> moduleClass;
+		private final Supplier<? extends LogisticsModule> moduleConstructor;
+		private final Class<? extends LogisticsModule> moduleClass;
 
 		private Module(Supplier<? extends LogisticsModule> moduleConstructor) {
 			this.moduleConstructor = moduleConstructor;
@@ -83,7 +83,7 @@ public class ItemModule extends LogisticsItem {
 
 	}
 
-	private Module moduleType;
+	private final Module moduleType;
 
 	public ItemModule(Module moduleType) {
 		super();

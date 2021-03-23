@@ -25,6 +25,6 @@ public class ProviderModuleInclude extends BooleanModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		module.setFilterExcluded(isFlag());
+		module.isExclusionFilter.setValue(isFlag());
 	}
 }

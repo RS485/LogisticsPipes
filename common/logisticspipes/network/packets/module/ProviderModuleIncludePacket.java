@@ -28,7 +28,8 @@ public class ProviderModuleIncludePacket extends ModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		module.setFilterExcluded(!module.isExcludeFilter());
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setFlag(module.isExcludeFilter()).setModulePos(module), player);
+		module.isExclusionFilter.toggle();
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setFlag(
+				module.isExclusionFilter.getValue()).setModulePos(module), player);
 	}
 }

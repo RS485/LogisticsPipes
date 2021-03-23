@@ -12,11 +12,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+
+import com.google.common.collect.ImmutableList;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -31,8 +32,6 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
-import network.rs485.logisticspipes.inventory.ProviderMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -66,24 +65,43 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
+import network.rs485.logisticspipes.inventory.ProviderMode;
 import network.rs485.logisticspipes.module.Gui;
+import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.module.SneakyDirection;
+import network.rs485.logisticspipes.property.BooleanProperty;
+import network.rs485.logisticspipes.property.EnumProperty;
+import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.NullableEnumProperty;
+import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "Provider Module")
-public class ModuleProvider extends LogisticsModule implements SneakyDirection, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, Gui {
-
-	public final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
-	private EnumFacing _sneakyDirection = null;
-
-	private boolean isActive = false;
+public class ModuleProvider extends LogisticsModule implements PropertyModule, SneakyDirection, ILegacyActiveModule,
+		IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, Gui {
 
 	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<>();
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
 	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<>();
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-	public boolean isExcludeFilter = false;
-	public ProviderMode providerMode = ProviderMode.DEFAULT;
+	public final InventoryProperty filterInventory = new InventoryProperty(
+			new ItemIdentifierInventory(9, "TargetInv", 1), "");
+	public final BooleanProperty isActive = new BooleanProperty(false, "isActive");
+	public final BooleanProperty isExclusionFilter = new BooleanProperty(false, "filterisexclude");
+	public final EnumProperty<ProviderMode> providerMode =
+			new EnumProperty<>(ProviderMode.DEFAULT, "extractionMode", ProviderMode.values());
+	public final NullableEnumProperty<EnumFacing> sneakyDirection =
+			new NullableEnumProperty<>(null, "sneakydirection", EnumFacing.values());
+	public final ImmutableList<Property<?>> propertyList = ImmutableList.<Property<?>>builder()
+			.add(filterInventory)
+			.add(isActive)
+			.add(isExclusionFilter)
+			.add(providerMode)
+			.add(sneakyDirection)
+			.build();
+
 	private final IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
 	public ModuleProvider() {}
@@ -92,36 +110,37 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 		return "provider";
 	}
 
+	@Nonnull
+	@Override
+	public List<Property<?>> getProperties() {
+		return propertyList;
+	}
+
 	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		_filterInventory.readFromNBT(nbttagcompound, "");
-		if (nbttagcompound.hasKey("isActive")) {
-			isActive = nbttagcompound.getBoolean("isActive");
-		}
-		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
-		providerMode = ProviderMode.modeFromIntSafe(nbttagcompound.getInteger("extractionMode"));
-		_sneakyDirection = SneakyDirection.readSneakyDirection(nbttagcompound);
+		PropertyModule.DefaultImpls.readFromNBT(this, nbttagcompound);
 	}
 
 	@Override
 	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		_filterInventory.writeToNBT(nbttagcompound, "");
-		nbttagcompound.setBoolean("isActive", isActive);
-		nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
-		nbttagcompound.setInteger("extractionMode", providerMode.ordinal());
-		SneakyDirection.writeSneakyDirection(_sneakyDirection, nbttagcompound);
+		PropertyModule.DefaultImpls.writeToNBT(this, nbttagcompound);
 	}
 
 	@Override
 	public EnumFacing getSneakyDirection() {
-		return _sneakyDirection;
+		return sneakyDirection.getValue();
 	}
 
 	@Override
-	public void setSneakyDirection(EnumFacing sneakyDirection) {
-		_sneakyDirection = sneakyDirection;
+	public void setSneakyDirection(EnumFacing direction) {
+		sneakyDirection.setValue(direction);
 		if (MainProxy.isServer(this._world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(SneakyModuleDirectionUpdate.class).setDirection(_sneakyDirection).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(
+					PacketHandler.getPacket(SneakyModuleDirectionUpdate.class)
+							.setDirection(sneakyDirection.getValue())
+							.setModulePos(this),
+					localModeWatchers
+			);
 		}
 	}
 
@@ -171,11 +190,11 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	}
 
 	public boolean filterBlocksItem(ItemIdentifier item) {
-		if (!hasFilter()) {
+		if (filterInventory.isEmpty()) {
 			return false;
 		}
-		boolean isFiltered = itemIsFiltered(item);
-		return isExcludeFilter == isFiltered;
+		boolean isFiltered = filterInventory.containsItem(item);
+		return isExclusionFilter.getValue() == isFiltered;
 	}
 
 	@Override
@@ -310,54 +329,22 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 		return inventoriesWithMode().map(invUtil -> invUtil.itemCount(item)).reduce(Integer::sum).orElse(0);
 	}
 
-	public boolean hasFilter() {
-		return !_filterInventory.isEmpty();
-	}
-
-	private boolean itemIsFiltered(ItemIdentifier item) {
-		return _filterInventory.containsItem(item);
-	}
-
 	/*** GUI STUFF ***/
 
 	@CCCommand(description = "Returns the FilterInventory of this Module")
-	public IInventory getFilterInventory() {
-		return _filterInventory;
+	public IItemIdentifierInventory getFilterInventory() {
+		return filterInventory;
 	}
 
-	public boolean isExcludeFilter() {
-		return isExcludeFilter;
-	}
-
-	public void setFilterExcluded(boolean isExcludeFilter) {
-		this.isExcludeFilter = isExcludeFilter;
-	}
-
-	public boolean isActive() {
-		return isActive;
-	}
-
-	public void setIsActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public ProviderMode getExtractionMode() {
-		return providerMode;
-	}
-
-	public void setExtractionMode(int id) {
-		providerMode = ProviderMode.modeFromIntSafe(id);
-	}
-
-	public void nextExtractionMode() {
-		providerMode = ProviderMode.modeFromIntSafe(providerMode.ordinal() + 1);
+	public void nextProviderMode() {
+		providerMode.setValue(ProviderMode.modeFromIntSafe(providerMode.getValue().ordinal() + 1));
 	}
 
 	@Override
 	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
-		list.add(!isExcludeFilter ? "Included" : "Excluded");
-		list.add("Mode: " + providerMode.name());
+		list.add(!(boolean) isExclusionFilter.getValue() ? "Included" : "Excluded");
+		list.add("Mode: " + providerMode.getValue().name());
 		list.add("Filter: ");
 		list.add("<inventory>");
 		list.add("<that>");
@@ -425,15 +412,16 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	@Override
 	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
 		//when filter is empty or in exclude mode, this is interested in attached inventory already
-		if (!isExcludeFilter && !_filterInventory.isEmpty()) {
+		if (!isExclusionFilter.getValue() && !filterInventory.isEmpty()) {
 			// when items included this is only interested in items in the filter
-			itemidCollection.addAll(_filterInventory.getItemsAndCount().keySet());
+			itemidCollection.addAll(filterInventory.getItemsAndCount().keySet());
 		}
 	}
 
 	@Override
 	public boolean interestedInAttachedInventory() {
-		return isExcludeFilter || _filterInventory.isEmpty(); // when items included this is only interested in items in the filter
+		// when items included this is only interested in items in the filter
+		return isExclusionFilter.getValue() || filterInventory.isEmpty();
 		// when items not included, we can only serve those items in the filter.
 	}
 
@@ -450,7 +438,8 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class).setExtractorMode(getExtractionMode().ordinal()).setExclude(isExcludeFilter);
+		return NewGuiHandler.getGui(ProviderModuleGuiProvider.class).setExtractorMode(providerMode.getValue().ordinal())
+				.setExclude(isExclusionFilter.getValue());
 	}
 
 	@Nonnull
@@ -460,6 +449,8 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	}
 
 	private IInventoryUtil getInventoryUtilWithMode(NeighborTileEntity<TileEntity> neighbor) {
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(neighbor.getTileEntity(), neighbor.getOurDirection(), providerMode);
+		return SimpleServiceLocator.inventoryUtilFactory
+				.getHidingInventoryUtil(neighbor.getTileEntity(), neighbor.getOurDirection(), providerMode.getValue());
 	}
+
 }

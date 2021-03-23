@@ -48,6 +48,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.connection.AdjacentUtilKt;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 
 public class ModuleActiveSupplier extends LogisticsModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
@@ -149,7 +150,7 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 	}
 
 	/*** GUI ***/
-	public ItemIdentifierInventory getDummyInventory() {
+	public IItemIdentifierInventory getDummyInventory() {
 		return dummyInventory;
 	}
 

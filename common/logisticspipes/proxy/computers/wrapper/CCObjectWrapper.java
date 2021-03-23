@@ -26,11 +26,11 @@ import logisticspipes.proxy.computers.objects.CCTriplet;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 public class CCObjectWrapper {
 
@@ -71,11 +71,11 @@ public class CCObjectWrapper {
 		Object wrapped = input;
 		if (CCObjectWrapper.specialMappings.containsKey(input.getClass())) {
 			wrapped = CCObjectWrapper.specialMappings.get(input.getClass()).getTypeFor(input);
-		} else if (input instanceof ItemIdentifierInventory) {
-			if (((ItemIdentifierInventory) input).getInventoryStackLimit() == 1) {
-				wrapped = new CCFilterInventory((ItemIdentifierInventory) input);
+		} else if (input instanceof IItemIdentifierInventory) {
+			if (((IItemIdentifierInventory) input).getInventoryStackLimit() == 1) {
+				wrapped = new CCFilterInventory((IItemIdentifierInventory) input);
 			} else {
-				wrapped = new CCItemIdentifierInventory((ItemIdentifierInventory) input);
+				wrapped = new CCItemIdentifierInventory((IItemIdentifierInventory) input);
 			}
 		}
 		CCWrapperInformation info = CCObjectWrapper.getWrapperInformation(wrapped.getClass());

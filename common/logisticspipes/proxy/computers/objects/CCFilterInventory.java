@@ -4,15 +4,15 @@ import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 @CCType(name = "FilterInventory")
 public class CCFilterInventory {
 
-	private final ItemIdentifierInventory inv;
+	private final IItemIdentifierInventory inv;
 
-	public CCFilterInventory(ItemIdentifierInventory inv) {
+	public CCFilterInventory(IItemIdentifierInventory inv) {
 		this.inv = inv;
 	}
 

@@ -3,15 +3,15 @@ package logisticspipes.proxy.computers.objects;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCQueued;
 import logisticspipes.proxy.computers.interfaces.CCType;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 @CCType(name = "FilterInventory")
 public class CCItemIdentifierInventory {
 
-	private final ItemIdentifierInventory inv;
+	private final IItemIdentifierInventory inv;
 
-	public CCItemIdentifierInventory(ItemIdentifierInventory inv) {
+	public CCItemIdentifierInventory(IItemIdentifierInventory inv) {
 		this.inv = inv;
 	}
 

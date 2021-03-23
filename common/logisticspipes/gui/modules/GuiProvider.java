@@ -46,20 +46,21 @@ public class GuiProvider extends ModuleBaseGui {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 40, height / 2 - 59, 45, 20, () -> _provider.isExcludeFilter() ? "Exclude" : "Include"));
+		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 40, height / 2 - 59, 45, 20,
+				() -> (_provider.isExclusionFilter.getValue() ? "Exclude" : "Include")));
 		buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
-			_provider.setFilterExcluded(!_provider.isExcludeFilter());
+			_provider.isExclusionFilter.toggle();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setModulePos(_provider));
 		} else if (guibutton.id == 1) {
-			_provider.nextExtractionMode();
+			_provider.nextProviderMode();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
 		} else if (guibutton.id == 2) {
-			_provider.setIsActive(!_provider.isActive());
+			_provider.isActive.toggle();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
 		}
 		super.actionPerformed(guibutton);
@@ -82,6 +83,6 @@ public class GuiProvider extends ModuleBaseGui {
 		mc.fontRenderer.drawString(_provider.getFilterInventory().getName(), xSize / 2 - mc.fontRenderer.getStringWidth(_provider.getFilterInventory().getName()) / 2, 6, 0x404040);
 		mc.fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
 		//mc.fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
-		mc.fontRenderer.drawString("Excess Inventory: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString("Excess Inventory: " + _provider.providerMode.getValue().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 }

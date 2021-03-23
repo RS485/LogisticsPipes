@@ -34,6 +34,7 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
@@ -57,7 +58,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
 	@Nonnull
-	public ItemIdentifierInventory getFilterInventory() {
+	public IItemIdentifierInventory getFilterInventory() {
 		return _filterInventory;
 	}
 

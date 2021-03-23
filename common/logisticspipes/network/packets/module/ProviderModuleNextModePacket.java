@@ -28,7 +28,8 @@ public class ProviderModuleNextModePacket extends ModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		module.nextExtractionMode();
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setMode(module.getExtractionMode().ordinal()).setModulePos(module), player);
+		module.nextProviderMode();
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setMode(
+				module.providerMode.getValue().ordinal()).setModulePos(module), player);
 	}
 }

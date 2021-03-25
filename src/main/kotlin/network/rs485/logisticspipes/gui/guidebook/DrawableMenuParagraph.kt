@@ -52,6 +52,8 @@ import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
 import java.util.*
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 private const val listEntryHeight = 24
 private const val tileSize = 40
@@ -142,7 +144,7 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         }
         if (hovered) {
             GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
-            GuiGuideBook.drawBoxedString(pageName, mid(), minOf(bottom, visibleArea.roundedBottom), GuideBookConstants.Z_TOOLTIP, HorizontalAlignment.CENTER, VerticalAlignment.TOP)
+            GuiGuideBook.drawBoxedString(pageName, mid(), min(bottom, visibleArea.bottom).roundToInt(), GuideBookConstants.Z_TOOLTIP, HorizontalAlignment.CENTER, VerticalAlignment.TOP)
         }
     }
 

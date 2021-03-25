@@ -49,10 +49,10 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
     val screenArea = Rectangle(width, height)
     val guiArea = Rectangle((width - widthIn) / 2, (height - heightIn) / 2 , widthIn, heightIn)
 
-    val left: Int get() = guiArea.x0
-    val top: Int get() = guiArea.y0
-    val right: Int get() = guiArea.x1
-    val bottom: Int get() = guiArea.y1
+    val left: Int get() = guiArea.roundedLeft
+    val top: Int get() = guiArea.roundedTop
+    val right: Int get() = guiArea.roundedRight
+    val bottom: Int get() = guiArea.roundedBottom
 
     override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
         //helper.drawGuibackground(guiArea)

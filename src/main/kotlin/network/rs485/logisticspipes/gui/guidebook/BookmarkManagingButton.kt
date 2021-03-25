@@ -41,15 +41,17 @@ import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.util.TextUtil
+import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 
 val additionTexture = Rectangle(192, 0, 16, 16)
-val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(additionTexture.width, 0)
+val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(additionTexture.width, 0.0f)
 
 /*
 * This button's position is set based on the right and bottom constraints
 */
-class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boolean, val additionStateUpdater: (() -> ButtonState)): LPGuiButton(2, x - additionTexture.width, y - additionTexture.height, additionTexture.width, additionTexture.height) {
+class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boolean, val additionStateUpdater: (() -> ButtonState)): LPGuiButton(2, x - additionTexture.roundedWidth, y - additionTexture.roundedHeight, additionTexture.roundedWidth, additionTexture.roundedHeight) {
     private var buttonState: ButtonState = ButtonState.ADD
     var onClickActionStated: (ButtonState) -> Boolean = onClickAction
 
@@ -76,7 +78,7 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
     }
 
     fun setX(newX: Int){
-        body.setPos(newX = newX)
+        body.setPos(newX.toFloat(), body.y0)
     }
 
     fun updateState(){

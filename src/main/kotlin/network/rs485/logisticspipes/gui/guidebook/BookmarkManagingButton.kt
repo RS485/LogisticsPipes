@@ -44,17 +44,17 @@ import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.util.math.Rectangle
 
 val additionTexture = Rectangle(192, 0, 16, 16)
-val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(additionTexture.width, 0)
+val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(translateX = additionTexture.width)
 
 /*
 * This button's position is set based on the right and bottom constraints
 */
-class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boolean, val additionStateUpdater: (() -> ButtonState)): LPGuiButton(2, x - additionTexture.width, y - additionTexture.height, additionTexture.width, additionTexture.height) {
+class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boolean, val additionStateUpdater: (() -> ButtonState)): LPGuiButton(2, x - additionTexture.roundedWidth, y - additionTexture.roundedHeight, additionTexture.roundedWidth, additionTexture.roundedHeight) {
     private var buttonState: ButtonState = ButtonState.ADD
     var onClickActionStated: (ButtonState) -> Boolean = onClickAction
 
     init {
-        zLevel = GuideBookConstants.Z_TITLE_BUTTONS.toFloat()
+        zLevel = GuideBookConstants.Z_TITLE_BUTTONS
     }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -62,21 +62,21 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
             hovered = isHovered(mouseX, mouseY)
             if (hovered) {
                 drawTooltip(
-                    x = body.x1 + body.height / 2,
-                    y = body.y0,
+                    x = body.roundedLeft + body.roundedHeight / 2,
+                    y = body.roundedTop,
                     horizontalAlign = GuiGuideBook.HorizontalAlignment.CENTER,
                     verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
                 )
             }
-            val yOffset = getHoverState(hovered) * additionTexture.height
+            val yOffset = getHoverState(hovered) * additionTexture.roundedHeight
             GlStateManager.enableAlpha()
-            GuiGuideBook.drawStretchingRectangle(body, zLevel.toDouble(), (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), false, MinecraftColor.WHITE.colorCode)
+            GuiGuideBook.drawStretchingRectangle(body, zLevel, (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), false, MinecraftColor.WHITE.colorCode)
             GlStateManager.disableAlpha()
         }
     }
 
     fun setX(newX: Int){
-        body.setPos(newX = newX)
+        body.setPos(newX.toFloat(), body.y0)
     }
 
     fun updateState(){

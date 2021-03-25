@@ -47,6 +47,8 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import network.rs485.grow.CoroutineScopes.ioScope
+import network.rs485.logisticspipes.gui.guidebook.pos
+import network.rs485.logisticspipes.gui.guidebook.tex
 import network.rs485.logisticspipes.util.alpha
 import network.rs485.logisticspipes.util.blue
 import network.rs485.logisticspipes.util.green
@@ -99,7 +101,7 @@ class LPFontRenderer(private val fontName: String) {
     }
 
     private val shadowColor = 0xEE3C3F41.toInt()
-    var zLevel = 5.0
+    var zLevel: Float = 5f
 
     private val tessellator
         get() = Tessellator.getInstance()
@@ -136,7 +138,7 @@ class LPFontRenderer(private val fontName: String) {
      * @param scale   This defines the size of the character to be drawn.
      * @return the width of the drawn character
      */
-    private fun putChar(char: Char, x: Double, y: Double, color: Int, wrapper: FontWrapper, italics: Boolean, scale: Double): Double {
+    private fun putChar(char: Char, x: Float, y: Float, color: Int, wrapper: FontWrapper, italics: Boolean, scale: Float): Float {
         val c: Char
         // Find current the character's uv coordinates
         val texIndex = when {
@@ -150,7 +152,7 @@ class LPFontRenderer(private val fontName: String) {
                 c = wrapper.defaultChar
                 wrapper.getTextureIndex(wrapper.defaultChar)
             }
-            else -> return 0.0
+            else -> return 0f
         }
         // Width of the drawn character texture
         val width = wrapper.getFontTextureSize()
@@ -163,7 +165,7 @@ class LPFontRenderer(private val fontName: String) {
         // The actual character glyph containing the actual character size and offsets.
         val glyph = wrapper.getGlyph(c)
         // In case any of the above fails to be set return 0 without adding anything to the buffer.
-        if (width == -1 || height == -1 || textureX == -1 || textureY == -1 || glyph == null) return 0.0
+        if (width == -1 || height == -1 || textureX == -1 || textureY == -1 || glyph == null) return 0f
         // Scaled character dimensions.
         val sWidth = (glyph.width * scale)
         val sHeight = (glyph.height * scale)
@@ -173,12 +175,12 @@ class LPFontRenderer(private val fontName: String) {
         val x1 = x0 + sWidth
         val y0 = y1 - sHeight
         // Texture coordinates calculation (0.0 - 1.0 depending on the position relative to the size of the full texture)
-        val u0 = textureX / width.toDouble()
-        val v0 = textureY / height.toDouble()
-        val u1 = (textureX + glyph.width) / width.toDouble()
-        val v1 = (textureY + glyph.height) / height.toDouble()
+        val u0 = textureX / width.toFloat()
+        val v0 = textureY / height.toFloat()
+        val u1 = (textureX + glyph.width) / width.toFloat()
+        val v1 = (textureY + glyph.height) / height.toFloat()
         // The offset distance requires a tan calculation because merely adding a fixed value independent of the character's height would lead to slightly different angles for each character.
-        val italicsOffset = if (italics) glyph.height * tan(0.2181662) else 0.0
+        val italicsOffset = if (italics) glyph.height * tan(0.2181662f) else 0f
         // Set the Magnification filter to Nearest neighbour to have sharp looking characters. (For some reason this wasn't working when applied in the start() method
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
         GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
@@ -196,7 +198,7 @@ class LPFontRenderer(private val fontName: String) {
     /**
      * Extension of the previous draw(char), that just implements functionality for bold characters, depending on the available wrappers
      */
-    private fun putChar(char: Char, x: Double, y: Double, color: Int, italics: Boolean, bold: Boolean, scale: Double): Double {
+    private fun putChar(char: Char, x: Float, y: Float, color: Int, italics: Boolean, bold: Boolean, scale: Float): Float {
         return if (bold) {
             putChar(char, x + scale, y, color, wrapperPlain, italics, scale)
             putChar(char, x, y, color, wrapperPlain, italics, scale) + scale
@@ -209,7 +211,7 @@ class LPFontRenderer(private val fontName: String) {
     /**
      * Extension of the previous draw(char), that just implements functionality for shadowed characters.
      */
-    private fun putChar(c: Char, x: Double, y: Double, color: Int, italics: Boolean, bold: Boolean, shadow: Boolean, scale: Double): Double {
+    private fun putChar(c: Char, x: Float, y: Float, color: Int, italics: Boolean, bold: Boolean, shadow: Boolean, scale: Float): Float {
         if (shadow) {
             putChar(c, x + scale, y + scale, shadowColor, italics, bold, scale)
         }
@@ -219,15 +221,15 @@ class LPFontRenderer(private val fontName: String) {
     /**
      * Draws the given string with all the possible parameters applied to it.
      */
-    fun drawString(string: String, x: Int, y: Int, color: Int, format: Set<TextFormat>, scale: Double): Int =
+    fun drawString(string: String, x: Float, y: Float, color: Int, format: Set<TextFormat>, scale: Float): Int =
             drawString(string = string, x = x, y = y, color = color, italic = format.italic(), bold = format.bold(), shadow = format.shadow(), underline = format.underline(), strikethrough = format.strikethrough(), scale = scale)
 
     /**
      * Draws the given string with all the possible parameters applied to it.
      */
-    private fun drawString(string: String, x: Int, y: Int, color: Int, italic: Boolean, bold: Boolean, shadow: Boolean, underline: Boolean, strikethrough: Boolean, scale: Double): Int {
+    private fun drawString(string: String, x: Float, y: Float, color: Int, italic: Boolean, bold: Boolean, shadow: Boolean, underline: Boolean, strikethrough: Boolean, scale: Float): Int {
         start()
-        var stringSize = string.fold(0.0) { currentX, char -> currentX + putChar(char, x + currentX, y.toDouble(), color, italic, bold, shadow, scale) }
+        var stringSize = string.fold(0f) { currentX, char -> currentX + putChar(char, x + currentX, y, color, italic, bold, shadow, scale) }
         // Lines...
         render()
         if(underline || strikethrough) {
@@ -252,42 +254,41 @@ class LPFontRenderer(private val fontName: String) {
     /**
      * Adds the formatting lines to the buffer, for underline and strikethrough.
      */
-    private fun putOverlayFormatting(x: Int, y: Int, width: Double, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double) {
+    private fun putOverlayFormatting(x: Float, y: Float, width: Float, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Float) {
         if (underline) {
             val underlineY = (wrapperPlain.fontHeight - 1) * scale
             if (shadow) putHorizontalLine(x = x + scale, y = y + underlineY + scale, width = width, thickness = scale, color = shadowColor, italics = italic)
-            putHorizontalLine(x = x + 0.0, y = y + underlineY + 0.0, width = width, thickness = scale, color = color, italics = italic)
+            putHorizontalLine(x = x, y = y + underlineY, width = width, thickness = scale, color = color, italics = italic)
         }
         if (strikethrough) {
-            val strikethroughY = ((wrapperPlain.fontHeight) / 2) * scale
+            val strikethroughY = ((wrapperPlain.fontHeight) / 2f) * scale
             if (shadow) putHorizontalLine(x = x + scale, y = y + strikethroughY + scale, width = width, thickness = scale, color = shadowColor, italics = italic)
-            putHorizontalLine(x = x + 0.0, y = y + strikethroughY + 0.0, width = width, thickness = scale, color = color, italics = italic)
+            putHorizontalLine(x = x, y = y + strikethroughY, width = width, thickness = scale, color = color, italics = italic)
         }
     }
 
-    fun drawSpace(x: Int, y: Int, width: Int, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Double): Int {
+    fun drawSpace(x: Float, y: Float, width: Int, color: Int, italic: Boolean, underline: Boolean, strikethrough: Boolean, shadow: Boolean, scale: Float): Int {
         if (width > 0 && (underline || strikethrough)) {
             startUntextured()
-            putOverlayFormatting(x = x, y = y, width = width.toDouble(), color = color, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
+            putOverlayFormatting(x = x, y = y, width = width.toFloat(), color = color, italic = italic, underline = underline, strikethrough = strikethrough, shadow = shadow, scale = scale)
             render()
         }
         return width
     }
 
-    fun drawCenteredString(string: String, x: Int, y: Int, color: Int, tags: Set<TextFormat>, scale: Double): Int {
-        return drawString(string, x - (getStringWidth(string, tags, scale) / 2.0).toInt(), y, color, tags, scale)
+    fun drawCenteredString(string: String, x: Float, y: Float, color: Int, tags: Set<TextFormat>, scale: Float): Int {
+        return drawString(string, x - (getStringWidth(string, tags, scale) / 2f), y, color, tags, scale)
     }
 
-    fun getFontHeight(scale: Double = 1.0): Int {
-        return (wrapperPlain.fontHeight * scale).toInt()
-    }
+    // It's not being rounded because it's supposed to be floored.
+    fun getFontHeight(scale: Float = 1f): Int = (wrapperPlain.fontHeight * scale).toInt()
 
-    private fun getCharWidth(char: Char, wrapper: FontWrapper, scale: Double): Double {
-        val glyph = wrapper.getGlyph(char) ?: return 0.0
+    private fun getCharWidth(char: Char, wrapper: FontWrapper, scale: Float): Float {
+        val glyph = wrapper.getGlyph(char) ?: return 0f
         return glyph.dWidthX * scale
     }
 
-    private fun getCharWidth(char: Char, bold: Boolean, scale: Double): Double {
+    private fun getCharWidth(char: Char, bold: Boolean, scale: Float): Float {
         return if (bold) {
             getCharWidth(char, wrapperPlain, scale) + 1
         } else {
@@ -295,23 +296,22 @@ class LPFontRenderer(private val fontName: String) {
         }
     }
 
-    fun getStringWidth(string: String, italics: Boolean, bold: Boolean, scale: Double): Int {
-        val italicsOffset = if (italics) scale else 0.0
+    fun getStringWidth(string: String, italics: Boolean, bold: Boolean, scale: Float): Int {
+        val italicsOffset = if (italics) scale else 0f
         return (string.fold(0.0) { currentX, char -> currentX + getCharWidth(char, bold, scale) } + italicsOffset).toInt()
     }
 
-    fun getStringWidth(string: String, tags: Set<TextFormat>, scale: Double): Int {
+    fun getStringWidth(string: String, tags: Set<TextFormat>, scale: Float): Int {
         return getStringWidth(string, tags.italic(), tags.bold(), scale)
     }
 
-    fun getStringWidth(string: String): Int = getStringWidth(string = string, italics = false, bold = false, scale = 1.0)
+    fun getStringWidth(string: String): Int = getStringWidth(string = string, italics = false, bold = false, scale = 1f)
 
-    private fun putHorizontalLine(x: Double, y: Double, width: Double, thickness: Double, color: Int, italics: Boolean) {
-        val italicsOffset = if (italics) thickness else 0.0
-        tessellator.buffer.pos(x, y, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        tessellator.buffer.pos(x, y + thickness, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        tessellator.buffer.pos(x + width + italicsOffset, y + thickness, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
-        tessellator.buffer.pos(x + width + italicsOffset, y, 5.0).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+    private fun putHorizontalLine(x: Float, y: Float, width: Float, thickness: Float, color: Int, italics: Boolean) {
+        val italicsOffset = if (italics) thickness else 0f
+        tessellator.buffer.pos(x, y, 5f).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x, y + thickness, 5f).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x + width + italicsOffset, y + thickness, 5f).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
+        tessellator.buffer.pos(x + width + italicsOffset, y, 5f).color(color.red(), color.green(), color.blue(), color.alpha()).endVertex()
     }
-
 }

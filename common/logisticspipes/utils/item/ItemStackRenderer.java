@@ -40,7 +40,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import logisticspipes.LPItems;
-import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
@@ -288,6 +287,26 @@ public class ItemStackRenderer {
 		}
 
 		itemEntityRenderer.doRender(entityitem, posX, posY, zLevel, 0.0F, partialTickTime);
+	}
+
+	public void renderItemInGui(float x, float y, Item item, float zLevel, float scale) {
+		this.setPosX(0);
+		this.setPosY(0);
+		this.setScaleX(1f);
+		this.setScaleY(1f);
+		this.itemstack = new ItemStack(item);
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, -100.0);
+		GlStateManager.scale(scale, scale, 1f);
+		GlStateManager.disableDepth();
+		float previousZ = renderItem.zLevel;
+		renderItem.zLevel = zLevel;
+		this.renderInGui();
+		renderItem.zLevel = previousZ;
+		GlStateManager.enableDepth();
+		GlStateManager.scale(1 / scale, 1 / scale, 1f);
+		GlStateManager.translate(-x, -y, 100.0);
+		GlStateManager.popMatrix();
 	}
 
 	public enum DisplayAmount {

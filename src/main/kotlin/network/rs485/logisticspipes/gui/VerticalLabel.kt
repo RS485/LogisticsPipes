@@ -52,11 +52,11 @@ class VerticalLabel(fullText: String, x: Int, y: Int, maxLength: Int, textColor:
         GlStateManager.translate(fullRect.x1.toDouble(), fullRect.y0.toDouble(), 500.0)
         GlStateManager.rotate(90f, 0f, 0f, 1f)
         if (overflows && hovered) {
-            drawGradientRect(0, -1, fullRect.height, fullRect.width + 1, backgroundColor, backgroundColor)
+            drawGradientRect(0, -1, fullRect.roundedHeight, fullRect.roundedWidth + 1, backgroundColor, backgroundColor)
             // Outlines
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(fullRect.height, -2, fullRect.height + 1, fullRect.width + 1, 0, 0x0, textColor.opaque())
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, -2, fullRect.height, -1, 0, 0x0, textColor.opaque())
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, fullRect.width, fullRect.height, fullRect.width + 1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(fullRect.roundedHeight, -2, fullRect.roundedHeight + 1, fullRect.roundedWidth + 1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, -2, fullRect.roundedHeight, -1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, fullRect.roundedWidth, fullRect.roundedHeight, fullRect.roundedWidth + 1, 0, 0x0, textColor.opaque())
             fullText
         } else {
             trimmedText
@@ -73,7 +73,7 @@ class VerticalLabel(fullText: String, x: Int, y: Int, maxLength: Int, textColor:
         trimmedText = StringUtils.getCuttedString(fullText, maxLength, fontRenderer)
         trimmedRect.setSize(fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(trimmedText))
 
-        val offset = (maxLength - trimmedRect.height) / 2
+        val offset = (maxLength - trimmedRect.roundedHeight) / 2
         fullRect.setPos(x, y + offset)
         trimmedRect.setPos(x, y + offset)
     }

@@ -48,13 +48,13 @@ private val homeIconTexture = Rectangle(128, 0, 16, 16)
 /*
 * Position on the button is set based on it's rightmost and where it needs to connect at the bottom.
 */
-class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(1, x - 24, y - 24, homeButtonTexture.width, homeButtonTexture.height) {
+class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(1, x - 24, y - 24, homeButtonTexture.roundedWidth, homeButtonTexture.roundedHeight) {
     private val homeIconBody: Rectangle
     override val bodyTrigger = Rectangle(1, 1, 22, 22)
 
     init {
         this.setOnClickAction(onClickAction)
-        zLevel = GuideBookConstants.Z_TITLE_BUTTONS.toFloat()
+        zLevel = GuideBookConstants.Z_TITLE_BUTTONS
         val offset = (body.width - homeIconTexture.width) / 2
         homeIconBody = Rectangle(offset, offset, homeIconTexture.width, homeIconTexture.height)
     }
@@ -68,13 +68,13 @@ class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(
             hovered = isHovered(mouseX, mouseY)
             if (hovered) {
                 drawTooltip(
-                    x = body.x1,
-                    y = body.y0,
+                    x = body.roundedRight,
+                    y = body.roundedTop,
                     horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
                     verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
                 )
             }
-            GuiGuideBook.drawStretchingRectangle(body, zLevel.toDouble(), homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
+            GuiGuideBook.drawStretchingRectangle(body, zLevel, homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
             drawButtonForegroundLayer(mouseX, mouseY)
         }
     }
@@ -84,7 +84,7 @@ class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(
     }
 
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
-        val hoverStateOffset = getHoverState(hovered) * homeIconTexture.height
-        GuiGuideBook.drawStretchingRectangle(homeIconBody.translated(body), zLevel.toDouble(), homeIconTexture.translated(0, hoverStateOffset), false, MinecraftColor.WHITE.colorCode)
+        val hoverStateOffset = getHoverState(hovered) * homeIconTexture.roundedHeight
+        GuiGuideBook.drawStretchingRectangle(homeIconBody.translated(body), zLevel, homeIconTexture.translated(0, hoverStateOffset), false, MinecraftColor.WHITE.colorCode)
     }
 }

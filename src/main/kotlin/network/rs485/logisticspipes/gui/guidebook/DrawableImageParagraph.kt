@@ -48,9 +48,10 @@ import java.io.IOException
 class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, val image: DrawableImage) : DrawableParagraph() {
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
-        relativeBody.setSize(newWidth = parent!!.width)
-        relativeBody.setSize(newHeight = setChildrenPos())
-        return relativeBody.height
+        // This has to be done in two steps because setChildrenPos() depends on the width already being set.
+        relativeBody.setSize(parent!!.width, 0)
+        relativeBody.setSize(relativeBody.roundedWidth, setChildrenPos())
+        return relativeBody.roundedHeight
     }
 
     override fun setChildrenPos(): Int {
@@ -90,7 +91,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable() {
         if (imageSize != null) {
             GuiGuideBook.drawImage(absoluteBody, visibleArea, imageResource)
         } else {
-            GuiGuideBook.drawRectangleOutline(absoluteBody, GuideBookConstants.Z_TEXT.toInt(), MinecraftColor.WHITE.colorCode)
+            GuiGuideBook.drawRectangleOutline(absoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
         }
     }
 
@@ -99,7 +100,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable() {
             // Checks width of image to scale down to a size that fits on the page
             relativeBody.setSize(imageSize!!.pngWidth, imageSize!!.pngHeight)
             if (imageSize!!.pngWidth > parent!!.width) {
-                val downScaleFactor = parent!!.width.toDouble() / width
+                val downScaleFactor = parent!!.width.toFloat() / width
                 relativeBody.scale(downScaleFactor)
             }
         } else {
@@ -108,17 +109,3 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable() {
         return super.setPos(x, y)
     }
 }
-
-/*
-interface ImageSetting
-
-class ImageSizeSetting : ImageSetting{
-
-}
-
-enum class ImageAlignSetting : ImageSetting {
-    CENTER,
-    LEFT,
-    RIGHT
-}
-*/

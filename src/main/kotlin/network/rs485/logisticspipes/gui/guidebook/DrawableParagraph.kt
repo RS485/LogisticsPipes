@@ -44,8 +44,8 @@ open class DrawableParagraph : Drawable() {
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
-        relativeBody.setSize(newWidth = parent!!.width)
-        relativeBody.setSize(newHeight = setChildrenPos())
+        relativeBody.setSize(parent!!.width, 0)
+        relativeBody.setSize(relativeBody.roundedWidth, setChildrenPos())
         return super.setPos(x, y)
     }
 
@@ -57,7 +57,7 @@ open class DrawableParagraph : Drawable() {
      * @return the height of all the Paragraph's children combined.
      */
     open fun setChildrenPos(): Int {
-        return relativeBody.height
+        return relativeBody.roundedHeight
     }
 
     open fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {}

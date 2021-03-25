@@ -41,7 +41,7 @@ import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParen
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.PageInfoProvider
 import network.rs485.markdown.*
-import java.lang.Double.min
+import kotlin.math.min
 
 private typealias DrawableWordMap<T> = (List<DrawableWord>) -> T
 private typealias DrawableMenuEntryFactory<T> = (linkedPage: String, pageName: String, icon: String) -> T
@@ -50,7 +50,7 @@ object DrawablePageFactory {
     /**
      * Calculates the scale from level 1 (2.0), reducing 0.2 for each level with a minimum of 1.0.
      */
-    private fun getScaleFromLevel(headerLevel: Int): Double = min(1.0, 2.0 - ((headerLevel - 1) / 5.0))
+    private fun getScaleFromLevel(headerLevel: Int): Float = min(1.0f, 2.0f - ((headerLevel - 1) / 5.0f))
 
     fun createDrawablePage(page: PageInfoProvider): DrawablePage =
         createDrawableParagraphs(page).let { it.createParent { DrawablePage(it) } }
@@ -62,7 +62,7 @@ object DrawablePageFactory {
     private fun LinkGroup?.createChild(constructor: (linkGroup: LinkGroup?) -> DrawableWord): DrawableWord =
         constructor(this).also { this?.addChild(it) }
 
-    private fun <T : DrawableParagraph> createDrawableParagraph(paragraphConstructor: DrawableWordMap<T>, elements: List<InlineElement>, scale: Double) =
+    private fun <T : DrawableParagraph> createDrawableParagraph(paragraphConstructor: DrawableWordMap<T>, elements: List<InlineElement>, scale: Float) =
         defaultDrawableState.copy().let { state ->
             val linkGroups = mutableMapOf<Link, LinkGroup>()
             elements.mapNotNull { element ->
@@ -84,7 +84,7 @@ object DrawablePageFactory {
                 is RegularParagraph -> createDrawableParagraph(
                     paragraphConstructor = ::DrawableRegularParagraph,
                     elements = paragraph.elements,
-                    scale = 1.0,
+                    scale = 1.0f,
                 )
                 is HeaderParagraph -> createDrawableParagraph(
                     paragraphConstructor = ::DrawableHeaderParagraph,
@@ -109,7 +109,7 @@ object DrawablePageFactory {
                         createDrawableParagraph(
                             paragraphConstructor = ::DrawableRegularParagraph,
                             elements = MarkdownParser.splitSpacesAndWords("Menu `${paragraph.link}` not found"),
-                            scale = 1.0,
+                            scale = 1.0f,
                         )
                     }
                 }
@@ -121,7 +121,7 @@ object DrawablePageFactory {
                         }
                     },
                     elements = MarkdownParser.splitAndFormatWords(paragraph.alternative),
-                    scale = 1.0,
+                    scale = 1.0f,
                 )
             }
         }

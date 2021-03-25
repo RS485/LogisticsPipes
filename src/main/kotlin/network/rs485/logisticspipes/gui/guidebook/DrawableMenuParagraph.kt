@@ -39,6 +39,8 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.LPItems
 import logisticspipes.utils.MinecraftColor
+import logisticspipes.utils.gui.GuiGraphics
+import logisticspipes.utils.item.ItemStackRenderer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -56,7 +58,7 @@ private const val tileSpacing = 5
 /**
  * Menu token, stores the key and the type of menu in a page.
  */
-class DrawableMenuParagraph<T: Drawable>(private val menuTitle: List<DrawableWord>, private val menuGroups: List<DrawableMenuGroup<T>>) : DrawableParagraph() {
+class DrawableMenuParagraph<T : Drawable>(private val menuTitle: List<DrawableWord>, private val menuGroups: List<DrawableMenuGroup<T>>) : DrawableParagraph() {
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
@@ -68,7 +70,7 @@ class DrawableMenuParagraph<T: Drawable>(private val menuTitle: List<DrawableWor
         menuGroups.firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: Unit
 
     override fun setChildrenPos(): Int {
-        var currentY = 0
+        var currentY = 1
         currentY += splitAndInitialize(menuTitle, 0, currentY, width, false)
         currentY += horizontalLine.setPos(0, currentY)
         for (group in menuGroups) currentY += group.setPos(0, currentY)
@@ -80,7 +82,7 @@ class DrawableMenuParagraph<T: Drawable>(private val menuTitle: List<DrawableWor
     }
 }
 
-class DrawableMenuGroup<T: Drawable>(private val groupTitle: List<DrawableWord>, private val groupTiles: List<T>) : DrawableParagraph() {
+class DrawableMenuGroup<T : Drawable>(private val groupTitle: List<DrawableWord>, private val groupTiles: List<T>) : DrawableParagraph() {
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
@@ -110,8 +112,14 @@ class DrawableMenuGroup<T: Drawable>(private val groupTitle: List<DrawableWord>,
 }
 
 class DrawableMenuTile(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable() {
-    private val iconScale = 1.5
+    private val iconScale = 1.5f
     private val iconBody = Rectangle()
+
+    companion object {
+        val itemStackRenderer by lazy {
+            ItemStackRenderer(0, 0, 0f, true, false)
+        }
+    }
 
     init {
         relativeBody.setSize(tileSize, tileSize)
@@ -124,25 +132,15 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         val hovered = isHovering(mouseX, mouseY, visibleArea)
-        GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
+        GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, GuideBookConstants.Z_TEXT - 1.0f, true, hovered, MinecraftColor.WHITE.colorCode)
         val itemRect = Rectangle.fromRectangle(iconBody.translated(absoluteBody))
         if (visibleArea.intersects(iconBody.translated(absoluteBody))) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
-            RenderHelper.enableGUIStandardItemLighting()
-            val renderItem = Minecraft.getMinecraft().renderItem
-            val prevZ = renderItem.zLevel
-            renderItem.zLevel = -145f
-            GlStateManager.scale(iconScale, iconScale, 1.0)
-            GlStateManager.disableDepth()
-            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), (itemRect.left / iconScale).toInt(), (itemRect.top / iconScale).toInt())
-            GlStateManager.scale(1 / iconScale, 1 / iconScale, 1.0)
-            GlStateManager.enableDepth()
-            renderItem.zLevel = prevZ
-            RenderHelper.disableStandardItemLighting()
+            itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, GuideBookConstants.Z_TEXT, iconScale)
         }
-        if (hovered){
+        if (hovered) {
             GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
-            GuiGuideBook.drawBoxedString(pageName, mid(), minOf(bottom, visibleArea.y1), GuideBookConstants.Z_TOOLTIP, GuiGuideBook.HorizontalAlignment.CENTER, GuiGuideBook.VerticalAlignment.TOP)
+            GuiGuideBook.drawBoxedString(pageName, mid(), minOf(bottom, visibleArea.y1).toInt(), GuideBookConstants.Z_TOOLTIP, GuiGuideBook.HorizontalAlignment.CENTER, GuiGuideBook.VerticalAlignment.TOP)
         }
     }
 
@@ -151,15 +149,20 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         return super.setPos(x, y)
     }
 
-    fun mid(): Int = left + (width / 2)
+    fun mid(): Int = left.toInt() + (width / 2)
 }
 
 class DrawableMenuListEntry(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable() {
-    private val iconScale = 1.0
+    private val iconScale = 1.0f
     private val iconSize = (16 * iconScale).toInt()
     private val itemRect = Rectangle()
     private val itemOffset = (listEntryHeight - iconSize) / 2
-    // TODO replace item rendering with LP itemstack renderer
+
+    companion object {
+        val itemStackRenderer by lazy {
+            ItemStackRenderer(0, 0, 0f, true, false)
+        }
+    }
 
     init {
         relativeBody.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), listEntryHeight)
@@ -171,29 +174,21 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
 
     override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         val hovered = isHovering(mouseX, mouseY, visibleArea)
-        GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, 4.0, true, hovered, MinecraftColor.WHITE.colorCode)
+        GuiGuideBook.drawRectangleTile(absoluteBody, visibleArea, GuideBookConstants.Z_TEXT - 1.0f, true, hovered, MinecraftColor.WHITE.colorCode)
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
             val textColor: Int = if (!hovered) MinecraftColor.WHITE.colorCode else 0xffffffa0.toInt()
-            val textVerticalOffset = (height - GuiGuideBook.lpFontRenderer.getFontHeight(1.0)) / 2
+            val textVerticalOffset = (height - GuiGuideBook.lpFontRenderer.getFontHeight(1.0f)) / 2
             GuiGuideBook.lpFontRenderer.drawString(
                 string = pageName,
                 x = itemRect.right + itemOffset,
                 y = top + textVerticalOffset,
                 color = textColor,
                 format = EnumSet.of(TextFormat.Shadow),
-                scale = 1.0
+                scale = 1.0f
             )
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
-            RenderHelper.enableGUIStandardItemLighting()
-            val renderItem = Minecraft.getMinecraft().renderItem
-            val prevZ = renderItem.zLevel
-            renderItem.zLevel = -145f
-            GlStateManager.disableDepth()
-            renderItem.renderItemAndEffectIntoGUI(ItemStack(item), itemRect.left, itemRect.top)
-            GlStateManager.enableDepth()
-            renderItem.zLevel = prevZ
-            RenderHelper.disableStandardItemLighting()
+            DrawableMenuTile.itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, GuideBookConstants.Z_TEXT, iconScale)
         }
         if (hovered) {
             GuiGuideBook.drawLinkIndicator(mouseX, mouseY)

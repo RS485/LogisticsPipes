@@ -72,17 +72,17 @@ open class Drawable : MouseInteractable {
     open var parent: Drawable? = null
 
     // Relative positions/size accessors.
-    val x: Int get() = relativeBody.x0
-    val y: Int get() = relativeBody.y0
-    val width: Int get() = relativeBody.width
-    val height: Int get() = relativeBody.height
+    val x: Float get() = relativeBody.x0
+    val y: Float get() = relativeBody.y0
+    val width: Int get() = relativeBody.roundedWidth
+    val height: Int get() = relativeBody.roundedHeight
 
     // Absolute positions accessors.
-    val left: Int get() = (parent?.left ?: 0) + x
-    val right: Int get() = left + width
-    val top: Int get() = (parent?.top ?: 0) + y
-    val bottom: Int get() = top + height
-    val absoluteBody: Rectangle get() = Rectangle(left, top, width, height)
+    val left: Float get() = (parent?.left ?: 0.0f) + x
+    val right: Float get() = left + width
+    val top: Float get() = (parent?.top ?: 0.0f) + y
+    val bottom: Float get() = top + height
+    val absoluteBody: Rectangle get() = Rectangle(left to top, right to bottom)
 
     /**
      * Assigns a new child's parent to this.
@@ -99,7 +99,7 @@ open class Drawable : MouseInteractable {
     open fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
         if (DRAW_BODY_WIREFRAME) {
             val visibleAbsoluteBody = visibleArea.translated(0, -5).grow(0, 10).overlap(absoluteBody)
-            GuiGuideBook.drawRectangleOutline(visibleAbsoluteBody, GuideBookConstants.Z_TEXT.toInt(), MinecraftColor.WHITE.colorCode)
+            GuiGuideBook.drawRectangleOutline(visibleAbsoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
         }
     }
 
@@ -112,7 +112,7 @@ open class Drawable : MouseInteractable {
      */
     open fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
-        return relativeBody.height
+        return relativeBody.roundedHeight
     }
 
     /**

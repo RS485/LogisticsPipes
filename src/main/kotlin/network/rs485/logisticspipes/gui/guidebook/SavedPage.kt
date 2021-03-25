@@ -63,7 +63,7 @@ class SavedPage(val page: String) : LPFinalSerializable {
     fun updateScrollPosition(visibleArea: Rectangle, currentProgress: Float) =
         drawablePage.updateScrollPosition(visibleArea, currentProgress)
 
-    fun getExtraHeight(visibleArea: Rectangle) = if(visibleArea.height < drawablePage.height) drawablePage.height - visibleArea.height else 0
+    fun getExtraHeight(visibleArea: Rectangle): Int = if(visibleArea.roundedHeight < drawablePage.height) drawablePage.height - visibleArea.roundedHeight else 0
 
     fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {
         drawablePage.getVisibleParagraphs(visibleArea)
@@ -72,8 +72,8 @@ class SavedPage(val page: String) : LPFinalSerializable {
     }
 
     fun setDrawablesPosition(area: Rectangle) {
-        drawablePage.setWidth(area.width)
-        drawablePage.setPos(area.x0, area.y0)
+        drawablePage.setWidth(area.roundedWidth)
+        drawablePage.setPos(area.roundedX, area.roundedY)
     }
 
     fun isBookmarkable() = pageInfo.bookmarkable

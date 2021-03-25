@@ -46,7 +46,7 @@ import kotlin.math.floor
  */
 open class DrawableWord(
     private val str: String,
-    private val scale: Double,
+    private val scale: Float,
     state: InlineDrawableState,
     protected val linkInteractable: LinkInteractable?,
 ) : Drawable() {
@@ -96,7 +96,7 @@ open class DrawableWord(
  * Space object responsible for drawing the necessary formatting in between words.
  */
 class DrawableSpace(
-    private val scale: Double,
+    private val scale: Float,
     state: InlineDrawableState,
     linkInteractable: LinkInteractable?,
 ) : DrawableWord(" ", scale, state, linkInteractable) {
@@ -121,7 +121,7 @@ class DrawableSpace(
     }
 
     fun setWidth(newWidth: Int) {
-        relativeBody.setSize(newWidth = newWidth)
+        relativeBody.setSize(newWidth, relativeBody.roundedHeight)
     }
 
     fun resetWidth() {
@@ -133,7 +133,7 @@ class DrawableSpace(
     }
 }
 
-object DrawableBreak : DrawableWord("", 1.0, defaultDrawableState, null)
+object DrawableBreak : DrawableWord("", 1.0f, defaultDrawableState, null)
 
 internal fun splitAndInitialize(drawables: List<DrawableWord>, x: Int, y: Int, maxWidth: Int, justify: Boolean): Int {
     var currentHeight = 0

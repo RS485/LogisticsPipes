@@ -62,7 +62,7 @@ class TabButton(
     private val circleArea = Rectangle(4, 4, 16, 16)
 
     init {
-        zLevel = GuideBookConstants.Z_TITLE_BUTTONS.toFloat()
+        zLevel = GuideBookConstants.Z_TITLE_BUTTONS
     }
 
     fun onLeftClick() = whisky.onLeftClick()
@@ -78,8 +78,8 @@ class TabButton(
         val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
         if (hovered) {
             drawTooltip(
-                x = body.x1,
-                y = body.y0,
+                x = body.roundedRight,
+                y = body.roundedTop,
                 horizontalAlign = GuiGuideBook.HorizontalAlignment.RIGHT,
                 verticalAlign = GuiGuideBook.VerticalAlignment.BOTTOM
             )
@@ -103,7 +103,7 @@ class TabButton(
             val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
             GuiGuideBook.drawStretchingRectangle(
                 rectangle = circleArea.translated(body),
-                z = zLevel.toDouble(),
+                z = zLevel,
                 texture = circleAreaTexture,
                 blend = true,
                 color = color

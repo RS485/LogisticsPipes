@@ -52,10 +52,10 @@ open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiBu
 
     override fun isMouseOver(): Boolean = hovered
 
-    override fun getButtonWidth(): Int = body.width
+    override fun getButtonWidth(): Int = body.roundedWidth
 
     override fun setWidth(width: Int) {
-        body.setSize(newWidth = width)
+        body.setSize(newWidth = width, body.roundedHeight)
     }
 
     override fun getHoverState(mouseOver: Boolean): Int = if (!enabled) 2 else if (hovered) 1 else 0

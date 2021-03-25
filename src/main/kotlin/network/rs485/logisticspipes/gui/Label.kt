@@ -65,19 +65,20 @@ open class Label(fullText: String, internal val x: Int, internal val y: Int, int
     open fun draw(mouseX: Int, mouseY: Int) {
         hovered = hovered(mouseX, mouseY)
         GlStateManager.pushMatrix()
-        GlStateManager.translate(fullRect.x0.toDouble(), fullRect.y0.toDouble(), 0.0)
+        GlStateManager.translate(fullRect.x0, fullRect.y0, 0.0f)
         if (overflows && hovered) {
-            drawGradientRect(0, -1, fullRect.width, fullRect.height + 1, backgroundColor, backgroundColor)
+            drawGradientRect(0, -1, fullRect.roundedWidth, fullRect.roundedHeight + 1, backgroundColor, backgroundColor)
             // Outlines
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(fullRect.width, -2, fullRect.width + 1, fullRect.height + 1, 0, textColor.opaque(), textColor.opaque())
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, -2, fullRect.width, -1, 0, 0x0, textColor.opaque())
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, fullRect.height, fullRect.width, fullRect.height + 1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(fullRect.roundedWidth, -2, fullRect.roundedWidth + 1, fullRect.roundedHeight + 1, 0, textColor.opaque(), textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, -2, fullRect.roundedWidth, -1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, fullRect.roundedHeight, fullRect.roundedWidth, fullRect.roundedHeight + 1, 0, 0x0, textColor.opaque())
             fullText
         } else {
             trimmedText
         }.also {
             fontRenderer.drawString(it, 0, 0, textColor)
         }
+        GlStateManager.translate(-fullRect.x0, -fullRect.y0, 0.0f)
         GlStateManager.popMatrix()
     }
 
@@ -88,7 +89,7 @@ open class Label(fullText: String, internal val x: Int, internal val y: Int, int
         trimmedText = StringUtils.getCuttedString(fullText, maxLength, fontRenderer)
         trimmedRect.setSize(fontRenderer.getStringWidth(trimmedText), fontRenderer.FONT_HEIGHT)
 
-        val offset = (maxLength - trimmedRect.width) / 2
+        val offset = (maxLength - trimmedRect.roundedWidth) / 2
         fullRect.setPos(x + offset, y)
         trimmedRect.setPos(x + offset, y)
     }

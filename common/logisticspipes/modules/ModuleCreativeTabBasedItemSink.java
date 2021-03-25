@@ -16,7 +16,9 @@ import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.IStringBasedModule;
+import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -50,7 +52,7 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 	}
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.ModBasedItemSink, 0, true, false, 5, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -63,8 +65,10 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 		if (tabSet.isEmpty()) {
 			tabSet.addAll(tabList);
 		}
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
 		if (tabSet.contains(item.getCreativeTabName())) {
-			if (_service.canUseEnergy(5)) {
+			if (service.canUseEnergy(5)) {
 				return _sinkReply;
 			}
 		}
@@ -126,7 +130,9 @@ public class ModuleCreativeTabBasedItemSink extends LogisticsModule implements I
 
 	@Override
 	public void listChanged() {
-		if (MainProxy.isServer(_world.getWorld())) {
+		final IWorldProvider worldProvider = _world;
+		if (worldProvider == null) return;
+		if (MainProxy.isServer(worldProvider.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setNbt(nbt).setModulePos(this), localModeWatchers);

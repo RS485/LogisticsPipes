@@ -111,7 +111,7 @@ class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -
     private val itemSendMode: CoreRoutedPipe.ItemSendMode
         get() = upgradeManager.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } } ?: CoreRoutedPipe.ItemSendMode.Normal
     private val connectedInventory: IInventoryUtil?
-        get() = _service.availableSneakyInventories(sneakyDirection).first()
+        get() = _service?.availableSneakyInventories(sneakyDirection)?.first()
 
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? =
@@ -129,7 +129,7 @@ class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -
 
         private fun sloterator(session: InventorySession) = sloterator(started = started, current = currentSlot, last = lastIndex, size = session.inventory.sizeInventory)
 
-        override fun newSession(): InventorySession? = (_service.router as? ServerRouter)?.let { serverRouter ->
+        override fun newSession(): InventorySession? = (_service?.router as? ServerRouter)?.let { serverRouter ->
             inventoryGetter()?.let { inventory ->
                 InventorySession(serverRouter, inventory)
             }
@@ -183,7 +183,7 @@ class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -
         var itemsLeft = itemsToExtract
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
             if (itemsLeft <= 0) return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
-            val serverRouter = this._service.router as? ServerRouter ?: return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
+            val serverRouter = this._service?.router as? ServerRouter ?: return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
             var stackLeft = pair.second.count
             val itemid = ItemIdentifier.get(pair.second)
             AsyncRouting.updateRoutingTable(serverRouter)
@@ -215,16 +215,17 @@ class AsyncExtractorModule(val inverseFilter: (ItemStack) -> Boolean = { stack -
     }
 
     private fun extractAndSend(slot: Int, count: Int, inventory: IInventoryUtil, destRouterId: Int, sinkReply: SinkReply, itemsLeft: Int): Int {
+        val service = this._service ?: return 0
         var extract = getExtractionMax(count, itemsLeft, sinkReply)
         if (extract < 1) return 0
-        while (!_service.useEnergy(energyPerItem * extract)) {
-            _service.spawnParticle(Particles.OrangeParticle, 2)
+        while (!service.useEnergy(energyPerItem * extract)) {
+            service.spawnParticle(Particles.OrangeParticle, 2)
             if (extract < 2) return 0
             extract /= 2
         }
         val toSend = inventory.decrStackSize(slot, extract)
         if (toSend.isEmpty) return 0
-        _service.sendStack(toSend, destRouterId, sinkReply, itemSendMode, _service.getPointedOrientation())
+        service.sendStack(toSend, destRouterId, sinkReply, itemSendMode, service.pointedOrientation)
         return toSend.count
     }
 

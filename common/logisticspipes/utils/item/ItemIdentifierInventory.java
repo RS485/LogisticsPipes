@@ -49,6 +49,7 @@ public class ItemIdentifierInventory implements ISaveState, Iterable<Pair<ItemId
 	private final ItemIdentifierStack[] _contents;
 	private final String _name;
 	private final int _stackLimit;
+	@Nonnull
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
 	private final HashSet<ItemIdentifier> _contentsUndamagedSet;
 	private final HashSet<ItemIdentifier> _contentsNoNBTSet;
@@ -365,11 +366,12 @@ public class ItemIdentifierInventory implements ISaveState, Iterable<Pair<ItemId
 		}
 	}
 
-	public int itemCount(final ItemIdentifier item) {
+	public int itemCount(@Nonnull final ItemIdentifier item) {
 		return _contentsMap.getOrDefault(item, 0);
 	}
 
 	@Override
+	@Nonnull
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return _contentsMap;
 	}

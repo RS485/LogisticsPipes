@@ -17,6 +17,7 @@ import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
@@ -59,7 +60,7 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 	}
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -70,8 +71,10 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 			return null;
 		}
 
-		final ISlotUpgradeManager upgradeManager = _service.getUpgradeManager(slot, positionInt);
-		IInventoryUtil targetUtil = PipeServiceProviderUtilKt.availableSneakyInventories(_service, upgradeManager).stream().findFirst().orElse(null);
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
+		final ISlotUpgradeManager upgradeManager = service.getUpgradeManager(slot, positionInt);
+		IInventoryUtil targetUtil = PipeServiceProviderUtilKt.availableSneakyInventories(service, upgradeManager).stream().findFirst().orElse(null);
 		if (targetUtil == null) {
 			return null;
 		}
@@ -86,7 +89,7 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 			return null;
 		}
 
-		if (_service.canUseEnergy(2)) {
+		if (service.canUseEnergy(2)) {
 			return new SinkReply(_sinkReply, targetCount - haveCount);
 		}
 		return null;
@@ -147,9 +150,14 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
-		}
+		MainProxy.runOnServer(getWorld(), () -> () ->
+				MainProxy.sendToPlayerList(
+						PacketHandler.getPacket(ModuleInventory.class)
+								.setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory))
+								.setModulePos(this),
+						localModeWatchers
+				)
+		);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -31,15 +32,15 @@ import network.rs485.logisticspipes.module.Gui;
 public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
 	private final Object[] ccTypeHolder = new Object[1];
+	@Nullable
 	protected IWorldProvider _world;
+	@Nullable
 	protected IPipeServiceProvider _service;
 
 	/**
 	 * Registers the Inventory and ItemSender to the module
-	 *
 	 * @param world   that the module is in.
-	 * @param service Inventory access, power and utility functions provided by the
-	 *                pipe
+	 * @param service Inventory access, power and utility functions provided by the pipe.
 	 */
 	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
 		_world = world;
@@ -52,15 +53,21 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	/**
 	 * Registers the slot type the module is in
 	 */
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		this.slot = slot;
 		this.positionInt = positionInt;
 	}
 
 	@Nonnull
 	public BlockPos getBlockPos() {
-		if (slot.isInWorld()) {
-			return _service.getPos();
+		final IPipeServiceProvider service = _service;
+		if (service == null) {
+			if (LogisticsPipes.isDEBUG()) {
+				throw new IllegalStateException("Module has no service, but getBlockPos was called");
+			}
+			return BlockPos.ORIGIN;
+		} else if (slot.isInWorld()) {
+			return service.getPos();
 		} else {
 			if (LogisticsPipes.isDEBUG()) {
 				throw new IllegalStateException("Module is not in world, but getBlockPos was called");
@@ -69,8 +76,11 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		}
 	}
 
+	@Nullable
 	public World getWorld() {
-		return _world.getWorld();
+		final IWorldProvider worldProvider = _world;
+		if (worldProvider == null) return null;
+		return worldProvider.getWorld();
 	}
 
 	public ModulePositionType getSlot() {

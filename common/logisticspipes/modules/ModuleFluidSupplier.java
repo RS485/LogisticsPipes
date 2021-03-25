@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -32,7 +33,7 @@ public class ModuleFluidSupplier extends LogisticsModule implements IClientInfor
 	private SinkReply _sinkReply;
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 0, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -42,8 +43,10 @@ public class ModuleFluidSupplier extends LogisticsModule implements IClientInfor
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
 		if (_filterInventory.containsItem(item)) {
-			_service.spawnParticle(Particles.VioletParticle, 2);
+			service.spawnParticle(Particles.VioletParticle, 2);
 			return _sinkReply;
 		}
 		return null;

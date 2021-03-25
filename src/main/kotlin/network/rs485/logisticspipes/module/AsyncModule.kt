@@ -75,7 +75,7 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
             } finally {
                 currentTask = null
             }
-            else -> if (_service.isNthTick(everyNthTick)) {
+            else -> if (_service?.isNthTick(everyNthTick) == true) {
                 val setup = tickSetup()
                 currentTask = CoroutineScopes.asynchronousScope.async {
                     try {

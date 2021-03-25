@@ -29,6 +29,8 @@ public interface IPipeServiceProvider extends IRoutedPowerProvider, ISpawnPartic
 	@Nonnull
 	BlockPos getPos();
 
+	void markTileDirty();
+
 	/**
 	 * @return the available adjacent cache.
 	 */

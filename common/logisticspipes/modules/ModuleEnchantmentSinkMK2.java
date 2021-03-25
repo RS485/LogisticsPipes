@@ -65,7 +65,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	private SinkReply _sinkReply;
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -129,9 +129,14 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
-		}
+		MainProxy.runOnServer(getWorld(), () -> () ->
+				MainProxy.sendToPlayerList(
+						PacketHandler.getPacket(ModuleInventory.class)
+								.setIdentList(ItemIdentifierStack.getListFromInventory(inventory))
+								.setModulePos(this),
+						localModeWatchers
+				)
+		);
 	}
 
 	@Override

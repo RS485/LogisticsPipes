@@ -27,6 +27,8 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
+import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -104,6 +106,12 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 
 	private final IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
+	@Override
+	public void registerHandler(@Nonnull IWorldProvider world, @Nonnull IPipeServiceProvider service) {
+		super.registerHandler(world, service);
+		PropertyModule.DefaultImpls.registerHandler(this, world, service);
+	}
+
 	public ModuleProvider() {}
 
 	public static String getName() {
@@ -134,14 +142,14 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 	@Override
 	public void setSneakyDirection(EnumFacing direction) {
 		sneakyDirection.setValue(direction);
-		if (MainProxy.isServer(this._world.getWorld())) {
-			MainProxy.sendToPlayerList(
-					PacketHandler.getPacket(SneakyModuleDirectionUpdate.class)
-							.setDirection(sneakyDirection.getValue())
-							.setModulePos(this),
-					localModeWatchers
-			);
-		}
+		MainProxy.runOnServer(getWorld(), () -> () ->
+				MainProxy.sendToPlayerList(
+						PacketHandler.getPacket(SneakyModuleDirectionUpdate.class)
+								.setDirection(sneakyDirection.getValue())
+								.setModulePos(this),
+						localModeWatchers
+				)
+		);
 	}
 
 	protected int neededEnergy() {
@@ -167,23 +175,25 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 
 	@Override
 	public void tick() {
-		if (_service.isNthTick(6)) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
+		if (service.isNthTick(6)) {
 			checkUpdate(null);
 		}
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		LogisticsItemOrder firstOrder = null;
 		LogisticsItemOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && _service.getItemOrderManager().hasOrders(ResourceType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
+		while (itemsleft > 0 && stacksleft > 0 && service.getItemOrderManager().hasOrders(ResourceType.PROVIDER) && (firstOrder == null || firstOrder != order)) {
 			if (firstOrder == null) {
 				firstOrder = order;
 			}
-			order = _service.getItemOrderManager().peekAtTopRequest(ResourceType.PROVIDER);
+			order = service.getItemOrderManager().peekAtTopRequest(ResourceType.PROVIDER);
 			int sent = sendStack(order.getResource().stack, itemsleft, order.getDestination().getRouter().getSimpleID(), order.getInformation());
 			if (sent < 0) {
 				break;
 			}
-			_service.spawnParticle(Particles.VioletParticle, 3);
+			service.spawnParticle(Particles.VioletParticle, 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}
@@ -199,14 +209,18 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 
 	@Override
 	public void onBlockRemoval() {
-		while (_service.getItemOrderManager().hasOrders(ResourceType.PROVIDER)) {
-			_service.getItemOrderManager().sendFailed();
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
+		while (service.getItemOrderManager().hasOrders(ResourceType.PROVIDER)) {
+			service.getItemOrderManager().sendFailed();
 		}
 	}
 
 	@Nonnull
 	public Stream<IInventoryUtil> inventoriesWithMode() {
-		return _service.getAvailableAdjacent().inventories().stream()
+		final IPipeServiceProvider service = _service;
+		if (service == null) return Stream.empty();
+		return service.getAvailableAdjacent().inventories().stream()
 				.map(this::getInventoryUtilWithMode)
 				.filter(Objects::nonNull);
 	}
@@ -239,16 +253,22 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 
 	@Override
 	public LogisticsOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
-		_service.spawnParticle(Particles.WhiteParticle, 2);
-		return _service.getItemOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.PROVIDER, info);
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
+		service.spawnParticle(Particles.WhiteParticle, 2);
+		return service.getItemOrderManager().addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.PROVIDER, info);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
-		return getTotalItemCount(item) - _service.getItemOrderManager().totalItemsCountInOrders(item);
+		final IPipeServiceProvider service = _service;
+		if (service == null) return 0;
+		return getTotalItemCount(item) - service.getItemOrderManager().totalItemsCountInOrders(item);
 	}
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
 		items.putAll(
 				inventoriesWithMode()
 						.map(IInventoryUtil::getItemsAndCount)
@@ -261,7 +281,9 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 							);
 							return !blockedInFilters; // skip filters-parameter-filtered items
 						})
-						.map(item -> new Pair<>(item.getKey(), item.getValue() - _service.getItemOrderManager().totalItemsCountInOrders(item.getKey())))
+						.map(item ->
+								new Pair<>(item.getKey(), item.getValue() - service.getItemOrderManager().totalItemsCountInOrders(item.getKey()))
+						)
 						.filter(itemIdentAndRemaining -> itemIdentAndRemaining.getValue2() > 0) // reduce what has been reserved
 						.collect(Pair.toMap(Integer::sum)) // sum up the provided amount by the inventories
 		);
@@ -270,9 +292,12 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 	// returns -1 on permanently failed, don't try another stack this tick
 	// returns 0 on "unable to do this delivery"
 	public int sendStack(ItemIdentifierStack stack, int maxCount, int destination, IAdditionalTargetInformation info) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return -1;
+
 		ItemIdentifier item = stack.getItem();
 
-		Iterator<Pair<IInventoryUtil, EnumFacing>> iterator = _service.getAvailableAdjacent().inventories().stream().flatMap(neighbor -> {
+		Iterator<Pair<IInventoryUtil, EnumFacing>> iterator = service.getAvailableAdjacent().inventories().stream().flatMap(neighbor -> {
 			final IInventoryUtil invUtil = getInventoryUtilWithMode(neighbor);
 			if (invUtil == null) return Stream.empty();
 			return Stream.of(new Pair<>(invUtil, neighbor.getDirection()));
@@ -290,7 +315,7 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 			wanted = Math.min(wanted, item.getMaxStackSize());
 			IRouter dRtr = SimpleServiceLocator.routerManager.getServerRouter(destination);
 			if (dRtr == null) {
-				_service.getItemOrderManager().sendFailed();
+				service.getItemOrderManager().sendFailed();
 				return 0;
 			}
 			SinkReply reply = LogisticsManager.canSink(stack.makeNormalStack(), dRtr, null, true, stack.getItem(), null, true, false);
@@ -299,13 +324,13 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 				if (reply.maxNumberOfItems < wanted) {
 					wanted = reply.maxNumberOfItems;
 					if (wanted <= 0) {
-						_service.getItemOrderManager().deferSend();
+						service.getItemOrderManager().deferSend();
 						return 0;
 					}
 					defersend = true;
 				}
 			}
-			if (!_service.canUseEnergy(wanted * neededEnergy())) {
+			if (!service.canUseEnergy(wanted * neededEnergy())) {
 				return -1;
 			}
 			ItemStack removed = current.getValue1().getMultipleItems(item, wanted);
@@ -313,14 +338,14 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 				continue;
 			}
 			int sent = removed.getCount();
-			_service.useEnergy(sent * neededEnergy());
+			service.useEnergy(sent * neededEnergy());
 
-			final IRoutedItem routedItem = _service.sendStack(removed, destination, itemSendMode(), info, current.getValue2());
-			_service.getItemOrderManager().sendSuccessfull(sent, defersend, routedItem);
+			final IRoutedItem routedItem = service.sendStack(removed, destination, itemSendMode(), info, current.getValue2());
+			service.getItemOrderManager().sendSuccessfull(sent, defersend, routedItem);
 			return sent;
 		}
 
-		_service.getItemOrderManager().sendFailed();
+		service.getItemOrderManager().sendFailed();
 		return 0;
 	}
 

@@ -170,7 +170,13 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Nullable
-	public LogisticsModule getModuleForItem(@Nonnull ItemStack itemStack, LogisticsModule currentModule, IWorldProvider world, IPipeServiceProvider service) {
+	public LogisticsModule getModuleForItem(
+		@Nonnull ItemStack itemStack,
+		@Nullable LogisticsModule currentModule,
+		@Nullable IWorldProvider world,
+		@Nullable IPipeServiceProvider service
+	) {
+
 		if (itemStack.isEmpty()) {
 			return null;
 		}

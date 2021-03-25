@@ -17,6 +17,7 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -74,7 +75,7 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	private SinkReply _sinkReply;
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -84,8 +85,10 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
 		if (_filterInventory.containsUndamagedItem(item.getUndamaged())) {
-			if (_service.canUseEnergy(2)) {
+			if (service.canUseEnergy(2)) {
 				return _sinkReply;
 			}
 		}
@@ -133,9 +136,14 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
-		}
+		MainProxy.runOnServer(getWorld(), () -> () ->
+				MainProxy.sendToPlayerList(
+						PacketHandler.getPacket(ModuleInventory.class)
+								.setIdentList(ItemIdentifierStack.getListFromInventory(inventory))
+								.setModulePos(this),
+						localModeWatchers
+				)
+		);
 	}
 
 	@Override

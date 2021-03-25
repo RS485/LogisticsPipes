@@ -58,7 +58,7 @@ public class ModuleOreDictItemSink extends LogisticsModule implements IClientInf
 	}
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -179,7 +179,7 @@ public class ModuleOreDictItemSink extends LogisticsModule implements IClientInf
 	}
 
 	public void OreListChanged() {
-		if (MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(OreDictItemSinkList.class).setTag(nbt).setModulePos(this), localModeWatchers);

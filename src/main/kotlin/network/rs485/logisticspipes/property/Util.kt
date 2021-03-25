@@ -37,15 +37,12 @@
 
 package network.rs485.logisticspipes.property
 
-import logisticspipes.interfaces.routing.ISaveState
+import net.minecraft.nbt.NBTTagCompound
 
-interface Property<V> : ISaveState {
-    val propertyObservers: MutableList<ObserverCallback<V>>
+typealias ObserverCallback<V> = (Property<V>) -> Unit
 
-    fun iChanged() = propertyObservers.forEach { observer -> observer.invoke(this) }
+fun Collection<Property<*>>.addObserver(callback: ObserverCallback<*>) = forEach { prop -> prop.addObserver(callback) }
 
-    fun <T> T.alsoIChanged() = this.also { iChanged() }
+fun Collection<Property<*>>.readFromNBT(tag: NBTTagCompound) = forEach { prop -> prop.readFromNBT(tag) }
 
-    fun addObserver(callback: ObserverCallback<V>) = propertyObservers.add(callback)
-
-}
+fun Collection<Property<*>>.writeToNBT(tag: NBTTagCompound) = forEach { prop -> prop.writeToNBT(tag) }

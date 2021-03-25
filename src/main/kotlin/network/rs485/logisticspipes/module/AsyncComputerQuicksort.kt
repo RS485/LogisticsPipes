@@ -60,8 +60,10 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         get() = _timeout
         set(value) {
             _timeout = if (value == 0) 100 else value
-            if (MainProxy.isServer(_world.world)) {
-//                MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode::class.java).setTimeOut(timeout).setModulePos(this), localModeWatchers)
+            MainProxy.runOnServer(world) {
+                Runnable {
+//                    MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode::class.java).setTimeOut(timeout).setModulePos(this), localModeWatchers)
+                }
             }
         }
 
@@ -70,8 +72,10 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         get() = _sinkSize
         set(value) {
             _sinkSize = value
-            if (MainProxy.isServer(_world.world)) {
-//                MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize::class.java).setSinkSize(sinkSize).setModulePos(this), localModeWatchers)
+            MainProxy.runOnServer(world) {
+                Runnable {
+//                    MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize::class.java).setSinkSize(sinkSize).setModulePos(this), localModeWatchers)
+                }
             }
         }
 
@@ -90,7 +94,7 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         quicksort.registerHandler(world, service)
     }
 
-    override fun registerPosition(slot: ModulePositionType?, positionInt: Int) {
+    override fun registerPosition(slot: ModulePositionType, positionInt: Int) {
         super.registerPosition(slot, positionInt)
         quicksort.registerPosition(slot, positionInt)
     }

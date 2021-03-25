@@ -21,6 +21,7 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -96,7 +97,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	private SinkReply _sinkReplyDefault;
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
 		_sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0, new ChassiTargetInformation(getPositionInt()));
@@ -110,8 +111,10 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
 		if (_filterInventory.containsUndamagedItem(item.getUndamaged())) {
-			if (_service.canUseEnergy(1)) {
+			if (service.canUseEnergy(1)) {
 				return _sinkReply;
 			}
 			return null;
@@ -136,7 +139,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 					ident2 = ident2.getIgnoringNBT();
 				}
 				if (ident1.equals(ident2)) {
-					if (_service.canUseEnergy(5)) {
+					if (service.canUseEnergy(5)) {
 						return _sinkReply;
 					}
 					return null;
@@ -147,7 +150,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 			if (bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) {
 				return null;
 			}
-			if (_service.canUseEnergy(1)) {
+			if (service.canUseEnergy(1)) {
 				return _sinkReplyDefault;
 			}
 			return null;
@@ -210,9 +213,14 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), localModeWatchers);
-		}
+		MainProxy.runOnServer(getWorld(), () -> () ->
+				MainProxy.sendToPlayerList(
+						PacketHandler.getPacket(ModuleInventory.class)
+								.setIdentList(ItemIdentifierStack.getListFromInventory(inventory))
+								.setModulePos(this),
+						localModeWatchers
+				)
+		);
 	}
 
 	@Override
@@ -293,7 +301,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		if (slot < 0 || slot >= 9) {
 			return;
 		}
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			if (player == null) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(false).setModulePos(this));
 			}
@@ -306,7 +314,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		if (slot < 0 || slot >= 9) {
 			return;
 		}
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			if (player == null) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(true).setModulePos(this));
 			}

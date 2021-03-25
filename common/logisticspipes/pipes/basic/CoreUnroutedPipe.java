@@ -2,6 +2,7 @@ package logisticspipes.pipes.basic;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -40,6 +41,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTypeHolder {
 
 	private final Object[] ccTypeHolder = new Object[1];
+	@Nullable
 	public LogisticsTileGenericPipe container;
 	public final PipeTransportLogistics transport;
 	public final Item item;
@@ -136,6 +138,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	public void onBlockRemoval() {}
 
+	@Nullable
 	public LogisticsTileGenericPipe getContainer() {
 		return container;
 	}
@@ -160,6 +163,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public void onChunkUnload() {}
 
 	public World getWorld() {
+		if (container == null) return null;
 		return container.getWorld();
 	}
 

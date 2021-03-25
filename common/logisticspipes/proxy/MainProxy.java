@@ -3,8 +3,10 @@ package logisticspipes.proxy;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -126,6 +128,13 @@ public class MainProxy {
 		return MainProxy.getEffectiveSide() == Side.SERVER;
 	}
 
+	/**
+	 * Simple function to run code on the server and which can be replaced by the DistExecutor later.
+	 */
+	public static void runOnServer(@Nullable IBlockAccess world, @Nonnull Supplier<Runnable> runnableConsumer) {
+		if (isServer(world)) runnableConsumer.get().run();
+	}
+
 	public static World getClientMainWorld() {
 		return MainProxy.proxy.getWorld();
 	}
@@ -185,8 +194,15 @@ public class MainProxy {
 
 	public static void sendPacketToAllWatchingChunk(LogisticsModule module, ModernPacket packet) {
 		if (module.getSlot().isInWorld()) {
+			final World world = module.getWorld();
+			if (world == null) {
+				if (LogisticsPipes.isDEBUG()) {
+					throw new IllegalStateException("sendPacketToAllWatchingChunk called without a world provider on the module");
+				}
+				return;
+			}
 			final BlockPos pos = module.getBlockPos();
-			sendPacketToAllWatchingChunk(pos.getX(), pos.getZ(), module.getWorld().provider.getDimension(), packet);
+			sendPacketToAllWatchingChunk(pos.getX(), pos.getZ(), world.provider.getDimension(), packet);
 		} else {
 			if (LogisticsPipes.isDEBUG()) {
 				throw new IllegalStateException("sendPacketToAllWatchingChunk for module in hand was called");
@@ -337,4 +353,5 @@ public class MainProxy {
 	public static void onWorldUnload(WorldEvent.Unload event) {
 		fakePlayers.entrySet().removeIf(entry -> entry.getValue().world == event.getWorld());
 	}
+
 }

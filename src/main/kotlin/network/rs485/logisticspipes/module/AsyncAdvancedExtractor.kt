@@ -106,7 +106,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         extractor.registerHandler(world, service)
     }
 
-    override fun registerPosition(slot: ModulePositionType?, positionInt: Int) {
+    override fun registerPosition(slot: ModulePositionType, positionInt: Int) {
         super.registerPosition(slot, positionInt)
         extractor.registerPosition(slot, positionInt)
     }
@@ -149,8 +149,15 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
     override fun handleInvContent(items: MutableCollection<ItemIdentifierStack>?) = filterInventory.handleItemIdentifierList(items)
 
     override fun InventoryChanged(inventory: IInventory?) {
-        if (MainProxy.isServer(_world.world)) {
-            MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory::class.java).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setModulePos(this), extractor.localModeWatchers)
+        MainProxy.runOnServer(world) {
+            Runnable {
+                MainProxy.sendToPlayerList(
+                    PacketHandler.getPacket(ModuleInventory::class.java)
+                        .setIdentList(ItemIdentifierStack.getListFromInventory(inventory))
+                        .setModulePos(this),
+                    extractor.localModeWatchers
+                )
+            }
         }
     }
 

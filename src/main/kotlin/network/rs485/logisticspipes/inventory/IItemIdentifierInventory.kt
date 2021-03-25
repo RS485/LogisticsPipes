@@ -44,6 +44,6 @@ import net.minecraft.inventory.IInventory
 interface IItemIdentifierInventory : IInventory, ILPCCTypeHolder {
     fun getIDStackInSlot(i: Int): ItemIdentifierStack?
     fun setInventorySlotContents(i: Int, itemstack: ItemIdentifierStack?)
-    val itemsAndCount: Map<ItemIdentifier?, Int?>?
+    val itemsAndCount: Map<ItemIdentifier, Int>
     fun containsItem(item: ItemIdentifier?): Boolean
 }

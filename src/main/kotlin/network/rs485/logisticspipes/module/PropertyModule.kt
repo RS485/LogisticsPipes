@@ -37,19 +37,31 @@
 
 package network.rs485.logisticspipes.module
 
+import logisticspipes.interfaces.IPipeServiceProvider
+import logisticspipes.interfaces.IWorldProvider
 import logisticspipes.interfaces.routing.ISaveState
+import logisticspipes.proxy.MainProxy
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.property.Property
+import network.rs485.logisticspipes.property.addObserver
+import network.rs485.logisticspipes.property.readFromNBT
+import network.rs485.logisticspipes.property.writeToNBT
 
 interface PropertyModule : ISaveState {
     val properties: List<Property<*>>
 
-    override fun readFromNBT(tag: NBTTagCompound) {
-        properties.forEach { prop -> prop.readFromNBT(tag) }
-    }
+    override fun readFromNBT(tag: NBTTagCompound) = properties.readFromNBT(tag)
 
-    override fun writeToNBT(tag: NBTTagCompound) {
-        properties.forEach { prop -> prop.writeToNBT(tag) }
+    override fun writeToNBT(tag: NBTTagCompound) = properties.writeToNBT(tag)
+
+    fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
+        service?.let {
+            MainProxy.runOnServer(world?.world) {
+                Runnable {
+                    properties.addObserver { service.markTileDirty() }
+                }
+            }
+        }
     }
 
 }

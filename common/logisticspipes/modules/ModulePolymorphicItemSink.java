@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.utils.SinkReply;
@@ -24,7 +25,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -34,8 +35,10 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		final ISlotUpgradeManager upgradeManager = _service.getUpgradeManager(slot, positionInt);
-		IInventoryUtil targetInventory = PipeServiceProviderUtilKt.availableSneakyInventories(_service, upgradeManager).stream().findFirst().orElse(null);
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
+		final ISlotUpgradeManager upgradeManager = service.getUpgradeManager(slot, positionInt);
+		IInventoryUtil targetInventory = PipeServiceProviderUtilKt.availableSneakyInventories(service, upgradeManager).stream().findFirst().orElse(null);
 		if (targetInventory == null) {
 			return null;
 		}
@@ -44,7 +47,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 			return null;
 		}
 
-		if (_service.canUseEnergy(3)) {
+		if (service.canUseEnergy(3)) {
 			return _sinkReply;
 		}
 		return null;

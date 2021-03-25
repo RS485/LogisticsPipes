@@ -268,6 +268,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		_delayOffset = CoreRoutedPipe.pipecount % Configs.LOGISTICS_DETECTION_FREQUENCY;
 	}
 
+	@Override
+	public void markTileDirty() {
+		container.markDirty();
+	}
+
 	@Nonnull
 	public RouteLayer getRouteLayer() {
 		if (_routeLayer == null) {
@@ -993,11 +998,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		stat_session_relayed += count;
 		stat_lifetime_relayed += count;
 		updateStats();
-	}
-
-	@Override
-	public World getWorld() {
-		return container.getWorld();
 	}
 
 	@Override

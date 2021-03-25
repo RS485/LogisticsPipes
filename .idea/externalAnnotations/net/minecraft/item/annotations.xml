@@ -1,0 +1,11 @@
+<root>
+    <item name='net.minecraft.item.Item net.minecraft.item.ItemStack onItemUseFinish(net.minecraft.item.ItemStack, net.minecraft.world.World, net.minecraft.entity.EntityLivingBase) 1'>
+        <annotation name='javax.annotation.Nullable'/>
+    </item>
+    <item name='net.minecraft.item.Item net.minecraft.util.ActionResult&lt;net.minecraft.item.ItemStack&gt; onItemRightClick(net.minecraft.world.World, net.minecraft.entity.player.EntityPlayer, net.minecraft.util.EnumHand) 0'>
+        <annotation name='javax.annotation.Nullable'/>
+    </item>
+    <item name='net.minecraft.item.Item net.minecraft.util.EnumActionResult onItemUse(net.minecraft.entity.player.EntityPlayer, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.util.EnumHand, net.minecraft.util.EnumFacing, float, float, float) 1'>
+        <annotation name='javax.annotation.Nullable'/>
+    </item>
+</root>

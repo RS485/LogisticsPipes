@@ -44,7 +44,7 @@ import network.rs485.logisticspipes.world.WorldCoordinatesWrapper
 
 object AdjacentFactory {
     fun createAdjacentCache(parent: CoreRoutedPipe): Adjacent {
-        val connectedTileEntities = WorldCoordinatesWrapper(parent.container).connectedTileEntities()
+        val connectedTileEntities = WorldCoordinatesWrapper(parent.container!!).connectedTileEntities()
             .filter { SimpleServiceLocator.pipeInformationManager.isNotAPipe(it.tileEntity) && !parent.isSideBlocked(it.direction, false) }
 
         // FIXME: container.canPipeConnect(neighbor.getTileEntity(), neighbor.getDirection()))

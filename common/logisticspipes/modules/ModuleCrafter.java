@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.DelayQueue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -138,6 +139,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	protected ItemIdentifierInventory _cleanupInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filter Items", 1);
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
 	protected SinkReply _sinkReply;
+	@Nullable
 	private IRequestItems _invRequester;
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<>(null);
 	private boolean cachedAreAllOrderesToBuffer;
@@ -163,7 +165,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
 	}
@@ -183,10 +185,12 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 
 	protected int spaceFor(@Nonnull ItemStack stack, ItemIdentifier item, boolean includeInTransit) {
 		Pair<String, ItemIdentifier> key = new Pair<>("spaceFor", item);
-		Object cache = _service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
+		final IPipeServiceProvider service = _service;
+		if (service == null) return 0;
+		Object cache = service.getCacheHolder().getCacheFor(CacheTypes.Inventory, key);
 		int onRoute = 0;
 		if (includeInTransit) {
-			onRoute = _service.countOnRoute(item);
+			onRoute = service.countOnRoute(item);
 		}
 		if (cache != null) {
 			return ((Integer) cache) - onRoute;
@@ -198,12 +202,12 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		}
 		final ISlotUpgradeManager upgradeManager = Objects.requireNonNull(getUpgradeManager());
 		final ItemStack finalStack = stack;
-		final Integer count = AdjacentUtilKt.sneakyInventoryUtils(_service.getAvailableAdjacent(), upgradeManager).stream()
+		final Integer count = AdjacentUtilKt.sneakyInventoryUtils(service.getAvailableAdjacent(), upgradeManager).stream()
 				.map(invUtil -> invUtil.roomForItem(finalStack))
 				.reduce(Integer::sum)
 				.orElse(0);
 
-		_service.getCacheHolder().setCache(CacheTypes.Inventory, key, count);
+		service.getCacheHolder().setCache(CacheTypes.Inventory, key, count);
 		return count - onRoute;
 	}
 
@@ -237,8 +241,10 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 
 	@Override
 	public void tick() {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
 		enabledUpdateEntity();
-		if (updateSatelliteFromIDs != null && _service.isNthTick(100)) {
+		if (updateSatelliteFromIDs != null && service.isNthTick(100)) {
 			if (updateSatelliteFromIDs.advancedSatelliteIdArray != null) {
 				boolean canBeRemoved = true;
 				for (int i = 0; i < updateSatelliteFromIDs.advancedSatelliteIdArray.length; i++) {
@@ -302,7 +308,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		int rerequested = 0;
 		while (lostItem != null && rerequested < 100) {
 			Pair<ItemIdentifierStack, IAdditionalTargetInformation> pair = lostItem.get();
-			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
+			if (service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
 				SinkReply reply = LogisticsManager.canSink(pair.getValue1().makeNormalStack(), getRouter(), null, true, pair.getValue1().getItem(), null, true, true, false);
 				if (reply == null || reply.maxNumberOfItems < 1) {
 					_lostItems.add(new DelayedGeneric<>(pair, 9000 + (int) (Math.random() * 2000)));
@@ -310,7 +316,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 					continue;
 				}
 			}
-			int received = RequestTree.requestPartial(pair.getValue1(), (CoreRoutedPipe) _service, pair.getValue2());
+			int received = RequestTree.requestPartial(pair.getValue1(), (CoreRoutedPipe) service, pair.getValue2());
 			rerequested++;
 			if (received < pair.getValue1().getStackSize()) {
 				pair.getValue1().setStackSize(pair.getValue1().getStackSize() - received);
@@ -369,7 +375,9 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 
 	@Override
 	public void canProvide(RequestTreeNode tree, RequestTree root, List<IFilter> filters) {
-		if (!_service.getItemOrderManager().hasExtras() || tree.hasBeenQueried(_service.getItemOrderManager())) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
+		if (!service.getItemOrderManager().hasExtras() || tree.hasBeenQueried(service.getItemOrderManager())) {
 			return;
 		}
 
@@ -385,7 +393,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			}
 		}
 		int remaining = 0;
-		for (LogisticsItemOrder extra : _service.getItemOrderManager()) {
+		for (LogisticsItemOrder extra : service.getItemOrderManager()) {
 			if (extra.getType() == ResourceType.EXTRA) {
 				if (extra.getResource().getItem().equals(requestedItem.getAsItem())) {
 					remaining += extra.getResource().stack.getStackSize();
@@ -404,25 +412,27 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			LogisticsExtraPromise promise = new LogisticsExtraPromise(getCraftedItem().getItem(), Math.min(remaining, tree.getMissingAmount()), this, true);
 			tree.addPromise(promise);
 		}
-		tree.setQueried(_service.getItemOrderManager());
+		tree.setQueried(service.getItemOrderManager());
 	}
 
 	@Override
 	public LogisticsItemOrder fullFill(LogisticsPromise promise, IRequestItems destination, IAdditionalTargetInformation info) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return null;
 		if (promise instanceof LogisticsExtraDictPromise) {
-			_service.getItemOrderManager().removeExtras(((LogisticsExtraDictPromise) promise).getResource());
+			service.getItemOrderManager().removeExtras(((LogisticsExtraDictPromise) promise).getResource());
 		}
 		if (promise instanceof LogisticsExtraPromise) {
-			_service.getItemOrderManager()
+			service.getItemOrderManager()
 					.removeExtras(new DictResource(new ItemIdentifierStack(promise.item, promise.numberOfItems), null));
 		}
 		if (promise instanceof LogisticsDictPromise) {
-			_service.spawnParticle(Particles.WhiteParticle, 2);
-			return _service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise)
+			service.spawnParticle(Particles.WhiteParticle, 2);
+			return service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise)
 					.getResource(), destination, ResourceType.CRAFTING, info);
 		}
-		_service.spawnParticle(Particles.WhiteParticle, 2);
-		return _service.getItemOrderManager()
+		service.spawnParticle(Particles.WhiteParticle, 2);
+		return service.getItemOrderManager()
 				.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, ResourceType.CRAFTING, info);
 	}
 
@@ -434,7 +444,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	@Override
 	@Nonnull
 	public IRouter getRouter() {
-		return _service.getRouter();
+		return Objects.requireNonNull(_service, "service was null").getRouter();
 	}
 
 	@Override
@@ -449,16 +459,20 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 
 	@Override
 	public int getID() {
-		return _service.getRouter().getSimpleID();
+		final IPipeServiceProvider service = _service;
+		if (service == null) return -1;
+		return service.getRouter().getSimpleID();
 	}
 
 	@Override
 	public void registerExtras(IPromise promise) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
 		if (promise instanceof LogisticsDictPromise) {
-			_service.getItemOrderManager().addExtra(((LogisticsDictPromise) promise).getResource());
+			service.getItemOrderManager().addExtra(((LogisticsDictPromise) promise).getResource());
 		} else {
 			ItemIdentifierStack stack = new ItemIdentifierStack(promise.getItemType(), promise.getAmount());
-			_service.getItemOrderManager().addExtra(new DictResource(stack, null));
+			service.getItemOrderManager().addExtra(new DictResource(stack, null));
 		}
 	}
 
@@ -634,7 +648,9 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 
 	@Override
 	public int getTodo() {
-		return _service.getItemOrderManager().totalAmountCountInAllOrders();
+		final IPipeServiceProvider service = _service;
+		if (service == null) return 0;
+		return service.getItemOrderManager().totalAmountCountInAllOrders();
 	}
 
 	private IRouter getSatelliteRouter(int x) {
@@ -802,7 +818,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	public void handleCraftingUpdatePacket(CraftingPipeUpdatePacket packet) {
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			amount = packet.getAmount();
 			clientSideSatelliteNames.liquidSatelliteNameArray = packet.getLiquidSatelliteNameArray();
 			clientSideSatelliteNames.liquidSatelliteName = packet.getLiquidSatelliteName();
@@ -850,12 +866,14 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	public void importFromCraftingTable(EntityPlayer player) {
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			// Send packet asking for import
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setModulePos(this);
 			MainProxy.sendPacketToServer(packet);
 		} else {
-			_service.getAvailableAdjacent().neighbors().keySet().stream()
+			final IPipeServiceProvider service = _service;
+			if (service == null) return;
+			service.getAvailableAdjacent().neighbors().keySet().stream()
 					.flatMap(neighbor ->
 							SimpleServiceLocator.craftingRecipeProviders.stream()
 									.filter(provider -> provider.importRecipe(neighbor.getTileEntity(), _dummyInventory))
@@ -926,7 +944,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	public void defineFluidAmount(int integer, int slot) {
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			amount[slot] = integer;
 		}
 	}
@@ -936,7 +954,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	public void setFluidAmount(int[] amount) {
-		if (MainProxy.isClient(_world.getWorld())) {
+		if (MainProxy.isClient(getWorld())) {
 			this.amount = amount;
 		}
 	}
@@ -961,6 +979,11 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setModulePos(this));
 			return false;
 		}
+
+		final IPipeServiceProvider service = _service;
+		if (service == null) return false;
+		final IWorldProvider worldProvider = _world;
+		if (worldProvider == null) return false;
 
 		// hack to avoid wrenching blocks
 		int savedEquipped = player.inventory.currentItem;
@@ -989,14 +1012,14 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		final boolean guiOpened = _service.getAvailableAdjacent().neighbors().keySet().stream()
+		final boolean guiOpened = service.getAvailableAdjacent().neighbors().keySet().stream()
 				.anyMatch(neighbor -> {
 					if (neighbor.canHandleItems() || SimpleServiceLocator.craftingRecipeProviders.stream().anyMatch(provider -> provider.canOpenGui(neighbor.getTileEntity()))) {
 						final BlockPos pos = neighbor.getTileEntity().getPos();
-						IBlockState blockState = _world.getWorld().getBlockState(pos);
-						return !blockState.getBlock().isAir(blockState, _world.getWorld(), pos) &&
+						IBlockState blockState = worldProvider.getWorld().getBlockState(pos);
+						return !blockState.getBlock().isAir(blockState, worldProvider.getWorld(), pos) &&
 								blockState.getBlock().onBlockActivated(
-										_world.getWorld(), pos, neighbor.getTileEntity().getWorld().getBlockState(pos), player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0
+										worldProvider.getWorld(), pos, neighbor.getTileEntity().getWorld().getBlockState(pos), player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0
 								);
 					} else {
 						return false;
@@ -1010,30 +1033,33 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	public void enabledUpdateEntity() {
-		if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
-			if (_service.isNthTick(6)) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
+
+		if (service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
+			if (service.isNthTick(6)) {
 				cacheAreAllOrderesToBuffer();
 			}
-			if (_service.getItemOrderManager().isFirstOrderWatched()) {
+			if (service.getItemOrderManager().isFirstOrderWatched()) {
 				TileEntity tile = lastAccessedCrafter.get();
 				if (tile != null) {
-					_service.getItemOrderManager().setMachineProgress(SimpleServiceLocator.machineProgressProvider.getProgressForTile(tile));
+					service.getItemOrderManager().setMachineProgress(SimpleServiceLocator.machineProgressProvider.getProgressForTile(tile));
 				} else {
-					_service.getItemOrderManager().setMachineProgress((byte) 0);
+					service.getItemOrderManager().setMachineProgress((byte) 0);
 				}
 			}
 		} else {
 			cachedAreAllOrderesToBuffer = false;
 		}
 
-		if (!_service.isNthTick(6)) {
+		if (!service.isNthTick(6)) {
 			return;
 		}
 
 		waitingForCraft = false;
-		final List<NeighborTileEntity<TileEntity>> adjacentInventories = _service.getAvailableAdjacent().inventories();
+		final List<NeighborTileEntity<TileEntity>> adjacentInventories = service.getAvailableAdjacent().inventories();
 
-		if (!_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
+		if (!service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 			final ISlotUpgradeManager upgradeManager = Objects.requireNonNull(getUpgradeManager());
 			if (upgradeManager.getCrafterCleanup() > 0) {
 				adjacentInventories.stream()
@@ -1041,8 +1067,8 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 						.filter(stack -> !stack.isEmpty())
 						.findFirst()
 						.ifPresent(extracted -> {
-							_service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), EnumFacing.UP);
-							_service.getCacheHolder().trigger(CacheTypes.Inventory);
+							service.queueRoutedItem(SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted), EnumFacing.UP);
+							service.getCacheHolder().trigger(CacheTypes.Inventory);
 						});
 			}
 			return;
@@ -1051,8 +1077,8 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		waitingForCraft = true;
 
 		if (adjacentInventories.size() < 1) {
-			if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
-				_service.getItemOrderManager().sendFailed();
+			if (service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
+				service.getItemOrderManager().sendFailed();
 			}
 			return;
 		}
@@ -1062,12 +1088,14 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			return;
 		}
 
-		_service.spawnParticle(Particles.VioletParticle, 2);
+		service.spawnParticle(Particles.VioletParticle, 2);
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
-			LogisticsItemOrder nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
+		while (itemsleft > 0 && stacksleft > 0 && (service
+				.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
+			LogisticsItemOrder nextOrder = service
+					.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
 			int maxtosend = Math.min(itemsleft, nextOrder.getResource().stack.getStackSize());
 			maxtosend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
@@ -1081,10 +1109,10 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 				}
 			}
 			if (extracted.isEmpty()) {
-				_service.getItemOrderManager().deferSend();
+				service.getItemOrderManager().deferSend();
 				break;
 			}
-			_service.getCacheHolder().trigger(CacheTypes.Inventory);
+			service.getCacheHolder().trigger(CacheTypes.Inventory);
 			Objects.requireNonNull(adjacent);
 			lastAccessedCrafter = new WeakReference<>(adjacent.getTileEntity());
 			// send the new crafted items to the destination
@@ -1092,10 +1120,11 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			while (!extracted.isEmpty()) {
 				if (isExtractedMismatch(nextOrder, extractedID)) {
 					LogisticsItemOrder startOrder = nextOrder;
-					if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
+					if (service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 						do {
-							_service.getItemOrderManager().deferSend();
-							nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA);
+							service.getItemOrderManager().deferSend();
+							nextOrder = service
+									.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA);
 						} while (isExtractedMismatch(nextOrder, extractedID) && startOrder != nextOrder);
 					}
 					if (startOrder == nextOrder) {
@@ -1108,7 +1137,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 						ItemStack stackToSend = extracted.splitStack(numtosend);
 						//Route the unhandled item
 
-						_service.sendStack(stackToSend, -1, ItemSendMode.Normal, null, _service.getPointedOrientation());
+						service.sendStack(stackToSend, -1, ItemSendMode.Normal, null, service.getPointedOrientation());
 						continue;
 					}
 				}
@@ -1130,14 +1159,14 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					item.setAdditionalTargetInformation(nextOrder.getInformation());
-					_service.queueRoutedItem(item, adjacent.getDirection());
-					_service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), defersend, item);
+					service.queueRoutedItem(item, adjacent.getDirection());
+					service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), defersend, item);
 				} else {
-					_service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation(), _service.getPointedOrientation());
-					_service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), false, null);
+					service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation(), service.getPointedOrientation());
+					service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), false, null);
 				}
-				if (_service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
-					nextOrder = _service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
+				if (service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
+					nextOrder = service.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
 				}
 			}
 		}
@@ -1153,8 +1182,10 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	}
 
 	public void cacheAreAllOrderesToBuffer() {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return;
 		boolean result = true;
-		for (LogisticsItemOrder order : _service.getItemOrderManager()) {
+		for (LogisticsItemOrder order : service.getItemOrderManager()) {
 			if (order.getDestination() instanceof IItemSpaceControl) {
 				SinkReply reply = LogisticsManager.canSink(order.getResource().stack.makeNormalStack(), order.getDestination().getRouter(), null, true, order.getResource().getItem(), null, true, false);
 				if (reply != null && reply.bufferMode == BufferMode.NONE && reply.maxNumberOfItems >= 1) {
@@ -1189,6 +1220,8 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 
 	@Nonnull
 	private ItemStack extractFromInventory(@Nonnull IInventoryUtil invUtil, IResource wanteditem, int count) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return ItemStack.EMPTY;
 		ItemIdentifier itemToExtract = null;
 		if (wanteditem instanceof ItemResource) {
 			itemToExtract = ((ItemResource) wanteditem).getItem();
@@ -1210,16 +1243,19 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		}
 		if (itemToExtract == null) return ItemStack.EMPTY;
 		int available = invUtil.itemCount(itemToExtract);
-		if (available == 0 || !_service.canUseEnergy(neededEnergy() * Math.min(count, available))) {
+		if (available == 0 || !service.canUseEnergy(neededEnergy() * Math.min(count, available))) {
 			return ItemStack.EMPTY;
 		}
 		ItemStack extracted = invUtil.getMultipleItems(itemToExtract, Math.min(count, available));
-		_service.useEnergy(neededEnergy() * extracted.getCount());
+		service.useEnergy(neededEnergy() * extracted.getCount());
 		return extracted;
 	}
 
 	@Nonnull
 	private ItemStack extractFromInventoryFiltered(@Nonnull IInventoryUtil invUtil, ItemIdentifierInventory filter, boolean isExcluded, int filterInvLimit) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return ItemStack.EMPTY;
+
 		ItemIdentifier wanteditem = null;
 		boolean found = false;
 		for (ItemIdentifier item : invUtil.getItemsAndCount().keySet()) {
@@ -1233,11 +1269,11 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 			return ItemStack.EMPTY;
 		}
 		int available = invUtil.itemCount(wanteditem);
-		if (available == 0 || !_service.canUseEnergy(neededEnergy() * Math.min(64, available))) {
+		if (available == 0 || !service.canUseEnergy(neededEnergy() * Math.min(64, available))) {
 			return ItemStack.EMPTY;
 		}
 		ItemStack extracted = invUtil.getMultipleItems(wanteditem, Math.min(64, available));
-		_service.useEnergy(neededEnergy() * extracted.getCount());
+		service.useEnergy(neededEnergy() * extracted.getCount());
 		return extracted;
 	}
 
@@ -1259,6 +1295,8 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 	private ItemStack extractFromLogisticsCraftingTable(
 			NeighborTileEntity<LogisticsCraftingTableTileEntity> adjacentCraftingTable,
 			IResource wanteditem, int count) {
+		final IPipeServiceProvider service = _service;
+		if (service == null) return ItemStack.EMPTY;
 		ItemStack extracted = extractFromInventory(
 				Objects.requireNonNull(LPNeighborTileEntityKt.getInventoryUtil(adjacentCraftingTable)),
 				wanteditem, count);
@@ -1267,7 +1305,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		}
 		ItemStack retstack = ItemStack.EMPTY;
 		while (count > 0) {
-			ItemStack stack = adjacentCraftingTable.getTileEntity().getOutput(wanteditem, _service);
+			ItemStack stack = adjacentCraftingTable.getTileEntity().getOutput(wanteditem, service);
 			if (stack.isEmpty()) {
 				break;
 			}
@@ -1283,7 +1321,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 					break;
 				}
 			}
-			if (!_service.useEnergy(neededEnergy() * stack.getCount())) {
+			if (!service.useEnergy(neededEnergy() * stack.getCount())) {
 				break;
 			}
 

@@ -1,10 +1,12 @@
 package logisticspipes.pipes;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LogisticsPipes;
@@ -15,6 +17,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
@@ -40,17 +43,19 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	public Object getTargetUUID() {
-		if (inv.getStackInSlot(0) == null) {
+		final ItemIdentifierStack itemident = inv.getIDStackInSlot(0);
+		if (itemident == null) {
 			return null;
 		}
-		if (!inv.getStackInSlot(0).hasTagCompound()) {
+		final ItemStack stack = itemident.makeNormalStack();
+		if (!stack.hasTagCompound()) {
 			return null;
 		}
-		if (!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
+		if (!Objects.requireNonNull(stack.getTagCompound()).hasKey("UUID")) {
 			return null;
 		}
 		spawnParticle(Particles.WhiteParticle, 2);
-		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
+		return UUID.fromString(stack.getTagCompound().getString("UUID"));
 	}
 
 	@Override
@@ -71,10 +76,11 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	private void dropFreqCard() {
-		if (inv.getStackInSlot(0) == null) {
+		final ItemIdentifierStack itemident = inv.getIDStackInSlot(0);
+		if (itemident == null) {
 			return;
 		}
-		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
+		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), itemident.makeNormalStack());
 		getWorld().spawnEntity(item);
 		inv.clearInventorySlotContents(0);
 	}

@@ -25,7 +25,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	private SinkReply _sinkReply;
 
 	@Override
-	public void registerPosition(ModulePositionType slot, int positionInt) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
 		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
 	}

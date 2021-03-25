@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.property
 
 import java.util.*
+import kotlin.streams.toList
 
 abstract class PropertyLayer(properties: Collection<Property<*>>) {
     private val lowerLayerProperties: List<Property<*>> = properties.toList()
@@ -95,6 +96,10 @@ abstract class PropertyLayer(properties: Collection<Property<*>>) {
 
         return property.copyValue()
     }
+
+    fun changedProperties(): Collection<Property<*>> = changedProperties.stream().mapToObj { properties[it] }.toList()
+
+    fun unregister() = lowerLayerProperties.forEach { it.propertyObservers.remove(::onChange) }
 
     /**
      * The passed property is *only* for checking equality with the properties passed to the layer as input properties.

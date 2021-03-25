@@ -1,6 +1,7 @@
 package logisticspipes.gui.modules;
 
 import java.io.IOException;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
@@ -9,22 +10,38 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.module.ProviderModuleIncludePacket;
-import logisticspipes.network.packets.module.ProviderModuleNextModePacket;
+import logisticspipes.network.packets.module.PropertyModuleUpdate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
+import network.rs485.logisticspipes.inventory.ProviderMode;
+import network.rs485.logisticspipes.property.BooleanProperty;
+import network.rs485.logisticspipes.property.EnumProperty;
+import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.Property;
+import network.rs485.logisticspipes.property.PropertyLayer;
 
 public class GuiProvider extends ModuleBaseGui {
 
-	private final ModuleProvider _provider;
+	private final PropertyLayer propertyLayer;
+	private final InventoryProperty filterInventory;
+	private final EnumProperty<ProviderMode> providerMode;
+	private final BooleanProperty isExclusionFilter;
+	private final BooleanProperty isActive;
 
 	public GuiProvider(IInventory playerInventory, ModuleProvider provider) {
 		super(null, provider);
-		_provider = provider;
+		propertyLayer = new PropertyLayer(provider.propertyList) {
 
-		DummyContainer dummy = new DummyContainer(playerInventory, _provider.filterInventory);
+			@Override
+			protected void onChange(@Nonnull Property<?> property) {}
+		};
+		filterInventory = propertyLayer.getWritableProperty(provider.filterInventory);
+		providerMode = propertyLayer.getWritableProperty(provider.providerMode);
+		isExclusionFilter = propertyLayer.getWritableProperty(provider.isExclusionFilter);
+		isActive = propertyLayer.getWritableProperty(provider.isActive);
+
+		DummyContainer dummy = new DummyContainer(playerInventory, filterInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 
 		int xOffset = 72;
@@ -39,7 +56,6 @@ public class GuiProvider extends ModuleBaseGui {
 		inventorySlots = dummy;
 		xSize = 194;
 		ySize = 186;
-
 	}
 
 	@Override
@@ -47,21 +63,27 @@ public class GuiProvider extends ModuleBaseGui {
 		super.initGui();
 		buttonList.clear();
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 40, height / 2 - 59, 45, 20,
-				() -> (_provider.isExclusionFilter.getValue() ? "Exclude" : "Include")));
+				() -> (isExclusionFilter.getValue() ? "Exclude" : "Include")));
 		buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
+	}
+
+	@Override
+	public void onGuiClosed() {
+		super.onGuiClosed();
+		if (this.mc.player != null) {
+			propertyLayer.unregister();
+			MainProxy.sendPacketToServer(PropertyModuleUpdate.fromLayer(propertyLayer).setModulePos(module));
+		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
-			_provider.isExclusionFilter.toggle();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setModulePos(_provider));
+			isExclusionFilter.toggle();
 		} else if (guibutton.id == 1) {
-			_provider.providerMode.next();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
+			providerMode.next();
 		} else if (guibutton.id == 2) {
-			_provider.isActive.toggle();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
+			isActive.toggle();
 		}
 		super.actionPerformed(guibutton);
 	}
@@ -80,9 +102,19 @@ public class GuiProvider extends ModuleBaseGui {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		mc.fontRenderer.drawString(_provider.getFilterInventory().getName(), xSize / 2 - mc.fontRenderer.getStringWidth(_provider.getFilterInventory().getName()) / 2, 6, 0x404040);
+		mc.fontRenderer.drawString(
+			filterInventory.getName(),
+			xSize / 2 - mc.fontRenderer.getStringWidth(filterInventory.getName()) / 2,
+			6,
+			0x404040
+		);
 		mc.fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
 		//mc.fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
-		mc.fontRenderer.drawString("Excess Inventory: " + _provider.providerMode.getValue().getExtractionModeString(), 9, ySize - 112, 0x404040);
+		mc.fontRenderer.drawString(
+			"Excess Inventory: " + providerMode.getValue().getExtractionModeString(),
+			9,
+			ySize - 112,
+			0x404040
+		);
 	}
 }

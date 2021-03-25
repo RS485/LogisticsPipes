@@ -180,7 +180,7 @@ public abstract class LPTravelingItem {
 			LPTravelingItemClient copy = new LPTravelingItemClient(id, position, input, output, yaw);
 			copy.speed = speed;
 			copy.hoverStart = hoverStart;
-			copy.item = item.clone();
+			copy.item = new ItemIdentifierStack(item);
 			copy.age = age;
 			copy.container = container;
 			return copy;
@@ -331,7 +331,8 @@ public abstract class LPTravelingItem {
 				if (destinationRouter.getPipe() != null) {
 					destinationRouter.getPipe().notifyOfReroute(info);
 					if (destinationRouter.getPipe() instanceof IRequireReliableTransport) {
-						((IRequireReliableTransport) destinationRouter.getPipe()).itemLost(info.getItem().clone(), info.targetInfo);
+						((IRequireReliableTransport) destinationRouter.getPipe()).itemLost(
+								new ItemIdentifierStack(info.getItem()), info.targetInfo);
 					}
 					if (destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
 						if (info.getItem().getItem().isFluidContainer()) {
@@ -385,7 +386,7 @@ public abstract class LPTravelingItem {
 				throw new UnsupportedOperationException("Can't split up a FluidContainer");
 			}
 			ItemIdentifierStack stackToKeep = getItemIdentifierStack();
-			ItemIdentifierStack stackToSend = stackToKeep.clone();
+			ItemIdentifierStack stackToSend = new ItemIdentifierStack(stackToKeep);
 			stackToKeep.setStackSize(itemsToTake);
 			stackToSend.setStackSize(stackToSend.getStackSize() - itemsToTake);
 

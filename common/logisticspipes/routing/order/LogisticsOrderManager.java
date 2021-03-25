@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -50,7 +50,7 @@ public abstract class LogisticsOrderManager<T extends LogisticsOrder, I> impleme
 				return;
 			}
 		}
-		list.addLast(stack.clone());
+		list.addLast(new ItemIdentifierStack(stack));
 	}
 
 	protected void listen() {

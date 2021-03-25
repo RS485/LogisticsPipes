@@ -39,12 +39,16 @@ package network.rs485.logisticspipes.property
 
 import net.minecraft.nbt.NBTTagCompound
 
-class BooleanProperty(initialValue: Boolean, private val tagKey: String) : ValueProperty<Boolean>(initialValue) {
+class BooleanProperty(initialValue: Boolean, override val tagKey: String) : ValueProperty<Boolean>(initialValue) {
     override fun readFromNBT(tag: NBTTagCompound) {
         if (tag.hasKey(tagKey)) value = tag.getBoolean(tagKey)
     }
 
     override fun writeToNBT(tag: NBTTagCompound) = tag.setBoolean(tagKey, value)
+
+    override fun copyValue(): Boolean = value
+
+    override fun copyProperty(): BooleanProperty = BooleanProperty(copyValue(), tagKey)
 
     fun toggle(): Boolean = (!value).also { value = it }
 

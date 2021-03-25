@@ -40,12 +40,12 @@ package network.rs485.logisticspipes.property
 import logisticspipes.interfaces.routing.ISaveState
 
 interface Property<V> : ISaveState {
+    val tagKey: String
     val propertyObservers: MutableList<ObserverCallback<V>>
 
     fun iChanged() = propertyObservers.forEach { observer -> observer.invoke(this) }
-
     fun <T> T.alsoIChanged() = this.also { iChanged() }
-
     fun addObserver(callback: ObserverCallback<V>) = propertyObservers.add(callback)
-
+    fun copyValue(): V
+    fun copyProperty(): Property<V>
 }

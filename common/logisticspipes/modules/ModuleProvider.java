@@ -361,10 +361,6 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 		return filterInventory;
 	}
 
-	public void nextProviderMode() {
-		providerMode.setValue(ProviderMode.modeFromIntSafe(providerMode.getValue().ordinal() + 1));
-	}
-
 	@Override
 	public @Nonnull List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();

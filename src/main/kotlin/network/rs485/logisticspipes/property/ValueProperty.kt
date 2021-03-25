@@ -47,4 +47,11 @@ abstract class ValueProperty<V>(initialValue: V) : Property<V> {
         if (oldValue != newValue) iChanged()
     }
 
+    override fun equals(other: Any?): Boolean =
+        other is ValueProperty<*> && tagKey == other.tagKey && value == other.value
+
+    override fun hashCode(): Int = value.hashCode()
+
+    override fun toString(): String = "Property($value)"
+
 }

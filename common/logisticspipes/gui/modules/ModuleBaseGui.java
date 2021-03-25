@@ -24,13 +24,13 @@ public abstract class ModuleBaseGui extends LogisticsBaseGuiScreen {
 	}
 
 	@Override
-	protected void keyTyped(char c, int i) throws IOException {
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (module == null) {
-			super.keyTyped(c, i);
+			super.keyTyped(typedChar, keyCode);
 			return;
 		}
-		if (i == 1 || c == 'e') {
-			super.keyTyped(c, i);
+		if (keyCode == 1 || typedChar == 'e') {
+			super.keyTyped(typedChar, keyCode);
 			if (module.getSlot() == ModulePositionType.SLOT) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiOpenChassis.class).setBlockPos(module.getBlockPos()));
 			}

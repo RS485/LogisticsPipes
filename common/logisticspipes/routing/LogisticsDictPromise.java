@@ -10,6 +10,7 @@ import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.order.IOrderInfoProvider;
+import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class LogisticsDictPromise extends LogisticsPromise {
 
@@ -19,7 +20,7 @@ public class LogisticsDictPromise extends LogisticsPromise {
 	public LogisticsDictPromise(DictResource item, int stackSize, IProvideItems sender, IOrderInfoProvider.ResourceType type) {
 		super(item.stack.getItem(), stackSize, sender, type);
 		this.resource = item;
-		this.resource.stack = this.resource.stack.clone();
+		this.resource.stack = new ItemIdentifierStack(this.resource.stack);
 		this.resource.stack.setStackSize(stackSize);
 	}
 

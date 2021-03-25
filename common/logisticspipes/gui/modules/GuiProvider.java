@@ -24,7 +24,7 @@ public class GuiProvider extends ModuleBaseGui {
 		super(null, provider);
 		_provider = provider;
 
-		DummyContainer dummy = new DummyContainer(playerInventory, _provider.getFilterInventory());
+		DummyContainer dummy = new DummyContainer(playerInventory, _provider.filterInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 
 		int xOffset = 72;
@@ -57,7 +57,7 @@ public class GuiProvider extends ModuleBaseGui {
 			_provider.isExclusionFilter.toggle();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setModulePos(_provider));
 		} else if (guibutton.id == 1) {
-			_provider.nextProviderMode();
+			_provider.providerMode.next();
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setModulePos(_provider));
 		} else if (guibutton.id == 2) {
 			_provider.isActive.toggle();

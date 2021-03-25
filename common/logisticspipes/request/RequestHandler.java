@@ -47,7 +47,7 @@ public class RequestHandler {
 			player.sendMessage(new TextComponentTranslation("lp.misc.noenergy"));
 			return;
 		}
-		RequestTree.request(stack.clone(), pipe, new RequestLog() {
+		RequestTree.request(new ItemIdentifierStack(stack), pipe, new RequestLog() {
 
 			@Override
 			public void handleMissingItems(List<IResource> resources) {
@@ -72,7 +72,7 @@ public class RequestHandler {
 	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
 		final List<IResource> usedList = new ArrayList<>();
 		final List<IResource> missingList = new ArrayList<>();
-		RequestTree.simulate(stack.clone(), pipe, new RequestLog() {
+		RequestTree.simulate(new ItemIdentifierStack(stack), pipe, new RequestLog() {
 
 			@Override
 			public void handleMissingItems(List<IResource> resources) {

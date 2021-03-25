@@ -43,7 +43,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 
-class InventoryProperty(private val inv: ItemIdentifierInventory, private val tagKey: String) :
+class InventoryProperty(private val inv: ItemIdentifierInventory, override val tagKey: String) :
     Property<ItemIdentifierInventory>, IItemIdentifierInventory by inv {
 
     override val propertyObservers: MutableList<ObserverCallback<ItemIdentifierInventory>> = mutableListOf()
@@ -65,5 +65,9 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, private val ta
     }
 
     override fun writeToNBT(tag: NBTTagCompound) = inv.writeToNBT(tag, tagKey)
+
+    override fun copyValue(): ItemIdentifierInventory = ItemIdentifierInventory(inv)
+
+    override fun copyProperty(): InventoryProperty = InventoryProperty(copyValue(), tagKey)
 
 }

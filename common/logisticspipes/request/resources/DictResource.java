@@ -106,7 +106,7 @@ public class DictResource implements IResource {
 
 	@Override
 	public IResource clone(int multiplier) {
-		ItemIdentifierStack stack = this.stack.clone();
+		ItemIdentifierStack stack = new ItemIdentifierStack(this.stack);
 		stack.setStackSize(stack.getStackSize() * multiplier);
 		DictResource clone = new DictResource(stack, requester);
 		clone.use_od = use_od;
@@ -117,7 +117,7 @@ public class DictResource implements IResource {
 	}
 
 	public DictResource clone() {
-		DictResource clone = new DictResource(this.stack.clone(), requester);
+		DictResource clone = new DictResource(new ItemIdentifierStack(this.stack), requester);
 		clone.use_od = use_od;
 		clone.ignore_dmg = ignore_dmg;
 		clone.ignore_nbt = ignore_nbt;
@@ -152,7 +152,7 @@ public class DictResource implements IResource {
 
 	@Override
 	public IResource copyForDisplayWith(int amount) {
-		ItemIdentifierStack stack = this.stack.clone();
+		ItemIdentifierStack stack = new ItemIdentifierStack(this.stack);
 		stack.setStackSize(amount);
 		DictResource clone = new DictResource(stack, null);
 		clone.use_od = use_od;

@@ -15,6 +15,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.world.CoordinateUtils;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
@@ -91,7 +92,9 @@ public class EnderIOTransceiverConnection implements ISpecialTileConnection {
 		}
 		TileEntity pipe = list.iterator().next();
 		if (pipe instanceof LogisticsTileGenericPipe) {
-			((CoreRoutedPipe) ((LogisticsTileGenericPipe) pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
+			final CoreRoutedPipe pipeTile = (CoreRoutedPipe) ((LogisticsTileGenericPipe) pipe).pipe;
+			final ItemIdentifierStack copiedStack = new ItemIdentifierStack(data.getItemIdentifierStack());
+			pipeTile.queueUnroutedItemInformation(copiedStack, data.getInfo());
 		} else {
 			new RuntimeException("Only LP pipes can be next to transceiver to queue item information").printStackTrace();
 		}

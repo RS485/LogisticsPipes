@@ -41,7 +41,7 @@ import net.minecraft.nbt.NBTTagCompound
 
 class NullableEnumProperty<E : Enum<E>>(
     private val defaultValue: E?,
-    private val tagKey: String,
+    override val tagKey: String,
     private val enumValues: Array<E>,
 ) : ValueProperty<E?>(defaultValue) {
 
@@ -58,5 +58,15 @@ class NullableEnumProperty<E : Enum<E>>(
 
     override fun writeToNBT(tag: NBTTagCompound) =
         value?.let { tag.setInteger(tagKey, it.ordinal) } ?: tag.setInteger(tagKey, -1)
+
+    override fun copyValue(): E? = value
+
+    override fun copyProperty(): NullableEnumProperty<E> =
+        NullableEnumProperty(defaultValue, tagKey, enumValues).also { it.value = copyValue() }
+
+    /**
+     * This will throw a NPE when the current value is null.
+     */
+    fun next() = (enumValues.getOrNull(value!!.ordinal + 1) ?: enumValues[0]).also { value = it }
 
 }

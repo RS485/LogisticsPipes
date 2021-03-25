@@ -42,7 +42,7 @@ public class ItemRoutingInformation {
 		that.jamlist = new ArrayList<>(jamlist);
 		that.tracker = tracker;
 		that.targetInfo = targetInfo;
-		that.item = getItem().clone();
+		that.item = new ItemIdentifierStack(getItem());
 		return that;
 	}
 

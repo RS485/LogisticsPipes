@@ -72,7 +72,7 @@ public class ItemResource implements IResource {
 
 	@Override
 	public IResource clone(int multiplier) {
-		ItemIdentifierStack stack = this.stack.clone();
+		ItemIdentifierStack stack = new ItemIdentifierStack(this.stack);
 		stack.setStackSize(stack.getStackSize() * multiplier);
 		return new ItemResource(stack, requester);
 	}
@@ -90,7 +90,7 @@ public class ItemResource implements IResource {
 
 	@Override
 	public IResource copyForDisplayWith(int amount) {
-		ItemIdentifierStack stack = this.stack.clone();
+		ItemIdentifierStack stack = new ItemIdentifierStack(this.stack);
 		stack.setStackSize(amount);
 		return new ItemResource(stack, requester);
 	}

@@ -41,7 +41,7 @@ import net.minecraft.nbt.NBTTagCompound
 
 class EnumProperty<E : Enum<E>>(
     private val defaultValue: E,
-    private val tagKey: String,
+    override val tagKey: String,
     private val enumValues: Array<E>,
 ) : ValueProperty<E>(defaultValue) {
 
@@ -50,5 +50,12 @@ class EnumProperty<E : Enum<E>>(
     }
 
     override fun writeToNBT(tag: NBTTagCompound) = tag.setInteger(tagKey, value.ordinal)
+
+    override fun copyValue(): E = value
+
+    override fun copyProperty(): EnumProperty<E> =
+        EnumProperty(defaultValue, tagKey, enumValues).also { it.value = copyValue() }
+
+    fun next() = (enumValues.getOrNull(value.ordinal + 1) ?: enumValues[0]).also { value = it }
 
 }

@@ -73,6 +73,20 @@ public class ItemIdentifierInventory implements ISaveState, Iterable<Pair<ItemId
 		this(size, name, stackLimit, false);
 	}
 
+	public ItemIdentifierInventory(@Nonnull ItemIdentifierInventory copy) {
+		_contents = Arrays.copyOf(copy._contents, copy._contents.length);
+		for (int i = 0; i < _contents.length; i++) {
+			if (copy._contents[i] != null) _contents[i] = new ItemIdentifierStack(copy._contents[i]);
+		}
+		_name = copy._name;
+		_stackLimit = copy._stackLimit;
+		_contentsMap = new HashMap<>(copy._contentsMap);
+		_contentsUndamagedSet = new HashSet<>(copy._contentsUndamagedSet);
+		_contentsNoNBTSet = new HashSet<>(copy._contentsNoNBTSet);
+		_contentsUndamagedNoNBTSet = new HashSet<>(copy._contentsUndamagedNoNBTSet);
+		isLiquidInventory = copy.isLiquidInventory;
+	}
+
 	@Override
 	public int getSizeInventory() {
 		return _contents.length;

@@ -1,12 +1,14 @@
 package logisticspipes.network.abstractpackets;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.world.World;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.exception.TargetNotFoundException;
@@ -84,13 +86,21 @@ public abstract class ModuleCoordinatesPacket extends CoordinatesPacket {
 				if (player.openContainer instanceof DummyModuleContainer) {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 					module = dummy.getModule();
+				} else if (player.openContainer instanceof ContainerPlayer) {
+					module = ItemModule.getLogisticsModule(player, getPositionInt());
+					if (module == null) {
+						throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", module not found at slot " + getPositionInt(), this);
+					}
 				} else {
-					throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", container wasn't a DummyModule Container", this);
+					throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", no DummyModuleContainer open and the player is in another GUI", this);
 				}
 			} else {
 				module = MainProxy.proxy.getModuleFromGui();
 				if (module == null) {
-					throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", GUI didn't provide the module", this);
+					module = ItemModule.getLogisticsModule(player, getPositionInt());
+				}
+				if (module == null) {
+					throw new TargetNotFoundException("Couldn't find " + clazz.getName() + ", GUI didn't provide the module and module not found at slot " + getPositionInt(), this);
 				}
 			}
 		} else {

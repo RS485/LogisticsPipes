@@ -3,6 +3,7 @@ package logisticspipes.network.guis.module.inhand;
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.gui.modules.GuiSneakyConfigurator;
+import logisticspipes.items.ItemModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
@@ -21,7 +22,7 @@ public class SneakyModuleInHandGuiProvider extends ModuleInHandGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsModule module = getLogisticsModule(player);
+		LogisticsModule module = ItemModule.getLogisticsModule(player, getInvSlot());
 		if (!(module instanceof Gui && module instanceof SneakyDirection)) {
 			return null;
 		}

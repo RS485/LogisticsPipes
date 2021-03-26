@@ -4,8 +4,10 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
+import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -55,10 +57,17 @@ public class PropertyModuleUpdate extends ModuleCoordinatesPacket {
 		// sync updated properties
 		PropertyModule.DefaultImpls.readFromNBT(module, tag);
 
-		MainProxy.runOnServer(player.world, () -> () ->
+		if (!getType().isInWorld() && player.openContainer instanceof ContainerPlayer) {
+			// FIXME: saveInformation & markDirty on module property change? should be called only once
+			// sync slot in player inventory and mark player inventory dirty
+			ItemModuleInformationManager.saveInformation(player.inventory.mainInventory.get(getPositionInt()), module);
+			player.inventory.markDirty();
+		}
+
+		MainProxy.runOnServer(player.world, () -> () -> {
 			// resync client
-			MainProxy.sendPacketToPlayer(fromModule(module).setModulePos(module), player)
-		);
+			MainProxy.sendPacketToPlayer(fromModule(module).setModulePos(module), player);
+		});
 	}
 
 	@Nonnull

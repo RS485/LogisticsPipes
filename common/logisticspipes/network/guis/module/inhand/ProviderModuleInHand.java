@@ -2,6 +2,7 @@ package logisticspipes.network.guis.module.inhand;
 
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.items.ItemModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -19,7 +20,7 @@ public class ProviderModuleInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsModule module = getLogisticsModule(player);
+		LogisticsModule module = ItemModule.getLogisticsModule(player, getInvSlot());
 		if (!(module instanceof ModuleProvider)) {
 			return null;
 		}

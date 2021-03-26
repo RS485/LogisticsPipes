@@ -50,6 +50,7 @@ import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.DummyWorldProvider;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.StringUtils;
@@ -121,8 +122,21 @@ public class ItemModule extends LogisticsItem {
 		registry.register(module);
 	}
 
+	@Nullable
+	public static LogisticsModule getLogisticsModule(@Nonnull EntityPlayer player, int invSlot) {
+		ItemStack item = player.inventory.mainInventory.get(invSlot);
+		if (item.isEmpty() || !(item.getItem() instanceof ItemModule)) return null;
+		LogisticsModule module = ((ItemModule) item.getItem()).getModuleForItem(
+			item, null, new DummyWorldProvider(player.getEntityWorld()), null
+		);
+		if (module == null) return null;
+		module.registerPosition(ModulePositionType.IN_HAND, invSlot);
+		ItemModuleInformationManager.readInformation(item, module);
+		return module;
+	}
+
 	private void openConfigGui(@Nonnull ItemStack stack, EntityPlayer player, World world) {
-		LogisticsModule module = getModuleForItem(stack, null, null, null);
+		LogisticsModule module = getModuleForItem(stack, null, new DummyWorldProvider(world), null);
 		if (module instanceof Gui && !stack.isEmpty()) {
 			ItemModuleInformationManager.readInformation(stack, module);
 			module.registerPosition(ModulePositionType.IN_HAND, player.inventory.currentItem);

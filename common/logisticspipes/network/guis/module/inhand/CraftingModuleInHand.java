@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.gui.GuiCraftingPipe;
+import logisticspipes.items.ItemModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.abstractguis.GuiProvider;
@@ -34,7 +35,7 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsModule module = getLogisticsModule(player);
+		LogisticsModule module = ItemModule.getLogisticsModule(player, getInvSlot());
 		if (!(module instanceof ModuleCrafter)) {
 			return null;
 		}

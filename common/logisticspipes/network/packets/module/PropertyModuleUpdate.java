@@ -65,7 +65,7 @@ public class PropertyModuleUpdate extends ModuleCoordinatesPacket {
 		}
 
 		MainProxy.runOnServer(player.world, () -> () -> {
-			// resync client
+			// resync client; always
 			MainProxy.sendPacketToPlayer(fromModule(module).setModulePos(module), player);
 		});
 	}

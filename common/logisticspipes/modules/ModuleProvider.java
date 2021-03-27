@@ -80,7 +80,7 @@ import network.rs485.logisticspipes.property.NullableEnumProperty;
 import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "Provider Module")
-public class ModuleProvider extends LogisticsModule implements PropertyModule, SneakyDirection, ILegacyActiveModule,
+public class ModuleProvider extends PropertyModule implements SneakyDirection, ILegacyActiveModule,
 		IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, Gui {
 
 	private final Map<ItemIdentifier, Integer> displayMap = new TreeMap<>();
@@ -106,32 +106,19 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 
 	private final IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
-	@Override
-	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
-		super.registerHandler(world, service);
-		PropertyModule.DefaultImpls.registerHandler(this, world, service);
-	}
-
 	public ModuleProvider() {}
 
 	public static String getName() {
 		return "provider";
 	}
 
+	/**
+	 * Returns a list of all the properties of this module.
+	 */
 	@Nonnull
 	@Override
 	public List<Property<?>> getProperties() {
 		return propertyList;
-	}
-
-	@Override
-	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		PropertyModule.DefaultImpls.readFromNBT(this, nbttagcompound);
-	}
-
-	@Override
-	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		PropertyModule.DefaultImpls.writeToNBT(this, nbttagcompound);
 	}
 
 	@Override

@@ -8,15 +8,13 @@ import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
-import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.module.PropertyModule;
-import network.rs485.logisticspipes.property.PropertyLayer;
-import network.rs485.logisticspipes.property.UtilKt;
+import network.rs485.logisticspipes.property.PropertyHolder;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -49,13 +47,13 @@ public class PropertyModuleUpdate extends ModuleCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final ModuleProvider module = this.getLogisticsModule(player, ModuleProvider.class);
+		final PropertyModule module = this.getLogisticsModule(player, PropertyModule.class);
 		if (module == null) {
 			return;
 		}
 
 		// sync updated properties
-		PropertyModule.DefaultImpls.readFromNBT(module, tag);
+		module.readFromNBT(tag);
 
 		if (!getType().isInWorld() && player.openContainer instanceof ContainerPlayer) {
 			// FIXME: saveInformation & markDirty on module property change? should be called only once
@@ -66,21 +64,14 @@ public class PropertyModuleUpdate extends ModuleCoordinatesPacket {
 
 		MainProxy.runOnServer(player.world, () -> () -> {
 			// resync client; always
-			MainProxy.sendPacketToPlayer(fromModule(module).setModulePos(module), player);
+			MainProxy.sendPacketToPlayer(fromPropertyHolder(module).setModulePos(module), player);
 		});
 	}
 
 	@Nonnull
-	public static ModuleCoordinatesPacket fromModule(PropertyModule module) {
+	public static ModuleCoordinatesPacket fromPropertyHolder(PropertyHolder holder) {
 		final PropertyModuleUpdate packet = PacketHandler.getPacket(PropertyModuleUpdate.class);
-		PropertyModule.DefaultImpls.writeToNBT(module, packet.tag);
-		return packet;
-	}
-
-	@Nonnull
-	public static PropertyModuleUpdate fromLayer(PropertyLayer propertyLayer) {
-		final PropertyModuleUpdate packet = PacketHandler.getPacket(PropertyModuleUpdate.class);
-		UtilKt.writeToNBT(propertyLayer.changedProperties(), packet.tag);
+		PropertyModule.DefaultImpls.writeToNBT(holder, packet.tag);
 		return packet;
 	}
 

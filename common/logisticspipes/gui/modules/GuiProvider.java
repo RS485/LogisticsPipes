@@ -71,9 +71,9 @@ public class GuiProvider extends ModuleBaseGui {
 	public void onGuiClosed() {
 		super.onGuiClosed();
 		propertyLayer.unregister();
-		if (this.mc.player != null && !propertyLayer.changedProperties().isEmpty()) {
+		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
 			// send update to server, when there are changed properties
-			MainProxy.sendPacketToServer(PropertyModuleUpdate.fromLayer(propertyLayer).setModulePos(module));
+			MainProxy.sendPacketToServer(PropertyModuleUpdate.fromPropertyHolder(propertyLayer).setModulePos(module));
 		}
 	}
 

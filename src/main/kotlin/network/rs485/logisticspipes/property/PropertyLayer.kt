@@ -40,27 +40,33 @@ package network.rs485.logisticspipes.property
 import java.util.*
 import kotlin.streams.toList
 
-abstract class PropertyLayer(propertiesIn: Collection<Property<*>>) {
-    private val lowerLayerProperties: List<Property<*>> = propertiesIn.toList()
-    private val properties: List<Property<*>> = propertiesIn.map(Property<*>::copyProperty).toList()
-    private val changedProperties: BitSet = BitSet(propertiesIn.size)
+abstract class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder {
+    private val lowerLayer: List<Property<*>> = propertiesIn.toList()
+    private val upperLayer: List<Property<*>> = propertiesIn.map(Property<*>::copyProperty).toList()
+    private val changedIndices: BitSet = BitSet(propertiesIn.size)
+
+    /**
+     * A list consisting only of changed [properties][Property] on this [PropertyLayer].
+     */
+    override val properties: List<Property<*>>
+        get() = changedIndices.stream().mapToObj { upperLayer[it] }.toList()
 
     init {
-        lowerLayerProperties.addObserver(::onChange)
-        properties.addObserver(::onPropertyWrite)
+        lowerLayer.addObserver(::onChange)
+        upperLayer.addObserver(::onPropertyWrite)
     }
 
-    private fun onPropertyWrite(prop: Property<*>) = lookupIndex(prop, properties).let {
-        if (!changedProperties.get(it)) onFirstChange(it)
-        changedProperties.set(it)
+    private fun onPropertyWrite(prop: Property<*>) = lookupIndex(prop, upperLayer).let {
+        if (!changedIndices.get(it)) onFirstChange(it)
+        changedIndices.set(it)
     }
 
     private fun onFirstChange(idx: Int) {
         // replace lower layer change listener with ours
-        lowerLayerProperties[idx].propertyObservers.remove(::onChange)
-        properties[idx].addObserver { onChange(lowerLayerProperties[idx]) }
-        properties[idx].propertyObservers.remove(::onPropertyWrite)
-        onChange(lowerLayerProperties[idx])
+        lowerLayer[idx].propertyObservers.remove(::onChange)
+        upperLayer[idx].addObserver { onChange(lowerLayer[idx]) }
+        upperLayer[idx].propertyObservers.remove(::onPropertyWrite)
+        onChange(lowerLayer[idx])
     }
 
     private fun lookupIndex(prop: Property<*>, propList: List<Property<*>>): Int =
@@ -70,16 +76,16 @@ abstract class PropertyLayer(propertiesIn: Collection<Property<*>>) {
     @Suppress("UNCHECKED_CAST")
     fun <V : Property<T>, T> getWritableProperty(prop: V): V {
         // same index, same type
-        return properties[lookupIndex(prop, lowerLayerProperties)] as V
+        return upperLayer[lookupIndex(prop, lowerLayer)] as V
     }
 
     @Suppress("UNCHECKED_CAST")
     fun <V : ValueProperty<T>, T> getLayerValue(prop: V): T {
-        val idx = lookupIndex(prop, lowerLayerProperties)
-        val valueProperty = if (changedProperties.get(idx)) {
-            properties[idx]
+        val idx = lookupIndex(prop, lowerLayer)
+        val valueProperty = if (changedIndices.get(idx)) {
+            upperLayer[idx]
         } else {
-            lowerLayerProperties[idx]
+            lowerLayer[idx]
         } as ValueProperty<T>
 
         return valueProperty.value
@@ -87,19 +93,17 @@ abstract class PropertyLayer(propertiesIn: Collection<Property<*>>) {
 
     @Suppress("UNCHECKED_CAST")
     fun <V : Property<T>, T> getLayerValue(prop: V): T {
-        val idx = lookupIndex(prop, lowerLayerProperties)
-        val property = if (changedProperties.get(idx)) {
-            properties[idx]
+        val idx = lookupIndex(prop, lowerLayer)
+        val property = if (changedIndices.get(idx)) {
+            upperLayer[idx]
         } else {
-            lowerLayerProperties[idx]
+            lowerLayer[idx]
         } as Property<T>
 
         return property.copyValue()
     }
 
-    fun changedProperties(): Collection<Property<*>> = changedProperties.stream().mapToObj { properties[it] }.toList()
-
-    fun unregister() = lowerLayerProperties.forEach { it.propertyObservers.remove(::onChange) }
+    fun unregister() = lowerLayer.forEach { it.propertyObservers.remove(::onChange) }
 
     /**
      * The passed property is *only* for checking equality with the properties passed to the layer as input properties.

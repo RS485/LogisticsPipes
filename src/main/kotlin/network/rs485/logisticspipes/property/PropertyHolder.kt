@@ -35,27 +35,19 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.module
+package network.rs485.logisticspipes.property
 
-import logisticspipes.interfaces.IPipeServiceProvider
-import logisticspipes.interfaces.IWorldProvider
 import logisticspipes.interfaces.routing.ISaveState
-import logisticspipes.modules.LogisticsModule
-import logisticspipes.proxy.MainProxy
 import net.minecraft.nbt.NBTTagCompound
-import network.rs485.logisticspipes.property.*
 
-abstract class PropertyModule : LogisticsModule(), PropertyHolder {
+/**
+ * Holds a [properties] list and can read and write [NBT][NBTTagCompound] via [ISaveState].
+ */
+interface PropertyHolder : ISaveState {
+    val properties: List<Property<*>>
 
-    override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
-        super.registerHandler(world, service)
-        service?.let {
-            MainProxy.runOnServer(world?.world) {
-                Runnable {
-                    properties.addObserver { service.markTileDirty() }
-                }
-            }
-        }
-    }
+    override fun readFromNBT(tag: NBTTagCompound) = properties.readFromNBT(tag)
+
+    override fun writeToNBT(tag: NBTTagCompound) = properties.writeToNBT(tag)
 
 }

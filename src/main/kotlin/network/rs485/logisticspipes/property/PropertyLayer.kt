@@ -40,26 +40,26 @@ package network.rs485.logisticspipes.property
 import java.util.*
 import kotlin.streams.toList
 
-abstract class PropertyLayer(properties: Collection<Property<*>>) {
-    private val lowerLayerProperties: List<Property<*>> = properties.toList()
-    private val properties: List<Property<*>> = properties.map(Property<*>::copyProperty).toList()
-    private val changedProperties: BitSet = BitSet(properties.size)
+abstract class PropertyLayer(propertiesIn: Collection<Property<*>>) {
+    private val lowerLayerProperties: List<Property<*>> = propertiesIn.toList()
+    private val properties: List<Property<*>> = propertiesIn.map(Property<*>::copyProperty).toList()
+    private val changedProperties: BitSet = BitSet(propertiesIn.size)
 
     init {
         lowerLayerProperties.addObserver(::onChange)
-        this.properties.addObserver(::propertyWrite)
+        properties.addObserver(::onPropertyWrite)
     }
 
-    private fun propertyWrite(prop: Property<*>) = lookupIndex(prop, properties).let {
-        if (!changedProperties.get(it)) firstChange(it)
+    private fun onPropertyWrite(prop: Property<*>) = lookupIndex(prop, properties).let {
+        if (!changedProperties.get(it)) onFirstChange(it)
         changedProperties.set(it)
     }
 
-    private fun firstChange(idx: Int) {
+    private fun onFirstChange(idx: Int) {
         // replace lower layer change listener with ours
         lowerLayerProperties[idx].propertyObservers.remove(::onChange)
         properties[idx].addObserver { onChange(lowerLayerProperties[idx]) }
-        properties[idx].propertyObservers.remove(::propertyWrite)
+        properties[idx].propertyObservers.remove(::onPropertyWrite)
         onChange(lowerLayerProperties[idx])
     }
 
@@ -68,13 +68,13 @@ abstract class PropertyLayer(properties: Collection<Property<*>>) {
             ?: throw IllegalArgumentException("Property <$prop> not in this layer")
 
     @Suppress("UNCHECKED_CAST")
-    fun <V: Property<T>, T> getWritableProperty(prop: V): V {
+    fun <V : Property<T>, T> getWritableProperty(prop: V): V {
         // same index, same type
         return properties[lookupIndex(prop, lowerLayerProperties)] as V
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <V: ValueProperty<T>, T> getLayerValue(prop: V): T {
+    fun <V : ValueProperty<T>, T> getLayerValue(prop: V): T {
         val idx = lookupIndex(prop, lowerLayerProperties)
         val valueProperty = if (changedProperties.get(idx)) {
             properties[idx]
@@ -86,7 +86,7 @@ abstract class PropertyLayer(properties: Collection<Property<*>>) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <V: Property<T>, T> getLayerValue(prop: V): T {
+    fun <V : Property<T>, T> getLayerValue(prop: V): T {
         val idx = lookupIndex(prop, lowerLayerProperties)
         val property = if (changedProperties.get(idx)) {
             properties[idx]

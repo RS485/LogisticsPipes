@@ -35,25 +35,44 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.property
+package network.rs485.logisticspipes.gui
 
-import net.minecraft.nbt.NBTTagCompound
-import java.util.function.Consumer
+import logisticspipes.proxy.MainProxy
+import net.minecraftforge.event.entity.player.PlayerContainerEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 
-typealias ObserverCallback<V> = (Property<V>) -> Unit
+object PropertyUpdaterEventListener {
+    private val propertyUpdaters: ArrayList<PropertyUpdater> = ArrayList()
 
-fun Collection<Property<*>>.addObserver(callback: ObserverCallback<*>) =
-    forEach { prop -> prop.addObserver(callback) }
+    @SubscribeEvent
+    fun openContainer(event: PlayerContainerEvent.Open) {
+        // FIXME: disabled server-side property update until there is a common Container class with getModule and getProperties
+//        val player = event.entityPlayer ?: return
+//        MainProxy.runOnServer(player.world) {
+//            Runnable {
+//                val guiContainer = event.container
+//                // FIXME: Have common Container class that has getModule and getProperties
+//                if (guiContainer is ProviderPipeContainer) {
+//                    val module = guiContainer.module
+//                    propertyUpdaters.add(
+//                        PropertyUpdater(player, module, (module as PropertyModule).properties)
+//                    )
+//                }
+//            }
+//        }
+    }
 
-fun Collection<Property<*>>.addObserver(consumer: Consumer<Property<*>>) =
-    forEach { prop -> prop.addObserver(consumer::accept) }
+    @SubscribeEvent
+    fun closeContainer(event: PlayerContainerEvent.Close) {
+        val player = event.entityPlayer ?: return
+        MainProxy.runOnServer(player.world) {
+            Runnable {
+                propertyUpdaters.removeIf { propertyUpdater: PropertyUpdater ->
+                    propertyUpdater.removeForPlayer(event.entityPlayer)
+                }
+            }
+        }
+    }
 
-fun Collection<Property<*>>.removeObserver(callback: ObserverCallback<*>) =
-    forEach { prop -> prop.propertyObservers.remove(callback) }
-
-fun Collection<Property<*>>.removeObserver(consumer: Consumer<Property<*>>) =
-    forEach { prop -> prop.propertyObservers.remove(consumer::accept) }
-
-fun Collection<Property<*>>.readFromNBT(tag: NBTTagCompound) = forEach { prop -> prop.readFromNBT(tag) }
-
-fun Collection<Property<*>>.writeToNBT(tag: NBTTagCompound) = forEach { prop -> prop.writeToNBT(tag) }
+}

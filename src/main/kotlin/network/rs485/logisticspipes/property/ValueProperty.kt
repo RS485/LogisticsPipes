@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.property
 
+import java.util.*
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
 
@@ -50,7 +51,7 @@ abstract class ValueProperty<V>(initialValue: V) : Property<V> {
     override fun equals(other: Any?): Boolean =
         other is ValueProperty<*> && tagKey == other.tagKey && value == other.value
 
-    override fun hashCode(): Int = value.hashCode()
+    override fun hashCode(): Int = Objects.hash(value, tagKey)
 
     override fun toString(): String = "Property($value)"
 

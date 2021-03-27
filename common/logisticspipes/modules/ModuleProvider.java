@@ -89,7 +89,7 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	public final InventoryProperty filterInventory = new InventoryProperty(
-			new ItemIdentifierInventory(9, "TargetInv", 1), "");
+			new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1), "");
 	public final BooleanProperty isActive = new BooleanProperty(false, "isActive");
 	public final BooleanProperty isExclusionFilter = new BooleanProperty(false, "filterisexclude");
 	public final EnumProperty<ProviderMode> providerMode =

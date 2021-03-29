@@ -41,6 +41,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.LogisticsModule
+import net.minecraft.client.Minecraft
 import net.minecraft.tileentity.TileEntity
 import network.rs485.grow.CoroutineScopes
 import java.time.Duration
@@ -48,7 +49,6 @@ import java.time.Duration
 abstract class AsyncModule<S, C> : LogisticsModule() {
     private var currentTick: Int = 0
     private var currentTask: Deferred<C?>? = null
-    private var currentSyncWork: Runnable? = null
     private val lock: Any = object {}
 
     /**
@@ -69,11 +69,13 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
     override fun tick() {
         when {
             currentTask?.isActive == true -> runSyncWork()
-            currentTask?.isCompleted == true -> try {
-                runSyncWork()
-                completeTick(currentTask!!)
-            } finally {
-                currentTask = null
+            currentTask?.isCompleted == true -> {
+                try {
+                    runSyncWork()
+                    completeTick(currentTask!!)
+                } finally {
+                    currentTask = null
+                }
             }
             else -> if (_service?.isNthTick(everyNthTick) == true) {
                 val setup = tickSetup()
@@ -83,29 +85,15 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
                             tickAsync(setup)
                         }
                     } catch (e: RuntimeException) {
-                        val connected = connectedEntity?.let { " connected to $it at ${it.pos}" } ?: ""
-                        LogisticsPipes.log.error("Error in ticking async module $module$connected", e)
+                        val isGamePaused = world?.isRemote == false && Minecraft.getMinecraft().isGamePaused
+                        if (e !is TimeoutCancellationException && !isGamePaused) {
+                            val connected = connectedEntity?.let { " connected to $it at ${it.pos}" } ?: ""
+                            LogisticsPipes.log.error("Error in ticking async module $module$connected", e)
+                        }
                     }
                     return@async null
                 }
             }
-        }
-    }
-
-    private fun runSyncWork() {
-        if (currentSyncWork != null) {
-            synchronized(lock) { currentSyncWork?.also { currentSyncWork = null } }?.run()
-        }
-    }
-
-    protected fun appendSyncWork(runnable: Runnable) {
-        synchronized(lock) {
-            currentSyncWork = currentSyncWork?.let { previousSyncWork ->
-                Runnable {
-                    previousSyncWork.run()
-                    runnable.run()
-                }
-            } ?: runnable
         }
     }
 
@@ -132,4 +120,9 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
      * @return a completion object for [completeTick].
      */
     abstract suspend fun tickAsync(setupObject: S): C
+
+    /**
+     * Runs every tick while the [current async task][currentTask] is active.
+     */
+    abstract fun runSyncWork()
 }

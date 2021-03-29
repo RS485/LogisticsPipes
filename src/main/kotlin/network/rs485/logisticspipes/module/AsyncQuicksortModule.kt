@@ -61,7 +61,12 @@ import network.rs485.logisticspipes.util.getExtractionMax
 const val STALLED_DELAY = 24
 const val NORMAL_DELAY = 6
 
-data class QuicksortAsyncResult(val slot: Int, val itemid: ItemIdentifier, val destRouterId: Int, val sinkReply: SinkReply)
+data class QuicksortAsyncResult(
+    val slot: Int,
+    val itemid: ItemIdentifier,
+    val destRouterId: Int,
+    val sinkReply: SinkReply,
+)
 
 class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>() {
     companion object {
@@ -74,7 +79,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     private var currentSlot = 0
         set(value) {
             field = value
-            MainProxy.sendToPlayerList(PacketHandler.getPacket(QuickSortState::class.java).setInteger(value).setModulePos(this), localSlotWatchers)
+            MainProxy.sendToPlayerList(PacketHandler.getPacket(QuickSortState::class.java).setInteger(value)
+                .setModulePos(this), localSlotWatchers)
         }
     private var stallSlot = 0
 
@@ -94,7 +100,9 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         val stack = inventory.getStackInSlot(slot)
         if (!stalled && slot == stallSlot) stalled = true
         if (stack.isEmpty) return null
-        if (ServerRouter.getBiggestSimpleID() > (ASYNC_THRESHOLD * 2) || AsyncRouting.routingTableNeedsUpdate(serverRouter)) {
+        if (ServerRouter.getBiggestSimpleID() > (ASYNC_THRESHOLD * 2) || AsyncRouting.routingTableNeedsUpdate(
+                serverRouter)
+        ) {
             // go async
             return slot to stack
         }
@@ -109,7 +117,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         val serverRouter = this._service?.router as? ServerRouter ?: return null
         AsyncRouting.updateRoutingTable(serverRouter)
         val itemid = ItemIdentifier.get(setupObject.second)
-        val result = LogisticsManager.getDestination(setupObject.second, itemid, false, serverRouter, emptyList()) ?: return null
+        val result =
+            LogisticsManager.getDestination(setupObject.second, itemid, false, serverRouter, emptyList()) ?: return null
         return QuicksortAsyncResult(setupObject.first, itemid, result.first, result.second)
     }
 
@@ -124,7 +133,13 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         }
     }
 
-    private fun extractAndSend(slot: Int, stack: ItemStack, inventory: IInventoryUtil, destRouterId: Int, sinkReply: SinkReply) {
+    private fun extractAndSend(
+        slot: Int,
+        stack: ItemStack,
+        inventory: IInventoryUtil,
+        destRouterId: Int,
+        sinkReply: SinkReply,
+    ) {
         val service = _service ?: return
         val toExtract = getExtractionMax(stack.count, stack.maxStackSize, sinkReply)
         if (toExtract <= 0) return
@@ -133,9 +148,15 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         stallSlot = slot
         val extracted = inventory.decrStackSize(slot, toExtract)
         if (extracted.isEmpty) return
-        service.sendStack(extracted, destRouterId, sinkReply, CoreRoutedPipe.ItemSendMode.Fast, service.pointedOrientation)
+        service.sendStack(extracted,
+            destRouterId,
+            sinkReply,
+            CoreRoutedPipe.ItemSendMode.Fast,
+            service.pointedOrientation)
         service.spawnParticle(Particles.OrangeParticle, 8)
     }
+
+    override fun runSyncWork() {}
 
     override fun recievePassive(): Boolean = false
 
@@ -151,7 +172,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
 
     fun addWatchingPlayer(player: EntityPlayer) {
         localSlotWatchers.add(player)
-        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState::class.java).setInteger(currentSlot).setModulePos(this), player)
+        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(QuickSortState::class.java).setInteger(currentSlot)
+            .setModulePos(this), player)
     }
 
     fun removeWatchingPlayer(player: EntityPlayer) {

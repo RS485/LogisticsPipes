@@ -40,21 +40,17 @@ package network.rs485.logisticspipes.module
 import kotlin.math.min
 
 /**
- * Sequence of slots to look at. Minds possible change of inventory size.
+ * [Iterable] of slots to look at. Minds possible change of inventory size.
  *
- * @param started should be true on every call after the first slot was already handled.
  * @param current the current slot index, should be last + 1 on the first call.
  * @param last the last slot index to look at. May be -1 as a special case.
  * @param size the size of the inventory to never violate. May change for each call.
  * @return a range-checked sequence over slots to work on.
  */
-fun sloterator(started: Boolean, current: Int, last: Int, size: Int) = when {
-    // end of the sequence
-    started and (current == last + 1) -> emptySequence()
-
+fun sloterator(current: Int, last: Int, size: Int): Iterable<Int> = when {
     // sequence with turnaround: [..., size-2, size-1, 0, 1, ...]
-    current > last -> (current until size).asSequence().plus(0 until min(size, last + 1))
+    current > last -> (current until size).plus(0 until min(size, last + 1))
 
     // sequence until last possible element
-    else -> (current until min(size, last + 1)).asSequence()
+    else -> current until min(size, last + 1)
 }

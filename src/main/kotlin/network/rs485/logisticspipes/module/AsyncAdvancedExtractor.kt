@@ -66,7 +66,9 @@ import net.minecraft.util.EnumFacing
 import network.rs485.logisticspipes.util.matchingSequence
 
 
-class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), SimpleFilter, SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
+class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), SimpleFilter,
+    SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive,
+    ISimpleInventoryEventHandler, Gui {
     companion object {
         @JvmStatic
         val name: String = "extractor_advanced"
@@ -74,13 +76,16 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     private val filterInventory: ItemIdentifierInventory = ItemIdentifierInventory(9, "Item list", 1)
     private val hud = HUDAdvancedExtractor(this)
-    private val extractor = AsyncExtractorModule(inverseFilter = { it.isEmpty || _itemsIncluded != filterInventory.matchingSequence(it).any() })
+    private val extractor = AsyncExtractorModule(inverseFilter = {
+        it.isEmpty || _itemsIncluded != filterInventory.matchingSequence(it).any()
+    })
     private var _itemsIncluded: Boolean = true
     var itemsIncluded: Boolean
         get() = _itemsIncluded
         set(value) {
             _itemsIncluded = value
-            MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude::class.java).setFlag(_itemsIncluded).setModulePos(this), extractor.localModeWatchers)
+            MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
+                .setFlag(_itemsIncluded).setModulePos(this), extractor.localModeWatchers)
         }
 
     override val everyNthTick: Int
@@ -139,14 +144,18 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     @ExperimentalCoroutinesApi
     @FlowPreview
-    override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? = extractor.tickAsync(setupObject)
+    override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? =
+        extractor.tickAsync(setupObject)
+
+    override fun runSyncWork() = extractor.runSyncWork()
 
     @CCCommand(description = "Returns the FilterInventory of this Module")
     override fun getFilterInventory(): ItemIdentifierInventory {
         return filterInventory
     }
 
-    override fun handleInvContent(items: MutableCollection<ItemIdentifierStack>?) = filterInventory.handleItemIdentifierList(items)
+    override fun handleInvContent(items: MutableCollection<ItemIdentifierStack>?) =
+        filterInventory.handleItemIdentifierList(items)
 
     override fun InventoryChanged(inventory: IInventory?) {
         MainProxy.runOnServer(world) {
@@ -171,20 +180,24 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     override fun startWatching(player: EntityPlayer?) {
         extractor.startWatching(player)
-        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory::class.java).setIdentList(ItemIdentifierStack.getListFromInventory(filterInventory)).setModulePos(this), player)
-        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude::class.java).setFlag(_itemsIncluded).setModulePos(this), player)
+        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory::class.java)
+            .setIdentList(ItemIdentifierStack.getListFromInventory(filterInventory)).setModulePos(this), player)
+        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
+            .setFlag(_itemsIncluded).setModulePos(this), player)
     }
 
     override fun stopWatching(player: EntityPlayer?) = extractor.stopWatching(player)
 
     override fun startHUDWatching() {
-        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java).setModulePos(this))
+        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java)
+            .setModulePos(this))
     }
 
     override fun getHUDRenderer(): IHUDModuleRenderer = hud
 
     override fun stopHUDWatching() {
-        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java).setModulePos(this))
+        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java)
+            .setModulePos(this))
     }
 
 }

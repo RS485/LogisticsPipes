@@ -37,11 +37,11 @@
 
 package network.rs485.grow
 
-import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.sendBlocking
+import java.util.function.Supplier
 
-abstract class ChunkedChannel<T, O>(val channel: Channel<T>) : Runnable {
+abstract class ChunkedChannel<T, O>(val channel: Channel<T>) : Supplier<Boolean> {
 
     /**
      * Returns a session object for this run.
@@ -54,27 +54,23 @@ abstract class ChunkedChannel<T, O>(val channel: Channel<T>) : Runnable {
     abstract fun hasWork(session: O): Boolean
 
     /**
-     * Returns a Sequence based on the current session.
+     * Returns a [List] of type T based on the current session.
      */
-    abstract fun sequenceFactory(session: O): Sequence<T>
+    abstract fun nextChunk(session: O): List<T>
 
     /**
-     * Is called if there is more work to do. Should be used with some kind of work queue.
+     * @return true, if there is more work to do and this should be re-called (again).
      */
-    abstract fun rerun(r: Runnable)
-
-    private fun checkWork(session: O): Boolean = if (hasWork(session)) false else true.also { channel.close() }
-
-    override fun run() {
+    override fun get(): Boolean {
         try {
             val session = newSession()
-            if (checkWork(session)) return
-            sequenceFactory(session).forEach(channel::sendBlocking)
-            if (checkWork(session)) return
-            rerun(this)
-        } catch (e: Throwable) {
+            nextChunk(session).forEach(channel::sendBlocking)
+            if (hasWork(session)) return true
+            channel.close()
+        } catch (e: Exception) {
             channel.close(e)
         }
+        return false
     }
 
 }

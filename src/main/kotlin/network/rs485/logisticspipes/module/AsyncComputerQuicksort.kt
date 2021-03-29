@@ -51,7 +51,8 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 
-class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>(), Gui, IClientInformationProvider, IModuleWatchReciver {
+class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>(), Gui,
+    IClientInformationProvider, IModuleWatchReciver {
     private val quicksort = AsyncQuicksortModule()
     private val localModeWatchers = PlayerCollectionList()
 
@@ -101,10 +102,13 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
 
     override fun tickSetup(): Pair<Int, ItemStack>? = quicksort.tickSetup()
 
-    override suspend fun tickAsync(setupObject: Pair<Int, ItemStack>?): QuicksortAsyncResult? = quicksort.tickAsync(setupObject)
+    override suspend fun tickAsync(setupObject: Pair<Int, ItemStack>?): QuicksortAsyncResult? =
+        quicksort.tickAsync(setupObject)
 
     @ExperimentalCoroutinesApi
     override fun completeTick(task: Deferred<QuicksortAsyncResult?>) = quicksort.completeTick(task)
+
+    override fun runSyncWork() = quicksort.runSyncWork()
 
     override fun readFromNBT(nbttagcompound: NBTTagCompound) {
         quicksort.readFromNBT(nbttagcompound)

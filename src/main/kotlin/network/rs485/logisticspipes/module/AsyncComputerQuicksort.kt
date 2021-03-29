@@ -50,11 +50,15 @@ import logisticspipes.utils.PlayerCollectionList
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import network.rs485.logisticspipes.property.Property
 
 class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>(), Gui,
     IClientInformationProvider, IModuleWatchReciver {
     private val quicksort = AsyncQuicksortModule()
     private val localModeWatchers = PlayerCollectionList()
+
+    override val properties: List<Property<*>>
+        get() = quicksort.properties
 
     private var _timeout: Int = 100
     var timeout: Int

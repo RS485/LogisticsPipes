@@ -61,8 +61,11 @@ import logisticspipes.utils.item.ItemIdentifierStack
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
+import network.rs485.logisticspipes.property.BooleanProperty
+import network.rs485.logisticspipes.property.InventoryProperty
+import network.rs485.logisticspipes.property.Property
 import network.rs485.logisticspipes.util.matchingSequence
 
 
@@ -74,22 +77,15 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         val name: String = "extractor_advanced"
     }
 
-    private val filterInventory: ItemIdentifierInventory = ItemIdentifierInventory(9, "Item list", 1)
+    private val filterInventory = InventoryProperty(ItemIdentifierInventory(9, "Item list", 1), "")
+    val itemsIncluded = BooleanProperty(true, "itemsIncluded")
+    override val properties: List<Property<*>>
+        get() = extractor.properties + listOf(filterInventory, itemsIncluded)
+
     private val hud = HUDAdvancedExtractor(this)
     private val extractor = AsyncExtractorModule(inverseFilter = {
-        it.isEmpty || _itemsIncluded != filterInventory.matchingSequence(it).any()
+        it.isEmpty || itemsIncluded.value != filterInventory.matchingSequence(it).any()
     })
-    private var _itemsIncluded: Boolean = true
-    var itemsIncluded: Boolean
-        get() = _itemsIncluded
-        set(value) {
-            _itemsIncluded = value
-            MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
-                .setFlag(_itemsIncluded).setModulePos(this), extractor.localModeWatchers)
-        }
-
-    override val everyNthTick: Int
-        get() = extractor.everyNthTick
 
     override var sneakyDirection: EnumFacing?
         get() = extractor.sneakyDirection
@@ -97,14 +93,27 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
             extractor.sneakyDirection = value
         }
 
+    override val everyNthTick: Int
+        get() = extractor.everyNthTick
+
     override val module = this
 
     override val pipeGuiProvider: ModuleCoordinatesGuiProvider
-        get() = NewGuiHandler.getGui(AdvancedExtractorModuleSlot::class.java).setAreItemsIncluded(_itemsIncluded)
+        get() = NewGuiHandler.getGui(AdvancedExtractorModuleSlot::class.java).setAreItemsIncluded(itemsIncluded.value)
 
     override val inHandGuiProvider: ModuleInHandGuiProvider
         get() = NewGuiHandler.getGui(AdvancedExtractorModuleInHand::class.java)
 
+    init {
+        itemsIncluded.addObserver {
+            MainProxy.sendToPlayerList(
+                PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
+                    .setFlag(it.copyValue())
+                    .setModulePos(this),
+                extractor.localModeWatchers,
+            )
+        }
+    }
 
     override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
         super.registerHandler(world, service)
@@ -120,18 +129,6 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? = extractor.tickSetup()
 
     override fun recievePassive(): Boolean = false
-
-    override fun readFromNBT(nbttagcompound: NBTTagCompound) {
-        filterInventory.readFromNBT(nbttagcompound)
-        itemsIncluded = nbttagcompound.getBoolean("itemsIncluded")
-        extractor.readFromNBT(nbttagcompound)
-    }
-
-    override fun writeToNBT(nbttagcompound: NBTTagCompound) {
-        filterInventory.writeToNBT(nbttagcompound)
-        nbttagcompound.setBoolean("itemsIncluded", _itemsIncluded)
-        extractor.writeToNBT(nbttagcompound)
-    }
 
     override fun hasGenericInterests(): Boolean = false
 
@@ -150,11 +147,11 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
     override fun runSyncWork() = extractor.runSyncWork()
 
     @CCCommand(description = "Returns the FilterInventory of this Module")
-    override fun getFilterInventory(): ItemIdentifierInventory {
+    override fun getFilterInventory(): IItemIdentifierInventory {
         return filterInventory
     }
 
-    override fun handleInvContent(items: MutableCollection<ItemIdentifierStack>?) =
+    override fun handleInvContent(items: MutableCollection<ItemIdentifierStack>) =
         filterInventory.handleItemIdentifierList(items)
 
     override fun InventoryChanged(inventory: IInventory?) {
@@ -172,7 +169,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     override fun getClientInformation(): MutableList<String> {
         val clientInformation = extractor.clientInformation
-        clientInformation.add(if (_itemsIncluded) "Included" else "Excluded")
+        clientInformation.add(if (itemsIncluded.value) "Included" else "Excluded")
         clientInformation.add("Filter:")
         clientInformation.addAll(filterInventory.clientInformation)
         return clientInformation
@@ -180,10 +177,18 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     override fun startWatching(player: EntityPlayer?) {
         extractor.startWatching(player)
-        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory::class.java)
-            .setIdentList(ItemIdentifierStack.getListFromInventory(filterInventory)).setModulePos(this), player)
-        MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
-            .setFlag(_itemsIncluded).setModulePos(this), player)
+        MainProxy.sendPacketToPlayer(
+            PacketHandler.getPacket(ModuleInventory::class.java)
+                .setIdentList(ItemIdentifierStack.getListFromInventory(filterInventory))
+                .setModulePos(this),
+            player,
+        )
+        MainProxy.sendPacketToPlayer(
+            PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
+                .setFlag(itemsIncluded.value)
+                .setModulePos(this),
+            player,
+        )
     }
 
     override fun stopWatching(player: EntityPlayer?) = extractor.stopWatching(player)

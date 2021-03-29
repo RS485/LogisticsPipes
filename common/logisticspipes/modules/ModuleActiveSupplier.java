@@ -51,13 +51,15 @@ import network.rs485.logisticspipes.connection.AdjacentUtilKt;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 
-public class ModuleActiveSupplier extends LogisticsModule implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
+public class ModuleActiveSupplier extends LogisticsModule
+		implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler,
+		IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
 	public int[] slotArray = new int[9];
 	private boolean _lastRequestFailed = false;
-	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "", 127);
+	private final ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "", 127);
 	private SupplyMode _requestMode = SupplyMode.Bulk50;
 	private PatternMode _patternMode = PatternMode.Bulk50;
 	@Getter
@@ -73,7 +75,8 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 	}
 
 	@Override
-	public @Nonnull List<String> getClientInformation() {
+	public @Nonnull
+	List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Supplied: ");
 		list.add("<inventory>");
@@ -94,7 +97,8 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(dummyInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class)
+				.setIdentList(ItemIdentifierStack.getListFromInventory(dummyInventory)).setModulePos(this), player);
 	}
 
 	@Override
@@ -109,14 +113,16 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(@Nonnull Collection<ItemIdentifierStack> list) {
 		dummyInventory.handleItemIdentifierList(list);
 	}
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
 		if (MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(dummyInventory)).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class)
+							.setIdentList(ItemIdentifierStack.getListFromInventory(dummyInventory)).setModulePos(this),
+					localModeWatchers);
 		}
 	}
 
@@ -160,7 +166,8 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 			return;
 		}
 
-		_requestedItems.values().stream().filter(amount -> amount > 0).forEach(amount -> _service.spawnParticle(Particles.VioletParticle, 2));
+		_requestedItems.values().stream().filter(amount -> amount > 0)
+				.forEach(amount -> _service.spawnParticle(Particles.VioletParticle, 2));
 
 		AdjacentUtilKt.sneakyInventoryUtils(_service.getAvailableAdjacent(), getUpgradeManager()).stream()
 				.filter(invUtil -> invUtil != null && invUtil.getSizeInventory() > 0)
@@ -198,7 +205,8 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 				}
 				haveCount = have.getStackSize();
 			}
-			if ((_patternMode == PatternMode.Bulk50 && haveCount > needed.getStackSize() / 2) || (_patternMode == PatternMode.Bulk100 && haveCount >= needed.getStackSize())) {
+			if ((_patternMode == PatternMode.Bulk50 && haveCount > needed.getStackSize() / 2) || (
+					_patternMode == PatternMode.Bulk100 && haveCount >= needed.getStackSize())) {
 				continue;
 			}
 
@@ -222,7 +230,8 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 
 			boolean success = false;
 
-			IAdditionalTargetInformation targetInformation = new PatternSupplierTargetInformation(slotArray[i], needed.getStackSize());
+			IAdditionalTargetInformation targetInformation = new PatternSupplierTargetInformation(slotArray[i],
+					needed.getStackSize());
 
 			if (_patternMode != PatternMode.Full) {
 				_service.getDebug().log("Supplier: Requesting partial: " + toRequest);
@@ -285,7 +294,8 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 				item.setValue(Math.min(item.getKey().getMaxStackSize(), Math.max(0, spaceAvailable)));
 				continue;
 			}
-			if (spaceAvailable < 1 || (_requestMode == SupplyMode.Bulk50 && haveCount > item.getValue() / 2) || (_requestMode == SupplyMode.Bulk100 && haveCount >= item.getValue())) {
+			if (spaceAvailable < 1 || (_requestMode == SupplyMode.Bulk50 && haveCount > item.getValue() / 2) || (
+					_requestMode == SupplyMode.Bulk100 && haveCount >= item.getValue())) {
 				item.setValue(0);
 				continue;
 			}
@@ -343,7 +353,9 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 					_service.getDebug().log("Supplier: Inserting Requested Items: " + neededCount);
 				} else {
 					_requestedItems.put(need.getKey(), currentRequest + neededCount);
-					_service.getDebug().log("Supplier: Raising Requested Items from: " + currentRequest + " to: " + currentRequest + neededCount);
+					_service.getDebug()
+							.log("Supplier: Raising Requested Items from: " + currentRequest + " to: " + currentRequest
+									+ neededCount);
 				}
 			} else {
 				setRequestFailed(true);
@@ -410,7 +422,8 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 			Entry<ItemIdentifier, Integer> e = it.next();
 			if (e.getKey().equalsWithoutNBT(item.getItem())) {
 				int expected = e.getValue();
-				_service.getDebug().log("Supplier: Fuzzy match with" + e + ". Still missing: " + Math.max(0, expected - remaining));
+				_service.getDebug().log("Supplier: Fuzzy match with" + e + ". Still missing: " + Math
+						.max(0, expected - remaining));
 				if (expected - remaining > 0) {
 					e.setValue(expected - remaining);
 				} else {
@@ -457,14 +470,16 @@ public class ModuleActiveSupplier extends LogisticsModule implements IRequestIte
 	public int[] getSlotsForItemIdentifier(ItemIdentifier item) {
 		int size = 0;
 		for (int i = 0; i < 9; i++) {
-			if (dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem().equals(item)) {
+			if (dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem()
+					.equals(item)) {
 				size++;
 			}
 		}
 		int[] array = new int[size];
 		int pos = 0;
 		for (int i = 0; i < 9; i++) {
-			if (dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem().equals(item)) {
+			if (dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem()
+					.equals(item)) {
 				array[pos++] = i;
 			}
 		}

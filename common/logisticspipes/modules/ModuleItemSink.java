@@ -53,17 +53,18 @@ import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
 @CCType(name = "ItemSink Module")
-public class ModuleItemSink extends LogisticsModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
+public class ModuleItemSink extends LogisticsModule
+		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
+		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 1);
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private boolean _isDefaultRoute;
-
 	private BitSet ignoreData = new BitSet(_filterInventory.getSizeInventory());
 	private BitSet ignoreNBT = new BitSet(_filterInventory.getSizeInventory());
-
-	private IHUDModuleRenderer HUD = new HUDItemSink(this);
-
-	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private final IHUDModuleRenderer HUD = new HUDItemSink(this);
+	private SinkReply _sinkReply;
+	private SinkReply _sinkReplyDefault;
 
 	public ModuleItemSink() {
 		_filterInventory.addListener(this);
@@ -89,26 +90,29 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	public void setDefaultRoute(Boolean isDefaultRoute) {
 		_isDefaultRoute = isDefaultRoute;
 		if (!localModeWatchers.isEmpty()) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), localModeWatchers);
+			MainProxy.sendToPlayerList(
+					PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this),
+					localModeWatchers);
 		}
 	}
-
-	private SinkReply _sinkReply;
-	private SinkReply _sinkReplyDefault;
 
 	@Override
 	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
-		_sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0,
+				new ChassiTargetInformation(getPositionInt()));
+		_sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0,
+				new ChassiTargetInformation(getPositionInt()));
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		if (_isDefaultRoute && !allowDefault) {
 			return null;
 		}
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
 		final IPipeServiceProvider service = _service;
@@ -147,7 +151,9 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 			}
 		}
 		if (_isDefaultRoute) {
-			if (bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) {
+			if (bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (
+					bestPriority == _sinkReplyDefault.fixedPriority.ordinal()
+							&& bestCustomPriority >= _sinkReplyDefault.customPriority)) {
 				return null;
 			}
 			if (service.canUseEnergy(1)) {
@@ -180,7 +186,8 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	public void tick() {}
 
 	@Override
-	public @Nonnull List<String> getClientInformation() {
+	public @Nonnull
+	List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Default: " + (isDefaultRoute() ? "Yes" : "No"));
 		list.add("Filter: ");
@@ -202,8 +209,10 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class)
+				.setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(
+				PacketHandler.getPacket(ItemSinkDefault.class).setFlag(_isDefaultRoute).setModulePos(this), player);
 	}
 
 	@Override
@@ -229,7 +238,7 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(@Nonnull Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 
@@ -303,7 +312,8 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		}
 		if (MainProxy.isClient(getWorld())) {
 			if (player == null) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(false).setModulePos(this));
+				MainProxy.sendPacketToServer(
+						PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(false).setModulePos(this));
 			}
 		} else {
 			sendIgnoreUpdate(slot, player, ignoreData);
@@ -316,7 +326,8 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 		}
 		if (MainProxy.isClient(getWorld())) {
 			if (player == null) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(true).setModulePos(this));
+				MainProxy.sendPacketToServer(
+						PacketHandler.getPacket(ItemSinkFuzzy.class).setPos(slot).setNBT(true).setModulePos(this));
 			}
 		} else {
 			sendIgnoreUpdate(slot, player, ignoreNBT);
@@ -325,7 +336,8 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 
 	public void sendIgnoreUpdate(int slot, @Nullable EntityPlayer player, @Nonnull BitSet ignoreNBT) {
 		ignoreNBT.set(slot, !ignoreNBT.get(slot));
-		ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setModulePos(this);
+		ModernPacket pak = PacketHandler.getPacket(ItemSinkFuzzy.class).setIgnoreData(ignoreData)
+				.setIgnoreNBT(ignoreNBT).setModulePos(this);
 		if (player != null) {
 			MainProxy.sendPacketToPlayer(pak, player);
 		}
@@ -351,7 +363,8 @@ public class ModuleItemSink extends LogisticsModule implements SimpleFilter, ICl
 	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ItemSinkSlot.class).setDefaultRoute(_isDefaultRoute).setIgnoreData(ignoreData).setIgnoreNBT(ignoreNBT).setHasFuzzyUpgrade(getUpgradeManager().isFuzzyUpgrade());
+		return NewGuiHandler.getGui(ItemSinkSlot.class).setDefaultRoute(_isDefaultRoute).setIgnoreData(ignoreData)
+				.setIgnoreNBT(ignoreNBT).setHasFuzzyUpgrade(getUpgradeManager().isFuzzyUpgrade());
 	}
 
 	@Nonnull

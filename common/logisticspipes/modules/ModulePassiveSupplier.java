@@ -38,11 +38,13 @@ import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
-public class ModulePassiveSupplier extends LogisticsModule implements Gui, SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
+public class ModulePassiveSupplier extends LogisticsModule
+		implements Gui, SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
+		IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested items", 64);
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private final IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 	private SinkReply _sinkReply;
 
 	public ModulePassiveSupplier() {
@@ -62,19 +64,23 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 	@Override
 	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0,
+				new ChassiTargetInformation(getPositionInt()));
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
 
 		final IPipeServiceProvider service = _service;
 		if (service == null) return null;
 		final ISlotUpgradeManager upgradeManager = service.getUpgradeManager(slot, positionInt);
-		IInventoryUtil targetUtil = PipeServiceProviderUtilKt.availableSneakyInventories(service, upgradeManager).stream().findFirst().orElse(null);
+		IInventoryUtil targetUtil = PipeServiceProviderUtilKt.availableSneakyInventories(service, upgradeManager)
+				.stream().findFirst().orElse(null);
 		if (targetUtil == null) {
 			return null;
 		}
@@ -109,7 +115,8 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 	public void tick() {}
 
 	@Override
-	public @Nonnull List<String> getClientInformation() {
+	public @Nonnull
+	List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Supplied: ");
 		list.add("<inventory>");
@@ -130,7 +137,8 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class)
+				.setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
 	}
 
 	@Override
@@ -144,7 +152,7 @@ public class ModulePassiveSupplier extends LogisticsModule implements Gui, Simpl
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(@Nonnull Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 

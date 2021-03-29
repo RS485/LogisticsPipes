@@ -53,8 +53,8 @@ import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.logistics.LogisticsManager
+import network.rs485.logisticspipes.property.Property
 import network.rs485.logisticspipes.util.equalsWithNBT
 import network.rs485.logisticspipes.util.getExtractionMax
 
@@ -83,6 +83,9 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
                 .setModulePos(this), localSlotWatchers)
         }
     private var stallSlot = 0
+
+    override val properties: List<Property<*>>
+        get() = emptyList()
 
     private val stacksToExtract: Int
         get() = 1 + upgradeManager.itemStackExtractionUpgrade
@@ -159,10 +162,6 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     override fun runSyncWork() {}
 
     override fun recievePassive(): Boolean = false
-
-    override fun readFromNBT(nbttagcompound: NBTTagCompound) {}
-
-    override fun writeToNBT(nbttagcompound: NBTTagCompound) {}
 
     override fun hasGenericInterests(): Boolean = false
 

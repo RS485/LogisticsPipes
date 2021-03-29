@@ -26,7 +26,7 @@ public class AdvancedExtractorModuleSlot extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		module.setItemsIncluded(areItemsIncluded);
+		module.getItemsIncluded().setValue(areItemsIncluded);
 		return new GuiAdvancedExtractor(player.inventory, module);
 	}
 

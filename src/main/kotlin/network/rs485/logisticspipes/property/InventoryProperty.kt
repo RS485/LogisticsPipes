@@ -66,6 +66,9 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, override val t
 
     override fun setField(id: Int, value: Int) = inv.setField(id, value).alsoIChanged()
 
+    override fun handleItemIdentifierList(_allItems: Collection<ItemIdentifierStack>) =
+        inv.handleItemIdentifierList(_allItems).alsoIChanged()
+
     override fun readFromNBT(tag: NBTTagCompound) {
         if (tagKey.isEmpty() || tag.hasKey(tagKey)) inv.readFromNBT(tag, tagKey).alsoIChanged()
     }

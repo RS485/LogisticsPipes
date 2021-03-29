@@ -112,12 +112,15 @@ public class ItemModule extends LogisticsItem {
 		registerModule(registry, ModuleCreativeTabBasedItemSink.getName(), ModuleCreativeTabBasedItemSink::new);
 	}
 
-	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
+	public static void registerModule(IForgeRegistry<Item> registry, String name,
+			@Nonnull Supplier<? extends LogisticsModule> moduleConstructor) {
 		registerModule(registry, name, moduleConstructor, LPConstants.LP_MOD_ID);
 	}
 
-	public static void registerModule(IForgeRegistry<Item> registry, String name, @Nonnull Supplier<? extends LogisticsModule> moduleConstructor, String modID) {
-		ItemModule module = LogisticsPipes.setName(new ItemModule(new Module(moduleConstructor)), String.format("module_%s", name), modID);
+	public static void registerModule(IForgeRegistry<Item> registry, String name,
+			@Nonnull Supplier<? extends LogisticsModule> moduleConstructor, String modID) {
+		ItemModule module = LogisticsPipes
+				.setName(new ItemModule(new Module(moduleConstructor)), String.format("module_%s", name), modID);
 		LPItems.modules.put(name, module.getRegistryName());
 		registry.register(module);
 	}
@@ -127,7 +130,7 @@ public class ItemModule extends LogisticsItem {
 		ItemStack item = player.inventory.mainInventory.get(invSlot);
 		if (item.isEmpty() || !(item.getItem() instanceof ItemModule)) return null;
 		LogisticsModule module = ((ItemModule) item.getItem()).getModuleForItem(
-			item, null, new DummyWorldProvider(player.getEntityWorld()), null
+				item, null, new DummyWorldProvider(player.getEntityWorld()), null
 		);
 		if (module == null) return null;
 		module.registerPosition(ModulePositionType.IN_HAND, invSlot);
@@ -138,8 +141,8 @@ public class ItemModule extends LogisticsItem {
 	private void openConfigGui(@Nonnull ItemStack stack, EntityPlayer player, World world) {
 		LogisticsModule module = getModuleForItem(stack, null, new DummyWorldProvider(world), null);
 		if (module instanceof Gui && !stack.isEmpty()) {
-			ItemModuleInformationManager.readInformation(stack, module);
 			module.registerPosition(ModulePositionType.IN_HAND, player.inventory.currentItem);
+			ItemModuleInformationManager.readInformation(stack, module);
 			Gui.getInHandGuiProvider((Gui) module).open(player);
 		}
 	}
@@ -157,7 +160,8 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@Nonnull
-	public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, @Nonnull final EnumHand hand) {
+	public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player,
+			@Nonnull final EnumHand hand) {
 		if (MainProxy.isServer(player.world)) {
 			openConfigGui(player.getHeldItem(hand), player, world);
 		}
@@ -166,11 +170,13 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@Nonnull
-	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing,
+			float hitX, float hitY, float hitZ) {
 		if (MainProxy.isServer(player.world)) {
 			TileEntity tile = world.getTileEntity(pos);
 			if (tile instanceof LogisticsTileGenericPipe) {
-				if (player.getDisplayName().getUnformattedText().equals("ComputerCraft")) { // Allow turtle to place modules in pipes.
+				if (player.getDisplayName().getUnformattedText()
+						.equals("ComputerCraft")) { // Allow turtle to place modules in pipes.
 					CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
 					if (LogisticsBlockGenericPipe.isValid(pipe)) {
 						pipe.blockActivated(player);
@@ -185,10 +191,10 @@ public class ItemModule extends LogisticsItem {
 
 	@Nullable
 	public LogisticsModule getModuleForItem(
-		@Nonnull ItemStack itemStack,
-		@Nullable LogisticsModule currentModule,
-		@Nullable IWorldProvider world,
-		@Nullable IPipeServiceProvider service
+			@Nonnull ItemStack itemStack,
+			@Nullable LogisticsModule currentModule,
+			@Nullable IWorldProvider world,
+			@Nullable IPipeServiceProvider service
 	) {
 
 		if (itemStack.isEmpty()) {
@@ -217,7 +223,8 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip,
+			ITooltipFlag flagIn) {
 		if (stack.hasTagCompound()) {
 			NBTTagCompound nbt = stack.getTagCompound();
 			assert nbt != null;
@@ -238,13 +245,15 @@ public class ItemModule extends LogisticsItem {
 								if (module.hasKey(prefix + "itemsCount")) {
 									size = module.getInteger(prefix + "itemsCount");
 								}
-								ItemIdentifierInventory inv = new ItemIdentifierInventory(size, "InformationTempInventory", Integer.MAX_VALUE);
+								ItemIdentifierInventory inv = new ItemIdentifierInventory(size,
+										"InformationTempInventory", Integer.MAX_VALUE);
 								inv.readFromNBT(module, prefix);
 								for (int pos = 0; pos < inv.getSizeInventory(); pos++) {
 									ItemIdentifierStack identStack = inv.getIDStackInSlot(pos);
 									if (identStack != null) {
 										if (identStack.getStackSize() > 1) {
-											tooltip.add("  " + identStack.getStackSize() + "x " + identStack.getFriendlyName());
+											tooltip.add("  " + identStack.getStackSize() + "x " + identStack
+													.getFriendlyName());
 										} else {
 											tooltip.add("  " + identStack.getFriendlyName());
 										}

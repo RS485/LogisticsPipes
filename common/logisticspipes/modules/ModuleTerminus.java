@@ -39,13 +39,14 @@ import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
 @CCType(name = "Terminus Module")
-public class ModuleTerminus extends LogisticsModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
+public class ModuleTerminus extends LogisticsModule
+		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
+		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
-
-	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
-
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private final IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private SinkReply _sinkReply;
 
 	public ModuleTerminus() {
 		_filterInventory.addListener(this);
@@ -72,17 +73,18 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 		_filterInventory.writeToNBT(nbttagcompound, "");
 	}
 
-	private SinkReply _sinkReply;
-
 	@Override
 	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0,
+				new ChassiTargetInformation(getPositionInt()));
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
 		final IPipeServiceProvider service = _service;
@@ -100,7 +102,8 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	public void tick() {}
 
 	@Override
-	public @Nonnull List<String> getClientInformation() {
+	public @Nonnull
+	List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Terminated: ");
 		list.add("<inventory>");
@@ -126,7 +129,9 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class)
+						.setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this),
+				localModeWatchers);
 	}
 
 	@Override
@@ -147,7 +152,7 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(@Nonnull Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 

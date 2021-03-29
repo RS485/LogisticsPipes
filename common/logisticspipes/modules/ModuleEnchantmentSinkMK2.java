@@ -39,17 +39,19 @@ import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 
 @CCType(name = "EnchantmentSink Module MK2")
-public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
+public class ModuleEnchantmentSinkMK2 extends LogisticsModule
+		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
+		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
-	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested Enchanted items", 1);
+	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested Enchanted items",
+			1);
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private final IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private SinkReply _sinkReply;
 
 	public ModuleEnchantmentSinkMK2() {
 		_filterInventory.addListener(this);
 	}
-
-	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
-
-	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	public static String getName() {
 		return "enchantment_sink_mk2";
@@ -62,17 +64,18 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 		return _filterInventory;
 	}
 
-	private SinkReply _sinkReply;
-
 	@Override
 	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0,
+				new ChassiTargetInformation(getPositionInt()));
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
 		if (_filterInventory.containsExcludeNBTItem(item.getUndamaged().getIgnoringNBT())) {
@@ -98,7 +101,8 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	public void tick() {}
 
 	@Override
-	public @Nonnull List<String> getClientInformation() {
+	public @Nonnull
+	List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Filter: ");
 		list.add("<inventory>");
@@ -119,7 +123,8 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class)
+				.setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
 	}
 
 	@Override
@@ -145,7 +150,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
+	public void handleInvContent(@Nonnull Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 

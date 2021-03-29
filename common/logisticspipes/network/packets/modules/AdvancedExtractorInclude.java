@@ -21,10 +21,10 @@ public class AdvancedExtractorInclude extends BooleanModuleCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		AsyncAdvancedExtractor recieiver = this.getLogisticsModule(player, AsyncAdvancedExtractor.class);
-		if (recieiver == null) {
+		AsyncAdvancedExtractor receiver = this.getLogisticsModule(player, AsyncAdvancedExtractor.class);
+		if (receiver == null) {
 			return;
 		}
-		recieiver.setItemsIncluded(isFlag());
+		receiver.getItemsIncluded().setValue(isFlag());
 	}
 }

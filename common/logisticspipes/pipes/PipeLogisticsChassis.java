@@ -96,9 +96,12 @@ import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.connection.SingleAdjacent;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
+import network.rs485.logisticspipes.pipes.IChassisPipe;
 
 @CCType(name = "LogisticsChassiePipe")
-public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
+public abstract class PipeLogisticsChassis extends CoreRoutedPipe
+		implements ICraftItems, IBufferItems, ISimpleInventoryEventHandler, ISendRoutedItem, IProvideItems,
+		IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver, IChassisPipe {
 
 	private final ChassisModule _module;
 	private final ItemIdentifierInventory _moduleInventory;
@@ -155,7 +158,8 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		}
 	}
 
-	private void nextOrientation() {
+	@Override
+	public void nextOrientation() {
 		final SingleAdjacent pointedAdjacent = getPointedAdjacent();
 		Pair<NeighborTileEntity<TileEntity>, ConnectionType> newNeighbor;
 		if (pointedAdjacent == null) {
@@ -175,6 +179,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		refreshRender(true);
 	}
 
+	@Override
 	public void setPointedOrientation(@Nullable EnumFacing dir) {
 		if (dir == null) {
 			setPointedAdjacent(null);
@@ -183,6 +188,8 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		}
 	}
 
+	@Override
+	@Nonnull
 	public IInventory getModuleInventory() {
 		return _moduleInventory;
 	}
@@ -387,8 +394,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		}
 	}
 
-	public abstract int getChassisSize();
-
 	@Override
 	public final LogisticsModule getLogisticsModule() {
 		return _module;
@@ -538,10 +543,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 	}
 
 	public void handleModuleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
-		_moduleInventory.handleItemIdentifierList(_allItems);
-	}
-
-	public void handleContentItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 

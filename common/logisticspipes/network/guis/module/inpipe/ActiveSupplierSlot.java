@@ -63,13 +63,14 @@ public class ActiveSupplierSlot extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		module.setLimited(isLimit);
+		module.isLimited.setValue(isLimit);
 		if (patternUpgarde) {
-			module.setPatternMode(PatternMode.values()[mode]);
+			module.patternMode.setValue(PatternMode.values()[mode]);
 		} else {
-			module.setSupplyMode(SupplyMode.values()[mode]);
+			module.requestMode.setValue(SupplyMode.values()[mode]);
 		}
-		return new GuiSupplierPipe(player.inventory, module.getDummyInventory(), module, patternUpgarde, slotArray);
+		module.slotAssignmentPattern.replaceContent(slotArray);
+		return new GuiSupplierPipe(player.inventory, module.inventory, module, patternUpgarde, slotArray);
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public class ActiveSupplierSlot extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		DummyContainer dummy = new DummyContainer(player.inventory, module.getDummyInventory());
+		DummyContainer dummy = new DummyContainer(player.inventory, module.inventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 
 		for (int row = 0; row < 3; row++) {

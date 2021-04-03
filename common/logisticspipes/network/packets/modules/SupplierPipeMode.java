@@ -40,9 +40,9 @@ public class SupplierPipeMode extends IntegerModuleCoordinatesPacket {
 			return;
 		}
 		if (hasPatternUpgrade) {
-			module.setPatternMode(PatternMode.values()[getInteger()]);
+			module.patternMode.setValue(PatternMode.values()[getInteger()]);
 		} else {
-			module.setSupplyMode(SupplyMode.values()[getInteger()]);
+			module.requestMode.setValue(SupplyMode.values()[getInteger()]);
 		}
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSupplierPipe) {
 			((GuiSupplierPipe) FMLClientHandler.instance().getClient().currentScreen).refreshMode();

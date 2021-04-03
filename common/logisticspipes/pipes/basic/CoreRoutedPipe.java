@@ -1634,6 +1634,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
+	@Nonnull
 	public DebugLogController getDebug() {
 		return debug;
 	}

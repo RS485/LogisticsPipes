@@ -283,13 +283,15 @@ public class ItemIdentifierInventory
 		}
 	}
 
-	public void addListener(ISimpleInventoryEventHandler listener) {
+	@Override
+	public void addListener(@Nonnull ISimpleInventoryEventHandler listener) {
 		if (!_listener.contains(listener)) {
 			_listener.add(listener);
 		}
 	}
 
-	public void removeListener(ISimpleInventoryEventHandler listener) {
+	@Override
+	public void removeListener(@Nonnull ISimpleInventoryEventHandler listener) {
 		_listener.remove(listener);
 	}
 

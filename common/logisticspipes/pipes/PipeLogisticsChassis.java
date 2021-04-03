@@ -155,7 +155,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe implements ICr
 		}
 	}
 
-	private void nextOrientation() {
+	protected void nextOrientation() {
 		final SingleAdjacent pointedAdjacent = getPointedAdjacent();
 		Pair<NeighborTileEntity<TileEntity>, ConnectionType> newNeighbor;
 		if (pointedAdjacent == null) {

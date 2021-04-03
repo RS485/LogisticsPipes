@@ -1,9 +1,12 @@
 package logisticspipes.modules;
 
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+
+import org.jetbrains.annotations.NotNull;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IPipeServiceProvider;
@@ -13,10 +16,10 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
+import network.rs485.logisticspipes.module.PropertyModule;
+import network.rs485.logisticspipes.property.Property;
 
-public class ModulePolymorphicItemSink extends LogisticsModule {
-
-	public ModulePolymorphicItemSink() {}
+public class ModulePolymorphicItemSink extends PropertyModule {
 
 	private SinkReply _sinkReply;
 
@@ -24,21 +27,36 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		return "item_sink_polymorphic";
 	}
 
+	@NotNull
 	@Override
-	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
-		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0, new ChassiTargetInformation(getPositionInt()));
+	public List<Property<?>> getProperties() {
+		return Collections.emptyList();
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
+		super.registerPosition(slot, positionInt);
+		_sinkReply = new SinkReply(FixedPriority.ItemSink,
+				0,
+				true,
+				false,
+				3,
+				0,
+				new ChassiTargetInformation(getPositionInt()));
+	}
+
+	@Override
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
 		final IPipeServiceProvider service = _service;
 		if (service == null) return null;
 		final ISlotUpgradeManager upgradeManager = service.getUpgradeManager(slot, positionInt);
-		IInventoryUtil targetInventory = PipeServiceProviderUtilKt.availableSneakyInventories(service, upgradeManager).stream().findFirst().orElse(null);
+		IInventoryUtil targetInventory = PipeServiceProviderUtilKt.availableSneakyInventories(service, upgradeManager)
+				.stream().findFirst().orElse(null);
 		if (targetInventory == null) {
 			return null;
 		}
@@ -52,12 +70,6 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 		}
 		return null;
 	}
-
-	@Override
-	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {}
-
-	@Override
-	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {}
 
 	@Override
 	public void tick() {}

@@ -1,14 +1,13 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.property.StringListProperty;
 
 public interface IStringBasedModule {
 
-	List<String> getStringList();
+	StringListProperty stringListProperty();
 
 	String getStringForItem(ItemIdentifier ident);
 

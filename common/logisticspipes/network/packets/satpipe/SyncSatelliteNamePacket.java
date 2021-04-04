@@ -42,8 +42,8 @@ public class SyncSatelliteNamePacket extends StringCoordinatesPacket {
 		}
 
 		if (pipe.pipe instanceof SatellitePipe) {
-            		((SatellitePipe) pipe.pipe).setSatellitePipeName(getString());
-        	}
+			((SatellitePipe) pipe.pipe).setSatellitePipeName(getString());
+		}
 		
 	}
 }

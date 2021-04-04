@@ -52,4 +52,7 @@ interface IItemIdentifierInventory : IInventory, ILPCCTypeHolder, IClientInforma
     fun handleItemIdentifierList(_allItems: Collection<ItemIdentifierStack>)
     fun addListener(listener: ISimpleInventoryEventHandler)
     fun removeListener(listener: ISimpleInventoryEventHandler)
+    fun containsUndamagedItem(item: ItemIdentifier): Boolean
+    fun containsExcludeNBTItem(item: ItemIdentifier): Boolean
+    fun containsUndamagedExcludeNBTItem(item: ItemIdentifier): Boolean
 }

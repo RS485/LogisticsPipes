@@ -428,18 +428,22 @@ public class ItemIdentifierInventory
 		return _contentsMap.containsKey(item);
 	}
 
-	public boolean containsUndamagedItem(final ItemIdentifier item) {
+	@Override
+	public boolean containsUndamagedItem(@Nonnull final ItemIdentifier item) {
 		return _contentsUndamagedSet.contains(item);
 	}
 
-	public boolean containsExcludeNBTItem(final ItemIdentifier item) {
+	@Override
+	public boolean containsExcludeNBTItem(@Nonnull final ItemIdentifier item) {
 		return _contentsNoNBTSet.contains(item);
 	}
 
-	public boolean containsUndamagedExcludeNBTItem(final ItemIdentifier item) {
+	@Override
+	public boolean containsUndamagedExcludeNBTItem(@Nonnull final ItemIdentifier item) {
 		return _contentsUndamagedNoNBTSet.contains(item);
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return _contentsMap.isEmpty();
 	}

@@ -34,28 +34,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package network.rs485.logisticspipes.inventory
 
-import logisticspipes.interfaces.IClientInformationProvider
-import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder
-import logisticspipes.utils.ISimpleInventoryEventHandler
-import logisticspipes.utils.item.ItemIdentifier
-import logisticspipes.utils.item.ItemIdentifierStack
-import logisticspipes.utils.tuples.Pair
-import net.minecraft.inventory.IInventory
+package network.rs485.logisticspipes.property
 
-interface IItemIdentifierInventory : IInventory, ILPCCTypeHolder, IClientInformationProvider {
-    val itemsAndCount: Map<ItemIdentifier, Int>
-    val slotAccess: SlotAccess
-    fun getIDStackInSlot(i: Int): ItemIdentifierStack?
-    fun setInventorySlotContents(i: Int, itemstack: ItemIdentifierStack?)
-    fun containsItem(item: ItemIdentifier?): Boolean
-    fun handleItemIdentifierList(_allItems: Collection<ItemIdentifierStack>)
-    fun addListener(listener: ISimpleInventoryEventHandler)
-    fun removeListener(listener: ISimpleInventoryEventHandler)
-    fun containsUndamagedItem(item: ItemIdentifier): Boolean
-    fun containsExcludeNBTItem(item: ItemIdentifier): Boolean
-    fun containsUndamagedExcludeNBTItem(item: ItemIdentifier): Boolean
-    fun itemCount(item: ItemIdentifier): Int
-    fun contents(): Iterable<Pair<ItemIdentifierStack, Int>>
+import net.minecraft.nbt.NBTTagCompound
+import java.util.*
+
+class BitSetProperty(private val bitset: BitSet, override val tagKey: String) : Property<BitSet> {
+
+    override val propertyObservers: MutableList<ObserverCallback<BitSet>> = mutableListOf()
+
+    override fun copyValue(): BitSet = bitset.clone() as BitSet
+
+    override fun copyProperty(): BitSetProperty = BitSetProperty(copyValue(), tagKey)
+
+    fun replaceWith(other: BitSet) = other.takeUnless { it == bitset }
+        ?.let { bitset.clear(); bitset.or(it) }
+        ?.alsoIChanged()
+
+    override fun readFromNBT(tag: NBTTagCompound) {
+        if (tag.hasKey(tagKey)) replaceWith(BitSet.valueOf(tag.getByteArray(tagKey)))
+    }
+
+    override fun writeToNBT(tag: NBTTagCompound) = tag.setByteArray(tagKey, bitset.toByteArray())
+
+    fun get(bit: Int): Boolean = bitset.get(bit)
+
+    fun flip(bit: Int) = bitset.flip(bit).alsoIChanged()
+
 }

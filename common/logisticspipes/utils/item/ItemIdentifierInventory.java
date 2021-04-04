@@ -565,6 +565,12 @@ public class ItemIdentifierInventory
 
 	@Nonnull
 	@Override
+	public Iterable<Pair<ItemIdentifierStack, Integer>> contents() {
+		return this;
+	}
+
+	@Nonnull
+	@Override
 	public SlotAccess getSlotAccess() {
 		return slotAccess;
 	}

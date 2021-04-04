@@ -44,14 +44,55 @@ abstract class ListProperty<T>(
     protected val list: MutableList<T>,
 ) : MutableList<T> by list, Property<MutableList<T>> {
 
+    companion object {
+        private const val SIZE_NAME = "listSize"
+        private const val ITEM_NAME = "listItem"
+
+        fun sizeTagKey(tagKey: String) = if (tagKey.isEmpty()) SIZE_NAME else "$tagKey.$SIZE_NAME"
+        fun itemTagKey(tagKey: String, idx: Int) =
+            if (tagKey.isEmpty()) "$ITEM_NAME.$idx" else "$tagKey.$ITEM_NAME.$idx"
+    }
+
     override val propertyObservers: MutableList<ObserverCallback<MutableList<T>>> = mutableListOf()
+
+    fun ensureSize(size: Int, fillWith: (Int) -> T) =
+        (size - list.size).takeIf { it > 0 }?.let { repeat(it) { list.add(fillWith(list.size)) } }?.alsoIChanged()
+
+    fun ensureSize(size: Int) = ensureSize(size) { defaultValue() }
+
+    fun replaceContent(col: Collection<T>) =
+        list.takeUnless { it == col.toMutableList() }
+            ?.run { clear(); addAll(col) }
+            ?.alsoIChanged()
+
+    fun replaceContent(arr: Array<T>) = replaceContent(arr.asList())
+
+    abstract fun defaultValue(): T
+
+    override fun readFromNBT(tag: NBTTagCompound) {
+        if (tag.hasKey(sizeTagKey(tagKey))) {
+            replaceContent(
+                MutableList(tag.getInteger(sizeTagKey(tagKey))) { idx ->
+                    if (tag.hasKey(itemTagKey(tagKey, idx))) {
+                        readSingleFromNBT(tag, itemTagKey(tagKey, idx))
+                    } else defaultValue()
+                }
+            )
+        }
+    }
+
+    abstract fun readSingleFromNBT(tag: NBTTagCompound, key: String): T
+
+    override fun writeToNBT(tag: NBTTagCompound) {
+        tag.setInteger(sizeTagKey(tagKey), list.size)
+        list.withIndex().forEach { writeSingleToNBT(tag, itemTagKey(tagKey, it.index), it.value) }
+    }
+
+    abstract fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: T)
 
     abstract fun copyValue(obj: T): T
 
     override fun copyValue(): MutableList<T> = MutableList(list.size) { idx -> copyValue(list[idx]) }
-
-    fun ensureSize(size: Int, fillWith: () -> T) =
-        (size - list.size).takeIf { it > 0 }?.let { repeat(it) { list.add(fillWith()) } }?.alsoIChanged()
 
     override fun add(element: T): Boolean = list.add(element).alsoIChanged()
 
@@ -100,6 +141,10 @@ class IntListProperty : ListProperty<Int> {
         this.tagKey = tagKey
     }
 
+    fun replaceContent(arr: IntArray) = replaceContent(arr.asList())
+
+    override fun defaultValue(): Int = 0
+
     override fun readFromNBT(tag: NBTTagCompound) {
         if (tag.hasKey(tagKey)) replaceContent(tag.getIntArray(tagKey))
     }
@@ -110,16 +155,32 @@ class IntListProperty : ListProperty<Int> {
 
     override fun copyProperty(): IntListProperty = IntListProperty(tagKey = tagKey, list = copyValue())
 
-    fun replaceContent(arr: IntArray) = replaceContent(arr.asList())
+    override fun readSingleFromNBT(tag: NBTTagCompound, key: String): Int = tag.getInteger(key)
 
-    fun replaceContent(col: Collection<Int>) =
-        list.takeUnless { it == col.toMutableList() }
-            ?.run { clear(); addAll(col) }
-            ?.alsoIChanged()
+    override fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: Int) = tag.setInteger(key, value)
 
-    /**
-     * Fills unpopulated entries with zeroes.
-     */
-    fun ensureSize(size: Int) = ensureSize(size) { 0 }
+}
+
+class StringListProperty : ListProperty<String> {
+
+    override val tagKey: String
+
+    constructor(tagKey: String) : super(mutableListOf()) {
+        this.tagKey = tagKey
+    }
+
+    private constructor(tagKey: String, list: MutableList<String>) : super(list) {
+        this.tagKey = tagKey
+    }
+
+    override fun defaultValue(): String = ""
+
+    override fun readSingleFromNBT(tag: NBTTagCompound, key: String): String = tag.getString(key)
+
+    override fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: String) = tag.setString(key, value)
+
+    override fun copyValue(obj: String): String = obj
+
+    override fun copyProperty(): StringListProperty = StringListProperty(tagKey = tagKey, list = copyValue())
 
 }

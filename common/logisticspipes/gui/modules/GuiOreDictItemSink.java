@@ -13,16 +13,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 import logisticspipes.modules.ModuleOreDictItemSink;
+import logisticspipes.network.packets.module.PropertyModuleUpdate;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import network.rs485.logisticspipes.property.Property;
+import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.property.StringListProperty;
 
 public class GuiOreDictItemSink extends ModuleBaseGui {
 
-	private final ModuleOreDictItemSink _itemSink;
 	private final ItemIdentifierInventory tmpInv;
+	private final PropertyLayer propertyLayer;
+	private final StringListProperty writeableOreList;
 
 	private int mouseX = 0;
 	private int mouseY = 0;
@@ -30,10 +36,14 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 	private final List<String> unsunkNames = new ArrayList<>();
 	private int currentOffset = 0;
 
-	public GuiOreDictItemSink(IInventory playerInventory, ModuleOreDictItemSink itemSink) {
-		super(null, itemSink);
+	public GuiOreDictItemSink(IInventory playerInventory, ModuleOreDictItemSink moduleIn) {
+		super(null, moduleIn);
 
-		_itemSink = itemSink;
+		propertyLayer = new PropertyLayer(moduleIn.getProperties()) {
+			@Override
+			protected void onChange(@Nonnull Property<?> property) {}
+		};
+		writeableOreList = propertyLayer.getWritableProperty(moduleIn.oreList);
 
 		tmpInv = new ItemIdentifierInventory(1, "Analyse Slot", 1);
 
@@ -55,6 +65,16 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 		buttonList.add(new SmallGuiButton(1, guiLeft + 159, guiTop + 17, 10, 10, ""));
 		buttonList.get(0).enabled = true;
 		buttonList.get(1).enabled = true;
+	}
+
+	@Override
+	public void onGuiClosed() {
+		super.onGuiClosed();
+		propertyLayer.unregister();
+		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
+			// send update to server, when there are changed properties
+			MainProxy.sendPacketToServer(PropertyModuleUpdate.fromPropertyHolder(propertyLayer).setModulePos(module));
+		}
 	}
 
 	@Override
@@ -89,7 +109,7 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 
 		if (tmpInv.getIDStackInSlot(0) != null) {
 			List<String> oreNames = getOreNames(tmpInv.getStackInSlot(0));
-			oreNames.stream().filter(name -> !unsunkNames.contains(name)).forEach(name -> unsunkNames.add(name));
+			oreNames.stream().filter(name -> !unsunkNames.contains(name)).forEach(unsunkNames::add);
 			tmpInv.clearInventorySlotContents(0);
 		}
 
@@ -110,11 +130,10 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 			if (27 <= mouseX && mouseX < 158 && 6 + (10 * i) <= mouseY && mouseY < 6 + (10 * (i + 1))) {
 				mouseX = 0;
 				mouseY = 0;
-				if (_itemSink.oreList.size() < 9) {
+				if (writeableOreList.size() < 9) {
 					String oreName = unsunkNames.get(currentOffset + i);
-					if (!_itemSink.oreList.contains(oreName)) {
-						_itemSink.oreList.add(oreName);
-						_itemSink.OreListChanged();
+					if (!writeableOreList.contains(oreName)) {
+						writeableOreList.add(oreName);
 					}
 					unsunkNames.remove(oreName);
 				}
@@ -123,20 +142,19 @@ public class GuiOreDictItemSink extends ModuleBaseGui {
 
 		//draw main list and highlight bar, handle clicks
 		Gui.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY.getValue());
-		for (int i = 0; i < _itemSink.oreList.size() && i < 9; i++) {
+		for (int i = 0; i < writeableOreList.size() && i < 9; i++) {
 			if (6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
 				Gui.drawRect(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)), Color.LIGHT_GREY.getValue());
 			}
-			mc.fontRenderer.drawString(_itemSink.oreList.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
+			mc.fontRenderer.drawString(writeableOreList.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
 			if (6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {
 				mouseX = 0;
 				mouseY = 0;
-				String oreName = _itemSink.oreList.get(i);
+				String oreName = writeableOreList.get(i);
 				if (!unsunkNames.contains(oreName)) {
 					unsunkNames.add(oreName);
 				}
-				_itemSink.oreList.remove(oreName);
-				_itemSink.OreListChanged();
+				writeableOreList.remove(oreName);
 			}
 		}
 	}

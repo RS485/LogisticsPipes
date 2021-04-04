@@ -1,8 +1,8 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,14 +39,19 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
+import network.rs485.logisticspipes.module.PropertyModule;
+import network.rs485.logisticspipes.property.Property;
+import network.rs485.logisticspipes.property.StringListProperty;
 
-public class ModuleOreDictItemSink extends LogisticsModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, Gui {
+public class ModuleOreDictItemSink extends PropertyModule
+		implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, Gui {
 
-	public final List<String> oreList = new LinkedList<>();
+	public final StringListProperty oreList = new StringListProperty("");
+
 	//map of Item:<set of damagevalues>, empty set if wildcard damage
 	private Map<Item, Set<Integer>> oreItemIdMap;
 
-	private IHUDModuleRenderer HUD = new HUDOreDictItemSink(this);
+	private final IHUDModuleRenderer HUD = new HUDOreDictItemSink(this);
 	private List<ItemIdentifierStack> oreHudList;
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
@@ -57,10 +62,22 @@ public class ModuleOreDictItemSink extends LogisticsModule implements IClientInf
 		return "item_sink_oredict";
 	}
 
+	@Nonnull
+	@Override
+	public List<Property<?>> getProperties() {
+		return Collections.singletonList(oreList);
+	}
+
 	@Override
 	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.OreDictItemSink,
+				0,
+				true,
+				false,
+				5,
+				0,
+				new ChassiTargetInformation(getPositionInt()));
 	}
 
 	@Override
@@ -124,24 +141,17 @@ public class ModuleOreDictItemSink extends LogisticsModule implements IClientInf
 	}
 
 	@Override
-	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		oreList.clear();
-		int limit = nbttagcompound.getInteger("listSize");
-		for (int i = 0; i < limit; i++) {
-			String oreName = nbttagcompound.getString("Ore" + i);
-			if (!oreName.equals("")) {
-				oreList.add(nbttagcompound.getString("Ore" + i));
+	public void readFromNBT(@Nonnull NBTTagCompound tag) {
+		super.readFromNBT(tag);
+		// deprecated, TODO: remove after 1.12
+		for (int i = 0; i < oreList.size(); i++) {
+			final String key = "Ore" + i;
+			if (tag.hasKey(key)) {
+				final String val = tag.getString(key);
+				if (!val.isEmpty()) oreList.set(i, val);
 			}
 		}
 		oreItemIdMap = null;
-	}
-
-	@Override
-	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("listSize", oreList.size());
-		for (int i = 0; i < oreList.size(); i++) {
-			nbttagcompound.setString("Ore" + i, oreList.get(i));
-		}
 	}
 
 	@Override

@@ -40,11 +40,9 @@ public class SyncSatelliteNamePacket extends StringCoordinatesPacket {
 			return;
 		}
 
-		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics) pipe.pipe).setSatellitePipeName(getString());
-		}
-		if (pipe.pipe instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe).setSatellitePipeName(getString());
-		}
+		if(pipe.pipe instanceof SatellitePipe){
+            		((SatellitePipe) pipe.pipe).setSatellitePipeName(getString());
+        	}
+		
 	}
 }

@@ -10,6 +10,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.StaticResolve;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
+import network.rs485.logisticspipes.SatellitePipe;
 
 @StaticResolve
 public class SyncSatelliteNamePacket extends StringCoordinatesPacket {
@@ -40,11 +41,9 @@ public class SyncSatelliteNamePacket extends StringCoordinatesPacket {
 			return;
 		}
 
-		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics) pipe.pipe).setSatellitePipeName(getString());
+		if (pipe.pipe instanceof SatellitePipe) {
+			((SatellitePipe) pipe.pipe).setSatellitePipeName(getString());
 		}
-		if (pipe.pipe instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe).setSatellitePipeName(getString());
-		}
+		
 	}
 }

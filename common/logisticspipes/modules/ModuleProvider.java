@@ -107,7 +107,7 @@ public class ModuleProvider extends LogisticsModule implements PropertyModule, S
 	private final IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
 	@Override
-	public void registerHandler(@Nonnull IWorldProvider world, @Nonnull IPipeServiceProvider service) {
+	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
 		super.registerHandler(world, service);
 		PropertyModule.DefaultImpls.registerHandler(this, world, service);
 	}

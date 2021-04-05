@@ -55,6 +55,8 @@ import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.connection.Adjacent;
+import network.rs485.logisticspipes.connection.SingleAdjacent;
 
 @CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
@@ -89,6 +91,29 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		super.enabledUpdateEntity();
 		if (doContentUpdate) {
 			checkContentUpdate();
+		}
+	}
+
+	/**
+	 * Updates pointedAdjacent on {@link CoreRoutedPipe}.
+	 */
+	@Override
+	protected void updateAdjacentCache() {
+		super.updateAdjacentCache();
+		final Adjacent adjacent = getAdjacent();
+		if (adjacent instanceof SingleAdjacent) {
+			setPointedAdjacent(((SingleAdjacent) adjacent));
+		} else {
+			final SingleAdjacent oldPointedAdjacent = getPointedAdjacent();
+			SingleAdjacent newPointedAdjacent = null;
+			if (oldPointedAdjacent != null) {
+				// update pointed adjacent with connection type or reset it
+				newPointedAdjacent = adjacent.optionalGet(oldPointedAdjacent.getDir()).map(connectionType -> new SingleAdjacent(this, oldPointedAdjacent.getDir(), connectionType)).orElse(null);
+			}
+			if (newPointedAdjacent == null) {
+				newPointedAdjacent = adjacent.neighbors().entrySet().stream().findAny().map(connectedNeighbor -> new SingleAdjacent(this, connectedNeighbor.getKey().getDirection(), connectedNeighbor.getValue())).orElse(null);
+			}
+			setPointedAdjacent(newPointedAdjacent);
 		}
 	}
 

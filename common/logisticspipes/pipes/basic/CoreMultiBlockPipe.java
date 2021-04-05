@@ -128,6 +128,4 @@ public abstract class CoreMultiBlockPipe extends CoreUnroutedPipe {
 		return super.canPipeConnect(tile, side);
 	}
 
-	@Override
-	protected void updateAdjacentCache() {}
 }

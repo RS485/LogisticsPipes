@@ -413,5 +413,11 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 		return ccTypeHolder;
 	}
 
-	protected abstract void updateAdjacentCache();
+	protected void updateAdjacentCache() {}
+
+	/**
+	 * Triggers connection checks for routing.
+	 */
+	protected void triggerConnectionCheck() {}
+
 }

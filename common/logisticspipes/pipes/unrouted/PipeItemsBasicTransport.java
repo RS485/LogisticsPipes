@@ -38,7 +38,4 @@ public class PipeItemsBasicTransport extends CoreUnroutedPipe {
 		return LogisticsRenderPipe.secondRenderer;
 	}
 
-	@Override
-	protected void updateAdjacentCache() {}
-
 }

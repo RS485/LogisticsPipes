@@ -39,7 +39,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 
 import lombok.Getter;
 
@@ -227,11 +226,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		pointedAdjacent = newPointedAdjacent;
 	}
 
+	/**
+	 * Re-creates adjacent cache.
+	 */
 	protected void updateAdjacentCache() {
-		// triggers connection checks for routing
-		triggerConnectionCheck();
-
-		// re-creates adjacent cache
 		adjacent = AdjacentFactory.INSTANCE.createAdjacentCache(this);
 	}
 
@@ -270,7 +268,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Override
 	public void markTileDirty() {
-		container.markDirty();
+		if (container != null) container.markDirty();
 	}
 
 	@Nonnull
@@ -445,7 +443,13 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 			}
 		}
 		//update router before ticking logic/transport
-		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit || recheckConnections, this);
+		final boolean doFullRefresh =
+				getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset
+				|| _initialInit || recheckConnections;
+		getRouter().update(doFullRefresh, this);
+		if (doFullRefresh) {
+			updateAdjacentCache();
+		}
 		recheckConnections = false;
 		getOriginalUpgradeManager().securityTick();
 		super.updateEntity();
@@ -1702,7 +1706,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return Integer.MAX_VALUE;
 	}
 
-	public void triggerConnectionCheck() {
+	protected void triggerConnectionCheck() {
 		recheckConnections = true;
 	}
 

@@ -351,7 +351,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 	public void scheduleNeighborChange() {
 		tdPart.scheduleNeighborChange();
 		if (MainProxy.isServer(world)) {
-			pipe.updateAdjacentCache();
+			pipe.triggerConnectionCheck();
 		}
 		blockNeighborChange = true;
 		boolean[] connected = new boolean[6];

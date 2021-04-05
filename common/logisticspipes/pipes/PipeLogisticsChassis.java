@@ -700,6 +700,12 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 	}
 
 	@Override
+	public void firstInitialiseTick() {
+		super.firstInitialiseTick();
+		updateAdjacentCache();
+	}
+
+	@Override
 	public boolean canCraft(IResource toCraft) {
 		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule x = getSubModule(i);

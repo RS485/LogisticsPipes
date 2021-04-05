@@ -118,6 +118,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
+	public void firstInitialiseTick() {
+		super.firstInitialiseTick();
+		updateAdjacentCache();
+	}
+
+	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTER_TEXTURE;
 	}

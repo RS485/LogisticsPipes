@@ -7,8 +7,6 @@
 
 package logisticspipes.gui.modules;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
@@ -23,26 +21,21 @@ import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
 import network.rs485.logisticspipes.property.BooleanProperty;
-import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.PropertyLayer;
 
 public class GuiAdvancedExtractor extends ModuleBaseGui {
 
 	private final AsyncAdvancedExtractor _advancedExtractor;
 	private final PropertyLayer propertyLayer;
-	private final BooleanProperty itemsIncludedProperty;
+	private final PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> itemsIncludedOverlay;
 
 	public GuiAdvancedExtractor(IInventory playerInventory, AsyncAdvancedExtractor advancedExtractor) {
 		super(null, advancedExtractor);
 		_advancedExtractor = advancedExtractor;
 
-		propertyLayer = new PropertyLayer(_advancedExtractor.getProperties()) {
+		propertyLayer = new PropertyLayer(_advancedExtractor.getProperties());
 
-			@Override
-			protected void onChange(@Nonnull Property<?> property) {}
-		};
-
-		itemsIncludedProperty = propertyLayer.getWritableProperty(_advancedExtractor.getItemsIncluded());
+		itemsIncludedOverlay = propertyLayer.overlay(_advancedExtractor.getItemsIncluded());
 
 		DummyContainer dummy = new DummyContainer(playerInventory, _advancedExtractor.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
@@ -63,7 +56,7 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 		//Default item toggle:
 		buttonList.clear();
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 20, height / 2 - 34, 60, 20,
-				() -> propertyLayer.getLayerValue(_advancedExtractor.getItemsIncluded()) ? "Included" : "Excluded"));
+				() -> itemsIncludedOverlay.get() ? "Included" : "Excluded"));
 
 		buttonList.add(new GuiButton(1, width / 2 - 25, height / 2 - 34, 40, 20, "Sneaky"));
 	}
@@ -71,7 +64,6 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		propertyLayer.unregister();
 		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
 			// send update to server, when there are changed properties
 			MainProxy.sendPacketToServer(PropertyModuleUpdate.fromPropertyHolder(propertyLayer).setModulePos(module));
@@ -82,7 +74,7 @@ public class GuiAdvancedExtractor extends ModuleBaseGui {
 	protected void actionPerformed(GuiButton guibutton) {
 		switch (guibutton.id) {
 			case 0:
-				itemsIncludedProperty.toggle();
+				itemsIncludedOverlay.write(BooleanProperty::toggle);
 				break;
 			case 1:
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class)

@@ -3,7 +3,6 @@ package logisticspipes.gui.modules;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -20,7 +19,6 @@ import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.PropertyLayer;
 import network.rs485.logisticspipes.property.StringListProperty;
 
@@ -29,6 +27,7 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 	private final ItemIdentifierInventory tmpInv;
 	private final PropertyLayer propertyLayer;
 	private final IStringBasedModule stringBasedModule;
+	private final PropertyLayer.PropertyOverlay<List<String>, StringListProperty> stringListOverlay;
 	private String name = "";
 	private int mouseX = 0;
 	private int mouseY = 0;
@@ -37,11 +36,8 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 		super(null, module);
 		if (!(module instanceof IStringBasedModule)) throw new IllegalArgumentException("Module must be string based");
 		stringBasedModule = (IStringBasedModule) module;
-		propertyLayer = new PropertyLayer(Collections.singletonList(stringBasedModule.stringListProperty())) {
-
-			@Override
-			protected void onChange(@Nonnull Property<?> property) {}
-		};
+		propertyLayer = new PropertyLayer(Collections.singletonList(stringBasedModule.stringListProperty()));
+		stringListOverlay = propertyLayer.overlay(stringBasedModule.stringListProperty());
 
 		tmpInv = new ItemIdentifierInventory(1, "Analyse Slot", 1);
 
@@ -68,7 +64,6 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		propertyLayer.unregister();
 		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
 			// send update to server, when there are changed properties
 			MainProxy.sendPacketToServer(PropertyModuleUpdate.fromPropertyHolder(propertyLayer).setModulePos(module));
@@ -80,21 +75,23 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 		if (par1GuiButton.id == 0) {
 			final ItemIdentifierStack analyseStack = tmpInv.getIDStackInSlot(0);
 			if (analyseStack == null) return;
-			final StringListProperty writableStringListProperty = propertyLayer
-					.getWritableProperty(stringBasedModule.stringListProperty());
-			if (!writableStringListProperty.contains(stringBasedModule.getStringForItem(analyseStack.getItem()))) {
-				writableStringListProperty.add(stringBasedModule.getStringForItem(analyseStack.getItem()));
-			}
+			stringListOverlay.write(strings -> {
+				if (!strings.contains(stringBasedModule.getStringForItem(analyseStack.getItem()))) {
+					strings.add(stringBasedModule.getStringForItem(analyseStack.getItem()));
+				}
+				return null;
+			});
 		} else if (par1GuiButton.id == 1) {
 			final ItemIdentifierStack analyseStack = tmpInv.getIDStackInSlot(0);
-			final StringListProperty writableStringListProperty = propertyLayer
-					.getWritableProperty(stringBasedModule.stringListProperty());
-			if (analyseStack != null && writableStringListProperty.contains(
-					stringBasedModule.getStringForItem(analyseStack.getItem()))) {
-				writableStringListProperty.remove(stringBasedModule.getStringForItem(analyseStack.getItem()));
-			} else if (!name.isEmpty() && writableStringListProperty.contains(name)) {
-				writableStringListProperty.remove(name);
-			}
+			stringListOverlay.write(strings -> {
+				if (analyseStack != null
+						&& strings.contains(stringBasedModule.getStringForItem(analyseStack.getItem()))) {
+					strings.remove(stringBasedModule.getStringForItem(analyseStack.getItem()));
+				} else if (!name.isEmpty() && strings.contains(name)) {
+					strings.remove(name);
+				}
+				return null;
+			});
 		} else {
 			super.actionPerformed(par1GuiButton);
 		}
@@ -117,52 +114,55 @@ public class GuiStringBasedItemSink extends ModuleBaseGui {
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
 		GuiGraphics.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 		SimpleGraphics.drawRectNoBlend(guiLeft + 26, guiTop + 5, guiLeft + 169, guiTop + 17, Color.DARK_GREY, 0.0);
-		final List<String> entries = propertyLayer.getLayerValue(stringBasedModule.stringListProperty());
-		final ItemIdentifierStack analyseStack = tmpInv.getIDStackInSlot(0);
-		if (analyseStack != null) {
-			name = "";
-			mc.fontRenderer
-					.drawString(stringBasedModule.getStringForItem(analyseStack.getItem()), guiLeft + 28, guiTop + 7,
-							0x404040);
-			if (entries.contains(stringBasedModule.getStringForItem(analyseStack.getItem()))) {
-				buttonList.get(0).enabled = false;
-				buttonList.get(1).enabled = true;
-			} else if (entries.size() < 9) {
-				buttonList.get(0).enabled = true;
-				buttonList.get(1).enabled = false;
-			} else {
-				buttonList.get(0).enabled = false;
-				buttonList.get(1).enabled = false;
-			}
-		} else if (name.isEmpty()) {
-			buttonList.get(0).enabled = false;
-			buttonList.get(1).enabled = false;
-		} else {
-			if (entries.contains(name)) {
-				mc.fontRenderer.drawString(name, guiLeft + 28, guiTop + 7, 0x404040);
-				buttonList.get(0).enabled = false;
-				buttonList.get(1).enabled = true;
-			} else {
+		stringListOverlay.read(strings -> {
+			final ItemIdentifierStack analyseStack = tmpInv.getIDStackInSlot(0);
+			if (analyseStack != null) {
 				name = "";
+				mc.fontRenderer
+						.drawString(stringBasedModule.getStringForItem(analyseStack.getItem()), guiLeft + 28,
+								guiTop + 7,
+								0x404040);
+				if (strings.contains(stringBasedModule.getStringForItem(analyseStack.getItem()))) {
+					buttonList.get(0).enabled = false;
+					buttonList.get(1).enabled = true;
+				} else if (strings.size() < 9) {
+					buttonList.get(0).enabled = true;
+					buttonList.get(1).enabled = false;
+				} else {
+					buttonList.get(0).enabled = false;
+					buttonList.get(1).enabled = false;
+				}
+			} else if (name.isEmpty()) {
 				buttonList.get(0).enabled = false;
 				buttonList.get(1).enabled = false;
+			} else {
+				if (strings.contains(name)) {
+					mc.fontRenderer.drawString(name, guiLeft + 28, guiTop + 7, 0x404040);
+					buttonList.get(0).enabled = false;
+					buttonList.get(1).enabled = true;
+				} else {
+					name = "";
+					buttonList.get(0).enabled = false;
+					buttonList.get(1).enabled = false;
+				}
 			}
-		}
-		Gui.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY.getValue());
-		for (int i = 0; i < entries.size() && i < 9; i++) {
-			int pointerX = var2 - guiLeft;
-			int pointerY = var3 - guiTop;
-			if (6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
-				Gui.drawRect(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)),
-						Color.LIGHT_GREY.getValue());
+			Gui.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, Color.DARK_GREY.getValue());
+			for (int i = 0; i < strings.size() && i < 9; i++) {
+				int pointerX = var2 - guiLeft;
+				int pointerY = var3 - guiTop;
+				if (6 <= pointerX && pointerX < 168 && 31 + (10 * i) <= pointerY && pointerY < 31 + (10 * (i + 1))) {
+					Gui.drawRect(guiLeft + 6, guiTop + 31 + (10 * i), guiLeft + 168, guiTop + 31 + (10 * (i + 1)),
+							Color.LIGHT_GREY.getValue());
+				}
+				mc.fontRenderer.drawString(strings.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
+				if (6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {
+					name = strings.get(i);
+					mouseX = 0;
+					mouseY = 0;
+					tmpInv.clearInventorySlotContents(0);
+				}
 			}
-			mc.fontRenderer.drawString(entries.get(i), guiLeft + 7, guiTop + 32 + (10 * i), 0x404040);
-			if (6 <= mouseX && mouseX < 168 && 31 + (10 * i) <= mouseY && mouseY < 31 + (10 * (i + 1))) {
-				name = entries.get(i);
-				mouseX = 0;
-				mouseY = 0;
-				tmpInv.clearInventorySlotContents(0);
-			}
-		}
+			return null;
+		});
 	}
 }

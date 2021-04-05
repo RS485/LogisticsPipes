@@ -31,7 +31,9 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
-import network.rs485.logisticspipes.property.Property;
+import network.rs485.logisticspipes.property.BooleanProperty;
+import network.rs485.logisticspipes.property.EnumProperty;
+import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.PropertyLayer;
 
 public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
@@ -41,6 +43,10 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	private final boolean hasPatternUpgrade;
 	private final PropertyLayer propertyLayer;
 	private final ModuleActiveSupplier supplierModule;
+	private final PropertyLayer.PropertyOverlay<List<Integer>, IntListProperty> slotAssignmentPatternOverlay;
+	private final PropertyLayer.ValuePropertyOverlay<SupplyMode, EnumProperty<SupplyMode>> requestModeOverlay;
+	private final PropertyLayer.ValuePropertyOverlay<PatternMode, EnumProperty<PatternMode>> patternModeOverlay;
+	private PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> limitedPropertyOverlay;
 
 	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, ModuleActiveSupplier module,
 			Boolean flag, int[] slots) {
@@ -48,11 +54,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 		hasPatternUpgrade = flag;
 		supplierModule = module;
 
-		propertyLayer = new PropertyLayer(supplierModule.getProperties()) {
-
-			@Override
-			protected void onChange(@Nonnull Property<?> property) {}
-		};
+		propertyLayer = new PropertyLayer(supplierModule.getProperties());
 
 		DummyContainer dummy = new DummyContainer(playerInventory, dummyInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
@@ -71,15 +73,18 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 			}
 		}
 		inventorySlots = dummy;
-		propertyLayer.getWritableProperty(supplierModule.slotAssignmentPattern).replaceContent(slots);
+		slotAssignmentPatternOverlay = propertyLayer.overlay(supplierModule.slotAssignmentPattern);
+		slotAssignmentPatternOverlay.write((p) -> p.replaceContent(slots));
 		xSize = 194;
 		ySize = 186;
+		patternModeOverlay = propertyLayer
+				.overlay(supplierModule.patternMode);
+		requestModeOverlay = propertyLayer.overlay(supplierModule.requestMode);
 	}
 
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		propertyLayer.unregister();
 		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
 			// send update to server, when there are changed properties
 			MainProxy.sendPacketToServer(
@@ -102,10 +107,12 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 				.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112,
 						0x404040);
 		if (hasPatternUpgrade) {
-			final List<Integer> slotAssignments = propertyLayer.getLayerValue(supplierModule.slotAssignmentPattern);
-			for (int i = 0; i < slotAssignments.size(); i++) {
-				mc.fontRenderer.drawString(Integer.toString(slotAssignments.get(i)), 22 + i * 18, 55, 0x404040);
-			}
+			slotAssignmentPatternOverlay.read((slotAssignments) -> {
+				for (int i = 0; i < slotAssignments.size(); i++) {
+					mc.fontRenderer.drawString(Integer.toString(slotAssignments.get(i)), 22 + i * 18, 55, 0x404040);
+				}
+				return null;
+			});
 		}
 	}
 
@@ -138,8 +145,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, width / 2 + 35, height / 2 - 25, 50, 20, getModeText()));
 		if (hasPatternUpgrade) {
-			buttonList.add(new SmallGuiButton(1, guiLeft + 5, guiTop + 68, 45, 10,
-					getLimitationText(propertyLayer.getLayerValue(supplierModule.isLimited))));
+			buttonList.add(new SmallGuiButton(1, guiLeft + 5, guiTop + 68, 45, 10, getLimitationText()));
 			for (int i = 0; i < 9; i++) {
 				buttonList.add(new SmallGuiButton(i + 2, guiLeft + 18 + i * 18, guiTop + 40, 17, 10, "Set"));
 			}
@@ -150,16 +156,16 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			if (hasPatternUpgrade) {
-				final PatternMode newMode = propertyLayer.getWritableProperty(supplierModule.patternMode).next();
+				final PatternMode newMode = patternModeOverlay.write(EnumProperty::next);
 				buttonList.get(0).displayString = newMode.toString();
 			} else {
-				final SupplyMode newMode = propertyLayer.getWritableProperty(supplierModule.requestMode).next();
+				final SupplyMode newMode = requestModeOverlay.write(EnumProperty::next);
 				buttonList.get(0).displayString = newMode.toString();
 			}
 		} else if (hasPatternUpgrade) {
 			if (guibutton.id == 1) {
-				final boolean isLimited = propertyLayer.getWritableProperty(supplierModule.isLimited).toggle();
-				buttonList.get(1).displayString = getLimitationText(isLimited);
+				limitedPropertyOverlay.write(BooleanProperty::toggle);
+				buttonList.get(1).displayString = getLimitationText();
 			} else if (guibutton.id >= 2 && guibutton.id <= 10) {
 				MainProxy.sendPacketToServer(
 						PacketHandler.getPacket(SlotFinderOpenGuiPacket.class).setSlot(guibutton.id - 2)
@@ -172,18 +178,18 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	public void refreshMode() {
 		buttonList.get(0).displayString = getModeText();
 		if (hasPatternUpgrade) {
-			buttonList.get(1).displayString = getLimitationText(propertyLayer.getLayerValue(supplierModule.isLimited));
+			limitedPropertyOverlay = propertyLayer.overlay(supplierModule.isLimited);
+			buttonList.get(1).displayString = getLimitationText();
 		}
 	}
 
 	@Nonnull
-	private String getLimitationText(boolean isLimited) {
-		return isLimited ? "Limited" : "Unlimited";
+	private String getLimitationText() {
+		return limitedPropertyOverlay.get() ? "Limited" : "Unlimited";
 	}
 
 	private String getModeText() {
-		return (hasPatternUpgrade ? propertyLayer.getLayerValue(supplierModule.patternMode) :
-				propertyLayer.getLayerValue(supplierModule.requestMode)).toString();
+		return (hasPatternUpgrade ? patternModeOverlay : requestModeOverlay).get().toString();
 	}
 
 }

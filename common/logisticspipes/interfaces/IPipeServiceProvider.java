@@ -38,7 +38,7 @@ public interface IPipeServiceProvider extends IRoutedPowerProvider, ISpawnPartic
 	Adjacent getAvailableAdjacent();
 
 	/**
-	 * Only makes sense to use this on pipes that use pointed orientation, like the chassis pipe.
+	 * Only makes sense to use this on the chassis pipe.
 	 */
 	@Nullable
 	EnumFacing getPointedOrientation();

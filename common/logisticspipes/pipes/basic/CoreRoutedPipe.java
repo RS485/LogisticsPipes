@@ -180,9 +180,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	private boolean isOpaqueClientSide = false;
 
 	/** Caches adjacent state, only on Side.SERVER */
+	@Nonnull
 	private Adjacent adjacent = NoAdjacent.INSTANCE;
-
-	private SingleAdjacent pointedAdjacent = null;
 
 	/**
 	 * @return the adjacent cache directly.
@@ -204,26 +203,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Nullable
 	@Override
 	public EnumFacing getPointedOrientation() {
-		if (pointedAdjacent == null) return null;
-		return pointedAdjacent.getDir();
-	}
-
-	@Nullable
-	protected SingleAdjacent getPointedAdjacent() {
-		return pointedAdjacent;
-	}
-
-	@Nonnull
-	protected Adjacent getPointedAdjacentOrNoAdjacent() {
-		if (pointedAdjacent == null) {
-			return NoAdjacent.INSTANCE;
-		} else {
-			return pointedAdjacent;
-		}
-	}
-
-	protected void setPointedAdjacent(@Nullable SingleAdjacent newPointedAdjacent) {
-		pointedAdjacent = newPointedAdjacent;
+		// from IPipeServiceProvider, overridden in the PipeLogisticsChassis
+		return null;
 	}
 
 	/**
@@ -231,24 +212,6 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	 */
 	protected void updateAdjacentCache() {
 		adjacent = AdjacentFactory.INSTANCE.createAdjacentCache(this);
-	}
-
-	@Nullable
-	protected Pair<NeighborTileEntity<TileEntity>, ConnectionType> nextPointedOrientation(@Nullable EnumFacing previousDirection) {
-		final Map<NeighborTileEntity<TileEntity>, ConnectionType> neighbors = adjacent.neighbors();
-		final Stream<NeighborTileEntity<TileEntity>> sortedNeighborsStream = neighbors.keySet().stream()
-				.sorted(Comparator.comparingInt(n -> n.getDirection().ordinal()));
-		if (previousDirection == null) {
-			return sortedNeighborsStream.findFirst().map(neighbor -> new Pair<>(neighbor, neighbors.get(neighbor))).orElse(null);
-		} else {
-			final List<NeighborTileEntity<TileEntity>> sortedNeighbors = sortedNeighborsStream.collect(Collectors.toList());
-			if (sortedNeighbors.size() == 0) return null;
-			final Optional<NeighborTileEntity<TileEntity>> nextNeighbor = sortedNeighbors.stream()
-					.filter(neighbor -> neighbor.getDirection().ordinal() > previousDirection.ordinal())
-					.findFirst();
-			return nextNeighbor.map(neighbor -> new Pair<>(neighbor, neighbors.get(neighbor)))
-					.orElse(new Pair<>(sortedNeighbors.get(0), neighbors.get(sortedNeighbors.get(0))));
-		}
 	}
 
 	private CacheHolder cacheHolder;
@@ -585,10 +548,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		sb.append("++++++++++CONNECTIONS+++++++++++++++\n");
 		sb.append(Arrays.toString(EnumFacing.VALUES)).append('\n');
 		sb.append(Arrays.toString(router.sideDisconnected)).append('\n');
-		sb.append(Arrays.toString(container.pipeConnectionsBuffer)).append('\n');
+		if (container != null) {
+			sb.append(Arrays.toString(container.pipeConnectionsBuffer)).append('\n');
+		}
 		sb.append("+++++++++++++ADJACENT+++++++++++++++\n");
 		sb.append(adjacent).append('\n');
-		sb.append("pointing: ").append(pointedAdjacent).append('\n');
+		sb.append("pointing: ").append(getPointedOrientation()).append('\n');
 		sb.append("~~~~~~~~~~~~~~~POWER~~~~~~~~~~~~~~~~\n");
 		sb.append(router.getPowerProvider()).append('\n');
 		sb.append("~~~~~~~~~~~SUBSYSTEMPOWER~~~~~~~~~~~\n");

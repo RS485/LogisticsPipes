@@ -138,10 +138,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private var guiSliderY1 = 0
 
     // Buttons
-    private lateinit var slider: SliderButton
-    private lateinit var home: HomeButton
+    private lateinit var slider: SliderButton2
+    private lateinit var home: HomeButton2
 
-    private lateinit var addOrRemoveTabButton: BookmarkManagingButton
+    private lateinit var addOrRemoveTabButton: BookmarkManagingButton2
 
     // initialize tabs from the stack NBT
     private val tabButtons = state.bookmarks.map(::createGuiTabButton).toMutableList()
@@ -209,7 +209,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             slider.updateSlider(state.currentPage.getExtraHeight(visibleArea), state.currentPage.progress)
         }
         var xOffset = 0
-        for (button: TabButton in tabButtons) {
+        for (button: TabButton2 in tabButtons) {
             button.setPos(outerGui.roundedRight - 2 - 2 * guiTabWidth - xOffset, outerGui.roundedTop)
             xOffset += guiTabWidth
         }
@@ -224,45 +224,45 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     override fun initGui() {
         calculateGuiConstraints()
         slider = addButton(
-            SliderButton(
-                x = innerGui.roundedRight - guiSliderWidth,
-                y = innerGui.roundedTop,
-                railHeight = innerGui.roundedHeight,
-                width = guiSliderWidth,
-                progress = state.currentPage.progress,
-                setProgressCallback = { progress -> state.currentPage.progress = progress }
-            )
+                SliderButton2(
+                        x = innerGui.roundedRight - guiSliderWidth,
+                        y = innerGui.roundedTop,
+                        railHeight = innerGui.roundedHeight,
+                        width = guiSliderWidth,
+                        progress = state.currentPage.progress,
+                        setProgressCallback = { progress -> state.currentPage.progress = progress }
+                )
         )
         home = addButton(
-            HomeButton(
-                x = outerGui.roundedRight,
-                y = outerGui.roundedTop
-            ) { mouseButton ->
-                if (mouseButton == 0) {
-                    changePage(MAIN_MENU_FILE)
+                HomeButton2(
+                        x = outerGui.roundedRight,
+                        y = outerGui.roundedTop
+                ) { mouseButton ->
+                    if (mouseButton == 0) {
+                        changePage(MAIN_MENU_FILE)
+                    }
+                    return@HomeButton2 true
                 }
-                return@HomeButton true
-            }
         )
         addOrRemoveTabButton = addButton(
-            BookmarkManagingButton(
-                x = outerGui.roundedRight - 18 - guiTabWidth + 4,
-                y = outerGui.roundedTop - 2,
-                onClickAction = { buttonState ->
-                    when (buttonState) {
-                        BookmarkManagingButton.ButtonState.ADD -> addBookmark().let { true }
-                        BookmarkManagingButton.ButtonState.REMOVE -> removeBookmark(state.currentPage)
-                        BookmarkManagingButton.ButtonState.DISABLED -> false
-                    }
-                },
-                additionStateUpdater = {
-                    when {
-                        state.currentPage.isBookmarkable() && isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.ADD
-                        !isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.REMOVE
-                        else -> BookmarkManagingButton.ButtonState.DISABLED
-                    }
-                }
-            )
+                BookmarkManagingButton2(
+                        x = outerGui.roundedRight - 18 - guiTabWidth + 4,
+                        y = outerGui.roundedTop - 2,
+                        onClickAction = { buttonState ->
+                            when (buttonState) {
+                                BookmarkManagingButton2.ButtonState.ADD -> addBookmark().let { true }
+                                BookmarkManagingButton2.ButtonState.REMOVE -> removeBookmark(state.currentPage)
+                                BookmarkManagingButton2.ButtonState.DISABLED -> false
+                            }
+                        },
+                        additionStateUpdater = {
+                            when {
+                                state.currentPage.isBookmarkable() && isTabAbsent(state.currentPage) -> BookmarkManagingButton2.ButtonState.ADD
+                                !isTabAbsent(state.currentPage) -> BookmarkManagingButton2.ButtonState.REMOVE
+                                else -> BookmarkManagingButton2.ButtonState.DISABLED
+                            }
+                        }
+                )
         )
         updateButtonVisibility()
     }
@@ -283,8 +283,11 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
-        state.currentPage.updateScrollPosition(visibleArea, currentProgress)
-        state.currentPage.draw(visibleArea, mouseX, mouseY, partialTicks)
+        state.currentPage.run {
+            updateScrollPosition(visibleArea, currentProgress)
+            drawablePage.preRender(mouseX, mouseY, visibleArea)
+            drawablePage.draw(mouseX, mouseY, partialTicks, visibleArea)
+        }
         drawGui()
         if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         drawTitle()
@@ -352,7 +355,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             addOrRemoveTabButton -> if (addOrRemoveTabButton.click(0)) {
                 button.playPressSound(mc.soundHandler)
             }
-            is TabButton -> if (button.onLeftClick()) {
+            is TabButton2 -> if (button.onLeftClick()) {
                 button.playPressSound(mc.soundHandler)
             }
         }
@@ -361,7 +364,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     private fun rightClick(button: GuiButton) {
         when (button) {
-            is TabButton -> {
+            is TabButton2 -> {
                 if (button.onRightClick(shiftClick = isShiftKeyDown(), ctrlClick = isCtrlKeyDown())) {
                     button.playPressSound(mc.soundHandler)
                 }
@@ -371,10 +374,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     }
 
     private fun addBookmark() = state.currentPage.takeIf { isTabAbsent(it) && tabButtons.size < maxTabs }
-        ?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
+            ?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
 
     private fun createGuiTabButton(tabPage: Page): TabButton =
-        TabButton(tabPage, outerGui.roundedRight - 2 - 2 * guiTabWidth, outerGui.roundedTop, object : TabButtonReturn {
+        TabButton2(tabPage, outerGui.roundedRight - 2 - 2 * guiTabWidth, outerGui.roundedTop, object : TabButtonReturn {
             override fun onLeftClick(): Boolean {
                 if (!isPageActive()) {
                     changePage(tabPage.page)
@@ -383,21 +386,21 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                 return false
             }
 
-            override fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean {
-                if (!isPageActive()) return false
-                if (ctrlClick && shiftClick) {
-                    removeBookmark(tabPage)
-                } else {
-                    tabPage.cycleColor(inverted = shiftClick)
+                override fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean {
+                    if (!isPageActive()) return false
+                    if (ctrlClick && shiftClick) {
+                        removeBookmark(tabPage)
+                    } else {
+                        tabPage.cycleColor(inverted = shiftClick)
+                    }
+                    return true
                 }
-                return true
-            }
 
-            override fun getColor(): Int =
-                tabPage.color ?: cycleMinecraftColorId(freeColor).also { freeColor = it; tabPage.color = it }
+                override fun getColor(): Int =
+                        tabPage.color ?: cycleMinecraftColorId(freeColor).also { freeColor = it; tabPage.color = it }
 
-            override fun isPageActive(): Boolean = tabPage.pageEquals(state.currentPage)
-        })
+                override fun isPageActive(): Boolean = tabPage.pageEquals(state.currentPage)
+            })
 
     private fun removeBookmark(page: Page): Boolean {
         val removedFromState = state.bookmarks.removeIf { it.pageEquals(page) }
@@ -651,16 +654,16 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
         fun drawStretchingRectangle(rectangle: Rectangle, z: Float, texture: Rectangle, blend: Boolean, color: Int) {
             drawStretchingRectangle(rectangle.x0,
-                rectangle.y0,
-                rectangle.x1,
-                rectangle.y1,
-                z,
-                texture.roundedLeft,
-                texture.roundedTop,
-                texture.roundedRight,
-                texture.roundedBottom,
-                blend,
-                color)
+                    rectangle.y0,
+                    rectangle.x1,
+                    rectangle.y1,
+                    z,
+                    texture.roundedLeft,
+                    texture.roundedTop,
+                    texture.roundedRight,
+                    texture.roundedBottom,
+                    blend,
+                    color)
         }
 
         /**

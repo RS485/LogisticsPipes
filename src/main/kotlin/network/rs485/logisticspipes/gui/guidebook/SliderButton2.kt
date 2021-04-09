@@ -45,7 +45,7 @@ import kotlin.math.roundToInt
 private const val minimumHeight = 16
 private val texture = Rectangle(96, 0, 12, 16)
 
-class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : LPGuiButton(0, x, y, width, railHeight) {
+class SliderButton2(x: Int, y: Int, width: Int, railHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : LPGuiButton2(0, x, y, width, railHeight) {
     private val sliderButton: Rectangle = Rectangle()
     private val movementDistance: Int get() = body.roundedHeight - sliderButton.roundedHeight
     private var dragging: Boolean = false
@@ -102,7 +102,7 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
         sliderButton.setPos(sliderButton.roundedX, y)
     }
 
-    fun updateSlider(extraHeight: Int, newProgress: Float): SliderButton {
+    fun updateSlider(extraHeight: Int, newProgress: Float): SliderButton2 {
         if (extraHeight > 0) {
             enabled = true
             sliderButton.setPos(0, calculateProgressI())

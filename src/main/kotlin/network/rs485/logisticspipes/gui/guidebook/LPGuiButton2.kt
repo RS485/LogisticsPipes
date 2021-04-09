@@ -43,7 +43,7 @@ import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 
-open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiButton(id, 24, 24, "") {
+open class LPGuiButton2(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiButton(id, 24, 24, "") {
     val body = Rectangle(x, y, width, height)
 
     // Position relative to body.
@@ -69,7 +69,7 @@ open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiBu
         body.setPos(newX, newY)
     }
 
-    open fun setOnClickAction(newOnClickAction: (Int) -> Boolean): LPGuiButton {
+    open fun setOnClickAction(newOnClickAction: (Int) -> Boolean): LPGuiButton2 {
         onClickAction = newOnClickAction
         return this
     }

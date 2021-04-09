@@ -53,12 +53,12 @@ interface TabButtonReturn {
 private val buttonTextureArea = Rectangle(40, 64, 24, 32)
 private val circleAreaTexture = Rectangle(32, 96, 16, 16)
 
-class TabButton(
+class TabButton2(
     internal val tabPage: Page,
     x: Int,
     y: Int,
     private val whisky: TabButtonReturn,
-) : LPGuiButton(99, x, y - 24, 24, 32) {
+) : LPGuiButton2(99, x, y - 24, 24, 32) {
 
     override val bodyTrigger = Rectangle(1, 1, 22, 22)
     private val circleArea = Rectangle(4, 4, 16, 16)

@@ -413,6 +413,7 @@ gui.powerprovider.StoredEnergy=Stored Energy
 gui.providerpipe.TargetInv=Items to provide (or empty for all)
 gui.providerpipe.Inventory=Inventory
 gui.providerpipe.Mode=Mode
+gui.providerpipe.ExcessInventory=Excess Inventory:
 gui.providerpipe.Exclude=Exclude
 gui.providerpipe.Include=Include
 gui.providerpipe.Switch=Switch

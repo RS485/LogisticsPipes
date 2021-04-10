@@ -10,6 +10,7 @@ import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
+import network.rs485.logisticspipes.gui.ProviderGui;
 
 @StaticResolve
 public class ProviderModuleInHand extends ModuleInHandGuiProvider {
@@ -24,7 +25,8 @@ public class ProviderModuleInHand extends ModuleInHandGuiProvider {
 		if (!(module instanceof ModuleProvider)) {
 			return null;
 		}
-		return new logisticspipes.gui.modules.GuiProvider(player.inventory, (ModuleProvider) module);
+		//return new logisticspipes.gui.modules.GuiProvider(player.inventory, (ModuleProvider) module);
+		return new ProviderGui(player.inventory, (ModuleProvider) module);
 	}
 
 	@Override

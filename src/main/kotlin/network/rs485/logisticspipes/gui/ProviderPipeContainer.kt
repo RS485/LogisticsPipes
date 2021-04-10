@@ -37,16 +37,17 @@
 
 package network.rs485.logisticspipes.gui
 
+import logisticspipes.modules.ModuleProvider
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
 
-class ProviderPipeContainer(playerInventoryIn: IInventory, providerInventoryIn: IInventory) : LPBaseContainer() {
+class ProviderPipeContainer(playerInventoryIn: IInventory, providerModule: ModuleProvider) : LPBaseContainer() {
 
     private val playerSlots = addPlayerSlotsToContainer(playerInventoryIn, 18, 97)
-    private val filterSlots = addDummySlotsToContainer(providerInventoryIn, 72, 18)
+    private val filterSlots = addDummySlotsToContainer(providerModule.filterInventory, 72, 18)
 
     // Add 3x3 grid of dummy slots.
     override fun addDummySlotsToContainer(dummyInventoryIn: IInventory, startX: Int, startY: Int): List<GhostSlot> {
@@ -69,16 +70,18 @@ class ProviderPipeContainer(playerInventoryIn: IInventory, providerInventoryIn: 
         return filterSlots
     }
 
+    override fun transferStackInSlot(player: EntityPlayer, index: Int): ItemStack {
 
-    override fun transferStackInSlot(playerIn: EntityPlayer, index: Int): ItemStack {
-
+        // Try to add to filter inventory
         val slot = inventorySlots[index]
-
-        if (playerSlots.contains(slot)) {
-            handleShiftClickToGhostSlot(slot, filterSlots)
+        if(playerSlots.contains(slot) && filterSlots.none { it.stack.isItemEqual(slot.stack) } && filterSlots.any { !it.hasStack } ){
+            filterSlots.firstOrNull { targetSlot -> !targetSlot.hasStack }?.also { ghostSlot ->
+                applyItemStackToGhostItemSlot(slot.stack, ghostSlot as GhostItemSlot)
+                return ItemStack.EMPTY
+            }
         }
 
-        return super.transferStackInSlot(playerIn, index)
+        return super.transferStackInSlot(player, index)
     }
 
     override fun canInteractWith(playerIn: EntityPlayer): Boolean = true

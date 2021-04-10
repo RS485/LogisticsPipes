@@ -39,27 +39,132 @@ package network.rs485.logisticspipes.gui
 
 import logisticspipes.LPConstants
 import logisticspipes.asm.ModDependentInterface
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.inventory.Container
+import network.rs485.logisticspipes.gui.guidebook.Drawable
+import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
+import network.rs485.logisticspipes.gui.guidebook.Screen
+import network.rs485.logisticspipes.gui.widget.LPGuiWidget
 import network.rs485.logisticspipes.util.math.Rectangle
 
 @ModDependentInterface(modId = [LPConstants.neiModID], interfacePath = ["codechicken.nei.api.INEIGuiHandler"])
-abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, heightIn: Int, xOffset: Int = 0, yOffset: Int = 0) : GuiContainer(inventorySlotsIn) {
+abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, heightIn: Int, private val xOffset: Int = 0, private val yOffset: Int = 0) : GuiContainer(inventorySlotsIn), Drawable {
 
-    val screenArea = Rectangle(width, height)
-    val guiArea = Rectangle((width - widthIn) / 2, (height - heightIn) / 2 , widthIn, heightIn)
+    override var parent: Drawable? = Screen
+    override var relativeBody = Rectangle((width - widthIn) / 2, (height - heightIn) / 2, widthIn, heightIn)
 
-    val left: Int get() = guiArea.roundedLeft
-    val top: Int get() = guiArea.roundedTop
-    val right: Int get() = guiArea.roundedRight
-    val bottom: Int get() = guiArea.roundedBottom
+    val widgetList: MutableList<LPGuiWidget> = mutableListOf()
 
+    val guiWidth: Int get() = relativeBody.roundedWidth
+    val guiHeight: Int get() = relativeBody.roundedHeight
+
+    override fun initGui() {
+        // In case the screen size has changed.
+        Screen.relativeBody.setSize(width, height)
+        // Center gui with possible offsets
+        relativeBody.setPos(
+                newX = (Screen.xCenter - guiWidth / 2) + xOffset,
+                newY = (Screen.yCenter - guiHeight / 2) + yOffset
+        )
+        // To use minecraft's slot and item rendering. Might remove later.
+        guiLeft = relativeBody.roundedLeft
+        guiTop = relativeBody.roundedTop
+        // Clear button and widget lists
+        buttonList.clear()
+        widgetList.clear()
+        mc.player.openContainer = inventorySlots
+    }
+
+    fun addWidget(widget: LPGuiWidget): Drawable {
+        widgetList.add(widget)
+        widgetList.sortBy { it.z }
+        return widget
+    }
+
+    /**
+     * Draw what is supposed to not be important to the gui and is behind everything else.
+     * Origin is top left corner of the minecraft window.
+     * @param mouseX mouse position on X axis.
+     * @param mouseY mouse position on Y axis.
+     * @param partialTicks time so animations don't have to depend on game ticks which can be unstable.
+     */
+    open fun drawBackgroundLayer(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        drawDefaultBackground()
+        helper.drawGuiBackground(absoluteBody, 0f, inventorySlots)
+    }
+
+    /**
+     * Draw the area in between the back and fore grounds, good place to draw buttons.
+     * Origin is the top left corner of the gui.
+     * @param mouseX mouse position on X axis.
+     * @param mouseY mouse position on Y axis.
+     * @param partialTicks time so animations don't have to depend on game ticks which can be unstable.
+     */
+    open fun drawFocalgroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {}
+
+    /**
+     * Draw the top layer of the screen, it could be tooltips, items on slots or even titles and text.
+     * Origin is the top left corner of the gui.
+     * @param mouseX mouse position on X axis.
+     * @param mouseY mouse position on Y axis.
+     * @param partialTicks time so animations don't have to depend on game ticks which can be unstable.
+     */
+    open fun drawForegroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {
+        widgetList.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
+    }
+
+    private fun getHovered(mouseX: Float, mouseY: Float): MouseInteractable? = widgetList.filterIsInstance<MouseInteractable>().firstOrNull { it.isMouseHovering(mouseX, mouseY) }
+
+    // Call super and call all the normally used methods.
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        super.drawScreen(mouseX, mouseY, partialTicks)
+        var currentMouseX: Float = mouseX.toFloat()
+        var currentMouseY: Float = mouseY.toFloat()
+        GlStateManager.pushMatrix()
+        GlStateManager.disableLighting()
+        GlStateManager.disableDepth()
+        GlStateManager.translate(absoluteBody.left, absoluteBody.top, 0.0f)
+        currentMouseX -= absoluteBody.left
+        currentMouseY -= absoluteBody.top
+        drawFocalgroundLayer(currentMouseX, currentMouseY, partialTicks)
+        GlStateManager.translate(0.0f, 0.0f, 10.0f)
+        RenderHelper.disableStandardItemLighting()
+        drawForegroundLayer(currentMouseX, currentMouseY, partialTicks)
+        GlStateManager.translate(-absoluteBody.left, -absoluteBody.top, -10.0f)
+        RenderHelper.enableStandardItemLighting()
+        GlStateManager.enableLighting()
+        GlStateManager.enableDepth()
+        GlStateManager.popMatrix()
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        val currentMouseX: Float = mouseX - absoluteBody.left
+        val currentMouseY: Float = mouseY - absoluteBody.top
+        if (getHovered(currentMouseX, currentMouseY)?.mouseClicked(mouseX.toFloat(), mouseY.toFloat(), mouseButton, null) == true) {
+            // Todo button sound if applicable
+            return
+        }
+        super.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    // Update screen size square when resolution changes.
+    override fun setWorldAndResolution(mc: Minecraft, width: Int, height: Int) {
+        super.setWorldAndResolution(mc, width, height)
+    }
+
+    // Redirect vanilla background method to drawBackgroundLayer()
     override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
-        //helper.drawGuibackground(guiArea)
+        drawBackgroundLayer(mouseX, mouseY, partialTicks)
     }
 
     companion object {
         val helper = LPGuiDrawer
     }
 
+    // TODO add NEI impl
+
+    fun List<Drawable>.draw(mouseX: Float, mouseY: Float, partialTicks: Float, visibleArea: Rectangle) = forEach { it.draw(mouseX, mouseY, partialTicks, visibleArea) }
 }

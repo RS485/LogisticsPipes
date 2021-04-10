@@ -53,5 +53,3 @@ sealed class GhostSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPos
 }
 
 class GhostItemSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int) : GhostSlot(inventoryIn, index, xPosition, yPosition)
-
-class GhostColorSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int) : GhostSlot(inventoryIn, index, xPosition, yPosition)

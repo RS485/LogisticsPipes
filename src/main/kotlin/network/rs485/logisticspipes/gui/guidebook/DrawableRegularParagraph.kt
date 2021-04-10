@@ -43,9 +43,9 @@ import network.rs485.logisticspipes.util.math.Rectangle
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
  */
 class DrawableRegularParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
-
-    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
-        words.find { it.isHovering(mouseX, mouseY, visibleArea) }?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: Unit
+    override var relativeBody: Rectangle = Rectangle()
+    override var parent: Drawable? = null
+    override var z: Float = GuideBookConstants.Z_TEXT
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
@@ -57,12 +57,16 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
         return splitAndInitialize(words, 0, 0, width, true)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+            words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+                    ?: false
+
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         val lines = words.groupBy { it.top }.values
         // Split by lines
         for (line in lines) {

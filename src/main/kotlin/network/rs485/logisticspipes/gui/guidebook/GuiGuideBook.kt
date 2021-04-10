@@ -286,7 +286,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         state.currentPage.run {
             updateScrollPosition(visibleArea, currentProgress)
             drawablePage.preRender(mouseX, mouseY, visibleArea)
-            drawablePage.draw(mouseX, mouseY, partialTicks, visibleArea)
+            drawablePage.draw(mouseX.toFloat(), mouseY.toFloat(), partialTicks, visibleArea)
         }
         drawGui()
         if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
@@ -313,7 +313,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             }
         }
         if (visibleArea.contains(mouseX, mouseY)) {
-            state.currentPage.mouseClicked(mouseX, mouseY, visibleArea, actionListener)
+            state.currentPage.mouseClicked(mouseX.toFloat(), mouseY.toFloat(), mouseButton, visibleArea, actionListener)
         }
     }
 

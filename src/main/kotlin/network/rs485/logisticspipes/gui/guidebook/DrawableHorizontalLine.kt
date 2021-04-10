@@ -47,13 +47,17 @@ import network.rs485.logisticspipes.util.math.Rectangle
 private const val horizontalPadding: Int = 3
 
 class DrawableHorizontalLine(private val thickness: Int, private val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : DrawableParagraph() {
+    override var relativeBody: Rectangle = Rectangle()
+    override var parent: Drawable? = null
+    override var z: Float = GuideBookConstants.Z_TEXT
+
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y + padding)
         relativeBody.setSize(parent!!.width - 2 * horizontalPadding, padding + thickness)
         return super.setPos(x, y)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         GuiGuideBook.drawHorizontalLine(left, right, top, GuideBookConstants.Z_TEXT, thickness, color)
     }

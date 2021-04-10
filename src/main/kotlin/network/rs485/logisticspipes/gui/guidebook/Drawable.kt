@@ -38,38 +38,61 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.math.Rectangle
 
 interface MouseInteractable {
+
     /**
-     * This function is responsible check if the mouse is over the object.
-     * @param mouseX        X position of the mouse (absolute, screen)
-     * @param mouseY        Y position of the mouse (absolute, screen)
-     * @param visibleArea   Desired visible area to check
+     * Check if mouse is over the current object.
+     * @param mouseX X position of the mouse (absolute, screen)
+     * @param mouseY Y position of the mouse (absolute, screen)
      */
-    fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean
+    fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = false
 
     /**
      * A mouse click event should run this and the implementation checks if
      * any actions on guideActionListener should be run.
+     * @param mouseX X position of the mouse (absolute, screen)
+     * @param mouseY Y position of the mouse (absolute, screen)
+     * @param mouseButton button of the mouse that was pressed.
+     * @param guideActionListener actions to run from outside of this scope? (ben knows it best)
      */
-    fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener)
+    fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean = false
+
+    /**
+     * Mouse scroll event, run this.
+     * @param mouseX X position of the mouse (absolute, screen)
+     * @param mouseY Y position of the mouse (absolute, screen)
+     * @param scrollAmount how much the scroll wheel has turned since the last event.
+     */
+    fun mouseScrolled(mouseX: Float, mouseY: Float, scrollAmount: Float): Boolean = false
+
+    /**
+     * A mouse release event should run this.
+     * @param mouseX X position of the mouse (absolute, screen)
+     * @param mouseY Y position of the mouse (absolute, screen)
+     * @param mouseButton button of the mouse that was pressed.
+     */
+    fun mouseReleased(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean = false
 
 }
 
-open class Drawable : MouseInteractable {
+interface Drawable {
     companion object {
         /**
          * Assigns the parent of all children to this.
          */
         fun <T : Drawable> List<Drawable>.createParent(parentGetter: () -> T) =
-            parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
+                parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
     }
 
-    internal var relativeBody: Rectangle = Rectangle()
+    var relativeBody: Rectangle
 
-    open var parent: Drawable? = null
+    var parent: Drawable?
+
+    var z: Float
 
     // Relative positions/size accessors.
     val x: Float get() = relativeBody.x0
@@ -96,10 +119,10 @@ open class Drawable : MouseInteractable {
      * @param delta         Timing floating value
      * @param visibleArea   used to avoid draw calls on non-visible children
      */
-    open fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         if (DRAW_BODY_WIREFRAME) {
             val visibleAbsoluteBody = visibleArea.translated(0, -5).grow(0, 10).overlap(absoluteBody)
-            GuiGuideBook.drawRectangleOutline(visibleAbsoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
+            LPGuiDrawer.drawOutlineRect(visibleAbsoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
         }
     }
 
@@ -110,19 +133,10 @@ open class Drawable : MouseInteractable {
      * @param y         the Y position of the Drawable.
      * @return the input Y level plus the current element's height and a preset vertical spacer height.
      */
-    open fun setPos(x: Int, y: Int): Int {
+    fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
         return relativeBody.roundedHeight
     }
-
-    /**
-     * This function is responsible check if the mouse is over the object
-     * @param mouseX        X position of the mouse (absolute, screen)
-     * @param mouseY        Y position of the mouse (absolute, screen)
-     * @param visibleArea   Desired visible area to check
-     */
-    override fun isHovering(mouseX: Int, mouseY: Int, visibleArea: Rectangle): Boolean =
-        visibleArea.contains(mouseX, mouseY) && absoluteBody.contains(mouseX, mouseY)
 
     /**
      * This function is responsible to check if the current Drawable is within the vertical constrains of the given area.
@@ -132,7 +146,15 @@ open class Drawable : MouseInteractable {
     fun visible(visibleArea: Rectangle): Boolean {
         return visibleArea.intersects(absoluteBody)
     }
+}
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) {}
+object Screen : Drawable {
+    override var relativeBody: Rectangle = Rectangle()
+    override var parent: Drawable? = null
+    override var z: Float = 0.0f
 
+    val xCenter: Int
+        get() = relativeBody.roundedWidth / 2
+    val yCenter: Int
+        get() = relativeBody.roundedHeight / 2
 }

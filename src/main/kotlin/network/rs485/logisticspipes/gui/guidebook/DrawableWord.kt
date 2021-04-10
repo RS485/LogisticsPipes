@@ -49,8 +49,15 @@ open class DrawableWord(
     private val scale: Float,
     state: InlineDrawableState,
     protected val linkInteractable: LinkInteractable?,
-) : Drawable() {
+) : Drawable, MouseInteractable {
 
+    final override var relativeBody: Rectangle = Rectangle()
+    override var parent: Drawable? = null
+        set(value) {
+            field = value
+            (value as? DrawableParagraph)?.run(::setupParent)
+        }
+    override var z: Float = GuideBookConstants.Z_TEXT
     val format: Set<TextFormat> = state.format
     val color: Int = state.color
 
@@ -58,22 +65,18 @@ open class DrawableWord(
         relativeBody.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
     }
 
-    override var parent: Drawable?
-        get() = super.parent
-        set(value) {
-            super.parent = value
-            (value as? DrawableParagraph)?.run(::setupParent)
-        }
-
     private fun setupParent(drawableParagraph: DrawableParagraph) {
         if (linkInteractable != null) drawableParagraph.registerPreRenderCallback(linkInteractable::updateState)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
-        linkInteractable?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener)
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?) =
+        linkInteractable?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
-        val hovering = linkInteractable?.isHovering(mouseX, mouseY, visibleArea) ?: false
+    override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean =
+            absoluteBody.contains(mouseX, mouseY)
+
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+        val hovering = linkInteractable?.isMouseHovering(mouseX, mouseY) ?: false
         val updatedColor = linkInteractable?.updateColor(color) ?: color
         val updatedFormat = linkInteractable?.updateFormat(format) ?: format
         if (hovering) {
@@ -101,9 +104,9 @@ class DrawableSpace(
     linkInteractable: LinkInteractable?,
 ) : DrawableWord(" ", scale, state, linkInteractable) {
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         if (width > 0) {
-            linkInteractable?.isHovering(mouseX, mouseY, visibleArea)
+            linkInteractable?.isMouseHovering(mouseX, mouseY)
             val updatedColor = linkInteractable?.updateColor(color) ?: color
             val updatedFormat = linkInteractable?.updateFormat(format) ?: format
             GuiGuideBook.lpFontRenderer.drawSpace(

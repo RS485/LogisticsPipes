@@ -42,9 +42,12 @@ import network.rs485.logisticspipes.util.math.Rectangle
 private const val PAGE_VERTICAL_PADDING = 5
 
 class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : DrawableParagraph() {
+    override var relativeBody: Rectangle = Rectangle()
+    override var parent: Drawable? = null
+    override var z: Float = GuideBookConstants.Z_TEXT
 
     fun setWidth(width: Int) =
-        relativeBody.setSize(width, relativeBody.roundedHeight)
+            relativeBody.setSize(width, relativeBody.roundedHeight)
 
     fun updateScrollPosition(visibleArea: Rectangle, progress: Float) {
         relativeBody.setPos(relativeBody.x0, visibleArea.y0 - ((height - visibleArea.height) * progress))
@@ -68,13 +71,13 @@ class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : Dr
         it.preRender(mouseX, mouseY, visibleArea)
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) =
-        drawChildren(mouseX, mouseY, delta, visibleArea)
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) =
+            drawChildren(mouseX, mouseY, delta, visibleArea)
 
-    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) =
-        getVisibleParagraphs(visibleArea).forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) =
+            getVisibleParagraphs(visibleArea).forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
 
     fun getVisibleParagraphs(visibleArea: Rectangle) =
-        drawableParagraphs.filter { it.visible(visibleArea) }
+            drawableParagraphs.filter { it.visible(visibleArea) }
 
 }

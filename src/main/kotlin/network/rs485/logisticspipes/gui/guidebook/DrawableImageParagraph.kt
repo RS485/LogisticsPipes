@@ -46,6 +46,10 @@ import network.rs485.logisticspipes.util.math.Rectangle
 import java.io.IOException
 
 class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, val image: DrawableImage) : DrawableParagraph() {
+    override var relativeBody = Rectangle()
+    override var parent: Drawable? = null
+    override var z: Float = GuideBookConstants.Z_TEXT
+
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
         // This has to be done in two steps because setChildrenPos() depends on the width already being set.
@@ -64,7 +68,7 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
         return currentY
     }
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         if (image.broken) {
             super.draw(mouseX, mouseY, delta, visibleArea)
             for (drawableWord in alternativeText.filter { it.visible(visibleArea) }) {
@@ -76,7 +80,11 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
     }
 }
 
-class DrawableImage(private var imageResource: ResourceLocation) : Drawable() {
+class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
+
+    override var relativeBody: Rectangle = Rectangle()
+    override var parent: Drawable? = null
+    override var z: Float = GuideBookConstants.Z_TEXT
 
     private var imageSize: PngSizeInfo? = try {
         val resource = Minecraft.getMinecraft().resourceManager.getResource(imageResource)
@@ -87,7 +95,8 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable() {
     }
     val broken: Boolean get() = imageSize == null
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         if (imageSize != null) {
             GuiGuideBook.drawImage(absoluteBody, visibleArea, imageResource)
         } else {

@@ -54,109 +54,109 @@ object DrawablePageFactory {
     private fun getScaleFromLevel(headerLevel: Int): Float = min(1.0f, 2.0f - ((headerLevel - 1) / 5.0f))
 
     fun createDrawablePage(page: PageInfoProvider): DrawablePage =
-        createDrawableParagraphs(page).let { it.createParent { DrawablePage(it) } }
+            createDrawableParagraphs(page).let { it.createParent { DrawablePage(it) } }
 
     private fun getLinkGroup(linkGroups: MutableMap<Link, LinkGroup>, state: InlineDrawableState) = state.link?.let { link ->
         linkGroups.getOrPut(link) { LinkGroup(link) }
     }
 
     private fun LinkGroup?.createChild(constructor: (linkGroup: LinkGroup?) -> DrawableWord): DrawableWord =
-        constructor(this).also { this?.addChild(it) }
+            constructor(this).also { this?.addChild(it) }
 
     private fun <T : DrawableParagraph> createDrawableParagraph(paragraphConstructor: DrawableWordMap<T>, elements: List<InlineElement>, scale: Float) =
-        defaultDrawableState.copy().let { state ->
-            val linkGroups = mutableMapOf<Link, LinkGroup>()
-            elements.mapNotNull { element ->
-                element.changeDrawableState(state)
-                when (element) {
-                    is Word -> getLinkGroup(linkGroups, state).createChild { DrawableWord(element.str, scale, state, it) }
-                    is Space -> getLinkGroup(linkGroups, state).createChild { DrawableSpace(scale, state, it) }
-                    Break -> DrawableBreak
-                    else -> null
-                }
-            }
-        }.let { drawableWords ->
-            drawableWords.createParent { paragraphConstructor(drawableWords) }
-        }
-
-    private fun createDrawableParagraphs(page: PageInfoProvider): List<DrawableParagraph> =
-        page.paragraphs.map { paragraph ->
-            when (paragraph) {
-                is RegularParagraph -> createDrawableParagraph(
-                    paragraphConstructor = ::DrawableRegularParagraph,
-                    elements = paragraph.elements,
-                    scale = 1.0f,
-                )
-                is HeaderParagraph -> createDrawableParagraph(
-                    paragraphConstructor = ::DrawableHeaderParagraph,
-                    elements = paragraph.elements,
-                    scale = getScaleFromLevel(paragraph.headerLevel),
-                )
-                is HorizontalLineParagraph -> DrawableHorizontalLine(2)
-                is MenuParagraph -> {
-                    if (page.metadata.menu.containsKey(paragraph.link)) {
-                        createDrawableParagraph(
-                            paragraphConstructor = { drawableMenuTitle ->
-                                val factory = when (paragraph.type) {
-                                    MenuParagraphType.LIST -> ::DrawableMenuListEntry
-                                    MenuParagraphType.TILE -> ::DrawableMenuTile
-                                }
-                                createDrawableMenuParagraph(page, page.metadata.menu[paragraph.link]!!, drawableMenuTitle, factory)
-                            },
-                            elements = MarkdownParser.splitAndFormatWords(paragraph.description),
-                            scale = getScaleFromLevel(3),
-                        )
-                    } else {
-                        createDrawableParagraph(
-                            paragraphConstructor = ::DrawableRegularParagraph,
-                            elements = MarkdownParser.splitSpacesAndWords("Menu `${paragraph.link}` not found"),
-                            scale = 1.0f,
-                        )
+            defaultDrawableState.copy().let { state ->
+                val linkGroups = mutableMapOf<Link, LinkGroup>()
+                elements.mapNotNull { element ->
+                    element.changeDrawableState(state)
+                    when (element) {
+                        is Word -> getLinkGroup(linkGroups, state).createChild { DrawableWord(element.str, scale, state, it) }
+                        is Space -> getLinkGroup(linkGroups, state).createChild { DrawableSpace(scale, state, it) }
+                        Break -> DrawableBreak
+                        else -> null
                     }
                 }
-                is ImageParagraph -> createDrawableParagraph(
-                    paragraphConstructor = { drawableAlternativeText ->
-                        val imageResource = page.resolveResource(paragraph.imagePath)
-                        DrawableImageParagraph(drawableAlternativeText, DrawableImage(imageResource)).also { drawableImageParagraph ->
-                            drawableImageParagraph.image.parent = drawableImageParagraph
-                        }
-                    },
-                    elements = MarkdownParser.splitAndFormatWords(paragraph.alternative),
-                    scale = 1.0f,
-                )
+            }.let { drawableWords ->
+                drawableWords.createParent { paragraphConstructor(drawableWords) }
             }
-        }
+
+    private fun createDrawableParagraphs(page: PageInfoProvider): List<DrawableParagraph> =
+            page.paragraphs.map { paragraph ->
+                when (paragraph) {
+                    is RegularParagraph -> createDrawableParagraph(
+                            paragraphConstructor = ::DrawableRegularParagraph,
+                            elements = paragraph.elements,
+                            scale = 1.0f,
+                    )
+                    is HeaderParagraph -> createDrawableParagraph(
+                            paragraphConstructor = ::DrawableHeaderParagraph,
+                            elements = paragraph.elements,
+                            scale = getScaleFromLevel(paragraph.headerLevel),
+                    )
+                    is HorizontalLineParagraph -> DrawableHorizontalLine(2)
+                    is MenuParagraph -> {
+                        if (page.metadata.menu.containsKey(paragraph.link)) {
+                            createDrawableParagraph(
+                                    paragraphConstructor = { drawableMenuTitle ->
+                                        val factory = when (paragraph.type) {
+                                            MenuParagraphType.LIST -> ::DrawableMenuListEntry
+                                            MenuParagraphType.TILE -> ::DrawableMenuTile
+                                        }
+                                        createDrawableMenuParagraph(page, page.metadata.menu[paragraph.link]!!, drawableMenuTitle, factory)
+                                    },
+                                    elements = MarkdownParser.splitAndFormatWords(paragraph.description),
+                                    scale = getScaleFromLevel(3),
+                            )
+                        } else {
+                            createDrawableParagraph(
+                                    paragraphConstructor = ::DrawableRegularParagraph,
+                                    elements = MarkdownParser.splitSpacesAndWords("Menu `${paragraph.link}` not found"),
+                                    scale = 1.0f,
+                            )
+                        }
+                    }
+                    is ImageParagraph -> createDrawableParagraph(
+                            paragraphConstructor = { drawableAlternativeText ->
+                                val imageResource = page.resolveResource(paragraph.imagePath)
+                                DrawableImageParagraph(drawableAlternativeText, DrawableImage(imageResource)).also { drawableImageParagraph ->
+                                    drawableImageParagraph.image.parent = drawableImageParagraph
+                                }
+                            },
+                            elements = MarkdownParser.splitAndFormatWords(paragraph.alternative),
+                            scale = 1.0f,
+                    )
+                }
+            }
 
     private fun resolvePaths(page: PageInfoProvider, groupEntries: List<String>) =
-        groupEntries.map { loc -> page.resolveLocation(loc).toLocation(true) }
+            groupEntries.map { loc -> page.resolveLocation(loc).toLocation(true) }
 
-    private fun <T : Drawable> createDrawableMenuParagraph(
-        page: PageInfoProvider,
-        menuStructure: Map<String, List<String>>,
-        drawableMenuTitle: List<DrawableWord>,
-        drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
-    ) = menuStructure.map { (groupTitle: String, groupEntries: List<String>) ->
+    private fun <T> createDrawableMenuParagraph(
+            page: PageInfoProvider,
+            menuStructure: Map<String, List<String>>,
+            drawableMenuTitle: List<DrawableWord>,
+            drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
+    ) where T : Drawable, T : MouseInteractable = menuStructure.map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
-            paragraphConstructor = { drawableGroupTitle ->
-                createDrawableMenu(resolvePaths(page, groupEntries), drawableGroupTitle, drawableMenuEntryConstructor)
-            },
-            elements = MarkdownParser.splitAndFormatWords(groupTitle),
-            scale = getScaleFromLevel(6),
+                paragraphConstructor = { drawableGroupTitle ->
+                    createDrawableMenu(resolvePaths(page, groupEntries), drawableGroupTitle, drawableMenuEntryConstructor)
+                },
+                elements = MarkdownParser.splitAndFormatWords(groupTitle),
+                scale = getScaleFromLevel(6),
         )
     }.let { drawableMenuGroups ->
         drawableMenuGroups.createParent { DrawableMenuParagraph(drawableMenuTitle, drawableMenuGroups) }
     }
 
-    private fun <T : Drawable> createDrawableMenu(
-        menuGroupEntries: List<String>,
-        drawableGroupTitle: List<DrawableWord>,
-        drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
-    ) = menuGroupEntries
-        .map { path ->
-            BookContents.get(path).metadata.let { metadata ->
-                drawableMenuEntryConstructor(path, metadata.title, metadata.icon)
+    private fun <T> createDrawableMenu(
+            menuGroupEntries: List<String>,
+            drawableGroupTitle: List<DrawableWord>,
+            drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
+    ) where T : Drawable, T : MouseInteractable = menuGroupEntries
+            .map { path ->
+                BookContents.get(path).metadata.let { metadata ->
+                    drawableMenuEntryConstructor(path, metadata.title, metadata.icon)
+                }
+            }.let { drawableMenuTiles ->
+                drawableMenuTiles.createParent { DrawableMenuGroup(drawableGroupTitle, drawableMenuTiles) }
             }
-        }.let { drawableMenuTiles ->
-            drawableMenuTiles.createParent { DrawableMenuGroup(drawableGroupTitle, drawableMenuTiles) }
-        }
 }

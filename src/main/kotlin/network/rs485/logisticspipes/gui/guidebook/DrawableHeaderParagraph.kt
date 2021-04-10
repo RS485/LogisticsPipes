@@ -43,17 +43,22 @@ import network.rs485.logisticspipes.util.math.Rectangle
  * Header token, stores all the tokens that are apart of the header.
  */
 class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
+    override var relativeBody: Rectangle = Rectangle()
+    override var parent: Drawable? = null
+    override var z: Float = GuideBookConstants.Z_TEXT
+
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, visibleArea: Rectangle, guideActionListener: GuiGuideBook.ActionListener) =
-        words.find { it.isHovering(mouseX, mouseY, visibleArea) }?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener) ?: Unit
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+            words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+                    ?: false
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun drawChildren(mouseX: Int, mouseY: Int, delta: Float, visibleArea: Rectangle) {
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         (this.words + horizontalLine).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
 

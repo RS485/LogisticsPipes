@@ -35,36 +35,54 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.gui.widget
 
 import logisticspipes.utils.MinecraftColor
 import logisticspipes.utils.string.StringUtils
+import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.LPBaseGuiContainer.Companion.helper
+import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.util.math.Rectangle
 
-class LPGuiLabel(private var text: String, val x: Int, private val y: Int, private val width: Int, private val textColor: Int = MinecraftColor.WHITE.colorCode) : LPGuiWidget() {
+class LPGuiLabel(
+        parent: Drawable,
+        var text: String,
+        xPosition: HorizontalPosition,
+        yPosition: VerticalPosition,
+        xSize: HorizontalSize,
+        private val textColor: Int = MinecraftColor.WHITE.colorCode) : LPGuiWidget
+(
+        parent = parent,
+        xPosition = xPosition,
+        yPosition = yPosition,
+        xSize = xSize,
+        ySize = AbsoluteSize(helper.mcFontRenderer.FONT_HEIGHT)
+) {
 
-    override val area: Rectangle = Rectangle(x, y, width, fontRenderer.FONT_HEIGHT)
-    private val textArea = Rectangle(x, y - 1, fontRenderer.getStringWidth(text), fontRenderer.FONT_HEIGHT + 1)
+    private val textArea = Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
     private var drawXOffset = 0
     private var extendable = false
-    private var trimmedText = ""
+    private var trimmedText = StringUtils.getCuttedString(text, width, helper.mcFontRenderer)
     private var alignment = HorizontalAlignment.LEFT
-    private var backgroundColor = MinecraftColor.LIGHT_GRAY.colorCode
+    private var backgroundColor = helper.BACKGROUND_LIGHT
 
-    override fun draw(mouseX: Int, mouseY: Int, delta: Float) {
-        val hovering = area.contains(mouseX, mouseY)
-        if(extendable && hovering){
-            helper.drawRect(textArea.translated(drawXOffset, 0), zLevel.toDouble(), backgroundColor)
-            fontRenderer.drawString(text, x + drawXOffset, y, textColor)
-        } else {
-            fontRenderer.drawString(trimmedText, x + drawXOffset, y, textColor)
-        }
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+        val hovering = relativeBody.contains(mouseX, mouseY)
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(0f, 0f, z)
+        GlStateManager.enableDepth()
+        if (hovering) helper.drawRect(textArea.translated(drawXOffset, 0), -5f, backgroundColor)
+        helper.mcFontRenderer.drawString(if (hovering) text else trimmedText, relativeBody.roundedX + drawXOffset, relativeBody.roundedY, textColor)
+        GlStateManager.disableDepth()
+        GlStateManager.translate(0f, 0f, -z)
+        GlStateManager.popMatrix()
     }
 
     fun updateText(newText: String): LPGuiLabel {
         text = newText
-        trimmedText = StringUtils.getCuttedString(text, width, fontRenderer)
-        textArea.setSize(fontRenderer.getStringWidth(text), fontRenderer.FONT_HEIGHT + 1)
+        trimmedText = StringUtils.getCuttedString(text, width, helper.mcFontRenderer)
+        textArea.setSize(helper.mcFontRenderer.getStringWidth(text), helper.mcFontRenderer.FONT_HEIGHT + 1)
         return setAlignment(alignment)
     }
 
@@ -75,12 +93,12 @@ class LPGuiLabel(private var text: String, val x: Int, private val y: Int, priva
     }
 
     fun setAlignment(newAlignment: HorizontalAlignment): LPGuiLabel {
-        alignment = if(text.width() > width){
+        alignment = if (text.width() > width) {
             HorizontalAlignment.LEFT
         } else {
             newAlignment
         }
-        drawXOffset = when(alignment){
+        drawXOffset = when (alignment) {
             HorizontalAlignment.CENTER -> (width - text.width()) / 2
             HorizontalAlignment.LEFT -> 0
             HorizontalAlignment.RIGHT -> width - text.width()
@@ -88,5 +106,5 @@ class LPGuiLabel(private var text: String, val x: Int, private val y: Int, priva
         return this
     }
 
-    private fun String.width() = fontRenderer.getStringWidth(this)
+    private fun String.width() = helper.mcFontRenderer.getStringWidth(this)
 }

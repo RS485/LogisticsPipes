@@ -50,7 +50,7 @@ private val homeIconTexture = Rectangle(128, 0, 16, 16)
 /*
 * Position on the button is set based on it's rightmost and where it needs to connect at the bottom.
 */
-class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(1, x - 24, y - 24, homeButtonTexture.roundedWidth, homeButtonTexture.roundedHeight) {
+class HomeButton2(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton2(1, x - 24, y - 24, homeButtonTexture.roundedWidth, homeButtonTexture.roundedHeight) {
     private val homeIconBody: Rectangle
     override val bodyTrigger = Rectangle(1, 1, 22, 22)
 

@@ -35,22 +35,33 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.gui.widget
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.FontRenderer
-import net.minecraft.client.gui.Gui
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.gui.guidebook.Drawable
+import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 
-abstract class LPGuiWidget : Gui() {
-
-    companion object {
-        val helper = LPGuiDrawer
-        val fontRenderer: FontRenderer = Minecraft.getMinecraft().fontRenderer
-    }
-
-    abstract val area: Rectangle
-
-    abstract fun draw(mouseX: Int, mouseY: Int, delta: Float)
-
+class BiStateButton(
+        parent: Drawable,
+        xPosition: HorizontalPosition,
+        yPosition: VerticalPosition,
+        xSize: HorizontalSize,
+        ySize: VerticalSize,
+        initialValue: Boolean,
+        private val trueText: String,
+        private val falseText: String,
+        private val valueGetter: () -> Boolean,
+        onClickAction: (Int) -> Boolean
+): TextButton(
+        parent = parent,
+        text = if (initialValue) trueText else falseText,
+        xPosition = xPosition,
+        yPosition = yPosition,
+        xSize = xSize,
+        ySize = ySize,
+        onClickAction = onClickAction
+) {
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+            onClickAction.invoke(mouseButton).also {
+                text = if(valueGetter.invoke()) trueText else falseText
+            }
 }

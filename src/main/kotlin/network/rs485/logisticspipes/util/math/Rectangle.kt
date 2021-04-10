@@ -75,6 +75,17 @@ class Rectangle constructor(private var _x: Float = 0.0f, private var _y: Float 
     val bottom: Float
         get() = y1
 
+    // Corners
+    val topRight: Pair<Float, Float>
+        get() = right to top
+    val topLeft: Pair<Float, Float>
+        get() = left to top
+    val bottomLeft: Pair<Float, Float>
+        get() = left to bottom
+    val bottomRight: Pair<Float, Float>
+        get() = right to bottom
+
+
     // Integer getters, only to be used when precision is not important
     val roundedX: Int
         get() = _x.roundToInt()
@@ -120,6 +131,8 @@ class Rectangle constructor(private var _x: Float = 0.0f, private var _y: Float 
      */
     constructor(firstPoint: Pair<Float, Float>, secondPoint: Pair<Float, Float>) : this(firstPoint.first, firstPoint.second, (secondPoint.first - firstPoint.first), (secondPoint.second - firstPoint.second))
 
+    constructor(rect: Rectangle) : this(rect._x, rect._y, rect._width, rect._height)
+
     // Transformations
     fun setSize(newWidth: Float, newHeight: Float) = apply {
         _width = newWidth
@@ -128,10 +141,14 @@ class Rectangle constructor(private var _x: Float = 0.0f, private var _y: Float 
 
     fun setSize(newWidth: Int, newHeight: Int) = setSize(newWidth.toFloat(), newHeight.toFloat())
 
-    fun grow(growX: Int, growY: Int) = apply {
+    fun grow(growX: Float, growY: Float) = apply {
         _width += growX
         _height += growY
     }
+    fun grow(grow: Float): Rectangle = grow(grow, grow)
+
+    fun grow(growX: Int, growY: Int): Rectangle = grow(growX.toFloat(), growY.toFloat())
+    fun grow(grow: Int): Rectangle = grow(grow, grow)
 
     fun setSizeFromRectangle(rect: Rectangle) = apply { setSize(rect._width, rect._height) }
 
@@ -157,11 +174,13 @@ class Rectangle constructor(private var _x: Float = 0.0f, private var _y: Float 
         _y *= multiplier
     }
 
+    fun translate(translate: Float): Rectangle = translate(translate, translate)
     fun translate(translateX: Float = 0.0f, translateY: Float = 0.0f) = apply {
         _x += translateX
         _y += translateY
     }
 
+    fun translate(translate: Int): Rectangle = translate(translate, translate)
     fun translate(translateX: Int = 0, translateY: Int = 0) = translate(translateX.toFloat(), translateY.toFloat())
 
     // Non-destructive

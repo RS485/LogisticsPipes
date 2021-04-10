@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.*
 import kotlin.math.floor
@@ -80,9 +81,9 @@ open class DrawableWord(
         val updatedColor = linkInteractable?.updateColor(color) ?: color
         val updatedFormat = linkInteractable?.updateFormat(format) ?: format
         if (hovering) {
-            GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
+            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
-        GuiGuideBook.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
+        LPGuiDrawer.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
     }
 
     override fun setPos(x: Int, y: Int): Int {

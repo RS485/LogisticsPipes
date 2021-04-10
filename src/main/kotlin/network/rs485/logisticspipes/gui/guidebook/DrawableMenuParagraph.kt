@@ -43,6 +43,7 @@ import logisticspipes.utils.item.ItemStackRenderer
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
@@ -161,7 +162,7 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
             itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, GuideBookConstants.Z_TEXT, iconScale)
         }
         if (hovered) {
-            GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
+            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
             GuiGuideBook.drawBoxedString(pageName, mid(), min(bottom, visibleArea.bottom).roundToInt(), GuideBookConstants.Z_TOOLTIP, HorizontalAlignment.CENTER, VerticalAlignment.TOP)
         }
     }
@@ -214,19 +215,19 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
         if (itemRect.intersects(visibleArea)) {
             val textColor: Int = if (!hovered) MinecraftColor.WHITE.colorCode else 0xffffffa0.toInt()
             val textVerticalOffset = (height - GuiGuideBook.lpFontRenderer.getFontHeight(1.0f)) / 2
-            GuiGuideBook.lpFontRenderer.drawString(
-                string = pageName,
-                x = itemRect.right + itemOffset,
-                y = top + textVerticalOffset,
-                color = textColor,
-                format = EnumSet.of(TextFormat.Shadow),
-                scale = 1.0f
+            LPGuiDrawer.lpFontRenderer.drawString(
+                    string = pageName,
+                    x = itemRect.right + itemOffset,
+                    y = top + textVerticalOffset,
+                    color = textColor,
+                    format = EnumSet.of(TextFormat.Shadow),
+                    scale = 1.0f
             )
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
             DrawableMenuTile.itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, GuideBookConstants.Z_TEXT, iconScale)
         }
         if (hovered) {
-            GuiGuideBook.drawLinkIndicator(mouseX, mouseY)
+            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
     }
 

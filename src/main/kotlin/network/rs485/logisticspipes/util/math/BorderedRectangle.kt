@@ -35,21 +35,31 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.util.math
 
-import net.minecraft.inventory.IInventory
+class BorderedRectangle(outer: Rectangle, borderTop: Int, borderLeft: Int, borderBottom: Int, borderRight: Int) {
 
-// TODO create different buttons.
-class ProviderPipeGui(playerInventory: IInventory, dummyInventory: IInventory) : LPBaseGuiContainer(ProviderPipeContainer(playerInventory, dummyInventory), 192, 186)
-{
+    constructor(outer: Rectangle, border: Int) : this(outer, border, border, border, border)
 
-    private val PREFIX = "gui.providerpipe."
+    val inner = outer.copy().translate(borderLeft, borderTop).grow(-borderLeft - borderRight, -borderTop - borderBottom)
 
-    init {
+    // Corners
+    val topRight: Rectangle = Rectangle(inner.right to outer.top, outer.right to inner.top)
+    val topLeft: Rectangle = Rectangle(outer.left to outer.top, inner.left to inner.top)
+    val bottomLeft: Rectangle = Rectangle(outer.left to inner.bottom, inner.left to outer.bottom)
+    val bottomRight: Rectangle = Rectangle(inner.right to inner.bottom, outer.right to outer.bottom)
 
-    }
+    // Sides
+    val top: Rectangle = Rectangle(inner.left to outer.top, inner.right to inner.top)
+    val left: Rectangle = Rectangle(outer.left to inner.top, inner.left to inner.bottom)
+    val bottom: Rectangle = Rectangle(inner.left to inner.bottom, inner.right to outer.bottom)
+    val right: Rectangle = Rectangle(inner.right to inner.top, outer.right to inner.bottom)
 
-    override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
-        helper.drawGuiBackground(guiArea, zLevel.toDouble(), inventorySlots)
-    }
+    val corners: List<Rectangle> = listOf(topRight, topLeft, bottomLeft, bottomRight)
+
+    val sides: List<Rectangle> = listOf(top, left, bottom, right)
+
+    val borderQuads: List<Rectangle> = listOf(topRight, top, topLeft, left, bottomLeft, bottom, bottomRight, right)
+
+    val quads: List<Rectangle> = borderQuads + inner
 }

@@ -42,6 +42,7 @@ import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.util.math.Rectangle
 import java.io.IOException
 
@@ -100,7 +101,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         if (imageSize != null) {
             GuiGuideBook.drawImage(absoluteBody, visibleArea, imageResource)
         } else {
-            GuiGuideBook.drawRectangleOutline(absoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
+            LPGuiDrawer.drawOutlineRect(absoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
         }
     }
 

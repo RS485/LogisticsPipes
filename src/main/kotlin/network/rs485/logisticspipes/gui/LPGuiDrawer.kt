@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.gui
 import logisticspipes.LPConstants
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -47,154 +48,226 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants
+import network.rs485.logisticspipes.util.math.BorderedRectangle
 import network.rs485.logisticspipes.util.math.Rectangle
 import org.lwjgl.opengl.GL11
-
-data class QuadD(val left: Double, val top: Double, val right: Double, val bottom: Double) {
-    val topRight: Pair<Double, Double> get() = Pair(right, top)
-    val topLeft: Pair<Double, Double> get() = Pair(left, top)
-    val bottomLeft: Pair<Double, Double> get() = Pair(left, bottom)
-    val bottomRight: Pair<Double, Double> get() = Pair(right, bottom)
-
-    companion object {
-        fun fromRectangle(rect: Rectangle) = QuadD(rect.x0.toDouble(), rect.y0.toDouble(), rect.x1.toDouble(), rect.y1.toDouble())
-        fun fromResizedQuad(quad: QuadD, amount: Double) = QuadD(quad.left - amount, quad.top - amount, quad.right + amount, quad.bottom + amount)
-        fun fromScaledQuad(quad: QuadD, scale: Double) = QuadD(quad.left * scale, quad.top * scale, quad.right * scale, quad.bottom * scale)
-    }
-}
 
 /**
  * Drawing methods to help with Guis
  */
 object LPGuiDrawer {
 
-    private val guiAtlas = ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/gui.png")
+    const val TEXT_DARK: Int = 0xff404040.toInt()
+    const val TEXT_WHITE: Int = 0xffffffff.toInt()
+    const val TEXT_HOVERED: Int = 0xffffffa0.toInt()
+    const val BACKGROUND_LIGHT: Int = 0xffc6c6c6.toInt()
+    const val BACKGROUND_DARK: Int = 0xff8b8b8b.toInt()
 
-    private const val border = 4
-    private val guiBackgroundTexture = QuadD(0.0, 96.0, 16.0, 112.0)
-    private val guiInnerBackgroundTexture = QuadD(4.0, 100.0, 12.0, 108.0)
-    private val slotNormalTexture = QuadD(0.0, 112.0, 18.0, 130.0)
-    private val slotDiskTexture = QuadD(18.0, 112.0, 36.0, 130.0)
-    private val slotProgrammerTexture = QuadD(36.0, 112.0, 54.0, 130.0)
-    private val slotSmallTexture = QuadD(54.0, 112.0, 62.0, 120.0)
-    private val slotBigTexture = QuadD(0.0, 130.0, 26.0, 156.0)
+    private val guiAtlas = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/gui.png"), 256)
+    private val guiNormalPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/normal.png"), 64)
+    private val guiLightPattern = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/light.png"), 64)
+    private val guiHoveredPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/blue.png"), 64)
+    private val guiDarkPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/dark.png"), 64)
+
+    private var currentTexture: Texture = guiAtlas
+
+    private const val border: Int = 4
+
+    // TODO update constructor params
+    private val guiBackgroundTexture = Rectangle(0, 96, 16, 16)
+    private val guiBlankTexture = Rectangle(2, 2, 2, 2)
+    private val slotNormalTexture = Rectangle(0, 112, 18, 18)
+    private val slotDiskTexture = Rectangle(18, 112, 36, 18)
+    private val slotProgrammerTexture = Rectangle(36, 112, 18, 18)
+    private val slotSmallTexture = Rectangle(54, 112, 8, 8)
+    private val slotBigTexture = Rectangle(0, 130, 26, 26)
+
+    private val guiGuidebookFrame = Rectangle(0, 0, 64, 64)
+    private val guiGuidebookSlider = Rectangle(96, 64, 16, 16)
+
+    private val buttonBorderTextureLight = Rectangle(0, 64, 8, 8)
+    private val buttonBorderTextureNormal = Rectangle(8, 64, 8, 8)
+    private val buttonBorderTextureDark = Rectangle(0, 72, 8, 8)
+    private val buttonBorderTextureHovered = Rectangle(8, 72, 8, 8)
 
     private val tessellator: Tessellator get() = Tessellator.getInstance()
     private val buffer: BufferBuilder get() = tessellator.buffer
+    private var isDrawing: Boolean = false
     private val textureManager = Minecraft.getMinecraft().renderEngine
-    private var z = 0.0
-    private var textureSize = 256
-        set(value) {
-            textureFactor = 1.0 / value
-            field = value
-        }
-    private var textureFactor = 0.0
+    private var z: Float = 0.0f
 
-    enum class Corner(val xMod: Int, val yMod: Int, val textureQuad: QuadD) {
-        TOP_LEFT(border, border, QuadD(guiBackgroundTexture.left, guiBackgroundTexture.top, guiInnerBackgroundTexture.left, guiInnerBackgroundTexture.top)),
-        TOP_RIGHT(-border, border, QuadD(guiInnerBackgroundTexture.right, guiBackgroundTexture.top, guiBackgroundTexture.right, guiInnerBackgroundTexture.top)),
-        BOTTOM_LEFT(border, -border, QuadD(guiBackgroundTexture.left, guiInnerBackgroundTexture.bottom, guiInnerBackgroundTexture.left, guiBackgroundTexture.bottom)),
-        BOTTOM_RIGHT(-border, -border, QuadD(guiInnerBackgroundTexture.right, guiInnerBackgroundTexture.bottom, guiBackgroundTexture.right, guiBackgroundTexture.bottom));
+    val lpFontRenderer: LPFontRenderer by lazy {
+        LPFontRenderer.get("ter-u12n")
+    }
+    val mcFontRenderer: FontRenderer by lazy {
+        Minecraft.getMinecraft().fontRenderer
     }
 
-    private fun Rectangle.quadFromCorner(corner: Corner): QuadD = when (corner) {
-        Corner.TOP_LEFT -> QuadD(left.toDouble(), top.toDouble(), (left + corner.xMod).toDouble(), (top + corner.yMod).toDouble())
-        Corner.TOP_RIGHT -> QuadD((right + corner.xMod).toDouble(), top.toDouble(), right.toDouble(), (top + corner.yMod).toDouble())
-        Corner.BOTTOM_LEFT -> QuadD(left.toDouble(), (bottom + corner.yMod).toDouble(), (left + corner.xMod).toDouble(), bottom.toDouble())
-        Corner.BOTTOM_RIGHT -> QuadD((right + corner.xMod).toDouble(), (bottom + corner.yMod).toDouble(), right.toDouble(), bottom.toDouble())
-    }
+    // Container specific draw code
 
-    enum class Edge(val xMod: Int, val yMod: Int, val textureQuad: QuadD) {
-        LEFT(border, border, QuadD(guiBackgroundTexture.left, guiInnerBackgroundTexture.top, guiInnerBackgroundTexture.left, guiInnerBackgroundTexture.bottom)),
-        TOP(border, border, QuadD(guiInnerBackgroundTexture.left, guiBackgroundTexture.top, guiInnerBackgroundTexture.right, guiInnerBackgroundTexture.top)),
-        RIGHT(-border, border, QuadD(guiInnerBackgroundTexture.right, guiInnerBackgroundTexture.top, guiBackgroundTexture.right, guiInnerBackgroundTexture.bottom)),
-        BOTTOM(border, -border, QuadD(guiInnerBackgroundTexture.left, guiInnerBackgroundTexture.bottom, guiInnerBackgroundTexture.right, guiBackgroundTexture.bottom));
-    }
-
-    private fun Rectangle.quadFromEdge(edge: Edge): QuadD = when (edge) {
-        Edge.LEFT -> QuadD(left.toDouble(), (top + edge.yMod).toDouble(), (left + edge.xMod).toDouble(), (bottom - edge.yMod).toDouble())
-        Edge.TOP -> QuadD((left + edge.xMod).toDouble(), top.toDouble(), (right - edge.xMod).toDouble(), (top + edge.yMod).toDouble())
-        Edge.RIGHT -> QuadD((right + edge.xMod).toDouble(), (top + edge.yMod).toDouble(), right.toDouble(), (bottom - edge.yMod).toDouble())
-        Edge.BOTTOM -> QuadD((left + edge.xMod).toDouble(), (bottom + edge.yMod).toDouble(), (right - edge.xMod).toDouble(), bottom.toDouble())
-    }
-
-    fun drawGuiBackground(guiArea: Rectangle, z: Double, container: Container) {
+    fun drawGuiBackground(guiArea: Rectangle, z: Float, container: Container) {
         this.z = z
-        textureManager.bindTexture(guiAtlas)
-        textureSize = 256
-
+        setTexture(guiAtlas)
         start()
-
-        buffer.putGuiBackgroundBase(guiArea)
-        buffer.putContainerSlots(guiArea, container)
-
+        putGuiBackgroundBase(guiArea)
+        putContainerSlots(guiArea, container)
         finish()
     }
 
-    private fun BufferBuilder.putGuiBackgroundBase(guiArea: Rectangle) {
+    // Container specific buffer code
 
-        Corner.values().forEach {
-            putTexturedQuad(guiArea.quadFromCorner(it), it.textureQuad, MinecraftColor.WHITE.colorCode)
+    private fun putGuiBackgroundBase(guiArea: Rectangle) {
+        val borderedGuiQuads = BorderedRectangle(guiArea, border).quads
+        val borderedTexQuads = BorderedRectangle(guiBackgroundTexture, border).quads
+        for ((i, quad) in borderedGuiQuads.withIndex()) {
+            putTexturedQuad(quad, borderedTexQuads[i], -1)
         }
-
-        Edge.values().forEach {
-            putTexturedQuad(guiArea.quadFromEdge(it), it.textureQuad, MinecraftColor.WHITE.colorCode)
-        }
-
-        putTexturedQuad(
-            quad = QuadD(
-                left = (guiArea.left + border).toDouble(),
-                top = (guiArea.top + border).toDouble(),
-                right = (guiArea.right - border).toDouble(),
-                bottom = (guiArea.bottom - border).toDouble()
-            ),
-            texture = guiInnerBackgroundTexture,
-            color = MinecraftColor.WHITE.colorCode,
-        )
-
     }
 
-    private fun BufferBuilder.putContainerSlots(guiArea: Rectangle, container: Container) {
-
+    private fun putContainerSlots(guiArea: Rectangle, container: Container) {
         for (slot in container.inventorySlots) {
-            putNormalSlot(guiArea.left + slot.xPos.toDouble(), guiArea.top + slot.yPos.toDouble())
+            putNormalSlot(guiArea.roundedLeft + slot.xPos, guiArea.roundedTop + slot.yPos)
         }
-
     }
 
-    private fun BufferBuilder.putNormalSlot(x: Double, y: Double){
-        val normalSlotSize = 16.0
+    private fun putNormalSlot(x: Int, y: Int) {
+        val normalSlotSize = 18
         putTexturedQuad(
-            QuadD.fromResizedQuad(
-                QuadD(x, y, x + normalSlotSize, y + normalSlotSize),
-                1.0
-            ),
-            slotNormalTexture,
-            MinecraftColor.WHITE.colorCode
+                Rectangle(x, y, normalSlotSize, normalSlotSize).translate(-1),
+                slotNormalTexture,
+                MinecraftColor.WHITE.colorCode
         )
     }
 
-    fun drawRect(area: Rectangle, z: Double, color: Int){
+    // Button specific draw code
+
+    fun drawBorderedTile(rect: Rectangle, z: Float, hovered: Boolean, enabled: Boolean, light: Boolean, thickerBottomBorder: Boolean) {
+        GlStateManager.enableBlend()
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+
+        val border = 2
+
+        val bottomBorder = if(thickerBottomBorder) border + 1 else border
+
+        val (buttonBackgroundTexture, buttonBorderTexture) = when {
+            !enabled -> {
+                guiDarkPatternTexture to buttonBorderTextureDark
+            }
+            hovered -> {
+                guiHoveredPatternTexture to buttonBorderTextureHovered
+            }
+            light -> {
+                guiLightPattern to buttonBorderTextureLight
+            }
+            else -> {
+                guiNormalPatternTexture to buttonBorderTextureNormal
+            }
+        }
+
+        this.z = z
+        setTexture(buttonBackgroundTexture)
+        start()
+        putScaledTexturedQuad(rect, 0f to 0f, -1)
+        finish()
+
+        this.z += 0.1f
+        setTexture(guiAtlas)
+        start()
+        val borderedGuiQuads = BorderedRectangle(rect, border, border, bottomBorder, border).borderQuads
+        val borderedTexQuads = BorderedRectangle(buttonBorderTexture, border, border, border, border).borderQuads
+        for ((i, quad) in borderedGuiQuads.withIndex()) {
+            putTexturedQuad(quad, borderedTexQuads[i], -1)
+        }
+        finish()
+
+        GlStateManager.disableBlend()
+    }
+
+    fun drawGuideBookFrame(rect: Rectangle, slider: Rectangle) {
+        GlStateManager.enableBlend()
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+
+        val borderedGui = BorderedRectangle(rect, 24)
+        val borderedGuiTexQuads = BorderedRectangle(guiGuidebookFrame, 24).borderQuads
+        val borderedSlider = BorderedRectangle(slider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
+        val borderedSliderTexQuads = BorderedRectangle(guiGuidebookSlider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
+
+        z = GuideBookConstants.Z_BACKGROUND
+        setTexture(guiNormalPatternTexture)
+        start()
+        putScaledTexturedQuad(borderedGui.inner.translate(-8).grow(16), 0f to 0f, -1)
+        finish()
+
+        z = GuideBookConstants.Z_FRAME
+        setTexture(guiAtlas)
+        start()
+        for ((i, quad) in (borderedGui.borderQuads + borderedSlider).withIndex()) {
+            putTexturedQuad(quad, (borderedGuiTexQuads + borderedSliderTexQuads)[i], -1)
+        }
+        finish()
+
+        GlStateManager.disableBlend()
+    }
+
+    // Text specific draw code
+
+    fun drawCenteredString(text: String, x: Int, y: Int, z: Float, color: Int, shadow: Boolean) {
+        val xOffset = mcFontRenderer.getStringWidth(text) / 2
+        mcFontRenderer.drawString(text, x.toFloat() - xOffset, y.toFloat(), color, shadow)
+    }
+
+    // Untextured draw code
+
+    fun drawInteractionIndicator(mouseX: Float, mouseY: Float) {
         this.z = z
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
-        buffer.putQuad(QuadD.fromRectangle(area), color)
+        putLine(start = mouseX + 5f to mouseY - 5f,
+                finish = mouseX + 4f to mouseY - 2f,
+                color = MinecraftColor.WHITE.colorCode)
+        putLine(start = mouseX + 4f to mouseY - 4f,
+                finish = mouseX + 6f to mouseY - 4f,
+                color = MinecraftColor.WHITE.colorCode)
         finish()
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
     }
 
-    fun drawHorizontalGradientRect(area: Rectangle, z: Double, colorLeft: Int, colorRight: Int) {
+    fun drawRect(area: Rectangle, z: Float, color: Int) {
+        this.z = z
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableAlpha()
+        start(DefaultVertexFormats.POSITION_COLOR)
+        putQuad(area, color)
+        finish()
+        GlStateManager.enableAlpha()
+        GlStateManager.enableTexture2D()
+    }
+
+    fun drawHorizontalGradientRect(area: Rectangle, z: Float, colorLeft: Int, colorRight: Int) {
         drawGradientQuad(area, z, colorRight, colorLeft, colorLeft, colorRight)
     }
 
-    fun drawVerticalGradientRect(area: Rectangle, z: Double, colorTop: Int, colorBottom: Int) {
+    fun drawVerticalGradientRect(area: Rectangle, z: Float, colorTop: Int, colorBottom: Int) {
         drawGradientQuad(area, z, colorTop, colorTop, colorBottom, colorBottom)
     }
 
-    private fun drawGradientQuad(area: Rectangle, z: Double, colorTopRight: Int, colorTopLeft: Int, colorBottomLeft: Int, colorBottomRight: Int) {
+    fun drawOutlineRect(rect: Rectangle, z: Float, color: Int) {
+        this.z = z
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableAlpha()
+        start(DefaultVertexFormats.POSITION_COLOR)
+        putOutlineQuad(rect, color)
+        finish()
+        GlStateManager.enableAlpha()
+        GlStateManager.enableTexture2D()
+    }
 
+    fun drawGradientQuad(area: Rectangle, z: Float, colorTopRight: Int, colorTopLeft: Int, colorBottomLeft: Int, colorBottomRight: Int) {
         this.z = z
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -202,48 +275,90 @@ object LPGuiDrawer {
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
         GlStateManager.shadeModel(GL11.GL_SMOOTH)
         start(DefaultVertexFormats.POSITION_COLOR)
-        buffer.pos(area.x1.toDouble() to area.y0.toDouble()).rgba(colorTopRight).endVertex()
-        buffer.pos(area.x0.toDouble() to area.y0.toDouble()).rgba(colorTopLeft).endVertex()
-        buffer.pos(area.x0.toDouble() to area.y1.toDouble()).rgba(colorBottomRight).endVertex()
-        buffer.pos(area.x1.toDouble() to area.y1.toDouble()).rgba(colorBottomLeft).endVertex()
+        buffer.pos(area.topRight).rgba(colorTopRight).endVertex()
+        buffer.pos(area.topLeft).rgba(colorTopLeft).endVertex()
+        buffer.pos(area.bottomLeft).rgba(colorBottomRight).endVertex()
+        buffer.pos(area.bottomRight).rgba(colorBottomLeft).endVertex()
         finish()
         GlStateManager.shadeModel(GL11.GL_FLAT)
         GlStateManager.disableBlend()
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
-
     }
 
-    private fun BufferBuilder.putTexturedQuad(quad: QuadD, texture: QuadD, color: Int) {
-        pos(quad.topRight).tex(texture.topRight).rgba(color).endVertex()
-        pos(quad.topLeft).tex(texture.topLeft).rgba(color).endVertex()
-        pos(quad.bottomLeft).tex(texture.bottomLeft).rgba(color).endVertex()
-        pos(quad.bottomRight).tex(texture.bottomRight).rgba(color).endVertex()
+    // Buffer specific code
+
+    private fun putScaledTexturedQuad(rect: Rectangle, texture: Pair<Float, Float>, color: Int) {
+        putTexturedQuad(rect, Rectangle(texture.first, texture.second, rect.width, rect.height), color)
     }
 
-    private fun BufferBuilder.putQuad(quad: QuadD, color: Int) {
-        pos(quad.topRight).rgba(color).endVertex()
-        pos(quad.topLeft).rgba(color).endVertex()
-        pos(quad.bottomLeft).rgba(color).endVertex()
-        pos(quad.bottomRight).rgba(color).endVertex()
+    private fun putTexturedQuad(rect: Rectangle, texture: Rectangle, color: Int) {
+        if (buffer.vertexFormat == DefaultVertexFormats.POSITION_TEX_COLOR) {
+            val scaledUV = texture.scaled(currentTexture.factor)
+            buffer.pos(rect.topRight).tex(scaledUV.topRight).rgba(color).endVertex()
+            buffer.pos(rect.topLeft).tex(scaledUV.topLeft).rgba(color).endVertex()
+            buffer.pos(rect.bottomLeft).tex(scaledUV.bottomLeft).rgba(color).endVertex()
+            buffer.pos(rect.bottomRight).tex(scaledUV.bottomRight).rgba(color).endVertex()
+        }
+    }
+
+    private fun putOutlineQuad(rect: Rectangle, color: Int) {
+        putLine(rect.topRight, rect.topLeft, color)
+        putLine(rect.topLeft, rect.bottomLeft, color)
+        putLine(rect.bottomLeft, rect.bottomRight, color)
+        putLine(rect.bottomRight, rect.topRight, color)
+    }
+
+    private fun putLine(start: Pair<Float, Float>, finish: Pair<Float, Float>, color: Int, thickness: Float = 1.0f) {
+        val secondPoint = finish.first + thickness to finish.second + thickness
+        putQuad(Rectangle(start, secondPoint), color)
+    }
+
+    private fun putQuad(rect: Rectangle, color: Int) {
+        if (buffer.vertexFormat == DefaultVertexFormats.POSITION_TEX_COLOR) {
+            putTexturedQuad(rect, guiBlankTexture, color)
+        } else if (buffer.vertexFormat == DefaultVertexFormats.POSITION_COLOR) {
+            buffer.pos(rect.topRight).rgba(color).endVertex()
+            buffer.pos(rect.topLeft).rgba(color).endVertex()
+            buffer.pos(rect.bottomLeft).rgba(color).endVertex()
+            buffer.pos(rect.bottomRight).rgba(color).endVertex()
+        }
     }
 
     /**
-     * Starts the BufferBuilder
+     * Starts the BufferBuilder if it was not started already.
      */
     private fun start(vertexFormats: VertexFormat = DefaultVertexFormats.POSITION_TEX_COLOR) {
-        buffer.begin(GL11.GL_QUADS, vertexFormats)
+        if (!isDrawing) {
+            buffer.begin(GL11.GL_QUADS, vertexFormats)
+            isDrawing = true
+        }
     }
 
+    /**
+     * Draws the buffered quads if the buffer is currently open.
+     */
     private fun finish() {
-        tessellator.draw()
+        if (isDrawing) {
+            tessellator.draw()
+            isDrawing = false
+        }
+    }
+
+    /**
+     * Binds another texture keeping track of it's size
+     * @param texture texture to be bound.
+     */
+    private fun setTexture(texture: Texture) {
+        currentTexture = texture
+        textureManager.bindTexture(currentTexture.resource)
     }
 
     /**
      * Cleanly splits the integer into the 4 rgba components and applies those to the BufferBuilder
      * Uses BufferBuilder.color(I,I,I,I) because BufferBuilder.color(F,F,F,F) will just multiply the floats back into integers.
      * @param color rgba color to be used
-     * @return used buffer builder.
+     * @return the buffer itself.
      */
     private fun BufferBuilder.rgba(color: Int): BufferBuilder {
         val a = (color shr 24 and 255)
@@ -253,7 +368,23 @@ object LPGuiDrawer {
         return this.color(r, g, b, a)
     }
 
-    private fun BufferBuilder.tex(point: Pair<Double, Double>): BufferBuilder = tex(point.first * textureFactor, point.second * textureFactor)
+    /**
+     * Takes in a Float pair to insert texture coordinates onto the draw buffer
+     * Uses BufferBuilder.tex(D,D)
+     * @param point coordinate on the texture (scaled from 0-1)
+     * @return the buffer itself.
+     */
+    private fun BufferBuilder.tex(point: Pair<Float, Float>): BufferBuilder = tex(point.first.toDouble(), point.second.toDouble())
 
-    private fun BufferBuilder.pos(point: Pair<Double, Double>): BufferBuilder = pos(point.first, point.second, z)
+    /**
+     * Takes in a Float pair to insert screen coordinates onto the draw buffer
+     * Uses BufferBuilder.pos(D,D)
+     * @param point coordinate to be inserted in the buffer.
+     * @return the buffer itself.
+     */
+    private fun BufferBuilder.pos(point: Pair<Float, Float>): BufferBuilder = pos(point.first.toDouble(), point.second.toDouble(), z.toDouble())
+}
+
+private class Texture(val resource: ResourceLocation, val size: Int) {
+    val factor: Float = 1.0f / size
 }

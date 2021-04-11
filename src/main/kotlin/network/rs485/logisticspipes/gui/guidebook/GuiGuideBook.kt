@@ -164,14 +164,14 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     init {
         if (LogisticsPipes.isDEBUG()) {
-            val debugSavedPage = cachedPages.getOrPut(DebugPage.FILE) { SavedPage(DebugPage.FILE) }
+            val debugSavedPage = cachedPages.getOrPut(DebugPage.FILE) { Page(PageData(DebugPage.FILE)) }
             debugSavedPage.color = 0
             tabButtons.add(createGuiTabButton(debugSavedPage))
         }
     }
 
     private fun changePage(path: String) {
-        val newPage = cachedPages.getOrPut(path) { SavedPage(path) }
+        val newPage = cachedPages.getOrPut(path) { Page(PageData(path)) }
         state.currentPage = newPage
         currentProgress = state.currentPage.progress
         newPage.setDrawablesPosition(visibleArea)
@@ -210,7 +210,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         }
     }
 
-    private fun isTabAbsent(page: SavedPage): Boolean = state.bookmarks.none { it.pageEquals(page) }
+    private fun isTabAbsent(page: Page): Boolean = state.bookmarks.none { it.pageEquals(page) }
 
     override fun initGui() {
         calculateGuiConstraints()
@@ -274,11 +274,8 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
-        state.currentPage.run {
-            updateScrollPosition(visibleArea, currentProgress)
-            drawablePage.preRender(mouseX, mouseY, visibleArea)
-            drawablePage.draw(mouseX, mouseY, partialTicks, visibleArea)
-        }
+        state.currentPage.updateScrollPosition(visibleArea, currentProgress)
+        state.currentPage.draw(visibleArea, mouseX, mouseY, partialTicks)
         drawGui()
         if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         drawTitle()
@@ -356,7 +353,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     private fun addBookmark() = state.currentPage.takeIf { isTabAbsent(it) && tabButtons.size < maxTabs }?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
 
-    private fun createGuiTabButton(tabPage: SavedPage): TabButton =
+    private fun createGuiTabButton(tabPage: Page): TabButton =
         TabButton(tabPage, outerGui.roundedRight - 2 - 2 * guiTabWidth, outerGui.roundedTop, object : TabButtonReturn {
             override fun onLeftClick(): Boolean {
                 if (!isPageActive()) {
@@ -381,7 +378,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             override fun isPageActive(): Boolean = tabPage.pageEquals(state.currentPage)
         })
 
-    private fun removeBookmark(page: SavedPage): Boolean {
+    private fun removeBookmark(page: Page): Boolean {
         val removedFromState = state.bookmarks.removeIf { it.pageEquals(page) }
         val removedFromButtons = tabButtons.removeIf { it.tabPage.pageEquals(page) }
         return removedFromState || removedFromButtons

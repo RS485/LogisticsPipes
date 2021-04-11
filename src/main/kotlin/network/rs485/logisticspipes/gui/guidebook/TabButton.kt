@@ -52,7 +52,7 @@ private val buttonTextureArea = Rectangle(40, 64, 24, 32)
 private val circleAreaTexture = Rectangle(32, 96, 16, 16)
 
 class TabButton(
-    internal val tabPage: SavedPage,
+    internal val tabPage: Page,
     x: Int,
     y: Int,
     private val whisky: TabButtonReturn,

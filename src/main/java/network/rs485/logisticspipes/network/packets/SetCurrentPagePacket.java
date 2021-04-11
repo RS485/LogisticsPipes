@@ -49,7 +49,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import logisticspipes.LPItems;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.StaticResolve;
-import network.rs485.logisticspipes.gui.guidebook.SavedPage;
+import network.rs485.logisticspipes.gui.guidebook.IPageData;
+import network.rs485.logisticspipes.gui.guidebook.PageData;
 import network.rs485.logisticspipes.guidebook.ItemGuideBook;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -58,11 +59,11 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public class SetCurrentPagePacket extends ModernPacket {
 
 	@Nullable
-	private SavedPage currentPage;
+	private IPageData currentPage;
 
 	private EntityEquipmentSlot equipmentSlot;
 
-	private List<SavedPage> bookmarks;
+	private List<? extends IPageData> bookmarks;
 
 	public SetCurrentPagePacket(int id) {
 		super(id);
@@ -87,8 +88,8 @@ public class SetCurrentPagePacket extends ModernPacket {
 	public void readData(LPDataInput input) {
 		super.readData(input);
 		equipmentSlot = input.readEnum(EntityEquipmentSlot.class);
-		currentPage = SavedPage.fromBytes(input);
-		bookmarks = input.readArrayList(SavedPage::fromBytes);
+		currentPage = new PageData(input);
+		bookmarks = input.readArrayList(PageData::new);
 	}
 
 	@Override
@@ -105,7 +106,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		return new SetCurrentPagePacket(getId());
 	}
 
-	public SetCurrentPagePacket setCurrentPage(SavedPage currentPage) {
+	public SetCurrentPagePacket setCurrentPage(IPageData currentPage) {
 		this.currentPage = currentPage;
 		return this;
 	}
@@ -115,7 +116,7 @@ public class SetCurrentPagePacket extends ModernPacket {
 		return this;
 	}
 
-	public SetCurrentPagePacket setBookmarks(List<SavedPage> bookmarks) {
+	public SetCurrentPagePacket setBookmarks(List<? extends IPageData> bookmarks) {
 		this.bookmarks = bookmarks;
 		return this;
 	}

@@ -52,7 +52,9 @@ import net.minecraft.util.EnumActionResult
 import net.minecraft.util.EnumHand
 import net.minecraft.world.World
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
-import network.rs485.logisticspipes.gui.guidebook.SavedPage
+import network.rs485.logisticspipes.gui.guidebook.IPageData
+import network.rs485.logisticspipes.gui.guidebook.PageData
+import network.rs485.logisticspipes.gui.guidebook.Page
 import network.rs485.logisticspipes.network.packets.SetCurrentPagePacket
 
 class ItemGuideBook : LogisticsItem() {
@@ -61,23 +63,23 @@ class ItemGuideBook : LogisticsItem() {
         /**
          * Loads the current page and the tabs from the stack's NBT. Returns Pair(currentPage, Tabs)
          */
-        private fun loadDataFromNBT(stack: ItemStack): Pair<SavedPage, List<SavedPage>> {
-            var currentPage: SavedPage? = null
-            var tabPages: List<SavedPage>? = null
+        private fun loadDataFromNBT(stack: ItemStack): Pair<PageData, List<PageData>> {
+            var currentPage: PageData? = null
+            var tabPages: List<PageData>? = null
             if (stack.hasTagCompound()) {
                 val nbt = stack.tagCompound!!
                 if (nbt.hasKey("version")) {
                     when (nbt.getByte("version")) {
                         1.toByte() -> {
-                            currentPage = SavedPage.fromTag(nbt.getCompoundTag("page"))
+                            currentPage = PageData(nbt.getCompoundTag("page"))
                             // type 10 = NBTTagCompound, see net.minecraft.nbt.NBTBase.createNewByType
                             val tagList = nbt.getTagList("bookmarks", 10)
-                            tabPages = tagList.mapNotNull { tag -> SavedPage.fromTag(tag as NBTTagCompound) }
+                            tabPages = tagList.mapNotNull { tag -> PageData(tag as NBTTagCompound) }
                         }
                     }
                 }
             }
-            currentPage = currentPage ?: SavedPage(BookContents.MAIN_MENU_FILE)
+            currentPage = currentPage ?: PageData(BookContents.MAIN_MENU_FILE)
             tabPages = tabPages ?: emptyList()
             return currentPage to tabPages
         }
@@ -89,7 +91,7 @@ class ItemGuideBook : LogisticsItem() {
             // add scheduled task to switch from network thread to main thread with OpenGL context
             mc.addScheduledTask {
                 val state = loadDataFromNBT(stack).let {
-                    GuideBookState(equipmentSlot, it.first, it.second)
+                    GuideBookState(equipmentSlot, Page(it.first), it.second.map(::Page))
                 }
                 mc.displayGuiScreen(GuiGuideBook(state))
             }
@@ -100,15 +102,15 @@ class ItemGuideBook : LogisticsItem() {
         maxStackSize = 1
     }
 
-    class GuideBookState(val equipmentSlot: EntityEquipmentSlot, var currentPage: SavedPage, bookmarks: List<SavedPage>) {
+    class GuideBookState(val equipmentSlot: EntityEquipmentSlot, var currentPage: Page, bookmarks: List<Page>) {
         val bookmarks = bookmarks.toMutableList()
     }
 
-    fun updateNBT(tag: NBTTagCompound, page: SavedPage, tabs: List<SavedPage>) = tag.apply {
+    fun updateNBT(tag: NBTTagCompound, page: IPageData, tabs: List<IPageData>) = tag.apply {
         setByte("version", 1)
         setTag("page", page.toTag())
         setTag("bookmarks", NBTTagList().apply {
-            tabs.map(SavedPage::toTag).forEach(::appendTag)
+            tabs.map(IPageData::toTag).forEach(::appendTag)
         })
     }
 

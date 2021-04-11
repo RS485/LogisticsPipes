@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,6 +35,16 @@ public class ItemPipeSignCreator extends LogisticsItem {
 		setMaxStackSize(1);
 		setMaxDamage(250);
 		setHasSubtypes(true);
+	}
+
+	@Override
+	public boolean isEnchantable(@Nonnull ItemStack stack) {
+		return false;
+	}
+
+	@Override
+	public boolean canApplyAtEnchantingTable(@Nonnull ItemStack stack, Enchantment enchantment) {
+		return false;
 	}
 
 	@Nonnull

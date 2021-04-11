@@ -14,6 +14,7 @@ import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IProvide;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.request.resources.FluidResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
@@ -115,9 +116,11 @@ public class RequestTree extends RequestTreeNode {
 		@Override
 		public int compare(ExitRoute o1, ExitRoute o2) {
 			int c;
-			if (o1.destination.getPipe() instanceof IHavePriority) {
-				if (o2.destination.getPipe() instanceof IHavePriority) {
-					c = ((IHavePriority) o2.destination.getCachedPipe()).getPriority() - ((IHavePriority) o1.destination.getCachedPipe()).getPriority();
+			final CoreRoutedPipe firstExitPipe = o1.destination.getPipe();
+			final CoreRoutedPipe secondExitPipe = o2.destination.getPipe();
+			if (firstExitPipe instanceof IHavePriority) {
+				if (secondExitPipe instanceof IHavePriority) {
+					c = ((IHavePriority) secondExitPipe).getPriority() - ((IHavePriority) firstExitPipe).getPriority();
 					if (c != 0) {
 						return c;
 					}
@@ -125,13 +128,13 @@ public class RequestTree extends RequestTreeNode {
 					return -1;
 				}
 			} else {
-				if (o2.destination.getPipe() instanceof IHavePriority) {
+				if (secondExitPipe instanceof IHavePriority) {
 					return 1;
 				}
 			}
 
 			//GetLoadFactor*64 should be an integer anyway.
-			c = (int) Math.floor(o1.destination.getCachedPipe().getLoadFactor() * 64) - (int) Math.floor(o2.destination.getCachedPipe().getLoadFactor() * 64);
+			c = (int) Math.floor(firstExitPipe.getLoadFactor() * 64) - (int) Math.floor(secondExitPipe.getLoadFactor() * 64);
 			if (distanceWeight != 0) {
 				c += (int) (Math.floor(o1.distanceToDestination * 64) - (int) Math.floor(o2.distanceToDestination * 64)) * distanceWeight;
 			}

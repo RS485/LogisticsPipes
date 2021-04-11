@@ -104,7 +104,7 @@ class ItemGuideBook : LogisticsItem() {
         val bookmarks = bookmarks.toMutableList()
     }
 
-    fun updateNBT(page: SavedPage, tabs: List<SavedPage>) = NBTTagCompound().apply {
+    fun updateNBT(tag: NBTTagCompound, page: SavedPage, tabs: List<SavedPage>) = tag.apply {
         setByte("version", 1)
         setTag("page", page.toTag())
         setTag("bookmarks", NBTTagList().apply {
@@ -125,9 +125,10 @@ class ItemGuideBook : LogisticsItem() {
     }
 
     fun saveState(state: GuideBookState) {
+        val stack = Minecraft.getMinecraft().player.getItemStackFromSlot(state.equipmentSlot)
+        val compound = if (stack.hasTagCompound()) stack.tagCompound!! else NBTTagCompound()
         // update NBT for the client
-        val updatedNBT = updateNBT(state.currentPage, state.bookmarks)
-        Minecraft.getMinecraft().player.getItemStackFromSlot(state.equipmentSlot).tagCompound = updatedNBT
+        stack.tagCompound = updateNBT(compound, state.currentPage, state.bookmarks)
 
         // … and for the server
         MainProxy.sendPacketToServer(

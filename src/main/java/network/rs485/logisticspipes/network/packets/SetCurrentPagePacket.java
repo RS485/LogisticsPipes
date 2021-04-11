@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.network.packets;
 
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -72,7 +73,13 @@ public class SetCurrentPagePacket extends ModernPacket {
 		if (currentPage == null) return;
 		ItemStack book = player.getItemStackFromSlot(equipmentSlot);
 		if (book.isEmpty() || !(book.getItem() instanceof ItemGuideBook)) return;
-		final NBTTagCompound nbt = LPItems.itemGuideBook.updateNBT(currentPage, bookmarks);
+		NBTTagCompound compound;
+		if (book.hasTagCompound()) {
+			compound = Objects.requireNonNull(book.getTagCompound());
+		} else {
+			compound = new NBTTagCompound();
+		}
+		final NBTTagCompound nbt = LPItems.itemGuideBook.updateNBT(compound, currentPage, bookmarks);
 		book.setTagCompound(nbt);
 	}
 

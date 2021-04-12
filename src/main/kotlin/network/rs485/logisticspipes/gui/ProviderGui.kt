@@ -119,6 +119,20 @@ class ProviderGui(playerInventory: IInventory, private val providerModule: Modul
                 return@TextButton false
             }
     )
+    private val filterSlots: SlotGroup = SlotGroup(
+            parent = this,
+            xPosition = Center,
+            yPosition = Top(18),
+            slots = (inventorySlots as ProviderContainer).filterSlots,
+            columns = 3,
+            rows = 3
+    )
+    private val playerSlots: PlayerInventorySlotGroup = PlayerInventorySlotGroup(
+            this,
+            Center,
+            Bottom(6),
+            (inventorySlots as ProviderContainer).playerSlots
+    )
 
     override fun initGui() {
         super.initGui()
@@ -126,6 +140,8 @@ class ProviderGui(playerInventory: IInventory, private val providerModule: Modul
         addWidget(extractionModeLabel)
         addWidget(extractionModeButton)
         addWidget(providerModeButton)
+        addWidget(filterSlots)
+        addWidget(playerSlots)
     }
 
     override fun drawFocalgroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {

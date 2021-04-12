@@ -43,6 +43,7 @@ import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPBaseGuiContainer.Companion.helper
 import network.rs485.logisticspipes.gui.guidebook.Drawable
+import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
 import network.rs485.logisticspipes.util.math.Rectangle
 
 class LPGuiLabel(
@@ -58,7 +59,7 @@ class LPGuiLabel(
         yPosition = yPosition,
         xSize = xSize,
         ySize = AbsoluteSize(helper.mcFontRenderer.FONT_HEIGHT)
-) {
+) , MouseHoverable {
 
     private var text: String = textGetter()
     private val textArea = Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
@@ -69,7 +70,7 @@ class LPGuiLabel(
     private var backgroundColor = helper.BACKGROUND_LIGHT
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
-        val hovering = relativeBody.contains(mouseX, mouseY)
+        val hovering = isMouseHovering(mouseX, mouseY)
         GlStateManager.pushMatrix()
         GlStateManager.translate(0f, 0f, z)
         GlStateManager.enableDepth()
@@ -106,6 +107,8 @@ class LPGuiLabel(
         }
         return this
     }
+
+    override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = relativeBody.contains(mouseX, mouseY)
 
     private fun String.width() = helper.mcFontRenderer.getStringWidth(this)
 }

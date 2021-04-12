@@ -42,14 +42,16 @@ import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.math.Rectangle
 
-interface MouseInteractable {
-
+interface MouseHoverable {
     /**
      * Check if mouse is over the current object.
      * @param mouseX X position of the mouse (absolute, screen)
      * @param mouseY Y position of the mouse (absolute, screen)
      */
     fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = false
+}
+
+interface MouseInteractable : MouseHoverable{
 
     /**
      * A mouse click event should run this and the implementation checks if

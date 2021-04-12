@@ -64,7 +64,6 @@ abstract class DrawableParagraph : Drawable, MouseInteractable {
      * This function is responsible check if the mouse is over the object
      * @param mouseX        X position of the mouse (absolute, screen)
      * @param mouseY        Y position of the mouse (absolute, screen)
-     * @param visibleArea   Desired visible area to check
      */
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean =
             absoluteBody.contains(mouseX, mouseY)

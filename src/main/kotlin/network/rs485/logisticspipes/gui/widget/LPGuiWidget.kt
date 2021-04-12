@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.gui.widget
 
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.Drawable
+import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
 import network.rs485.logisticspipes.util.math.Rectangle
 
 interface Tooltipped : MouseHoverable {

@@ -56,10 +56,8 @@ class ProviderGui(private val playerInventory: IInventory, private val providerM
         override fun onChange(property: Property<*>) {}
     }
 
-    private val filterInventory: InventoryProperty = propertyLayer.getWritableProperty(providerModule.filterInventory)
     private val providerMode: EnumProperty<ProviderMode> = propertyLayer.getWritableProperty(providerModule.providerMode)
     private val isExclusionFilter: BooleanProperty = propertyLayer.getWritableProperty(providerModule.isExclusionFilter)
-    private val isActive: BooleanProperty = propertyLayer.getWritableProperty(providerModule.isActive)
 
     private val title: LPGuiLabel = LPGuiLabel(
             parent = this,

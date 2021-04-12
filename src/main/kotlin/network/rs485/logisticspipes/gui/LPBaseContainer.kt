@@ -45,11 +45,10 @@ import net.minecraft.inventory.Container
 import net.minecraft.inventory.IInventory
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
-import java.util.*
+import network.rs485.logisticspipes.gui.widget.LockedSlot
 import kotlin.math.min
 
 abstract class LPBaseContainer : Container() {
@@ -81,12 +80,16 @@ abstract class LPBaseContainer : Container() {
     }
 
     override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType, player: EntityPlayer): ItemStack {
+
         // slotId -999 is a special case for when the ItemStack is being drag-split between slots.
         if (slotId < 0) {
             return super.slotClick(slotId, dragType, clickTypeIn, player)
         }
 
         val slot = inventorySlots[slotId] ?: return ItemStack.EMPTY
+
+        if (slot is LockedSlot) return ItemStack.EMPTY
+
         if (slot !is GhostSlot) {
             // In case slot is not a subtype of GhostSlot vanilla behaviour will be applied.
             return super.slotClick(slotId, dragType, clickTypeIn, player)
@@ -96,6 +99,7 @@ abstract class LPBaseContainer : Container() {
         val grabbedItemStack = player.inventory.itemStack
         handleGhostSlotClick(slot, grabbedItemStack, dragType, clickTypeIn, player)
         return ItemStack.EMPTY
+
     }
 
     /**
@@ -176,7 +180,10 @@ abstract class LPBaseContainer : Container() {
      * @param startY starting topmost position.
      * @return  return all the slots in the player's inventory.
      */
-    open fun addPlayerSlotsToContainer(playerInventoryIn: IInventory, startX: Int, startY: Int): List<Slot> {
+    open fun addPlayerSlotsToContainer(playerInventoryIn: IInventory, startX: Int, startY: Int, lockedStack: ItemStack): List<Slot> {
+
+        // Minecraft expects the 27 backpack slots to be index in 0-26 on the container list, and the hotbar
+        // corresponds to 27-35.
 
         // Add the top 27 inventory slots
         for (row in 0..2) {
@@ -191,7 +198,11 @@ abstract class LPBaseContainer : Container() {
 
         // Add the hotbar inventory slots
         for (index in 0..8) {
-            playerHotbarSlots.add(addSlotToContainer(Slot(playerInventoryIn, index, startX + index * slotSize, startY + 3 * slotSize + 4)))
+            if (!lockedStack.isEmpty && playerInventoryIn.getStackInSlot(index) == lockedStack) {
+                playerHotbarSlots.add(addSlotToContainer(LockedSlot(playerInventoryIn, index, startX + index * slotSize, startY + 3 * slotSize + 4)))
+            } else {
+                playerHotbarSlots.add(addSlotToContainer(Slot(playerInventoryIn, index, startX + index * slotSize, startY + 3 * slotSize + 4)))
+            }
         }
 
         return playerBackpackSlots + playerHotbarSlots

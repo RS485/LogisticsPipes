@@ -1,6 +1,7 @@
 package logisticspipes.network.guis.module.inpipe;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 
 import lombok.Getter;
@@ -10,7 +11,7 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.StaticResolve;
-import network.rs485.logisticspipes.gui.ProviderPipeContainer;
+import network.rs485.logisticspipes.gui.ProviderContainer;
 import network.rs485.logisticspipes.gui.ProviderGui;
 import network.rs485.logisticspipes.inventory.ProviderMode;
 import network.rs485.logisticspipes.util.LPDataInput;
@@ -49,17 +50,16 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		module.providerMode.setValue(ProviderMode.modeFromIntSafe(extractorMode));
 		module.setSneakyDirection(sneakyOrientation);
 		module.isActive.setValue(isActive);
-		//return new logisticspipes.gui.modules.GuiProvider(player.inventory, module);
-		return new ProviderGui(player.inventory, module);
+		return new ProviderGui(player.inventory, module, ItemStack.EMPTY);
 	}
 
 	@Override
-	public ProviderPipeContainer getContainer(EntityPlayer player) {
+	public ProviderContainer getContainer(EntityPlayer player) {
 		ModuleProvider module = this.getLogisticsModule(player.getEntityWorld(), ModuleProvider.class);
 		if (module == null) {
 			return null;
 		}
-		return new ProviderPipeContainer(player.inventory, module);
+		return new ProviderContainer(player.inventory, module, ItemStack.EMPTY);
 	}
 
 	@Override

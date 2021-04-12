@@ -40,15 +40,9 @@ package network.rs485.logisticspipes.gui.widget
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.inventory.Slot
+import net.minecraft.item.ItemStack
 
-sealed class GhostSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int) : Slot(inventoryIn, index, xPosition, yPosition) {
-    override fun getSlotStackLimit(): Int {
-        return 0
-    }
-
-    override fun canTakeStack(playerIn: EntityPlayer): Boolean {
-        return false
-    }
+class LockedSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int) : Slot(inventoryIn, index, xPosition, yPosition) {
+    override fun canTakeStack(playerIn: EntityPlayer): Boolean = false
+    override fun isItemValid(stack: ItemStack): Boolean = false
 }
-
-class GhostItemSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int) : GhostSlot(inventoryIn, index, xPosition, yPosition)

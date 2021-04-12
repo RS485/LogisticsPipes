@@ -44,10 +44,10 @@ import net.minecraft.item.ItemStack
 import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
 
-class ProviderPipeContainer(playerInventoryIn: IInventory, providerModule: ModuleProvider) : LPBaseContainer() {
+class ProviderContainer(playerInventoryIn: IInventory, providerModule: ModuleProvider, moduleInHand: ItemStack) : LPBaseContainer() {
 
-    private val playerSlots = addPlayerSlotsToContainer(playerInventoryIn, 18, 97)
-    private val filterSlots = addDummySlotsToContainer(providerModule.filterInventory, 72, 18)
+    val playerSlots = addPlayerSlotsToContainer(playerInventoryIn, 0, 0, moduleInHand)
+    val filterSlots = addDummySlotsToContainer(providerModule.filterInventory, 0, 0)
 
     // Add 3x3 grid of dummy slots.
     override fun addDummySlotsToContainer(dummyInventoryIn: IInventory, startX: Int, startY: Int): List<GhostSlot> {

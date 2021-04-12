@@ -42,12 +42,13 @@ import logisticspipes.network.packets.module.PropertyModuleUpdate
 import logisticspipes.proxy.MainProxy
 import logisticspipes.utils.string.StringUtils
 import net.minecraft.inventory.IInventory
+import net.minecraft.item.ItemStack
 import network.rs485.logisticspipes.gui.widget.*
 import network.rs485.logisticspipes.inventory.ProviderMode
 import network.rs485.logisticspipes.property.*
 
 // TODO create different buttons.
-class ProviderGui(private val playerInventory: IInventory, private val providerModule: ModuleProvider) : LPBaseGuiContainer(ProviderPipeContainer(playerInventory, providerModule), 192, 186) {
+class ProviderGui(playerInventory: IInventory, private val providerModule: ModuleProvider, lockedStack: ItemStack) : LPBaseGuiContainer(ProviderContainer(playerInventory, providerModule, lockedStack), 174, 177) {
     override var z = 1.0f
 
     private val prefix: String = "gui.providerpipe."

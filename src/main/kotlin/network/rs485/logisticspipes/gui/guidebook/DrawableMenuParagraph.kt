@@ -78,6 +78,7 @@ class DrawableMenuParagraph<T>(private val menuTitle: List<DrawableWord>, privat
         var currentY = 1
         currentY += splitAndInitialize(menuTitle, 0, currentY, width, false)
         currentY += horizontalLine.setPos(0, currentY)
+        currentY += 5
         for (group in menuGroups) currentY += group.setPos(0, currentY)
         return currentY
     }

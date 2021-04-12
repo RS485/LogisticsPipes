@@ -226,12 +226,14 @@ object LPGuiDrawer {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
-        putLine(start = mouseX + 5f to mouseY - 5f,
-                finish = mouseX + 4f to mouseY - 2f,
-                color = MinecraftColor.WHITE.colorCode)
-        putLine(start = mouseX + 4f to mouseY - 4f,
-                finish = mouseX + 6f to mouseY - 4f,
-                color = MinecraftColor.WHITE.colorCode)
+        putQuad(
+                Rectangle(mouseX + 4f to mouseY - 5f, mouseX + 5f to mouseY - 2f),
+                MinecraftColor.WHITE.colorCode
+        )
+        putQuad(
+                Rectangle(mouseX + 3f to mouseY - 4f, mouseX + 6f to mouseY - 3f),
+                MinecraftColor.WHITE.colorCode
+        )
         finish()
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
@@ -302,16 +304,13 @@ object LPGuiDrawer {
         }
     }
 
-    private fun putOutlineQuad(rect: Rectangle, color: Int) {
-        putLine(rect.topRight, rect.topLeft, color)
-        putLine(rect.topLeft, rect.bottomLeft, color)
-        putLine(rect.bottomLeft, rect.bottomRight, color)
-        putLine(rect.bottomRight, rect.topRight, color)
-    }
-
-    private fun putLine(start: Pair<Float, Float>, finish: Pair<Float, Float>, color: Int, thickness: Float = 1.0f) {
-        val secondPoint = finish.first + thickness to finish.second + thickness
-        putQuad(Rectangle(start, secondPoint), color)
+    private fun putOutlineQuad(rect: Rectangle, color: Int, thickness: Float = 1.0f) {
+        rect.run {
+            putQuad(Rectangle(left to top, right to top + thickness), color)
+            putQuad(Rectangle(left to bottom - thickness, right to bottom), color)
+            putQuad(Rectangle(left to top, left + thickness to bottom), color)
+            putQuad(Rectangle(right - thickness to top, right to bottom), color)
+        }
     }
 
     private fun putQuad(rect: Rectangle, color: Int) {

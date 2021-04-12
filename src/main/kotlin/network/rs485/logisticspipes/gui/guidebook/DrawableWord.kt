@@ -81,7 +81,7 @@ open class DrawableWord(
         val updatedColor = linkInteractable?.updateColor(color) ?: color
         val updatedFormat = linkInteractable?.updateFormat(format) ?: format
         if (hovering) {
-            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
+            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY, 25f)
         }
         LPGuiDrawer.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
     }

@@ -75,7 +75,7 @@ open class TextButton(
         }
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-        helper.drawCenteredString(text, (relativeBody.left + centerX).roundToInt(), relativeBody.roundedY + yOffset, z, color, true)
+        helper.drawCenteredString(text, (relativeBody.left + centerX).roundToInt(), relativeBody.roundedY + yOffset, color, true)
         GlStateManager.disableBlend()
     }
 

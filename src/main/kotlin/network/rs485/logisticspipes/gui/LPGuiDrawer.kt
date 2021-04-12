@@ -214,14 +214,14 @@ object LPGuiDrawer {
 
     // Text specific draw code
 
-    fun drawCenteredString(text: String, x: Int, y: Int, z: Float, color: Int, shadow: Boolean) {
+    fun drawCenteredString(text: String, x: Int, y: Int, color: Int, shadow: Boolean) {
         val xOffset = mcFontRenderer.getStringWidth(text) / 2
         mcFontRenderer.drawString(text, x.toFloat() - xOffset, y.toFloat(), color, shadow)
     }
 
     // Untextured draw code
 
-    fun drawInteractionIndicator(mouseX: Float, mouseY: Float) {
+    fun drawInteractionIndicator(mouseX: Float, mouseY: Float, z: Float) {
         this.z = z
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()

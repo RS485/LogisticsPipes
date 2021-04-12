@@ -64,10 +64,10 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
         Center -> {
             (parent!!.width / 2) - (width / 2)
         }
-        is FloatLeft -> {
+        is Left -> {
             pos.margin
         }
-        is FloatRight -> {
+        is Right -> {
             parent!!.width - width - pos.margin
         }
         else -> {
@@ -79,10 +79,10 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
         Center -> {
             (parent!!.height / 2) - (height / 2)
         }
-        is FloatTop -> {
+        is Top -> {
             pos.margin
         }
-        is FloatBottom -> {
+        is Bottom -> {
             parent!!.height - height - pos.margin
         }
         else -> {
@@ -118,12 +118,12 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
 // TODO positions and sizes relative to siblings.
 
 interface HorizontalPosition
-data class FloatLeft(val margin: Int = 0) : HorizontalPosition
-data class FloatRight(val margin: Int = 0) : HorizontalPosition
+data class Left(val margin: Int = 0) : HorizontalPosition
+data class Right(val margin: Int = 0) : HorizontalPosition
 
 interface VerticalPosition
-data class FloatTop(val margin: Int = 0) : VerticalPosition
-data class FloatBottom(val margin: Int = 0) : VerticalPosition
+data class Top(val margin: Int = 0) : VerticalPosition
+data class Bottom(val margin: Int = 0) : VerticalPosition
 
 object Center : HorizontalPosition, VerticalPosition
 

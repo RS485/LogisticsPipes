@@ -65,23 +65,21 @@ class ProviderGui(private val playerInventory: IInventory, private val providerM
             parent = this,
             text = providerModule.filterInventory.name,
             xPosition = Center,
-            yPosition = FloatTop(5),
+            yPosition = Top(6),
             xSize = FullSize(6),
             textColor = helper.TEXT_DARK)
             .setAlignment(HorizontalAlignment.CENTER)
     private val extractionModeLabel: LPGuiLabel = LPGuiLabel(
             parent = this,
-            text = "${StringUtils.translate("${prefix}ExcessInventory")} ${providerMode.value.extractionModeString}",
-            xPosition = FloatLeft(6),
-            yPosition = FloatTop(80),
+            xPosition = Left(6),
+            yPosition = Top(80),
             xSize = FullSize(6),
             textColor = helper.TEXT_DARK)
             .setExtendable(true, helper.BACKGROUND_LIGHT)
     private val extractionModeButton: TextButton = TextButton(
             parent = this,
-            text = StringUtils.translate("${prefix}Switch"),
-            xPosition = FloatLeft(6),
-            yPosition = FloatTop(33),
+            xPosition = Left(6),
+            yPosition = Top(35),
             xSize = AbsoluteSize(50),
             ySize = AbsoluteSize(20),
             onClickAction = { mouseButton ->
@@ -94,8 +92,8 @@ class ProviderGui(private val playerInventory: IInventory, private val providerM
             })
     private val providerModeButton: BiStateButton = BiStateButton(
             parent = this,
-            xPosition = FloatRight(6),
-            yPosition = FloatTop(33),
+            xPosition = Right(6),
+            yPosition = Top(35),
             xSize = AbsoluteSize(50),
             ySize = AbsoluteSize(20),
             initialValue = propertyLayer.getLayerValue(providerModule.isExclusionFilter),

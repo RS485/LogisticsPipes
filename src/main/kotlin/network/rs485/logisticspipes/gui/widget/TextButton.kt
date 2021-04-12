@@ -44,15 +44,31 @@ import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.roundToInt
 
-open class TextButton(parent: Drawable, text: String, xPosition: HorizontalPosition, yPosition: VerticalPosition, xSize: HorizontalSize, ySize: VerticalSize, onClickAction: (Int) -> Boolean) : LPGuiButton(parent, xPosition, yPosition, xSize, ySize, onClickAction) {
-    var text: String = StringUtils.getCuttedString(text, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
+open class TextButton(
+        parent: Drawable,
+        xPosition: HorizontalPosition,
+        yPosition: VerticalPosition,
+        xSize: HorizontalSize,
+        ySize: VerticalSize,
+        private val textGetter: () -> String,
+        onClickAction: (Int) -> Boolean
+) : LPGuiButton(parent, xPosition, yPosition, xSize, ySize, onClickAction), Tooltipped {
+
+    var text: String = ""
+        set(value){
+            field = StringUtils.getCuttedString(value, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
+        }
     val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
     private val centerX: Float
         get() = relativeBody.width / 2
 
+    init {
+        text = textGetter()
+    }
+
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
-        val color = if(isMouseHovering(mouseX, mouseY)) {
+        val color = if (isMouseHovering(mouseX, mouseY)) {
             helper.TEXT_HOVERED
         } else {
             helper.TEXT_WHITE
@@ -63,4 +79,10 @@ open class TextButton(parent: Drawable, text: String, xPosition: HorizontalPosit
         GlStateManager.disableBlend()
     }
 
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+            onClickAction.invoke(mouseButton).also {
+                text = textGetter()
+            }
+
+    override fun getTooltipText(): List<String> = if(text != textGetter()) listOf(textGetter()) else emptyList()
 }

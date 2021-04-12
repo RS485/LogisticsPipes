@@ -47,10 +47,10 @@ import network.rs485.logisticspipes.util.math.Rectangle
 
 class LPGuiLabel(
         parent: Drawable,
-        var text: String,
         xPosition: HorizontalPosition,
         yPosition: VerticalPosition,
         xSize: HorizontalSize,
+        private val textGetter: () -> String,
         private val textColor: Int = MinecraftColor.WHITE.colorCode) : LPGuiWidget
 (
         parent = parent,
@@ -60,6 +60,7 @@ class LPGuiLabel(
         ySize = AbsoluteSize(helper.mcFontRenderer.FONT_HEIGHT)
 ) {
 
+    private var text: String = textGetter()
     private val textArea = Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
     private var drawXOffset = 0
     private var extendable = false
@@ -79,8 +80,8 @@ class LPGuiLabel(
         GlStateManager.popMatrix()
     }
 
-    fun updateText(newText: String): LPGuiLabel {
-        text = newText
+    fun updateText(): LPGuiLabel {
+        text = textGetter()
         trimmedText = StringUtils.getCuttedString(text, width, helper.mcFontRenderer)
         textArea.setSize(helper.mcFontRenderer.getStringWidth(text), helper.mcFontRenderer.FONT_HEIGHT + 1)
         return setAlignment(alignment)

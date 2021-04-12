@@ -48,13 +48,16 @@ import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.gui.guidebook.Screen
 import network.rs485.logisticspipes.gui.widget.LPGuiWidget
+import network.rs485.logisticspipes.gui.widget.Tooltipped
 import network.rs485.logisticspipes.util.math.Rectangle
+import kotlin.math.roundToInt
 
 @ModDependentInterface(modId = [LPConstants.neiModID], interfacePath = ["codechicken.nei.api.INEIGuiHandler"])
 abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, heightIn: Int, private val xOffset: Int = 0, private val yOffset: Int = 0) : GuiContainer(inventorySlotsIn), Drawable {
 
     override var parent: Drawable? = Screen
     override var relativeBody = Rectangle((width - widthIn) / 2, (height - heightIn) / 2, widthIn, heightIn)
+    private var hoveredWidget: Tooltipped? = null
 
     val widgetList: MutableList<LPGuiWidget> = mutableListOf()
 
@@ -114,6 +117,9 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
      */
     open fun drawForegroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {
         widgetList.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
+        hoveredWidget?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
+            drawHoveringText(it, mouseX.roundToInt(), mouseY.roundToInt())
+        } ?: renderHoveredToolTip(mouseX.roundToInt(), mouseY.roundToInt())
     }
 
     private fun getHovered(mouseX: Float, mouseY: Float): MouseInteractable? = widgetList.filterIsInstance<MouseInteractable>().firstOrNull { it.isMouseHovering(mouseX, mouseY) }
@@ -132,6 +138,7 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
         drawFocalgroundLayer(currentMouseX, currentMouseY, partialTicks)
         GlStateManager.translate(0.0f, 0.0f, 10.0f)
         RenderHelper.disableStandardItemLighting()
+        hoveredWidget = widgetList.filterIsInstance<Tooltipped>().firstOrNull { it.isMouseHovering(currentMouseX, currentMouseY) }
         drawForegroundLayer(currentMouseX, currentMouseY, partialTicks)
         GlStateManager.translate(-absoluteBody.left, -absoluteBody.top, -10.0f)
         RenderHelper.enableStandardItemLighting()

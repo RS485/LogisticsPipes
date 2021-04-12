@@ -41,6 +41,10 @@ import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.util.math.Rectangle
 
+interface Tooltipped : MouseHoverable {
+    fun getTooltipText(): List<String>
+}
+
 open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPosition: VerticalPosition, xSize: HorizontalSize, ySize: VerticalSize) : Drawable {
     override var parent: Drawable? = parent
 

@@ -61,18 +61,24 @@ class ProviderGui(private val playerInventory: IInventory, private val providerM
 
     private val title: LPGuiLabel = LPGuiLabel(
             parent = this,
-            text = providerModule.filterInventory.name,
             xPosition = Center,
             yPosition = Top(6),
             xSize = FullSize(6),
-            textColor = helper.TEXT_DARK)
+            textColor = helper.TEXT_DARK,
+            textGetter = {
+                providerModule.filterInventory.name
+            }
+            )
             .setAlignment(HorizontalAlignment.CENTER)
     private val extractionModeLabel: LPGuiLabel = LPGuiLabel(
             parent = this,
             xPosition = Left(6),
             yPosition = Top(80),
             xSize = FullSize(6),
-            textColor = helper.TEXT_DARK)
+            textColor = helper.TEXT_DARK,
+            textGetter = {
+                "${StringUtils.translate("${prefix}ExcessInventory")} ${providerMode.value.extractionModeString}"
+            })
             .setExtendable(true, helper.BACKGROUND_LIGHT)
     private val extractionModeButton: TextButton = TextButton(
             parent = this,
@@ -80,32 +86,36 @@ class ProviderGui(private val playerInventory: IInventory, private val providerM
             yPosition = Top(35),
             xSize = AbsoluteSize(50),
             ySize = AbsoluteSize(20),
+            textGetter =  {
+                StringUtils.translate("${prefix}Switch")
+            },
             onClickAction = { mouseButton ->
                 if (mouseButton == 0) {
                     providerMode.next()
-                    extractionModeLabel.updateText("${StringUtils.translate("${prefix}ExcessInventory")} ${providerMode.value.extractionModeString}")
+                    extractionModeLabel.updateText()
                     return@TextButton true
                 }
                 return@TextButton false
             })
-    private val providerModeButton: BiStateButton = BiStateButton(
+    private val providerModeButton: TextButton = TextButton(
             parent = this,
             xPosition = Right(6),
             yPosition = Top(35),
             xSize = AbsoluteSize(50),
             ySize = AbsoluteSize(20),
-            initialValue = propertyLayer.getLayerValue(providerModule.isExclusionFilter),
-            trueText = StringUtils.translate("${prefix}Include"),
-            falseText = StringUtils.translate("${prefix}Exclude"),
-            valueGetter = {
-                propertyLayer.getLayerValue(providerModule.isExclusionFilter)
+            textGetter = {
+                if(propertyLayer.getLayerValue(providerModule.isExclusionFilter)) {
+                    StringUtils.translate("${prefix}Include")
+                } else {
+                    StringUtils.translate("${prefix}Exclude")
+                }
             },
             onClickAction = { mouseButton ->
                 if (mouseButton == 0) {
                     isExclusionFilter.toggle()
-                    return@BiStateButton true
+                    return@TextButton true
                 }
-                return@BiStateButton false
+                return@TextButton false
             }
     )
 

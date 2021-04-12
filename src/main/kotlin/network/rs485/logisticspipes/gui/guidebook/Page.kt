@@ -120,14 +120,15 @@ class Page(data: PageData) : IPageData by data {
         if (visibleArea.roundedHeight < drawable.height) drawable.height - visibleArea.roundedHeight else 0
 
     fun mouseClicked(
-        mouseX: Int,
-        mouseY: Int,
+        mouseX: Float,
+        mouseY: Float,
+        mouseButton: Int,
         visibleArea: Rectangle,
         guideActionListener: GuiGuideBook.ActionListener,
     ) {
         drawable.getVisibleParagraphs(visibleArea)
             .firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }
-            ?.mouseClicked(mouseX, mouseY, visibleArea, guideActionListener)
+            ?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
     }
 
     fun setDrawablesPosition(area: Rectangle) {
@@ -142,7 +143,7 @@ class Page(data: PageData) : IPageData by data {
     fun cycleColor(inverted: Boolean = false) =
         cycleMinecraftColorId((color ?: 0), inverted).also { color = it }
 
-    fun draw(visibleArea: Rectangle, mouseX: Int, mouseY: Int, partialTicks: Float) {
+    fun draw(visibleArea: Rectangle, mouseX: Float, mouseY: Float, partialTicks: Float) {
         drawable.preRender(mouseX, mouseY, visibleArea)
         drawable.draw(mouseX, mouseY, partialTicks, visibleArea)
     }

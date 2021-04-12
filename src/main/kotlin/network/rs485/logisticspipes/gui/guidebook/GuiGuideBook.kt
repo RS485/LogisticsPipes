@@ -286,8 +286,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         state.currentPage.run {
             updateScrollPosition(visibleArea, currentProgress)
-            drawablePage.preRender(mouseX, mouseY, visibleArea)
-            drawablePage.draw(mouseX.toFloat(), mouseY.toFloat(), partialTicks, visibleArea)
+            draw(visibleArea, mouseX.toFloat(), mouseY.toFloat(), partialTicks)
         }
         LPGuiDrawer.drawGuideBookFrame(outerGui, sliderSeparator)
         if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
@@ -377,7 +376,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private fun addBookmark() = state.currentPage.takeIf { isTabAbsent(it) && tabButtons.size < maxTabs }
             ?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
 
-    private fun createGuiTabButton(tabPage: Page): TabButton =
+    private fun createGuiTabButton(tabPage: Page): TabButton2 =
         TabButton2(tabPage, outerGui.roundedRight - 2 - 2 * guiTabWidth, outerGui.roundedTop, object : TabButtonReturn {
             override fun onLeftClick(): Boolean {
                 if (!isPageActive()) {

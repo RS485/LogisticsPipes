@@ -67,7 +67,7 @@ class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : Dr
         return currentY
     }
 
-    override fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) = getVisibleParagraphs(visibleArea).forEach {
+    override fun preRender(mouseX: Float, mouseY: Float, visibleArea: Rectangle) = getVisibleParagraphs(visibleArea).forEach {
         it.preRender(mouseX, mouseY, visibleArea)
     }
 

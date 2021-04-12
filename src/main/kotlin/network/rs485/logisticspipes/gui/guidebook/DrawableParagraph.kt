@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import network.rs485.logisticspipes.util.math.Rectangle
 
 abstract class DrawableParagraph : Drawable, MouseInteractable {
-    private val preRenderCallbacks = mutableSetOf<(mouseX: Int, mouseY: Int, visibleArea: Rectangle) -> Unit>()
+    private val preRenderCallbacks = mutableSetOf<(mouseX: Float, mouseY: Float, visibleArea: Rectangle) -> Unit>()
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
@@ -74,11 +74,11 @@ abstract class DrawableParagraph : Drawable, MouseInteractable {
     /**
      * Registers a preRender callback to call on preRender.
      */
-    fun registerPreRenderCallback(callable: (mouseX: Int, mouseY: Int, visibleArea: Rectangle) -> Unit) {
+    fun registerPreRenderCallback(callable: (mouseX: Float, mouseY: Float, visibleArea: Rectangle) -> Unit) {
         preRenderCallbacks.add(callable)
     }
 
-    open fun preRender(mouseX: Int, mouseY: Int, visibleArea: Rectangle) =
+    open fun preRender(mouseX: Float, mouseY: Float, visibleArea: Rectangle) =
         preRenderCallbacks.forEach { function ->
             function.invoke(mouseX, mouseY, visibleArea)
         }

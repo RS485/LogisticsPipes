@@ -58,7 +58,7 @@ interface LinkInteractable : MouseInteractable {
     /**
      * Update mouse state for any state changes.
      */
-    fun updateState(mouseX: Int, mouseY: Int, visibleArea: Rectangle)
+    fun updateState(mouseX: Float, mouseY: Float, visibleArea: Rectangle)
 
 }
 
@@ -74,8 +74,8 @@ class LinkGroup(private val link: Link) : LinkInteractable {
                 it.isMouseHovering(mouseX, mouseY)
             }
 
-    override fun updateState(mouseX: Int, mouseY: Int, visibleArea: Rectangle) =
-            isMouseHovering(mouseX.toFloat(), mouseY.toFloat()).let { hovered = it }
+    override fun updateState(mouseX: Float, mouseY: Float, visibleArea: Rectangle) =
+            isMouseHovering(mouseX, mouseY).let { hovered = it }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean {
         if (guideActionListener != null) {

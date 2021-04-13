@@ -3,7 +3,7 @@ package logisticspipes.asm.wrapper;
 import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.item.ItemIdentifierInventory;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICraftingRecipeProvider {
 
@@ -38,7 +38,7 @@ class CraftingRecipeProviderWrapper extends AbstractWrapper implements ICrafting
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
+	public boolean importRecipe(TileEntity tile, IItemIdentifierInventory inventory) {
 		if (isEnabled()) {
 			try {
 				return provider.importRecipe(tile, inventory);

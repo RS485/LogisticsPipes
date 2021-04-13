@@ -26,7 +26,7 @@ public class CPipeSatelliteImportBack extends InventoryModuleCoordinatesPacket {
 			return;
 		}
 		for (int i = 0; i < getStackList().size(); i++) {
-			module.setDummyInventorySlot(i, getStackList().get(i));
+			module.dummyInventory.setInventorySlotContents(i, getStackList().get(i));
 		}
 	}
 }

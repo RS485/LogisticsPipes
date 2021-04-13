@@ -56,7 +56,7 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		return new GuiCraftingPipe(player, module.getDummyInventory(), module, isAdvancedSat, liquidCrafter, amount, hasByproductExtractor, isFuzzy,
+		return new GuiCraftingPipe(player, module.dummyInventory, module, isAdvancedSat, liquidCrafter, amount, hasByproductExtractor, isFuzzy,
 				cleanupSize, cleanupExclude);
 	}
 
@@ -67,7 +67,7 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 			return null;
 		}
 		MainProxy.sendPacketToPlayer(module.getCPipePacket(), player);
-		DummyContainer dummy = new DummyContainer(player, module.getDummyInventory(), module);
+		DummyContainer dummy = new DummyContainer(player, module.dummyInventory, module);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots
 		for (int l = 0; l < 9; l++) {
@@ -79,7 +79,7 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 
 		for (int i = 0; i < liquidCrafter; i++) {
 			int liquidLeft = -(i * 40) - 40;
-			dummy.addFluidSlot(i, module.getFluidInventory(), liquidLeft + 13, 42);
+			dummy.addFluidSlot(i, module.liquidInventory, liquidLeft + 13, 42);
 		}
 
 		if (hasByproductExtractor) {
@@ -88,7 +88,7 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 
 		for (int Y = 0; Y < cleanupSize; Y++) {
 			for (int X = 0; X < 3; X++) {
-				dummy.addDummySlot(Y * 3 + X, module.getCleanupInventory(), X * 18 - 57, Y * 18 + 13);
+				dummy.addDummySlot(Y * 3 + X, module.cleanupInventory, X * 18 - 57, Y * 18 + 13);
 			}
 		}
 

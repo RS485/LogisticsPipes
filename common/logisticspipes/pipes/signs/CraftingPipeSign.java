@@ -47,7 +47,12 @@ public class CraftingPipeSign implements IPipeSign {
 	@Override
 	public ModernPacket getPacket() {
 		PipeItemsCraftingLogistics cpipe = (PipeItemsCraftingLogistics) pipe;
-		return PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(cpipe.getDummyInventory()).setType(ModulePositionType.IN_PIPE).setPosX(cpipe.getX()).setPosY(cpipe.getY()).setPosZ(cpipe.getZ());
+		return PacketHandler.getPacket(CPipeSatelliteImportBack.class)
+				.setInventory(cpipe.getDummyInventory())
+				.setType(ModulePositionType.IN_PIPE)
+				.setPosX(cpipe.getX())
+				.setPosY(cpipe.getY())
+				.setPosZ(cpipe.getZ());
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import buildcraft.silicon.tile.TileAssemblyTable;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.item.ItemIdentifierInventory;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 public class AssemblyTable implements ICraftingRecipeProvider {
 
@@ -25,7 +26,7 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
+	public boolean importRecipe(TileEntity tile, IItemIdentifierInventory inventory) {
 		if (!(tile instanceof TileAssemblyTable)) {
 			return false;
 		}

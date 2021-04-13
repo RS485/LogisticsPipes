@@ -38,7 +38,7 @@ public class CPipeCleanupStatus extends ModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		module.cleanupModeIsExclude = mode;
+		module.cleanupModeIsExclude.setValue(mode);
 		if (Minecraft.getMinecraft().currentScreen instanceof GuiCraftingPipe) {
 			((GuiCraftingPipe) Minecraft.getMinecraft().currentScreen).onCleanupModeChange();
 		}

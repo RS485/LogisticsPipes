@@ -28,6 +28,10 @@ public class CPipeCleanupImport extends ModuleCoordinatesPacket {
 			return;
 		}
 		module.importCleanup();
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeCleanupStatus.class).setMode(module.cleanupModeIsExclude).setPacketPos(this), player);
+		MainProxy.sendPacketToPlayer(
+				PacketHandler.getPacket(CPipeCleanupStatus.class)
+						.setMode(module.cleanupModeIsExclude.getValue())
+						.setPacketPos(this),
+				player);
 	}
 }

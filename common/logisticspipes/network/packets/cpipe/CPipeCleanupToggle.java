@@ -27,7 +27,11 @@ public class CPipeCleanupToggle extends ModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		module.toogleCleaupMode();
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeCleanupStatus.class).setMode(module.cleanupModeIsExclude).setPacketPos(this), player);
+		module.cleanupModeIsExclude.toggle();
+		MainProxy.sendPacketToPlayer(
+				PacketHandler.getPacket(CPipeCleanupStatus.class)
+						.setMode(module.cleanupModeIsExclude.getValue())
+						.setPacketPos(this),
+				player);
 	}
 }

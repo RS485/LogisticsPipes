@@ -42,6 +42,7 @@ import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.gui.Label;
 import network.rs485.logisticspipes.gui.VerticalLabel;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 public class GuiCraftingPipe extends ModuleBaseGui {
 
@@ -67,12 +68,13 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 
 	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter module, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy, int cleanupSize, boolean cleanupExclude) {
 		super(null, module);
+		craftingModule = module;
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
 		this.liquidCrafter = liquidCrafter;
 		this.hasByproductExtractor = hasByproductExtractor;
 		this.cleanupSize = cleanupSize;
-		module.cleanupModeIsExclude = cleanupExclude;
+		craftingModule.cleanupModeIsExclude.setValue(cleanupExclude);
 
 		if (!hasByproductExtractor) {
 			xSize = 177;
@@ -92,7 +94,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		// Input slots
 		for (int l = 0; l < 9; l++) {
 			if (isFuzzy) {
-				dummy.addFuzzyDummySlot(l, 8 + l * 18, 18, module.fuzzyCraftingFlagArray[l]);
+				dummy.addFuzzyDummySlot(l, 8 + l * 18, 18, craftingModule.fuzzyCraftingFlagArray[l]);
 			} else {
 				dummy.addDummySlot(l, 8 + l * 18, 18);
 			}
@@ -102,7 +104,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		int yPosOutput = 55;
 		if (isAdvancedSat) yPosOutput = 105;
 		if (isFuzzy) {
-			dummy.addFuzzyDummySlot(9, 85, yPosOutput, module.outputFuzzyFlags);
+			dummy.addFuzzyDummySlot(9, 85, yPosOutput, craftingModule.outputFuzzyFlags);
 		} else {
 			dummy.addDummySlot(9, 85, yPosOutput);
 		}
@@ -117,7 +119,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			} else {
 				liquidLeft = -(liquidCrafter * 40) + (i * 40);
 			}
-			fluidSlotIDs[i] = extentionControllerLeft.registerControlledSlot(dummy.addFluidSlot(i, module.getFluidInventory(), liquidLeft + 11, 24));
+			fluidSlotIDs[i] = extentionControllerLeft.registerControlledSlot(dummy.addFluidSlot(i,
+					craftingModule.liquidInventory, liquidLeft + 11, 24));
 		}
 
 		if (hasByproductExtractor) {
@@ -129,13 +132,15 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		cleanupSlotIDs = new int[cleanupSize * 3];
 		for (int y = 0; y < cleanupSize; y++) {
 			for (int x = 0; x < 3; x++) {
-				cleanupSlotIDs[y * 3 + x] = extentionControllerLeft.registerControlledSlot(dummy.addDummySlot(y * 3 + x, module.getCleanupInventory(), x * 18 - 57, y * 18 + 13));
+				cleanupSlotIDs[y * 3 + x] = extentionControllerLeft.registerControlledSlot(dummy.addDummySlot(y * 3 + x,
+						craftingModule.cleanupInventory, x * 18 - 57, y * 18 + 13));
 			}
 		}
 
 		inventorySlots = dummy;
-		craftingModule = module;
-		craftingModule.setFluidAmount(amount);
+		if (MainProxy.isClient()) {
+			craftingModule.liquidAmounts.replaceContent(amount);
+		}
 		normalButtonArray = new GuiButton[7];
 		advancedSatButtonArray = new GuiButton[9][2];
 		for (int i = 0; i < 9; i++) {
@@ -211,7 +216,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 		if (cleanupSize > 0) {
 			CleanupExtention cleanupExtention = new CleanupExtention();
-			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + (craftingModule.cleanupModeIsExclude ? "Exclude" : "Include"))))));
+			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + (craftingModule.cleanupModeIsExclude.getValue() ? "Exclude" : "Include"))))));
 			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")))));
 			for (int i = 0; i < cleanupSize * 3; i++) {
 				cleanupExtention.registerSlot(cleanupSlotIDs[i]);
@@ -375,7 +380,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	}
 
 	public void onCleanupModeChange() {
-		cleanupModeButton.displayString = StringUtils.translate(GuiCraftingPipe.PREFIX + (craftingModule.cleanupModeIsExclude ? "Exclude" : "Include"));
+		cleanupModeButton.displayString = StringUtils.translate(GuiCraftingPipe.PREFIX + (craftingModule.cleanupModeIsExclude.getValue() ? "Exclude" : "Include"));
 	}
 
 	private final class FluidCraftingExtention extends GuiExtention {
@@ -459,7 +464,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 
 		private void renderFluidText(int left, int top, int i) {
 			GuiGraphics.drawSlotBackground(mc, left + 12, top + 19);
-			mc.fontRenderer.drawString(Integer.toString(craftingModule.getFluidAmount()[i]), left + 22 - (fontRenderer.getStringWidth(Integer.toString(craftingModule.getFluidAmount()[i])) / 2), top + 40, 0x404040);
+			mc.fontRenderer.drawString(Integer.toString(craftingModule.liquidAmounts.get(i)), left + 22 - (fontRenderer.getStringWidth(Integer.toString(craftingModule.liquidAmounts.get(i))) / 2), top + 40, 0x404040);
 			mc.fontRenderer.drawString("1", left + 19, top + 53, 0x404040);
 			mc.fontRenderer.drawString("10", left + 16, top + 73, 0x404040);
 			mc.fontRenderer.drawString("100", left + 13, top + 93, 0x404040);
@@ -481,7 +486,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				}
 				Gui.drawRect(left + 3, top + 138, left + 42, top + 139, 0xff8B8B8B);
 			}
-			if (craftingModule.getFluidInventory().getStackInSlot(i).isEmpty() && !((!isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) || (isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()))) {
+			if (((IItemIdentifierInventory) craftingModule.liquidInventory).getStackInSlot(i).isEmpty() && !((!isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) || (isAdvancedSat && craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()))) {
 				Gui.drawRect(left + 3, top + 50, left + 42, top + 138, 0xAA8B8B8B);
 				for (int j = 0; j < 8; j++) {
 					liquidGuiParts[i][j].enabled = false;

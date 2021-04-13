@@ -137,6 +137,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
+	@Deprecated
 	public List<ItemIdentifierStack> getCraftedItems() {
 		return craftingModule.getCraftedItems();
 	}
@@ -229,7 +230,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public int getPriority() {
-		return craftingModule.getPriority();
+		return craftingModule.priority.getValue();
 	}
 
 	@Override
@@ -253,15 +254,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	public IInventory getDummyInventory() {
-		return craftingModule.getDummyInventory();
-	}
-
-	public IInventory getFluidInventory() {
-		return craftingModule.getFluidInventory();
-	}
-
-	public IInventory getCleanupInventory() {
-		return craftingModule.getCleanupInventory();
+		return craftingModule.dummyInventory;
 	}
 
 	public boolean hasCraftingSign() {
@@ -272,4 +265,5 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 		return false;
 	}
+
 }

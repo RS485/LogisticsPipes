@@ -9,8 +9,8 @@ import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
 import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 
@@ -20,7 +20,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
+	public boolean importRecipe(TileEntity tile, IItemIdentifierInventory inventory) {
 		if (!(tile instanceof LogisticsCraftingTableTileEntity)) {
 			return false;
 		}
@@ -55,7 +55,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 	}
 
 	@Override
-	public void importFuzzyFlags(TileEntity tile, ItemIdentifierInventory inventory, DictResource[] flags, DictResource output) {
+	public void importFuzzyFlags(TileEntity tile, IItemIdentifierInventory inventory, DictResource[] flags, DictResource output) {
 		if (!(tile instanceof LogisticsCraftingTableTileEntity)) {
 			return;
 		}

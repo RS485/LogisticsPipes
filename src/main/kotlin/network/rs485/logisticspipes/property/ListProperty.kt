@@ -143,6 +143,10 @@ class IntListProperty : ListProperty<Int> {
 
     fun replaceContent(arr: IntArray) = replaceContent(arr.asList())
 
+    fun getArray(): IntArray = list.toIntArray()
+
+    fun increase(index: Int, by: Int) = set(index, get(index) + by)
+
     override fun defaultValue(): Int = 0
 
     override fun readFromNBT(tag: NBTTagCompound) {

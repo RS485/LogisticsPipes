@@ -18,7 +18,6 @@ public class LPConstants {
 	public static final String ic2ModID = "ic2";
 	public static final String bcSiliconModID = "buildcraftsilicon";
 	public static final String bcTransportModID = "buildcrafttransport";
-	public static final String tubestuffModID = "tubestuff";
 	public static final String thermalExpansionModID = "thermalexpansion";
 	public static final String enderCoreModID = "endercore";
 	public static final String betterStorageModID = "betterstorage";

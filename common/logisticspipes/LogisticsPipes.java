@@ -154,7 +154,6 @@ import logisticspipes.proxy.computers.objects.LPGlobalCCAccess;
 import logisticspipes.proxy.endercore.EnderCoreProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
-import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
 import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
 import logisticspipes.proxy.specialconnection.EnderIOTransceiverConnection;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
@@ -433,7 +432,6 @@ public class LogisticsPipes {
 		if (SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass() != null) {
 			SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider(LPConstants.bcSiliconModID, "AssemblyTable", SimpleServiceLocator.buildCraftProxy.getAssemblyTableProviderClass()));
 		}
-		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider(LPConstants.tubestuffModID, "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
 
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider(LPConstants.thermalExpansionModID, "Generic", ThermalExpansionProgressProvider.class));

@@ -42,9 +42,15 @@ import logisticspipes.utils.item.ItemIdentifierStack
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
+import network.rs485.logisticspipes.inventory.SlotAccess
 
 class InventoryProperty(private val inv: ItemIdentifierInventory, override val tagKey: String) :
     Property<ItemIdentifierInventory>, IItemIdentifierInventory by inv {
+
+    override val slotAccess: SlotAccess = object : SlotAccess by inv.slotAccess {
+        override fun mergeSlots(intoSlot: Int, fromSlot: Int) =
+            inv.slotAccess.mergeSlots(intoSlot, fromSlot).alsoIChanged()
+    }
 
     override val propertyObservers: MutableList<ObserverCallback<ItemIdentifierInventory>> = mutableListOf()
 

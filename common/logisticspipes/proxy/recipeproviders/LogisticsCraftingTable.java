@@ -48,7 +48,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 		}
 
 		if (!bench.isFuzzy()) {
-			inventory.compactFirst(9);
+			inventory.getSlotAccess().compactFirst(9);
 		}
 
 		return true;
@@ -97,11 +97,11 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 		}
 
 		for (int i = 0; i < 9; i++) {
-			if (inventory.getStackInSlot(i) != null) {
+			if (inventory.getIDStackInSlot(i) != null) {
 				continue;
 			}
 			for (int j = i + 1; j < 9; j++) {
-				if (inventory.getStackInSlot(j) == null) {
+				if (inventory.getIDStackInSlot(j) == null) {
 					continue;
 				}
 				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
@@ -111,7 +111,5 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 				break;
 			}
 		}
-
-		return;
 	}
 }

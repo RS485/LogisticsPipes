@@ -104,8 +104,8 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 			// TODO: make it show a nice error or
 			// remove this hack altogether.
 		}
-		// Compact
-		inventory.compactFirst(9);
+
+		inventory.getSlotAccess().compactFirst(9);
 
 		return true;
 	}

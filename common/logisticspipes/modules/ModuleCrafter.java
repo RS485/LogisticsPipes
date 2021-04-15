@@ -1357,7 +1357,7 @@ public class ModuleCrafter extends LogisticsModule implements ICraftItems, IHUDM
 		for (int i = 10; i < _cleanupInventory.getSizeInventory(); i++) {
 			_cleanupInventory.setInventorySlotContents(i, ItemStack.EMPTY);
 		}
-		_cleanupInventory.compactFirst(10);
+		_cleanupInventory.getSlotAccess().compactFirst(10);
 		_cleanupInventory.recheckStackLimit();
 		cleanupModeIsExclude = false;
 	}

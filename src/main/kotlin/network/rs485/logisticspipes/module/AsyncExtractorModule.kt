@@ -127,7 +127,7 @@ class AsyncExtractorModule(
         get() = upgradeManager.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } }
             ?: CoreRoutedPipe.ItemSendMode.Normal
     private val connectedInventory: IInventoryUtil?
-        get() = _service?.availableSneakyInventories(sneakyDirection)?.first()
+        get() = _service?.availableSneakyInventories(sneakyDirection)?.firstOrNull()
 
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? =

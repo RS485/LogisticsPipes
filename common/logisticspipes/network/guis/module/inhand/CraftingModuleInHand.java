@@ -54,11 +54,11 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots
 		for (int l = 0; l < 9; l++) {
-			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, ((ModuleCrafter) dummy.getModule()).fuzzyCraftingFlagArray[l]);
+			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, ((ModuleCrafter) dummy.getModule()).inputFuzzy(l));
 		}
 
 		//Output slot
-		dummy.addFuzzyDummySlot(9, 90, 64, ((ModuleCrafter) dummy.getModule()).outputFuzzyFlags);
+		dummy.addFuzzyDummySlot(9, 90, 64, ((ModuleCrafter) dummy.getModule()).outputFuzzy());
 		return dummy;
 	}
 

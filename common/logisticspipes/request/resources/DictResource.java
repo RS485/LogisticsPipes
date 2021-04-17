@@ -3,8 +3,6 @@ package logisticspipes.request.resources;
 import java.util.BitSet;
 import javax.annotation.Nonnull;
 
-import net.minecraft.item.ItemStack;
-
 import com.google.common.base.Objects;
 
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -12,6 +10,8 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
+import network.rs485.logisticspipes.util.FuzzyFlag;
+import network.rs485.logisticspipes.util.FuzzyUtil;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -20,14 +20,7 @@ public class DictResource implements IResource {
 	private final Object[] ccTypeHolder = new Object[1];
 	private final IRequestItems requester;
 	public ItemIdentifierStack stack;
-	//match all items with same oredict name
-	public boolean use_od = false;
-	//match all items with same id
-	public boolean ignore_dmg = false;
-	//match all items with same id and damage
-	public boolean ignore_nbt = false;
-	//match all items with same oredict prefix
-	public boolean use_category = false;
+	private BitSet fuzzyFlags = new BitSet(4);
 
 	public DictResource(ItemIdentifierStack stack, IRequestItems requester) {
 		this.stack = stack;
@@ -37,22 +30,13 @@ public class DictResource implements IResource {
 	public DictResource(LPDataInput input) {
 		stack = input.readItemIdentifierStack();
 		requester = null;
-		BitSet bits = input.readBitSet();
-		use_od = bits.get(0);
-		ignore_dmg = bits.get(1);
-		ignore_nbt = bits.get(2);
-		use_category = bits.get(3);
+		fuzzyFlags = input.readBitSet().get(0, 3);
 	}
 
 	@Override
 	public void writeData(LPDataOutput output) {
 		output.writeItemIdentifierStack(stack);
-		BitSet bits = new BitSet();
-		bits.set(0, use_od);
-		bits.set(1, ignore_dmg);
-		bits.set(2, ignore_nbt);
-		bits.set(3, use_category);
-		output.writeBitSet(bits);
+		output.writeBitSet(fuzzyFlags);
 	}
 
 	@Override
@@ -67,35 +51,7 @@ public class DictResource implements IResource {
 
 	@Override
 	public boolean matches(ItemIdentifier other, MatchSettings settings) {
-		if (use_od || use_category) {
-			if (stack.getItem().getDictIdentifiers() != null && other.getDictIdentifiers() != null) {
-				if (stack.getItem().getDictIdentifiers().canMatch(other.getDictIdentifiers(), true, use_category)) {
-					return true;
-				}
-			}
-		}
-		ItemStack stack_n = stack.makeNormalStack();
-		ItemStack other_n = other.makeNormalStack(1);
-		if (stack_n.getItem() != other_n.getItem()) {
-			return false;
-		}
-		if (stack_n.getItemDamage() != other_n.getItemDamage()) {
-			if (stack_n.getHasSubtypes()) {
-				return false;
-			} else if (!ignore_dmg) {
-				return false;
-			}
-		}
-		if (ignore_nbt) {
-			return true;
-		}
-		if (stack_n.hasTagCompound() ^ other_n.hasTagCompound()) {
-			return false;
-		}
-		if (!stack_n.hasTagCompound() && !other_n.hasTagCompound()) {
-			return true;
-		}
-		return ItemStack.areItemStackTagsEqual(stack_n, other_n);
+		return FuzzyUtil.INSTANCE.fuzzyMatches(FuzzyUtil.INSTANCE.getter(fuzzyFlags), stack.getItem(), other);
 	}
 
 	@Override
@@ -109,19 +65,13 @@ public class DictResource implements IResource {
 		ItemIdentifierStack stack = new ItemIdentifierStack(this.stack);
 		stack.setStackSize(stack.getStackSize() * multiplier);
 		DictResource clone = new DictResource(stack, requester);
-		clone.use_od = use_od;
-		clone.ignore_dmg = ignore_dmg;
-		clone.ignore_nbt = ignore_nbt;
-		clone.use_category = use_category;
+		clone.fuzzyFlags.or(fuzzyFlags);
 		return clone;
 	}
 
 	public DictResource clone() {
 		DictResource clone = new DictResource(new ItemIdentifierStack(this.stack), requester);
-		clone.use_od = use_od;
-		clone.ignore_dmg = ignore_dmg;
-		clone.ignore_nbt = ignore_nbt;
-		clone.use_category = use_category;
+		clone.fuzzyFlags.or(fuzzyFlags);
 		return clone;
 	}
 
@@ -140,9 +90,8 @@ public class DictResource implements IResource {
 	@Override
 	public boolean mergeForDisplay(IResource resource, int withAmount) {
 		if (resource instanceof DictResource) {
-			if (((DictResource) resource).use_od == use_od && ((DictResource) resource).ignore_dmg == ignore_dmg
-					&& ((DictResource) resource).ignore_nbt == ignore_nbt && ((DictResource) resource).use_category == use_category && ((DictResource) resource)
-					.getItem().equals(getItem())) {
+			if (((DictResource) resource).fuzzyFlags.equals(fuzzyFlags) && ((DictResource) resource).getItem()
+					.equals(getItem())) {
 				stack.setStackSize(stack.getStackSize() + withAmount);
 				return true;
 			}
@@ -155,10 +104,7 @@ public class DictResource implements IResource {
 		ItemIdentifierStack stack = new ItemIdentifierStack(this.stack);
 		stack.setStackSize(amount);
 		DictResource clone = new DictResource(stack, null);
-		clone.use_od = use_od;
-		clone.ignore_dmg = ignore_dmg;
-		clone.ignore_nbt = ignore_nbt;
-		clone.use_category = use_category;
+		clone.fuzzyFlags.or(fuzzyFlags);
 		return clone;
 	}
 
@@ -175,19 +121,19 @@ public class DictResource implements IResource {
 			builder.append(ChatColor.GRAY);
 		}
 		builder.append(" [");
-		builder.append(use_od ? ChatColor.GREEN : ChatColor.RED);
+		builder.append(useOreDict() ? ChatColor.GREEN : ChatColor.RED);
 		builder.append("OreDict");
 		builder.append(ChatColor.GRAY);
 		builder.append(", ");
-		builder.append(use_category ? ChatColor.GREEN : ChatColor.RED);
+		builder.append(useOreCategory() ? ChatColor.GREEN : ChatColor.RED);
 		builder.append("OreCat");
 		builder.append(ChatColor.GRAY);
 		builder.append(", ");
-		builder.append(ignore_dmg ? ChatColor.GREEN : ChatColor.RED);
+		builder.append(ignoreDamage() ? ChatColor.GREEN : ChatColor.RED);
 		builder.append("IgnDmg");
 		builder.append(ChatColor.GRAY);
 		builder.append(", ");
-		builder.append(ignore_nbt ? ChatColor.GREEN : ChatColor.RED);
+		builder.append(ignoreNBT() ? ChatColor.GREEN : ChatColor.RED);
 		builder.append("IgnNBT");
 		builder.append(ChatColor.GRAY);
 		return builder.append("]}").toString();
@@ -199,24 +145,38 @@ public class DictResource implements IResource {
 	}
 
 	public DictResource loadFromBitSet(BitSet bits) {
-		use_od = bits.get(0);
-		ignore_dmg = bits.get(1);
-		ignore_nbt = bits.get(2);
-		use_category = bits.get(3);
+		fuzzyFlags.clear();
+		fuzzyFlags.or(bits);
 		return this;
 	}
 
 	public BitSet getBitSet() {
-		BitSet bits = new BitSet();
-		bits.set(0, use_od);
-		bits.set(1, ignore_dmg);
-		bits.set(2, ignore_nbt);
-		bits.set(3, use_category);
-		return bits;
+		return fuzzyFlags.get(0, 3);
 	}
 
 	public Identifier getIdentifier() {
 		return new Identifier();
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
+
+	public boolean useOreDict() {
+		return FuzzyUtil.INSTANCE.get(fuzzyFlags, FuzzyFlag.USE_ORE_DICT);
+	}
+
+	public boolean useOreCategory() {
+		return FuzzyUtil.INSTANCE.get(fuzzyFlags, FuzzyFlag.USE_ORE_CATEGORY);
+	}
+
+	public boolean ignoreDamage() {
+		return FuzzyUtil.INSTANCE.get(fuzzyFlags, FuzzyFlag.IGNORE_DAMAGE);
+	}
+
+	public boolean ignoreNBT() {
+		return FuzzyUtil.INSTANCE.get(fuzzyFlags, FuzzyFlag.IGNORE_NBT);
 	}
 
 	public class Identifier {
@@ -242,11 +202,6 @@ public class DictResource implements IResource {
 			}
 			return false;
 		}
-	}
-
-	@Override
-	public Object[] getTypeHolder() {
-		return ccTypeHolder;
 	}
 
 }

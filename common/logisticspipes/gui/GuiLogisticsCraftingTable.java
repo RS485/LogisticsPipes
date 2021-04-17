@@ -37,14 +37,14 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {
 				if (crafter.isFuzzy()) {
-					dummy.addFuzzyDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18, crafter.fuzzyFlags[y * 3 + x]);
+					dummy.addFuzzyDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18, crafter.inputFuzzy(y * 3 + x));
 				} else {
 					dummy.addDummySlot(y * 3 + x, 35 + x * 18, 10 + y * 18);
 				}
 			}
 		}
 		if (crafter.isFuzzy()) {
-			dummy.addFuzzyUnmodifiableSlot(0, crafter.resultInv, 125, 28, crafter.outputFuzzyFlags);
+			dummy.addFuzzyUnmodifiableSlot(0, crafter.resultInv, 125, 28, crafter.outputFuzzy());
 		} else {
 			dummy.addUnmodifiableSlot(0, crafter.resultInv, 125, 28);
 		}

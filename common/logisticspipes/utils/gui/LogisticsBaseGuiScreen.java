@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -11,7 +11,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -52,12 +51,14 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.DummyContainerSlotClick;
 import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.DictResource;
 import logisticspipes.utils.ChainAddArrayList;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.property.IBitSet;
+import network.rs485.logisticspipes.util.FuzzyFlag;
+import network.rs485.logisticspipes.util.FuzzyUtil;
 
 @ModDependentInterface(modId = { LPConstants.neiModID }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
 public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler, IGuiAccess {
@@ -258,23 +259,27 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	private void onRenderSlot(Slot slot) {
 		if (slot instanceof IFuzzySlot) {
-			final DictResource resource = ((IFuzzySlot) slot).getFuzzyFlags();
+			final IBitSet set = ((IFuzzySlot) slot).getFuzzyFlags();
 			int x1 = slot.xPos;
 			int y1 = slot.yPos;
 			GL11.glDisable(GL11.GL_LIGHTING);
-			if (resource.use_od) {
+			final boolean useOreDict = FuzzyUtil.INSTANCE.get(set, FuzzyFlag.USE_ORE_DICT);
+			if (useOreDict) {
 				Gui.drawRect(x1 + 8, y1 - 1, x1 + 17, y1, 0xFFFF4040);
 				Gui.drawRect(x1 + 16, y1, x1 + 17, y1 + 8, 0xFFFF4040);
 			}
-			if (resource.ignore_dmg) {
+			final boolean ignoreDamage = FuzzyUtil.INSTANCE.get(set, FuzzyFlag.IGNORE_DAMAGE);
+			if (ignoreDamage) {
 				Gui.drawRect(x1 - 1, y1 - 1, x1 + 8, y1, 0xFF40FF40);
 				Gui.drawRect(x1 - 1, y1, x1, y1 + 8, 0xFF40FF40);
 			}
-			if (resource.ignore_nbt) {
+			final boolean ignoreNBT = FuzzyUtil.INSTANCE.get(set, FuzzyFlag.IGNORE_NBT);
+			if (ignoreNBT) {
 				Gui.drawRect(x1 - 1, y1 + 16, x1 + 8, y1 + 17, 0xFF4040FF);
 				Gui.drawRect(x1 - 1, y1 + 8, x1, y1 + 17, 0xFF4040FF);
 			}
-			if (resource.use_category) {
+			final boolean useOreCategory = FuzzyUtil.INSTANCE.get(set, FuzzyFlag.USE_ORE_CATEGORY);
+			if (useOreCategory) {
 				Gui.drawRect(x1 + 8, y1 + 16, x1 + 17, y1 + 17, 0xFF7F7F40);
 				Gui.drawRect(x1 + 16, y1 + 8, x1 + 17, y1 + 17, 0xFF7F7F40);
 			}
@@ -301,8 +306,6 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 						fuzzySlot = null;
 					}
 				}
-				//int posX = -60;
-				//int posY = 0;
 				final int posX = slot.xPos + guiLeft;
 				final int posY = slot.yPos + 17 + guiTop;
 				renderAtTheEnd.add(() -> {
@@ -311,10 +314,14 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 61, posY + 47, zLevel, true, true, true, true, true);
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 					final String PREFIX = "gui.crafting.";
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 5, posY + 5, (!resource.use_od ? 0x404040 : 0xFF4040));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 5, posY + 15, (!resource.ignore_dmg ? 0x404040 : 0x40FF40));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 5, posY + 25, (!resource.ignore_nbt ? 0x404040 : 0x4040FF));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 5, posY + 35, (!resource.use_category ? 0x404040 : 0x7F7F40));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 5, posY + 5,
+							(useOreDict ? 0xFF4040 : 0x404040));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 5, posY + 15,
+							(ignoreDamage ? 0x40FF40 : 0x404040));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 5, posY + 25,
+							(ignoreNBT ? 0x4040FF : 0x404040));
+					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 5, posY + 35,
+							(useOreCategory ? 0x7F7F40 : 0x404040));
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 				});
@@ -448,22 +455,28 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					sel = (par2 - posY - 4) / 10;
 				}
 			}
-			DictResource resource = fuzzySlot.getFuzzyFlags();
-			BitSet set = resource.getBitSet();
-			if (sel == 0) {
-				resource.use_od = !resource.use_od;
+			IBitSet set = fuzzySlot.getFuzzyFlags();
+			FuzzyFlag flag = null;
+			switch (sel) {
+				case 0:
+					flag = FuzzyFlag.USE_ORE_DICT;
+					break;
+				case 1:
+					flag = FuzzyFlag.IGNORE_DAMAGE;
+					break;
+				case 2:
+					flag = FuzzyFlag.IGNORE_NBT;
+					break;
+				case 3:
+					flag = FuzzyFlag.USE_ORE_CATEGORY;
+					break;
 			}
-			if (sel == 1) {
-				resource.ignore_dmg = !resource.ignore_dmg;
-			}
-			if (sel == 2) {
-				resource.ignore_nbt = !resource.ignore_nbt;
-			}
-			if (sel == 3) {
-				resource.use_category = !resource.use_category;
-			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(FuzzySlotSettingsPacket.class).setSlotNumber(fuzzySlot.getSlotId()).setFlags(resource.getBitSet()));
-			resource.loadFromBitSet(set); // Reset to wait for server
+			if (flag == null) return;
+			set.flip(flag.getBit());
+			MainProxy.sendPacketToServer(
+					PacketHandler.getPacket(FuzzySlotSettingsPacket.class)
+							.setSlotNumber(fuzzySlot.getSlotId())
+							.setFlags(set.copyValue()));
 			return;
 		}
 		boolean handledButton = false;

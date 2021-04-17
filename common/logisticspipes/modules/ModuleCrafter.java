@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,9 @@ import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.PropertyModule;
+import network.rs485.logisticspipes.property.BitSetProperty;
 import network.rs485.logisticspipes.property.BooleanProperty;
+import network.rs485.logisticspipes.property.IBitSet;
 import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.IntegerProperty;
 import network.rs485.logisticspipes.property.InventoryProperty;
@@ -120,6 +123,7 @@ import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.UUIDListProperty;
 import network.rs485.logisticspipes.property.UUIDProperty;
 import network.rs485.logisticspipes.property.UUIDPropertyKt;
+import network.rs485.logisticspipes.util.FuzzyUtil;
 
 public class ModuleCrafter extends PropertyModule
 		implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver, IGuiOpenControler, Gui {
@@ -137,7 +141,7 @@ public class ModuleCrafter extends PropertyModule
 	public final IntegerProperty priority = new IntegerProperty(0, "priority");
 	public final IntListProperty liquidAmounts = new IntListProperty("FluidAmount");
 	public final BooleanProperty cleanupModeIsExclude = new BooleanProperty(true, "cleanupModeIsExclude");
-
+	public final BitSetProperty fuzzyFlags = new BitSetProperty(new BitSet(4 * (9 + 1)), "fuzzyBitSet");
 	private final List<Property<?>> properties = ImmutableList.<Property<?>>builder()
 			.add(dummyInventory)
 			.add(liquidInventory)
@@ -149,6 +153,7 @@ public class ModuleCrafter extends PropertyModule
 			.add(priority)
 			.add(liquidAmounts)
 			.add(cleanupModeIsExclude)
+			.add(fuzzyFlags)
 			.build();
 
 	// for reliable transport
@@ -156,8 +161,6 @@ public class ModuleCrafter extends PropertyModule
 	protected final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	protected final PlayerCollectionList guiWatcher = new PlayerCollectionList();
 
-	public DictResource[] fuzzyCraftingFlagArray = new DictResource[9];
-	public DictResource outputFuzzyFlags = new DictResource(null, null);
 	public ClientSideSatelliteNames clientSideSatelliteNames = new ClientSideSatelliteNames();
 	protected SinkReply _sinkReply;
 	@Nullable
@@ -169,9 +172,6 @@ public class ModuleCrafter extends PropertyModule
 	public ModuleCrafter() {
 		advancedSatelliteUUIDList.ensureSize(9);
 		liquidSatelliteUUIDList.ensureSize(ItemUpgrade.MAX_LIQUID_CRAFTER);
-		for (int i = 0; i < fuzzyCraftingFlagArray.length; i++) {
-			fuzzyCraftingFlagArray[i] = new DictResource(null, null);
-		}
 	}
 
 	public static String getName() {
@@ -236,10 +236,7 @@ public class ModuleCrafter extends PropertyModule
 		final ISlotUpgradeManager upgradeManager = Objects.requireNonNull(getUpgradeManager());
 		final ItemStack finalStack = stack;
 		final Integer count = AdjacentUtilKt.sneakyInventoryUtils(service.getAvailableAdjacent(), upgradeManager)
-				.stream()
-				.map(invUtil -> invUtil.roomForItem(finalStack))
-				.reduce(Integer::sum)
-				.orElse(0);
+				.stream().map(invUtil -> invUtil.roomForItem(finalStack)).reduce(Integer::sum).orElse(0);
 
 		service.getCacheHolder().setCache(CacheTypes.Inventory, key, count);
 		return count - onRoute;
@@ -354,7 +351,8 @@ public class ModuleCrafter extends PropertyModule
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {}
+	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
+	}
 
 	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
@@ -431,8 +429,8 @@ public class ModuleCrafter extends PropertyModule
 		if (remaining < 1) {
 			return;
 		}
-		if (getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
-			DictResource dict = new DictResource(getCraftedItem(), null).loadFromBitSet(outputFuzzyFlags.getBitSet());
+		if (getUpgradeManager().isFuzzyUpgrade() && outputFuzzy().nextSetBit(0) != -1) {
+			DictResource dict = new DictResource(getCraftedItem(), null).loadFromBitSet(outputFuzzy().copyValue());
 			LogisticsExtraDictPromise promise = new LogisticsExtraDictPromise(dict,
 					Math.min(remaining, tree.getMissingAmount()), this, true);
 			tree.addPromise(promise);
@@ -458,8 +456,8 @@ public class ModuleCrafter extends PropertyModule
 		}
 		if (promise instanceof LogisticsDictPromise) {
 			service.spawnParticle(Particles.WhiteParticle, 2);
-			return service.getItemOrderManager().addOrder(((LogisticsDictPromise) promise)
-					.getResource(), destination, ResourceType.CRAFTING, info);
+			return service.getItemOrderManager()
+					.addOrder(((LogisticsDictPromise) promise).getResource(), destination, ResourceType.CRAFTING, info);
 		}
 		service.spawnParticle(Particles.WhiteParticle, 2);
 		return service.getItemOrderManager()
@@ -468,7 +466,8 @@ public class ModuleCrafter extends PropertyModule
 	}
 
 	@Override
-	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter) {}
+	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter) {
+	}
 
 	@Override
 	@Nonnull
@@ -513,11 +512,11 @@ public class ModuleCrafter extends PropertyModule
 			return null;
 		}
 		IReqCraftingTemplate template = null;
-		if (getUpgradeManager().isFuzzyUpgrade() && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+		if (getUpgradeManager().isFuzzyUpgrade() && outputFuzzy().nextSetBit(0) != -1) {
 			if (toCraft instanceof DictResource) {
 				for (ItemIdentifierStack craftable : stack) {
 					DictResource dict = new DictResource(craftable, null);
-					dict.loadFromBitSet(outputFuzzyFlags.getBitSet());
+					dict.loadFromBitSet(outputFuzzy().copyValue());
 					if (toCraft.matches(craftable.getItem(), IResource.MatchSettings.NORMAL) && dict
 							.matches(((DictResource) toCraft).getItem(), IResource.MatchSettings.NORMAL) && dict
 							.getBitSet().equals(((DictResource) toCraft).getBitSet())) {
@@ -571,10 +570,10 @@ public class ModuleCrafter extends PropertyModule
 				continue;
 			}
 			IResource req;
-			if (getUpgradeManager().isFuzzyUpgrade() && fuzzyCraftingFlagArray[i].getBitSet().nextSetBit(0) != -1) {
+			if (getUpgradeManager().isFuzzyUpgrade() && inputFuzzy(i).nextSetBit(0) != -1) {
 				DictResource dict;
 				req = dict = new DictResource(resourceStack, target[i]);
-				dict.loadFromBitSet(fuzzyCraftingFlagArray[i].getBitSet());
+				dict.loadFromBitSet(inputFuzzy(i).copyValue());
 			} else {
 				req = new ItemResource(resourceStack, target[i]);
 			}
@@ -711,24 +710,19 @@ public class ModuleCrafter extends PropertyModule
 			}
 		}
 
+		// FIXME: remove after 1.12
 		if (tag.hasKey("fuzzyFlags")) {
 			NBTTagList lst = tag.getTagList("fuzzyFlags", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < 9; i++) {
-				NBTTagCompound comp = lst.getCompoundTagAt(i);
-				fuzzyCraftingFlagArray[i].ignore_dmg = comp.getBoolean("ignore_dmg");
-				fuzzyCraftingFlagArray[i].ignore_nbt = comp.getBoolean("ignore_nbt");
-				fuzzyCraftingFlagArray[i].use_od = comp.getBoolean("use_od");
-				fuzzyCraftingFlagArray[i].use_category = comp.getBoolean("use_category");
+				FuzzyUtil.INSTANCE.readFromNBT(inputFuzzy(i), lst.getCompoundTagAt(i));
 			}
 		}
+		// FIXME: remove after 1.12
 		if (tag.hasKey("outputFuzzyFlags")) {
-			NBTTagCompound comp = tag.getCompoundTag("outputFuzzyFlags");
-			outputFuzzyFlags.ignore_dmg = comp.getBoolean("ignore_dmg");
-			outputFuzzyFlags.ignore_nbt = comp.getBoolean("ignore_nbt");
-			outputFuzzyFlags.use_od = comp.getBoolean("use_od");
-			outputFuzzyFlags.use_category = comp.getBoolean("use_category");
+			FuzzyUtil.INSTANCE.readFromNBT(outputFuzzy(), tag.getCompoundTag("outputFuzzyFlags"));
 		}
 
+		// FIXME: remove after 1.12
 		if (tag.hasKey("satelliteid")) {
 			updateSatelliteFromIDs = new UpgradeSatelliteFromIDs();
 			updateSatelliteFromIDs.satelliteId = tag.getInteger("satelliteid");
@@ -742,39 +736,23 @@ public class ModuleCrafter extends PropertyModule
 		}
 	}
 
-	@Override
-	public void writeToNBT(@Nonnull NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public IBitSet outputFuzzy() {
+		final int startIdx = 4 * 9; // after the 9th slot
+		return fuzzyFlags.get(startIdx, startIdx + 3);
+	}
 
-		NBTTagList lst = new NBTTagList();
-		for (int i = 0; i < 9; i++) {
-			NBTTagCompound comp = new NBTTagCompound();
-			comp.setBoolean("ignore_dmg", fuzzyCraftingFlagArray[i].ignore_dmg);
-			comp.setBoolean("ignore_nbt", fuzzyCraftingFlagArray[i].ignore_nbt);
-			comp.setBoolean("use_od", fuzzyCraftingFlagArray[i].use_od);
-			comp.setBoolean("use_category", fuzzyCraftingFlagArray[i].use_category);
-			lst.appendTag(comp);
-		}
-		tag.setTag("fuzzyFlags", lst);
-		{
-			NBTTagCompound comp = new NBTTagCompound();
-			comp.setBoolean("ignore_dmg", outputFuzzyFlags.ignore_dmg);
-			comp.setBoolean("ignore_nbt", outputFuzzyFlags.ignore_nbt);
-			comp.setBoolean("use_od", outputFuzzyFlags.use_od);
-			comp.setBoolean("use_category", outputFuzzyFlags.use_category);
-			tag.setTag("outputFuzzyFlags", comp);
-		}
+	public IBitSet inputFuzzy(int slot) {
+		final int startIdx = 4 * slot;
+		return fuzzyFlags.get(startIdx, startIdx + 3);
 	}
 
 	public ModernPacket getCPipePacket() {
-		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class)
-				.setAmount(liquidAmounts.getArray())
+		return PacketHandler.getPacket(CraftingPipeUpdatePacket.class).setAmount(liquidAmounts.getArray())
 				.setLiquidSatelliteNameArray(getSatelliteNamesForUUIDs(liquidSatelliteUUIDList))
 				.setLiquidSatelliteName(getSatelliteNameForUUID(liquidSatelliteUUID.getValue()))
 				.setSatelliteName(getSatelliteNameForUUID(satelliteUUID.getValue()))
 				.setAdvancedSatelliteNameArray(getSatelliteNamesForUUIDs(advancedSatelliteUUIDList))
-				.setPriority(priority.getValue())
-				.setModulePos(this);
+				.setPriority(priority.getValue()).setModulePos(this);
 	}
 
 	private String getSatelliteNameForUUID(UUID uuid) {
@@ -827,8 +805,7 @@ public class ModuleCrafter extends PropertyModule
 	@Nonnull
 	@Override
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
-		return NewGuiHandler.getGui(CraftingModuleInHand.class)
-				.setAmount(liquidAmounts.getArray())
+		return NewGuiHandler.getGui(CraftingModuleInHand.class).setAmount(liquidAmounts.getArray())
 				.setCleanupExclude(cleanupModeIsExclude.getValue());
 	}
 
@@ -840,19 +817,15 @@ public class ModuleCrafter extends PropertyModule
 		} else {
 			final IPipeServiceProvider service = _service;
 			if (service == null) return;
-			service.getAvailableAdjacent().neighbors().keySet().stream()
-					.flatMap(neighbor ->
-							SimpleServiceLocator.craftingRecipeProviders.stream()
-									.filter(provider -> provider.importRecipe(neighbor.getTileEntity(), dummyInventory))
-									.map(provider1 -> new Pair<>(neighbor, provider1))
-					)
-					.findFirst()
+			service.getAvailableAdjacent().neighbors().keySet().stream().flatMap(
+					neighbor -> SimpleServiceLocator.craftingRecipeProviders.stream()
+							.filter(provider -> provider.importRecipe(neighbor.getTileEntity(), dummyInventory))
+							.map(provider1 -> new Pair<>(neighbor, provider1))).findFirst()
 					.ifPresent(neighborProviderPair -> {
 						if (neighborProviderPair.getValue2() instanceof IFuzzyRecipeProvider) {
-							((IFuzzyRecipeProvider) neighborProviderPair.getValue2()).importFuzzyFlags(
-									neighborProviderPair.getValue1().getTileEntity(), dummyInventory,
-									fuzzyCraftingFlagArray, outputFuzzyFlags
-							);
+							((IFuzzyRecipeProvider) neighborProviderPair.getValue2())
+									.importFuzzyFlags(neighborProviderPair.getValue1().getTileEntity(),
+											dummyInventory.getSlotAccess(), fuzzyFlags);
 						}
 					});
 
@@ -873,9 +846,7 @@ public class ModuleCrafter extends PropertyModule
 					.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setModulePos(this));
 		} else if (MainProxy.isServer(player.world)) {
 			MainProxy.sendPacketToPlayer(
-					PacketHandler.getPacket(CraftingPriority.class)
-							.setInteger(priority.getValue())
-							.setModulePos(this),
+					PacketHandler.getPacket(CraftingPriority.class).setInteger(priority.getValue()).setModulePos(this),
 					player);
 		}
 	}
@@ -887,9 +858,7 @@ public class ModuleCrafter extends PropertyModule
 					PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setModulePos(this));
 		} else if (MainProxy.isServer(player.world)) {
 			MainProxy.sendPacketToPlayer(
-					PacketHandler.getPacket(CraftingPriority.class)
-							.setInteger(priority.getValue())
-							.setModulePos(this),
+					PacketHandler.getPacket(CraftingPriority.class).setInteger(priority.getValue()).setModulePos(this),
 					player);
 		}
 	}
@@ -909,20 +878,15 @@ public class ModuleCrafter extends PropertyModule
 	public void changeFluidAmount(int change, int slot, EntityPlayer player) {
 		if (MainProxy.isClient(player.world)) {
 			MainProxy.sendPacketToServer(
-					PacketHandler.getPacket(FluidCraftingAmount.class)
-							.setInteger2(slot)
-							.setInteger(change)
+					PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(change)
 							.setModulePos(this));
 		} else {
 			liquidAmounts.increase(slot, change);
 			if (liquidAmounts.get(slot) <= 0) {
 				liquidAmounts.set(slot, 0);
 			}
-			MainProxy.sendPacketToPlayer(
-					PacketHandler.getPacket(FluidCraftingAmount.class)
-							.setInteger2(slot)
-							.setInteger(liquidAmounts.get(slot))
-							.setModulePos(this), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot)
+					.setInteger(liquidAmounts.get(slot)).setModulePos(this), player);
 		}
 	}
 
@@ -981,22 +945,19 @@ public class ModuleCrafter extends PropertyModule
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		final boolean guiOpened = service.getAvailableAdjacent().neighbors().keySet().stream()
-				.anyMatch(neighbor -> {
-					if (neighbor.canHandleItems() || SimpleServiceLocator.craftingRecipeProviders.stream()
-							.anyMatch(provider -> provider.canOpenGui(neighbor.getTileEntity()))) {
-						final BlockPos pos = neighbor.getTileEntity().getPos();
-						IBlockState blockState = worldProvider.getWorld().getBlockState(pos);
-						return !blockState.getBlock().isAir(blockState, worldProvider.getWorld(), pos) &&
-								blockState.getBlock().onBlockActivated(
-										worldProvider.getWorld(), pos,
-										neighbor.getTileEntity().getWorld().getBlockState(pos), player,
-										EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0
-								);
-					} else {
-						return false;
-					}
-				});
+		final boolean guiOpened = service.getAvailableAdjacent().neighbors().keySet().stream().anyMatch(neighbor -> {
+			if (neighbor.canHandleItems() || SimpleServiceLocator.craftingRecipeProviders.stream()
+					.anyMatch(provider -> provider.canOpenGui(neighbor.getTileEntity()))) {
+				final BlockPos pos = neighbor.getTileEntity().getPos();
+				IBlockState blockState = worldProvider.getWorld().getBlockState(pos);
+				return !blockState.getBlock().isAir(blockState, worldProvider.getWorld(), pos) && blockState.getBlock()
+						.onBlockActivated(worldProvider.getWorld(), pos,
+								neighbor.getTileEntity().getWorld().getBlockState(pos), player, EnumHand.MAIN_HAND,
+								EnumFacing.UP, 0, 0, 0);
+			} else {
+				return false;
+			}
+		});
 		if (!guiOpened) {
 			LogisticsPipes.log.warn("Ignored open attached GUI request at " + player.world + " @ " + getBlockPos());
 		}
@@ -1036,9 +997,7 @@ public class ModuleCrafter extends PropertyModule
 			if (upgradeManager.getCrafterCleanup() > 0) {
 				adjacentInventories.stream()
 						.map(neighbor -> extractFiltered(neighbor, cleanupInventory, cleanupModeIsExclude.getValue(),
-								upgradeManager.getCrafterCleanup() * 3))
-						.filter(stack -> !stack.isEmpty())
-						.findFirst()
+								upgradeManager.getCrafterCleanup() * 3)).filter(stack -> !stack.isEmpty()).findFirst()
 						.ifPresent(extracted -> {
 							service.queueRoutedItem(
 									SimpleServiceLocator.routedItemHelper.createNewTravelItem(extracted),
@@ -1065,10 +1024,9 @@ public class ModuleCrafter extends PropertyModule
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && (service
-				.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
-			LogisticsItemOrder nextOrder = service
-					.getItemOrderManager()
+		while (itemsleft > 0 && stacksleft > 0 && (service.getItemOrderManager()
+				.hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
+			LogisticsItemOrder nextOrder = service.getItemOrderManager()
 					.peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
 			int maxtosend = Math.min(itemsleft, nextOrder.getResource().stack.getStackSize());
 			maxtosend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxtosend);
@@ -1097,8 +1055,8 @@ public class ModuleCrafter extends PropertyModule
 					if (service.getItemOrderManager().hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA)) {
 						do {
 							service.getItemOrderManager().deferSend();
-							nextOrder = service
-									.getItemOrderManager().peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA);
+							nextOrder = service.getItemOrderManager()
+									.peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA);
 						} while (isExtractedMismatch(nextOrder, extractedID) && startOrder != nextOrder);
 					}
 					if (startOrder == nextOrder) {
@@ -1127,8 +1085,7 @@ public class ModuleCrafter extends PropertyModule
 					SinkReply reply = LogisticsManager
 							.canSink(stackToSend, nextOrder.getDestination().getRouter(), null, true,
 									ItemIdentifier.get(stackToSend), null, true, false);
-					boolean defersend = (reply == null
-							|| reply.bufferMode != BufferMode.NONE
+					boolean defersend = (reply == null || reply.bufferMode != BufferMode.NONE
 							|| reply.maxNumberOfItems < 1);
 					IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stackToSend);
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
@@ -1277,13 +1234,13 @@ public class ModuleCrafter extends PropertyModule
 
 	@Nonnull
 	private ItemStack extractFromLogisticsCraftingTable(
-			NeighborTileEntity<LogisticsCraftingTableTileEntity> adjacentCraftingTable,
-			IResource wanteditem, int count) {
+			NeighborTileEntity<LogisticsCraftingTableTileEntity> adjacentCraftingTable, IResource wanteditem,
+			int count) {
 		final IPipeServiceProvider service = _service;
 		if (service == null) return ItemStack.EMPTY;
 		ItemStack extracted = extractFromInventory(
-				Objects.requireNonNull(LPNeighborTileEntityKt.getInventoryUtil(adjacentCraftingTable)),
-				wanteditem, count);
+				Objects.requireNonNull(LPNeighborTileEntityKt.getInventoryUtil(adjacentCraftingTable)), wanteditem,
+				count);
 		if (!extracted.isEmpty()) {
 			return extracted;
 		}

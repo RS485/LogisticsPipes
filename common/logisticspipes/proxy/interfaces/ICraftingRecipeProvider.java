@@ -9,4 +9,5 @@ public interface ICraftingRecipeProvider {
 	boolean canOpenGui(TileEntity tile);
 
 	boolean importRecipe(TileEntity tile, IItemIdentifierInventory inventory);
+
 }

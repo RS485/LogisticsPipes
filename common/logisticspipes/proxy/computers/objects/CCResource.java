@@ -71,22 +71,22 @@ public class CCResource implements ILPCCTypeDefinition {
 
 		@CCCommand(description = "Returns whether the OreDictionary should be used to compare this resource")
 		public Boolean isUseOreDictionarySet() {
-			return resource.use_od;
+			return resource.useOreDict();
 		}
 
 		@CCCommand(description = "Returns whether the OreDictionary's entry category should be used to compare this resource")
 		public Boolean isUseOreDictionaryCategorySet() {
-			return resource.use_category;
+			return resource.useOreCategory();
 		}
 
 		@CCCommand(description = "Returns whether the damage should be ignored to compare this resource")
 		public Boolean isIgnoreDamageSet() {
-			return resource.ignore_dmg;
+			return resource.ignoreDamage();
 		}
 
 		@CCCommand(description = "Returns whether the NBT data should be ignored to compare this resource")
 		public Boolean isIgnoreNBTSet() {
-			return resource.ignore_nbt;
+			return resource.ignoreNBT();
 		}
 	}
 
@@ -142,7 +142,7 @@ public class CCResource implements ILPCCTypeDefinition {
 				return ((ItemResource) resource).getItem();
 			}
 			if (resource instanceof DictResource) {
-				return ((ItemResource) resource).getItem();
+				return ((DictResource) resource).getItem();
 			}
 			return null;
 		}

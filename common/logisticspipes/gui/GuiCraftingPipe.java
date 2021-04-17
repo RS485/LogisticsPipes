@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -94,7 +94,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		// Input slots
 		for (int l = 0; l < 9; l++) {
 			if (isFuzzy) {
-				dummy.addFuzzyDummySlot(l, 8 + l * 18, 18, craftingModule.fuzzyCraftingFlagArray[l]);
+				dummy.addFuzzyDummySlot(l, 8 + l * 18, 18, craftingModule.inputFuzzy(l));
 			} else {
 				dummy.addDummySlot(l, 8 + l * 18, 18);
 			}
@@ -104,7 +104,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		int yPosOutput = 55;
 		if (isAdvancedSat) yPosOutput = 105;
 		if (isFuzzy) {
-			dummy.addFuzzyDummySlot(9, 85, yPosOutput, craftingModule.outputFuzzyFlags);
+			dummy.addFuzzyDummySlot(9, 85, yPosOutput, craftingModule.outputFuzzy());
 		} else {
 			dummy.addDummySlot(9, 85, yPosOutput);
 		}

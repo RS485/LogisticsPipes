@@ -3,20 +3,20 @@ package logisticspipes.utils.gui;
 import net.minecraft.inventory.IInventory;
 
 import logisticspipes.interfaces.IFuzzySlot;
-import logisticspipes.request.resources.DictResource;
+import network.rs485.logisticspipes.property.IBitSet;
 
 public class FuzzyUnmodifiableSlot extends UnmodifiableSlot implements IFuzzySlot {
 
-	private DictResource dictResource;
+	private IBitSet fuzzyFlags;
 
-	public FuzzyUnmodifiableSlot(IInventory par1iInventory, int par2, int par3, int par4, DictResource dictResource) {
+	public FuzzyUnmodifiableSlot(IInventory par1iInventory, int par2, int par3, int par4, IBitSet fuzzyFlags) {
 		super(par1iInventory, par2, par3, par4);
-		this.dictResource = dictResource;
+		this.fuzzyFlags = fuzzyFlags;
 	}
 
 	@Override
-	public DictResource getFuzzyFlags() {
-		return dictResource;
+	public IBitSet getFuzzyFlags() {
+		return fuzzyFlags;
 	}
 
 	@Override

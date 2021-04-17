@@ -71,11 +71,11 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots
 		for (int l = 0; l < 9; l++) {
-			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, module.fuzzyCraftingFlagArray[l]);
+			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, module.inputFuzzy(l));
 		}
 
 		//Output slot
-		dummy.addFuzzyDummySlot(9, 90, 64, module.outputFuzzyFlags);
+		dummy.addFuzzyDummySlot(9, 90, 64, module.outputFuzzy());
 
 		for (int i = 0; i < liquidCrafter; i++) {
 			int liquidLeft = -(i * 40) - 40;

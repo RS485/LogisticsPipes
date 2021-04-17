@@ -48,9 +48,11 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
@@ -187,6 +189,7 @@ import logisticspipes.utils.StaticResolverUtil;
 import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.grow.ServerTickDispatcher;
+import network.rs485.logisticspipes.compat.TheOneProbeIntegration;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.ServerConfigurationManager;
 import network.rs485.logisticspipes.gui.LPFontRenderer;
@@ -406,6 +409,11 @@ public class LogisticsPipes {
 
 		SimpleServiceLocator.setPipeInformationManager(new PipeInformationManager());
 		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
+
+		if (Loader.isModLoaded(LPConstants.theOneProbeModID)) {
+			FMLInterModComms.sendFunctionMessage(LPConstants.theOneProbeModID, "getTheOneProbe",
+					TheOneProbeIntegration.class.getName());
+		}
 
 		MainProxy.proxy.initModelLoader();
 	}

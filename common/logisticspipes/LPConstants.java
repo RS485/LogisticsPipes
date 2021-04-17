@@ -31,5 +31,6 @@ public class LPConstants {
 	public static final String mcmpModID = "mcmultipart";
 	public static final String appliedenergisticsModID = "appliedenergistics2";
 	public static final String storagedrawersModID = "storagedrawers";
+	public static final String theOneProbeModID = "theoneprobe";
 
 }

@@ -190,6 +190,25 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Nullable
+	public LogisticsModule getModule(
+			@Nullable LogisticsModule currentModule,
+			@Nullable IWorldProvider world,
+			@Nullable IPipeServiceProvider service
+	) {
+		if (currentModule != null) {
+			if (moduleType.getILogisticsModuleClass().equals(currentModule.getClass())) {
+				return currentModule;
+			}
+		}
+		LogisticsModule newmodule = moduleType.getILogisticsModule();
+		if (newmodule == null) {
+			return null;
+		}
+		newmodule.registerHandler(world, service);
+		return newmodule;
+	}
+
+	@Nullable
 	public LogisticsModule getModuleForItem(
 			@Nonnull ItemStack itemStack,
 			@Nullable LogisticsModule currentModule,
@@ -203,17 +222,7 @@ public class ItemModule extends LogisticsItem {
 		if (itemStack.getItem() != this) {
 			return null;
 		}
-		if (currentModule != null) {
-			if (moduleType.getILogisticsModuleClass().equals(currentModule.getClass())) {
-				return currentModule;
-			}
-		}
-		LogisticsModule newmodule = moduleType.getILogisticsModule();
-		if (newmodule == null) {
-			return null;
-		}
-		newmodule.registerHandler(world, service);
-		return newmodule;
+		return getModule(currentModule, world, service);
 	}
 
 	@Override

@@ -48,7 +48,6 @@ import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.property.BitSetProperty;
 import network.rs485.logisticspipes.property.BooleanProperty;
@@ -56,7 +55,7 @@ import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "ItemSink Module")
-public class ModuleItemSink extends PropertyModule
+public class ModuleItemSink extends LogisticsModule
 		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
@@ -86,6 +85,12 @@ public class ModuleItemSink extends PropertyModule
 
 	public static String getName() {
 		return "item_sink";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@Nonnull

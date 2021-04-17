@@ -38,21 +38,14 @@
 package network.rs485.logisticspipes.property
 
 import net.minecraft.nbt.NBTTagCompound
-import java.util.function.Consumer
 
 typealias ObserverCallback<V> = (Property<V>) -> Unit
 
 fun Collection<Property<*>>.addObserver(callback: ObserverCallback<*>) =
     forEach { prop -> prop.addObserver(callback) }
 
-fun Collection<Property<*>>.addObserver(consumer: Consumer<Property<*>>) =
-    forEach { prop -> prop.addObserver(consumer::accept) }
-
 fun Collection<Property<*>>.removeObserver(callback: ObserverCallback<*>) =
     forEach { prop -> prop.propertyObservers.remove(callback) }
-
-fun Collection<Property<*>>.removeObserver(consumer: Consumer<Property<*>>) =
-    forEach { prop -> prop.propertyObservers.remove(consumer::accept) }
 
 fun Collection<Property<*>>.readFromNBT(tag: NBTTagCompound) = forEach { prop -> prop.readFromNBT(tag) }
 

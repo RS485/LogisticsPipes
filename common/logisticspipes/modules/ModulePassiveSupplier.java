@@ -36,12 +36,11 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
-public class ModulePassiveSupplier extends PropertyModule
+public class ModulePassiveSupplier extends LogisticsModule
 		implements Gui, SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
@@ -58,6 +57,12 @@ public class ModulePassiveSupplier extends PropertyModule
 
 	public static String getName() {
 		return "passive_supplier";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@Nonnull

@@ -14,12 +14,17 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.Property;
 
-public class ModuleSatellite extends PropertyModule {
+public class ModuleSatellite extends LogisticsModule {
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		throw new RuntimeException("Cannot get LP name for " + this);
+	}
 
 	@NotNull
 	@Override

@@ -8,23 +8,23 @@ import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolve;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.PropertyHolder;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
 @StaticResolve
-public class PropertyModuleUpdate extends ModuleCoordinatesPacket {
+public class ModulePropertiesUpdate extends ModuleCoordinatesPacket {
 
 	@Nonnull
 	public NBTTagCompound tag = new NBTTagCompound();
 
-	public PropertyModuleUpdate(int id) {
+	public ModulePropertiesUpdate(int id) {
 		super(id);
 	}
 
@@ -37,17 +37,17 @@ public class PropertyModuleUpdate extends ModuleCoordinatesPacket {
 	@Override
 	public void readData(LPDataInput input) {
 		super.readData(input);
-		tag = Objects.requireNonNull(input.readNBTTagCompound(), "read null NBT in PropertyModuleUpdate");
+		tag = Objects.requireNonNull(input.readNBTTagCompound(), "read null NBT in ModulePropertiesUpdate");
 	}
 
 	@Override
 	public ModernPacket template() {
-		return new PropertyModuleUpdate(getId());
+		return new ModulePropertiesUpdate(getId());
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final PropertyModule module = this.getLogisticsModule(player, PropertyModule.class);
+		final LogisticsModule module = this.getLogisticsModule(player, LogisticsModule.class);
 		if (module == null) {
 			return;
 		}
@@ -70,8 +70,8 @@ public class PropertyModuleUpdate extends ModuleCoordinatesPacket {
 
 	@Nonnull
 	public static ModuleCoordinatesPacket fromPropertyHolder(PropertyHolder holder) {
-		final PropertyModuleUpdate packet = PacketHandler.getPacket(PropertyModuleUpdate.class);
-		PropertyModule.DefaultImpls.writeToNBT(holder, packet.tag);
+		final ModulePropertiesUpdate packet = PacketHandler.getPacket(ModulePropertiesUpdate.class);
+		holder.writeToNBT(packet.tag);
 		return packet;
 	}
 

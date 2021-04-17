@@ -36,13 +36,12 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "EnchantmentSink Module MK2")
-public class ModuleEnchantmentSinkMK2 extends PropertyModule
+public class ModuleEnchantmentSinkMK2 extends LogisticsModule
 		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
@@ -59,6 +58,12 @@ public class ModuleEnchantmentSinkMK2 extends PropertyModule
 
 	public static String getName() {
 		return "enchantment_sink_mk2";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@Nonnull

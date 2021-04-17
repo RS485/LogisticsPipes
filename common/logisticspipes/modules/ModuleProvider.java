@@ -69,7 +69,6 @@ import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.inventory.ProviderMode;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.module.SneakyDirection;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.EnumProperty;
@@ -78,7 +77,7 @@ import network.rs485.logisticspipes.property.NullableEnumProperty;
 import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "Provider Module")
-public class ModuleProvider extends PropertyModule implements SneakyDirection, ILegacyActiveModule,
+public class ModuleProvider extends LogisticsModule implements SneakyDirection, ILegacyActiveModule,
 		IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, Gui {
 
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
@@ -106,6 +105,12 @@ public class ModuleProvider extends PropertyModule implements SneakyDirection, I
 
 	public static String getName() {
 		return "provider";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	/**

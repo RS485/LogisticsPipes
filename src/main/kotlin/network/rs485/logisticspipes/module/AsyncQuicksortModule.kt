@@ -94,6 +94,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     override val everyNthTick: Int
         get() = if (stalled) STALLED_DELAY else NORMAL_DELAY
 
+    override fun getLPName(): String = name
+
     override fun tickSetup(): Pair<Int, ItemStack>? {
         val serverRouter = this._service?.router as? ServerRouter ?: return null
         val inventory = _service?.availableInventories()?.firstOrNull() ?: return null

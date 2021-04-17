@@ -36,13 +36,12 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "Terminus Module")
-public class ModuleTerminus extends PropertyModule
+public class ModuleTerminus extends LogisticsModule
 		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
@@ -60,6 +59,10 @@ public class ModuleTerminus extends PropertyModule
 	public static String getName() {
 		return "terminus";
 	}
+
+	@Nonnull
+	@Override
+	public String getLPName() { return getName(); }
 
 	@Nonnull
 	@Override

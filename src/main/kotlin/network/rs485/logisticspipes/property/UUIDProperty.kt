@@ -77,7 +77,7 @@ class UUIDListProperty : ListProperty<UUID> {
         this.tagKey = tagKey
     }
 
-    override fun defaultValue(): UUID = zero
+    override fun defaultValue(idx: Int): UUID = zero
 
     override fun readSingleFromNBT(tag: NBTTagCompound, key: String): UUID = UUID.fromString(tag.getString(key))
 

@@ -12,15 +12,20 @@ import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.Property;
 
-public class ModuleEnchantmentSink extends PropertyModule {
+public class ModuleEnchantmentSink extends LogisticsModule {
 
 	private SinkReply _sinkReply;
 
 	public static String getName() {
 		return "enchantment_sink";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@NotNull

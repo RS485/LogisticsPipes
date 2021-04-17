@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.gui
 
 import logisticspipes.modules.LogisticsModule
 import logisticspipes.network.PacketHandler
-import logisticspipes.network.packets.module.PropertyModuleUpdate
+import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
 import net.minecraft.entity.player.EntityPlayer
 import network.rs485.grow.CoroutineScopes.scheduleServerTask
@@ -48,7 +48,6 @@ import network.rs485.logisticspipes.property.addObserver
 import network.rs485.logisticspipes.property.removeObserver
 import network.rs485.logisticspipes.property.writeToNBT
 import java.lang.ref.WeakReference
-import java.util.*
 import java.util.function.Consumer
 
 class PropertyUpdater(
@@ -58,7 +57,7 @@ class PropertyUpdater(
 ) : Consumer<Property<*>> {
 
     private val weakPlayer: WeakReference<EntityPlayer> = WeakReference(player)
-    private val properties: List<Property<*>> = propertiesIn.also { it.addObserver(this) }
+    private val properties: List<Property<*>> = propertiesIn.also { it.addObserver(this::accept) }
     private val changedProperties = HashSet<Property<*>>()
     private val module: LogisticsModule = moduleIn
     private var shouldUpdate = false
@@ -74,7 +73,7 @@ class PropertyUpdater(
     private fun sendPropertyUpdate() {
         if (shouldUpdate && !weakPlayer.isEnqueued) {
             val player = weakPlayer.get() ?: return
-            val packet = PacketHandler.getPacket(PropertyModuleUpdate::class.java)
+            val packet = PacketHandler.getPacket(ModulePropertiesUpdate::class.java)
             changedProperties.writeToNBT(packet.tag)
             changedProperties.clear()
             MainProxy.sendPacketToPlayer(packet.setModulePos(module), player)
@@ -86,7 +85,7 @@ class PropertyUpdater(
         val shouldBeRemoved = (weakPlayer.isEnqueued
                 || weakPlayer.get() == null || weakPlayer.get() === entityPlayer)
         if (shouldBeRemoved) {
-            properties.removeObserver(this)
+            properties.removeObserver(this::accept)
             shouldUpdate = false
         }
         return shouldBeRemoved

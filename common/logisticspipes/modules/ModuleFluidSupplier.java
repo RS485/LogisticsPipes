@@ -8,6 +8,8 @@ import javax.annotation.Nonnull;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import org.jetbrains.annotations.Contract;
+
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.network.NewGuiHandler;
@@ -21,16 +23,21 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
-public class ModuleFluidSupplier extends PropertyModule implements IClientInformationProvider, Gui {
+public class ModuleFluidSupplier extends LogisticsModule implements IClientInformationProvider, Gui {
 
 	private final InventoryProperty filterInventory = new InventoryProperty(
 			new ItemIdentifierInventory(9, "Requested liquids", 1), "");
 
 	private SinkReply _sinkReply;
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		throw new RuntimeException("Cannot get LP name for " + this);
+	}
 
 	@Nonnull
 	@Override

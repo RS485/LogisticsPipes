@@ -137,7 +137,7 @@ public class LogisticsEventListener {
 						.filter(adjacent -> ((PipeLogisticsChassis) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe).getPointedOrientation()
 								== adjacent.getOurDirection())
 						.map(adjacent -> (PipeLogisticsChassis) ((LogisticsTileGenericPipe) adjacent.getTileEntity()).pipe)
-						.flatMap(chassis -> Arrays.stream(chassis.getModules().getModules()))
+						.flatMap(chassis -> chassis.getModules().getModules())
 						.filter(logisticsModule -> logisticsModule instanceof AsyncQuicksortModule)
 						.map(logisticsModule -> new WeakReference<>((AsyncQuicksortModule) logisticsModule))
 						.collect(Collectors.toList());

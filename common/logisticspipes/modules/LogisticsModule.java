@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -9,8 +10,10 @@ import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import kotlin.Unit;
 import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
@@ -19,6 +22,7 @@ import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ISaveState;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
@@ -27,28 +31,53 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
+import network.rs485.logisticspipes.property.Property;
+import network.rs485.logisticspipes.property.PropertyHolder;
+import network.rs485.logisticspipes.property.UtilKt;
 
 @CCType(name = "LogisticsModule")
-public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
+public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder, PropertyHolder {
 
 	private final Object[] ccTypeHolder = new Object[1];
 	@Nullable
 	protected IWorldProvider _world;
 	@Nullable
 	protected IPipeServiceProvider _service;
+	protected ModulePositionType slot;
+	protected int positionInt;
 
 	/**
 	 * Registers the Inventory and ItemSender to the module
+	 *
 	 * @param world   that the module is in.
 	 * @param service Inventory access, power and utility functions provided by the pipe.
 	 */
 	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
 		_world = world;
 		_service = service;
+		if (service != null) {
+			final IBlockAccess blockAccess = world == null ? null : world.getWorld();
+			MainProxy.runOnServer(blockAccess, () -> () ->
+					UtilKt.addObserver(getProperties(), (prop) -> {
+						_service.markTileDirty();
+						return Unit.INSTANCE;
+					})
+			);
+		}
 	}
 
-	protected ModulePositionType slot;
-	protected int positionInt;
+	/**
+	 * Returns the name this module is registered in LP with, as used in
+	 * {@link logisticspipes.items.ItemModule#registerModule} and saved in {@link logisticspipes.LPItems#modules}.
+	 */
+	@Nonnull
+	public abstract String getLPName();
+
+	@Nonnull
+	@Override
+	public List<Property<?>> getProperties() {
+		return Collections.emptyList();
+	}
 
 	/**
 	 * Registers the slot type the module is in
@@ -91,19 +120,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		return this.positionInt;
 	}
 
-	public enum ModulePositionType {
-		SLOT(true),
-		IN_HAND(false),
-		IN_PIPE(true);
-
-		@Getter
-		private final boolean inWorld;
-
-		ModulePositionType(boolean inWorld) {
-			this.inWorld = inWorld;
-		}
-	}
-
 	/**
 	 * Gives an sink answer on the given itemstack
 	 *
@@ -117,7 +133,8 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	 * @param forcePassive       check for passive routing only, in case this method is redirected to other sinks
 	 * @return SinkReply whether the module sinks the item or not
 	 */
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		return null;
 	}
 
@@ -137,9 +154,11 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	/**
 	 * Collects the items which this module is capable of providing or supplying
 	 * (or is otherwise interested in)
+	 *
 	 * @param itemidCollection the collection to add the interests to
 	 */
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {}
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	}
 
 	public abstract boolean interestedInAttachedInventory();
 
@@ -168,7 +187,8 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 		return new ArrayList<>(0);
 	}
 
-	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {}
+	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {
+	}
 
 	@CCCommand(description = "Returns true if the Pipe has a gui")
 	public boolean hasGui() {
@@ -182,7 +202,8 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 
 	@Nonnull
 	protected ISlotUpgradeManager getUpgradeManager() {
-		return Objects.requireNonNull(_service, "service object was null in " + toString()).getUpgradeManager(slot, positionInt);
+		return Objects.requireNonNull(_service, "service object was null in " + this)
+				.getUpgradeManager(slot, positionInt);
 	}
 
 	@Override
@@ -201,6 +222,17 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder {
 	@Override
 	public Object[] getTypeHolder() {
 		return ccTypeHolder;
+	}
+
+	public enum ModulePositionType {
+		SLOT(true), IN_HAND(false), IN_PIPE(true);
+
+		@Getter
+		private final boolean inWorld;
+
+		ModulePositionType(boolean inWorld) {
+			this.inWorld = inWorld;
+		}
 	}
 
 }

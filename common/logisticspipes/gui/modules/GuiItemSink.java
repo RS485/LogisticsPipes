@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL11;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkImportPacket;
-import logisticspipes.network.packets.module.PropertyModuleUpdate;
+import logisticspipes.network.packets.module.ModulePropertiesUpdate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -82,7 +82,7 @@ public class GuiItemSink extends ModuleBaseGui {
 		super.onGuiClosed();
 		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
 			// send update to server, when there are changed properties
-			MainProxy.sendPacketToServer(PropertyModuleUpdate.fromPropertyHolder(propertyLayer).setModulePos(module));
+			MainProxy.sendPacketToServer(ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(module));
 		}
 	}
 

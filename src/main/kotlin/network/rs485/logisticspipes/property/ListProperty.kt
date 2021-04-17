@@ -58,7 +58,7 @@ abstract class ListProperty<T>(
     fun ensureSize(size: Int, fillWith: (Int) -> T) =
         (size - list.size).takeIf { it > 0 }?.let { repeat(it) { list.add(fillWith(list.size)) } }?.alsoIChanged()
 
-    fun ensureSize(size: Int) = ensureSize(size) { defaultValue() }
+    fun ensureSize(size: Int) = ensureSize(size) { defaultValue(it) }
 
     fun replaceContent(col: Collection<T>) =
         list.takeUnless { it == col.toMutableList() }
@@ -67,7 +67,7 @@ abstract class ListProperty<T>(
 
     fun replaceContent(arr: Array<T>) = replaceContent(arr.asList())
 
-    abstract fun defaultValue(): T
+    abstract fun defaultValue(idx: Int): T
 
     override fun readFromNBT(tag: NBTTagCompound) {
         if (tag.hasKey(sizeTagKey(tagKey))) {
@@ -75,7 +75,7 @@ abstract class ListProperty<T>(
                 MutableList(tag.getInteger(sizeTagKey(tagKey))) { idx ->
                     if (tag.hasKey(itemTagKey(tagKey, idx))) {
                         readSingleFromNBT(tag, itemTagKey(tagKey, idx))
-                    } else defaultValue()
+                    } else defaultValue(idx)
                 }
             )
         }
@@ -147,7 +147,7 @@ class IntListProperty : ListProperty<Int> {
 
     fun increase(index: Int, by: Int) = set(index, get(index) + by)
 
-    override fun defaultValue(): Int = 0
+    override fun defaultValue(idx: Int): Int = 0
 
     override fun readFromNBT(tag: NBTTagCompound) {
         if (tag.hasKey(tagKey)) replaceContent(tag.getIntArray(tagKey))
@@ -177,7 +177,7 @@ class StringListProperty : ListProperty<String> {
         this.tagKey = tagKey
     }
 
-    override fun defaultValue(): String = ""
+    override fun defaultValue(idx: Int): String = ""
 
     override fun readSingleFromNBT(tag: NBTTagCompound, key: String): String = tag.getString(key)
 

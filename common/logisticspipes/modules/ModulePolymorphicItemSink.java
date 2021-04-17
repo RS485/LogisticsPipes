@@ -16,15 +16,20 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.Property;
 
-public class ModulePolymorphicItemSink extends PropertyModule {
+public class ModulePolymorphicItemSink extends LogisticsModule {
 
 	private SinkReply _sinkReply;
 
 	public static String getName() {
 		return "item_sink_polymorphic";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@NotNull

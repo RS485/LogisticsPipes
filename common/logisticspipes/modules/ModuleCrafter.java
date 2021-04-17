@@ -112,7 +112,6 @@ import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.BitSetProperty;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.IBitSet;
@@ -125,7 +124,7 @@ import network.rs485.logisticspipes.property.UUIDProperty;
 import network.rs485.logisticspipes.property.UUIDPropertyKt;
 import network.rs485.logisticspipes.util.FuzzyUtil;
 
-public class ModuleCrafter extends PropertyModule
+public class ModuleCrafter extends LogisticsModule
 		implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver, IGuiOpenControler, Gui {
 
 	public final InventoryProperty dummyInventory = new InventoryProperty(
@@ -176,6 +175,12 @@ public class ModuleCrafter extends PropertyModule
 
 	public static String getName() {
 		return "crafter";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@Nonnull
@@ -673,6 +678,7 @@ public class ModuleCrafter extends PropertyModule
 		return list;
 	}
 
+	@Nullable
 	public ItemIdentifierStack getCraftedItem() {
 		return dummyInventory.getIDStackInSlot(9);
 	}

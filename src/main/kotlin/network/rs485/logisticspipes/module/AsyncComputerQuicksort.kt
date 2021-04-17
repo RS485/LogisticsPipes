@@ -54,6 +54,12 @@ import network.rs485.logisticspipes.property.Property
 
 class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>(), Gui,
     IClientInformationProvider, IModuleWatchReciver {
+
+    companion object {
+        @JvmStatic
+        val name: String = "quick_sort_cc"
+    }
+
     private val quicksort = AsyncQuicksortModule()
     private val localModeWatchers = PlayerCollectionList()
 
@@ -93,6 +99,8 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
     init {
         TODO("Class still needs to be implemented")
     }
+
+    override fun getLPName(): String = name
 
     override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
         super.registerHandler(world, service)

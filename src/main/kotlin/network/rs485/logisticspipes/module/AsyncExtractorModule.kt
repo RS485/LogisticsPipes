@@ -87,6 +87,7 @@ class AsyncExtractorModule(
     val inverseFilter: (ItemStack) -> Boolean = { stack -> stack.isEmpty },
 ) : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection,
     IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+
     companion object {
         @JvmStatic
         val name: String = "extractor"
@@ -142,6 +143,8 @@ class AsyncExtractorModule(
             ?: CoreRoutedPipe.ItemSendMode.Normal
     private val connectedInventory: IInventoryUtil?
         get() = _service?.availableSneakyInventories(sneakyDirection)?.firstOrNull()
+
+    override fun getLPName(): String = name
 
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? =

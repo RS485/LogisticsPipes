@@ -39,11 +39,10 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.StringListProperty;
 
-public class ModuleOreDictItemSink extends PropertyModule
+public class ModuleOreDictItemSink extends LogisticsModule
 		implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, Gui {
 
 	public final StringListProperty oreList = new StringListProperty("");
@@ -60,6 +59,12 @@ public class ModuleOreDictItemSink extends PropertyModule
 
 	public static String getName() {
 		return "item_sink_oredict";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@Nonnull

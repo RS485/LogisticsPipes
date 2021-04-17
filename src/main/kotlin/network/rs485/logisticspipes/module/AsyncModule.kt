@@ -40,12 +40,13 @@ package network.rs485.logisticspipes.module
 import kotlinx.coroutines.*
 import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
+import logisticspipes.modules.LogisticsModule
 import net.minecraft.client.Minecraft
 import net.minecraft.tileentity.TileEntity
 import network.rs485.grow.CoroutineScopes
 import java.time.Duration
 
-abstract class AsyncModule<S, C> : PropertyModule() {
+abstract class AsyncModule<S, C> : LogisticsModule() {
     private var currentTick: Int = 0
     private var currentTask: Deferred<C?>? = null
     private val lock: Any = object {}

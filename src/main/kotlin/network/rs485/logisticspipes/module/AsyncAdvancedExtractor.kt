@@ -115,6 +115,8 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         }
     }
 
+    override fun getLPName(): String = name
+
     override fun registerHandler(world: IWorldProvider?, service: IPipeServiceProvider?) {
         super.registerHandler(world, service)
         extractor.registerHandler(world, service)

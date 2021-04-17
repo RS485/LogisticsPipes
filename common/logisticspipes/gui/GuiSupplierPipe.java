@@ -22,7 +22,7 @@ import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
 import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.module.PropertyModuleUpdate;
+import logisticspipes.network.packets.module.ModulePropertiesUpdate;
 import logisticspipes.network.packets.pipe.SlotFinderOpenGuiPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
@@ -88,7 +88,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
 			// send update to server, when there are changed properties
 			MainProxy.sendPacketToServer(
-					PropertyModuleUpdate.fromPropertyHolder(propertyLayer).setModulePos(supplierModule));
+					ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(supplierModule));
 		}
 	}
 

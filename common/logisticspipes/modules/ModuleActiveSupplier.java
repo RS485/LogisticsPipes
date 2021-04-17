@@ -54,14 +54,13 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.AdjacentUtilKt;
 import network.rs485.logisticspipes.module.Gui;
-import network.rs485.logisticspipes.module.PropertyModule;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.EnumProperty;
 import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
-public class ModuleActiveSupplier extends PropertyModule
+public class ModuleActiveSupplier extends LogisticsModule
 		implements IRequestItems, IRequireReliableTransport, IClientInformationProvider, IHUDModuleHandler,
 		IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler, Gui {
 
@@ -99,6 +98,12 @@ public class ModuleActiveSupplier extends PropertyModule
 
 	public static String getName() {
 		return "active_supplier";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
 	}
 
 	@NotNull

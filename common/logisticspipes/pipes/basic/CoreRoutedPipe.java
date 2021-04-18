@@ -12,18 +12,14 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -123,10 +119,7 @@ import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import network.rs485.logisticspipes.connection.Adjacent;
 import network.rs485.logisticspipes.connection.AdjacentFactory;
-import network.rs485.logisticspipes.connection.ConnectionType;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.connection.NoAdjacent;
-import network.rs485.logisticspipes.connection.SingleAdjacent;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
@@ -513,7 +506,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		}
 		sb.append('\n');
 
-		sb.append(router.toString()).append('\n');
+		sb.append(router).append('\n');
 		sb.append("---------CONNECTED TO---------------\n");
 		for (CoreRoutedPipe adj : router._adjacent.keySet()) {
 			sb.append(adj.getRouter().getSimpleID()).append('\n');
@@ -560,11 +553,11 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		sb.append(router.getSubSystemPowerProvider()).append('\n');
 		if (_orderItemManager != null) {
 			sb.append("################ORDERDUMP#################\n");
-			_orderItemManager.dump();
+			_orderItemManager.dump(sb);
 		}
 		sb.append("################END#################\n");
 		refreshConnectionAndRender(true);
-		System.out.print(sb.toString());
+		System.out.print(sb);
 		router.CreateRouteTable(Integer.MAX_VALUE);
 	}
 

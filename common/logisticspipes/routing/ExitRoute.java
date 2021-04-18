@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -183,7 +183,9 @@ public class ExitRoute implements Comparable<ExitRoute>, LPFinalSerializable {
 
 	@Override
 	public String toString() {
-		return "{" + exitOrientation.name() + "," + insertOrientation.name() + "," + distanceToDestination + "," + destinationDistanceToRoot + ", ConnectionDetails: " + connectionDetails + ", " + filters + "}";
+		return String.format("ExitRoute(exitdir=%s, insertdir=%s, distance=%s, reverse distance=%s, conn. details=%s, "
+						+ "filters=%s)", exitOrientation, insertOrientation, distanceToDestination, destinationDistanceToRoot,
+				connectionDetails, filters);
 	}
 
 	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {

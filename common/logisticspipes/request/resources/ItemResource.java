@@ -60,6 +60,17 @@ public class ItemResource implements IResource {
 	}
 
 	@Override
+	public boolean matches(IResource resource, MatchSettings settings) {
+		if (resource instanceof DictResource) {
+			return resource.matches(this, settings);
+		} else if (resource instanceof ItemResource) {
+			return matches(((ItemResource) resource).getItem(), settings)
+					&& resource.matches(getItem(), settings);
+		}
+		return false;
+	}
+
+	@Override
 	public boolean matches(ItemIdentifier itemType, MatchSettings settings) {
 		switch (settings) {
 			case NORMAL:

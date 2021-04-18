@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -99,10 +99,7 @@ public class DictCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public boolean canCraft(IResource type) {
-		if (type instanceof DictResource) {
-			return type.matches(_result.getItem(), IResource.MatchSettings.NORMAL) && _result.matches(((DictResource) type).getItem(), IResource.MatchSettings.NORMAL) && _result.getBitSet().equals(((DictResource) type).getBitSet());
-		}
-		return false;
+		return _result.matches(type, IResource.MatchSettings.NORMAL);
 	}
 
 	@Override

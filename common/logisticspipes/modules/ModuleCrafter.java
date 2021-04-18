@@ -518,16 +518,12 @@ public class ModuleCrafter extends LogisticsModule
 		}
 		IReqCraftingTemplate template = null;
 		if (getUpgradeManager().isFuzzyUpgrade() && outputFuzzy().nextSetBit(0) != -1) {
-			if (toCraft instanceof DictResource) {
-				for (ItemIdentifierStack craftable : stack) {
-					DictResource dict = new DictResource(craftable, null);
-					dict.loadFromBitSet(outputFuzzy().copyValue());
-					if (toCraft.matches(craftable.getItem(), IResource.MatchSettings.NORMAL) && dict
-							.matches(((DictResource) toCraft).getItem(), IResource.MatchSettings.NORMAL) && dict
-							.getBitSet().equals(((DictResource) toCraft).getBitSet())) {
-						template = new DictCraftingTemplate(dict, this, priority.getValue());
-						break;
-					}
+			for (ItemIdentifierStack craftable : stack) {
+				DictResource dict = new DictResource(craftable, null);
+				dict.loadFromBitSet(outputFuzzy().copyValue());
+				if (toCraft.matches(dict, IResource.MatchSettings.NORMAL)) {
+					template = new DictCraftingTemplate(dict, this, priority.getValue());
+					break;
 				}
 			}
 		} else {
@@ -547,8 +543,8 @@ public class ModuleCrafter extends LogisticsModule
 			target[i] = this;
 		}
 
-		boolean hasSatellite = isSatelliteConnected();
-		if (!hasSatellite) {
+		if (!isSatelliteConnected()) {
+			// has a satellite configured and that one is unreachable
 			return null;
 		}
 		if (!getUpgradeManager().isAdvancedSatelliteCrafter()) {

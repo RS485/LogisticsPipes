@@ -50,6 +50,18 @@ public class DictResource implements IResource {
 	}
 
 	@Override
+	public boolean matches(IResource resource, MatchSettings settings) {
+		if (resource instanceof DictResource) {
+			return matches(((DictResource) resource).getItem(), IResource.MatchSettings.NORMAL)
+					&& resource.matches(getItem(), IResource.MatchSettings.NORMAL)
+					&& getBitSet().equals(((DictResource) resource).getBitSet());
+		} else if (resource instanceof ItemResource) {
+			return matches(((ItemResource) resource).getItem(), MatchSettings.NORMAL);
+		}
+		return false;
+	}
+
+	@Override
 	public boolean matches(ItemIdentifier other, MatchSettings settings) {
 		return FuzzyUtil.INSTANCE.fuzzyMatches(FuzzyUtil.INSTANCE.getter(fuzzyFlags), stack.getItem(), other);
 	}

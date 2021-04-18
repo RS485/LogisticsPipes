@@ -852,6 +852,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Override
 	public final boolean blockActivated(EntityPlayer entityplayer) {
+		if (container == null) return super.blockActivated(entityplayer);
 		SecuritySettings settings = null;
 		if (MainProxy.isServer(entityplayer.world)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getOriginalUpgradeManager().getSecurityID());
@@ -908,8 +909,9 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		if (SimpleServiceLocator.configToolHandler.canWrench(entityplayer, entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND), container)) {
 			if (MainProxy.isServer(entityplayer.world)) {
 				if (settings == null || settings.openGui) {
-					if (getLogisticsModule() != null && getLogisticsModule() instanceof Gui) {
-						Gui.getPipeGuiProvider((Gui) getLogisticsModule()).setTilePos(container).open(entityplayer);
+					final LogisticsModule module = getLogisticsModule();
+					if (module instanceof Gui) {
+						Gui.getPipeGuiProvider((Gui) module).setTilePos(container).open(entityplayer);
 					} else {
 						onWrenchClicked(entityplayer);
 					}
@@ -1632,6 +1634,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
+	@Nonnull
 	public DebugLogController getDebug() {
 		return debug;
 	}

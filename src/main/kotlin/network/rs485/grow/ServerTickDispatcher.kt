@@ -44,6 +44,7 @@ import kotlin.coroutines.CoroutineContext
 
 internal object ServerTickDispatcher : CoroutineDispatcher() {
     private val coroutineQueue = ConcurrentLinkedQueue<Runnable>()
+    private val toSchedule = mutableListOf<Runnable>()
 
     fun serverStart() {
         val startupJob = CoroutineScopes.serverScope.launch {
@@ -73,10 +74,20 @@ internal object ServerTickDispatcher : CoroutineDispatcher() {
             println("Logistics Pipes ServerTickContext hang for a second. Dumping coroutines:")
             coroutineQueue.forEach(::println)
         }
+        synchronized(toSchedule) {
+            coroutineQueue.addAll(toSchedule)
+            toSchedule.clear()
+        }
     }
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         coroutineQueue.add(block)
+    }
+
+    fun scheduleNextTick(block: Runnable) {
+        synchronized(toSchedule) {
+            toSchedule.add(block)
+        }
     }
 
 }

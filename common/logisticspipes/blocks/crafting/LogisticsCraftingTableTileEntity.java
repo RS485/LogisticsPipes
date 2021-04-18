@@ -1,7 +1,9 @@
 package logisticspipes.blocks.crafting;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -38,7 +40,6 @@ import logisticspipes.network.abstractguis.CoordinatesGuiProvider;
 import logisticspipes.network.guis.block.AutoCraftingGui;
 import logisticspipes.network.packets.block.CraftingSetType;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -47,20 +48,21 @@ import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.property.BitSetProperty;
+import network.rs485.logisticspipes.property.IBitSet;
+import network.rs485.logisticspipes.util.FuzzyUtil;
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
-public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity implements IInventory, IGuiTileEntity, ISimpleInventoryEventHandler, IGuiOpenControler {
+public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity
+		implements IInventory, IGuiTileEntity, ISimpleInventoryEventHandler, IGuiOpenControler {
 
+	public final BitSetProperty fuzzyFlags = new BitSetProperty(new BitSet(4 * (9 + 1)), "fuzzyBitSet");
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
 	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
+	public ItemIdentifier targetType = null;
 
 	private InventoryCraftResult vanillaResult = new InventoryCraftResult();
-
-	public ItemIdentifier targetType = null;
-	//just use CraftingRequirement to store flags; field "stack" is ignored
-	public DictResource[] fuzzyFlags = new DictResource[9];
-	public DictResource outputFuzzyFlags = new DictResource(null, null);
 	private IRecipe cache;
 	private EntityPlayerMP fake;
 	private PlayerIdentifier placedBy = null;
@@ -71,9 +73,6 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	public LogisticsCraftingTableTileEntity() {
 		matrix.addListener(this);
-		for (int i = 0; i < 9; i++) {
-			fuzzyFlags[i] = new DictResource(null, null);
-		}
 	}
 
 	public void cacheRecipe() {
@@ -123,9 +122,11 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		} else {
 			targetType = null;
 		}
-		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
-		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType))) && !guiWatcher.isEmpty() && MainProxy.isServer(getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
+		if (((targetType == null && oldTargetType != null) || (targetType != null && !targetType.equals(oldTargetType)))
+				&& !guiWatcher.isEmpty() && MainProxy.isServer(getWorld())) {
+			MainProxy.sendToPlayerList(
+					PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this),
+					guiWatcher);
 		}
 	}
 
@@ -187,15 +188,22 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		}
 
 		if (!guiWatcher.isEmpty() && MainProxy.isServer(getWorld())) {
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this), guiWatcher);
+			MainProxy.sendToPlayerList(
+					PacketHandler.getPacket(CraftingSetType.class).setTargetType(targetType).setTilePos(this),
+					guiWatcher);
 		}
 
 		cacheRecipe();
 	}
 
-	private boolean testFuzzy(ItemIdentifier item, ItemIdentifierStack item2, int slot) {
-		fuzzyFlags[slot].stack = item.makeStack(1);
-		return fuzzyFlags[slot].matches(item2.getItem(), IResource.MatchSettings.NORMAL);
+	public IBitSet outputFuzzy() {
+		final int startIdx = 4 * 9; // after the 9th slot
+		return fuzzyFlags.get(startIdx, startIdx + 3);
+	}
+
+	public IBitSet inputFuzzy(int slot) {
+		final int startIdx = 4 * slot;
+		return fuzzyFlags.get(startIdx, startIdx + 3);
 	}
 
 	@Nonnull
@@ -222,12 +230,16 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 				if (item == null) {
 					continue;
 				}
-				if (isFuzzy ? (testFuzzy(ident, item, i)) : ident.equalsForCrafting(item.getItem())) {
-					if (item.getStackSize() > used[j]) {
-						used[j]++;
-						toUse[i] = j;
-						continue outer;
-					}
+
+				final boolean doItemsEqual = isFuzzy ?
+						(FuzzyUtil.INSTANCE
+								.fuzzyMatches(FuzzyUtil.INSTANCE.getter(inputFuzzy(i)), ident, item.getItem())) :
+						ident.equalsForCrafting(item.getItem());
+
+				if (doItemsEqual && item.getStackSize() > used[j]) {
+					used[j]++;
+					toUse[i] = j;
+					continue outer;
 				}
 			}
 			//Not enough material
@@ -241,12 +253,15 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 			}
 		}
 		IRecipe recipe = cache;
-		outputFuzzyFlags.stack = resultInv.getIDStackInSlot(0);
+		final ItemIdentifierStack outStack = Objects.requireNonNull(resultInv.getIDStackInSlot(0));
 		if (!recipe.matches(crafter, getWorld())) {
-			if (isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
+			if (isFuzzy && outputFuzzy().nextSetBit(0) != -1) {
 				recipe = null;
 				for (IRecipe r : CraftingUtil.getRecipeList()) {
-					if (r.matches(crafter, getWorld()) && outputFuzzyFlags.matches(ItemIdentifier.get(r.getRecipeOutput()), IResource.MatchSettings.NORMAL)) {
+
+					if (r.matches(crafter, getWorld()) && FuzzyUtil.INSTANCE
+							.fuzzyMatches(FuzzyUtil.INSTANCE.getter(outputFuzzy()), outStack.getItem(),
+									ItemIdentifier.get(r.getRecipeOutput()))) {
 						recipe = r;
 						break;
 					}
@@ -262,18 +277,20 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		if (result.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
-		if (isFuzzy && outputFuzzyFlags.getBitSet().nextSetBit(0) != -1) {
-			if (!outputFuzzyFlags.matches(ItemIdentifier.get(result), IResource.MatchSettings.NORMAL)) {
+		if (isFuzzy && outputFuzzy().nextSetBit(0) != -1) {
+			if (!FuzzyUtil.INSTANCE.fuzzyMatches(FuzzyUtil.INSTANCE.getter(outputFuzzy()), outStack.getItem(),
+					ItemIdentifier.get(result))) {
 				return ItemStack.EMPTY;
 			}
-			if (!outputFuzzyFlags.matches(wanted.getAsItem(), IResource.MatchSettings.NORMAL)) {
+			if (!FuzzyUtil.INSTANCE.fuzzyMatches(FuzzyUtil.INSTANCE.getter(outputFuzzy()), wanted.getAsItem(),
+					ItemIdentifier.get(result))) {
 				return ItemStack.EMPTY;
 			}
 		} else {
-			if (!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
+			if (!outStack.getItem().equalsWithoutNBT(ItemIdentifier.get(result))) {
 				return ItemStack.EMPTY;
 			}
-			if (!wanted.matches(resultInv.getIDStackInSlot(0).getItem(), IResource.MatchSettings.WITHOUT_NBT)) {
+			if (!wanted.matches(outStack.getItem(), IResource.MatchSettings.WITHOUT_NBT)) {
 				return ItemStack.EMPTY;
 			}
 		}
@@ -340,7 +357,8 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	public void handleNEIRecipePacket(NonNullList<ItemStack> content) {
-		if (matrix.getSizeInventory() != content.size()) throw new IllegalStateException("Different sizes of matrix and inventory from packet");
+		if (matrix.getSizeInventory() != content.size())
+			throw new IllegalStateException("Different sizes of matrix and inventory from packet");
 		for (int i = 0; i < content.size(); i++) {
 			matrix.setInventorySlotContents(i, content.get(i));
 		}
@@ -358,25 +376,21 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		} else {
 			placedBy = PlayerIdentifier.readFromNBT(par1nbtTagCompound, "placedBy");
 		}
+		fuzzyFlags.readFromNBT(par1nbtTagCompound);
+		// FIXME: remove after 1.12
 		if (par1nbtTagCompound.hasKey("fuzzyFlags")) {
 			NBTTagList lst = par1nbtTagCompound.getTagList("fuzzyFlags", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < 9; i++) {
-				NBTTagCompound comp = lst.getCompoundTagAt(i);
-				fuzzyFlags[i].ignore_dmg = comp.getBoolean("ignore_dmg");
-				fuzzyFlags[i].ignore_nbt = comp.getBoolean("ignore_nbt");
-				fuzzyFlags[i].use_od = comp.getBoolean("use_od");
-				fuzzyFlags[i].use_category = comp.getBoolean("use_category");
+				FuzzyUtil.INSTANCE.readFromNBT(inputFuzzy(i), lst.getCompoundTagAt(i));
 			}
 		}
+		// FIXME: remove after 1.12
 		if (par1nbtTagCompound.hasKey("outputFuzzyFlags")) {
-			NBTTagCompound comp = par1nbtTagCompound.getCompoundTag("outputFuzzyFlags");
-			outputFuzzyFlags.ignore_dmg = comp.getBoolean("ignore_dmg");
-			outputFuzzyFlags.ignore_nbt = comp.getBoolean("ignore_nbt");
-			outputFuzzyFlags.use_od = comp.getBoolean("use_od");
-			outputFuzzyFlags.use_category = comp.getBoolean("use_category");
+			FuzzyUtil.INSTANCE.readFromNBT(outputFuzzy(), par1nbtTagCompound.getCompoundTag("outputFuzzyFlags"));
 		}
 		if (par1nbtTagCompound.hasKey("targetType")) {
-			targetType = ItemIdentifier.get(ItemStackLoader.loadAndFixItemStackFromNBT(par1nbtTagCompound.getCompoundTag("targetType")));
+			targetType = ItemIdentifier
+					.get(ItemStackLoader.loadAndFixItemStackFromNBT(par1nbtTagCompound.getCompoundTag("targetType")));
 		}
 		cacheRecipe();
 	}
@@ -389,24 +403,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		if (placedBy != null) {
 			placedBy.writeToNBT(par1nbtTagCompound, "placedBy");
 		}
-		NBTTagList lst = new NBTTagList();
-		for (int i = 0; i < 9; i++) {
-			NBTTagCompound comp = new NBTTagCompound();
-			comp.setBoolean("ignore_dmg", fuzzyFlags[i].ignore_dmg);
-			comp.setBoolean("ignore_nbt", fuzzyFlags[i].ignore_nbt);
-			comp.setBoolean("use_od", fuzzyFlags[i].use_od);
-			comp.setBoolean("use_category", fuzzyFlags[i].use_category);
-			lst.appendTag(comp);
-		}
-		par1nbtTagCompound.setTag("fuzzyFlags", lst);
-		{
-			NBTTagCompound comp = new NBTTagCompound();
-			comp.setBoolean("ignore_dmg", outputFuzzyFlags.ignore_dmg);
-			comp.setBoolean("ignore_nbt", outputFuzzyFlags.ignore_nbt);
-			comp.setBoolean("use_od", outputFuzzyFlags.use_od);
-			comp.setBoolean("use_category", outputFuzzyFlags.use_category);
-			par1nbtTagCompound.setTag("outputFuzzyFlags", comp);
-		}
+		fuzzyFlags.writeToNBT(par1nbtTagCompound);
 		if (targetType != null) {
 			NBTTagCompound type = new NBTTagCompound();
 			targetType.makeNormalStack(1).writeToNBT(type);
@@ -478,19 +475,22 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public void openInventory(@Nonnull EntityPlayer player) {}
+	public void openInventory(@Nonnull EntityPlayer player) {
+	}
 
 	@Override
-	public void closeInventory(@Nonnull EntityPlayer player) {}
+	public void closeInventory(@Nonnull EntityPlayer player) {
+	}
 
 	@Override
 	public boolean isItemValidForSlot(int i, @Nonnull ItemStack itemstack) {
 		if (i < 9 && i >= 0) {
 			ItemIdentifierStack stack = matrix.getIDStackInSlot(i);
 			if (stack != null && !itemstack.isEmpty()) {
-				if (isFuzzy() && fuzzyFlags[i].getBitSet().nextSetBit(0) != -1) {
-					fuzzyFlags[i].stack = stack;
-					return fuzzyFlags[i].matches(ItemIdentifier.get(itemstack), IResource.MatchSettings.NORMAL);
+				if (isFuzzy() && inputFuzzy(i).nextSetBit(0) != -1) {
+					return FuzzyUtil.INSTANCE.fuzzyMatches(FuzzyUtil.INSTANCE.getter(inputFuzzy(i)),
+							stack.getItem(),
+							ItemIdentifier.get(itemstack));
 				}
 				return stack.getItem().equalsWithoutNBT(ItemIdentifier.get(itemstack));
 			}
@@ -554,7 +554,7 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 		return true;
 	}
 
-	@Nonnull
+	@Nullable
 	@Override
 	public ITextComponent getDisplayName() {
 		return null;
@@ -562,7 +562,6 @@ public class LogisticsCraftingTableTileEntity extends LogisticsSolidTileEntity i
 
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload worldEvent) {
-		if (fake.world == worldEvent.getWorld())
-			fake = null;
+		if (fake.world == worldEvent.getWorld()) fake = null;
 	}
 }

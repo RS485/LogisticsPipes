@@ -39,7 +39,7 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 		if (!(module instanceof ModuleCrafter)) {
 			return null;
 		}
-		return new GuiCraftingPipe(player, ((ModuleCrafter) module).getDummyInventory(), ((ModuleCrafter) module), false, 0, amount, false, false, 0,
+		return new GuiCraftingPipe(player, ((ModuleCrafter) module).dummyInventory, ((ModuleCrafter) module), false, 0, amount, false, false, 0,
 				cleanupExclude);
 	}
 
@@ -50,15 +50,15 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 			return null;
 		}
 		MainProxy.sendPacketToPlayer(((ModuleCrafter) dummy.getModule()).getCPipePacket(), player);
-		dummy.setInventory(((ModuleCrafter) dummy.getModule()).getDummyInventory());
+		dummy.setInventory(((ModuleCrafter) dummy.getModule()).dummyInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 		//Input slots
 		for (int l = 0; l < 9; l++) {
-			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, ((ModuleCrafter) dummy.getModule()).fuzzyCraftingFlagArray[l]);
+			dummy.addFuzzyDummySlot(l, 18 + l * 18, 18, ((ModuleCrafter) dummy.getModule()).inputFuzzy(l));
 		}
 
 		//Output slot
-		dummy.addFuzzyDummySlot(9, 90, 64, ((ModuleCrafter) dummy.getModule()).outputFuzzyFlags);
+		dummy.addFuzzyDummySlot(9, 90, 64, ((ModuleCrafter) dummy.getModule()).outputFuzzy());
 		return dummy;
 	}
 

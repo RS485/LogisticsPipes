@@ -34,30 +34,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package network.rs485.logisticspipes.inventory
 
-import logisticspipes.interfaces.IClientInformationProvider
-import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder
-import logisticspipes.utils.ISimpleInventoryEventHandler
-import logisticspipes.utils.item.ItemIdentifier
-import logisticspipes.utils.item.ItemIdentifierStack
-import logisticspipes.utils.tuples.Pair
-import net.minecraft.inventory.IInventory
+package network.rs485.logisticspipes.property
 
-interface IItemIdentifierInventory : IInventory, ILPCCTypeHolder, IClientInformationProvider {
-    val itemsAndCount: Map<ItemIdentifier, Int>
-    val slotAccess: SlotAccess
-    fun getIDStackInSlot(i: Int): ItemIdentifierStack?
-    fun setInventorySlotContents(i: Int, itemstack: ItemIdentifierStack?)
-    fun containsItem(item: ItemIdentifier?): Boolean
-    fun handleItemIdentifierList(_allItems: Collection<ItemIdentifierStack>)
-    fun addListener(listener: ISimpleInventoryEventHandler)
-    fun removeListener(listener: ISimpleInventoryEventHandler)
-    fun containsUndamagedItem(item: ItemIdentifier): Boolean
-    fun containsExcludeNBTItem(item: ItemIdentifier): Boolean
-    fun containsUndamagedExcludeNBTItem(item: ItemIdentifier): Boolean
-    fun itemCount(item: ItemIdentifier): Int
-    fun contents(): Iterable<Pair<ItemIdentifierStack, Int>>
-    fun recheckStackLimit()
-    fun clearInventorySlotContents(i: Int)
+import net.minecraft.nbt.NBTTagCompound
+import java.util.*
+
+private val zero = UUID(0L, 0L)
+
+fun isZero(uuid: UUID) = uuid == zero
+
+class UUIDProperty(initialValue: UUID?, override val tagKey: String) : ValueProperty<UUID>(initialValue ?: zero) {
+
+    override fun readFromNBT(tag: NBTTagCompound) {
+        // FIXME after 1.12: remove support for empty string
+        if (tag.hasKey(tagKey)) tag.getString(tagKey).takeUnless(String::isEmpty)?.also { value = UUID.fromString(it) }
+    }
+
+    override fun writeToNBT(tag: NBTTagCompound) = tag.setString(tagKey, value.toString())
+
+    override fun copyValue(): UUID = value
+
+    override fun copyProperty(): Property<UUID> = UUIDProperty(copyValue(), tagKey)
+
+    fun isZero() = isZero(value)
+
+    fun zero() {
+        value = zero
+    }
+
+}
+
+class UUIDListProperty : ListProperty<UUID> {
+
+    override val tagKey: String
+
+    constructor(tagKey: String) : super(mutableListOf()) {
+        this.tagKey = tagKey
+    }
+
+    private constructor(tagKey: String, list: MutableList<UUID>) : super(list) {
+        this.tagKey = tagKey
+    }
+
+    override fun defaultValue(idx: Int): UUID = zero
+
+    override fun readSingleFromNBT(tag: NBTTagCompound, key: String): UUID = UUID.fromString(tag.getString(key))
+
+    override fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: UUID) = tag.setString(key, value.toString())
+
+    override fun copyValue(obj: UUID): UUID = obj
+
+    override fun copyProperty(): Property<MutableList<UUID>> = UUIDListProperty(tagKey, list)
+
+    fun isZero(idx: Int) = isZero(get(idx))
+
+    fun zero(idx: Int) = set(idx, zero)
+
 }

@@ -34,30 +34,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package network.rs485.logisticspipes.inventory
 
-import logisticspipes.interfaces.IClientInformationProvider
-import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder
-import logisticspipes.utils.ISimpleInventoryEventHandler
-import logisticspipes.utils.item.ItemIdentifier
-import logisticspipes.utils.item.ItemIdentifierStack
-import logisticspipes.utils.tuples.Pair
-import net.minecraft.inventory.IInventory
+package network.rs485.logisticspipes.gui
 
-interface IItemIdentifierInventory : IInventory, ILPCCTypeHolder, IClientInformationProvider {
-    val itemsAndCount: Map<ItemIdentifier, Int>
-    val slotAccess: SlotAccess
-    fun getIDStackInSlot(i: Int): ItemIdentifierStack?
-    fun setInventorySlotContents(i: Int, itemstack: ItemIdentifierStack?)
-    fun containsItem(item: ItemIdentifier?): Boolean
-    fun handleItemIdentifierList(_allItems: Collection<ItemIdentifierStack>)
-    fun addListener(listener: ISimpleInventoryEventHandler)
-    fun removeListener(listener: ISimpleInventoryEventHandler)
-    fun containsUndamagedItem(item: ItemIdentifier): Boolean
-    fun containsExcludeNBTItem(item: ItemIdentifier): Boolean
-    fun containsUndamagedExcludeNBTItem(item: ItemIdentifier): Boolean
-    fun itemCount(item: ItemIdentifier): Int
-    fun contents(): Iterable<Pair<ItemIdentifierStack, Int>>
-    fun recheckStackLimit()
-    fun clearInventorySlotContents(i: Int)
+import logisticspipes.proxy.MainProxy
+import net.minecraftforge.event.entity.player.PlayerContainerEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+
+object PropertyUpdaterEventListener {
+    private val propertyUpdaters: ArrayList<PropertyUpdater> = ArrayList()
+
+    @SubscribeEvent
+    fun openContainer(event: PlayerContainerEvent.Open) {
+        // FIXME: disabled server-side property update until there is a common Container class with getModule
+//        val player = event.entityPlayer ?: return
+//        MainProxy.runOnServer(player.world) {
+//            Runnable {
+//                val guiContainer = event.container
+//                if (guiContainer is ProviderPipeContainer) {
+//                    val module = guiContainer.module
+//                    propertyUpdaters.add(
+//                        PropertyUpdater(player, module, module.properties)
+//                    )
+//                }
+//            }
+//        }
+    }
+
+    @SubscribeEvent
+    fun closeContainer(event: PlayerContainerEvent.Close) {
+        val player = event.entityPlayer ?: return
+        MainProxy.runOnServer(player.world) {
+            Runnable {
+                propertyUpdaters.removeIf { propertyUpdater: PropertyUpdater ->
+                    propertyUpdater.removeForPlayer(event.entityPlayer)
+                }
+            }
+        }
+    }
+
 }

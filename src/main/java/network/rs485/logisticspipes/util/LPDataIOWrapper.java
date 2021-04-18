@@ -272,7 +272,7 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 
 	@Override
 	public void writeBitSet(@Nonnull BitSet bits) {
-		writeByteArray(bits.toByteArray());
+		writeLongArray(bits.toLongArray());
 	}
 
 	@Override
@@ -516,11 +516,11 @@ public final class LPDataIOWrapper implements LPDataInput, LPDataOutput {
 	@Nonnull
 	@Override
 	public BitSet readBitSet() {
-		byte[] arr = readByteArray();
-		if (arr == null) {
+		final long[] words = readLongArray();
+		if (words == null) {
 			return new BitSet();
 		} else {
-			return BitSet.valueOf(arr);
+			return BitSet.valueOf(words);
 		}
 	}
 

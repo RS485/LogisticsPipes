@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -9,7 +10,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -37,45 +37,63 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
+import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "EnchantmentSink Module MK2")
-public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
+public class ModuleEnchantmentSinkMK2 extends LogisticsModule
+		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
+		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
-	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested Enchanted items", 1);
-
-	public ModuleEnchantmentSinkMK2() {
-		_filterInventory.addListener(this);
-	}
-
-	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private final InventoryProperty filterInventory = new InventoryProperty(
+			new ItemIdentifierInventory(9, "Requested Enchanted items", 1), "");
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private final IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private SinkReply _sinkReply;
+
+	public ModuleEnchantmentSinkMK2() {
+		filterInventory.addListener(this);
+	}
 
 	public static String getName() {
 		return "enchantment_sink_mk2";
+	}
+
+	@Nonnull
+	@Override
+	public String getLPName() {
+		return getName();
+	}
+
+	@Nonnull
+	@Override
+	public List<Property<?>> getProperties() {
+		return Collections.singletonList(filterInventory);
 	}
 
 	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
 	@Nonnull
 	public IItemIdentifierInventory getFilterInventory() {
-		return _filterInventory;
+		return filterInventory;
 	}
-
-	private SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 1, true, false, 1, 0,
+				new ChassiTargetInformation(getPositionInt()));
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
-		if (_filterInventory.containsExcludeNBTItem(item.getUndamaged().getIgnoringNBT())) {
+		if (filterInventory.containsExcludeNBTItem(item.getUndamaged().getIgnoringNBT())) {
 			if (stack.isItemEnchanted()) {
 				return _sinkReply;
 			}
@@ -85,20 +103,11 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	}
 
 	@Override
-	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		_filterInventory.readFromNBT(nbttagcompound, "");
-	}
-
-	@Override
-	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		_filterInventory.writeToNBT(nbttagcompound, "");
-	}
-
-	@Override
 	public void tick() {}
 
 	@Override
-	public @Nonnull List<String> getClientInformation() {
+	public @Nonnull
+	List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Filter: ");
 		list.add("<inventory>");
@@ -119,7 +128,8 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class)
+				.setIdentList(ItemIdentifierStack.getListFromInventory(filterInventory)).setModulePos(this), player);
 	}
 
 	@Override
@@ -145,8 +155,8 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
-		_filterInventory.handleItemIdentifierList(list);
+	public void handleInvContent(@Nonnull Collection<ItemIdentifierStack> list) {
+		filterInventory.handleItemIdentifierList(list);
 	}
 
 	@Override
@@ -161,7 +171,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule implements SimpleF
 
 	@Override
 	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+		Map<ItemIdentifier, Integer> mapIC = filterInventory.getItemsAndCount();
 		itemidCollection.addAll(mapIC.keySet());
 		for (ItemIdentifier id : mapIC.keySet()) {
 			itemidCollection.add(id.getUndamaged());

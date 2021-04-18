@@ -40,71 +40,59 @@ package network.rs485.logisticspipes.property
 import java.util.*
 import kotlin.streams.toList
 
-abstract class PropertyLayer(properties: Collection<Property<*>>) {
-    private val lowerLayerProperties: List<Property<*>> = properties.toList()
-    private val properties: List<Property<*>> = properties.map(Property<*>::copyProperty).toList()
-    private val changedProperties: BitSet = BitSet(properties.size)
+open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder {
+    private val lowerLayer: List<Property<*>> = propertiesIn.toList()
+    private val upperLayer: MutableList<Property<*>?> = MutableList(propertiesIn.size) { null }
+    private val changedIndices: BitSet = BitSet(propertiesIn.size)
 
-    init {
-        lowerLayerProperties.addObserver(::onChange)
-        this.properties.addObserver(::propertyWrite)
-    }
+    /**
+     * A list consisting only of changed [properties][Property] on this [PropertyLayer].
+     */
+    override val properties: List<Property<*>>
+        get() = changedIndices.stream().mapToObj { upperLayer[it]!! }.toList()
 
-    private fun propertyWrite(prop: Property<*>) = lookupIndex(prop, properties).let {
-        if (!changedProperties.get(it)) firstChange(it)
-        changedProperties.set(it)
-    }
-
-    private fun firstChange(idx: Int) {
-        // replace lower layer change listener with ours
-        lowerLayerProperties[idx].propertyObservers.remove(::onChange)
-        properties[idx].addObserver { onChange(lowerLayerProperties[idx]) }
-        properties[idx].propertyObservers.remove(::propertyWrite)
-        onChange(lowerLayerProperties[idx])
+    private fun prepareWrite(idx: Int) {
+        upperLayer[idx] = lowerLayer[idx].copyProperty().also {
+            // set to changed once the copied property is actually changed
+            it.addObserver { changedIndices.set(idx) }
+        }
     }
 
     private fun lookupIndex(prop: Property<*>, propList: List<Property<*>>): Int =
         propList.indexOfFirst { other -> prop === other }.takeUnless { it == -1 }
             ?: throw IllegalArgumentException("Property <$prop> not in this layer")
 
-    @Suppress("UNCHECKED_CAST")
-    fun <V: Property<T>, T> getWritableProperty(prop: V): V {
-        // same index, same type
-        return properties[lookupIndex(prop, lowerLayerProperties)] as V
+    fun <T, P : ValueProperty<T>> overlay(valueProp: P) = ValuePropertyOverlay<T, P>(lookupIndex(valueProp, lowerLayer))
+    fun <T, P : Property<T>> overlay(prop: P) = PropertyOverlay<T, P>(lookupIndex(prop, lowerLayer))
+
+    open inner class PropertyOverlay<T, P : Property<T>>(private val idx: Int) {
+
+        @Suppress("UNCHECKED_CAST")
+        protected fun lookupRead(): P = if (changedIndices.get(idx)) {
+            upperLayer[idx]!! as P
+        } else lowerLayer[idx] as P
+
+        @Suppress("UNCHECKED_CAST")
+        protected fun lookupWrite(): P {
+            if (!changedIndices.get(idx)) {
+                prepareWrite(idx)
+            }
+            return upperLayer[idx]!! as P
+        }
+
+        fun <V> read(func: (P) -> V): V = func(lookupRead())
+
+        fun <V> write(func: (P) -> V): V = func(lookupWrite())
+
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <V: ValueProperty<T>, T> getLayerValue(prop: V): T {
-        val idx = lookupIndex(prop, lowerLayerProperties)
-        val valueProperty = if (changedProperties.get(idx)) {
-            properties[idx]
-        } else {
-            lowerLayerProperties[idx]
-        } as ValueProperty<T>
+    inner class ValuePropertyOverlay<T, P : ValueProperty<T>>(idx: Int) : PropertyOverlay<T, P>(idx) {
+        fun get(): T = lookupRead().value
 
-        return valueProperty.value
+        fun set(value: T) {
+            lookupWrite().value = value
+        }
+
     }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <V: Property<T>, T> getLayerValue(prop: V): T {
-        val idx = lookupIndex(prop, lowerLayerProperties)
-        val property = if (changedProperties.get(idx)) {
-            properties[idx]
-        } else {
-            lowerLayerProperties[idx]
-        } as Property<T>
-
-        return property.copyValue()
-    }
-
-    fun changedProperties(): Collection<Property<*>> = changedProperties.stream().mapToObj { properties[it] }.toList()
-
-    fun unregister() = lowerLayerProperties.forEach { it.propertyObservers.remove(::onChange) }
-
-    /**
-     * The passed property is *only* for checking equality with the properties passed to the layer as input properties.
-     * The current value can be retrieved with [getLayerValue].
-     */
-    protected abstract fun onChange(property: Property<*>)
 
 }

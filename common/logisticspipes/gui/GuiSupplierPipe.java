@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -8,6 +8,8 @@
 package logisticspipes.gui;
 
 import java.io.IOException;
+import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
@@ -20,8 +22,7 @@ import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.modules.ModuleActiveSupplier.PatternMode;
 import logisticspipes.modules.ModuleActiveSupplier.SupplyMode;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.packets.module.SupplierPipeLimitedPacket;
-import logisticspipes.network.packets.module.SupplierPipeModePacket;
+import logisticspipes.network.packets.module.ModulePropertiesUpdate;
 import logisticspipes.network.packets.pipe.SlotFinderOpenGuiPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Color;
@@ -30,17 +31,30 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.property.BooleanProperty;
+import network.rs485.logisticspipes.property.EnumProperty;
+import network.rs485.logisticspipes.property.IntListProperty;
+import network.rs485.logisticspipes.property.PropertyLayer;
 
 public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 
 	private static final String PREFIX = "gui.supplierpipe.";
-
-	private ModuleActiveSupplier module;
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
 	private final boolean hasPatternUpgrade;
+	private final PropertyLayer propertyLayer;
+	private final ModuleActiveSupplier supplierModule;
+	private final PropertyLayer.PropertyOverlay<List<Integer>, IntListProperty> slotAssignmentPatternOverlay;
+	private final PropertyLayer.ValuePropertyOverlay<SupplyMode, EnumProperty<SupplyMode>> requestModeOverlay;
+	private final PropertyLayer.ValuePropertyOverlay<PatternMode, EnumProperty<PatternMode>> patternModeOverlay;
+	private PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> limitedPropertyOverlay;
 
-	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, ModuleActiveSupplier module, Boolean flag, int[] slots) {
+	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, ModuleActiveSupplier module,
+			Boolean flag, int[] slots) {
 		super(null);
 		hasPatternUpgrade = flag;
+		supplierModule = module;
+
+		propertyLayer = new PropertyLayer(supplierModule.getProperties());
 
 		DummyContainer dummy = new DummyContainer(playerInventory, dummyInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
@@ -59,10 +73,23 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 			}
 		}
 		inventorySlots = dummy;
-		module.slotArray = slots;
-		this.module = module;
+		slotAssignmentPatternOverlay = propertyLayer.overlay(supplierModule.slotAssignmentPattern);
+		slotAssignmentPatternOverlay.write((p) -> p.replaceContent(slots));
 		xSize = 194;
 		ySize = 186;
+		patternModeOverlay = propertyLayer
+				.overlay(supplierModule.patternMode);
+		requestModeOverlay = propertyLayer.overlay(supplierModule.requestMode);
+	}
+
+	@Override
+	public void onGuiClosed() {
+		super.onGuiClosed();
+		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
+			// send update to server, when there are changed properties
+			MainProxy.sendPacketToServer(
+					ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(supplierModule));
+		}
 	}
 
 	@Override
@@ -74,16 +101,20 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 			name = StringUtils.translate(GuiSupplierPipe.PREFIX + "TargetInv");
 		}
 		mc.fontRenderer.drawString(name, xSize / 2 - mc.fontRenderer.getStringWidth(name) / 2, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112, 0x404040);
+		mc.fontRenderer
+				.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+		mc.fontRenderer
+				.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112,
+						0x404040);
 		if (hasPatternUpgrade) {
-			for (int i = 0; i < 9; i++) {
-				mc.fontRenderer.drawString(Integer.toString(module.slotArray[i]), 22 + i * 18, 55, 0x404040);
-			}
+			slotAssignmentPatternOverlay.read((slotAssignments) -> {
+				for (int i = 0; i < slotAssignments.size(); i++) {
+					mc.fontRenderer.drawString(Integer.toString(slotAssignments.get(i)), 22 + i * 18, 55, 0x404040);
+				}
+				return null;
+			});
 		}
 	}
-
-	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
@@ -112,9 +143,9 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new GuiButton(0, width / 2 + 35, height / 2 - 25, 50, 20, (hasPatternUpgrade ? module.getPatternMode() : module.getSupplyMode()).toString()));
+		buttonList.add(new GuiButton(0, width / 2 + 35, height / 2 - 25, 50, 20, getModeText()));
 		if (hasPatternUpgrade) {
-			buttonList.add(new SmallGuiButton(1, guiLeft + 5, guiTop + 68, 45, 10, module.isLimited() ? "Limited" : "Unlimited"));
+			buttonList.add(new SmallGuiButton(1, guiLeft + 5, guiTop + 68, 45, 10, getLimitationText()));
 			for (int i = 0; i < 9; i++) {
 				buttonList.add(new SmallGuiButton(i + 2, guiLeft + 18 + i * 18, guiTop + 40, 17, 10, "Set"));
 			}
@@ -125,37 +156,40 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
 		if (guibutton.id == 0) {
 			if (hasPatternUpgrade) {
-				int currentMode = module.getPatternMode().ordinal() + 1;
-				if (currentMode >= PatternMode.values().length) {
-					currentMode = 0;
-				}
-				module.setPatternMode(PatternMode.values()[currentMode]);
-				buttonList.get(0).displayString = module.getPatternMode().toString();
+				final PatternMode newMode = patternModeOverlay.write(EnumProperty::next);
+				buttonList.get(0).displayString = newMode.toString();
 			} else {
-				int currentMode = module.getSupplyMode().ordinal() + 1;
-				if (currentMode >= SupplyMode.values().length) {
-					currentMode = 0;
-				}
-				module.setSupplyMode(SupplyMode.values()[currentMode]);
-				buttonList.get(0).displayString = module.getSupplyMode().toString();
+				final SupplyMode newMode = requestModeOverlay.write(EnumProperty::next);
+				buttonList.get(0).displayString = newMode.toString();
 			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeModePacket.class).setModulePos(module));
 		} else if (hasPatternUpgrade) {
 			if (guibutton.id == 1) {
-				module.setLimited(!module.isLimited());
-				buttonList.get(1).displayString = module.isLimited() ? "Limited" : "Unlimited";
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(module.isLimited()).setModulePos(module));
+				limitedPropertyOverlay.write(BooleanProperty::toggle);
+				buttonList.get(1).displayString = getLimitationText();
 			} else if (guibutton.id >= 2 && guibutton.id <= 10) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderOpenGuiPacket.class).setSlot(guibutton.id - 2).setModulePos(module));
+				MainProxy.sendPacketToServer(
+						PacketHandler.getPacket(SlotFinderOpenGuiPacket.class).setSlot(guibutton.id - 2)
+								.setModulePos(supplierModule));
 			}
 		}
 		super.actionPerformed(guibutton);
 	}
 
 	public void refreshMode() {
-		buttonList.get(0).displayString = (hasPatternUpgrade ? module.getPatternMode() : module.getSupplyMode()).toString();
+		buttonList.get(0).displayString = getModeText();
 		if (hasPatternUpgrade) {
-			buttonList.get(1).displayString = module.isLimited() ? "Limited" : "Unlimited";
+			limitedPropertyOverlay = propertyLayer.overlay(supplierModule.isLimited);
+			buttonList.get(1).displayString = getLimitationText();
 		}
 	}
+
+	@Nonnull
+	private String getLimitationText() {
+		return limitedPropertyOverlay.get() ? "Limited" : "Unlimited";
+	}
+
+	private String getModeText() {
+		return (hasPatternUpgrade ? patternModeOverlay : requestModeOverlay).get().toString();
+	}
+
 }

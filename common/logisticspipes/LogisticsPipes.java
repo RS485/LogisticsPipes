@@ -190,6 +190,7 @@ import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.ServerConfigurationManager;
 import network.rs485.logisticspipes.gui.LPFontRenderer;
+import network.rs485.logisticspipes.gui.PropertyUpdaterEventListener;
 import network.rs485.logisticspipes.guidebook.ItemGuideBook;
 
 //@formatter:off
@@ -360,9 +361,9 @@ public class LogisticsPipes {
 		for (int i = 0; i < Configs.MULTI_THREAD_NUMBER; i++) {
 			new RoutingTableUpdateThread(i);
 		}
-		LogisticsEventListener eventListener = new LogisticsEventListener();
-		MinecraftForge.EVENT_BUS.register(eventListener);
+		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
 		MinecraftForge.EVENT_BUS.register(new LPChatListener());
+		MinecraftForge.EVENT_BUS.register(PropertyUpdaterEventListener.INSTANCE);
 
 		LPDataFixer.INSTANCE.init();
 

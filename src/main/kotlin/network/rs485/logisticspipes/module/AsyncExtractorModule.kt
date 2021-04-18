@@ -63,11 +63,12 @@ import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.EnumFacing
 import net.minecraftforge.fml.client.FMLClientHandler
 import network.rs485.grow.ChunkedChannel
 import network.rs485.logisticspipes.logistics.LogisticsManager
+import network.rs485.logisticspipes.property.NullableEnumProperty
+import network.rs485.logisticspipes.property.Property
 import network.rs485.logisticspipes.util.equalsWithNBT
 import network.rs485.logisticspipes.util.getExtractionMax
 import java.util.*
@@ -92,27 +93,37 @@ class AsyncExtractorModule(
         val name: String = "extractor"
     }
 
-    private var nextChannelWork: (() -> Unit)? = null
-    private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
-    private var _sneakyDirection: EnumFacing? = null
-    private var currentSlot = 0
-    val localModeWatchers = PlayerCollectionList()
+    private val sneakyDirectionProp = NullableEnumProperty(null, "sneakydirection", EnumFacing.values())
+
+    override val properties: List<Property<*>>
+        get() = listOf(sneakyDirectionProp)
 
     override var sneakyDirection: EnumFacing?
-        get() = _sneakyDirection
+        get() = sneakyDirectionProp.value
         set(value) {
-            _sneakyDirection = value
+            sneakyDirectionProp.value = value
             MainProxy.sendToPlayerList(
-                PacketHandler.getPacket(SneakyModuleDirectionUpdate::class.java).setDirection(_sneakyDirection)
-                    .setModulePos(this), localModeWatchers
+                PacketHandler.getPacket(SneakyModuleDirectionUpdate::class.java)
+                    .setDirection(sneakyDirection)
+                    .setModulePos(this),
+                localModeWatchers
             )
         }
 
+    private var nextChannelWork: (() -> Unit)? = null
+    private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
+    private var currentSlot = 0
+    val localModeWatchers = PlayerCollectionList()
+
     override val module = this
-    override val pipeGuiProvider: ModuleCoordinatesGuiProvider =
-        NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider::class.java).setSneakyOrientation(_sneakyDirection)
-    override val inHandGuiProvider: ModuleInHandGuiProvider =
-        NewGuiHandler.getGui(SneakyModuleInHandGuiProvider::class.java)
+
+    override val pipeGuiProvider: ModuleCoordinatesGuiProvider
+        get() =
+            NewGuiHandler.getGui(SneakyModuleInSlotGuiProvider::class.java).setSneakyOrientation(sneakyDirection)
+
+    override val inHandGuiProvider: ModuleInHandGuiProvider
+        get() =
+            NewGuiHandler.getGui(SneakyModuleInHandGuiProvider::class.java)
     override val everyNthTick: Int
         get() = (80 / upgradeManager.let { 2.0.pow(it.actionSpeedUpgrade) }).toInt().coerceAtLeast(2)
 
@@ -121,13 +132,19 @@ class AsyncExtractorModule(
     private val itemsToExtract: Int
         get() = upgradeManager.let { 2.0.pow(it.itemExtractionUpgrade) }.toInt()
     private val energyPerItem: Int
-        get() = upgradeManager.let { 5 * 1.1.pow(it.itemExtractionUpgrade) * 1.2.pow(it.itemStackExtractionUpgrade) }
+        get() = upgradeManager.let {
+            5 * 1.1.pow(it.itemExtractionUpgrade) * 1.2.pow(it.itemStackExtractionUpgrade)
+        }
             .toInt()
     private val itemSendMode: CoreRoutedPipe.ItemSendMode
-        get() = upgradeManager.let { um -> CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 } }
+        get() = upgradeManager.let { um ->
+            CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 }
+        }
             ?: CoreRoutedPipe.ItemSendMode.Normal
     private val connectedInventory: IInventoryUtil?
         get() = _service?.availableSneakyInventories(sneakyDirection)?.firstOrNull()
+
+    override fun getLPName(): String = name
 
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? =
@@ -220,19 +237,19 @@ class AsyncExtractorModule(
             // find destinations and send stacks now
             var sourceStackLeft = stack.count
             LogisticsManager.allDestinations(
-                stack,
-                ItemIdentifier.get(stack),
-                true,
-                session.serverRouter
+                stack = stack,
+                itemid = ItemIdentifier.get(stack),
+                canBeDefault = true,
+                sourceRouter = session.serverRouter
             ) { itemsLeft > 0 && sourceStackLeft > 0 }
                 .forEach { pair ->
                     extractAndSend(
-                        slot,
-                        sourceStackLeft,
-                        session.inventory,
-                        pair.first,
-                        pair.second,
-                        itemsLeft
+                        slot = slot,
+                        count = sourceStackLeft,
+                        inventory = session.inventory,
+                        destRouterId = pair.first,
+                        sinkReply = pair.second,
+                        itemsLeft = itemsLeft
                     ).also {
                         itemsLeft -= it
                         sourceStackLeft -= it
@@ -248,8 +265,9 @@ class AsyncExtractorModule(
         var itemsLeft = itemsToExtract
         return setupObject.consumeAsFlow().flatMapConcat { pair ->
             if (itemsLeft <= 0) return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
-            val serverRouter = this._service?.router as? ServerRouter
-                ?: return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
+            val serverRouter =
+                this._service?.router as? ServerRouter
+                    ?: return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
             var stackLeft = pair.second.count
             val itemid = ItemIdentifier.get(pair.second)
             AsyncRouting.updateRoutingTable(serverRouter)
@@ -276,12 +294,12 @@ class AsyncExtractorModule(
                 val stack = inventory.getStackInSlot(it.slot)
                 if (it.itemid.equalsWithNBT(stack)) {
                     itemsLeft -= extractAndSend(
-                        it.slot,
-                        stack.count,
-                        inventory,
-                        it.destRouterId,
-                        it.sinkReply,
-                        itemsLeft
+                        slot = it.slot,
+                        count = stack.count,
+                        inventory = inventory,
+                        destRouterId = it.destRouterId,
+                        sinkReply = it.sinkReply,
+                        itemsLeft = itemsLeft,
                     )
                 }
             }
@@ -311,14 +329,6 @@ class AsyncExtractorModule(
 
     override fun recievePassive(): Boolean = false
 
-    override fun readFromNBT(nbttagcompound: NBTTagCompound) {
-        _sneakyDirection = SneakyDirection.readSneakyDirection(nbttagcompound)
-    }
-
-    override fun writeToNBT(nbttagcompound: NBTTagCompound) {
-        SneakyDirection.writeSneakyDirection(_sneakyDirection, nbttagcompound)
-    }
-
     override fun hasGenericInterests(): Boolean = false
 
     override fun interestedInUndamagedID(): Boolean = false
@@ -326,7 +336,7 @@ class AsyncExtractorModule(
     override fun interestedInAttachedInventory(): Boolean = true
 
     override fun getClientInformation(): MutableList<String> =
-        mutableListOf("Extraction: ${_sneakyDirection?.name ?: "DEFAULT"}")
+        mutableListOf("Extraction: ${sneakyDirection?.name ?: "DEFAULT"}")
 
     override fun stopHUDWatching() {
         MainProxy.sendPacketToServer(
@@ -346,8 +356,9 @@ class AsyncExtractorModule(
         Objects.requireNonNull(player, "player must not be null")
         localModeWatchers.add(player)
         MainProxy.sendPacketToPlayer(
-            PacketHandler.getPacket(SneakyModuleDirectionUpdate::class.java).setDirection(_sneakyDirection)
-                .setModulePos(this), player
+            PacketHandler.getPacket(SneakyModuleDirectionUpdate::class.java).setDirection(sneakyDirection)
+                .setModulePos(this),
+            player,
         )
     }
 

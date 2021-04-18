@@ -116,7 +116,7 @@ public class SlotFinderNumberPacket extends ModuleCoordinatesPacket {
 			setPosZ(getPipePosZ());
 			ModuleActiveSupplier module = this.getLogisticsModule(player, ModuleActiveSupplier.class);
 			if (module != null) {
-				module.slotArray[slot] = resultIndex;
+				module.slotAssignmentPattern.set(slot, resultIndex);
 			}
 		}
 	}

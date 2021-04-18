@@ -25,7 +25,11 @@ public class ActiveSupplierInHand extends ModuleInHandGuiProvider {
 		if (!(module instanceof ModuleActiveSupplier)) {
 			return null;
 		}
-		return new GuiSupplierPipe(player.inventory, ((ModuleActiveSupplier) module).getDummyInventory(), (ModuleActiveSupplier) module, false, new int[9]);
+		return new GuiSupplierPipe(player.inventory,
+				((ModuleActiveSupplier) module).inventory,
+				(ModuleActiveSupplier) module,
+				false,
+				new int[9]);
 	}
 
 	@Override
@@ -34,7 +38,7 @@ public class ActiveSupplierInHand extends ModuleInHandGuiProvider {
 		if (!(dummy.getModule() instanceof ModuleActiveSupplier)) {
 			return null;
 		}
-		dummy.setInventory(((ModuleActiveSupplier) dummy.getModule()).getDummyInventory());
+		dummy.setInventory(((ModuleActiveSupplier) dummy.getModule()).inventory);
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots

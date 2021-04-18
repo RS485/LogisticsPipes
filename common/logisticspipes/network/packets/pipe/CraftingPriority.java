@@ -25,6 +25,6 @@ public class CraftingPriority extends IntegerModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		module.setPriority(getInteger());
+		module.priority.setValue(getInteger());
 	}
 }

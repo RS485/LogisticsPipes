@@ -24,6 +24,8 @@ public interface IResource extends ILPCCTypeHolder, LPFinalSerializable {
 	@Nonnull
 	IRouter getRouter();
 
+	boolean matches(IResource resource, MatchSettings settings);
+
 	boolean matches(ItemIdentifier itemType, MatchSettings settings);
 
 	IResource clone(int multiplier);

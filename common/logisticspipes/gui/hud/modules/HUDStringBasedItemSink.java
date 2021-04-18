@@ -15,8 +15,8 @@ import logisticspipes.utils.gui.hud.BasicHUDButton;
 public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 
 	private final IStringBasedModule itemSink;
-	private int page = 0;
 	private final List<IHUDButton> list;
+	private int page = 0;
 
 	public HUDStringBasedItemSink(IStringBasedModule module) {
 		itemSink = module;
@@ -52,7 +52,7 @@ public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 
 			@Override
 			public boolean buttonEnabled() {
-				return (page + 1) * 6 < itemSink.getStringList().size();
+				return (page + 1) * 6 < itemSink.stringListProperty().size();
 			}
 		});
 	}
@@ -60,9 +60,10 @@ public class HUDStringBasedItemSink implements IHUDModuleRenderer {
 	@Override
 	public void renderContent(boolean shifted) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		for (int i = page * 6; i < itemSink.getStringList().size() && i < 6 + (page * 6); i++) {
-			String mod = itemSink.getStringList().get(i);
-			mc.fontRenderer.drawString(mod.substring(0, Math.min(12, mod.length())), -28, -25 + ((i - (page * 6)) * 10), 0x404040);
+		for (int i = page * 6; i < itemSink.stringListProperty().size() && i < 6 + (page * 6); i++) {
+			String mod = itemSink.stringListProperty().get(i);
+			mc.fontRenderer.drawString(mod.substring(0, Math.min(12, mod.length())), -28, -25 + ((i - (page * 6)) * 10),
+					0x404040);
 			//mc.fontRenderer.drawSplitString(mod, -28, -25 + ((i - (page * 6)) * 10), 50, 0x404040);
 		}
 	}

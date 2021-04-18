@@ -3,7 +3,6 @@ package logisticspipes.interfaces;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
@@ -15,13 +14,13 @@ import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.utils.CacheHolder;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.connection.Adjacent;
-import network.rs485.logisticspipes.connection.NeighborTileEntity;
 
 //methods needed by modules that any CRP can offer
 public interface IPipeServiceProvider extends IRoutedPowerProvider, ISpawnParticles, ISendRoutedItem {
 
 	boolean isNthTick(int n);
 
+	@Nonnull
 	DebugLogController getDebug();
 
 	CacheHolder getCacheHolder();

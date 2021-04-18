@@ -37,7 +37,7 @@ public class FuzzySlotSettingsPacket extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if (player.openContainer != null && player.openContainer.getSlot(slotNumber) instanceof IFuzzySlot) {
-			((IFuzzySlot) player.openContainer.getSlot(slotNumber)).getFuzzyFlags().loadFromBitSet(flags);
+			((IFuzzySlot) player.openContainer.getSlot(slotNumber)).getFuzzyFlags().replaceWith(flags);
 		}
 	}
 
@@ -51,4 +51,5 @@ public class FuzzySlotSettingsPacket extends ModernPacket {
 	public ModernPacket template() {
 		return new FuzzySlotSettingsPacket(getId());
 	}
+
 }

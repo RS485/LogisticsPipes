@@ -1,16 +1,15 @@
 package logisticspipes.proxy.recipeproviders;
 
-import java.util.BitSet;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.proxy.interfaces.IFuzzyRecipeProvider;
-import logisticspipes.request.resources.DictResource;
-import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.inventory.FuzzySlotAccess;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
+import network.rs485.logisticspipes.inventory.SlotAccess;
+import network.rs485.logisticspipes.property.BitSetProperty;
 
 public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 
@@ -20,7 +19,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
+	public boolean importRecipe(TileEntity tile, IItemIdentifierInventory inventory) {
 		if (!(tile instanceof LogisticsCraftingTableTileEntity)) {
 			return false;
 		}
@@ -55,7 +54,7 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 	}
 
 	@Override
-	public void importFuzzyFlags(TileEntity tile, ItemIdentifierInventory inventory, DictResource[] flags, DictResource output) {
+	public void importFuzzyFlags(TileEntity tile, SlotAccess slotAccess, BitSetProperty fuzzyFlags) {
 		if (!(tile instanceof LogisticsCraftingTableTileEntity)) {
 			return;
 		}
@@ -66,50 +65,8 @@ public class LogisticsCraftingTable implements IFuzzyRecipeProvider {
 			return;
 		}
 
-		for (int i = 0; i < bench.fuzzyFlags.length; i++) {
-			if (i >= flags.length) {
-				break;
-			}
-			flags[i].loadFromBitSet(bench.fuzzyFlags[i].getBitSet());
-		}
-		output.loadFromBitSet(bench.outputFuzzyFlags.getBitSet());
-
-		//compact with fuzzy flags
-
-		for (int i = 0; i < 9; i++) {
-			final ItemIdentifierStack stackInSlot = inventory.getIDStackInSlot(i);
-			if (stackInSlot == null) {
-				continue;
-			}
-			final ItemIdentifier itemInSlot = stackInSlot.getItem();
-			for (int j = i + 1; j < 9; j++) {
-				final ItemIdentifierStack stackInOtherSlot = inventory.getIDStackInSlot(j);
-				if (stackInOtherSlot == null) {
-					continue;
-				}
-				if (itemInSlot.equals(stackInOtherSlot.getItem()) && flags[i].getBitSet().equals(flags[j].getBitSet())) {
-					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
-					inventory.clearInventorySlotContents(j);
-					flags[j].loadFromBitSet(new BitSet()); // clear
-				}
-			}
-			inventory.setInventorySlotContents(i, stackInSlot);
-		}
-
-		for (int i = 0; i < 9; i++) {
-			if (inventory.getIDStackInSlot(i) != null) {
-				continue;
-			}
-			for (int j = i + 1; j < 9; j++) {
-				if (inventory.getIDStackInSlot(j) == null) {
-					continue;
-				}
-				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
-				flags[i].loadFromBitSet(flags[j].getBitSet());
-				inventory.clearInventorySlotContents(j);
-				flags[j].loadFromBitSet(new BitSet()); // clear
-				break;
-			}
-		}
+		fuzzyFlags.replaceWith(bench.fuzzyFlags);
+		new FuzzySlotAccess(slotAccess, fuzzyFlags).compactFirst(9);
 	}
+
 }

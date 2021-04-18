@@ -21,6 +21,7 @@ public class ModuleInventory extends InventoryModuleCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
+		if (getIdentList() == null) return;
 		IModuleInventoryReceive module = this.getLogisticsModule(player, IModuleInventoryReceive.class);
 		if (module == null) {
 			return;

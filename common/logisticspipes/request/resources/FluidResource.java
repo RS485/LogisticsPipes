@@ -1,5 +1,6 @@
 package logisticspipes.request.resources;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import logisticspipes.interfaces.routing.IRequestFluid;
@@ -25,7 +26,7 @@ public class FluidResource implements IResource {
 	}
 
 	public FluidResource(LPDataInput input) {
-		liquid = FluidIdentifier.get(input.readItemIdentifier());
+		liquid = FluidIdentifier.get(Objects.requireNonNull(input.readItemIdentifier()));
 		amount = input.readInt();
 		target = null;
 	}
@@ -58,6 +59,11 @@ public class FluidResource implements IResource {
 	@Nonnull
 	public IRouter getRouter() {
 		return target.getRouter();
+	}
+
+	@Override
+	public boolean matches(IResource resource, MatchSettings settings) {
+		return resource instanceof FluidResource && matches(resource.getAsItem(), settings);
 	}
 
 	@Override

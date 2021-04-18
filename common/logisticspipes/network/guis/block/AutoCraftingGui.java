@@ -1,5 +1,7 @@
 package logisticspipes.network.guis.block;
 
+import java.util.BitSet;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
@@ -16,10 +18,7 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public class AutoCraftingGui extends CoordinatesGuiProvider {
 
 	boolean isFuzzy;
-	boolean[] ignore_dmg = new boolean[9];
-	boolean[] ignore_nbt = new boolean[9];
-	boolean[] use_od = new boolean[9];
-	boolean[] use_category = new boolean[9];
+	BitSet fuzzyFlags = new BitSet(9 * 4);
 	ItemIdentifier targetType;
 
 	public AutoCraftingGui(int id) {
@@ -30,12 +29,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsCraftingTableTileEntity tile = getTileAs(player.world, LogisticsCraftingTableTileEntity.class);
 		if (tile.isFuzzy()) {
-			for (int i = 0; i < 9; i++) {
-				tile.fuzzyFlags[i].ignore_dmg = ignore_dmg[i];
-				tile.fuzzyFlags[i].ignore_nbt = ignore_nbt[i];
-				tile.fuzzyFlags[i].use_od = use_od[i];
-				tile.fuzzyFlags[i].use_category = use_category[i];
-			}
+			tile.fuzzyFlags.replaceWith(fuzzyFlags);
 		}
 		tile.targetType = targetType;
 		return new GuiLogisticsCraftingTable(player, tile);
@@ -48,10 +42,10 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 
 		for (int X = 0; X < 3; X++) {
 			for (int Y = 0; Y < 3; Y++) {
-				dummy.addFuzzyDummySlot(Y * 3 + X, 35 + X * 18, 10 + Y * 18, tile.fuzzyFlags[Y * 3 + X]);
+				dummy.addFuzzyDummySlot(Y * 3 + X, 35 + X * 18, 10 + Y * 18, tile.inputFuzzy(Y * 3 + X));
 			}
 		}
-		dummy.addFuzzyUnmodifiableSlot(0, tile.resultInv, 125, 28, tile.outputFuzzyFlags);
+		dummy.addFuzzyUnmodifiableSlot(0, tile.resultInv, 125, 28, tile.outputFuzzy());
 		for (int Y = 0; Y < 2; Y++) {
 			for (int X = 0; X < 9; X++) {
 				dummy.addNormalSlot(Y * 9 + X, tile.inv, 8 + X * 18, 80 + Y * 18);
@@ -67,12 +61,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 		output.writeItemIdentifier(targetType);
 		output.writeBoolean(isFuzzy);
 		if (isFuzzy) {
-			for (int i = 0; i < 9; i++) {
-				output.writeBoolean(ignore_dmg[i]);
-				output.writeBoolean(ignore_nbt[i]);
-				output.writeBoolean(use_od[i]);
-				output.writeBoolean(use_category[i]);
-			}
+			output.writeBitSet(fuzzyFlags);
 		}
 	}
 
@@ -81,12 +70,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 		super.readData(input);
 		targetType = input.readItemIdentifier();
 		if (input.readBoolean()) {
-			for (int i = 0; i < 9; i++) {
-				ignore_dmg[i] = input.readBoolean();
-				ignore_nbt[i] = input.readBoolean();
-				use_od[i] = input.readBoolean();
-				use_category[i] = input.readBoolean();
-			}
+			fuzzyFlags = input.readBitSet();
 		}
 	}
 
@@ -94,12 +78,7 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 		setTilePos(tile);
 		if (tile.isFuzzy()) {
 			isFuzzy = true;
-			for (int i = 0; i < 9; i++) {
-				ignore_dmg[i] = tile.fuzzyFlags[i].ignore_dmg;
-				ignore_nbt[i] = tile.fuzzyFlags[i].ignore_nbt;
-				use_od[i] = tile.fuzzyFlags[i].use_od;
-				use_category[i] = tile.fuzzyFlags[i].use_category;
-			}
+			fuzzyFlags = tile.fuzzyFlags.copyValue(0, (9 * 4) - 1);
 		}
 		targetType = tile.targetType;
 		return this;

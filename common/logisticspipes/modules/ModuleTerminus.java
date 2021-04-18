@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -9,7 +10,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.gui.hud.modules.HUDSimpleFilterModule;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -37,57 +37,63 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
+import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "Terminus Module")
-public class ModuleTerminus extends LogisticsModule implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
+public class ModuleTerminus extends LogisticsModule
+		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
+		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
-	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
-
-	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private final InventoryProperty filterInventory = new InventoryProperty(
+			new ItemIdentifierInventory(9, "Terminated items", 1), "");
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
+	private final IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
+	private SinkReply _sinkReply;
 
 	public ModuleTerminus() {
-		_filterInventory.addListener(this);
+		filterInventory.addListener(this);
 	}
 
 	public static String getName() {
 		return "terminus";
 	}
 
+	@Nonnull
+	@Override
+	public String getLPName() { return getName(); }
+
+	@Nonnull
+	@Override
+	public List<Property<?>> getProperties() {
+		return Collections.singletonList(filterInventory);
+	}
+
 	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
 	@Nonnull
 	public IInventory getFilterInventory() {
-		return _filterInventory;
+		return filterInventory;
 	}
-
-	@Override
-	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		_filterInventory.readFromNBT(nbttagcompound, "");
-	}
-
-	@Override
-	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		_filterInventory.writeToNBT(nbttagcompound, "");
-	}
-
-	private SinkReply _sinkReply;
 
 	@Override
 	public void registerPosition(@Nonnull ModulePositionType slot, int positionInt) {
 		super.registerPosition(slot, positionInt);
-		_sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0, new ChassiTargetInformation(getPositionInt()));
+		_sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0,
+				new ChassiTargetInformation(getPositionInt()));
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
-		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal()
+				&& bestCustomPriority >= _sinkReply.customPriority)) {
 			return null;
 		}
 		final IPipeServiceProvider service = _service;
 		if (service == null) return null;
-		if (_filterInventory.containsUndamagedItem(item.getUndamaged())) {
+		if (filterInventory.containsUndamagedItem(item.getUndamaged())) {
 			if (service.canUseEnergy(2)) {
 				return _sinkReply;
 			}
@@ -100,7 +106,8 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	public void tick() {}
 
 	@Override
-	public @Nonnull List<String> getClientInformation() {
+	public @Nonnull
+	List<String> getClientInformation() {
 		List<String> list = new ArrayList<>();
 		list.add("Terminated: ");
 		list.add("<inventory>");
@@ -126,7 +133,9 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setModulePos(this), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class)
+						.setIdentList(ItemIdentifierStack.getListFromInventory(filterInventory)).setModulePos(this),
+				localModeWatchers);
 	}
 
 	@Override
@@ -147,8 +156,8 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 	}
 
 	@Override
-	public void handleInvContent(Collection<ItemIdentifierStack> list) {
-		_filterInventory.handleItemIdentifierList(list);
+	public void handleInvContent(@Nonnull Collection<ItemIdentifierStack> list) {
+		filterInventory.handleItemIdentifierList(list);
 	}
 
 	@Override
@@ -158,7 +167,7 @@ public class ModuleTerminus extends LogisticsModule implements SimpleFilter, ICl
 
 	@Override
 	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		Set<ItemIdentifier> filterItemids = _filterInventory.getItemsAndCount().keySet();
+		Set<ItemIdentifier> filterItemids = filterInventory.getItemsAndCount().keySet();
 		itemidCollection.addAll(filterItemids);
 		filterItemids.stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
 	}

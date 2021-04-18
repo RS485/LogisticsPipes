@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Krapht, 2011
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0, or MMPL. Please check the contents of the license located in
@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.request.resources.DictResource;
 import logisticspipes.request.resources.IResource;
 import logisticspipes.request.resources.ItemResource;
 import logisticspipes.routing.LogisticsExtraPromise;
@@ -99,12 +98,7 @@ public class ItemCraftingTemplate implements IReqCraftingTemplate {
 
 	@Override
 	public boolean canCraft(IResource type) {
-		if (type instanceof ItemResource) {
-			return ((ItemResource) type).getItem().equals(_result.getItem());
-		} else if (type instanceof DictResource) {
-			return type.matches(_result.getItem(), IResource.MatchSettings.NORMAL);
-		}
-		return false;
+		return type.matches(_result.getItem(), IResource.MatchSettings.NORMAL);
 	}
 
 	@Override

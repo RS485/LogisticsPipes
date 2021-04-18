@@ -20,7 +20,7 @@ public class ProviderModuleInHand extends ModuleInHandGuiProvider {
 
 	@Override
 	public Object getClientGui(EntityPlayer player) {
-		LogisticsModule module = ItemModule.getLogisticsModule(player, getInvSlot());
+		final LogisticsModule module = ItemModule.getLogisticsModule(player, getInvSlot());
 		if (!(module instanceof ModuleProvider)) {
 			return null;
 		}
@@ -33,7 +33,7 @@ public class ProviderModuleInHand extends ModuleInHandGuiProvider {
 		if (!(dummy.getModule() instanceof ModuleProvider)) {
 			return null;
 		}
-		dummy.setInventory(((ModuleProvider) dummy.getModule()).getFilterInventory());
+		dummy.setInventory(((ModuleProvider) dummy.getModule()).filterInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 
 		int xOffset = 72;

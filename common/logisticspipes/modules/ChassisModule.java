@@ -1,8 +1,12 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,45 +25,65 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
+import network.rs485.logisticspipes.property.Property;
+import network.rs485.logisticspipes.property.SlottedModule;
+import network.rs485.logisticspipes.property.SlottedModuleListProperty;
 
 public class ChassisModule extends LogisticsModule implements Gui {
 
-	private final LogisticsModule[] modules;
 	private final PipeLogisticsChassis parentChassis;
+	private final SlottedModuleListProperty modules;
 
 	public ChassisModule(int moduleCount, PipeLogisticsChassis parentChassis) {
-		modules = new LogisticsModule[moduleCount];
+		modules = new SlottedModuleListProperty(moduleCount, "modules");
 		this.parentChassis = parentChassis;
 		registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
+	@Nonnull
+	@Override
+	public String getLPName() {
+		throw new RuntimeException("Cannot get LP name for " + this);
+	}
+
+	@Nonnull
+	@Override
+	public List<Property<?>> getProperties() {
+		return Collections.singletonList(modules);
+	}
+
 	public void installModule(int slot, LogisticsModule module) {
-		modules[slot] = module;
+		modules.set(slot, module);
 	}
 
 	public void removeModule(int slot) {
-		modules[slot] = null;
+		modules.clear(slot);
 	}
 
+	@Nullable
 	public LogisticsModule getModule(int slot) {
-		return modules[slot];
+		return modules.get(slot).getModule();
 	}
 
 	public boolean hasModule(int slot) {
-		return (modules[slot] != null);
+		return !modules.get(slot).isEmpty();
 	}
 
-	public LogisticsModule[] getModules() {
-		return modules;
+	public Stream<LogisticsModule> getModules() {
+		return modules.stream().map(SlottedModule::getModule);
 	}
 
 	@Override
-	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
+	public SinkReply sinksItem(@Nonnull ItemStack stack, ItemIdentifier item, int bestPriority, int bestCustomPriority,
+			boolean allowDefault, boolean includeInTransit, boolean forcePassive) {
 		SinkReply bestresult = null;
-		for (LogisticsModule module : modules) {
+		for (SlottedModule slottedModule : modules) {
+			final LogisticsModule module = slottedModule.getModule();
 			if (module != null) {
 				if (!forcePassive || module.recievePassive()) {
-					SinkReply result = module.sinksItem(stack, item, bestPriority, bestCustomPriority, allowDefault, includeInTransit, forcePassive);
+					SinkReply result = module
+							.sinksItem(stack, item, bestPriority, bestCustomPriority, allowDefault, includeInTransit,
+									forcePassive);
 					if (result != null && result.maxNumberOfItems >= 0) {
 						bestresult = result;
 						bestPriority = result.fixedPriority.ordinal();
@@ -73,8 +97,10 @@ public class ChassisModule extends LogisticsModule implements Gui {
 			return null;
 		}
 		//Always deny items when we can't put the item anywhere
-		final ISlotUpgradeManager upgradeManager = parentChassis.getUpgradeManager(ModulePositionType.SLOT, ((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
-		IInventoryUtil invUtil = PipeServiceProviderUtilKt.availableSneakyInventories(parentChassis, upgradeManager).stream().findFirst().orElse(null);
+		final ISlotUpgradeManager upgradeManager = parentChassis.getUpgradeManager(ModulePositionType.SLOT,
+				((ChassiTargetInformation) bestresult.addInfo).getModuleSlot());
+		IInventoryUtil invUtil = PipeServiceProviderUtilKt.availableSneakyInventories(parentChassis, upgradeManager)
+				.stream().findFirst().orElse(null);
 		if (invUtil == null) {
 			return null;
 		}
@@ -99,30 +125,19 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	}
 
 	@Override
-	public void readFromNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		for (int i = 0; i < modules.length; i++) {
-			if (modules[i] != null) {
-				if (nbttagcompound.hasKey("slot" + i)) {
-					modules[i].readFromNBT(nbttagcompound.getCompoundTag("slot" + i));
-				}
-			}
-		}
-	}
-
-	@Override
-	public void writeToNBT(@Nonnull NBTTagCompound nbttagcompound) {
-		for (int i = 0; i < modules.length; i++) {
-			if (modules[i] != null) {
-				NBTTagCompound slot = new NBTTagCompound();
-				modules[i].writeToNBT(slot);
-				nbttagcompound.setTag("slot" + i, slot);
-			}
-		}
+	public void readFromNBT(@Nonnull NBTTagCompound tag) {
+		super.readFromNBT(tag);
+		// FIXME: remove after 1.12
+		modules.stream()
+				.filter(slottedModule -> !slottedModule.isEmpty() && tag.hasKey("slot" + slottedModule.getSlot()))
+				.forEach(slottedModule -> Objects.requireNonNull(slottedModule.getModule())
+						.readFromNBT(tag.getCompoundTag("slot" + slottedModule.getSlot())));
 	}
 
 	@Override
 	public void tick() {
-		for (LogisticsModule module : modules) {
+		for (SlottedModule slottedModule : modules) {
+			final LogisticsModule module = slottedModule.getModule();
 			if (module == null) {
 				continue;
 			}
@@ -147,7 +162,8 @@ public class ChassisModule extends LogisticsModule implements Gui {
 
 	@Override
 	public boolean recievePassive() {
-		for (LogisticsModule module : modules) {
+		for (SlottedModule slottedModule : modules) {
+			final LogisticsModule module = slottedModule.getModule();
 			if (module != null && module.recievePassive()) {
 				return true;
 			}
@@ -158,7 +174,8 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
 		List<CCSinkResponder> list = new ArrayList<>();
-		for (LogisticsModule module : modules) {
+		for (SlottedModule slottedModule : modules) {
+			final LogisticsModule module = slottedModule.getModule();
 			if (module != null) {
 				list.addAll(module.queueCCSinkEvent(item));
 			}
@@ -169,7 +186,8 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	@Nonnull
 	@Override
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
-		return NewGuiHandler.getGui(ChassisGuiProvider.class).setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
+		return NewGuiHandler.getGui(ChassisGuiProvider.class)
+				.setFlag(parentChassis.getUpgradeManager().hasUpgradeModuleUpgrade());
 	}
 
 	@Nonnull
@@ -177,4 +195,5 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		throw new UnsupportedOperationException("Chassis GUI can never be opened in hand");
 	}
+
 }

@@ -41,7 +41,11 @@ import net.minecraft.nbt.NBTTagCompound
 
 typealias ObserverCallback<V> = (Property<V>) -> Unit
 
-fun Collection<Property<*>>.addObserver(callback: ObserverCallback<*>) = forEach { prop -> prop.addObserver(callback) }
+fun Collection<Property<*>>.addObserver(callback: ObserverCallback<*>) =
+    forEach { prop -> prop.addObserver(callback) }
+
+fun Collection<Property<*>>.removeObserver(callback: ObserverCallback<*>) =
+    forEach { prop -> prop.propertyObservers.remove(callback) }
 
 fun Collection<Property<*>>.readFromNBT(tag: NBTTagCompound) = forEach { prop -> prop.readFromNBT(tag) }
 

@@ -63,10 +63,7 @@ import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
 import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopModuleWatchingPacket;
-import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
-import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
 import logisticspipes.network.packets.pipe.CraftingPipeUpdatePacket;
-import logisticspipes.network.packets.pipe.CraftingPriority;
 import logisticspipes.network.packets.pipe.FluidCraftingAmount;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeFluidSatellite;
@@ -161,7 +158,9 @@ public class ModuleCrafter extends LogisticsModule
 	protected final PlayerCollectionList guiWatcher = new PlayerCollectionList();
 
 	public ClientSideSatelliteNames clientSideSatelliteNames = new ClientSideSatelliteNames();
+
 	protected SinkReply _sinkReply;
+
 	@Nullable
 	private IRequestItems _invRequester;
 	private WeakReference<TileEntity> lastAccessedCrafter = new WeakReference<>(null);
@@ -796,11 +795,9 @@ public class ModuleCrafter extends LogisticsModule
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(CraftingModuleSlot.class)
 				.setAdvancedSat(getUpgradeManager().isAdvancedSatelliteCrafter())
-				.setLiquidCrafter(getUpgradeManager().getFluidCrafter())
-				.setAmount(liquidAmounts.getArray())
+				.setLiquidCrafter(getUpgradeManager().getFluidCrafter()).setAmount(liquidAmounts.getArray())
 				.setHasByproductExtractor(getUpgradeManager().hasByproductExtractor())
-				.setFuzzy(getUpgradeManager().isFuzzyUpgrade())
-				.setCleanupSize(getUpgradeManager().getCrafterCleanup())
+				.setFuzzy(getUpgradeManager().isFuzzyUpgrade()).setCleanupSize(getUpgradeManager().getCrafterCleanup())
 				.setCleanupExclude(cleanupModeIsExclude.getValue());
 	}
 
@@ -838,30 +835,6 @@ public class ModuleCrafter extends LogisticsModule
 				MainProxy.sendPacketToPlayer(packet, player);
 			}
 			MainProxy.sendPacketToAllWatchingChunk(this, packet);
-		}
-	}
-
-	public void priorityUp(EntityPlayer player) {
-		priority.increase(1);
-		if (MainProxy.isClient(player.world)) {
-			MainProxy
-					.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setModulePos(this));
-		} else if (MainProxy.isServer(player.world)) {
-			MainProxy.sendPacketToPlayer(
-					PacketHandler.getPacket(CraftingPriority.class).setInteger(priority.getValue()).setModulePos(this),
-					player);
-		}
-	}
-
-	public void priorityDown(EntityPlayer player) {
-		priority.increase(-1);
-		if (MainProxy.isClient(player.world)) {
-			MainProxy.sendPacketToServer(
-					PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setModulePos(this));
-		} else if (MainProxy.isServer(player.world)) {
-			MainProxy.sendPacketToPlayer(
-					PacketHandler.getPacket(CraftingPriority.class).setInteger(priority.getValue()).setModulePos(this),
-					player);
 		}
 	}
 

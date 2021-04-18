@@ -51,6 +51,6 @@ class IntegerProperty(initialValue: Int, override val tagKey: String) : ValuePro
 
     override fun copyProperty(): IntegerProperty = IntegerProperty(copyValue(), tagKey)
 
-    fun increase(by: Int) = value.and(by).also { value = it }
+    fun increase(by: Int) = value.plus(by).also { value = it }
 
 }

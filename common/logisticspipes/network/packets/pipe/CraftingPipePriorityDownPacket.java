@@ -25,6 +25,6 @@ public class CraftingPipePriorityDownPacket extends ModuleCoordinatesPacket {
 		if (module == null) {
 			return;
 		}
-		module.priorityDown(player);
+		module.priority.increase(-1);
 	}
 }

@@ -85,6 +85,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
+		propertyLayer.unregister();
 		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
 			// send update to server, when there are changed properties
 			MainProxy.sendPacketToServer(

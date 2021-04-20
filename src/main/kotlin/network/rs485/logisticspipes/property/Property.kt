@@ -38,10 +38,11 @@
 package network.rs485.logisticspipes.property
 
 import logisticspipes.interfaces.routing.ISaveState
+import java.util.concurrent.CopyOnWriteArraySet
 
 interface Property<V> : ISaveState {
     val tagKey: String
-    val propertyObservers: MutableList<ObserverCallback<V>>
+    val propertyObservers: CopyOnWriteArraySet<ObserverCallback<V>>
 
     fun iChanged() = propertyObservers.forEach { observer -> observer.invoke(this) }
     fun <T> T.alsoIChanged() = this.also { iChanged() }

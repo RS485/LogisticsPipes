@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.property
 
 import net.minecraft.nbt.NBTTagCompound
+import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.UnaryOperator
 
 abstract class ListProperty<T>(
@@ -53,7 +54,7 @@ abstract class ListProperty<T>(
             if (tagKey.isEmpty()) "$ITEM_NAME.$idx" else "$tagKey.$ITEM_NAME.$idx"
     }
 
-    override val propertyObservers: MutableList<ObserverCallback<MutableList<T>>> = mutableListOf()
+    override val propertyObservers: CopyOnWriteArraySet<ObserverCallback<MutableList<T>>> = CopyOnWriteArraySet()
 
     fun ensureSize(size: Int, fillWith: (Int) -> T) =
         (size - list.size).takeIf { it > 0 }?.let { repeat(it) { list.add(fillWith(list.size)) } }?.alsoIChanged()

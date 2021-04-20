@@ -43,6 +43,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.inventory.SlotAccess
+import java.util.concurrent.CopyOnWriteArraySet
 
 class InventoryProperty(private val inv: ItemIdentifierInventory, override val tagKey: String) :
     Property<ItemIdentifierInventory>, IItemIdentifierInventory by inv {
@@ -52,7 +53,8 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, override val t
             inv.slotAccess.mergeSlots(intoSlot, fromSlot).alsoIChanged()
     }
 
-    override val propertyObservers: MutableList<ObserverCallback<ItemIdentifierInventory>> = mutableListOf()
+    override val propertyObservers: CopyOnWriteArraySet<ObserverCallback<ItemIdentifierInventory>> =
+        CopyOnWriteArraySet()
 
     override fun decrStackSize(index: Int, count: Int): ItemStack = inv.decrStackSize(index, count).alsoIChanged()
 

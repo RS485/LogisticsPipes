@@ -38,11 +38,12 @@
 package network.rs485.logisticspipes.property
 
 import java.util.*
+import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
 
 abstract class ValueProperty<V>(initialValue: V) : Property<V> {
-    override val propertyObservers: MutableList<ObserverCallback<V>> = mutableListOf()
+    override val propertyObservers: CopyOnWriteArraySet<ObserverCallback<V>> = CopyOnWriteArraySet()
 
     var value: V by Delegates.observable(initialValue) { _: KProperty<*>, oldValue: V, newValue: V ->
         if (oldValue != newValue) iChanged()

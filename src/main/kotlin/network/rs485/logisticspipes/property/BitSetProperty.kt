@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.property
 
 import net.minecraft.nbt.NBTTagCompound
 import java.util.*
+import java.util.concurrent.CopyOnWriteArraySet
 
 interface IBitSet {
     operator fun get(bit: Int): Boolean
@@ -60,7 +61,7 @@ interface IBitSet {
 
 class BitSetProperty(private val bitset: BitSet, override val tagKey: String) : IBitSet, Property<BitSet> {
 
-    override val propertyObservers: MutableList<ObserverCallback<BitSet>> = mutableListOf()
+    override val propertyObservers: CopyOnWriteArraySet<ObserverCallback<BitSet>> = CopyOnWriteArraySet()
 
     override fun copyValue(): BitSet = bitset.clone() as BitSet
 

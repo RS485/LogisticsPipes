@@ -44,6 +44,7 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
     private val lowerLayer: List<Property<*>> = propertiesIn.toList()
     private val upperLayer: MutableList<Property<*>?> = MutableList(propertiesIn.size) { null }
     private val changedIndices: BitSet = BitSet(propertiesIn.size)
+    private val observersToRemove: MutableMap<Int, ObserverCallback<*>> = mutableMapOf()
 
     /**
      * A list consisting only of changed [properties][Property] on this [PropertyLayer].
@@ -53,8 +54,15 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
 
     private fun prepareWrite(idx: Int) {
         upperLayer[idx] = lowerLayer[idx].copyProperty().also {
-            // set to changed once the copied property is actually changed
-            it.addObserver { changedIndices.set(idx) }
+            it.addObserver {
+                // set to changed once the copied property is actually changed
+                changedIndices.set(idx)
+                observersToRemove.remove(idx)?.also { obs ->
+                    lowerLayer[idx].propertyObservers.remove(obs)
+                    it.addObserver(obs)
+                    obs(it)
+                }
+            }
         }
     }
 
@@ -64,6 +72,28 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
 
     fun <T, P : ValueProperty<T>> overlay(valueProp: P) = ValuePropertyOverlay<T, P>(lookupIndex(valueProp, lowerLayer))
     fun <T, P : Property<T>> overlay(prop: P) = PropertyOverlay<T, P>(lookupIndex(prop, lowerLayer))
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T, P : Property<T>> writeProp(prop: P): P {
+        val idx = lookupIndex(prop, lowerLayer)
+        if (!changedIndices.get(idx)) {
+            prepareWrite(idx)
+        }
+        return upperLayer[idx]!! as P
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T, P : Property<T>> addObserver(prop: P, observer: ObserverCallback<T>) {
+        val idx = lookupIndex(prop, lowerLayer)
+        if (changedIndices.get(idx)) {
+            (upperLayer[idx]!! as P).addObserver(observer)
+        } else {
+            observersToRemove[idx] = observer as ObserverCallback<*>
+            (lowerLayer[idx] as P).addObserver(observer)
+        }
+    }
+
+    fun unregister() = observersToRemove.forEach { lowerLayer[it.key].propertyObservers.remove(it.value) }
 
     open inner class PropertyOverlay<T, P : Property<T>>(private val idx: Int) {
 

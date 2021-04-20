@@ -56,7 +56,7 @@ public class CraftingModuleSlot extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		return new GuiCraftingPipe(player, module.dummyInventory, module, isAdvancedSat, liquidCrafter, amount, hasByproductExtractor, isFuzzy,
+		return new GuiCraftingPipe(player, module, isAdvancedSat, liquidCrafter, amount, hasByproductExtractor, isFuzzy,
 				cleanupSize, cleanupExclude);
 	}
 

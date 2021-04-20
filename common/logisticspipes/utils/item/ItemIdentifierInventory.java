@@ -152,15 +152,13 @@ public class ItemIdentifierInventory
 		if (_contents[slot] == null) {
 			return ItemStack.EMPTY;
 		}
+		ItemStack ret = _contents[slot].makeNormalStack();
 		if (_contents[slot].getStackSize() > count) {
-			ItemStack ret = _contents[slot].makeNormalStack();
 			ret.setCount(count);
 			_contents[slot].setStackSize(_contents[slot].getStackSize() - count);
-			updateContents();
-			return ret;
+		} else {
+			_contents[slot] = null;
 		}
-		ItemStack ret = _contents[slot].makeNormalStack();
-		_contents[slot] = null;
 		updateContents();
 		return ret;
 	}

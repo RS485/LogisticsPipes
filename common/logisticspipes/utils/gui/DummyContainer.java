@@ -653,8 +653,8 @@ public class DummyContainer extends Container {
 
 		if (mouseButton >= 1000) {
 			if (mouseButton <= 1001) {
-				if (!slot.getStack().isEmpty()) {
-					ItemStack stack = slot.getStack();
+				if (slot.getHasStack()) {
+					ItemStack stack = slot.getStack().copy();
 					if (mouseButton == 1000) {
 						stack.grow(1);
 					} else if (stack.getCount() > 1) {
@@ -663,8 +663,11 @@ public class DummyContainer extends Container {
 					stack.setCount(Math.min(slot.getSlotStackLimit(), Math.max(1, stack.getCount())));
 					slot.putStack(stack);
 				}
+				if (slot instanceof DummySlot) {
+					((DummySlot) slot).setRedirectCall(false);
+				}
+				return;
 			}
-			return;
 		}
 
 		if (currentlyEquippedStack.isEmpty()) {

@@ -16,9 +16,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+import kotlin.Unit;
 import lombok.Getter;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -30,9 +30,7 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.cpipe.CPipeCleanupImport;
-import logisticspipes.network.packets.cpipe.CPipeCleanupToggle;
-import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
-import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
+import logisticspipes.network.packets.module.ModulePropertiesUpdate;
 import logisticspipes.network.packets.pipe.CraftingPipeSetSatellitePacket;
 import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
 import logisticspipes.pipes.upgrades.CraftingCleanupUpgrade;
@@ -49,6 +47,7 @@ import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.IntegerProperty;
+import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.PropertyLayer;
 
 public class GuiCraftingPipe extends ModuleBaseGui {
@@ -68,6 +67,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	private final int[] fluidSlotIDs;
 	private final int byproductSlotID;
 	private final int[] cleanupSlotIDs;
+	private final PropertyLayer propertyLayer;
 	private final PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> cleanupModeIsExcludeOverlay;
 	private final PropertyLayer.ValuePropertyOverlay<Integer, IntegerProperty> craftingPriorityOverlay;
 	private final PropertyLayer.PropertyOverlay<List<Integer>, IntListProperty> liquidAmountsOverlay;
@@ -76,7 +76,9 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	private final Label[] satellitePipeLabels;
 	private Label satellitePipeLabel;
 
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, ModuleCrafter module, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy, int cleanupSize, boolean cleanupExclude) {
+	public GuiCraftingPipe(EntityPlayer player, ModuleCrafter module, boolean isAdvancedSat,
+			int liquidCrafter, int[] amount, boolean hasByproductExtractor, boolean isFuzzy, int cleanupSize,
+			boolean cleanupExclude) {
 		super(null, module);
 		craftingModule = module;
 		_player = player;
@@ -86,8 +88,9 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		this.cleanupSize = cleanupSize;
 		craftingModule.cleanupModeIsExclude.setValue(cleanupExclude);
 
-		PropertyLayer propertyLayer = new PropertyLayer(craftingModule.getProperties());
+		propertyLayer = new PropertyLayer(craftingModule.getProperties());
 		cleanupModeIsExcludeOverlay = propertyLayer.overlay(craftingModule.cleanupModeIsExclude);
+		propertyLayer.addObserver(craftingModule.cleanupModeIsExclude, this::updateCleanupModeButton);
 		craftingPriorityOverlay = propertyLayer.overlay(craftingModule.priority);
 		liquidAmountsOverlay = propertyLayer.overlay(craftingModule.liquidAmounts);
 
@@ -103,7 +106,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			ySize = 187 + 30;
 		}
 
-		DummyContainer dummy = new DummyContainer(player.inventory, dummyInventory);
+		DummyContainer dummy = new DummyContainer(player.inventory,
+				propertyLayer.writeProp(craftingModule.dummyInventory));
 		dummy.addNormalSlotsForPlayerInventory(8, ySize - 82);
 
 		// Input slots
@@ -302,25 +306,18 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				break;
 			case 20:
 				craftingPriorityOverlay.write(prop -> prop.increase(1));
-				// FIXME: remove when saving properties on gui close
-				MainProxy.sendPacketToServer(
-						PacketHandler.getPacket(CraftingPipePriorityUpPacket.class)
-								.setModulePos(module));
 				break;
 			case 21:
 				craftingPriorityOverlay.write(prop -> prop.increase(-1));
-				// FIXME: remove when saving properties on gui close
-				MainProxy.sendPacketToServer(
-						PacketHandler.getPacket(CraftingPipePriorityDownPacket.class)
-								.setModulePos(module));
 				break;
 			case 22:
 				openSubGuiForSatelliteSelection(100, true);
 				break;
 			case 24:
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupToggle.class).setModulePos(craftingModule));
+				cleanupModeIsExcludeOverlay.write(BooleanProperty::toggle);
 				break;
 			case 25:
+				cleanupModeIsExcludeOverlay.set(false);
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(CPipeCleanupImport.class).setModulePos(craftingModule));
 				break;
 			default:
@@ -338,7 +335,11 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		inventorySlots.onContainerClosed(_player);
+		propertyLayer.unregister();
+		if (this.mc.player != null && !propertyLayer.getProperties().isEmpty()) {
+			// send update to server, when there are changed properties
+			MainProxy.sendPacketToServer(ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(module));
+		}
 	}
 
 	@Override
@@ -401,8 +402,10 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		super.renderExtentions();
 	}
 
-	public void onCleanupModeChange() {
-		cleanupModeButton.displayString = StringUtils.translate(GuiCraftingPipe.PREFIX + (cleanupModeIsExcludeOverlay.get() ? "Exclude" : "Include"));
+	private Unit updateCleanupModeButton(Property<Boolean> prop) {
+		cleanupModeButton.displayString = StringUtils.translate(
+				GuiCraftingPipe.PREFIX + (prop.copyValue() ? "Exclude" : "Include"));
+		return Unit.INSTANCE;
 	}
 
 	private final class FluidCraftingExtention extends GuiExtention {

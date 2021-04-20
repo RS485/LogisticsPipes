@@ -39,7 +39,7 @@ public class CraftingModuleInHand extends ModuleInHandGuiProvider {
 		if (!(module instanceof ModuleCrafter)) {
 			return null;
 		}
-		return new GuiCraftingPipe(player, ((ModuleCrafter) module).dummyInventory, ((ModuleCrafter) module), false, 0, amount, false, false, 0,
+		return new GuiCraftingPipe(player, ((ModuleCrafter) module), false, 0, amount, false, false, 0,
 				cleanupExclude);
 	}
 

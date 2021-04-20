@@ -429,17 +429,19 @@ public class ModuleCrafter extends LogisticsModule
 				}
 			}
 		}
-		remaining -= root.getAllPromissesFor(this, getCraftedItem().getItem());
+		final ItemIdentifierStack craftedItem = getCraftedItem();
+		if (craftedItem == null) return;
+		remaining -= root.getAllPromissesFor(this, craftedItem.getItem());
 		if (remaining < 1) {
 			return;
 		}
 		if (getUpgradeManager().isFuzzyUpgrade() && outputFuzzy().nextSetBit(0) != -1) {
-			DictResource dict = new DictResource(getCraftedItem(), null).loadFromBitSet(outputFuzzy().copyValue());
+			DictResource dict = new DictResource(craftedItem, null).loadFromBitSet(outputFuzzy().copyValue());
 			LogisticsExtraDictPromise promise = new LogisticsExtraDictPromise(dict,
 					Math.min(remaining, tree.getMissingAmount()), this, true);
 			tree.addPromise(promise);
 		} else {
-			LogisticsExtraPromise promise = new LogisticsExtraPromise(getCraftedItem().getItem(),
+			LogisticsExtraPromise promise = new LogisticsExtraPromise(craftedItem.getItem(),
 					Math.min(remaining, tree.getMissingAmount()), this, true);
 			tree.addPromise(promise);
 		}
@@ -1271,10 +1273,15 @@ public class ModuleCrafter extends LogisticsModule
 
 	public void importCleanup() {
 		for (int i = 0; i < 10; i++) {
-			cleanupInventory.setInventorySlotContents(i, dummyInventory.getIDStackInSlot(i));
+			final ItemIdentifierStack identStack = dummyInventory.getIDStackInSlot(i);
+			if (identStack == null) {
+				cleanupInventory.clearInventorySlotContents(i);
+			} else {
+				cleanupInventory.setInventorySlotContents(i, new ItemIdentifierStack(identStack));
+			}
 		}
 		for (int i = 10; i < cleanupInventory.getSizeInventory(); i++) {
-			cleanupInventory.setInventorySlotContents(i, ItemStack.EMPTY);
+			cleanupInventory.clearInventorySlotContents(i);
 		}
 		cleanupInventory.getSlotAccess().compactFirst(10);
 		cleanupInventory.recheckStackLimit();

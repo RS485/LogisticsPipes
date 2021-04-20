@@ -240,10 +240,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 			}
 		}
 		if (needUpdate) {
-			pipe.connectionUpdate();
-			if (pipe.container != null) {
-				pipe.container.sendUpdateToClient();
-			}
+			MainProxy.runOnServer(null, () -> () -> {
+				pipe.connectionUpdate();
+				if (pipe.container != null) {
+					pipe.container.sendUpdateToClient();
+				}
+			});
 		}
 		uuid = null;
 		uuidS = null;

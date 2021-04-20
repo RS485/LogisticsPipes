@@ -10,6 +10,7 @@ import lombok.Getter;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.pipes.PipeLogisticsChassis;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.SimpleStackInventory;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -160,10 +161,12 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 		itemExtractionUpgrade = Math.min(itemExtractionUpgrade, ItemUpgrade.MAX_ITEM_EXTRACTION);
 		itemStackExtractionUpgrade = Math.min(itemStackExtractionUpgrade, ItemUpgrade.MAX_ITEM_STACK_EXTRACTION);
 		if (needUpdate) {
-			pipe.connectionUpdate();
-			if (pipe.container != null) {
-				pipe.container.sendUpdateToClient();
-			}
+			MainProxy.runOnServer(null, () -> () -> {
+				pipe.connectionUpdate();
+				if (pipe.container != null) {
+					pipe.container.sendUpdateToClient();
+				}
+			});
 		}
 	}
 

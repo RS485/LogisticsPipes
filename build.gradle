@@ -270,10 +270,6 @@ repositories {
         name = "storagedrawers"
         url = "https://dl.bintray.com/jaquadro/dev/"
     }
-    maven {
-        name = "forge"
-        url = "https://maven.minecraftforge.net"
-    }
 }
 
 dependencies {
@@ -300,7 +296,7 @@ dependencies {
     compileOnly group: 'codechicken', name: 'NotEnoughItems', version: '1.12.2-2.4.3.245', classifier: 'deobf', transitive: false
     compileOnly group: 'codechicken', name: 'EnderStorage', version: '1.12.2-2.4.6.137', classifier: 'deobf', transitive: false
     compileOnly group: 'li.cil.oc', name: 'OpenComputers', version: 'MC1.12.2-1.7.5.205', classifier: 'api'
-    compileOnly group: 'appeng', name: 'appliedenergistics2', version: 'rv6-stable-7', classifier: 'api', transitive: false
+    compileOnly files('lib/appliedenergistics2-rv6-stable-7-api.jar')
     compileOnly group: 'cofh', name: 'CoFHCore', version: '1.12.2-4.6.3.27', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'RedstoneFlux', version: '1.12-2.1.0.7', classifier: 'deobf', transitive: false
     compileOnly group: 'cofh', name: 'CoFHWorld', version: '1.12.2-1.2.0.5', classifier: 'deobf', transitive: false

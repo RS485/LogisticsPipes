@@ -11,8 +11,12 @@ buildscript {
             url = "https://www.rs485.network/maven-cache/"
         }
         maven {
+            name = "minecraft"
+            url = "https://libraries.minecraft.net"
+        }
+        maven {
             name = "forge"
-            url = "https://files.minecraftforge.net/maven"
+            url = "https://maven.minecraftforge.net"
         }
     }
     dependencies {
@@ -239,8 +243,8 @@ repositories {
         url = 'https://jitpack.io'
     }
     maven {
-        name = "forge"
-        url = "https://files.minecraftforge.net/maven"
+        name = "minecraft"
+        url = "https://libraries.minecraft.net"
     }
     maven {
         url "http://maven.shadowfacts.net/"
@@ -265,6 +269,10 @@ repositories {
     maven {
         name = "storagedrawers"
         url = "https://dl.bintray.com/jaquadro/dev/"
+    }
+    maven {
+        name = "forge"
+        url = "https://maven.minecraftforge.net"
     }
 }
 

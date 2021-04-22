@@ -233,7 +233,6 @@ public class ItemStackRenderer {
 
 			GlStateManager.disableLighting();
 			String amountString = TextUtil.getThreeDigitFormattedNumber(itemIdentStack != null ? itemIdentStack.getStackSize() : itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
-			System.out.println(itemIdentStack != null ? itemIdentStack.getStackSize() : itemstack.getCount());
 			GlStateManager.translate(0.0F, 0.0F, zLevel + 130.0F);
 
 			// using a translated shadow does not hurt and works with the HUD

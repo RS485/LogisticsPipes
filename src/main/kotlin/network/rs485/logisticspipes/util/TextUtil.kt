@@ -101,7 +101,7 @@ object TextUtil {
     @JvmStatic
     fun getThreeDigitFormattedNumber(number: Long, forceDisplayNumber: Boolean): String {
         return numberPrefixes.firstOrNull {
-            number >= it.first * 0.1 && number < it.first * 100
+            number == 0L || (number >= it.first * 0.1 && number < it.first * 100)
         }?.let {
             when {
                 number == 1L && !forceDisplayNumber -> ""
@@ -154,8 +154,6 @@ object TextUtil {
     @JvmStatic
     fun formatNumberWithCommas(number: Long): String =
             NumberFormat.getNumberInstance(Minecraft.getMinecraft().languageManager.currentLanguage.javaLocale).format(number)
-
-    //fun formatNumberWithSpaces(number: Long): String = NumberFormat.FRACTION_FIELD
 
     private fun getReplacementString(formatting: TextFormatting): String {
         if (formatting == TextFormatting.RESET) {

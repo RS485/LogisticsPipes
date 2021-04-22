@@ -3,10 +3,10 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -128,6 +128,17 @@ public class ModuleItemSink extends LogisticsModule
 				new ChassiTargetInformation(getPositionInt()));
 		_sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0,
 				new ChassiTargetInformation(getPositionInt()));
+	}
+
+	public Stream<ItemIdentifier> getAdjacentInventoriesItems() {
+		return Objects.requireNonNull(_service)
+				.getAvailableAdjacent()
+				.inventories()
+				.stream()
+				.map(LPNeighborTileEntityKt::getInventoryUtil)
+				.filter(Objects::nonNull)
+				.flatMap(invUtil -> invUtil.getItems().stream())
+				.distinct();
 	}
 
 	@Override
@@ -303,22 +314,6 @@ public class ModuleItemSink extends LogisticsModule
 
 	public void setIgnoreNBT(BitSet ignoreNBT) {
 		this.ignoreNBT.replaceWith(ignoreNBT);
-	}
-
-	public void importFromInventory() {
-		if (_service == null) {
-			return;
-		}
-		Iterator<ItemIdentifier> items = _service.getAvailableAdjacent().inventories().stream()
-				.map(LPNeighborTileEntityKt::getInventoryUtil)
-				.filter(Objects::nonNull)
-				.flatMap(invUtil -> invUtil.getItems().stream())
-				.limit(filterInventory.getSizeInventory())
-				.iterator();
-		int idx = 0;
-		for (ItemIdentifier item = items.next(); items.hasNext(); ++idx) {
-			filterInventory.setInventorySlotContents(idx, item.makeStack(1));
-		}
 	}
 
 	@Nonnull

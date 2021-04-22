@@ -9,11 +9,14 @@ package logisticspipes.gui.modules;
 
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
+import kotlin.Unit;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.modules.ModuleItemSink;
@@ -25,9 +28,12 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.property.BitSetProperty;
 import network.rs485.logisticspipes.property.BooleanProperty;
+import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.PropertyLayer;
 
 public class GuiItemSink extends ModuleBaseGui {
@@ -37,11 +43,12 @@ public class GuiItemSink extends ModuleBaseGui {
 
 	private final PropertyLayer propertyLayer;
 	private final PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> defaultRouteOverlay;
+	private final PropertyLayer.PropertyOverlay<BitSet, BitSetProperty> ignoreDataOverlay;
+	private final PropertyLayer.PropertyOverlay<BitSet, BitSetProperty> ignoreNBTOverlay;
+	private final PropertyLayer.PropertyOverlay<ItemIdentifierInventory, InventoryProperty> filterInventoryOverlay;
 
 	private final boolean isFuzzy;
 	private final ModuleItemSink itemSinkModule;
-	private final PropertyLayer.PropertyOverlay<BitSet, BitSetProperty> ignoreDataOverlay;
-	private final PropertyLayer.PropertyOverlay<BitSet, BitSetProperty> ignoreNBTOverlay;
 	private int fuzzyPanelSelection = -1;
 
 	public GuiItemSink(IInventory playerInventory, ModuleItemSink itemSink, boolean hasFuzzyUpgrade) {
@@ -50,8 +57,10 @@ public class GuiItemSink extends ModuleBaseGui {
 		itemSinkModule = itemSink;
 		propertyLayer = new PropertyLayer(itemSink.getProperties());
 		defaultRouteOverlay = propertyLayer.overlay(itemSinkModule.defaultRoute);
+		filterInventoryOverlay = propertyLayer.overlay(itemSinkModule.filterInventory);
 
-		DummyContainer dummy = new DummyContainer(playerInventory, itemSink.getFilterInventory());
+		DummyContainer dummy = new DummyContainer(playerInventory,
+				propertyLayer.writeProp(itemSinkModule.filterInventory));
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		// Pipe slots
@@ -98,6 +107,19 @@ public class GuiItemSink extends ModuleBaseGui {
 				break;
 		}
 
+	}
+
+	public void importFromInventory(Stream<ItemIdentifier> items) {
+		filterInventoryOverlay.write(filterInventory -> {
+			final Iterator<ItemIdentifier> itemsIter = items.limit(filterInventory.getSizeInventory()).iterator();
+			filterInventory.clear();
+			int idx = 0;
+			while (itemsIter.hasNext()) {
+				filterInventory.setInventorySlotContents(idx, itemsIter.next().makeStack(1));
+				++idx;
+			}
+			return Unit.INSTANCE;
+		});
 	}
 
 	@Override

@@ -96,18 +96,22 @@ object TextUtil {
      *  each scale it will be translated to the next higher scale as so: 0Px where P is the
      *  higher prefix and x is the value in the hundreds equivalent to the previous prefix.
      *  @param number to be formatted.
+     *  @param forceDisplayNumber whether 1 should return an empty string or itself.
      *  @return 3 digit string, not constrained but should never exceed it.
      */
     @JvmStatic
     fun getThreeDigitFormattedNumber(number: Long, forceDisplayNumber: Boolean): String {
-        return numberPrefixes.firstOrNull {
-            number == 0L || (number >= it.first * 0.1 && number < it.first * 100)
-        }?.let {
+        return numberPrefixes.firstOrNull { prefix ->
+            number == 0L || (number >= prefix.first * 0.1 && number < prefix.first * 100)
+        }?.let { prefix ->
             when {
                 number == 1L && !forceDisplayNumber -> ""
-                number < 1000 -> number.toString()
-                number >= it.first -> (number / it.first).toInt().toString() + it.second
-                else -> (number / it.first).toInt().toString() + it.second + ((number % it.first) / (it.first / 10)).toInt()
+                number < 1000 -> number.toString() // Don't touch less than 3 digit values
+                else -> (number / prefix.first).toInt().toString() + prefix.second + if (number > 10 * prefix.first) {
+                    ""
+                } else {
+                    ((number % prefix.first) / (prefix.first / 10)).toInt().takeIf { decimal -> decimal > 0 }?: ""
+                }
             }
         } ?: "NaN"
     }

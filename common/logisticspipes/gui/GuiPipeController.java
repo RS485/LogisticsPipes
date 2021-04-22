@@ -42,6 +42,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class GuiPipeController extends LogisticsBaseTabGuiScreen {
@@ -174,9 +175,9 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void renderForgroundContent() {
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "upgrade"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "upgrade"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			if (pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
-				fontRenderer.drawString(StringUtils.translate(PREFIX + "sneakyUpgrades"), 10, 74, Color.getValue(Color.DARKER_GREY), false);
+				fontRenderer.drawString(TextUtil.translate(PREFIX + "sneakyUpgrades"), 10, 74, Color.getValue(Color.DARKER_GREY), false);
 			}
 		}
 	}
@@ -212,7 +213,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 		@Override
 		public void renderForgroundContent() {
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
 			if (!itemStack.isEmpty()) {
 				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
@@ -248,16 +249,16 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			int lifetimexCenter = 140;
 			String s;
 
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "Session"), sessionxCenter - fontRenderer
-					.getStringWidth(StringUtils.translate(PREFIX + "Session")) / 2, 40, 0x303030);
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRenderer
-					.getStringWidth(StringUtils.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "Sent") + ":", 55 - fontRenderer
-					.getStringWidth(StringUtils.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "Recieved") + ":", 55 - fontRenderer
-					.getStringWidth(StringUtils.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "Relayed") + ":", 55 - fontRenderer
-					.getStringWidth(StringUtils.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Session"), sessionxCenter - fontRenderer
+					.getStringWidth(TextUtil.translate(PREFIX + "Session")) / 2, 40, 0x303030);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRenderer
+					.getStringWidth(TextUtil.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Sent") + ":", 55 - fontRenderer
+					.getStringWidth(TextUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Recieved") + ":", 55 - fontRenderer
+					.getStringWidth(TextUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Relayed") + ":", 55 - fontRenderer
+					.getStringWidth(TextUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_sent);
 			fontRenderer.drawString(s, sessionxCenter - fontRenderer.getStringWidth(s) / 2, 55, 0x303030);
@@ -277,8 +278,8 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
 			fontRenderer.drawString(s, lifetimexCenter - fontRenderer.getStringWidth(s) / 2, 85, 0x303030);
 
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRenderer
-					.getStringWidth(StringUtils.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRenderer
+					.getStringWidth(TextUtil.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.server_routing_table_size);
 			fontRenderer.drawString(s, 130 - fontRenderer.getStringWidth(s) / 2, 110, 0x303030);

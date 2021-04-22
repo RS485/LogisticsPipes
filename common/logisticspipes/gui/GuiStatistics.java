@@ -37,6 +37,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.math.Vec2;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiStatistics extends LogisticsBaseGuiScreen {
 
@@ -336,7 +337,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		@Override
 		public void drawForegroundLayer(int mouseX, int mouseY) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			mc.fontRenderer.drawString(TextUtil.translate(PREFIX + "amount"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 		}
 
 		@Override
@@ -514,7 +515,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		@Override
 		public void init() {
-			BUTTONS.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, StringUtils.translate(PREFIX + "gettasks"))));
+			BUTTONS.add(addButton(new GuiButton(6, guiLeft + 10, guiTop + 40, 160, 20, TextUtil.translate(PREFIX + "gettasks"))));
 			BUTTONS.add(addButton(new SmallGuiButton(7, guiLeft + 90, guiTop + 65, 10, 10, "<")));
 			BUTTONS.add(addButton(new SmallGuiButton(8, guiLeft + 160, guiTop + 65, 10, 10, ">")));
 
@@ -534,7 +535,7 @@ public class GuiStatistics extends LogisticsBaseGuiScreen {
 
 		@Override
 		public void drawForegroundLayer(int mouseX, int mouseY) {
-			mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
+			mc.fontRenderer.drawString(TextUtil.translate(PREFIX + "crafting"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), GuiStatistics.this, zLevel, guiLeft, guiTop);
 		}
 

@@ -24,6 +24,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsItem;
 import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
+import org.lwjgl.input.Keyboard;
 
 public class LogisticsItem extends Item implements ILogisticsItem {
 
@@ -72,7 +74,7 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (addShiftInfo()) {
-			StringUtils.addShiftAddition(stack, tooltip);
+			TextUtil.addTooltipInformation(stack, tooltip, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
 		}
 	}
 

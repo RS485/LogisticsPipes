@@ -44,7 +44,7 @@ import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.SimpleGraphics;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 @Data
 @Accessors(chain = true)
@@ -232,8 +232,8 @@ public class ItemStackRenderer {
 			}
 
 			GlStateManager.disableLighting();
-			String amountString = StringUtils.getFormatedStackSize(itemIdentStack != null ? itemIdentStack.getStackSize() : itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
-
+			String amountString = TextUtil.getThreeDigitFormattedNumber(itemIdentStack != null ? itemIdentStack.getStackSize() : itemstack.getCount(), displayAmount == DisplayAmount.ALWAYS);
+			System.out.println(itemIdentStack != null ? itemIdentStack.getStackSize() : itemstack.getCount());
 			GlStateManager.translate(0.0F, 0.0F, zLevel + 130.0F);
 
 			// using a translated shadow does not hurt and works with the HUD

@@ -30,11 +30,11 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.EnumProperty;
 import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 
@@ -97,15 +97,15 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		String name;
 		if (hasPatternUpgrade) {
-			name = StringUtils.translate(GuiSupplierPipe.PREFIX + "TargetInvPattern");
+			name = TextUtil.translate(GuiSupplierPipe.PREFIX + "TargetInvPattern");
 		} else {
-			name = StringUtils.translate(GuiSupplierPipe.PREFIX + "TargetInv");
+			name = TextUtil.translate(GuiSupplierPipe.PREFIX + "TargetInv");
 		}
 		mc.fontRenderer.drawString(name, xSize / 2 - mc.fontRenderer.getStringWidth(name) / 2, 6, 0x404040);
 		mc.fontRenderer
-				.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
+				.drawString(TextUtil.translate(GuiSupplierPipe.PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
 		mc.fontRenderer
-				.drawString(StringUtils.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112,
+				.drawString(TextUtil.translate(GuiSupplierPipe.PREFIX + "RequestMode"), xSize - 140, ySize - 112,
 						0x404040);
 		if (hasPatternUpgrade) {
 			slotAssignmentPatternOverlay.read((slotAssignments) -> {

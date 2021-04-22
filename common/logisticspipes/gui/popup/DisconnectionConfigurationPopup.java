@@ -15,7 +15,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.gui.UpgradeSlot;
 import logisticspipes.utils.gui.sideconfig.SideConfigDisplay;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class DisconnectionConfigurationPopup extends SubGuiScreen {
 
@@ -68,7 +68,7 @@ public class DisconnectionConfigurationPopup extends SubGuiScreen {
 		int w = bounds.width * scaledresolution.getScaleFactor();
 		int h = (bounds.height - 1) * scaledresolution.getScaleFactor();
 
-		mc.fontRenderer.drawString(StringUtils
+		mc.fontRenderer.drawString(TextUtil
 				.translate(PREFIX + "disconnectTitle"), guiLeft + 8, guiTop + 8, logisticspipes.utils.Color
 				.getValue(logisticspipes.utils.Color.DARKER_GREY), false);
 

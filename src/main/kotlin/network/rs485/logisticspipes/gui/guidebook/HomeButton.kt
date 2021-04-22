@@ -38,8 +38,8 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.Minecraft
+import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
 
 private val homeButtonTexture = Rectangle(16, 64, 24, 32)
@@ -80,7 +80,7 @@ class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(
     }
 
     override fun getTooltipText(): String {
-        return StringUtils.translate("misc.guide_book.home_button")
+        return TextUtil.translate("misc.guide_book.home_button")
     }
 
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {

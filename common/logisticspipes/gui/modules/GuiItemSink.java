@@ -25,10 +25,10 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.property.BitSetProperty;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiItemSink extends ModuleBaseGui {
 
@@ -72,9 +72,9 @@ public class GuiItemSink extends ModuleBaseGui {
 		// Default item toggle:
 		buttonList.clear();
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20,
-				() -> StringUtils.translate(GuiItemSink.PREFIX + (defaultRouteOverlay.get() ? "Yes" : "No"))));
+				() -> TextUtil.translate(GuiItemSink.PREFIX + (defaultRouteOverlay.get() ? "Yes" : "No"))));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 10, guiTop + 37, 40, 10,
-				StringUtils.translate(GuiItemSink.PREFIX + "import")));
+				TextUtil.translate(GuiItemSink.PREFIX + "import")));
 	}
 
 	@Override
@@ -103,8 +103,8 @@ public class GuiItemSink extends ModuleBaseGui {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		mc.fontRenderer.drawString(itemSinkModule.getFilterInventory().getName(), 8, 6, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "Defaultroute") + ":", 65, 45, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiItemSink.PREFIX + "Inventory"), 8, ySize - 92, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiItemSink.PREFIX + "Defaultroute") + ":", 65, 45, 0x404040);
 
 		if (isFuzzy) {
 			int mx = par1 - guiLeft;
@@ -131,9 +131,9 @@ public class GuiItemSink extends ModuleBaseGui {
 			int posY = 18 + 16;
 			GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 70, posY + 27, zLevel, true, true, true, true, true);
 
-			mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "IgnoreData"),
+			mc.fontRenderer.drawString(TextUtil.translate(GuiItemSink.PREFIX + "IgnoreData"),
 					posX + 4, posY + 4, !isIgnoreData(fuzzyPanelSelection) ? 0x404040 : 0xFF4040);
-			mc.fontRenderer.drawString(StringUtils.translate(GuiItemSink.PREFIX + "IgnoreNBT"),
+			mc.fontRenderer.drawString(TextUtil.translate(GuiItemSink.PREFIX + "IgnoreNBT"),
 					posX + 4, posY + 14, !isIgnoreNBT(fuzzyPanelSelection) ? 0x404040 : 0x40FF40);
 		}
 

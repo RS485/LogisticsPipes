@@ -23,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatAllowedCharacters;
 
+import network.rs485.logisticspipes.util.TextUtil;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -63,7 +64,6 @@ import logisticspipes.utils.gui.extention.GuiExtention;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
 
 public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSearch, ISpecialItemRenderer, IDiskProvider {
@@ -280,7 +280,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 							stack = resource.getDisplayItem().makeNormalStack();
 							itemRender.renderItemAndEffectIntoGUI(stack, left + 5, top + 5);
 							itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, stack, left + 5, top + 5, "");
-							s = StringUtils.getFormatedStackSize(stack.getCount(), false);
+							s = TextUtil.getThreeDigitFormattedNumber(stack.getCount(), false);
 						} else {
 							s = "List";
 						}
@@ -315,7 +315,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 								RenderHelper.enableGUIStandardItemLighting();
 								itemRender.renderItemAndEffectIntoGUI(stack, x, y);
 								itemRender.renderItemOverlayIntoGUI(fontRenderer, stack, x, y, "");
-								s = StringUtils.getFormatedStackSize(stack.getCount(), false);
+								s = TextUtil.getThreeDigitFormattedNumber(stack.getCount(), false);
 								GL11.glDisable(GL11.GL_LIGHTING);
 								GL11.glDisable(GL11.GL_DEPTH_TEST);
 								itemRender.zLevel = 0.0F;

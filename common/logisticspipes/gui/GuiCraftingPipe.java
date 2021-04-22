@@ -40,7 +40,6 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.gui.Label;
 import network.rs485.logisticspipes.gui.VerticalLabel;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
@@ -49,6 +48,7 @@ import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.IntegerProperty;
 import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiCraftingPipe extends ModuleBaseGui {
 
@@ -176,23 +176,24 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			if (liquidCrafter != 0) {
 				extention = new FluidCraftingExtention(0);
 			}
-			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 125, (height - ySize) / 2 + 57, 37, 10, StringUtils.translate(PREFIX + "Select")));
+			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 125, (height - ySize) / 2 + 57, 37, 10, TextUtil.translate(PREFIX + "Select")));
 			normalButtonArray[0].enabled = craftingModule.getSlot().isInWorld();
-			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
-			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
+			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 50, 37, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + "Import")));
+			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 50, 28, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + "Open")));
 			addButton(normalButtonArray[3] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
 			addButton(normalButtonArray[4] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
 			if (liquidCrafter != 0) {
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[5] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 - 18, guiTop + 158, 37, 10, StringUtils.translate(PREFIX + "Select")))));
+				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[5] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 - 18, guiTop + 158, 37, 10, TextUtil.translate(PREFIX + "Select")))));
 			}
 			satellitePipeLabel = new Label(craftingModule.clientSideSatelliteNames.satelliteName, 115, 43, 55, 0x404040, 0xff8b8b8b);
 		} else {
 			for (int i = 0; i < 9; i++) {
-				addButton(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 9 + 18 * i, (height - ySize) / 2 + 75, 17, 10, StringUtils.translate(PREFIX + "Sel")));
+				addButton(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 9 + 18 * i, (height - ySize) / 2 + 75, 17, 10, TextUtil.translate(PREFIX + "Sel")));
 				satellitePipeLabels[i] = new VerticalLabel(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i], 11 + (i * 18), 35, 40, 0x404040, 0xffc6c6c6);
 			}
-			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")));
-			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Open")));
+			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + "Import")));
+			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, TextUtil
+					.translate(GuiCraftingPipe.PREFIX + "Open")));
 			addButton(normalButtonArray[3] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 105, 10, 10, ">"));
 			addButton(normalButtonArray[4] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 105, 10, 10, "<"));
 		}
@@ -216,7 +217,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
 			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
 			if (isAdvancedSat) {
-				final SmallGuiButton advancedSatelliteSelector = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 2, guiTop + 160, 37, 10, StringUtils.translate(PREFIX + "Select"));
+				final SmallGuiButton advancedSatelliteSelector = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 2, guiTop + 160, 37, 10, TextUtil.translate(PREFIX + "Select"));
 				advancedSatelliteSelector.enabled = craftingModule.getSlot().isInWorld();
 				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = advancedSatelliteSelector)));
 				extentionControllerLeft.addExtention(extention);
@@ -233,9 +234,9 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 		if (cleanupSize > 0) {
 			CleanupExtention cleanupExtention = new CleanupExtention();
-			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + (
+			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + (
 					cleanupModeIsExcludeOverlay.get() ? "Exclude" : "Include"))))));
-			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, StringUtils.translate(GuiCraftingPipe.PREFIX + "Import")))));
+			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + "Import")))));
 			for (int i = 0; i < cleanupSize * 3; i++) {
 				cleanupExtention.registerSlot(cleanupSlotIDs[i]);
 			}
@@ -347,26 +348,26 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Inputs"), 18, 7, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Inputs"), 18, 7, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Inventory"), 10, ySize - 93, 0x404040);
 
 		if (!isAdvancedSat) {
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 40, 0x404040);
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Satellite"), 123, 7, 0x404040);
+			mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 40, 0x404040);
+			mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Satellite"), 123, 7, 0x404040);
 			if (craftingModule.clientSideSatelliteNames.satelliteName.isEmpty()) {
-				mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 135, 43, 0x404040);
+				mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Off"), 135, 43, 0x404040);
 			} else {
 				if (!satellitePipeLabel.isTextEqual(craftingModule.clientSideSatelliteNames.satelliteName)) {
 					satellitePipeLabel.setText(craftingModule.clientSideSatelliteNames.satelliteName);
 				}
 				satellitePipeLabel.draw(mouseX - guiLeft, mouseY - guiTop);
 			}
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 75, 0x404040);
+			mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 75, 0x404040);
 			mc.fontRenderer.drawString(String.valueOf(craftingPriorityOverlay.get()), 143 - (mc.fontRenderer.getStringWidth(String.valueOf(craftingPriorityOverlay.get())) / 2), 87, 0x404040);
 		} else {
 			for (int i = 0; i < 9; i++) {
 				if (craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i].isEmpty()) {
-					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), 9 + (i * 18), 57, 0x404040);
+					mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Off"), 9 + (i * 18), 57, 0x404040);
 				} else {
 					if (!satellitePipeLabels[i].isTextEqual(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i])) {
 						satellitePipeLabels[i].setText(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i]);
@@ -374,8 +375,8 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 					satellitePipeLabels[i].draw(mouseX - guiLeft, mouseY - guiTop);
 				}
 			}
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 90, 0x404040);
-			mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 95, 0x404040);
+			mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Output"), 77, 90, 0x404040);
+			mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Priority") + ":", 123, 95, 0x404040);
 			mc.fontRenderer.drawString(String.valueOf(craftingPriorityOverlay.get()), 143 - (mc.fontRenderer.getStringWidth(String.valueOf(craftingPriorityOverlay.get())) / 2), 107, 0x404040);
 		}
 		GL11.glEnable(GL11.GL_LIGHTING);
@@ -403,7 +404,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	}
 
 	private Unit updateCleanupModeButton(Property<Boolean> prop) {
-		cleanupModeButton.displayString = StringUtils.translate(
+		cleanupModeButton.displayString = TextUtil.translate(
 				GuiCraftingPipe.PREFIX + (prop.copyValue() ? "Exclude" : "Include"));
 		return Unit.INSTANCE;
 	}
@@ -467,7 +468,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 					}
 					if (craftingModule.clientSideSatelliteNames.liquidSatelliteName.isEmpty()) {
 						Gui.drawRect(left + 3, top + 3, left + 3 + (liquidCrafter * 40), top + 138, 0xAA8B8B8B);
-						mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
+						mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Off"), left + (liquidCrafter * 40) / 2 - 5, top + 145, 0x404040);
 						for (int i = 0; i < liquidCrafter; i++) {
 							for (int j = 0; j < 8; j++) {
 								liquidGuiParts[i][j].enabled = false;
@@ -498,13 +499,13 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			if (isAdvancedSat) {
 				if (craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[i].isEmpty()) {
 					Gui.drawRect(left + 3, top + 3, left + 42, top + 138, 0xAA8B8B8B);
-					mc.fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Off"), left + 15, top + 146, 0x404040);
+					mc.fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Off"), left + 15, top + 146, 0x404040);
 					for (int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
 				} else {
 					String name = craftingModule.clientSideSatelliteNames.liquidSatelliteNameArray[i];
-					name = StringUtils.getCuttedString(name, 40, mc.fontRenderer);
+					name = TextUtil.getTrimmedString(name, 40, mc.fontRenderer, "...");
 					mc.fontRenderer.drawString(name, left + 22 - (fontRenderer.getStringWidth(name) / 2), top + 146, 0x404040);
 					for (int j = 0; j < 8; j++) {
 						liquidGuiParts[i][j].enabled = true;
@@ -557,7 +558,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				itemRender.zLevel = 0.0F;
 			} else {
 				GuiGraphics.drawBigSlotBackground(mc, left + 9, top + 20);
-				fontRenderer.drawString(StringUtils.translate(GuiCraftingPipe.PREFIX + "Extra"), left + 9, top + 8, 0x404040);
+				fontRenderer.drawString(TextUtil.translate(GuiCraftingPipe.PREFIX + "Extra"), left + 9, top + 8, 0x404040);
 			}
 		}
 	}

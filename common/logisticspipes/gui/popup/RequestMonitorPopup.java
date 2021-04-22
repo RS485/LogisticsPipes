@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 
+import network.rs485.logisticspipes.util.TextUtil;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -577,7 +578,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
 			itemRender.renderItemAndEffectIntoGUI(item.getItem().makeNormalStack(1), x, y);
 			itemRender.renderItemOverlayIntoGUI(fontRenderer, item.getItem().makeNormalStack(1), x, y, "");
-			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
+			String s = TextUtil.getThreeDigitFormattedNumber(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			itemRender.zLevel = 0.0F;

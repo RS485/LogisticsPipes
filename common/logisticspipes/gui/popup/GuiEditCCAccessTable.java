@@ -18,7 +18,7 @@ import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiEditCCAccessTable extends SubGuiScreen {
 
@@ -50,8 +50,8 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 119, 30, 20, "-"));
 		buttonList.add(new GuiButton(1, guiLeft + 110, guiTop + 119, 30, 20, "+"));
-		buttonList.add(new SmallGuiButton(2, guiLeft + 30, guiTop + 107, 40, 10, StringUtils.translate(GuiEditCCAccessTable.PREFIX + "Remove")));
-		buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 107, 40, 10, StringUtils.translate(GuiEditCCAccessTable.PREFIX + "Add")));
+		buttonList.add(new SmallGuiButton(2, guiLeft + 30, guiTop + 107, 40, 10, TextUtil.translate(GuiEditCCAccessTable.PREFIX + "Remove")));
+		buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 107, 40, 10, TextUtil.translate(GuiEditCCAccessTable.PREFIX + "Add")));
 		buttonList.add(new SmallGuiButton(4, guiLeft + 87, guiTop + 4, 10, 10, "<"));
 		buttonList.add(new SmallGuiButton(5, guiLeft + 130, guiTop + 4, 10, 10, ">"));
 	}

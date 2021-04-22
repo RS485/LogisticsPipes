@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.inventory
 
-import logisticspipes.utils.string.StringUtils
+import network.rs485.logisticspipes.util.TextUtil
 
 @Suppress("unused") // these are saved/restored by values() index
 enum class ProviderMode(
@@ -55,7 +55,7 @@ enum class ProviderMode(
     LEAVE_ONE_PER_TYPE("Leave1PerType", false, true, 0, 0);
 
     val extractionModeString: String
-        get() = StringUtils.translate(PREFIX + translationName)
+        get() = TextUtil.translate(PREFIX + translationName)
 
     companion object {
         @JvmStatic

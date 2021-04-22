@@ -19,7 +19,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 
@@ -80,7 +80,7 @@ public class SelectItemOutOfList extends SubGuiScreen implements IItemSearch {
 	@Override
 	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		fontRenderer.drawString(StringUtils.translate("misc.selectType"), guiLeft + 8, guiTop + 6, 0x404040, false); //TODO
+		fontRenderer.drawString(TextUtil.translate("misc.selectType"), guiLeft + 8, guiTop + 6, 0x404040, false); //TODO
 
 		itemDisplay.renderPageNumber(right - 47, guiTop + 6);
 

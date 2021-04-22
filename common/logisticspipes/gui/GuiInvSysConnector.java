@@ -30,7 +30,7 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.item.ItemStackRenderer;
 import logisticspipes.utils.item.ItemStackRenderer.DisplayAmount;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUIChannelInformationReceiver {
 
@@ -62,11 +62,11 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		buttonList.clear();
 		buttonList.add(new SmallGuiButton(0, guiLeft + 120, guiTop + 67, 10, 10, "<"));
 		buttonList.add(new SmallGuiButton(1, guiLeft + 160, guiTop + 67, 10, 10, ">"));
-		buttonList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 67, 46, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Refresh")));
+		buttonList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 67, 46, 10, TextUtil.translate(GuiInvSysConnector.PREFIX + "Refresh")));
 		buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 55, 10, 10, "<"));
 		buttonList.add(new SmallGuiButton(4, guiLeft + 120, guiTop + 55, 10, 10, ">"));
-		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 55, 30, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Save")));
-		buttonList.add(new SmallGuiButton(6, guiLeft + 130, guiTop + 20, 40, 10, StringUtils.translate(GuiInvSysConnector.PREFIX + "Change")));
+		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 55, 30, 10, TextUtil.translate(GuiInvSysConnector.PREFIX + "Save")));
+		buttonList.add(new SmallGuiButton(6, guiLeft + 130, guiTop + 20, 40, 10, TextUtil.translate(GuiInvSysConnector.PREFIX + "Change")));
 
 		if (this.resistanceCountBar == null) {
 			this.resistanceCountBar = new InputBar(this.fontRenderer, this, guiLeft + 90, guiTop + 55, 30, 12, false, true, InputBar.Align.CENTER);
@@ -88,13 +88,13 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 135);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiInvSysConnector.PREFIX + "InventorySystemConnector"), guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 78, guiLeft + 170, guiTop + 132, Color.GREY);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "ConnectionInformation") + ":", guiLeft + 10, guiTop + 21, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.getCuttedString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Channel") + ": " + (connectedChannel != null ? connectedChannel.getName() : "UNDEFINED"), 150, this.fontRenderer), guiLeft + 15, guiTop + 38, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 68, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiInvSysConnector.PREFIX + "ConnectionInformation") + ":", guiLeft + 10, guiTop + 21, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.getTrimmedString(TextUtil.translate(GuiInvSysConnector.PREFIX + "Channel") + ": " + (connectedChannel != null ? connectedChannel.getName() : "UNDEFINED"), 150, this.fontRenderer, "..."), guiLeft + 15, guiTop + 38, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiInvSysConnector.PREFIX + "Waitingfor") + ":", guiLeft + 10, guiTop + 68, 0x404040);
 		mc.fontRenderer.drawString((page + 1) + "/" + maxPage(), guiLeft + 136, guiTop + 69, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 55, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiInvSysConnector.PREFIX + "Resistance") + ":", guiLeft + 10, guiTop + 55, 0x404040);
 		resistanceCountBar.drawTextBox();
 	}
 

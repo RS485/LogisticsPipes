@@ -525,35 +525,61 @@ itemstackinfo.lprouteditem=$REDItem with stored LogisticsPipes routing informati
 itemstackinfo.lproutediteminfo=$YELLOWDrop to remove routing information and get original items back
 itemstackinfo.lprouteditemtype=Stored item
 
-top.logistics_pipes.crafting_result=§e§lCrafting result:
-top.logistics_pipes.crafting_ingredients=§e§lCrafting result:
-top.logistics_pipes.crafting_satellite_ingredients=§e§Ingredients sent through %s:
-top.logistics_pipes.crafting_extracting_byproduct=§e§lExtracting byproduct:
-top.logistics_pipes.crafting_no_result=§c§lNo crafting setup
+top.logistics_pipes.general.upgrades=Installed upgrades: %s
+top.logistics_pipes.general.no_upgrades=$REDNo installed upgrades.
+top.logistics_pipes.general.is_default_route=This $GREENis$WHITE set as a default route.
+top.logistics_pipes.general.is_not_default_route=This $REDis not§f set as a default route.
 
-top.logistics_pipes.satellite_name=§e§lSatellite name:
+top.logistics_pipes.module.provider.all=Providing $GREENall$WHITE items.
+top.logistics_pipes.module.provider.none=Providing $REDno$WHITE items.
+top.logistics_pipes.module.provider.but=Providing all $YELLOWexcept$WHITE: %s
+top.logistics_pipes.module.provider.only=Providing $YELLOWonly$WHITE: %s
+top.logistics_pipes.module.provider.mode=Mode:
 
-top.logistics_pipes.general_upgrades=§e§lUpgrades:
-top.logistics_pipes.general_no_upgrades=§cNo upgrades.
-top.logistics_pipes.general_is_default_route=§oThis §a§ois§f§o set as a default route.
-top.logistics_pipes.general_is_not_default_route=§oThis §c§ois not§f§o set as a default route.
+top.logistics_pipes.module.crafting.result=Crafting $AQUA%s$WHITE.
+top.logistics_pipes.module.crafting.no_result=$REDNo crafting recipe set.
+top.logistics_pipes.module.crafting.result_with_byproduct=Crafting $AQUA%s$WHITE with $AQUA%s$WHITE as byproduct.
 
-top.logistics_pipes.general_exclude=§c§oexclude
-top.logistics_pipes.general_include=§a§oinclude
+top.logistics_pipes.module.terminus.filter=Terminated items: %s
+top.logistics_pipes.module.terminus.no_filter=There are $REDno terminated items$RESET.
 
-top.logistics_pipes.module_provider_filter=§oFiltering items to %s.
-top.logistics_pipes.module_crafting_result=Crafting §b§o%s§f§o.
-top.logistics_pipes.module_crafting_result_with_byproduct=§oCrafting §b§o%s§f§o with §b§o%s§f§o as byproduct.
+top.logistics_pipes.module.passive_supplier.filter=Requesting: %s
+top.logistics_pipes.module.passive_supplier.no_filter=Requesting $REDno$WHITE items.
 
-top.logistics_pipes.chassis_no_modules=§cNo modules installed.
+top.logistics_pipes.module.active_supplier.filter=Items: %s
+top.logistics_pipes.module.active_supplier.no_filter=$REDNo$WHITE items being supplied.
+top.logistics_pipes.module.active_supplier.mode=Requesting items in $AQUA%s$WHITE mode.
 
-top.logistics_pipes.module_terminus_terminated_items=§oThere are terminated items.
+top.logistics_pipes.module.enchantment_sink.filter=Accepting items: %s
+top.logistics_pipes.module.enchantment_sink.no_filter=There are $REDno items set$WHITE to filter.
 
-top.logistics_pipes.module_mod_item_sink_filtered=§oAccepting items from mods: %s
-top.logistics_pipes.module_mod_item_sink_no_filter=§oThere are §c§ono mods set§f§o to filter.
+top.logistics_pipes.module.mod_item_sink.filter=Accepting items from mods: %s
+top.logistics_pipes.module.mod_item_sink.no_filter=There are $REDno mods set$WHITE to filter.
 
-top.logistics_pipes.module_creative_tab_item_sink_filtered=§oAccepting items from tabs: %s
-top.logistics_pipes.module_creative_tab_item_sink_no_filter=§oThere are §c§ono creative tabs set§f§o to filter.
+top.logistics_pipes.module.creative_tab_item_sink.filter=Accepting items from tabs: %s
+top.logistics_pipes.module.creative_tab_item_sink.no_filter=There are $REDno creative tabs set$WHITE to filter.
 
-top.logistics_pipes.module_ore_item_sink_filtered=§oAccepting ores matching: %s
-top.logistics_pipes.module_ore_item_sink_no_filter=§oThere are §c§ono ores set§f§o to filter.
+top.logistics_pipes.module.ore_item_sink.filter=Accepting ores matching: %s
+top.logistics_pipes.module.ore_item_sink.no_filter=There are $REDno ores set$WHITE to filter.
+
+top.logistics_pipes.module.extractor.side=Extracting from $AQUA%s$WHITE.
+
+top.logistics_pipes.module.advanced_extractor.all=Extracting $GREENall$WHITE items.
+top.logistics_pipes.module.advanced_extractor.none=Extracting $REDno$WHITE items.
+top.logistics_pipes.module.advanced_extractor.but=Extracting all $YELLOWexcept$WHITE: %s
+top.logistics_pipes.module.advanced_extractor.only=Extracting $YELLOWonly$WHITE: %s
+
+top.logistics_pipes.pipe.satellite.name=Satellite name: $AQUA%s$RESET.
+top.logistics_pipes.pipe.satellite.no_name=Satellite name $REDnot set$RESET.
+
+top.logistics_pipes.pipe.firewall.providing=Providing: %s
+top.logistics_pipes.pipe.firewall.crafting=Crafting: %s
+top.logistics_pipes.pipe.firewall.sorting=Sorting: %s
+top.logistics_pipes.pipe.firewall.power=Power: %s
+top.logistics_pipes.pipe.firewall.filtering=$AQUA%d$WHITE items are being %s through.
+top.logistics_pipes.pipe.firewall.allowed=$GREENAllowed$WHITE
+top.logistics_pipes.pipe.firewall.blocked=$REDBlocked$WHITE
+
+top.logistics_pipes.pipe.unrouted.too_many_connections=Unrouted pipes $REDshould not$RESET have more than 2 connections!
+
+top.logistics_pipes.pipe.chassis.no_modules=$REDNo modules installed.

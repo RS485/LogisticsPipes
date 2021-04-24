@@ -47,13 +47,16 @@ import logisticspipes.pipes.basic.LogisticsBlockGenericPipe
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport
 import mcjty.theoneprobe.api.*
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.resources.I18n
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.World
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.module.AsyncAdvancedExtractor
 import network.rs485.logisticspipes.module.AsyncExtractorModule
 import network.rs485.logisticspipes.util.TextUtil
+import java.util.*
 import java.util.function.Function
 
 class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
@@ -81,116 +84,155 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             if (probeInfo == null || blockState == null || data == null) return
             when (blockState.block) {
                 is LogisticsBlockGenericPipe -> {
+                    val isModule = false
                     val pipe = LogisticsBlockGenericPipe.getPipe(world, data.pos)
                     when (pipe) {
-                        is PipeItemsCraftingLogistics -> {
-                            addCraftingInfo(pipe, probeInfo, mode)
-                        }
-                        is PipeLogisticsChassis -> {
-                            addChassisPipeInfo(pipe, probeInfo, mode)
-                        }
-                        is PipeItemsBasicTransport -> {
-                            addBasicTransportPipeInfo(pipe, probeInfo, mode)
-                        }
-                        is PipeItemsBasicLogistics -> {
-                            addBasicLogisticsPipeInfo(pipe, probeInfo, mode)
-                        }
-                        is PipeItemsSatelliteLogistics -> {
-                            addSatellitePipeInfo(pipe, probeInfo, mode)
-                        }
-                        is PipeItemsRequestLogistics -> {
-                            defaultInfo(pipe, probeInfo, mode)
-                        }
+                        is PipeItemsFirewall -> addFirewallPipeInfo(pipe, probeInfo)
+                        is PipeLogisticsChassis -> addChassisPipeInfo(pipe, probeInfo, mode)
+                        is PipeItemsBasicTransport -> addBasicTransportPipeInfo(pipe, probeInfo)
+                        is PipeItemsSatelliteLogistics -> addSatellitePipeInfo(pipe, probeInfo)
+                        is PipeItemsBasicLogistics -> addItemSinkModuleInfo(
+                            module = pipe.logisticsModule,
+                            probeInfo = probeInfo,
+                            mode = ProbeMode.EXTENDED,
+                            isModule = isModule
+                        )
+                        is PipeItemsSupplierLogistics -> addActiveSupplierModuleInfo(
+                            module = pipe.logisticsModule,
+                            probeInfo = probeInfo,
+                            mode = ProbeMode.EXTENDED,
+                            isModule = isModule
+                        )
+                        is PipeItemsCraftingLogistics -> addCraftingModuleInfo(
+                            module = pipe.logisticsModule,
+                            probeInfo = probeInfo,
+                            mode = ProbeMode.EXTENDED,
+                            isModule = isModule
+                        )
+                        is PipeItemsProviderLogistics -> addProviderModuleInfo(
+                            module = pipe.logisticsModule,
+                            probeInfo = probeInfo,
+                            mode = ProbeMode.EXTENDED,
+                            isModule = isModule
+                        )
+                        is PipeItemsSystemDestinationLogistics -> Unit // TODO pipe doesn't work atm
+                        is PipeItemsSystemEntranceLogistics -> Unit // TODO pipe doesn't work atm
+                        is PipeItemsRemoteOrdererLogistics -> Unit
+                        is PipeItemsRequestLogistics -> Unit
                         else -> {
-                            probeInfo.text("Not implemented.")
-                            probeInfo.text(pipe.javaClass.name)
+                            if(LogisticsPipes.isDEBUG()) {
+                                probeInfo.text("Not implemented.")
+                                probeInfo.text(pipe.javaClass.name)
+                            }
                         }
                     }
+                    defaultInfo(pipe, probeInfo, mode)
                 }
             }
         }
 
-        private fun addSatellitePipeInfo(pipe: PipeItemsSatelliteLogistics, probeInfo: IProbeInfo, mode: ProbeMode) {
-            val lpRectangle = probeInfo.getLogisticsPipesInfoContainer().vertical()
+        private fun addFirewallPipeInfo(pipe: PipeItemsFirewall, probeInfo: IProbeInfo) {
+            val translatedAllowed = translate("pipe.firewall.allowed",
+                EnumSet.noneOf(TextFormatting::class.java),
+                prepend = "",
+                append = ""
+            )
+            val translatedBlocked = translate("pipe.firewall.blocked",
+                EnumSet.noneOf(TextFormatting::class.java),
+                prepend = "",
+                append = ""
+            )
+            if(!pipe.inv.isEmpty){
+                probeInfo.translatedFormatting(
+                    "pipe.firewall.filtering",
+                    pipe.inv.itemsAndCount.keys.count { !it.makeNormalStack(1).isEmpty }.toString(),
+                    TextUtil.translate(if(pipe.isBlocking) translatedBlocked else translatedAllowed).toLowerCase()
+                )
+            }
+            probeInfo.translatedFormatting(
+                "pipe.firewall.providing",
+                if(pipe.isBlockProvider){
+                    translatedBlocked
+                } else {
+                    translatedAllowed
+                }
+            )
+            probeInfo.translatedFormatting(
+                "pipe.firewall.crafting",
+                if(pipe.isBlockCrafer){
+                    translatedBlocked
+                } else {
+                    translatedAllowed
+                }
+            )
+            probeInfo.translatedFormatting(
+                "pipe.firewall.sorting",
+                if(pipe.isBlockSorting){
+                    translatedBlocked
+                } else {
+                    translatedAllowed
+                }
+            )
+            probeInfo.translatedFormatting(
+                "pipe.firewall.power",
+                if(pipe.isBlockPower){
+                    translatedBlocked
+                } else {
+                    translatedAllowed
+                }
+            )
+        }
+
+        private fun addSatellitePipeInfo(pipe: PipeItemsSatelliteLogistics, probeInfo: IProbeInfo) {
             val satellitePipeName = pipe.satellitePipeName
             if (satellitePipeName.isNotBlank()) {
-                lpRectangle.translatedText("satellite_name")
-                lpRectangle.text(satellitePipeName)
+                probeInfo.translatedFormatting("pipe.satellite.name", satellitePipeName)
             } else {
-                lpRectangle.translatedText("satellite_no_name")
+                probeInfo.translatedFormatting("pipe.satellite.no_name")
             }
         }
 
         private fun addBasicLogisticsPipeInfo(pipe: PipeItemsBasicLogistics, probeInfo: IProbeInfo, mode: ProbeMode) {
             if (pipe.hasGenericInterests() || mode == ProbeMode.EXTENDED) {
-                val lpRectangle = probeInfo.getLogisticsPipesInfoContainer()
-                if (pipe.hasGenericInterests()) lpRectangle.translatedText("general_default_route")
-                addUpgradesInfo(pipe, lpRectangle, mode)
+                if (pipe.hasGenericInterests()) probeInfo.translatedFormatting("general.is_default_route")
             }
         }
 
-        private fun addBasicTransportPipeInfo(
-            pipe: PipeItemsBasicTransport,
-            logisticsPipesInfoContainer: IProbeInfo,
-            mode: ProbeMode,
-        ) {
+        private fun addBasicTransportPipeInfo(pipe: PipeItemsBasicTransport, logisticsPipesInfoContainer: IProbeInfo) {
             val connections = pipe.container?.pipeConnectionsBuffer?.count { it } ?: 0
             if (connections > 2) {
-                logisticsPipesInfoContainer.text("Warning:")
-                    .text("Unrouted pipes should not have more than 2 connections!")
+                logisticsPipesInfoContainer.translatedFormatting("pipe.unrouted.too_many_connections")
             }
         }
 
         private fun defaultInfo(pipe: CoreUnroutedPipe, probeInfo: IProbeInfo, mode: ProbeMode) {
             if (mode == ProbeMode.EXTENDED) {
-                val lpRectangle = probeInfo.getLogisticsPipesInfoContainer()
-                addUpgradesInfo(pipe, lpRectangle, mode)
+                addUpgradesInfo(pipe, probeInfo, mode)
             }
         }
 
         private fun addUpgradesInfo(pipe: CoreUnroutedPipe, probeInfo: IProbeInfo, mode: ProbeMode) {
             if (pipe is CoreRoutedPipe) {
                 if (mode == ProbeMode.EXTENDED) {
-                    probeInfo.translatedText("general_upgrades")
-                    var any = false
-                    val upgrades = probeInfo.vertical(probeInfo.defaultLayoutStyle())
-                    (0 until pipe.originalUpgradeManager.inv.sizeInventory).mapNotNull {
-                        pipe.originalUpgradeManager.inv.getStackInSlot(it)
-                    }.filter {
-                        !it.isEmpty
-                    }.forEach {
-                        any = true
-                        upgrades.addItemWithText(it)
+                    val upgradeManagerInv = pipe.originalUpgradeManager.inv
+                    val upgrades = (0 until upgradeManagerInv.sizeInventory).mapNotNull { slotId ->
+                        upgradeManagerInv.getStackInSlot(slotId).takeIf { !it.isEmpty }?.displayName
                     }
-                    if (!any) upgrades.translatedText("general_no_upgrades")
+                    if (upgrades.isNotEmpty()) {
+                        probeInfo.translatedFormatting(
+                            "general.upgrades",
+                            upgrades.joinToString(
+                                separator = "\$WHITE, \$AQUA",
+                                prefix = "\$AQUA",
+                                postfix = "\$WHITE;",
+                                limit = 3
+                            )
+                        )
+                    } else {
+                        probeInfo.translatedFormatting("general.no_upgrades")
+                    }
                 }
             }
-        }
-
-        /*
-         *  Adds all the useful information about the crafting pipe:
-         *  Default:
-         *      Result (if any)
-         *      Byproduct (if any)
-         *  Extended:
-         *      Ingredients:
-         *          Direct and Satellite.
-         */
-        private fun addCraftingInfo(pipe: PipeItemsCraftingLogistics, probeInfo: IProbeInfo, mode: ProbeMode) {
-            val pipeResult = pipe.dummyInventory.getStackInSlot(9)
-            val lpRectangle = probeInfo.getLogisticsPipesInfoContainer()
-            if (!pipeResult.isEmpty) {
-                lpRectangle.translatedText("crafting_result")
-                lpRectangle.addItemWithText(pipeResult)
-                val byproduct = pipe.dummyInventory.getStackInSlot(10)
-                if (!byproduct.isEmpty) {
-                    lpRectangle.translatedText("crafting_extracting_byproduct")
-                    lpRectangle.addItemWithText(byproduct)
-                }
-            } else {
-                lpRectangle.translatedText("crafting_no_result")
-            }
-            addUpgradesInfo(pipe, lpRectangle, mode)
         }
 
         private fun addChassisPipeInfo(pipe: PipeLogisticsChassis, probeInfo: IProbeInfo, mode: ProbeMode) {
@@ -204,29 +246,66 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             if(modules.isNotEmpty()){
                 modules.forEach { (module, stack) ->
                     val infoCol = chassisColumn.addItemWithText(stack)
+                    val isModule = true
                     when (module) {
-                        is ModuleItemSink -> addItemSinkModuleInfo(module, infoCol, mode)
-                        is ModulePassiveSupplier -> {}
-                        is ModuleActiveSupplier -> {}
-                        is AsyncExtractorModule -> {}
-                        is AsyncAdvancedExtractor -> {}
-                        is ModuleTerminus -> addTerminusModuleInfo(module, infoCol, mode)
-                        is ModuleProvider -> addProviderModuleInfo(module, infoCol, mode)
-                        is ModuleEnchantmentSinkMK2 -> {}
-                        is ModuleCrafter -> addCraftingModuleInfo(module, infoCol, mode)
-                        is ModuleCreativeTabBasedItemSink -> {
-                            addStringBasedItemSinkInfo(infoCol, mode, "module_creative_tab_item_sink_filtered", "module_creative_tab_item_sink_no_filter", module.tabList)
-                        }
-                        is ModuleModBasedItemSink -> {
-                            addStringBasedItemSinkInfo(infoCol, mode, "module_mod_item_sink_filtered", "module_mod_item_sink_no_filter", module.modList)
-                        }
-                        is ModuleOreDictItemSink -> {
-                            addStringBasedItemSinkInfo(infoCol, mode, "module_ore_item_sink_filtered", "module_ore_item_sink_no_filter", module.oreList)
-                        }
+                        is ModuleItemSink -> addItemSinkModuleInfo(module, infoCol, mode, isModule)
+                        is ModuleProvider -> addProviderModuleInfo(module, infoCol, mode, isModule)
+                        is ModuleCrafter -> addCraftingModuleInfo(module, infoCol, mode, isModule)
+                        is ModuleActiveSupplier -> addActiveSupplierModuleInfo(module, infoCol, mode, isModule)
+                        is AsyncExtractorModule -> addExtractorModuleInfo(module, infoCol, mode)
+                        is AsyncAdvancedExtractor -> addAdvancedExtractorModuleInfo(module, infoCol, mode)
+                        is ModulePassiveSupplier -> addFilteringListItemIdentifierInfo(
+                            probeInfo = infoCol,
+                            mode = mode,
+                            positiveString = "module.passive_supplier.filter",
+                            negativeString = "module.passive_supplier.no_filter",
+                            items = module.filterInventory,
+                            isModule = isModule
+                        )
+                        is ModuleTerminus -> addFilteringListItemIdentifierInfo(
+                            probeInfo = infoCol,
+                            mode = mode,
+                            positiveString = "module.terminus.filter",
+                            negativeString = "module.terminus.no_filter",
+                            items = module.filterInventory,
+                            isModule = isModule
+                        )
+                        is ModuleEnchantmentSinkMK2 -> addFilteringListItemIdentifierInfo(
+                            probeInfo = infoCol,
+                            mode = mode,
+                            positiveString = "module.enchantment_sink.filter",
+                            negativeString = "module.enchantment_sink.no_filter",
+                            items = module.filterInventory,
+                            isModule = isModule
+                        )
+                        is ModuleCreativeTabBasedItemSink -> addFilteringListStringInfo(
+                            probeInfo = infoCol,
+                            mode = mode,
+                            positiveString = "module.creative_tab_item_sink.filter",
+                            negativeString = "module.creative_tab_item_sink.no_filter",
+                            strings = module.tabList,
+                            isModule = isModule
+                        )
+                        is ModuleModBasedItemSink -> addFilteringListStringInfo(
+                            probeInfo = infoCol,
+                            mode = mode,
+                            positiveString = "module.mod_item_sink.filter",
+                            negativeString = "module.mod_item_sink.no_filter",
+                            strings = module.modList,
+                            isModule = isModule
+                        )
+                        is ModuleOreDictItemSink -> addFilteringListStringInfo(
+                            probeInfo = infoCol,
+                            mode = mode,
+                            positiveString = "module.ore_item_sink.filter",
+                            negativeString = "module.ore_item_sink.no_filter",
+                            strings = module.oreList,
+                            isModule = isModule
+                        )
                     }
                 }
             } else {
-                chassisColumn.translatedText("chassis_no_modules")
+                chassisColumn.translatedFormatting("pipe.chassis.no_modules")
             }
         }
 
@@ -234,84 +313,239 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
          Module information providers.
          */
 
-        private fun addItemSinkModuleInfo(module: ModuleItemSink, probeInfo: IProbeInfo, mode: ProbeMode) {
-            if(mode == ProbeMode.EXTENDED){
-                if(module.isDefaultRoute) {
-                    probeInfo.translatedText("general_is_default_route")
-                } else {
-                    probeInfo.translatedText("general_is_not_default_route")
-                }
-            }
-        }
-        private fun addPassiveSupplierModuleInfo(module: ModulePassiveSupplier, probeInfo: IProbeInfo, mode: ProbeMode) {}
-        private fun addActiveSupplierModuleInfo(module: ModuleActiveSupplier, probeInfo: IProbeInfo, mode: ProbeMode) {}
-        private fun addExtractorModuleInfo(module: AsyncExtractorModule, probeInfo: IProbeInfo, mode: ProbeMode) {}
-        private fun addAdvancedExtractorModuleInfo(module: AsyncAdvancedExtractor, probeInfo: IProbeInfo, mode: ProbeMode) {}
-        private fun addTerminusModuleInfo(module: ModuleTerminus, probeInfo: IProbeInfo, mode: ProbeMode) {
-            if(mode == ProbeMode.EXTENDED){
-                if (!module.getFilterInventory().isEmpty) {
-                    probeInfo.translatedText("module_terminus_terminated_items")
-                }
-            }
-        }
-        private fun addProviderModuleInfo(module: ModuleProvider, probeInfo: IProbeInfo, mode: ProbeMode) {
-            if(mode == ProbeMode.EXTENDED){
-                if(!module.filterInventory.isEmpty){
-                    val modeString = TextUtil.translate(prefix + if(module.isExclusionFilter.value) {
-                        "general_exclude"
-                    } else {
-                        "general_include"
-                    })
-                    probeInfo.translateFormatting("module_provider_filter", modeString)
-                }
-                probeInfo.text("§o" + module.providerMode.value.extractionModeString)
-            }
-        }
-        private fun addOreDictBasedItemSinkModuleInfo(module: ModuleOreDictItemSink, probeInfo: IProbeInfo, mode: ProbeMode) {
-            if (mode == ProbeMode.EXTENDED){
-                if(module.oreList.isNotEmpty()) {
-                    probeInfo.translateFormatting("module_mod_item_sink_filtered",
-                        module.oreList.joinToString(
-                            separator = "§f§o, §b§o",
-                            prefix = "§b§o",
-                            postfix = "§f§o;",
-                            limit = 3
-                        )
+        private fun addItemSinkModuleInfo(
+            module: ModuleItemSink,
+            probeInfo: IProbeInfo,
+            mode: ProbeMode,
+            isModule: Boolean
+        ) {
+            if (mode == ProbeMode.EXTENDED) {
+                if (module.isDefaultRoute) {
+                    probeInfo.translatedFormatting(
+                        key = "general.is_default_route",
+                        baseFormatting = italic(isModule),
+                        prepend = prepend(isModule),
+                        append = ""
                     )
-                } else {
-                    probeInfo.translatedText("module_mod_item_sink_no_filter")
+                } else if (isModule) {
+                    probeInfo.translatedFormatting(
+                        key = "general.is_not_default_route",
+                        baseFormatting = italic(isModule),
+                        prepend = prepend(isModule),
+                        append = ""
+                    )
                 }
             }
         }
-        private fun addEnchantmentSinkModuleMk2Info(module: ModuleEnchantmentSinkMK2, probeInfo: IProbeInfo, mode: ProbeMode) {}
-        private fun addCraftingModuleInfo(module: ModuleCrafter, probeInfo: IProbeInfo, mode: ProbeMode) {
-            if(mode == ProbeMode.EXTENDED){
-                val result = module.craftedItem?.makeNormalStack()?: ItemStack.EMPTY
-                val byproduct = module.byproductItem?.makeNormalStack()?: ItemStack.EMPTY
-                if(!result.isEmpty){
-                    if (byproduct.isEmpty){
-                        probeInfo.translateFormatting( "module_crafting_result", result.displayName)
-                    } else {
-                        probeInfo.translateFormatting( "module_crafting_result_with_byproduct", result.displayName, byproduct.displayName)
-                    }
-                }
-            }
-        }
-        private fun addCreativeTabBasedItemModuleInfo(module: ModuleCreativeTabBasedItemSink, item: ItemStack, probeInfo: IProbeInfo, mode: ProbeMode) {}
 
-        private fun addStringBasedItemSinkInfo(probeInfo: IProbeInfo, mode: ProbeMode, positiveString: String, negativeString: String, strings: List<String>){
-            if (mode == ProbeMode.EXTENDED){
-                if(strings.isNotEmpty()) {
-                    probeInfo.translateFormatting(positiveString,
-                        strings.joinToString(
-                            separator = "§f§o, §b§o",
-                            prefix = "§b§o",
-                            postfix = "§f§o;",
-                            limit = 3
-                        )
+        private fun addActiveSupplierModuleInfo(
+            module: ModuleActiveSupplier,
+            probeInfo: IProbeInfo,
+            mode: ProbeMode,
+            isModule: Boolean
+        ) {
+            if (mode == ProbeMode.EXTENDED) {
+                if (module.inventory.isEmpty) {
+                    probeInfo.translatedFormatting(
+                        key = "module.active_supplier.no_filter",
+                        baseFormatting = italic(isModule),
+                        prepend = prepend(isModule),
+                        append = ""
                     )
                 } else {
-                    probeInfo.translatedText(negativeString)
+                    probeInfo.translatedFormatting(
+                        key = "module.active_supplier.mode",
+                        baseFormatting = italic(isModule),
+                        prepend = prepend(isModule),
+                        append = "",
+                        module.requestMode.value.name
+                    )
+                    addFilteringListItemIdentifierInfo(
+                        probeInfo = probeInfo,
+                        mode = mode,
+                        positiveString = "module.active_supplier.filter",
+                        negativeString = "",
+                        items = module.inventory,
+                        isModule = isModule
+                    )
+                }
+            }
+        }
+
+        private fun addExtractorModuleInfo(module: AsyncExtractorModule, probeInfo: IProbeInfo, mode: ProbeMode) {
+            if (mode == ProbeMode.EXTENDED) {
+                addSneakyExtractorInfo(module.sneakyDirection, probeInfo)
+            }
+        }
+
+        private fun addAdvancedExtractorModuleInfo(
+            module: AsyncAdvancedExtractor,
+            probeInfo: IProbeInfo,
+            mode: ProbeMode
+        ) {
+            val isModule = true
+            if (mode == ProbeMode.EXTENDED) {
+                addFilteringListItemIdentifierInfo(
+                    probeInfo = probeInfo,
+                    mode = mode,
+                    positiveString = if (module.itemsIncluded.value) {
+                        "module.advanced_extractor.only"
+                    } else {
+                        "module.advanced_extractor.but"
+                    },
+                    negativeString = if (module.itemsIncluded.value) {
+                        "module.advanced_extractor.none"
+                    } else {
+                        "module.advanced_extractor.all"
+                    },
+                    items = module.filterInventory,
+                    isModule = isModule
+                )
+                addSneakyExtractorInfo(module.sneakyDirection, probeInfo)
+            }
+        }
+
+        private fun addSneakyExtractorInfo(
+            direction: EnumFacing?,
+            probeInfo: IProbeInfo,
+        ) {
+            val isModule = true
+            if (direction != null) {
+                probeInfo.translatedFormatting(
+                    key = "module.extractor.side",
+                    baseFormatting = italic(isModule),
+                    prepend = prepend(isModule),
+                    append = "",
+                    direction.name2
+                )
+            }
+        }
+
+        private fun addProviderModuleInfo(
+            module: ModuleProvider,
+            probeInfo: IProbeInfo,
+            mode: ProbeMode,
+            isModule: Boolean
+        ) {
+            if (mode == ProbeMode.EXTENDED) {
+                addFilteringListItemIdentifierInfo(
+                    probeInfo = probeInfo,
+                    mode = mode,
+                    positiveString = if (module.isExclusionFilter.value) {
+                        "module.provider.but"
+                    } else {
+                        "module.provider.only"
+                    },
+                    negativeString =
+                    // TODO change this if the behaviour ever changes "module.provider.none"
+                    "module.provider.all",
+                    items = module.filterInventory,
+                    isModule = isModule
+                )
+                if (!isModule) probeInfo.translatedFormatting("module.provider.mode")
+                probeInfo.text(
+                    prepend(isModule) + TextUtil.transform(
+                        text = module.providerMode.value.extractionModeString,
+                        baseFormatting = italic(isModule),
+                    )
+                )
+            }
+        }
+
+        private fun addCraftingModuleInfo(
+            module: ModuleCrafter,
+            probeInfo: IProbeInfo,
+            mode: ProbeMode,
+            isModule: Boolean
+        ) {
+            if (mode == ProbeMode.EXTENDED) {
+                val result = module.craftedItem?.makeNormalStack() ?: ItemStack.EMPTY
+                val byproduct = module.byproductItem?.makeNormalStack() ?: ItemStack.EMPTY
+                if (!result.isEmpty) {
+                    val fuzzyText = if (module.hasFuzzyUpgrade()) " \$GOLD[Fuzzy]\$WHITE" else ""
+                    if (!byproduct.isEmpty && module.hasByproductUpgrade()) {
+                        probeInfo.translatedFormatting(
+                            key = "module.crafting.result_with_byproduct",
+                            baseFormatting = italic(isModule),
+                            prepend = prepend(isModule),
+                            append = fuzzyText,
+                            result.displayName,
+                            byproduct.displayName
+                        )
+                    } else {
+                        probeInfo.translatedFormatting(
+                            key = "module.crafting.result",
+                            baseFormatting = italic(isModule),
+                            prepend = prepend(isModule),
+                            append = fuzzyText,
+                            result.displayName
+                        )
+                    }
+                } else {
+                    probeInfo.translatedFormatting(
+                        key = "module.crafting.no_result",
+                        baseFormatting = italic(isModule),
+                        prepend = prepend(isModule),
+                        append = ""
+                    )
+                }
+            }
+        }
+
+        private fun addFilteringListItemIdentifierInfo(
+            probeInfo: IProbeInfo,
+            mode: ProbeMode,
+            positiveString: String,
+            negativeString: String,
+            items: IItemIdentifierInventory,
+            isModule: Boolean,
+            color: TextFormatting = TextFormatting.WHITE
+        ) {
+            addFilteringListStringInfo(
+                probeInfo = probeInfo,
+                mode = mode,
+                positiveString = positiveString,
+                negativeString = negativeString,
+                strings = items.itemsAndCount.keys.mapNotNull {
+                    if (it.makeNormalStack(1).isEmpty) null
+                    else it.makeNormalStack(1).displayName
+                },
+                isModule = isModule,
+                color = color
+            )
+        }
+
+        private fun addFilteringListStringInfo(
+            probeInfo: IProbeInfo,
+            mode: ProbeMode,
+            positiveString: String,
+            negativeString: String,
+            strings: List<String>,
+            limit: Int = 3,
+            isModule: Boolean,
+            color: TextFormatting = TextFormatting.WHITE
+        ) {
+            if (mode == ProbeMode.EXTENDED) {
+                if (strings.isNotEmpty() && positiveString.isNotBlank()) {
+                    probeInfo.translatedFormatting(
+                        key = positiveString,
+                        baseFormatting = italic(isModule, color),
+                        prepend = prepend(isModule),
+                        append = "",
+                        strings.joinToString(
+                            separator = "\$WHITE, \$AQUA",
+                            prefix = "\$AQUA",
+                            postfix = "\$WHITE",
+                            limit = limit
+                        )
+                    )
+                } else if (negativeString.isNotBlank()) {
+                    probeInfo.translatedFormatting(
+                        key = negativeString,
+                        baseFormatting = italic(isModule),
+                        prepend = prepend(isModule),
+                        append = ""
+                    )
                 }
             }
         }
@@ -334,16 +568,47 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             return textColumn
         }
 
-        fun IProbeInfo.getLogisticsPipesInfoContainer(): IProbeInfo =
-            horizontal(defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER))
-                .vertical(defaultLayoutStyle().borderColor(0xa0FF5555.toInt()).spacing(3))
+        fun IProbeInfo.translatedFormatting(key: String, vararg args: String) {
+            translatedFormatting(
+                key = key,
+                baseFormatting = EnumSet.noneOf(TextFormatting::class.java),
+                prepend = "",
+                append = "",
+                args = args
+            )
+        }
 
-        fun IProbeInfo.translatedText(text: String): IProbeInfo = text("$prefix${text}".translated())
+        fun IProbeInfo.translatedFormatting(
+            key: String,
+            baseFormatting: EnumSet<TextFormatting>,
+            prepend: String,
+            append: String,
+            vararg args: String
+        ) {
+            text(translate(key = key, baseFormatting = baseFormatting, prepend = prepend, append = append, args = args))
+        }
 
-        fun IProbeInfo.translateFormatting(text: String, vararg args: String): IProbeInfo =
-            text(I18n.format(prefix + text, *args))
+        fun translate(
+            key: String,
+            baseFormatting: EnumSet<TextFormatting>,
+            prepend: String,
+            append: String,
+            vararg args: String
+        ) =
+            TextUtil.translate(
+                key = key.prefix(),
+                baseFormatting = baseFormatting,
+                prepend = prepend,
+                append = append,
+                args = args
+            )
 
-        fun String.translated(): String = "${IProbeInfo.STARTLOC}$this${IProbeInfo.ENDLOC}"
+        fun String.prefix(): String = prefix + this
+
+        fun italic(italic: Boolean, color: TextFormatting = TextFormatting.WHITE): EnumSet<TextFormatting> =
+            if (italic) EnumSet.of(TextFormatting.ITALIC, color) else EnumSet.of(color)
+
+        fun prepend(isModule: Boolean): String = if (isModule) "- " else ""
     }
 
 }

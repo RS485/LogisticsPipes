@@ -1399,4 +1399,10 @@ public class ModuleCrafter extends LogisticsModule
 		public @Nonnull
 		String[] liquidSatelliteNameArray = {};
 	}
+
+	public boolean hasByproductUpgrade() {
+		return getUpgradeManager().hasByproductExtractor();
+	}
+
+	public boolean hasFuzzyUpgrade() { return getUpgradeManager().isFuzzyUpgrade(); }
 }

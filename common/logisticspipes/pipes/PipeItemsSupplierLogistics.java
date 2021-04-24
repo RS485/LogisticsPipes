@@ -46,7 +46,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	@Override
-	public LogisticsModule getLogisticsModule() {
+	public ModuleActiveSupplier getLogisticsModule() {
 		return supplierModule;
 	}
 

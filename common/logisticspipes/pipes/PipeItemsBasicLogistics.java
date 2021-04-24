@@ -93,7 +93,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public LogisticsModule getLogisticsModule() {
+	public ModuleItemSink getLogisticsModule() {
 		return itemSinkModule;
 	}
 

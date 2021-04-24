@@ -44,7 +44,7 @@ public class ModulePassiveSupplier extends LogisticsModule
 		implements Gui, SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
-	private final InventoryProperty filterInventory = new InventoryProperty(
+	public final InventoryProperty filterInventory = new InventoryProperty(
 			new ItemIdentifierInventory(9, "Requested items", 64), "");
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();

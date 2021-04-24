@@ -3,24 +3,11 @@ buildscript {
         mavenCentral()
         jcenter()
         maven {
-            name = "gradle plugins"
-            url = "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            name = "RS485 Cache"
-            url = "https://www.rs485.network/maven-cache/"
-        }
-        maven {
-            name = "minecraft"
-            url = "https://libraries.minecraft.net"
-        }
-        maven {
-            name = "forge"
-            url = "https://maven.minecraftforge.net"
+            url = "https://maven.removeco.de/"
         }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: forgegradle_version
+        classpath group: 'network.rs485', name: 'ForgeGradle', version: forgegradle_version
         classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: cursegradle_version
         classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version
         classpath group: 'org.jetbrains.kotlin', name: 'kotlin-serialization', version: kotlin_version
@@ -233,42 +220,14 @@ processResources {
 }
 
 repositories {
+    mavenCentral()
     jcenter()
-    maven {
-        name = "RS485 Cache"
-        url = "https://www.rs485.network/maven-cache/"
-    }
     maven {
         name = 'JitPack.io'
         url = 'https://jitpack.io'
     }
     maven {
-        name = "minecraft"
-        url = "https://libraries.minecraft.net"
-    }
-    maven {
-        url "http://maven.shadowfacts.net/"
-    }
-    maven {
-        url = 'https://squiddev.cc/maven/'
-    }
-    maven {
-        url = "http://maven.cil.li/"
-    }
-    maven {
-        name = "buildcraft"
-        url = "https://mod-buildcraft.com/maven/"
-    }
-    maven { // JEI Bees & Thaumcraft
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven/"
-    }
-    maven {
-        url "http://maven.amadornes.com/"
-    }
-    maven {
-        name = "storagedrawers"
-        url = "https://dl.bintray.com/jaquadro/dev/"
+        url = "https://maven.removeco.de/"
     }
 }
 

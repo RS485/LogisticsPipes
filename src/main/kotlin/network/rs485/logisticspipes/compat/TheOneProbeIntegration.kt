@@ -192,12 +192,6 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             }
         }
 
-        private fun addBasicLogisticsPipeInfo(pipe: PipeItemsBasicLogistics, probeInfo: IProbeInfo, mode: ProbeMode) {
-            if (pipe.hasGenericInterests() || mode == ProbeMode.EXTENDED) {
-                if (pipe.hasGenericInterests()) probeInfo.translatedFormatting("general.is_default_route")
-            }
-        }
-
         private fun addBasicTransportPipeInfo(pipe: PipeItemsBasicTransport, logisticsPipesInfoContainer: IProbeInfo) {
             val connections = pipe.container?.pipeConnectionsBuffer?.count { it } ?: 0
             if (connections > 2) {
@@ -244,64 +238,71 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                 else module to stack
             }
             if(modules.isNotEmpty()){
-                modules.forEach { (module, stack) ->
-                    val infoCol = chassisColumn.addItemWithText(stack)
-                    val isModule = true
-                    when (module) {
-                        is ModuleItemSink -> addItemSinkModuleInfo(module, infoCol, mode, isModule)
-                        is ModuleProvider -> addProviderModuleInfo(module, infoCol, mode, isModule)
-                        is ModuleCrafter -> addCraftingModuleInfo(module, infoCol, mode, isModule)
-                        is ModuleActiveSupplier -> addActiveSupplierModuleInfo(module, infoCol, mode, isModule)
-                        is AsyncExtractorModule -> addExtractorModuleInfo(module, infoCol, mode)
-                        is AsyncAdvancedExtractor -> addAdvancedExtractorModuleInfo(module, infoCol, mode)
-                        is ModulePassiveSupplier -> addFilteringListItemIdentifierInfo(
-                            probeInfo = infoCol,
-                            mode = mode,
-                            positiveString = "module.passive_supplier.filter",
-                            negativeString = "module.passive_supplier.no_filter",
-                            items = module.filterInventory,
-                            isModule = isModule
-                        )
-                        is ModuleTerminus -> addFilteringListItemIdentifierInfo(
-                            probeInfo = infoCol,
-                            mode = mode,
-                            positiveString = "module.terminus.filter",
-                            negativeString = "module.terminus.no_filter",
-                            items = module.filterInventory,
-                            isModule = isModule
-                        )
-                        is ModuleEnchantmentSinkMK2 -> addFilteringListItemIdentifierInfo(
-                            probeInfo = infoCol,
-                            mode = mode,
-                            positiveString = "module.enchantment_sink.filter",
-                            negativeString = "module.enchantment_sink.no_filter",
-                            items = module.filterInventory,
-                            isModule = isModule
-                        )
-                        is ModuleCreativeTabBasedItemSink -> addFilteringListStringInfo(
-                            probeInfo = infoCol,
-                            mode = mode,
-                            positiveString = "module.creative_tab_item_sink.filter",
-                            negativeString = "module.creative_tab_item_sink.no_filter",
-                            strings = module.tabList,
-                            isModule = isModule
-                        )
-                        is ModuleModBasedItemSink -> addFilteringListStringInfo(
-                            probeInfo = infoCol,
-                            mode = mode,
-                            positiveString = "module.mod_item_sink.filter",
-                            negativeString = "module.mod_item_sink.no_filter",
-                            strings = module.modList,
-                            isModule = isModule
-                        )
-                        is ModuleOreDictItemSink -> addFilteringListStringInfo(
-                            probeInfo = infoCol,
-                            mode = mode,
-                            positiveString = "module.ore_item_sink.filter",
-                            negativeString = "module.ore_item_sink.no_filter",
-                            strings = module.oreList,
-                            isModule = isModule
-                        )
+                if (mode == ProbeMode.EXTENDED) {
+                    modules.forEach { (module, stack) ->
+                        val infoCol = chassisColumn.addItemWithText(stack)
+                        val isModule = true
+                        when (module) {
+                            is ModuleItemSink -> addItemSinkModuleInfo(module, infoCol, mode, isModule)
+                            is ModuleProvider -> addProviderModuleInfo(module, infoCol, mode, isModule)
+                            is ModuleCrafter -> addCraftingModuleInfo(module, infoCol, mode, isModule)
+                            is ModuleActiveSupplier -> addActiveSupplierModuleInfo(module, infoCol, mode, isModule)
+                            is AsyncExtractorModule -> addExtractorModuleInfo(module, infoCol, mode)
+                            is AsyncAdvancedExtractor -> addAdvancedExtractorModuleInfo(module, infoCol, mode)
+                            is ModulePassiveSupplier -> addFilteringListItemIdentifierInfo(
+                                probeInfo = infoCol,
+                                mode = mode,
+                                positiveString = "module.passive_supplier.filter",
+                                negativeString = "module.passive_supplier.no_filter",
+                                items = module.filterInventory,
+                                isModule = isModule
+                            )
+                            is ModuleTerminus -> addFilteringListItemIdentifierInfo(
+                                probeInfo = infoCol,
+                                mode = mode,
+                                positiveString = "module.terminus.filter",
+                                negativeString = "module.terminus.no_filter",
+                                items = module.filterInventory,
+                                isModule = isModule
+                            )
+                            is ModuleEnchantmentSinkMK2 -> addFilteringListItemIdentifierInfo(
+                                probeInfo = infoCol,
+                                mode = mode,
+                                positiveString = "module.enchantment_sink.filter",
+                                negativeString = "module.enchantment_sink.no_filter",
+                                items = module.filterInventory,
+                                isModule = isModule
+                            )
+                            is ModuleCreativeTabBasedItemSink -> addFilteringListStringInfo(
+                                probeInfo = infoCol,
+                                mode = mode,
+                                positiveString = "module.creative_tab_item_sink.filter",
+                                negativeString = "module.creative_tab_item_sink.no_filter",
+                                strings = module.tabList,
+                                isModule = isModule
+                            )
+                            is ModuleModBasedItemSink -> addFilteringListStringInfo(
+                                probeInfo = infoCol,
+                                mode = mode,
+                                positiveString = "module.mod_item_sink.filter",
+                                negativeString = "module.mod_item_sink.no_filter",
+                                strings = module.modList,
+                                isModule = isModule
+                            )
+                            is ModuleOreDictItemSink -> addFilteringListStringInfo(
+                                probeInfo = infoCol,
+                                mode = mode,
+                                positiveString = "module.ore_item_sink.filter",
+                                negativeString = "module.ore_item_sink.no_filter",
+                                strings = module.oreList,
+                                isModule = isModule
+                            )
+                        }
+                    }
+                } else {
+                    val infoRow = probeInfo.horizontal()
+                    modules.forEach { (_ , stack) ->
+                        infoRow.item(stack)
                     }
                 }
             } else {

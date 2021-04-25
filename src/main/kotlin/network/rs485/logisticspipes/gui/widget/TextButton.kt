@@ -37,10 +37,10 @@
 
 package network.rs485.logisticspipes.gui.widget
 
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
+import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.roundToInt
 
@@ -56,14 +56,14 @@ open class TextButton(
 
     var text: String = ""
         set(value){
-            field = StringUtils.getCuttedString(value, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
+            field = TextUtil.getTrimmedString(value, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
         }
     val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
     private val centerX: Float
         get() = relativeBody.width / 2
 
     init {
-        text = textGetter()
+        updateText()
     }
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
@@ -85,4 +85,8 @@ open class TextButton(
             }
 
     override fun getTooltipText(): List<String> = if(text != textGetter()) listOf(textGetter()) else emptyList()
+
+    fun updateText() {
+        text = textGetter()
+    }
 }

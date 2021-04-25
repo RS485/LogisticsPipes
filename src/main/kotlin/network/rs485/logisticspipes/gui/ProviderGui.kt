@@ -38,101 +38,107 @@
 package network.rs485.logisticspipes.gui
 
 import logisticspipes.modules.ModuleProvider
-import logisticspipes.network.packets.module.PropertyModuleUpdate
+import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import network.rs485.logisticspipes.gui.widget.*
-import network.rs485.logisticspipes.inventory.ProviderMode
-import network.rs485.logisticspipes.property.*
+import network.rs485.logisticspipes.property.PropertyLayer
+import network.rs485.logisticspipes.util.TextUtil
 
 // TODO create different buttons.
-class ProviderGui(playerInventory: IInventory, private val providerModule: ModuleProvider, lockedStack: ItemStack) : LPBaseGuiContainer(ProviderContainer(playerInventory, providerModule, lockedStack), 174, 177) {
+class ProviderGui(
+    playerInventory: IInventory,
+    private val providerModule: ModuleProvider,
+    lockedStack: ItemStack
+) : LPBaseGuiContainer(ProviderContainer(playerInventory, providerModule, lockedStack), 174, 177) {
     override var z = 1.0f
 
     private val prefix: String = "gui.providerpipe."
 
-    private val propertyLayer: PropertyLayer = object : PropertyLayer(providerModule.propertyList) {
-        override fun onChange(property: Property<*>) {}
-    }
+    private val propertyLayer: PropertyLayer = PropertyLayer(providerModule.propertyList)
 
-    private val providerMode: EnumProperty<ProviderMode> = propertyLayer.getWritableProperty(providerModule.providerMode)
-    private val isExclusionFilter: BooleanProperty = propertyLayer.getWritableProperty(providerModule.isExclusionFilter)
+    private val providerMode = propertyLayer.overlay(providerModule.providerMode)
+    private val isExclusionFilter = propertyLayer.overlay(providerModule.isExclusionFilter)
 
     private val title: LPGuiLabel = LPGuiLabel(
-            parent = this,
-            xPosition = Center,
-            yPosition = Top(6),
-            xSize = FullSize(6),
-            textColor = helper.TEXT_DARK,
-            textGetter = {
-                providerModule.filterInventory.name
-            }
-            )
-            .setAlignment(HorizontalAlignment.CENTER)
+        parent = this,
+        xPosition = Center,
+        yPosition = Top(6),
+        xSize = FullSize(6),
+        textColor = helper.TEXT_DARK,
+        textGetter = {
+            providerModule.filterInventory.name
+        })
+        .setAlignment(HorizontalAlignment.CENTER)
     private val extractionModeLabel: LPGuiLabel = LPGuiLabel(
-            parent = this,
-            xPosition = Left(6),
-            yPosition = Top(80),
-            xSize = FullSize(6),
-            textColor = helper.TEXT_DARK,
-            textGetter = {
-                "${StringUtils.translate("${prefix}ExcessInventory")} ${providerMode.value.extractionModeString}"
-            })
-            .setExtendable(true, helper.BACKGROUND_LIGHT)
+        parent = this,
+        xPosition = Left(6),
+        yPosition = Top(80),
+        xSize = FullSize(6),
+        textColor = helper.TEXT_DARK,
+        textGetter = {
+            "${TextUtil.translate("${prefix}ExcessInventory")} ${providerMode.get().extractionModeString}"
+        })
+        .setExtendable(true, helper.BACKGROUND_LIGHT)
     private val extractionModeButton: TextButton = TextButton(
-            parent = this,
-            xPosition = Left(6),
-            yPosition = Top(35),
-            xSize = AbsoluteSize(50),
-            ySize = AbsoluteSize(20),
-            textGetter =  {
-                StringUtils.translate("${prefix}Switch")
-            },
-            onClickAction = { mouseButton ->
-                if (mouseButton == 0) {
-                    providerMode.next()
-                    extractionModeLabel.updateText()
-                    return@TextButton true
-                }
-                return@TextButton false
-            })
-    private val providerModeButton: TextButton = TextButton(
-            parent = this,
-            xPosition = Right(6),
-            yPosition = Top(35),
-            xSize = AbsoluteSize(50),
-            ySize = AbsoluteSize(20),
-            textGetter = {
-                if(propertyLayer.getLayerValue(providerModule.isExclusionFilter)) {
-                    StringUtils.translate("${prefix}Include")
-                } else {
-                    StringUtils.translate("${prefix}Exclude")
-                }
-            },
-            onClickAction = { mouseButton ->
-                if (mouseButton == 0) {
-                    isExclusionFilter.toggle()
-                    return@TextButton true
-                }
-                return@TextButton false
+        parent = this,
+        xPosition = Left(6),
+        yPosition = Top(35),
+        xSize = AbsoluteSize(50),
+        ySize = AbsoluteSize(20),
+        textGetter = {
+            TextUtil.translate("${prefix}Switch")
+        },
+        onClickAction = { mouseButton ->
+            if (mouseButton == 0) {
+                providerMode.write { it.next() }
+                extractionModeLabel.updateText()
+                return@TextButton true
             }
+            return@TextButton false
+        })
+    private val providerModeButton: TextButton = TextButton(
+        parent = this,
+        xPosition = Right(6),
+        yPosition = Top(35),
+        xSize = AbsoluteSize(50),
+        ySize = AbsoluteSize(20),
+        textGetter = {
+            if (isExclusionFilter.get()) {
+                TextUtil.translate("${prefix}Exclude")
+            } else {
+                TextUtil.translate("${prefix}Include")
+            }
+        },
+        onClickAction = { mouseButton ->
+            if (mouseButton == 0) {
+                isExclusionFilter.write { it.toggle() }
+                return@TextButton true
+            }
+            return@TextButton false
+        }
     )
     private val filterSlots: SlotGroup = SlotGroup(
-            parent = this,
-            xPosition = Center,
-            yPosition = Top(18),
-            slots = (inventorySlots as ProviderContainer).filterSlots,
-            columns = 3,
-            rows = 3
+        parent = this,
+        xPosition = Center,
+        yPosition = Top(18),
+        slots = (inventorySlots as ProviderContainer).filterSlots,
+        columns = 3,
+        rows = 3
     )
     private val playerSlots: PlayerInventorySlotGroup = PlayerInventorySlotGroup(
-            this,
-            Center,
-            Bottom(6),
-            (inventorySlots as ProviderContainer).playerSlots
+        this,
+        Center,
+        Bottom(6),
+        (inventorySlots as ProviderContainer).playerSlots
     )
+
+    init {
+        propertyLayer.addObserver(providerModule.isExclusionFilter) {
+            providerModeButton.updateText()
+        }
+    }
 
     override fun initGui() {
         super.initGui()
@@ -153,9 +159,11 @@ class ProviderGui(playerInventory: IInventory, private val providerModule: Modul
     override fun onGuiClosed() {
         super.onGuiClosed()
         propertyLayer.unregister()
-        if (mc.player != null && !propertyLayer.changedProperties().isEmpty()) {
+        if (mc.player != null && propertyLayer.properties.isNotEmpty()) {
             // send update to server, when there are changed properties
-            MainProxy.sendPacketToServer(PropertyModuleUpdate.fromLayer(propertyLayer).setModulePos(providerModule))
+            MainProxy.sendPacketToServer(
+                ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(providerModule)
+            )
         }
     }
 }

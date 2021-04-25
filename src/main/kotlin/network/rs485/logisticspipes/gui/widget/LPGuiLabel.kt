@@ -38,12 +38,12 @@
 package network.rs485.logisticspipes.gui.widget
 
 import logisticspipes.utils.MinecraftColor
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPBaseGuiContainer.Companion.helper
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
+import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
 
 class LPGuiLabel(
@@ -65,7 +65,7 @@ class LPGuiLabel(
     private val textArea = Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
     private var drawXOffset = 0
     private var extendable = false
-    private var trimmedText = StringUtils.getCuttedString(text, width, helper.mcFontRenderer)
+    private var trimmedText = TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)
     private var alignment = HorizontalAlignment.LEFT
     private var backgroundColor = helper.BACKGROUND_LIGHT
 
@@ -83,7 +83,7 @@ class LPGuiLabel(
 
     fun updateText(): LPGuiLabel {
         text = textGetter()
-        trimmedText = StringUtils.getCuttedString(text, width, helper.mcFontRenderer)
+        trimmedText = TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)
         textArea.setSize(helper.mcFontRenderer.getStringWidth(text), helper.mcFontRenderer.FONT_HEIGHT + 1)
         return setAlignment(alignment)
     }

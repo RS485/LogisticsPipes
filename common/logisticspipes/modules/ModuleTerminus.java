@@ -35,6 +35,7 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.property.InventoryProperty;
@@ -45,7 +46,7 @@ public class ModuleTerminus extends LogisticsModule
 		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
-	private final InventoryProperty filterInventory = new InventoryProperty(
+	public final InventoryProperty filterInventory = new InventoryProperty(
 			new ItemIdentifierInventory(9, "Terminated items", 1), "");
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
@@ -73,7 +74,7 @@ public class ModuleTerminus extends LogisticsModule
 	@Override
 	@CCCommand(description = "Returns the FilterInventory of this Module")
 	@Nonnull
-	public IInventory getFilterInventory() {
+	public IItemIdentifierInventory getFilterInventory() {
 		return filterInventory;
 	}
 

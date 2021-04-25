@@ -248,6 +248,7 @@ dependencies {
     implementation group: 'com.charleskorn.kaml', name: 'kaml', version: kaml_version
     implementation group: 'com.github.RS485', name: 'CodeChickenLib', version: '5901b4c6f4af70e6ef2dbe194bf7e0e097bb375c', classifier: 'deobf'
 
+    compileOnly group: 'mcjty.theoneprobe', name: 'TheOneProbe-1.12', version: '1.12-1.4.28-17', classifier: 'api'
     compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.293'
     compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.3', classifier: 'deobf'
     compileOnly group: 'com.mod-buildcraft', name: 'buildcraft-all', version: '7.99.24.6', transitive: false

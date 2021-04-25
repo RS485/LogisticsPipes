@@ -45,7 +45,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule
 		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
-	private final InventoryProperty filterInventory = new InventoryProperty(
+	public final InventoryProperty filterInventory = new InventoryProperty(
 			new ItemIdentifierInventory(9, "Requested Enchanted items", 1), "");
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();

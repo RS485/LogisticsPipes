@@ -77,7 +77,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         val name: String = "extractor_advanced"
     }
 
-    private val filterInventory = InventoryProperty(ItemIdentifierInventory(9, "Item list", 1), "")
+    val filterInventory = InventoryProperty(ItemIdentifierInventory(9, "Item list", 1), "")
     val itemsIncluded = BooleanProperty(true, "itemsIncluded")
     override val properties: List<Property<*>>
         get() = extractor.properties + listOf(filterInventory, itemsIncluded)

@@ -42,11 +42,11 @@ import com.charleskorn.kaml.YamlException
 import kotlinx.serialization.Serializable
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.DrawablePage
 import network.rs485.logisticspipes.gui.guidebook.DrawablePageFactory
+import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.markdown.HeaderParagraph
 import network.rs485.markdown.ImageParagraph
 import network.rs485.markdown.MarkdownParser
@@ -109,13 +109,13 @@ fun loadPage(path: String, lang: String): PageInfoProvider {
             loadPage(path, "en_us")
         } else {
             // English not found, this may be normal. Maybe the previous language file pointed to a non-existent file.
-            val translatedError = MessageFormat.format(StringUtils.translate("misc.guide_book.missing_page"), resolvedLocation)
+            val translatedError = MessageFormat.format(TextUtil.translate("misc.guide_book.missing_page"), resolvedLocation)
             object : PageInfoProvider {
                 override val bookmarkable: Boolean = false
                 override val language: String = lang
                 override val fileLocation: String = ""
                 override val metadata: YamlPageMetadata = YamlPageMetadata(
-                    title = StringUtils.translate("misc.guide_book.missing_page_title"),
+                    title = TextUtil.translate("misc.guide_book.missing_page_title"),
                     icon = "logisticspipes:itemcard",
                     menu = emptyMap()
                 )

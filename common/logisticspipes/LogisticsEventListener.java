@@ -1,7 +1,6 @@
 package logisticspipes;
 
 import java.lang.ref.WeakReference;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,11 +68,11 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
 import logisticspipes.utils.QuickSortChestMarkerStorage;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.PlayerConfiguration;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.module.AsyncQuicksortModule;
+import network.rs485.logisticspipes.util.TextUtil;
 import network.rs485.logisticspipes.world.WorldCoordinatesWrapper;
 
 public class LogisticsEventListener {
@@ -310,9 +309,9 @@ public class LogisticsEventListener {
 					ItemRoutingInformation info = ItemRoutingInformation.restoreFromNBT(event.getItemStack().getTagCompound().getCompoundTag(key));
 					List<String> list = event.getToolTip();
 					list.set(0, ChatColor.RED + "!!! " + ChatColor.WHITE + list.get(0) + ChatColor.RED + " !!!" + ChatColor.WHITE);
-					list.add(1, StringUtils.translate("itemstackinfo.lprouteditem"));
-					list.add(2, StringUtils.translate("itemstackinfo.lproutediteminfo"));
-					list.add(3, StringUtils.translate("itemstackinfo.lprouteditemtype") + ": " + info.getItem().toString());
+					list.add(1, TextUtil.translate("itemstackinfo.lprouteditem"));
+					list.add(2, TextUtil.translate("itemstackinfo.lproutediteminfo"));
+					list.add(3, TextUtil.translate("itemstackinfo.lprouteditemtype") + ": " + info.getItem().toString());
 				}
 			}
 		}

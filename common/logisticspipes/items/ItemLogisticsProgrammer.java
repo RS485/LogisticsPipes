@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class ItemLogisticsProgrammer extends LogisticsItem {
 
@@ -44,24 +44,24 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 				if (!target.isEmpty()) {
 					Item targetItem = REGISTRY.getObject(new ResourceLocation(target));
 					if (targetItem instanceof ItemModule) {
-						tooltip.add(StringUtils.translate("tooltip.programmerForModule"));
-						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
+						tooltip.add(TextUtil.translate("tooltip.programmerForModule"));
+						tooltip.add(TextUtil.translate(targetItem.getUnlocalizedName() + ".name"));
 					} else if (targetItem instanceof ItemUpgrade) {
-						tooltip.add(StringUtils.translate("tooltip.programmerForUpgrade"));
-						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
+						tooltip.add(TextUtil.translate("tooltip.programmerForUpgrade"));
+						tooltip.add(TextUtil.translate(targetItem.getUnlocalizedName() + ".name"));
 					} else if (targetItem instanceof ItemLogisticsPipe) {
-						tooltip.add(StringUtils.translate("tooltip.programmerForPipe"));
-						tooltip.add(StringUtils.translate(targetItem.getUnlocalizedName() + ".name"));
+						tooltip.add(TextUtil.translate("tooltip.programmerForPipe"));
+						tooltip.add(TextUtil.translate(targetItem.getUnlocalizedName() + ".name"));
 					} else {
-						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.1"));
-						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.2"));
-						tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.3"));
+						tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.1"));
+						tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.2"));
+						tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.3"));
 					}
 				}
 			} else {
-				tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.1"));
-				tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.2"));
-				tooltip.add(StringUtils.translate("tooltip.programmerForUnknown.3"));
+				tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.1"));
+				tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.2"));
+				tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.3"));
 			}
 		}
 		super.addInformation(stack, worldIn, tooltip, flagIn);

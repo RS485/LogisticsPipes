@@ -32,8 +32,8 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.string.StringUtils;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandler {
 
@@ -175,7 +175,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 				}
 
 				var17.drawString(String.format("ID: %d", Item.getIdFromItem(item)), -var17.getStringWidth(String.format("ID: %d", Item.getIdFromItem(item))) / 2, 0 * 10 - 4 * 5, 0);
-				String displayAmount = StringUtils.getFormatedStackSize(amount, false);
+				String displayAmount = TextUtil.getThreeDigitFormattedNumber(amount, false);
 				var17.drawString("Amount:", -var17.getStringWidth("Amount:") / 2, 1 * 10 - 4 * 5, 0);
 				var17.drawString(displayAmount, -var17.getStringWidth(displayAmount) / 2, 2 * 10 - 4 * 5, 0);
 			} else {

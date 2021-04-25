@@ -17,7 +17,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiAddChannelPopup extends SubGuiScreen {
 
@@ -46,7 +46,7 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 		buttonList.add(new GuiCheckBox(1, guiLeft + 94, guiTop + 81, 16, 16, false));
 		buttonList.add(new GuiCheckBox(2, guiLeft + 94, guiTop + 96, 16, 16, false));
 
-		buttonList.add(new SmallGuiButton(4, guiLeft + 58, guiTop + 120, 50, 10, StringUtils.translate(GUI_LANG_KEY + "save")));
+		buttonList.add(new SmallGuiButton(4, guiLeft + 58, guiTop + 120, 50, 10, TextUtil.translate(GUI_LANG_KEY + "save")));
 
 		if (this.textInput == null) {
 			this.textInput = new InputBar(Minecraft.getMinecraft().fontRenderer, this.getBaseScreen(), guiLeft + 30, guiTop + 32, right - guiLeft - 20, 15);
@@ -67,16 +67,16 @@ public class GuiAddChannelPopup extends SubGuiScreen {
 	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		drawTitle();
-		mc.fontRenderer.drawString(StringUtils.translate(GUI_LANG_KEY + "name"), guiLeft + 10, guiTop + 20, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GUI_LANG_KEY + "access") + ":", guiLeft + 10, guiTop + 55, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GUI_LANG_KEY + "public"), guiLeft + 10, guiTop + 70, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GUI_LANG_KEY + "security"), guiLeft + 10, guiTop + 85, responsibleSecurityID != null ? 0x404040 : 0x808080);
-		mc.fontRenderer.drawString(StringUtils.translate(GUI_LANG_KEY + "private"), guiLeft + 10, guiTop + 100, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GUI_LANG_KEY + "name"), guiLeft + 10, guiTop + 20, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GUI_LANG_KEY + "access") + ":", guiLeft + 10, guiTop + 55, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GUI_LANG_KEY + "public"), guiLeft + 10, guiTop + 70, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GUI_LANG_KEY + "security"), guiLeft + 10, guiTop + 85, responsibleSecurityID != null ? 0x404040 : 0x808080);
+		mc.fontRenderer.drawString(TextUtil.translate(GUI_LANG_KEY + "private"), guiLeft + 10, guiTop + 100, 0x404040);
 	}
 
 	protected void drawTitle() {
 		mc.fontRenderer.drawStringWithShadow(
-				StringUtils.translate(GUI_LANG_KEY + "title"), xCenter - (mc.fontRenderer.getStringWidth(StringUtils.translate(GUI_LANG_KEY + "title")) / 2f), guiTop + 6, 0xFFFFFF);
+				TextUtil.translate(GUI_LANG_KEY + "title"), xCenter - (mc.fontRenderer.getStringWidth(TextUtil.translate(GUI_LANG_KEY + "title")) / 2f), guiTop + 6, 0xFFFFFF);
 	}
 
 	@Override

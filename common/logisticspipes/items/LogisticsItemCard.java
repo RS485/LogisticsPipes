@@ -18,7 +18,7 @@ import org.lwjgl.input.Keyboard;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExistance {
 
@@ -34,7 +34,7 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 	public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		if (!stack.hasTagCompound()) {
-			tooltip.add(StringUtils.translate("tooltip.logisticsItemCard"));
+			tooltip.add(TextUtil.translate("tooltip.logisticsItemCard"));
 		} else {
 			final NBTTagCompound tag = Objects.requireNonNull(stack.getTagCompound());
 			if (tag.hasKey("UUID")) {

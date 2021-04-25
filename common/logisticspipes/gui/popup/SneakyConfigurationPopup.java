@@ -16,7 +16,7 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.gui.UpgradeSlot;
 import logisticspipes.utils.gui.sideconfig.SideConfigDisplay;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class SneakyConfigurationPopup extends SubGuiScreen {
@@ -70,7 +70,7 @@ public class SneakyConfigurationPopup extends SubGuiScreen {
 		int w = bounds.width * scaledresolution.getScaleFactor();
 		int h = (bounds.height - 1) * scaledresolution.getScaleFactor();
 
-		fontRenderer.drawString(StringUtils.translate(PREFIX + "sneakyTitle"), guiLeft + 8, guiTop + 8, Color.getValue(Color.DARKER_GREY), false);
+		fontRenderer.drawString(TextUtil.translate(PREFIX + "sneakyTitle"), guiLeft + 8, guiTop + 8, Color.getValue(Color.DARKER_GREY), false);
 
 		configDisplay.drawScreen(mouseX, mouseY, partialTick, new Rectangle(vpx, vpy, w, h), bounds);
 	}

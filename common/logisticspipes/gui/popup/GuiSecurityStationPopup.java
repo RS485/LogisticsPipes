@@ -14,7 +14,7 @@ import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiSecurityStationPopup extends SubGuiScreen {
 
@@ -39,20 +39,20 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 		buttonList.add(new GuiCheckBox(3, guiLeft + 138, guiTop + 71, 16, 16, false));
 		buttonList.add(new GuiCheckBox(4, guiLeft + 138, guiTop + 86, 16, 16, false));
 		buttonList.add(new GuiCheckBox(5, guiLeft + 138, guiTop + 101, 16, 16, false));
-		buttonList.add(new SmallGuiButton(6, guiLeft + 123, guiTop + 118, 30, 10, StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Close")));
+		buttonList.add(new SmallGuiButton(6, guiLeft + 123, guiTop + 118, 30, 10, TextUtil.translate(GuiSecurityStationPopup.PREFIX + "Close")));
 		refreshCheckBoxes();
 	}
 
 	@Override
 	protected void renderGuiBackground(int mouseX, int mouseY) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
-		mc.fontRenderer.drawString(StringUtils.translate(GuiSecurityStationPopup.PREFIX + "AccessRoutingChannels") + ": ", guiLeft + 10, guiTop + 105, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiSecurityStationPopup.PREFIX + "Player") + ": " + activeSetting.name, guiLeft + 10, guiTop + 10, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiSecurityStationPopup.PREFIX + "ConfigureSettings") + ": ", guiLeft + 10, guiTop + 30, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiSecurityStationPopup.PREFIX + "ActiveRequesting") + ": ", guiLeft + 10, guiTop + 45, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiSecurityStationPopup.PREFIX + "UpgradePipes") + ": ", guiLeft + 10, guiTop + 60, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiSecurityStationPopup.PREFIX + "CheckNetwork") + ": ", guiLeft + 10, guiTop + 75, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiSecurityStationPopup.PREFIX + "RemovePipes") + ": ", guiLeft + 10, guiTop + 90, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.translate(GuiSecurityStationPopup.PREFIX + "AccessRoutingChannels") + ": ", guiLeft + 10, guiTop + 105, 0x404040);
 	}
 
 	@Override

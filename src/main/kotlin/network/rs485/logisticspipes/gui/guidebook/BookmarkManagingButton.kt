@@ -38,9 +38,9 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
 
 val additionTexture = Rectangle(192, 0, 16, 16)
@@ -84,7 +84,7 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
     }
 
     override fun getTooltipText(): String = when(buttonState){
-        ButtonState.ADD, ButtonState.REMOVE -> StringUtils.translate("misc.guide_book.bookmark_button.${buttonState.toString().toLowerCase()}")
+        ButtonState.ADD, ButtonState.REMOVE -> TextUtil.translate("misc.guide_book.bookmark_button.${buttonState.toString().toLowerCase()}")
         ButtonState.DISABLED -> ""
     }
 

@@ -13,7 +13,7 @@ import logisticspipes.request.resources.IResource.ColorCode;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiRequestPopup extends SubGuiScreen {
 
@@ -71,7 +71,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 			if (text[i] == null) {
 				continue;
 			}
-			String msg = StringUtils.getCuttedString(text[i], mWidth - 10, fontRenderer);
+			String msg = TextUtil.getTrimmedString(text[i], mWidth - 10, fontRenderer, "...");
 			int stringWidth = mc.fontRenderer.getStringWidth(msg);
 			mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}

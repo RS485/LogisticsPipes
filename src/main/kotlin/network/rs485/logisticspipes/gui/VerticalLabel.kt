@@ -38,8 +38,8 @@
 package network.rs485.logisticspipes.gui
 
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.opaque
 
 class VerticalLabel(fullText: String, x: Int, y: Int, maxLength: Int, textColor: Int, backgroundColor: Int) : Label(fullText, x, y, maxLength, textColor, backgroundColor) {
@@ -70,7 +70,7 @@ class VerticalLabel(fullText: String, x: Int, y: Int, maxLength: Int, textColor:
         fullText = newFullText
         fullRect.setSize(fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(fullText))
 
-        trimmedText = StringUtils.getCuttedString(fullText, maxLength, fontRenderer)
+        trimmedText = TextUtil.getTrimmedString(fullText, maxLength, fontRenderer)
         trimmedRect.setSize(fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(trimmedText))
 
         val offset = (maxLength - trimmedRect.roundedHeight) / 2

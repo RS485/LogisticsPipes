@@ -37,7 +37,10 @@
 
 package network.rs485.logisticspipes.util
 
+import net.minecraft.util.text.TextFormatting
+import java.util.*
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TestUtil {
@@ -69,5 +72,10 @@ class TestUtil {
     @Test
     fun `test getBytesFromInteger for -1`() {
         assertTrue(byteArrayOf(-1, -1, -1, -1).contentEquals(getBytesFromInteger(-1)))
+    }
+
+    @Test
+    fun `test transform with starting formatting`() {
+        assertEquals("§7§oThis is a semi §c§oformatted§r§7§o string.", TextUtil.transform(text = "This is a semi \$REDformatted\$RESET string.", baseFormatting = EnumSet.of(TextFormatting.GRAY, TextFormatting.ITALIC)))
     }
 }

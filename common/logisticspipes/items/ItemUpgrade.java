@@ -48,7 +48,7 @@ import logisticspipes.pipes.upgrades.power.IC2HVPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2LVPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.IC2MVPowerSupplierUpgrade;
 import logisticspipes.pipes.upgrades.power.RFPowerSupplierUpgrade;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class ItemUpgrade extends LogisticsItem {
 
@@ -175,26 +175,21 @@ public class ItemUpgrade extends LogisticsItem {
 			if (!pipe.isEmpty() && !module.isEmpty()) {
 				//Can be applied to {0} pipes
 				//and {0} modules
-				String base1 = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "both1");
-				String base2 = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "both2");
+				String base1 = TextUtil.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "both1");
+				String base2 = TextUtil.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "both2");
 				tooltip.add(MessageFormat.format(base1, join(pipe)));
 				tooltip.add(MessageFormat.format(base2, join(module)));
 			} else if (!pipe.isEmpty()) {
 				//Can be applied to {0} pipes
-				String base = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "pipe");
+				String base = TextUtil.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "pipe");
 				tooltip.add(MessageFormat.format(base, join(pipe)));
 			} else {
 				//Can be applied to {0} modules
-				String base = StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "module");
+				String base = TextUtil.translate(ItemUpgrade.SHIFT_INFO_PREFIX + "module");
 				tooltip.add(MessageFormat.format(base, join(module)));
 			}
 		} else {
-			String baseKey = MessageFormat.format("{0}.tip", stack.getItem().getUnlocalizedName(stack));
-			String key = baseKey + 1;
-			String translation = StringUtils.translate(key);
-			if (translation.equals(key)) {
-				tooltip.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
-			}
+			TextUtil.addTooltipInformation(stack, tooltip, false);
 		}
 	}
 
@@ -202,14 +197,14 @@ public class ItemUpgrade extends LogisticsItem {
 	private String join(List<String> join) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < join.size() - 2; i++) {
-			builder.append(StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + join.get(i)));
+			builder.append(TextUtil.translate(ItemUpgrade.SHIFT_INFO_PREFIX + join.get(i)));
 			builder.append(", ");
 		}
 		if (join.size() > 1) {
-			builder.append(StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + join.get(join.size() - 2)));
+			builder.append(TextUtil.translate(ItemUpgrade.SHIFT_INFO_PREFIX + join.get(join.size() - 2)));
 			builder.append(" and ");
 		}
-		builder.append(StringUtils.translate(ItemUpgrade.SHIFT_INFO_PREFIX + join.get(join.size() - 1)));
+		builder.append(TextUtil.translate(ItemUpgrade.SHIFT_INFO_PREFIX + join.get(join.size() - 1)));
 		return builder.toString();
 	}
 }

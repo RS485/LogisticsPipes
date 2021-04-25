@@ -53,11 +53,11 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.DummyWorldProvider;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
 import network.rs485.logisticspipes.module.AsyncExtractorModule;
 import network.rs485.logisticspipes.module.AsyncQuicksortModule;
 import network.rs485.logisticspipes.module.Gui;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class ItemModule extends LogisticsItem {
 
@@ -275,13 +275,13 @@ public class ItemModule extends LogisticsItem {
 						}
 					}
 				} else {
-					tooltip.add(StringUtils.translate(StringUtils.KEY_HOLDSHIFT));
+					TextUtil.addTooltipInformation(stack, tooltip, false);
 				}
 			} else {
-				StringUtils.addShiftAddition(stack, tooltip);
+				TextUtil.addTooltipInformation(stack, tooltip, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
 			}
 		} else {
-			StringUtils.addShiftAddition(stack, tooltip);
+			TextUtil.addTooltipInformation(stack, tooltip, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT));
 		}
 	}
 }

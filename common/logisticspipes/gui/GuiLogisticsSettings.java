@@ -19,8 +19,8 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseTabGuiScreen;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.config.ClientConfiguration;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 
@@ -95,10 +95,10 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		public void renderForgroundContent() {
 			renderDistance.drawTextBox();
 			contentRenderDistance.drawTextBox();
-			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
-			//fontRenderer.drawString(StringUtils.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
-			fontRenderer.drawString(StringUtils.translate(PREFIX + "pipecontentrenderdistance"), 10, 100, 0x404040);
+			//fontRenderer.drawString(StringUtil.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);
+			//fontRenderer.drawString(StringUtil.translate(PREFIX + "pipefallbackrenderer"), 38, 54, 0x404040);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "piperenderdistance"), 10, 70, 0x404040);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "pipecontentrenderdistance"), 10, 100, 0x404040);
 		}
 
 		@Override

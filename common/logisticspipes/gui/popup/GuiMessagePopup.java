@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiButton;
 
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiMessagePopup extends SubGuiScreen {
 
@@ -51,7 +51,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 			if (text[i] == null) {
 				continue;
 			}
-			String msg = StringUtils.getCuttedString(text[i], mWidth - 10, fontRenderer);
+			String msg = TextUtil.getTrimmedString(text[i], mWidth - 10, fontRenderer, "");
 			int stringWidth = mc.fontRenderer.getStringWidth(msg);
 			mc.fontRenderer.drawString(msg, xCenter - (stringWidth / 2), guiTop + 10 + (i * 10), 0x404040);
 		}

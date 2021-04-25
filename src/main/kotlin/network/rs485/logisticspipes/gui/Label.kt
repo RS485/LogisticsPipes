@@ -38,10 +38,10 @@
 package network.rs485.logisticspipes.gui
 
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen
-import logisticspipes.utils.string.StringUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.logisticspipes.util.opaque
 
@@ -86,7 +86,7 @@ open class Label(fullText: String, internal val x: Int, internal val y: Int, int
         fullText = newFullText
         fullRect.setSize(fontRenderer.getStringWidth(fullText), fontRenderer.FONT_HEIGHT)
 
-        trimmedText = StringUtils.getCuttedString(fullText, maxLength, fontRenderer)
+        trimmedText = TextUtil.getTrimmedString(fullText, maxLength, fontRenderer)
         trimmedRect.setSize(fontRenderer.getStringWidth(trimmedText), fontRenderer.FONT_HEIGHT)
 
         val offset = (maxLength - trimmedRect.roundedWidth) / 2

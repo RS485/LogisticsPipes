@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 
 import logisticspipes.routing.channels.ChannelInformation;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiSelectChannelPopup extends GuiManageChannelPopup {
 
@@ -31,7 +31,7 @@ public class GuiSelectChannelPopup extends GuiManageChannelPopup {
 
 	protected void drawTitle() {
 		mc.fontRenderer.drawStringWithShadow(
-				StringUtils.translate(GUI_LANG_KEY + "title"), xCenter - (mc.fontRenderer.getStringWidth(StringUtils.translate(GUI_LANG_KEY + "title")) / 2f), guiTop + 6, 0xFFFFFF);
+				TextUtil.translate(GUI_LANG_KEY + "title"), xCenter - (mc.fontRenderer.getStringWidth(TextUtil.translate(GUI_LANG_KEY + "title")) / 2f), guiTop + 6, 0xFFFFFF);
 	}
 
 	@Override

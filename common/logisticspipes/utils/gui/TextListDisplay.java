@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import logisticspipes.utils.Color;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class TextListDisplay {
 
@@ -95,7 +95,7 @@ public class TextListDisplay {
 				flag = true;
 			}
 			String name = list.getTextAt(i);
-			name = StringUtils.getCuttedString(name, gui.getXSize() - borderRight - borderLeft - 6, gui.getMC().fontRenderer);
+			name = TextUtil.getTrimmedString(name, gui.getXSize() - borderRight - borderLeft - 6, gui.getMC().fontRenderer, "...");
 			gui.getMC().fontRenderer.drawString(name, gui.getGuiLeft() + borderLeft + 4, gui.getGuiTop() + borderTop + 4 + ((i - scroll) * 10), list.getTextColor(i));
 		}
 

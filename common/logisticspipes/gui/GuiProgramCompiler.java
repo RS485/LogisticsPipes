@@ -30,7 +30,7 @@ import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.TextListDisplay;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 //TODO: Config Option for disabling program compilation
 public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
@@ -73,7 +73,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 					return "";
 				}
 				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
-				return StringUtils.translate("gui.compiler." + LogisticsProgramCompilerTileEntity.programByCategory.keySet().stream()
+				return TextUtil.translate("gui.compiler." + LogisticsProgramCompilerTileEntity.programByCategory.keySet().stream()
 						.filter(it -> StreamSupport.stream(list.spliterator(), false).noneMatch(nbtBase -> ((NBTTagString) nbtBase).getString().equals(it.toString())))
 						.skip(index)
 						.findFirst()
@@ -110,7 +110,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 				Item selItem = Item.REGISTRY.getObject(sel);
 				if (selItem != null) {
-					return StringUtils.translate(selItem.getUnlocalizedName() + ".name");
+					return TextUtil.translate(selItem.getUnlocalizedName() + ".name");
 				}
 				return "UNDEFINED";
 			}
@@ -218,7 +218,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		GuiGraphics.drawSlotProgrammerBackground(mc, guiLeft + 153, guiTop + 9);
 
 		if (compiler.getCurrentTask() != null) {
-			fontRenderer.drawString(StringUtils.translate("gui.compiler.processing"), guiLeft + 10, guiTop + 39, 0x000000);
+			fontRenderer.drawString(TextUtil.translate("gui.compiler.processing"), guiLeft + 10, guiTop + 39, 0x000000);
 			String name;
 			Item item = Item.REGISTRY.getObject(compiler.getCurrentTask());
 			if (item != null) {
@@ -226,16 +226,16 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			} else {
 				name = "gui.compiler." + compiler.getCurrentTask().toString().replace(':', '.');
 			}
-			String text = StringUtils.getCuttedString(StringUtils.translate(name),
-					160, fontRenderer);
+			String text = TextUtil.getTrimmedString(TextUtil.translate(name),
+					160, fontRenderer, "...");
 			fontRenderer.drawString(text, guiLeft + 10, guiTop + 70, 0x000000);
 			drawRect(guiLeft + 9, guiTop + 50, guiLeft + 171, guiTop + 66, Color.BLACK);
 			drawRect(guiLeft + 10, guiTop + 51, guiLeft + 170, guiTop + 65, Color.WHITE);
 			drawRect(guiLeft + 11, guiTop + 52, guiLeft + 11 + (int) (158 * compiler.getTaskProgress()), guiTop + 64, Color.GREEN);
 
 			if (!compiler.isWasAbleToConsumePower()) {
-				fontRenderer.drawString(StringUtils.translate("gui.compiler.nopower.1"), guiLeft + 68, guiTop + 10, 0x000000);
-				fontRenderer.drawString(StringUtils.translate("gui.compiler.nopower.2"), guiLeft + 35, guiTop + 20, 0x000000);
+				fontRenderer.drawString(TextUtil.translate("gui.compiler.nopower.1"), guiLeft + 68, guiTop + 10, 0x000000);
+				fontRenderer.drawString(TextUtil.translate("gui.compiler.nopower.2"), guiLeft + 35, guiTop + 20, 0x000000);
 			}
 
 			buttonList.forEach(b -> b.visible = false);
@@ -277,9 +277,9 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		return StreamSupport.stream(list.spliterator(), false).flatMap(
 				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new ResourceLocation(((NBTTagString) nbtBase).getString()))
 						.stream())
-				.filter(it -> StringUtils.translate(Item.REGISTRY.getObject(it).getUnlocalizedName() + ".name").toLowerCase().contains(search.getText().toLowerCase()))
+				.filter(it -> TextUtil.translate(Item.REGISTRY.getObject(it).getUnlocalizedName() + ".name").toLowerCase().contains(search.getText().toLowerCase()))
 				.sorted(Comparator.comparing(o -> getSortingClass(Item.REGISTRY.getObject((ResourceLocation) o)))
-						.thenComparing(o -> StringUtils.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName() + ".name").toLowerCase())
+						.thenComparing(o -> TextUtil.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName() + ".name").toLowerCase())
 				)
 				.collect(Collectors.toList());
 	}

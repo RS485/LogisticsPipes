@@ -35,7 +35,7 @@ import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
-import logisticspipes.utils.string.StringUtils;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class RequestMonitorPopup extends SubGuiScreen {
 
@@ -577,7 +577,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
 			itemRender.renderItemAndEffectIntoGUI(item.getItem().makeNormalStack(1), x, y);
 			itemRender.renderItemOverlayIntoGUI(fontRenderer, item.getItem().makeNormalStack(1), x, y, "");
-			String s = StringUtils.getFormatedStackSize(item.getStackSize(), false);
+			String s = TextUtil.getThreeDigitFormattedNumber(item.getStackSize(), false);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			itemRender.zLevel = 0.0F;

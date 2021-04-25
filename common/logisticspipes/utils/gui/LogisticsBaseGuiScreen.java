@@ -55,10 +55,10 @@ import logisticspipes.utils.ChainAddArrayList;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.extention.GuiExtentionController;
 import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.property.IBitSet;
 import network.rs485.logisticspipes.util.FuzzyFlag;
 import network.rs485.logisticspipes.util.FuzzyUtil;
+import network.rs485.logisticspipes.util.TextUtil;
 
 @ModDependentInterface(modId = { LPConstants.neiModID }, interfacePath = { "codechicken.nei.api.INEIGuiHandler" })
 public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISubGuiControler, INEIGuiHandler, IGuiAccess {
@@ -314,13 +314,13 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 					GuiGraphics.drawGuiBackGround(mc, posX, posY, posX + 61, posY + 47, zLevel, true, true, true, true, true);
 					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 					final String PREFIX = "gui.crafting.";
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OreDict"), posX + 5, posY + 5,
+					mc.fontRenderer.drawString(TextUtil.translate(PREFIX + "OreDict"), posX + 5, posY + 5,
 							(useOreDict ? 0xFF4040 : 0x404040));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnDamage"), posX + 5, posY + 15,
+					mc.fontRenderer.drawString(TextUtil.translate(PREFIX + "IgnDamage"), posX + 5, posY + 15,
 							(ignoreDamage ? 0x40FF40 : 0x404040));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "IgnNBT"), posX + 5, posY + 25,
+					mc.fontRenderer.drawString(TextUtil.translate(PREFIX + "IgnNBT"), posX + 5, posY + 25,
 							(ignoreNBT ? 0x4040FF : 0x404040));
-					mc.fontRenderer.drawString(StringUtils.translate(PREFIX + "OrePrefix"), posX + 5, posY + 35,
+					mc.fontRenderer.drawString(TextUtil.translate(PREFIX + "OrePrefix"), posX + 5, posY + 35,
 							(useOreCategory ? 0x7F7F40 : 0x404040));
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);

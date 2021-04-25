@@ -25,8 +25,8 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.string.StringUtils;
 import network.rs485.logisticspipes.SatellitePipe;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
@@ -81,11 +81,11 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		drawCenteredString(StringUtils.translate("gui.satellite.SatelliteName"), 59, 7, 0x404040);
-		String name = StringUtils.getCuttedString(satellitePipe.getSatellitePipeName(), 100, mc.fontRenderer);
+		drawCenteredString(TextUtil.translate("gui.satellite.SatelliteName"), 59, 7, 0x404040);
+		String name = TextUtil.getTrimmedString(satellitePipe.getSatellitePipeName(), 100, mc.fontRenderer, "...");
 		int yOffset = 0;
 		if (!response.isEmpty()) {
-			drawCenteredString(StringUtils.translate("gui.satellite.naming_result." + response), xSize / 2, 30, response.equals("success") ? 0x404040 : 0x5c1111);
+			drawCenteredString(TextUtil.translate("gui.satellite.naming_result." + response), xSize / 2, 30, response.equals("success") ? 0x404040 : 0x5c1111);
 			yOffset = 4;
 		}
 		drawCenteredString(name, xSize / 2, 24 - yOffset, 0x404040);

@@ -1,4 +1,8 @@
 jdk:
   - openjdk8
+before_install:
+  - git lfs install
+  - git lfs fetch
+  - git lfs checkout
 install:
   - ./gradlew clean install -xtest

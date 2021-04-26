@@ -1,5 +1,15 @@
 language: java
-script: ./gradlew clean build install
+jobs:
+  include:
+    - stage: build
+      name: "Build and install"
+      script: ./gradlew install -xtest
+    - stage: test
+      name: "Unit tests"
+      script: ./gradlew check
+    - stage: test
+      name: "Integration tests"
+      script: ./gradlew -P acceptMinecraftServerEula=true integrationTests
 jdk:
   - openjdk8
 before_cache:
@@ -7,5 +17,6 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
+    - build/fg_cache
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/

@@ -155,6 +155,7 @@ minecraft {
             main 'net.minecraftforge.legacydev.MainServer'
             args '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
             arg 'nogui' // without GUI
+            jvmArg '-enableassertions'
             workingDirectory project.file('run-server-test')
 
             // load LP core mod from classpath

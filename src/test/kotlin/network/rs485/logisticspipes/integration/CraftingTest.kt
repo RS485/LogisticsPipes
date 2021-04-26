@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.minecrafttest
+package network.rs485.logisticspipes.integration
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.time.withTimeoutOrNull
@@ -60,7 +60,10 @@ import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.EnumFacing
 import network.rs485.logisticspipes.util.FuzzyFlag
 import network.rs485.logisticspipes.util.FuzzyUtil
+import network.rs485.minecraft.BlockBuilder
+import network.rs485.minecraft.BlockPosSelector
 import java.time.Duration
+import kotlin.test.assertTrue
 
 @Suppress("FunctionName")
 object CraftingTest {
@@ -68,15 +71,16 @@ object CraftingTest {
 
     suspend fun `test fuzzy-input crafting fails with mixed input OreDict`(
         logger: (Any) -> Unit,
-        testBuilder: TestBlockBuilder.TestBuilder,
+        selector: BlockPosSelector,
     ) {
         val testName = Throwable().stackTrace[0].methodName
         try {
             val requesterPair = `setup fuzzy crafting chest`(
-                testBuilder, arrayOf(
+                selector = selector,
+                providerStacks = arrayOf(
                     ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.OAK.metadata),
                     ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.DARK_OAK.metadata),
-                )
+                ),
             )
             val missingItems = CompletableDeferred<Boolean>()
             val stacks = listOf(ItemStack(Blocks.CHEST))
@@ -104,32 +108,38 @@ object CraftingTest {
             )
             val requestMissedItems = withTimeoutOrNull(Duration.ofSeconds(1)) {
                 missingItems.await()
-            } ?: false
-            assert(requestMissedItems) { "the request did not report missing items" }
-            val chestNeverArrived = waitForOrNull(
+            }
+            assertTrue(message = "the request did not report missing items") {
+                requestMissedItems == true
+            }
+            val waitForChestResult = waitForOrNull(
                 timeout = Duration.ofSeconds(3),
                 check = { requesterPair.second.getTileEntity<TileEntityChest>().containsAll(stacks) },
-            ) === null
-            assert(chestNeverArrived) { "a chest item was found in the requester chest" }
+            )
+            assertTrue(message = "a chest item was found in the requester chest") {
+                waitForChestResult === null
+            }
             logger("$testName [PASSED]")
-        } catch (e: Exception) {
-            logger("$testName [FAILED] $e")
+        } catch (e: Throwable) {
+            logger("$testName [FAILED]\n==> ${e.stackTraceToString()}")
         }
     }
 
     private suspend fun `setup fuzzy crafting chest`(
-        testBuilder: TestBlockBuilder.TestBuilder, providerStacks: Array<ItemStack>
-    ): Pair<TestBlockBuilder.TestBuilder.PipeBuilder<PipeItemsRequestLogistics>, TestBlockBuilder.TestBuilder.BlockBuilder<BlockChest>> {
-        val fuzzyCraftingTable = testBuilder.place(LPBlocks.crafterFuzzy)
+        selector: BlockPosSelector, providerStacks: Array<ItemStack>
+    ): Pair<PipeBuilder<PipeItemsRequestLogistics>, BlockBuilder<BlockChest>> {
+        val fuzzyCraftingTable = selector.place(LPBlocks.crafterFuzzy)
         val craftingPipe = fuzzyCraftingTable
             .direction(EnumFacing.NORTH)
             .placePipe(PipeItemsCraftingLogistics(LPItems.pipeCrafting))
-        (craftingPipe.pipe.upgradeManager as UpgradeManager).inv.setInventorySlotContents(
-            0,
-            ItemStack(fuzzyUpgradeItem)
-        )
+        (craftingPipe.pipe.upgradeManager as UpgradeManager).inv.apply {
+            setInventorySlotContents(0, ItemStack(fuzzyUpgradeItem))
+            markDirty()
+        }
         craftingPipe.waitForPipeInitialization()
-        assert(craftingPipe.pipe.logisticsModule.hasFuzzyUpgrade())
+        assertTrue(message = "Expected crafting pipe to have fuzzy upgrade") {
+            craftingPipe.pipe.logisticsModule.hasFuzzyUpgrade()
+        }
         fuzzyCraftingTable.getTileEntity<LogisticsCraftingTableTileEntity>().apply {
             (0 until 9).filter { it != 4 }.forEach {
                 matrix.setInventorySlotContents(it, ItemStack(Blocks.PLANKS))

@@ -384,7 +384,7 @@ public class LogisticsPipes {
 		if (isTesting()) {
 			final Class<?> testClass;
 			try {
-				testClass = Class.forName("network.rs485.minecrafttest.MinecraftTest");
+				testClass = Class.forName("network.rs485.logisticspipes.integration.MinecraftTest");
 			} catch (ReflectiveOperationException e) {
 				throw new RuntimeException("Error loading minecraft test class", e);
 			}

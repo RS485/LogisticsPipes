@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.minecrafttest
+package network.rs485.logisticspipes.integration
 
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.launch
@@ -46,8 +46,9 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent
 import network.rs485.grow.CoroutineScopes
 import java.lang.management.ManagementFactory
+import kotlin.test.assertTrue
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 object MinecraftTest {
 
     /**
@@ -55,10 +56,10 @@ object MinecraftTest {
      */
     private const val DEBUGGING = false
     private lateinit var world: WorldServer
-    private lateinit var testBlockBuilder: TestBlockBuilder
+    private lateinit var testBlockBuilder: TestWorldBuilder
 
     fun serverStart(event: FMLServerStartedEvent) {
-        assert(event.side.isServer)
+        assertTrue(message = "Test suite must run on the server") { event.side.isServer }
         val serverInstance = FMLCommonHandler.instance().minecraftServerInstance as DedicatedServer
         if (DEBUGGING) {
             serverInstance.setProperty("max-tick-time", 0L)
@@ -69,7 +70,7 @@ object MinecraftTest {
             if (watchdog != null) error("Watchdog already running! Set max-tick-time to 0, please restart the server!")
         }
         world = serverInstance.worlds[0]
-        testBlockBuilder = TestBlockBuilder(world)
+        testBlockBuilder = TestWorldBuilder(world)
         println("[STARTING LOGISTICSPIPES TESTS]")
         val task = startTests(LogisticsPipes.log::info)
         task.invokeOnCompletion {
@@ -82,7 +83,7 @@ object MinecraftTest {
     }
 
     fun startTests(logger: (Any) -> Unit) = CoroutineScopes.serverScope.launch(CoroutineName("logisticspipes.test")) {
-        CraftingTest.`test fuzzy-input crafting fails with mixed input OreDict`(logger, testBlockBuilder.newTest())
+        CraftingTest.`test fuzzy-input crafting fails with mixed input OreDict`(logger, testBlockBuilder.newSelector())
     }
 
 }

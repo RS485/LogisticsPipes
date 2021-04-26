@@ -235,7 +235,11 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 
 	@Override
 	public String toString() {
-		return super.toString() + " (" + getX() + ", " + getY() + ", " + getZ() + ")";
+		if (container == null) {
+			return getClass().getName() + "(NO CONTAINER)";
+		} else {
+			return String.format("%s(%s)", getClass().getName(), container.getPos());
+		}
 	}
 
 	public DoubleCoordinates getLPPosition() {

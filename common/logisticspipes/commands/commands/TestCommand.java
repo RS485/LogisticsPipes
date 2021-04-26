@@ -33,7 +33,7 @@ public class TestCommand implements ICommandHandler {
 	public void executeCommand(ICommandSender sender, String[] args) {
 		final Class<?> testClass;
 		try {
-			testClass = Class.forName("network.rs485.minecrafttest.MinecraftTest");
+			testClass = Class.forName("network.rs485.logisticspipes.integration.MinecraftTest");
 		} catch (ReflectiveOperationException e) {
 			sender.sendMessage(new TextComponentString(ChatColor.RED + "Error loading minecraft test class " + e));
 			return;

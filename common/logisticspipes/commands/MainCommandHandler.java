@@ -2,6 +2,7 @@ package logisticspipes.commands;
 
 import net.minecraft.command.ICommandSender;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.SubCommandHandler;
 import logisticspipes.commands.commands.BypassCommand;
 import logisticspipes.commands.commands.ChangelogCommand;
@@ -12,6 +13,7 @@ import logisticspipes.commands.commands.DumpCommand;
 import logisticspipes.commands.commands.NBTDebugCommand;
 import logisticspipes.commands.commands.NameLookupCommand;
 import logisticspipes.commands.commands.RoutingThreadCommand;
+import logisticspipes.commands.commands.TestCommand;
 import logisticspipes.commands.commands.TransferNamesCommand;
 import logisticspipes.commands.commands.VersionCommand;
 import logisticspipes.commands.commands.WrapperCommand;
@@ -46,6 +48,9 @@ public class MainCommandHandler extends SubCommandHandler {
 		registerSubCommand(new BypassCommand());
 		registerSubCommand(new DebugCommand());
 		registerSubCommand(new WrapperCommand());
+		if (LogisticsPipes.isTesting()) {
+			registerSubCommand(new TestCommand());
+		}
 		registerSubCommand(new ClearCommand());
 	}
 }

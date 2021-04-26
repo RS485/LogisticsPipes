@@ -810,7 +810,7 @@ public class ModuleCrafter extends LogisticsModule
 				.setCleanupExclude(cleanupModeIsExclude.getValue());
 	}
 
-	public void importFromCraftingTable(EntityPlayer player) {
+	public void importFromCraftingTable(@Nullable EntityPlayer player) {
 		if (MainProxy.isClient(getWorld())) {
 			// Send packet asking for import
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setModulePos(this);

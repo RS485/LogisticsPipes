@@ -10,6 +10,7 @@ package logisticspipes;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.jar.JarFile;
@@ -56,6 +58,7 @@ import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -210,6 +213,8 @@ public class LogisticsPipes {
 
 	public static final String UNKNOWN = "unknown";
 	private static boolean DEBUG = true;
+	private Consumer<FMLServerStartedEvent> minecraftTestStartMethod = null;
+
 	public static boolean isDEBUG() {
 		return DEBUG;
 	}
@@ -375,6 +380,37 @@ public class LogisticsPipes {
 		} else if (event.getSide() == Side.CLIENT) {
 			LPFontRenderer.Factory.asyncPreload();
 		}
+
+		if (isTesting()) {
+			final Class<?> testClass;
+			try {
+				testClass = Class.forName("network.rs485.minecrafttest.MinecraftTest");
+			} catch (ReflectiveOperationException e) {
+				throw new RuntimeException("Error loading minecraft test class", e);
+			}
+			final Object minecraftTestInstance;
+			try {
+				minecraftTestInstance = testClass.getDeclaredField("INSTANCE").get(null);
+				final Method serverStartMethod = testClass
+						.getDeclaredMethod("serverStart", FMLServerStartedEvent.class);
+				minecraftTestStartMethod = (FMLServerStartedEvent serverStartedEvent) -> {
+					try {
+						serverStartMethod.invoke(minecraftTestInstance, serverStartedEvent);
+					} catch (ReflectiveOperationException e) {
+						throw new RuntimeException("Could not run server started hook in " + minecraftTestInstance, e);
+					}
+				};
+			} catch (ReflectiveOperationException e) {
+				throw new RuntimeException("Error accessing minecraft test instance", e);
+			}
+
+			MinecraftForge.EVENT_BUS.register(minecraftTestInstance);
+		}
+	}
+
+	public static boolean isTesting() {
+		final String testSetting = System.getProperty("logisticspipes.test");
+		return testSetting != null && testSetting.equalsIgnoreCase("true");
 	}
 
 	@Mod.EventHandler
@@ -622,6 +658,11 @@ public class LogisticsPipes {
 	@Mod.EventHandler
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
+	}
+
+	@Mod.EventHandler
+	public void serverStarted(FMLServerStartedEvent event) {
+		if (minecraftTestStartMethod != null) minecraftTestStartMethod.accept(event);
 	}
 
 	@Mod.EventHandler

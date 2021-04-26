@@ -186,7 +186,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 
 		public Security(DummyContainer dummy) {
 			addSlot(dummy
-					.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 10, 42, itemStack -> {
+					.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().secInv, 10, 42, itemStack -> {
 						if (itemStack.isEmpty()) {
 							return false;
 						}
@@ -214,7 +214,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		@Override
 		public void renderForgroundContent() {
 			fontRenderer.drawString(TextUtil.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
-			ItemStack itemStack = pipe.getOriginalUpgradeManager().getSecInv().getStackInSlot(0);
+			ItemStack itemStack = pipe.getOriginalUpgradeManager().secInv.getStackInSlot(0);
 			if (!itemStack.isEmpty()) {
 				UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
 				fontRenderer.drawString("Id: ", 10, 68, Color.getValue(Color.DARKER_GREY), false);

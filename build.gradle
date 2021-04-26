@@ -146,6 +146,29 @@ minecraft {
                 }
             }
         }
+
+        serverTest {
+            environment 'target', 'server'
+            // mimic the runServer task
+            environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
+            environment 'MCP_TO_SRG', "$buildDir/createSrgToMcp/output.srg"
+            main 'net.minecraftforge.legacydev.MainServer'
+            args '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+            arg 'nogui' // without GUI
+            workingDirectory project.file('run-server-test')
+
+            // load LP core mod from classpath
+            property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
+
+            // put LP in test mode
+            property 'logisticspipes.test', 'true'
+
+            mods {
+                logisticspipes {
+                    sources = [sourceSets.api, sourceSets.main, sourceSets.test]
+                }
+            }
+        }
     }
 }
 
@@ -271,7 +294,10 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 }
 
+
 import net.minecraftforge.gradle.userdev.MinecraftUserRepo
+
+import java.nio.file.Files
 
 final nonMinecraftConfigurations = configurations.findAll { conf -> conf != configurations.minecraft }
 if (!nonMinecraftConfigurations.empty) {
@@ -386,6 +412,14 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
                     }
                 }
             }
+        } else if (task.name.startsWith('prepareRunServerTest')) {
+            task.doFirst {
+                if (findProperty("acceptMinecraftServerEula") == 'true') {
+                    def eulaFile = projectDir.toPath().resolve('run-server-test').resolve('eula.txt')
+                    Files.deleteIfExists(eulaFile)
+                    eulaFile.write('eula=true')
+                }
+            }
         }
     }
 }
@@ -445,4 +479,29 @@ tasks.named('wrapper') {
 tasks.withType(AbstractArchiveTask) {
     preserveFileTimestamps = false
     reproducibleFileOrder = true
+}
+
+task integrationTests(dependsOn: ['prepareRunServerTest'], type: Exec) {
+    workingDir projectDir
+
+    commandLine "$projectDir/gradlew"
+    args 'runServerTest'
+    ignoreExitValue = true
+
+    standardOutput = new ByteArrayOutputStream()
+    errorOutput = new ByteArrayOutputStream()
+
+    doLast {
+        final output = standardOutput.toString()
+        final start = output.indexOf('[STARTING LOGISTICSPIPES TESTS]')
+        if (start == -1) throw new RuntimeException('Cannot find LP test start')
+        def testOutput = output.substring(start)
+        if (testOutput.contains('[FAILED]')) {
+            throw new GradleException("Error in LP Tests:\n${testOutput}")
+        } else {
+            testOutput.eachLine {
+                if (it.contains('[PASSED]')) println(it)
+            }
+        }
+    }
 }

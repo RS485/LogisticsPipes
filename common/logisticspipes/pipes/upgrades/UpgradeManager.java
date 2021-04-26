@@ -12,8 +12,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-import lombok.Getter;
-
 import logisticspipes.LPItems;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IPipeUpgradeManager;
@@ -34,12 +32,9 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager, IPipeUpgradeManager {
 
-	@Getter
-	private SimpleStackInventory inv = new SimpleStackInventory(9, "UpgradeInventory", 16);
-	@Getter
-	private SimpleStackInventory sneakyInv = new SimpleStackInventory(9, "SneakyUpgradeInventory", 1);
-	@Getter
-	private SimpleStackInventory secInv = new SimpleStackInventory(1, "SecurityInventory", 16);
+	public final SimpleStackInventory inv = new SimpleStackInventory(9, "UpgradeInventory", 16);
+	public final SimpleStackInventory sneakyInv = new SimpleStackInventory(9, "SneakyUpgradeInventory", 1);
+	public final SimpleStackInventory secInv = new SimpleStackInventory(1, "SecurityInventory", 16);
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[9];
 	private IPipeUpgrade[] sneakyUpgrades = new IPipeUpgrade[9];
 	private CoreRoutedPipe pipe;
@@ -232,7 +227,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 		for (int i = 0; i < sneakyUpgrades.length; i++) {
 			IPipeUpgrade upgrade = sneakyUpgrades[i];
 			if (upgrade instanceof SneakyUpgradeConfig) {
-				ItemStack stack = getSneakyInv().getStackInSlot(i);
+				ItemStack stack = sneakyInv.getStackInSlot(i);
 				combinedSneakyOrientation[i] = ((SneakyUpgradeConfig) upgrade).getSide(stack);
 			}
 			if (upgrade instanceof IConfigPipeUpgrade) {
@@ -520,4 +515,10 @@ public class UpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgrad
 	public int getItemStackExtractionUpgrade() {
 		return itemStackExtractionUpgrade;
 	}
+
+	@Override
+	public SimpleStackInventory getInv() {
+		return this.inv;
+	}
+
 }

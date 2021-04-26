@@ -13,6 +13,7 @@
 # Minecraft client/server files
 run/*
 run-server/*
+run-server-test/*
 !run/.gitkeep
 !run-server/.gitkeep
 

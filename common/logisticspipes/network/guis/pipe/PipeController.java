@@ -77,7 +77,7 @@ public class PipeController extends CoordinatesGuiProvider {
 			});
 		}
 		// TAB_2 SLOTS
-		dummy.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().getSecInv(), 8 + 8 * 18, 18, itemStack -> {
+		dummy.addStaticRestrictedSlot(0, pipe.getOriginalUpgradeManager().secInv, 8 + 8 * 18, 18, itemStack -> {
 			if (itemStack.isEmpty()) {
 				return false;
 			}

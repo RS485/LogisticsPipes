@@ -37,23 +37,93 @@
 
 package network.rs485.minecraft
 
-import net.minecraft.block.Block
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.common.ForgeChunkManager
+import net.minecraft.util.math.Vec3i
+import net.minecraft.world.WorldServer
+import kotlin.math.max
+import kotlin.math.min
 
-open class BlockPosSelector(val worldBuilder: WorldBuilder, xBlock: Int, yBlock: Int, zBlock: Int) {
-    private var start = BlockPos(xBlock, yBlock, zBlock) // TODO: add boundary checking for x tests
-    private var end = BlockPos(xBlock, yBlock, zBlock)
-    var current = BlockPos(xBlock, yBlock, zBlock)
+class BlockPosSelector(val worldBuilder: WorldBuilder) {
+    private val placersToOffsets = ArrayList<Pair<Placer, Vec3i>>()
+    private val extraConfigurators = ArrayList<Configurator>()
+    private var finalized: Boolean = false
+    var localStart: Vec3i = BlockPos.NULL_VECTOR
+        private set
+    var localEnd: Vec3i = BlockPos.NULL_VECTOR
+        private set
+    var localOffset: Vec3i = BlockPos.NULL_VECTOR
 
-    fun <T : Block> place(block: T): BlockBuilder<T> {
-        ForgeChunkManager.forceChunk(
-            worldBuilder.tickets.first(),
-            worldBuilder.world.getChunkFromBlockCoords(current).pos
-        )
-        worldBuilder.world.setBlockToAir(current)
-        worldBuilder.world.setBlockState(current, block.defaultState)
-        return BlockBuilder(worldBuilder.world, this, block, current)
+    fun <T> resetOffsetAfter(block: BlockPosSelector.() -> T) = localOffset.let { startOffset ->
+        block.invoke(this).also { localOffset = startOffset }
+    }
+
+    fun direction(direction: EnumFacing): BlockPosSelector = this.also {
+        localOffset += direction.directionVec
+    }
+
+    fun place(placer: Placer): BlockPosSelector = this.also {
+        localStart = BlockPos(
+            min(localStart.x, localOffset.x),
+            min(localStart.y, localOffset.y),
+            min(localStart.z, localOffset.z)
+        ).takeIf { !finalized || it == localStart }
+            ?: error("Range $localStart to $localEnd has been finalized!")
+        localEnd = BlockPos(
+            max(localEnd.x, localOffset.x),
+            max(localEnd.y, localOffset.y),
+            max(localEnd.z, localOffset.z)
+        ).takeIf { !finalized || it == localEnd }
+            ?: error("Range $localStart to $localEnd has been finalized!")
+        placersToOffsets += placer to localOffset
+    }
+
+    fun configure(configurator: Configurator): BlockPosSelector = this.also {
+        extraConfigurators.add(configurator)
+    }
+
+    suspend fun finalize() {
+        coroutineScope {
+            val translated = worldBuilder.finalPosition(this@BlockPosSelector)
+            val configurators = placersToOffsets.map {
+                (translated + it.second).let { pos ->
+                    worldBuilder.loadChunk(worldBuilder.world.getChunkFromBlockCoords(pos).pos)
+                    async {
+                        it.first.place(worldBuilder.world, pos)
+                    }
+                }
+            }.awaitAll()
+            finalized = true
+            (configurators + extraConfigurators).map {
+                async {
+                    it.configure()
+                }
+            }.awaitAll()
+        }
     }
 
 }
+
+interface Placer {
+    suspend fun place(world: WorldServer, pos: BlockPos): Configurator
+}
+
+interface Configurator {
+    suspend fun configure()
+}
+
+suspend fun configurator(name: String? = null, block: suspend () -> Unit) = object : Configurator {
+    override suspend fun configure() = block.invoke()
+
+    override fun toString(): String {
+        return "Configurator" + (name?.let { "($it)" } ?: "")
+    }
+}
+
+internal operator fun Vec3i.plus(other: Vec3i): Vec3i = Vec3i(x + other.x, y + other.y, z + other.z)
+
+internal operator fun BlockPos.plus(other: Vec3i): BlockPos = add(other)
+internal operator fun BlockPos.minus(other: Vec3i): BlockPos = subtract(other)

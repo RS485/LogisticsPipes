@@ -58,10 +58,12 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.EnumFacing
+import network.rs485.logisticspipes.integration.MinecraftTest.TIMEOUT_MODIFIER
 import network.rs485.logisticspipes.util.FuzzyFlag
 import network.rs485.logisticspipes.util.FuzzyUtil
-import network.rs485.minecraft.BlockBuilder
+import network.rs485.minecraft.BlockPlacer
 import network.rs485.minecraft.BlockPosSelector
+import network.rs485.minecraft.configurator
 import java.time.Duration
 import kotlin.test.assertTrue
 
@@ -75,18 +77,19 @@ object CraftingTest {
     ) {
         val testName = Throwable().stackTrace[0].methodName
         try {
-            val requesterPair = `setup fuzzy crafting chest`(
+            val (requesterPipe, chest) = `setup fuzzy crafting chest`(
                 selector = selector,
                 providerStacks = arrayOf(
                     ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.OAK.metadata),
                     ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.DARK_OAK.metadata),
                 ),
             )
+            selector.finalize()
             val missingItems = CompletableDeferred<Boolean>()
             val stacks = listOf(ItemStack(Blocks.CHEST))
             RequestTree.request(
                 stacks.map { ItemIdentifierStack.getFromStack(it) }.toList(),
-                requesterPair.first.pipe,
+                requesterPipe.pipe,
                 object : RequestLog {
                     override fun handleMissingItems(resources: List<IResource>) {
                         missingItems.complete(true)
@@ -106,15 +109,15 @@ object CraftingTest {
                 RequestTree.defaultRequestFlags.clone().apply { add(RequestTree.ActiveRequestType.LogMissing) },
                 null,
             )
-            val requestMissedItems = withTimeoutOrNull(Duration.ofSeconds(1)) {
+            val requestMissedItems = withTimeoutOrNull(Duration.ofSeconds(1 * TIMEOUT_MODIFIER)) {
                 missingItems.await()
             }
             assertTrue(message = "the request did not report missing items") {
                 requestMissedItems == true
             }
             val waitForChestResult = waitForOrNull(
-                timeout = Duration.ofSeconds(3),
-                check = { requesterPair.second.getTileEntity<TileEntityChest>().containsAll(stacks) },
+                timeout = Duration.ofSeconds(3 * TIMEOUT_MODIFIER),
+                check = { chest.getTileEntity<TileEntityChest>().containsAll(stacks) },
             )
             assertTrue(message = "a chest item was found in the requester chest") {
                 waitForChestResult === null
@@ -126,34 +129,43 @@ object CraftingTest {
     }
 
     private suspend fun `setup fuzzy crafting chest`(
-        selector: BlockPosSelector, providerStacks: Array<ItemStack>
-    ): Pair<PipeBuilder<PipeItemsRequestLogistics>, BlockBuilder<BlockChest>> {
-        val fuzzyCraftingTable = selector.place(LPBlocks.crafterFuzzy)
-        val craftingPipe = fuzzyCraftingTable
+        selector: BlockPosSelector,
+        providerStacks: Array<ItemStack>,
+    ): Pair<PipePlacer<PipeItemsRequestLogistics>, BlockPlacer<BlockChest>> {
+        val fuzzyCraftingTableHasRecipe = CompletableDeferred<Unit>()
+        val craftingPipeInitialized = CompletableDeferred<PipeItemsCraftingLogistics>()
+        return selector.place(
+            BlockPlacer(block = LPBlocks.crafterFuzzy) { placer ->
+                placer.getTileEntity<LogisticsCraftingTableTileEntity>().apply {
+                    (0 until 9).filter { it != 4 }.forEach {
+                        matrix.setInventorySlotContents(it, ItemStack(Blocks.PLANKS))
+                        FuzzyUtil.set(inputFuzzy(it), FuzzyFlag.USE_ORE_DICT, true)
+                    }
+                    cacheRecipe()
+                }
+                fuzzyCraftingTableHasRecipe.complete(Unit)
+            })
             .direction(EnumFacing.NORTH)
-            .placePipe(PipeItemsCraftingLogistics(LPItems.pipeCrafting))
-        (craftingPipe.pipe.upgradeManager as UpgradeManager).inv.apply {
-            setInventorySlotContents(0, ItemStack(fuzzyUpgradeItem))
-            markDirty()
-        }
-        craftingPipe.waitForPipeInitialization()
-        assertTrue(message = "Expected crafting pipe to have fuzzy upgrade") {
-            craftingPipe.pipe.logisticsModule.hasFuzzyUpgrade()
-        }
-        fuzzyCraftingTable.getTileEntity<LogisticsCraftingTableTileEntity>().apply {
-            (0 until 9).filter { it != 4 }.forEach {
-                matrix.setInventorySlotContents(it, ItemStack(Blocks.PLANKS))
-                FuzzyUtil.set(inputFuzzy(it), FuzzyFlag.USE_ORE_DICT, true)
-            }
-            cacheRecipe()
-        }
-        craftingPipe.updateConnectionsAndWait()
-        craftingPipe.pipe.logisticsModule.importFromCraftingTable(null)
-        craftingPipe.setupLogisticsPower(EnumFacing.EAST, 100000F)
-        craftingPipe.setupProvidingChest(EnumFacing.WEST, *providerStacks)
-            .also { it.first.updateConnectionsAndWait() }
-        return craftingPipe.setupRequestingChest(EnumFacing.UP)
-            .also { it.first.updateConnectionsAndWait() }
+            .place(PipePlacer(PipeItemsCraftingLogistics(LPItems.pipeCrafting)) {
+                (it.pipe.upgradeManager as UpgradeManager).inv.apply {
+                    setInventorySlotContents(0, ItemStack(fuzzyUpgradeItem))
+                    markDirty()
+                }
+                it.waitForPipeInitialization()
+                assertTrue(message = "Expected crafting pipe to have fuzzy upgrade") {
+                    it.pipe.logisticsModule.hasFuzzyUpgrade()
+                }
+                craftingPipeInitialized.complete(it.pipe)
+                it.updateConnectionsAndWait()
+            })
+            .configure(configurator("crafting recipe importer") {
+                fuzzyCraftingTableHasRecipe.await()
+                val craftingPipe = craftingPipeInitialized.await()
+                craftingPipe.logisticsModule.importFromCraftingTable(null)
+            })
+            .apply { setupLogisticsPower(EnumFacing.EAST, 100000F) }
+            .apply { setupProvidingChest(EnumFacing.WEST, *providerStacks) }
+            .run { setupRequestingChest(EnumFacing.UP) }
     }
 
 }

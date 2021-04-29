@@ -159,7 +159,7 @@ minecraft {
             main 'net.minecraftforge.legacydev.MainServer'
             args '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
             arg 'nogui' // without GUI
-            jvmArg '-enableassertions'
+            jvmArg '-ea'
             workingDirectory project.file('run-server-test')
 
             // load LP core mod from classpath
@@ -419,10 +419,40 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
             }
         } else if (task.name.startsWith('prepareRunServerTest')) {
             task.doFirst {
+                final def serverTestHome = projectDir.toPath().resolve('run-server-test')
                 if (findProperty("acceptMinecraftServerEula") == 'true') {
-                    def eulaFile = projectDir.toPath().resolve('run-server-test').resolve('eula.txt')
+                    def eulaFile = serverTestHome.resolve('eula.txt')
                     Files.deleteIfExists(eulaFile)
                     eulaFile.write('eula=true')
+                }
+
+                final serverProperties = serverTestHome.resolve('server.properties')
+                def properties = new Properties()
+                try {
+                    serverProperties.withReader {reader ->
+                        properties.load(reader)
+                    }
+                } catch (IOException e) {
+                    println "Error reading $serverProperties"
+                    e.printStackTrace()
+                }
+                properties.setProperty('spawn-monsters', 'false')
+                properties.setProperty('spawn-npcs', 'false')
+                properties.setProperty('spawn-animals', 'false')
+                properties.setProperty('generate-structures', 'false')
+                properties.setProperty('online-mode', 'false')
+                properties.setProperty('gamemode', '1')
+                properties.setProperty('level-type', 'FLAT')
+                properties.setProperty('generator-settings', 'minecraft:bedrock,3*minecraft:stone,52*minecraft:sandstone;minecraft:desert;')
+                properties.setProperty('motd', 'Logistics Pipes Test Server')
+                //properties.setProperty('max-tick-time', '0') // for debugging the server
+                try {
+                    serverProperties.withWriter {writer ->
+                        properties.store(writer, null)
+                    }
+                } catch (IOException e) {
+                    println "Error reading $serverProperties"
+                    e.printStackTrace()
                 }
             }
         }

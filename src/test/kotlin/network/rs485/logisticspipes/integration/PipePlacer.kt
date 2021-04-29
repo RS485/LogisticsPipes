@@ -34,28 +34,58 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package network.rs485.logisticspipes.integration
 
-package network.rs485.minecraft
-
-import net.minecraft.block.Block
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.EnumFacing
+import logisticspipes.LPBlocks
+import logisticspipes.pipes.basic.CoreRoutedPipe
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.WorldServer
+import network.rs485.minecraft.Configurator
+import network.rs485.minecraft.Placer
+import network.rs485.minecraft.configurator
+import java.time.Duration
+import kotlin.test.assertTrue
 
-open class BlockBuilder<T : Block>(
-    val world: WorldServer,
-    val selector: BlockPosSelector,
-    val block: T,
-    val pos: BlockPos,
-) {
+class PipePlacer<T : CoreRoutedPipe>(
+    val pipe: T,
+    private val pipePlacerConfigurator: suspend (PipePlacer<T>) -> Unit = { it.waitForPipeInitialization() },
+) : Placer {
 
-    fun direction(direction: EnumFacing): BlockPosSelector {
-        selector.current = pos.offset(direction)
-        return selector
+    private lateinit var world: WorldServer
+    private lateinit var pos: BlockPos
+    private var placed = false
+
+    override suspend fun place(world: WorldServer, pos: BlockPos): Configurator {
+        placed = true
+        this.pos = pos
+        this.world = world
+        assertTrue(message = "Expected $pipe to be placed at $pos (${world})") {
+            LogisticsBlockGenericPipe.placePipe(pipe, world, pos, LPBlocks.pipe)
+        }
+        return configurator(name = "$pipe at $pos") { pipePlacerConfigurator(this@PipePlacer) }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <Y : TileEntity> getTileEntity(): Y = (world.getTileEntity(pos) as Y)
+    suspend fun waitForPipeInitialization() {
+        waitFor(
+            timeout = Duration.ofSeconds(1 * MinecraftTest.TIMEOUT_MODIFIER),
+            check = { !pipe.initialInit() },
+            lazyErrorMessage = { "Timed out waiting for pipe init on $pipe at $pos" },
+        )
+    }
+
+    suspend fun updateConnectionsAndWait() {
+        pipe.connectionUpdate()
+        val recheckConnections =
+            CoreRoutedPipe::class.java.getDeclaredField("recheckConnections").let {
+                it.isAccessible = true
+                it::getBoolean
+            }
+        waitFor(
+            timeout = Duration.ofSeconds(1 * MinecraftTest.TIMEOUT_MODIFIER),
+            check = { !recheckConnections(pipe) },
+            lazyErrorMessage = { "Timed out waiting for connection update on $pipe at $pos" },
+        )
+    }
 
 }

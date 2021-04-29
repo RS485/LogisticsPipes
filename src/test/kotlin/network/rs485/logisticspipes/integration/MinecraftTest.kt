@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.integration
 
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import logisticspipes.LogisticsPipes
 import net.minecraft.server.dedicated.DedicatedServer
@@ -46,6 +47,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent
 import network.rs485.grow.Coroutines
 import java.lang.management.ManagementFactory
+import java.time.Duration
 import kotlin.test.assertTrue
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -54,9 +56,11 @@ object MinecraftTest {
     /**
      * If not debugging, the server watch dog is not disabled and the server is shut down after running th tests.
      */
-    private const val DEBUGGING = false
+    private const val DEBUGGING = true
     private lateinit var world: WorldServer
     private lateinit var testBlockBuilder: TestWorldBuilder
+
+    const val TIMEOUT_MODIFIER: Long = 1L
 
     fun serverStart(event: FMLServerStartedEvent) {
         assertTrue(message = "Test suite must run on the server") { event.side.isServer }
@@ -70,8 +74,6 @@ object MinecraftTest {
             if (watchdog != null) error("Watchdog already running! Set max-tick-time to 0, please restart the server!")
         }
         world = serverInstance.worlds[0]
-        testBlockBuilder = TestWorldBuilder(world)
-        println("[STARTING LOGISTICSPIPES TESTS]")
         val task = startTests(LogisticsPipes.log::info)
         task.invokeOnCompletion {
             if (it != null) throw it
@@ -82,8 +84,15 @@ object MinecraftTest {
         }
     }
 
-    fun startTests(logger: (Any) -> Unit) = Coroutines.serverScope.launch(CoroutineName("logisticspipes.test")) {
-        CraftingTest.`test fuzzy-input crafting fails with mixed input OreDict`(logger, testBlockBuilder.newSelector())
-    }
+    fun startTests(logger: (Any) -> Unit) =
+        Coroutines.serverScope.launch(CoroutineName("logisticspipes.test")) {
+            delay(Duration.ofSeconds(1 * TIMEOUT_MODIFIER).toMillis())
+            println("[STARTING LOGISTICSPIPES TESTS]")
+            testBlockBuilder = TestWorldBuilder(world)
+            CraftingTest.`test fuzzy-input crafting fails with mixed input OreDict`(
+                logger = logger,
+                selector = testBlockBuilder.newSelector()
+            )
+        }
 
 }

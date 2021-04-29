@@ -37,6 +37,9 @@
 
 package network.rs485.logisticspipes.integration
 
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.time.withTimeoutOrNull
 import logisticspipes.LPBlocks
 import logisticspipes.LPItems
 import logisticspipes.blocks.LogisticsSolidBlock
@@ -44,97 +47,60 @@ import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity
 import logisticspipes.pipes.PipeItemsBasicLogistics
 import logisticspipes.pipes.PipeItemsProviderLogistics
 import logisticspipes.pipes.PipeItemsRequestLogistics
-import logisticspipes.pipes.basic.CoreRoutedPipe
-import logisticspipes.pipes.basic.CoreUnroutedPipe
-import logisticspipes.pipes.basic.LogisticsBlockGenericPipe
 import logisticspipes.utils.item.ItemIdentifier
 import net.minecraft.block.BlockChest
 import net.minecraft.init.Blocks
+import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos
-import net.minecraft.world.WorldServer
-import network.rs485.minecraft.BlockBuilder
+import network.rs485.grow.ServerTickDispatcher
+import network.rs485.minecraft.BlockPlacer
 import network.rs485.minecraft.BlockPosSelector
 import java.time.Duration
-import kotlin.test.assertTrue
 
-fun <T : CoreUnroutedPipe> BlockPosSelector.placePipe(pipe: T): PipeBuilder<T> {
-    worldBuilder.world.setBlockToAir(current)
-    assertTrue(message = "Expected $pipe to be placed at $current (${worldBuilder.world})") {
-        LogisticsBlockGenericPipe.placePipe(pipe, worldBuilder.world, current, LPBlocks.pipe)
-    }
-    return PipeBuilder(worldBuilder.world, this, pipe, current)
-}
-
-class PipeBuilder<T : CoreUnroutedPipe>(
-    world: WorldServer,
-    selector: BlockPosSelector,
-    val pipe: T,
-    pos: BlockPos,
-) : BlockBuilder<LogisticsBlockGenericPipe>(world, selector, LPBlocks.pipe, pos) {
-
-    suspend fun waitForPipeInitialization() {
-        waitFor(
-            timeout = Duration.ofSeconds(1),
-            check = { (pipe as? CoreRoutedPipe)?.let { !it.initialInit() } ?: pipe.isInitialized },
-            lazyErrorMessage = { "Timed out waiting for pipe init on $pipe at $pos" },
-        )
+fun BlockPosSelector.setupLogisticsPower(
+    direction: EnumFacing,
+    amount: Float,
+): Pair<PipePlacer<PipeItemsBasicLogistics>, BlockPlacer<LogisticsSolidBlock>> =
+    resetOffsetAfter {
+        val basicPipePlacer = PipePlacer(PipeItemsBasicLogistics(LPItems.pipeBasic))
+            .also { direction(direction).place(it) }
+        val powerJunctionPlacer = BlockPlacer(LPBlocks.powerJunction) {
+            it.getTileEntity<LogisticsPowerJunctionTileEntity>().apply {
+                addEnergy(amount)
+            }
+        }.also { direction(direction).place(it) }
+        basicPipePlacer to powerJunctionPlacer
     }
 
-    suspend fun setupLogisticsPower(
-        direction: EnumFacing,
-        amount: Float,
-    ): Pair<PipeBuilder<PipeItemsBasicLogistics>, BlockBuilder<LogisticsSolidBlock>> {
-        val basicPipe = direction(direction).placePipe(PipeItemsBasicLogistics(LPItems.pipeBasic))
-        val powerJunction = basicPipe.direction(direction).place(LPBlocks.powerJunction)
-        powerJunction.getTileEntity<LogisticsPowerJunctionTileEntity>().apply {
-            addEnergy(amount)
-        }
-        basicPipe.waitForPipeInitialization()
-        return basicPipe to powerJunction
+fun BlockPosSelector.setupProvidingChest(
+    direction: EnumFacing,
+    vararg stacks: ItemStack,
+): Pair<PipePlacer<PipeItemsProviderLogistics>, BlockPlacer<BlockChest>> =
+    resetOffsetAfter {
+        val providerPlacer = PipePlacer(PipeItemsProviderLogistics(LPItems.pipeProvider))
+            .also { direction(direction).place(it) }
+        val chestPlacer = BlockPlacer(Blocks.CHEST) {
+            it.getTileEntity<TileEntityChest>().apply {
+                stacks.forEachIndexed { index, itemStack -> setInventorySlotContents(index, itemStack) }
+            }
+        }.also { direction(direction).place(it) }
+        providerPlacer to chestPlacer
     }
 
-    suspend fun setupProvidingChest(
-        direction: EnumFacing,
-        vararg stacks: ItemStack,
-    ): Pair<PipeBuilder<PipeItemsProviderLogistics>, BlockBuilder<BlockChest>> {
-        val providerPipe = direction(direction).placePipe(PipeItemsProviderLogistics(LPItems.pipeProvider))
-        val chest = providerPipe.direction(direction).place(Blocks.CHEST)
-        chest.getTileEntity<TileEntityChest>().apply {
-            stacks.forEachIndexed { index, itemStack -> setInventorySlotContents(index, itemStack) }
-        }
-        providerPipe.waitForPipeInitialization()
-        return providerPipe to chest
+fun BlockPosSelector.setupRequestingChest(
+    direction: EnumFacing,
+): Pair<PipePlacer<PipeItemsRequestLogistics>, BlockPlacer<BlockChest>> =
+    resetOffsetAfter {
+        val requesterPlacer = PipePlacer(PipeItemsRequestLogistics(LPItems.pipeRequest))
+            .also { direction(direction).place(it) }
+        val chestPlacer = BlockPlacer(Blocks.CHEST)
+            .also { direction(direction).place(it) }
+        requesterPlacer to chestPlacer
     }
 
-    suspend fun setupRequestingChest(
-        direction: EnumFacing,
-    ): Pair<PipeBuilder<PipeItemsRequestLogistics>, BlockBuilder<BlockChest>> {
-        val requesterPipe = direction(direction).placePipe(PipeItemsRequestLogistics(LPItems.pipeRequest))
-        val chest = requesterPipe.direction(direction).place(Blocks.CHEST)
-        requesterPipe.waitForPipeInitialization()
-        return requesterPipe to chest
-    }
-
-    suspend fun updateConnectionsAndWait() {
-        (pipe as CoreRoutedPipe).connectionUpdate()
-        waitFor(
-            timeout = Duration.ofSeconds(1),
-            check = {
-                CoreRoutedPipe::class.java.getDeclaredField("recheckConnections").run {
-                    isAccessible = true
-                    !getBoolean(pipe)
-                }
-            },
-            lazyErrorMessage = { "Timed out waiting for connection update on $pipe at $pos" },
-        )
-    }
-
-}
-
-fun TileEntityChest.containsAll(stacks: Collection<ItemStack>): Boolean {
+fun IInventory.containsAll(stacks: Collection<ItemStack>): Boolean {
     val stacksLeft = stacks.associateByTo(
         destination = HashMap(),
         keySelector = { ItemIdentifier.get(it) },
@@ -147,3 +113,30 @@ fun TileEntityChest.containsAll(stacks: Collection<ItemStack>): Boolean {
     }
     return stacksLeft.isEmpty()
 }
+
+suspend fun waitForOrNull(timeout: Duration, check: () -> Boolean): Unit? =
+    CompletableDeferred<Unit>().let { response ->
+        withTimeoutOrNull(timeout) {
+            fun reschedule() {
+                ServerTickDispatcher.scheduleNextTick {
+                    try {
+                        when {
+                            response.isCancelled -> return@scheduleNextTick
+                            check() -> response.complete(Unit)
+                            else -> reschedule()
+                        }
+                    } catch (e: Exception) {
+                        response.completeExceptionally(e)
+                    }
+                }
+            }
+
+            reschedule()
+            response.await()
+        }.also {
+            if (response.isActive) response.cancelAndJoin()
+        }
+    }
+
+suspend fun waitFor(timeout: Duration, check: () -> Boolean, lazyErrorMessage: () -> Any) =
+    waitForOrNull(timeout, check) ?: error(lazyErrorMessage())

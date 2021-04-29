@@ -37,13 +37,32 @@
 
 package network.rs485.minecraft
 
+import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.ChunkPos
 import net.minecraft.world.WorldServer
 
-interface WorldBuilder {
-    fun finalPosition(selector: BlockPosSelector): BlockPos
-    fun loadChunk(pos: ChunkPos)
+open class BlockPlacer<T : Block>(
+    private val block: T,
+    private val state: IBlockState = block.defaultState,
+    private val blockPlacerConfigurator: suspend (BlockPlacer<T>) -> Unit = {},
+) : Placer {
 
-    val world: WorldServer
+    private lateinit var world: WorldServer
+    private lateinit var pos: BlockPos
+    private var placed = false
+
+    override suspend fun place(world: WorldServer, pos: BlockPos): Configurator {
+        this.pos = pos
+        this.world = world
+        world.setBlockState(pos, state)
+        placed = true
+        return configurator(name = "$block at $pos") { blockPlacerConfigurator(this@BlockPlacer) }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <Y : TileEntity> getTileEntity(): Y =
+        if (placed) world.getTileEntity(pos) as Y else error("$block has not been placed yet")
+
 }

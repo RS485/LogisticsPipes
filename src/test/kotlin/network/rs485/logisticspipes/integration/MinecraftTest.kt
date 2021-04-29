@@ -56,7 +56,7 @@ object MinecraftTest {
     /**
      * If not debugging, the server watch dog is not disabled and the server is shut down after running th tests.
      */
-    private const val DEBUGGING = true
+    private const val DEBUGGING = false
     private lateinit var world: WorldServer
     private lateinit var testBlockBuilder: TestWorldBuilder
 

@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.gui
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
 import net.minecraft.client.Minecraft
@@ -46,7 +47,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
-import network.rs485.grow.CoroutineScopes.ioScope
+import network.rs485.grow.Coroutines
 import network.rs485.logisticspipes.gui.guidebook.pos
 import network.rs485.logisticspipes.gui.guidebook.tex
 import network.rs485.logisticspipes.util.alpha
@@ -68,20 +69,22 @@ class LPFontRenderer(private val fontName: String) {
 
         @ExperimentalCoroutinesApi
         fun asyncPreload() {
-            preloadFonts.map {
-                ioScope.async {
-                    get(it).apply { ::fontPlain.get() }
-                }
-            }.forEach { deferred ->
-                deferred.invokeOnCompletion {
-                    if (it != null) {
-                        LogisticsPipes.log.error("Error while preloading fonts:\n${it.stackTraceToString()}")
-                    } else {
-                        val fontRenderer = deferred.getCompleted()
-                        LogisticsPipes.log.info("Preloaded font files: ${fontRenderer.fontName}")
-                        Minecraft.getMinecraft().addScheduledTask {
-                            fontRenderer::wrapperPlain.get()
-                            LogisticsPipes.log.info("Created font textures for: ${fontRenderer.fontName}")
+            Coroutines.ioScope.launch {
+                preloadFonts.map {
+                    async {
+                        get(it).apply { ::fontPlain.get() }
+                    }
+                }.forEach { deferred ->
+                    deferred.invokeOnCompletion {
+                        if (it != null) {
+                            LogisticsPipes.log.error("Error while preloading fonts:\n${it.stackTraceToString()}")
+                        } else {
+                            val fontRenderer = deferred.getCompleted()
+                            LogisticsPipes.log.info("Preloaded font files: ${fontRenderer.fontName}")
+                            Minecraft.getMinecraft().addScheduledTask {
+                                fontRenderer::wrapperPlain.get()
+                                LogisticsPipes.log.info("Created font textures for: ${fontRenderer.fontName}")
+                            }
                         }
                     }
                 }

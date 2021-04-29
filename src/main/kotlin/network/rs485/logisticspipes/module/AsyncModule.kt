@@ -37,13 +37,16 @@
 
 package network.rs485.logisticspipes.module
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.async
 import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.LogisticsModule
 import net.minecraft.client.Minecraft
 import net.minecraft.tileentity.TileEntity
-import network.rs485.grow.CoroutineScopes
+import network.rs485.grow.Coroutines
 import java.time.Duration
 
 abstract class AsyncModule<S, C> : LogisticsModule() {
@@ -79,7 +82,7 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
             }
             else -> if (_service?.isNthTick(everyNthTick) == true) {
                 val setup = tickSetup()
-                currentTask = CoroutineScopes.asynchronousScope.async {
+                currentTask = Coroutines.asynchronousScope.async {
                     try {
                         return@async withTimeout(Duration.ofSeconds(90)) {
                             tickAsync(setup)

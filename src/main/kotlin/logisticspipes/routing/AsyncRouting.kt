@@ -37,7 +37,8 @@
 
 package logisticspipes.routing
 
-import network.rs485.grow.CoroutineScopes
+import kotlinx.coroutines.withContext
+import network.rs485.grow.Coroutines
 
 object AsyncRouting {
     fun getDistance(sourceRouter: ServerRouter, destinationRouter: IRouter): List<ExitRoute>? {
@@ -54,7 +55,7 @@ object AsyncRouting {
 
     suspend fun updateRoutingTable(serverRouter: ServerRouter) {
         if (serverRouter.connectionNeedsChecking != 0) {
-            CoroutineScopes.serverScope.run {
+            withContext(Coroutines.serverScope.coroutineContext) {
                 if (serverRouter.checkAdjacentUpdate()) {
                     serverRouter.updateLsa()
                 }

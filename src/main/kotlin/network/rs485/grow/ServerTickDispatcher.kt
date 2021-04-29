@@ -42,15 +42,15 @@ import logisticspipes.LogisticsPipes
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.coroutines.CoroutineContext
 
-internal object ServerTickDispatcher : CoroutineDispatcher() {
+object ServerTickDispatcher : CoroutineDispatcher() {
     private val coroutineQueue = ConcurrentLinkedQueue<Runnable>()
     private val toSchedule = mutableListOf<Runnable>()
 
     fun serverStart() {
-        val startupJob = CoroutineScopes.serverScope.launch {
+        val startupJob = Coroutines.serverScope.launch {
             LogisticsPipes.log.info("Hello from the server tick")
         }
-        CoroutineScopes.asynchronousScope.async {
+        Coroutines.asynchronousScope.async {
             LogisticsPipes.log.info("Waiting for server tick")
             startupJob.join()
             LogisticsPipes.log.info("Server tick complete! Hello from the async scope")

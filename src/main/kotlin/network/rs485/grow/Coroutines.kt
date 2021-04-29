@@ -42,10 +42,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraftforge.fml.common.FMLCommonHandler
 
-object CoroutineScopes {
-    val ioScope = CoroutineScope(Dispatchers.IO)
-    val asynchronousScope = CoroutineScope(Dispatchers.Default)
-    val serverScope = CoroutineScope(ServerTickDispatcher)
+object Coroutines {
+    val io = Dispatchers.IO
+    val ioScope
+        get() = CoroutineScope(io)
+    val default = Dispatchers.Default
+    val asynchronousScope
+        get() = CoroutineScope(default)
+    val server = ServerTickDispatcher
+    val serverScope
+        get() = CoroutineScope(server)
 
     fun scheduleServerTask(inTicks: Int, task: Runnable) {
         val runTick = FMLCommonHandler.instance().minecraftServerInstance.tickCounter + inTicks
@@ -54,7 +60,7 @@ object CoroutineScopes {
             if (FMLCommonHandler.instance().minecraftServerInstance.tickCounter >= runTick) {
                 task.run()
             } else {
-                ServerTickDispatcher.scheduleNextTick(::waitForTick)
+                server.scheduleNextTick(::waitForTick)
             }
         }
 

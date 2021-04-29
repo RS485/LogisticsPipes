@@ -44,7 +44,7 @@ import net.minecraft.server.dedicated.DedicatedServer
 import net.minecraft.world.WorldServer
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent
-import network.rs485.grow.CoroutineScopes
+import network.rs485.grow.Coroutines
 import java.lang.management.ManagementFactory
 import kotlin.test.assertTrue
 
@@ -82,7 +82,7 @@ object MinecraftTest {
         }
     }
 
-    fun startTests(logger: (Any) -> Unit) = CoroutineScopes.serverScope.launch(CoroutineName("logisticspipes.test")) {
+    fun startTests(logger: (Any) -> Unit) = Coroutines.serverScope.launch(CoroutineName("logisticspipes.test")) {
         CraftingTest.`test fuzzy-input crafting fails with mixed input OreDict`(logger, testBlockBuilder.newSelector())
     }
 

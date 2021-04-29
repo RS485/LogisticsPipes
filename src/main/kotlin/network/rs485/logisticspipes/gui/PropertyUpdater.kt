@@ -42,7 +42,7 @@ import logisticspipes.network.PacketHandler
 import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
 import net.minecraft.entity.player.EntityPlayer
-import network.rs485.grow.CoroutineScopes.scheduleServerTask
+import network.rs485.grow.Coroutines.scheduleServerTask
 import network.rs485.logisticspipes.property.Property
 import network.rs485.logisticspipes.property.addObserver
 import network.rs485.logisticspipes.property.removeObserver

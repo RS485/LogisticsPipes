@@ -402,10 +402,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		final boolean doFullRefresh =
 				getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset
 				|| _initialInit || recheckConnections;
-		getRouter().update(doFullRefresh, this);
 		if (doFullRefresh) {
+			// update adjacent cache first, so interests can be gathered correctly
+			// in getRouter().update(…) below
 			updateAdjacentCache();
 		}
+		getRouter().update(doFullRefresh, this);
 		recheckConnections = false;
 		getOriginalUpgradeManager().securityTick();
 		super.updateEntity();

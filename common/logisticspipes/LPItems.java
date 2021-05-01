@@ -23,6 +23,9 @@ import network.rs485.logisticspipes.guidebook.ItemGuideBook;
 public class LPItems {
 
 	// Logistics Pipes
+	@ObjectHolder("logisticspipes:pipe_transport_basic")
+	public static Item pipeUnrouted;
+
 	@ObjectHolder("logisticspipes:pipe_basic")
 	public static Item pipeBasic;
 

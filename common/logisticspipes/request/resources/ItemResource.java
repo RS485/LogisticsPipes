@@ -137,6 +137,6 @@ public class ItemResource implements IResource {
 
 	@Override
 	public String toString() {
-		return String.format("ItemResource(requester=%s, item=%s)", requester, stack);
+		return String.format("ItemResource(%s, target=%s)", stack, requester);
 	}
 }

@@ -37,17 +37,18 @@
 
 package network.rs485.logisticspipes.integration
 
+import network.rs485.minecraft.BlockPosSelector
+import network.rs485.minecraft.WorldBuilder
+import network.rs485.minecraft.minus
 import logisticspipes.LogisticsPipes
+import net.minecraftforge.common.ForgeChunkManager
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Vec3i
 import net.minecraft.world.WorldServer
-import net.minecraftforge.common.ForgeChunkManager
-import network.rs485.minecraft.BlockPosSelector
-import network.rs485.minecraft.WorldBuilder
-import network.rs485.minecraft.minus
 import kotlin.math.min
 
 const val LEVEL = 100
@@ -82,6 +83,7 @@ class TestWorldBuilder(override val world: WorldServer, val firstBlockPos: Block
         lowest = min(lowest, borderStart.y)
         nextPos = BlockPos(borderEnd.x + 2, LEVEL, 0)
         world.setBlocksToAir(start = borderStart, end = borderEnd)
+        world.removeItemsOnGround(start = borderStart, end = borderEnd)
         world.setBlocks(
             start = BlockPos(borderStart.x, lowest, borderStart.z),
             end = BlockPos(borderStart.x, lowest, borderEnd.z),
@@ -130,6 +132,12 @@ private fun WorldServer.setBlocks(start: BlockPos, end: BlockPos, state: IBlockS
 
 private fun WorldServer.setBlocksToAir(start: BlockPos, end: BlockPos) =
     blocksIn(start, end).forEach(::setBlockToAir)
+
+private fun WorldServer.removeItemsOnGround(start: BlockPos, end: BlockPos) =
+    blocksIn(start, end).map { getChunkFromBlockCoords(it) }.distinct()
+        .forEach { chunk ->
+            chunk.entityLists.flatMap { it.getByClass(EntityItem::class.java) }.forEach { removeEntity(it) }
+        }
 
 private fun blocksIn(start: BlockPos, end: BlockPos): List<BlockPos> {
     assert(start.x <= end.x)

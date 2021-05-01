@@ -38,6 +38,8 @@
 package network.rs485.logisticspipes.integration
 
 import network.rs485.grow.Coroutines
+import network.rs485.minecraft.BlockPosSelector
+import network.rs485.minecraft.TestState
 import network.rs485.util.checkBooleanProperty
 import logisticspipes.LogisticsPipes
 import net.minecraftforge.fml.common.FMLCommonHandler
@@ -94,7 +96,7 @@ object MinecraftTest {
         task.invokeOnCompletion {
             if (it != null) throw it
             repeat(3) {
-                println("All Tests done.")
+                LogisticsPipes.log.info("All Tests done.")
             }
             if (!isDebugging) serverInstance.initiateShutdown()
         }
@@ -103,31 +105,67 @@ object MinecraftTest {
     fun startTests(logger: (Any) -> Unit) =
         Coroutines.serverScope.launch(CoroutineName("logisticspipes.test")) {
             delay(Duration.ofSeconds(1 * TIMEOUT_MODIFIER).toMillis())
-            println("[STARTING LOGISTICSPIPES TESTS]")
+            logger("[STARTING LOGISTICSPIPES TESTS]")
             withTimeout(Duration.ofMinutes(3)) {
                 testBlockBuilder = TestWorldBuilder(world, firstBlockPos)
                 world.spawnPoint = testBlockBuilder.buildSpawnPlatform()
                 listOf(
                     async {
-                        CraftingTest.`test fuzzy-input crafting succeeds multi-request with mixed input OreDict`(
+                        CraftingTest.`test single fuzzy ingredient crafting fails multi-request with mixed OreDict input`(
                             loggerIn = logger,
                             selector = testBlockBuilder.newSelector(),
                         )
                     },
                     async {
-                        CraftingTest.`test fuzzy-input crafting succeeds with mixed input OreDict`(
+                        CraftingTest.`test single fuzzy ingredient crafting fails with mixed OreDict input`(
                             loggerIn = logger,
                             selector = testBlockBuilder.newSelector(),
                         )
                     },
                     async {
-                        CraftingTest.`test fuzzy-input crafting succeeds multi-request with sufficient mixed input OreDict`(
+                        CraftingTest.`test single fuzzy ingredient crafting succeeds multi-request with sufficient input of one OreDict type`(
                             loggerIn = logger,
                             selector = testBlockBuilder.newSelector(),
                         )
                     },
                     async {
-                        CraftingTest.`test fuzzy-input crafting succeeds with sufficient mixed input OreDict`(
+                        CraftingTest.`test single fuzzy ingredient crafting succeeds with sufficient input of one OreDict type`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test split fuzzy ingredients crafting succeeds multi-request with mixed OreDict input`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test split fuzzy ingredients crafting succeeds with leftover mixed OreDict input`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test split fuzzy ingredients crafting succeeds multi-request with leftover mixed OreDict input`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test single fuzzy ingredient crafting fails with mixed OreDict input on two provider pipes on one double chest`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test single fuzzy ingredient crafting fails with mixed OreDict input on different providers`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test split fuzzy ingredients crafting succeeds with mixed OreDict input`(
                             loggerIn = logger,
                             selector = testBlockBuilder.newSelector(),
                         )
@@ -135,5 +173,43 @@ object MinecraftTest {
                 ).awaitAll()
             }
         }
+
+    suspend inline fun runTest(
+        crossinline loggerIn: (Any) -> Unit,
+        selector: BlockPosSelector,
+        throwable: Throwable = Throwable(),
+        crossinline runnable: suspend () -> Unit,
+        onFail: (logger: (Any) -> Unit, error: Throwable) -> Unit,
+    ) {
+        val testName = throwable.stackTrace[0].methodName
+        val logger = { msg: Any -> loggerIn("$testName $msg") }
+        try {
+            runnable()
+            selector.setVisibleState(TestState.PASSED)
+            logger("[PASSED]")
+        } catch (e: Throwable) {
+            onFail(logger, e)
+        }
+    }
+
+    suspend inline fun skippedTest(
+        crossinline loggerIn: (Any) -> Unit,
+        selector: BlockPosSelector,
+        throwable: Throwable = Throwable(),
+        crossinline runnable: suspend () -> Unit,
+    ) = runTest(loggerIn = loggerIn, selector = selector, throwable = throwable, runnable = runnable) { logger, _ ->
+        selector.setVisibleState(TestState.SKIPPED)
+        logger("[SKIPPED]")
+    }
+
+    suspend inline fun regularTest(
+        crossinline loggerIn: (Any) -> Unit,
+        selector: BlockPosSelector,
+        throwable: Throwable = Throwable(),
+        crossinline runnable: suspend () -> Unit,
+    ) = runTest(loggerIn = loggerIn, selector = selector, throwable = throwable, runnable = runnable) { logger, error ->
+        selector.setVisibleState(TestState.FAILED)
+        logger("[FAILED]\n==> ${error.stackTraceToString()}")
+    }
 
 }

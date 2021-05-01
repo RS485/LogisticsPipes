@@ -115,8 +115,9 @@ class BlockPosSelector(val worldBuilder: WorldBuilder) {
         ?.to(state.let {
             when (it) {
                 TestState.RUNNING -> Blocks.GLOWSTONE.defaultState
-                TestState.FAIL -> Blocks.CONCRETE.defaultState.withProperty(BlockColored.COLOR, EnumDyeColor.RED)
-                TestState.SUCCESS -> Blocks.CONCRETE.defaultState.withProperty(BlockColored.COLOR, EnumDyeColor.GREEN)
+                TestState.FAILED -> Blocks.CONCRETE.defaultState.withProperty(BlockColored.COLOR, EnumDyeColor.RED)
+                TestState.PASSED -> Blocks.CONCRETE.defaultState.withProperty(BlockColored.COLOR, EnumDyeColor.GREEN)
+                TestState.SKIPPED -> Blocks.CONCRETE.defaultState.withProperty(BlockColored.COLOR, EnumDyeColor.YELLOW)
             }
         })
         ?.also {
@@ -126,8 +127,9 @@ class BlockPosSelector(val worldBuilder: WorldBuilder) {
 
 enum class TestState {
     RUNNING,
-    FAIL,
-    SUCCESS;
+    FAILED,
+    PASSED,
+    SKIPPED;
 }
 
 interface Placer {

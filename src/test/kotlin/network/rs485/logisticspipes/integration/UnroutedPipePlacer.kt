@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -34,61 +34,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package network.rs485.logisticspipes.integration
 
 import logisticspipes.LPBlocks
-import logisticspipes.pipes.basic.CoreRoutedPipe
+import logisticspipes.LPItems
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe
+import logisticspipes.pipes.unrouted.PipeItemsBasicTransport
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.WorldServer
 import network.rs485.minecraft.Configurator
 import network.rs485.minecraft.Placer
 import network.rs485.minecraft.configurator
-import java.time.Duration
 import kotlin.test.assertTrue
 
-class PipePlacer<T : CoreRoutedPipe>(
-    val pipe: T,
-    private val pipePlacerConfigurator: suspend (PipePlacer<T>) -> Unit = {
-        it.waitForPipeInitialization()
-        it.updateConnectionsAndWait()
-    },
-) : Placer {
-
-    private lateinit var world: WorldServer
-    private lateinit var pos: BlockPos
-    private var placed = false
+object UnroutedPipePlacer : Placer {
 
     override suspend fun place(world: WorldServer, pos: BlockPos): Configurator {
-        placed = true
-        this.pos = pos
-        this.world = world
-        assertTrue(message = "Expected $pipe to be placed at $pos (${world})") {
-            LogisticsBlockGenericPipe.placePipe(pipe, world, pos, LPBlocks.pipe)
+        val unroutedPipe = PipeItemsBasicTransport(LPItems.pipeUnrouted)
+        assertTrue(message = "Expected unrouted pipe to be placed at $pos (${world})") {
+            LogisticsBlockGenericPipe.placePipe(unroutedPipe, world, pos, LPBlocks.pipe)
         }
-        return configurator(name = "$pipe at $pos") { pipePlacerConfigurator(this@PipePlacer) }
-    }
-
-    suspend fun waitForPipeInitialization() {
-        waitFor(
-            timeout = Duration.ofSeconds(1 * MinecraftTest.TIMEOUT_MODIFIER),
-            check = { !pipe.initialInit() },
-            lazyErrorMessage = { "Timed out waiting for pipe init on $pipe at $pos" },
-        )
-    }
-
-    suspend fun updateConnectionsAndWait() {
-        pipe.connectionUpdate()
-        val recheckConnections =
-            CoreRoutedPipe::class.java.getDeclaredField("recheckConnections").let {
-                it.isAccessible = true
-                it::getBoolean
-            }
-        waitFor(
-            timeout = Duration.ofSeconds(1 * MinecraftTest.TIMEOUT_MODIFIER),
-            check = { !recheckConnections(pipe) },
-            lazyErrorMessage = { "Timed out waiting for connection update on $pipe at $pos" },
-        )
+        return configurator { unroutedPipe.updateEntity() }
     }
 
 }

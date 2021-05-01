@@ -68,11 +68,11 @@ object TextUtil {
 
     @JvmStatic
     fun translate(
-            key: String,
-            baseFormatting: EnumSet<TextFormatting> = EnumSet.noneOf(TextFormatting::class.java),
-            prepend: String = "",
-            append: String = "",
-            vararg args: String
+        key: String,
+        baseFormatting: EnumSet<TextFormatting> = EnumSet.noneOf(TextFormatting::class.java),
+        prepend: String = "",
+        append: String = "",
+        args: Array<out String>,
     ): String = transform(prepend + I18n.format(key, *args) + append, baseFormatting)
 
     @JvmStatic

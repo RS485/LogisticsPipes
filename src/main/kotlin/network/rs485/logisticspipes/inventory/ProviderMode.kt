@@ -37,11 +37,9 @@
 
 package network.rs485.logisticspipes.inventory
 
-import network.rs485.logisticspipes.util.TextUtil
-
 @Suppress("unused") // these are saved/restored by values() index
 enum class ProviderMode(
-    private val translationName: String,
+    translationName: String,
     val hideOnePerStack: Boolean,
     val hideOnePerType: Boolean,
     val cropStart: Int,
@@ -54,14 +52,12 @@ enum class ProviderMode(
     LEAVE_ONE_PER_STACK("Leave1PerStack", true, false, 0, 0),
     LEAVE_ONE_PER_TYPE("Leave1PerType", false, true, 0, 0);
 
-    val extractionModeString: String
-        get() = TextUtil.translate(PREFIX + translationName)
+    val extractionModeTranslationKey = "misc.extractionmode.$translationName"
 
     companion object {
         @JvmStatic
-		fun modeFromIntSafe(id: Int): ProviderMode = values().getOrNull(id) ?: DEFAULT
+        fun modeFromIntSafe(id: Int): ProviderMode = values().getOrNull(id) ?: DEFAULT
 
-        private const val PREFIX = "misc.extractionmode."
     }
 
 }

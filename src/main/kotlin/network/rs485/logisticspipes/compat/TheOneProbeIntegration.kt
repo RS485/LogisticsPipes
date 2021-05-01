@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.compat
 
+import io.netty.buffer.ByteBuf
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.*
@@ -45,8 +46,10 @@ import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.pipes.basic.CoreUnroutedPipe
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe
 import logisticspipes.pipes.unrouted.PipeItemsBasicTransport
+import logisticspipes.proxy.MainProxy
 import mcjty.theoneprobe.api.*
 import net.minecraft.block.state.IBlockState
+import net.minecraft.client.Minecraft
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
@@ -55,21 +58,51 @@ import net.minecraft.world.World
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.module.AsyncAdvancedExtractor
 import network.rs485.logisticspipes.module.AsyncExtractorModule
+import network.rs485.logisticspipes.util.LPDataIOWrapper
+import network.rs485.logisticspipes.util.LPDataInput
+import network.rs485.logisticspipes.util.LPDataOutput
 import network.rs485.logisticspipes.util.TextUtil
 import java.util.*
 import java.util.function.Function
+import kotlin.properties.Delegates
 
 class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
 
+    /** general translation key prefix for The One Probe translation keys */
+    private val prefix = "top.logisticspipes."
+    /** very simple translation key regex */
+    private val translationKeyRegex = Regex("([a-z]+\\.)+[a-z]+")
+    private var lpTextElementId by Delegates.notNull<Int>()
+    private var renderText: ((x: Int, y: Int, txt: String) -> Int)? = null
+
     override fun apply(probe: ITheOneProbe): Void? {
+        lpTextElementId = probe.registerElementFactory(::LPText)
+        MainProxy.runOnClient(null) {
+            Runnable {
+                renderText = try {
+                    val renderHelper = Class.forName("mcjty.theoneprobe.rendering.RenderHelper")
+                    val renderTextMethod = renderHelper.getDeclaredMethod(
+                        "renderText",
+                        Minecraft::class.java,
+                        Int::class.java,
+                        Int::class.java,
+                        String::class.java
+                    );
+                    // returns the width of the rendered text
+                    { x, y, txt -> renderTextMethod.invoke(null, Minecraft.getMinecraft(), x, y, txt) as Int }
+                } catch (e: ReflectiveOperationException) {
+                    LogisticsPipes.log.error("Could not acquire RenderHelper.renderText", e)
+                    null
+                }
+            }
+        }
+
+        probe.registerProvider(PipeInfoProvider())
         LogisticsPipes.log.info("The One Probe integration loaded.")
-        probe.registerProvider(PipeInfoProvider)
         return null
     }
 
-    private object PipeInfoProvider : IProbeInfoProvider {
-
-        private const val prefix = "top.logistics_pipes."
+    private inner class PipeInfoProvider : IProbeInfoProvider {
 
         override fun getID(): String = "${LPConstants.LP_MOD_ID}:pipe_info_provider"
 
@@ -120,7 +153,7 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                         is PipeItemsRemoteOrdererLogistics -> Unit
                         is PipeItemsRequestLogistics -> Unit
                         else -> {
-                            if(LogisticsPipes.isDEBUG()) {
+                            if (LogisticsPipes.isDEBUG()) {
                                 probeInfo.text("Not implemented.")
                                 probeInfo.text(pipe.javaClass.name)
                             }
@@ -132,70 +165,39 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
         }
 
         private fun addFirewallPipeInfo(pipe: PipeItemsFirewall, probeInfo: IProbeInfo) {
-            val translatedAllowed = translate("pipe.firewall.allowed",
-                EnumSet.noneOf(TextFormatting::class.java),
-                prepend = "",
-                append = ""
-            )
-            val translatedBlocked = translate("pipe.firewall.blocked",
-                EnumSet.noneOf(TextFormatting::class.java),
-                prepend = "",
-                append = ""
-            )
-            if(!pipe.inv.isEmpty){
-                probeInfo.translatedFormatting(
-                    "pipe.firewall.filtering",
-                    pipe.inv.itemsAndCount.keys.count { !it.makeNormalStack(1).isEmpty }.toString(),
-                    TextUtil.translate(if(pipe.isBlocking) translatedBlocked else translatedAllowed).toLowerCase()
-                )
+            val allowed = "${prefix}pipe.firewall.allowed"
+            val blocked = "${prefix}pipe.firewall.blocked"
+            if (!pipe.inv.isEmpty) {
+                probeInfo.element(LPText("${prefix}pipe.firewall.filtering").apply {
+                    arguments.add(pipe.inv.itemsAndCount.count { it.value > 0 }.toString())
+                    arguments.add(if (pipe.isBlocking) blocked else allowed)
+                })
             }
-            probeInfo.translatedFormatting(
-                "pipe.firewall.providing",
-                if(pipe.isBlockProvider){
-                    translatedBlocked
-                } else {
-                    translatedAllowed
-                }
-            )
-            probeInfo.translatedFormatting(
-                "pipe.firewall.crafting",
-                if(pipe.isBlockCrafer){
-                    translatedBlocked
-                } else {
-                    translatedAllowed
-                }
-            )
-            probeInfo.translatedFormatting(
-                "pipe.firewall.sorting",
-                if(pipe.isBlockSorting){
-                    translatedBlocked
-                } else {
-                    translatedAllowed
-                }
-            )
-            probeInfo.translatedFormatting(
-                "pipe.firewall.power",
-                if(pipe.isBlockPower){
-                    translatedBlocked
-                } else {
-                    translatedAllowed
-                }
-            )
+            listOf(
+                "pipe.firewall.providing" to pipe.isBlockProvider,
+                "pipe.firewall.crafting" to pipe.isBlockCrafer,
+                "pipe.firewall.sorting" to pipe.isBlockSorting,
+                "pipe.firewall.power" to pipe.isBlockPower,
+            ).forEach {
+                probeInfo.element(LPText(prefix + it.first).apply {
+                    arguments.add(if (it.second) blocked else allowed)
+                })
+            }
         }
 
         private fun addSatellitePipeInfo(pipe: PipeItemsSatelliteLogistics, probeInfo: IProbeInfo) {
             val satellitePipeName = pipe.satellitePipeName
             if (satellitePipeName.isNotBlank()) {
-                probeInfo.translatedFormatting("pipe.satellite.name", satellitePipeName)
+                probeInfo.element(LPText("${prefix}pipe.satellite.name").apply { arguments.add(satellitePipeName) })
             } else {
-                probeInfo.translatedFormatting("pipe.satellite.no_name")
+                probeInfo.element(LPText("${prefix}pipe.satellite.no_name"))
             }
         }
 
         private fun addBasicTransportPipeInfo(pipe: PipeItemsBasicTransport, logisticsPipesInfoContainer: IProbeInfo) {
             val connections = pipe.container?.pipeConnectionsBuffer?.count { it } ?: 0
             if (connections > 2) {
-                logisticsPipesInfoContainer.translatedFormatting("pipe.unrouted.too_many_connections")
+                logisticsPipesInfoContainer.element(LPText("${prefix}pipe.unrouted.too_many_connections"))
             }
         }
 
@@ -213,17 +215,18 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                         upgradeManagerInv.getStackInSlot(slotId).takeIf { !it.isEmpty }?.displayName
                     }
                     if (upgrades.isNotEmpty()) {
-                        probeInfo.translatedFormatting(
-                            "general.upgrades",
-                            upgrades.joinToString(
-                                separator = "\$WHITE, \$AQUA",
-                                prefix = "\$AQUA",
-                                postfix = "\$WHITE;",
-                                limit = 3
+                        probeInfo.element(LPText("${prefix}general.upgrades").apply {
+                            arguments.add(
+                                upgrades.joinToString(
+                                    separator = "\$WHITE, \$AQUA",
+                                    prefix = "\$AQUA",
+                                    postfix = "\$WHITE;",
+                                    limit = 3
+                                )
                             )
-                        )
+                        })
                     } else {
-                        probeInfo.translatedFormatting("general.no_upgrades")
+                        probeInfo.element(LPText("${prefix}general.no_upgrades"))
                     }
                 }
             }
@@ -237,7 +240,7 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                 if (module == null) null
                 else module to stack
             }
-            if(modules.isNotEmpty()){
+            if (modules.isNotEmpty()) {
                 if (mode == ProbeMode.EXTENDED) {
                     modules.forEach { (module, stack) ->
                         val infoCol = chassisColumn.addItemWithText(stack)
@@ -252,48 +255,48 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                             is ModulePassiveSupplier -> addFilteringListItemIdentifierInfo(
                                 probeInfo = infoCol,
                                 mode = mode,
-                                positiveString = "module.passive_supplier.filter",
-                                negativeString = "module.passive_supplier.no_filter",
+                                positiveTranslationKey = "${prefix}module.passive_supplier.filter",
+                                negativeTranslationKey = "${prefix}module.passive_supplier.no_filter",
                                 items = module.filterInventory,
                                 isModule = isModule
                             )
                             is ModuleTerminus -> addFilteringListItemIdentifierInfo(
                                 probeInfo = infoCol,
                                 mode = mode,
-                                positiveString = "module.terminus.filter",
-                                negativeString = "module.terminus.no_filter",
+                                positiveTranslationKey = "${prefix}module.terminus.filter",
+                                negativeTranslationKey = "${prefix}module.terminus.no_filter",
                                 items = module.filterInventory,
                                 isModule = isModule
                             )
                             is ModuleEnchantmentSinkMK2 -> addFilteringListItemIdentifierInfo(
                                 probeInfo = infoCol,
                                 mode = mode,
-                                positiveString = "module.enchantment_sink.filter",
-                                negativeString = "module.enchantment_sink.no_filter",
+                                positiveTranslationKey = "${prefix}module.enchantment_sink.filter",
+                                negativeTranslationKey = "${prefix}module.enchantment_sink.no_filter",
                                 items = module.filterInventory,
                                 isModule = isModule
                             )
                             is ModuleCreativeTabBasedItemSink -> addFilteringListStringInfo(
                                 probeInfo = infoCol,
                                 mode = mode,
-                                positiveString = "module.creative_tab_item_sink.filter",
-                                negativeString = "module.creative_tab_item_sink.no_filter",
+                                positiveTranslationKey = "${prefix}module.creative_tab_item_sink.filter",
+                                negativeTranslationKey = "${prefix}module.creative_tab_item_sink.no_filter",
                                 strings = module.tabList,
                                 isModule = isModule
                             )
                             is ModuleModBasedItemSink -> addFilteringListStringInfo(
                                 probeInfo = infoCol,
                                 mode = mode,
-                                positiveString = "module.mod_item_sink.filter",
-                                negativeString = "module.mod_item_sink.no_filter",
+                                positiveTranslationKey = "${prefix}module.mod_item_sink.filter",
+                                negativeTranslationKey = "${prefix}module.mod_item_sink.no_filter",
                                 strings = module.modList,
                                 isModule = isModule
                             )
                             is ModuleOreDictItemSink -> addFilteringListStringInfo(
                                 probeInfo = infoCol,
                                 mode = mode,
-                                positiveString = "module.ore_item_sink.filter",
-                                negativeString = "module.ore_item_sink.no_filter",
+                                positiveTranslationKey = "${prefix}module.ore_item_sink.filter",
+                                negativeTranslationKey = "${prefix}module.ore_item_sink.no_filter",
                                 strings = module.oreList,
                                 isModule = isModule
                             )
@@ -301,12 +304,12 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                     }
                 } else {
                     val infoRow = probeInfo.horizontal()
-                    modules.forEach { (_ , stack) ->
+                    modules.forEach { (_, stack) ->
                         infoRow.item(stack)
                     }
                 }
             } else {
-                chassisColumn.translatedFormatting("pipe.chassis.no_modules")
+                chassisColumn.element(LPText("${prefix}pipe.chassis.no_modules"))
             }
         }
 
@@ -318,19 +321,15 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
         ) {
             if (mode == ProbeMode.EXTENDED) {
                 if (module.isDefaultRoute) {
-                    probeInfo.translatedFormatting(
-                        key = "general.is_default_route",
-                        baseFormatting = italic(isModule),
-                        prepend = prepend(isModule),
-                        append = ""
-                    )
+                    probeInfo.element(LPText("${prefix}general.is_default_route").apply {
+                        baseFormatting.addAll(italic(isModule))
+                        prepend = prepend(isModule)
+                    })
                 } else if (isModule) {
-                    probeInfo.translatedFormatting(
-                        key = "general.is_not_default_route",
-                        baseFormatting = italic(isModule),
-                        prepend = prepend(isModule),
-                        append = ""
-                    )
+                    probeInfo.element(LPText("${prefix}general.is_not_default_route").apply {
+                        baseFormatting.addAll(italic(isModule))
+                        prepend = prepend(isModule)
+                    })
                 }
             }
         }
@@ -343,25 +342,21 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
         ) {
             if (mode == ProbeMode.EXTENDED) {
                 if (module.inventory.isEmpty) {
-                    probeInfo.translatedFormatting(
-                        key = "module.active_supplier.no_filter",
-                        baseFormatting = italic(isModule),
-                        prepend = prepend(isModule),
-                        append = ""
-                    )
+                    probeInfo.element(LPText("${prefix}module.active_supplier.no_filter").apply {
+                        baseFormatting.addAll(italic(isModule))
+                        prepend = prepend(isModule)
+                    })
                 } else {
-                    probeInfo.translatedFormatting(
-                        key = "module.active_supplier.mode",
-                        baseFormatting = italic(isModule),
-                        prepend = prepend(isModule),
-                        append = "",
-                        module.requestMode.value.name
-                    )
+                    probeInfo.element(LPText("${prefix}module.active_supplier.mode").apply {
+                        baseFormatting.addAll(italic(isModule))
+                        prepend = prepend(isModule)
+                        arguments.add(module.requestMode.value.name)
+                    })
                     addFilteringListItemIdentifierInfo(
                         probeInfo = probeInfo,
                         mode = mode,
-                        positiveString = "module.active_supplier.filter",
-                        negativeString = "",
+                        positiveTranslationKey = "${prefix}module.active_supplier.filter",
+                        negativeTranslationKey = "",
                         items = module.inventory,
                         isModule = isModule
                     )
@@ -385,15 +380,15 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                 addFilteringListItemIdentifierInfo(
                     probeInfo = probeInfo,
                     mode = mode,
-                    positiveString = if (module.itemsIncluded.value) {
-                        "module.advanced_extractor.only"
+                    positiveTranslationKey = if (module.itemsIncluded.value) {
+                        "${prefix}module.advanced_extractor.only"
                     } else {
-                        "module.advanced_extractor.but"
+                        "${prefix}module.advanced_extractor.but"
                     },
-                    negativeString = if (module.itemsIncluded.value) {
-                        "module.advanced_extractor.none"
+                    negativeTranslationKey = if (module.itemsIncluded.value) {
+                        "${prefix}module.advanced_extractor.none"
                     } else {
-                        "module.advanced_extractor.all"
+                        "${prefix}module.advanced_extractor.all"
                     },
                     items = module.filterInventory,
                     isModule = isModule
@@ -408,13 +403,11 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
         ) {
             val isModule = true
             if (direction != null) {
-                probeInfo.translatedFormatting(
-                    key = "module.extractor.side",
-                    baseFormatting = italic(isModule),
-                    prepend = prepend(isModule),
-                    append = "",
-                    direction.name2
-                )
+                probeInfo.element(LPText("${prefix}module.extractor.side").apply {
+                    baseFormatting.addAll(italic(isModule))
+                    prepend = prepend(isModule)
+                    arguments.add(direction.name2)
+                })
             }
         }
 
@@ -428,24 +421,23 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                 addFilteringListItemIdentifierInfo(
                     probeInfo = probeInfo,
                     mode = mode,
-                    positiveString = if (module.isExclusionFilter.value) {
-                        "module.provider.but"
+                    positiveTranslationKey = if (module.isExclusionFilter.value) {
+                        "${prefix}module.provider.but"
                     } else {
-                        "module.provider.only"
+                        "${prefix}module.provider.only"
                     },
-                    negativeString =
                     // TODO change this if the behaviour ever changes "module.provider.none"
-                    "module.provider.all",
+                    negativeTranslationKey = "${prefix}module.provider.all",
                     items = module.filterInventory,
                     isModule = isModule
                 )
-                if (!isModule) probeInfo.translatedFormatting("module.provider.mode")
-                probeInfo.text(
-                    prepend(isModule) + TextUtil.transform(
-                        text = module.providerMode.value.extractionModeString,
-                        baseFormatting = italic(isModule),
-                    )
-                )
+                if (!isModule) {
+                    probeInfo.element(LPText("${prefix}module.provider.mode"))
+                }
+                probeInfo.element(LPText(module.providerMode.value.extractionModeTranslationKey).apply {
+                    baseFormatting.addAll(italic(isModule))
+                    prepend = prepend(isModule)
+                })
             }
         }
 
@@ -456,35 +448,29 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             isModule: Boolean
         ) {
             if (mode == ProbeMode.EXTENDED) {
-                val result = module.craftedItem?.makeNormalStack() ?: ItemStack.EMPTY
-                val byproduct = module.byproductItem?.makeNormalStack() ?: ItemStack.EMPTY
-                if (!result.isEmpty) {
+                if (module.craftedItem != null) {
                     val fuzzyText = if (module.hasFuzzyUpgrade()) " \$GOLD[Fuzzy]\$WHITE" else ""
-                    if (!byproduct.isEmpty && module.hasByproductUpgrade()) {
-                        probeInfo.translatedFormatting(
-                            key = "module.crafting.result_with_byproduct",
-                            baseFormatting = italic(isModule),
-                            prepend = prepend(isModule),
-                            append = fuzzyText,
-                            result.displayName,
-                            byproduct.displayName
-                        )
+                    if (module.hasByproductUpgrade() && module.byproductItem != null) {
+                        probeInfo.element(LPText("${prefix}module.crafting.result_with_byproduct").apply {
+                            baseFormatting.addAll(italic(isModule))
+                            prepend = prepend(isModule)
+                            append = fuzzyText
+                            arguments.add(module.craftedItem!!.friendlyName)
+                            arguments.add(module.byproductItem!!.friendlyName)
+                        })
                     } else {
-                        probeInfo.translatedFormatting(
-                            key = "module.crafting.result",
-                            baseFormatting = italic(isModule),
-                            prepend = prepend(isModule),
-                            append = fuzzyText,
-                            result.displayName
-                        )
+                        probeInfo.element(LPText("${prefix}module.crafting.result").apply {
+                            baseFormatting.addAll(italic(isModule))
+                            prepend = prepend(isModule)
+                            append = fuzzyText
+                            arguments.add(module.craftedItem!!.friendlyName)
+                        })
                     }
                 } else {
-                    probeInfo.translatedFormatting(
-                        key = "module.crafting.no_result",
-                        baseFormatting = italic(isModule),
-                        prepend = prepend(isModule),
-                        append = ""
-                    )
+                    probeInfo.element(LPText("${prefix}module.crafting.no_result").apply {
+                        baseFormatting.addAll(italic(isModule))
+                        prepend = prepend(isModule)
+                    })
                 }
             }
         }
@@ -492,8 +478,8 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
         private fun addFilteringListItemIdentifierInfo(
             probeInfo: IProbeInfo,
             mode: ProbeMode,
-            positiveString: String,
-            negativeString: String,
+            positiveTranslationKey: String,
+            negativeTranslationKey: String,
             items: IItemIdentifierInventory,
             isModule: Boolean,
             color: TextFormatting = TextFormatting.WHITE
@@ -501,11 +487,10 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             addFilteringListStringInfo(
                 probeInfo = probeInfo,
                 mode = mode,
-                positiveString = positiveString,
-                negativeString = negativeString,
-                strings = items.itemsAndCount.keys.mapNotNull {
-                    if (it.makeNormalStack(1).isEmpty) null
-                    else it.makeNormalStack(1).displayName
+                positiveTranslationKey = positiveTranslationKey,
+                negativeTranslationKey = negativeTranslationKey,
+                strings = items.itemsAndCount.mapNotNull {
+                    if (it.value > 0) it.key.friendlyName else null
                 },
                 isModule = isModule,
                 color = color
@@ -515,34 +500,32 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
         private fun addFilteringListStringInfo(
             probeInfo: IProbeInfo,
             mode: ProbeMode,
-            positiveString: String,
-            negativeString: String,
+            positiveTranslationKey: String,
+            negativeTranslationKey: String,
             strings: List<String>,
             limit: Int = 3,
             isModule: Boolean,
             color: TextFormatting = TextFormatting.WHITE
         ) {
             if (mode == ProbeMode.EXTENDED) {
-                if (strings.isNotEmpty() && positiveString.isNotBlank()) {
-                    probeInfo.translatedFormatting(
-                        key = positiveString,
-                        baseFormatting = italic(isModule, color),
-                        prepend = prepend(isModule),
-                        append = "",
-                        strings.joinToString(
-                            separator = "\$WHITE, \$AQUA",
-                            prefix = "\$AQUA",
-                            postfix = "\$WHITE",
-                            limit = limit
+                if (strings.isNotEmpty() && positiveTranslationKey.isNotBlank()) {
+                    probeInfo.element(LPText(positiveTranslationKey).apply {
+                        baseFormatting.addAll(italic(isModule, color))
+                        prepend = prepend(isModule)
+                        arguments.add(
+                            strings.joinToString(
+                                separator = "\$WHITE, \$AQUA",
+                                prefix = "\$AQUA",
+                                postfix = "\$WHITE",
+                                limit = limit
+                            )
                         )
-                    )
-                } else if (negativeString.isNotBlank()) {
-                    probeInfo.translatedFormatting(
-                        key = negativeString,
-                        baseFormatting = italic(isModule),
-                        prepend = prepend(isModule),
-                        append = ""
-                    )
+                    })
+                } else if (negativeTranslationKey.isNotBlank()) {
+                    probeInfo.element(LPText(negativeTranslationKey).apply {
+                        baseFormatting.addAll(italic(isModule))
+                        prepend = prepend(isModule)
+                    })
                 }
             }
         }
@@ -565,47 +548,86 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             return textColumn
         }
 
-        fun IProbeInfo.translatedFormatting(key: String, vararg args: String) {
-            translatedFormatting(
-                key = key,
-                baseFormatting = EnumSet.noneOf(TextFormatting::class.java),
-                prepend = "",
-                append = "",
-                args = args
-            )
-        }
-
-        fun IProbeInfo.translatedFormatting(
-            key: String,
-            baseFormatting: EnumSet<TextFormatting>,
-            prepend: String,
-            append: String,
-            vararg args: String
-        ) {
-            text(translate(key = key, baseFormatting = baseFormatting, prepend = prepend, append = append, args = args))
-        }
-
-        fun translate(
-            key: String,
-            baseFormatting: EnumSet<TextFormatting>,
-            prepend: String,
-            append: String,
-            vararg args: String
-        ) =
-            TextUtil.translate(
-                key = key.prefix(),
-                baseFormatting = baseFormatting,
-                prepend = prepend,
-                append = append,
-                args = args
-            )
-
-        fun String.prefix(): String = prefix + this
-
         fun italic(italic: Boolean, color: TextFormatting = TextFormatting.WHITE): EnumSet<TextFormatting> =
             if (italic) EnumSet.of(TextFormatting.ITALIC, color) else EnumSet.of(color)
 
         fun prepend(isModule: Boolean): String = if (isModule) "- " else ""
+    }
+
+    inner class LPText : IElement {
+        var append: String = ""
+        var prepend: String = ""
+        val baseFormatting: EnumSet<TextFormatting> = EnumSet.noneOf(TextFormatting::class.java)
+        val arguments: MutableList<String> = ArrayList<String>()
+        var key: String? = null
+
+        /**
+         * Only for clients.
+         */
+        val translated
+            get() = TextUtil.translate(
+                key = key!!,
+                baseFormatting = baseFormatting,
+                prepend = translateIfApplicable(prepend),
+                append = translateIfApplicable(append),
+                args = arguments.map { translateIfApplicable(it) }.toTypedArray(),
+            )
+
+        private fun translateIfApplicable(text: String) =
+            if (translationKeyRegex.matches(text)) TextUtil.translate(text) else text
+
+        constructor(key: String) {
+            this.key = key
+        }
+
+        constructor(buf: ByteBuf) {
+            try {
+                LPDataIOWrapper.provideData(buf) { input ->
+                    key = input.readUTF()
+                    input.readArrayList(LPDataInput::readUTF)?.filterNotNull()?.also { arguments.addAll(it) }
+                    baseFormatting.addAll(input.readEnumSet(TextFormatting::class.java))
+                    input.readUTF()?.also { prepend = it }
+                    input.readUTF()?.also { append = it }
+                }
+            } catch (e: Exception) {
+                LogisticsPipes.log.error("Problem when reading buffer for TheOneProbe", e)
+            }
+        }
+
+        override fun toBytes(buf: ByteBuf) = try {
+            LPDataIOWrapper.writeData(buf) {
+                it.writeUTF(key)
+                it.writeCollection(arguments, LPDataOutput::writeUTF)
+                it.writeEnumSet(baseFormatting, TextFormatting::class.java)
+                it.writeUTF(prepend)
+                it.writeUTF(append)
+            }
+        } catch (e: Exception) {
+            LogisticsPipes.log.error("Problem when writing buffer for TheOneProbe", e)
+        }
+
+        /**
+         * Obviously only for clients.
+         */
+        override fun render(x: Int, y: Int) {
+            renderText?.invoke(x, y, translated)
+        }
+
+        /**
+         * Only for clients.
+         */
+        override fun getWidth(): Int {
+            return Minecraft.getMinecraft()?.fontRenderer?.getStringWidth(translated) ?: 0
+        }
+
+        override fun getHeight(): Int {
+            return 10
+        }
+
+        override fun getID(): Int {
+            return lpTextElementId
+        }
+
     }
 
 }

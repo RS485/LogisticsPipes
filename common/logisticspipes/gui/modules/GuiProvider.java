@@ -18,6 +18,7 @@ import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.EnumProperty;
 import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiProvider extends ModuleBaseGui {
 
@@ -102,7 +103,8 @@ public class GuiProvider extends ModuleBaseGui {
 				0x404040);
 		mc.fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
 		//mc.fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
-		mc.fontRenderer.drawString("Excess Inventory: " + providerModeOverlay.get().getExtractionModeString(),
+		mc.fontRenderer.drawString("Excess Inventory: "
+						+ TextUtil.translate(providerModeOverlay.get().getExtractionModeTranslationKey()),
 				9,
 				ySize - 112,
 				0x404040);

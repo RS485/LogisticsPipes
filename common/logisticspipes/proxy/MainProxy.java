@@ -135,6 +135,10 @@ public class MainProxy {
 		if (isServer(world)) runnableConsumer.get().run();
 	}
 
+	public static void runOnClient(@Nullable IBlockAccess world, @Nonnull Supplier<Runnable> runnableConsumer) {
+		if (isClient(world)) runnableConsumer.get().run();
+	}
+
 	public static World getClientMainWorld() {
 		return MainProxy.proxy.getWorld();
 	}

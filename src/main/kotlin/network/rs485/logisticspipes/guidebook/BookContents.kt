@@ -51,6 +51,7 @@ import network.rs485.markdown.HeaderParagraph
 import network.rs485.markdown.ImageParagraph
 import network.rs485.markdown.MarkdownParser
 import network.rs485.markdown.Paragraph
+import org.apache.commons.io.FilenameUtils
 import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -94,7 +95,7 @@ object BookContents {
 private val metadataRegex = "^\\s*<!---\\s*\\n(.*?)\\n\\s*--->\\s*(.*)$".toRegex(RegexOption.DOT_MATCHES_ALL)
 
 fun loadPage(path: String, lang: String): PageInfoProvider {
-    val resolvedLocation = resolveAbsoluteLocation(resolvedLocation = Paths.get(path), language = lang)
+    val resolvedLocation = resolveAbsoluteLocation(resolvedLocation = Paths.get(path), language = lang).toLocation(false)
     return try {
         val bookFile = Minecraft.getMinecraft().resourceManager.getResource(ResourceLocation(LPConstants.LP_MOD_ID, resolvedLocation))
         LoadedPage(
@@ -180,24 +181,32 @@ class LoadedPage(override val fileLocation: String, override val language: Strin
     override val bookmarkable: Boolean = fileLocation != BookContents.MAIN_MENU_FILE
 }
 
-fun resolveAbsoluteLocation(resolvedLocation: Path, language: String) =
+fun Path.toLocation(absolute: Boolean = isAbsolute) = (if (absolute) "/" else "").plus(
+    toString()
+        .let { it.substring(FilenameUtils.getPrefixLength(it)) }
+        .let { FilenameUtils.separatorsToUnix(it) }
+)
+
+fun resolveAbsoluteLocation(resolvedLocation: Path, language: String): Path =
     Paths.get("book/$language").let { base ->
         resolvedLocation.normalize()
             .filter { path -> !path.startsWith("..") }
-            .fold(base, Path::resolve).toString()
+            .fold(base, Path::resolve)
     }
 
 interface PageInfoProvider {
     fun resolveLocation(location: String): Path = Paths.get(fileLocation).resolveSibling(location).normalize()
-    fun resolveAbsoluteLocation(location: String): String = resolveAbsoluteLocation(resolveLocation(location), language)
     fun resolveResource(location: String): ResourceLocation =
         location.lastIndexOf(':').let { idx ->
             val resourceDomain = when (idx) {
                 -1 -> LPConstants.LP_MOD_ID
                 else -> location.substring(0 until idx)
             }
-            var resourcePath = ((idx + 1)..location.lastIndex).let { if (it.isEmpty()) "" else location.substring(it) }
-            resourcePath = BookContents.specialImages.getOrDefault(resourcePath, resolveAbsoluteLocation(resourcePath))
+            var resourcePath: String = ((idx + 1)..location.lastIndex).let { if (it.isEmpty()) "" else location.substring(it) }
+            resourcePath = BookContents.specialImages.getOrDefault(
+                key = resourcePath,
+                defaultValue = resolveAbsoluteLocation(resolveLocation(resourcePath), language).toLocation(false)
+            )
             ResourceLocation(resourceDomain, resourcePath)
         }
 

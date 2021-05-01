@@ -79,7 +79,7 @@ object DebugPage : PageInfoProvider {
         ),
         ImageParagraph(
             alternative = "This image failed loading",
-            imagePath = "book/en_us/guides/test_image.png",
+            imagePath = "/guides/test_image.png",
         ),
         HeaderParagraph(
             listOf(

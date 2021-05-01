@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import network.rs485.logisticspipes.gui.guidebook.Drawable.Companion.createParent
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.PageInfoProvider
+import network.rs485.logisticspipes.guidebook.toLocation
 import network.rs485.markdown.*
 import kotlin.math.min
 
@@ -127,7 +128,7 @@ object DrawablePageFactory {
         }
 
     private fun resolvePaths(page: PageInfoProvider, groupEntries: List<String>) =
-        groupEntries.map { loc -> page.resolveLocation(loc).let { if (it.isAbsolute) it.toString() else "/$it" } }
+        groupEntries.map { loc -> page.resolveLocation(loc).toLocation(true) }
 
     private fun <T : Drawable> createDrawableMenuParagraph(
         page: PageInfoProvider,

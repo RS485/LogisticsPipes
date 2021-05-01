@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
@@ -316,10 +315,6 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 	public static TextureTransformation innerBoxTexture;
 	public static TextureTransformation statusTexture;
 	public static TextureTransformation statusBCTexture;
-
-	static {
-		LogisticsNewRenderPipe.loadModels();
-	}
 
 	public static void loadModels() {
 		if (!SimpleServiceLocator.cclProxy.isActivated()) return;

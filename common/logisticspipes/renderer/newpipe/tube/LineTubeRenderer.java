@@ -38,10 +38,6 @@ public final class LineTubeRenderer implements ISpecialPipeRenderer, IHighlightP
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/HS-Tube-Line.png");
 
-	static {
-		LineTubeRenderer.loadModels();
-	}
-
 	public static void loadModels() {
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/HSTube-Line_result.obj"), 7, new LPScale(1 / 100f));

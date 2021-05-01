@@ -50,10 +50,6 @@ public class SCurveTubeRenderer implements ISpecialPipeRenderer, IHighlightPlace
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/blocks/pipes/HS-Tube.png");
 
-	static {
-		SCurveTubeRenderer.loadModels();
-	}
-
 	public static void loadModels() {
 		try {
 			Map<String, IModel3D> pipePartModels = SimpleServiceLocator.cclProxy.parseObjModels(LogisticsPipes.class.getResourceAsStream("/logisticspipes/models/HSTube-Gain_result.obj"), 7, new LPScale(1 / 100f));

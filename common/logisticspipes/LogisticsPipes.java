@@ -172,6 +172,13 @@ import logisticspipes.recipes.PipeChippedCraftingRecipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.UpgradeChippedCraftingRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.renderer.newpipe.LogisticsNewRenderPipe;
+import logisticspipes.renderer.newpipe.LogisticsNewSolidBlockWorldRenderer;
+import logisticspipes.renderer.newpipe.tube.CurveTubeRenderer;
+import logisticspipes.renderer.newpipe.tube.GainTubeRenderer;
+import logisticspipes.renderer.newpipe.tube.LineTubeRenderer;
+import logisticspipes.renderer.newpipe.tube.SCurveTubeRenderer;
+import logisticspipes.renderer.newpipe.tube.SpeedupTubeRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.routing.channels.ChannelManagerProvider;
@@ -380,6 +387,16 @@ public class LogisticsPipes {
 		} else if (event.getSide() == Side.CLIENT) {
 			LPFontRenderer.Factory.asyncPreload();
 		}
+
+		// load all the models so they don't get loaded and crash on concurrent class loading
+		// the OBJParser is a non-sharable static thing
+		LogisticsNewRenderPipe.loadModels();
+		LogisticsNewSolidBlockWorldRenderer.loadModels();
+		CurveTubeRenderer.loadModels();
+		GainTubeRenderer.loadModels();
+		LineTubeRenderer.loadModels();
+		SpeedupTubeRenderer.loadModels();
+		SCurveTubeRenderer.loadModels();
 
 		if (isTesting()) {
 			final Class<?> testClass;

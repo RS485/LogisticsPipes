@@ -78,10 +78,6 @@ public class LogisticsNewSolidBlockWorldRenderer {
 	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Inner = new HashMap<>();
 	static Map<CoverSides, Map<BlockRotation, IModel3D>> texturePlate_Outer = new HashMap<>();
 
-	static {
-		LogisticsNewSolidBlockWorldRenderer.loadModels();
-	}
-
 	public static void loadModels() {
 		if (!SimpleServiceLocator.cclProxy.isActivated()) return;
 		try {

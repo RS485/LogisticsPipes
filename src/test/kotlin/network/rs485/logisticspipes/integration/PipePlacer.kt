@@ -49,7 +49,10 @@ import kotlin.test.assertTrue
 
 class PipePlacer<T : CoreRoutedPipe>(
     val pipe: T,
-    private val pipePlacerConfigurator: suspend (PipePlacer<T>) -> Unit = { it.waitForPipeInitialization() },
+    private val pipePlacerConfigurator: suspend (PipePlacer<T>) -> Unit = {
+        it.waitForPipeInitialization()
+        it.updateConnectionsAndWait()
+    },
 ) : Placer {
 
     private lateinit var world: WorldServer

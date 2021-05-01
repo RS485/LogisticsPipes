@@ -129,4 +129,8 @@ public class ItemResource implements IResource {
 		return ccTypeHolder;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("ItemResource(requester=%s, item=%s)", requester, stack);
+	}
 }

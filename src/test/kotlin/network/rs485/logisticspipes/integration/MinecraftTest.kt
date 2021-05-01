@@ -37,9 +37,8 @@
 
 package network.rs485.logisticspipes.integration
 
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.time.withTimeout
 import logisticspipes.LogisticsPipes
 import net.minecraft.server.dedicated.DedicatedServer
 import net.minecraft.world.WorldServer
@@ -54,7 +53,7 @@ import kotlin.test.assertTrue
 object MinecraftTest {
 
     /**
-     * If not debugging, the server watch dog is not disabled and the server is shut down after running th tests.
+     * If not debugging, the server watch dog is not disabled and the server is shut down after running the tests.
      */
     private const val DEBUGGING = false
     private lateinit var world: WorldServer
@@ -77,7 +76,7 @@ object MinecraftTest {
         val task = startTests(LogisticsPipes.log::info)
         task.invokeOnCompletion {
             if (it != null) throw it
-            repeat(10) {
+            repeat(3) {
                 println("All Tests done.")
             }
             if (!DEBUGGING) serverInstance.initiateShutdown()
@@ -88,11 +87,35 @@ object MinecraftTest {
         Coroutines.serverScope.launch(CoroutineName("logisticspipes.test")) {
             delay(Duration.ofSeconds(1 * TIMEOUT_MODIFIER).toMillis())
             println("[STARTING LOGISTICSPIPES TESTS]")
-            testBlockBuilder = TestWorldBuilder(world)
-            CraftingTest.`test fuzzy-input crafting fails with mixed input OreDict`(
-                logger = logger,
-                selector = testBlockBuilder.newSelector()
-            )
+            withTimeout(Duration.ofMinutes(3)) {
+                testBlockBuilder = TestWorldBuilder(world)
+                listOf(
+                    async {
+                        CraftingTest.`test fuzzy-input crafting succeeds multi-request with mixed input OreDict`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test fuzzy-input crafting succeeds with mixed input OreDict`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test fuzzy-input crafting succeeds multi-request with sufficient mixed input OreDict`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                    async {
+                        CraftingTest.`test fuzzy-input crafting succeeds with sufficient mixed input OreDict`(
+                            loggerIn = logger,
+                            selector = testBlockBuilder.newSelector(),
+                        )
+                    },
+                ).awaitAll()
+            }
         }
 
 }

@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.integration
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.time.withTimeoutOrNull
 import logisticspipes.LPBlocks
 import logisticspipes.LPItems
@@ -63,19 +64,22 @@ import network.rs485.logisticspipes.util.FuzzyFlag
 import network.rs485.logisticspipes.util.FuzzyUtil
 import network.rs485.minecraft.BlockPlacer
 import network.rs485.minecraft.BlockPosSelector
+import network.rs485.minecraft.TestState
 import network.rs485.minecraft.configurator
 import java.time.Duration
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 @Suppress("FunctionName")
 object CraftingTest {
     private val fuzzyUpgradeItem = Item.REGISTRY.getObject(LPItems.upgrades[FuzzyUpgrade.getName()])!!
 
-    suspend fun `test fuzzy-input crafting fails with mixed input OreDict`(
-        logger: (Any) -> Unit,
+    suspend fun `test fuzzy-input crafting succeeds multi-request with mixed input OreDict`(
+        loggerIn: (Any) -> Unit,
         selector: BlockPosSelector,
     ) {
         val testName = Throwable().stackTrace[0].methodName
+        val logger = { msg: Any -> loggerIn("$testName $msg") }
         try {
             val (requesterPipe, chest) = `setup fuzzy crafting chest`(
                 selector = selector,
@@ -85,46 +89,244 @@ object CraftingTest {
                 ),
             )
             selector.finalize()
-            val missingItems = CompletableDeferred<Boolean>()
+            delay(5000) // FIXME: delay and pipe update should not be needed
+            requesterPipe.pipe.router.update(true, requesterPipe.pipe)
+            val requestSuccessful = CompletableDeferred<Boolean>()
             val stacks = listOf(ItemStack(Blocks.CHEST))
             RequestTree.request(
                 stacks.map { ItemIdentifierStack.getFromStack(it) }.toList(),
                 requesterPipe.pipe,
                 object : RequestLog {
                     override fun handleMissingItems(resources: List<IResource>) {
-                        missingItems.complete(true)
+                        fail("Request should have succeeded. Missing items: $resources")
                     }
 
                     override fun handleSucessfullRequestOf(item: IResource, parts: LinkedLogisticsOrderList) {
-                        missingItems.complete(false)
+                        requestSuccessful.complete(true)
                     }
 
                     override fun handleSucessfullRequestOfList(
                         resources: List<IResource>,
                         parts: LinkedLogisticsOrderList
                     ) {
-                        missingItems.complete(false)
+                        requestSuccessful.complete(true)
                     }
                 },
-                RequestTree.defaultRequestFlags.clone().apply { add(RequestTree.ActiveRequestType.LogMissing) },
+                RequestTree.defaultRequestFlags.clone().apply {
+                    add(RequestTree.ActiveRequestType.LogMissing)
+                },
                 null,
             )
-            val requestMissedItems = withTimeoutOrNull(Duration.ofSeconds(1 * TIMEOUT_MODIFIER)) {
-                missingItems.await()
+            val requestWasSuccessful = withTimeoutOrNull(Duration.ofSeconds(1 * TIMEOUT_MODIFIER)) {
+                requestSuccessful.await()
             }
-            assertTrue(message = "the request did not report missing items") {
-                requestMissedItems == true
+            assertTrue(message = "the request was not reported successful") {
+                requestWasSuccessful == true
             }
             val waitForChestResult = waitForOrNull(
                 timeout = Duration.ofSeconds(3 * TIMEOUT_MODIFIER),
                 check = { chest.getTileEntity<TileEntityChest>().containsAll(stacks) },
             )
-            assertTrue(message = "a chest item was found in the requester chest") {
-                waitForChestResult === null
+            assertTrue(message = "a chest item was not found before a timeout") {
+                waitForChestResult !== null
             }
-            logger("$testName [PASSED]")
+            selector.setVisibleState(TestState.SUCCESS)
+            logger("[PASSED]")
         } catch (e: Throwable) {
-            logger("$testName [FAILED]\n==> ${e.stackTraceToString()}")
+            selector.setVisibleState(TestState.FAIL)
+            logger("[FAILED]\n==> ${e.stackTraceToString()}")
+        }
+    }
+
+    suspend fun `test fuzzy-input crafting succeeds with mixed input OreDict`(
+        loggerIn: (Any) -> Unit,
+        selector: BlockPosSelector,
+    ) {
+        val testName = Throwable().stackTrace[0].methodName
+        val logger = { msg: Any -> loggerIn("$testName $msg") }
+        try {
+            val (requesterPipe, chest) = `setup fuzzy crafting chest`(
+                selector = selector,
+                providerStacks = arrayOf(
+                    ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.OAK.metadata),
+                    ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.DARK_OAK.metadata),
+                ),
+            )
+            selector.finalize()
+            delay(5000)
+            requesterPipe.pipe.router.update(true, requesterPipe.pipe)
+            val requestSuccessful = CompletableDeferred<Boolean>()
+            RequestTree.request(
+                ItemIdentifierStack.getFromStack(ItemStack(Blocks.CHEST)),
+                requesterPipe.pipe,
+                object : RequestLog {
+                    override fun handleMissingItems(resources: List<IResource>) {
+                        fail("Request should have succeeded. Missing items: $resources")
+                    }
+
+                    override fun handleSucessfullRequestOf(item: IResource, parts: LinkedLogisticsOrderList) {
+                        requestSuccessful.complete(true)
+                    }
+
+                    override fun handleSucessfullRequestOfList(
+                        resources: List<IResource>,
+                        parts: LinkedLogisticsOrderList
+                    ) {
+                        requestSuccessful.complete(true)
+                    }
+                },
+                false, false, true, false,
+                RequestTree.defaultRequestFlags.clone().apply {
+                    add(RequestTree.ActiveRequestType.LogMissing)
+                },
+                null,
+            )
+            val requestWasSuccessful = withTimeoutOrNull(Duration.ofSeconds(1 * TIMEOUT_MODIFIER)) {
+                requestSuccessful.await()
+            }
+            assertTrue(message = "the request was not reported successful") {
+                requestWasSuccessful == true
+            }
+            val waitForChestResult = waitForOrNull(
+                timeout = Duration.ofSeconds(3 * TIMEOUT_MODIFIER),
+                check = { chest.getTileEntity<TileEntityChest>().containsAll(listOf(ItemStack(Blocks.CHEST))) },
+            )
+            assertTrue(message = "a chest item was not found before a timeout") {
+                waitForChestResult !== null
+            }
+            selector.setVisibleState(TestState.SUCCESS)
+            logger("[PASSED]")
+        } catch (e: Throwable) {
+            selector.setVisibleState(TestState.FAIL)
+            logger("[FAILED]\n==> ${e.stackTraceToString()}")
+        }
+    }
+
+    suspend fun `test fuzzy-input crafting succeeds with sufficient mixed input OreDict`(
+        loggerIn: (Any) -> Unit,
+        selector: BlockPosSelector,
+    ) {
+        val testName = Throwable().stackTrace[0].methodName
+        val logger = { msg: Any -> loggerIn("$testName $msg") }
+        try {
+            val (requesterPipe, chest) = `setup fuzzy crafting chest`(
+                selector = selector,
+                providerStacks = arrayOf(
+                    ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.OAK.metadata),
+                    ItemStack(Blocks.PLANKS, 8, BlockPlanks.EnumType.DARK_OAK.metadata),
+                ),
+            )
+            selector.finalize()
+            delay(5000)
+            requesterPipe.pipe.router.update(true, requesterPipe.pipe)
+            val requestSuccessful = CompletableDeferred<Boolean>()
+            RequestTree.request(
+                ItemIdentifierStack.getFromStack(ItemStack(Blocks.CHEST)),
+                requesterPipe.pipe,
+                object : RequestLog {
+                    override fun handleMissingItems(resources: List<IResource>) {
+                        fail("Request should have succeeded. Missing items: $resources")
+                    }
+
+                    override fun handleSucessfullRequestOf(item: IResource, parts: LinkedLogisticsOrderList) {
+                        requestSuccessful.complete(true)
+                    }
+
+                    override fun handleSucessfullRequestOfList(
+                        resources: List<IResource>,
+                        parts: LinkedLogisticsOrderList
+                    ) {
+                        requestSuccessful.complete(true)
+                    }
+                },
+                false, false, true, false,
+                RequestTree.defaultRequestFlags.clone().apply {
+                    add(RequestTree.ActiveRequestType.LogMissing)
+                },
+                null,
+            )
+            val requestWasSuccessful = withTimeoutOrNull(Duration.ofSeconds(1 * TIMEOUT_MODIFIER)) {
+                requestSuccessful.await()
+            }
+            assertTrue(message = "the request was not reported successful") {
+                requestWasSuccessful == true
+            }
+            val waitForChestResult = waitForOrNull(
+                timeout = Duration.ofSeconds(3 * TIMEOUT_MODIFIER),
+                check = { chest.getTileEntity<TileEntityChest>().containsAll(listOf(ItemStack(Blocks.CHEST))) },
+            )
+            assertTrue(message = "a chest item was not found before a timeout") {
+                waitForChestResult !== null
+            }
+            selector.setVisibleState(TestState.SUCCESS)
+            logger("[PASSED]")
+        } catch (e: Throwable) {
+            selector.setVisibleState(TestState.FAIL)
+            logger("[FAILED]\n==> ${e.stackTraceToString()}")
+        }
+    }
+
+    suspend fun `test fuzzy-input crafting succeeds multi-request with sufficient mixed input OreDict`(
+        loggerIn: (Any) -> Unit,
+        selector: BlockPosSelector,
+    ) {
+        val testName = Throwable().stackTrace[0].methodName
+        val logger = { msg: Any -> loggerIn("$testName $msg") }
+        try {
+            val (requesterPipe, chest) = `setup fuzzy crafting chest`(
+                selector = selector,
+                providerStacks = arrayOf(
+                    ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.OAK.metadata),
+                    ItemStack(Blocks.PLANKS, 8, BlockPlanks.EnumType.DARK_OAK.metadata),
+                ),
+            )
+            selector.finalize()
+            delay(5000)
+            requesterPipe.pipe.router.update(true, requesterPipe.pipe)
+            val requestSuccessful = CompletableDeferred<Boolean>()
+            val stacks = listOf(ItemStack(Blocks.CHEST))
+            RequestTree.request(
+                stacks.map { ItemIdentifierStack.getFromStack(it) }.toList(),
+                requesterPipe.pipe,
+                object : RequestLog {
+                    override fun handleMissingItems(resources: List<IResource>) {
+                        fail("Request should have succeeded. Missing items: $resources")
+                    }
+
+                    override fun handleSucessfullRequestOf(item: IResource, parts: LinkedLogisticsOrderList) {
+                        requestSuccessful.complete(true)
+                    }
+
+                    override fun handleSucessfullRequestOfList(
+                        resources: List<IResource>,
+                        parts: LinkedLogisticsOrderList
+                    ) {
+                        requestSuccessful.complete(true)
+                    }
+                },
+                RequestTree.defaultRequestFlags.clone().apply {
+                    add(RequestTree.ActiveRequestType.LogMissing)
+                },
+                null,
+            )
+            val requestWasSuccessful = withTimeoutOrNull(Duration.ofSeconds(1 * TIMEOUT_MODIFIER)) {
+                requestSuccessful.await()
+            }
+            assertTrue(message = "the request was not reported successful") {
+                requestWasSuccessful == true
+            }
+            val waitForChestResult = waitForOrNull(
+                timeout = Duration.ofSeconds(3 * TIMEOUT_MODIFIER),
+                check = { chest.getTileEntity<TileEntityChest>().containsAll(stacks) },
+            )
+            assertTrue(message = "a chest item was not found before a timeout") {
+                waitForChestResult !== null
+            }
+            selector.setVisibleState(TestState.SUCCESS)
+            logger("[PASSED]")
+        } catch (e: Throwable) {
+            selector.setVisibleState(TestState.FAIL)
+            logger("[FAILED]\n==> ${e.stackTraceToString()}")
         }
     }
 
@@ -158,7 +360,7 @@ object CraftingTest {
                 craftingPipeInitialized.complete(it.pipe)
                 it.updateConnectionsAndWait()
             })
-            .configure(configurator("crafting recipe importer") {
+            .configure(configurator(name = "crafting recipe importer") {
                 fuzzyCraftingTableHasRecipe.await()
                 val craftingPipe = craftingPipeInitialized.await()
                 craftingPipe.logisticsModule.importFromCraftingTable(null)

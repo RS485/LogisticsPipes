@@ -40,17 +40,21 @@ package network.rs485.minecraft
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import net.minecraft.block.BlockColored
+import net.minecraft.init.Blocks
+import net.minecraft.item.EnumDyeColor
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3i
 import net.minecraft.world.WorldServer
+import network.rs485.logisticspipes.integration.ONE_VECTOR
 import kotlin.math.max
 import kotlin.math.min
 
 class BlockPosSelector(val worldBuilder: WorldBuilder) {
     private val placersToOffsets = ArrayList<Pair<Placer, Vec3i>>()
     private val extraConfigurators = ArrayList<Configurator>()
-    private var finalized: Boolean = false
+    private var finalized: BlockPos? = null
     var localStart: Vec3i = BlockPos.NULL_VECTOR
         private set
     var localEnd: Vec3i = BlockPos.NULL_VECTOR
@@ -70,13 +74,13 @@ class BlockPosSelector(val worldBuilder: WorldBuilder) {
             min(localStart.x, localOffset.x),
             min(localStart.y, localOffset.y),
             min(localStart.z, localOffset.z)
-        ).takeIf { !finalized || it == localStart }
+        ).takeIf { finalized == null || it == localStart }
             ?: error("Range $localStart to $localEnd has been finalized!")
         localEnd = BlockPos(
             max(localEnd.x, localOffset.x),
             max(localEnd.y, localOffset.y),
             max(localEnd.z, localOffset.z)
-        ).takeIf { !finalized || it == localEnd }
+        ).takeIf { finalized == null || it == localEnd }
             ?: error("Range $localStart to $localEnd has been finalized!")
         placersToOffsets += placer to localOffset
     }
@@ -96,7 +100,8 @@ class BlockPosSelector(val worldBuilder: WorldBuilder) {
                     }
                 }
             }.awaitAll()
-            finalized = true
+            finalized = translated
+            setVisibleState(TestState.RUNNING)
             (configurators + extraConfigurators).map {
                 async {
                     it.configure()
@@ -105,6 +110,24 @@ class BlockPosSelector(val worldBuilder: WorldBuilder) {
         }
     }
 
+    fun setVisibleState(state: TestState) = finalized
+        ?.let { it + localStart - ONE_VECTOR }
+        ?.to(state.let {
+            when (it) {
+                TestState.RUNNING -> Blocks.GLOWSTONE.defaultState
+                TestState.FAIL -> Blocks.CONCRETE.defaultState.withProperty(BlockColored.COLOR, EnumDyeColor.RED)
+                TestState.SUCCESS -> Blocks.CONCRETE.defaultState.withProperty(BlockColored.COLOR, EnumDyeColor.GREEN)
+            }
+        })
+        ?.also {
+            worldBuilder.world.setBlockState(it.first, it.second)
+        }
+}
+
+enum class TestState {
+    RUNNING,
+    FAIL,
+    SUCCESS;
 }
 
 interface Placer {

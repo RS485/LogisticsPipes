@@ -38,6 +38,7 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.utils.FluidSinkReply;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
@@ -189,8 +190,8 @@ public class LogisticsManager implements ILogisticsManager {
 		Collections.sort(validDestinations);
 		final ItemStack stack = itemIdStack.makeNormalStack();
 		if (stack.getItem() instanceof LogisticsFluidContainer) {
-			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(itemIdStack), sourceRouter, item.getJamList());
-			if (bestReply.getValue1() != null && bestReply.getValue1() != 0) {
+			Pair<Integer, FluidSinkReply> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(itemIdStack), sourceRouter, item.getJamList());
+			if (bestReply.getValue1() != null && bestReply.getValue1() != 0 && bestReply.getValue2() != null) {
 				item.setDestination(bestReply.getValue1());
 			}
 		} else {

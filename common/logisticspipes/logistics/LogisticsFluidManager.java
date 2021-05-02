@@ -16,45 +16,41 @@ import logisticspipes.LPItems;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.interfaces.routing.IProvideFluids;
 import logisticspipes.items.LogisticsFluidContainer;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.FluidSinkReply;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
 public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 	@Override
-	public Pair<Integer, Integer> getBestReply(FluidIdentifierStack stack, IRouter sourceRouter, List<Integer> jamList) {
-		for (ExitRoute candidateRouter : sourceRouter.getIRoutersByCost()) {
-			if (!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-				continue;
-			}
-			if (candidateRouter.destination.getSimpleID() == sourceRouter.getSimpleID()) {
-				continue;
-			}
-			if (jamList.contains(candidateRouter.destination.getSimpleID())) {
-				continue;
-			}
+	public Pair<Integer, FluidSinkReply> getBestReply(FluidIdentifierStack stack, IRouter sourceRouter, List<Integer> jamList) {
+		Pair<Integer, FluidSinkReply> best = sourceRouter.getIRoutersByCost().stream()
+				.filter(it -> it.containsFlag(PipeRoutingConnectionType.canRouteTo) &&
+						it.destination.getId() != sourceRouter.getId() &&
+						!jamList.contains(it.destination.getSimpleID()) &&
+						it.destination.getPipe() != null &&
+						it.destination.getPipe().isEnabled() &&
+						!it.destination.getPipe().isOnSameContainer(sourceRouter.getPipe()) &&
+						it.destination.getPipe() instanceof IFluidSink
+				).sorted()
+				.map(it -> new Pair<>(it.destination.getSimpleID(), ((IFluidSink) it.destination.getPipe()).sinkAmount(stack)))
+				.reduce(new Pair<>(0, null), (currentBest, it) -> (it.getValue2()!= null && it.getValue2().sinkAmount!=0 &&
+						(currentBest.getValue2() == null || it.getValue2().fixedFluidPriority.ordinal() >= currentBest.getValue2().fixedFluidPriority.ordinal()))
+						? it : currentBest);
 
-			if (candidateRouter.destination.getPipe() == null || !candidateRouter.destination.getPipe().isEnabled()) {
-				continue;
-			}
-			CoreRoutedPipe pipe = candidateRouter.destination.getPipe();
-
-			if (!(pipe instanceof IFluidSink)) {
-				continue;
-			}
-
-			int amount = ((IFluidSink) pipe).sinkAmount(stack);
-			if (amount > 0) {
-				return new Pair<>(candidateRouter.destination.getSimpleID(), amount);
-			}
+		if(best.getValue2() != null && best.getValue2().sinkAmount != 0){
+			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getServerRouter(best.getValue1()).getPipe();
+			pipe.spawnParticle(Particles.BlueParticle, 10);
 		}
-		return new Pair<>(0, 0);
+		return best;
 	}
 
 	@Override

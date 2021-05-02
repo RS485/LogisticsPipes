@@ -7,6 +7,8 @@ import net.minecraft.tileentity.TileEntity;
 
 import net.minecraftforge.fluids.FluidTank;
 
+import com.google.common.collect.ImmutableList;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IFluidSink;
@@ -17,16 +19,22 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.FluidSinkReply;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.NeighborTileEntity;
+import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.Property;
 
 public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
-
-	public ItemIdentifierInventory filterInv = new ItemIdentifierInventory(1, "Dummy", 1, true);
+	public final InventoryProperty filterInv = new InventoryProperty(new ItemIdentifierInventory(1, "Fluids to sink", 1, true), "");
 	private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
+
+	public final ImmutableList<Property<?>> propertyList = ImmutableList.<Property<?>>builder()
+			.add(filterInv)
+			.build();
 
 	public PipeFluidBasic(Item item) {
 		super(item);
@@ -48,17 +56,17 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	}
 
 	@Override
-	public int sinkAmount(FluidIdentifierStack stack) {
+	public FluidSinkReply sinkAmount(FluidIdentifierStack stack) {
 		if (!guiOpenedBy.isEmpty()) {
-			return 0; //Don't sink when the gui is open
+			return null; //Don't sink when the gui is open
 		}
 		FluidIdentifier ident = stack.getFluid();
 		final ItemIdentifierStack identStack = filterInv.getIDStackInSlot(0);
 		if (identStack == null) {
-			return 0;
+			return null;
 		}
 		if (!ident.equals(FluidIdentifier.get(identStack.getItem()))) {
-			return 0;
+			return null;
 		}
 		int onTheWay = this.countOnRoute(ident);
 		long freeSpace = -onTheWay;
@@ -69,10 +77,10 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 			freeSpace += pair.getValue2().getFreeSpaceInsideTank(ident);
 			freeSpace += ident.getFreeSpaceInsideTank(tank);
 			if (freeSpace >= stack.getAmount()) {
-				return stack.getAmount();
+				return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.FLUIDSINK, stack.getAmount());
 			}
 		}
-		return (int) freeSpace;
+		return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.FLUIDSINK, freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace);
 	}
 
 	@Override

@@ -120,6 +120,7 @@ import logisticspipes.pipes.PipeFluidProvider;
 import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
+import logisticspipes.pipes.PipeFluidTerminus;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -727,6 +728,7 @@ public class LogisticsPipes {
 		registerPipe(registry, "fluid_extractor", PipeFluidExtractor::new);
 		registerPipe(registry, "fluid_satellite", PipeFluidSatellite::new);
 		registerPipe(registry, "fluid_supplier_mk2", PipeFluidSupplierMk2::new);
+		registerPipe(registry, "fluid_terminus", PipeFluidTerminus::new);
 
 		registerPipe(registry, "request_table", PipeBlockRequestTable::new);
 

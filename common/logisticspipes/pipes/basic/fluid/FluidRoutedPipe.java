@@ -32,6 +32,7 @@ import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.FluidSinkReply;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
@@ -258,7 +259,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			}
 
 			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid));
-			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsFluidManager.getBestReply(liquid, getRouter(), routedItem.getJamList());
+			Pair<Integer, FluidSinkReply> replies = SimpleServiceLocator.logisticsFluidManager.getBestReply(liquid, getRouter(), routedItem.getJamList());
 			int dest = replies.getValue1();
 			routedItem.setDestination(dest);
 			routedItem.setTransportMode(TransportMode.Passive);

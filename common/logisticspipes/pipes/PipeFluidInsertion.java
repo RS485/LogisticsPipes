@@ -3,6 +3,7 @@ package logisticspipes.pipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.utils.FluidSinkReply;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -65,20 +66,20 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 				continue;
 			}
 
-			Pair<Integer, Integer> result = SimpleServiceLocator.logisticsFluidManager.getBestReply(FluidIdentifierStack.getFromStack(stack), getRouter(), tempJamList);
-			if (result == null || result.getValue1() == null || result.getValue1() == 0 || result.getValue2() == 0) {
+			Pair<Integer, FluidSinkReply> result = SimpleServiceLocator.logisticsFluidManager.getBestReply(FluidIdentifierStack.getFromStack(stack), getRouter(), tempJamList);
+			if (result == null || result.getValue1() == null || result.getValue1() == 0 || result.getValue2()== null || result.getValue2().sinkAmount == 0) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;
 				continue;
 			}
 
-			if (!useEnergy((int) (0.01 * result.getValue2()))) {
+			if (!useEnergy((int) (0.01 * result.getValue2().sinkAmount))) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;
 				continue;
 			}
 
-			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2(), true);
+			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2().sinkAmount, true);
 			ItemIdentifierStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(FluidIdentifierStack.getFromStack(toSend));
 			IRoutedItem routed = SimpleServiceLocator.routedItemHelper.createNewTravelItem(liquidContainer);
 			routed.setDestination(result.getValue1());

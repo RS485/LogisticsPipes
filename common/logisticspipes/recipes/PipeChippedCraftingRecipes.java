@@ -219,6 +219,21 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 				new RecipeManager.RecipeIndex('g', "ingotGold")
 		);
 
+		registerPipeRecipeCategory(LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LPItems.pipeFluidTerminus);
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.pipeFluidBasic),
+				new RecipeManager.RecipeLayout(
+						" p ",
+						"wsv",
+						"gbg"
+				),
+				new RecipeManager.RecipeIndex('b', parts.getChipBasic()),
+				new RecipeManager.RecipeIndex('p', getIngredientForProgrammer(LPItems.pipeFluidTerminus)),
+				new RecipeManager.RecipeIndex('s', LPItems.pipeFluidBasic),
+				new RecipeManager.RecipeIndex('w', "dyeBlack"),
+				new RecipeManager.RecipeIndex('v', "dyePurple"),
+				new RecipeManager.RecipeIndex('g', "ingotIron")
+		);
+
 		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LPItems.pipeFluidRequest, LPItems.pipeFluidBasic);
 		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LPItems.pipeFluidProvider, LPItems.pipeFluidBasic);
 		registerPipeRecipe(parts, RecipeType.LEVEL_2, LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LPItems.pipeFluidSupplierMk2, LPItems.pipeFluidSupplier);

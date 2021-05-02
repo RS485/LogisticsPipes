@@ -101,6 +101,9 @@ public class LPItems {
 	@ObjectHolder("logisticspipes:pipe_fluid_extractor")
 	public static Item pipeFluidExtractor;
 
+	@ObjectHolder("logisticspipes:pipe_fluid_terminus")
+	public static Item pipeFluidTerminus;
+
 	// Logistics Modules/Upgrades
 	@ObjectHolder("logisticspipes:module_blank")
 	public static ItemBlankModule blankModule;

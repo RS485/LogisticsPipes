@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+import logisticspipes.utils.FluidSinkReply;
 import net.minecraft.item.ItemStack;
 
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -189,8 +190,8 @@ public class LogisticsManager implements ILogisticsManager {
 		Collections.sort(validDestinations);
 		final ItemStack stack = itemIdStack.makeNormalStack();
 		if (stack.getItem() instanceof LogisticsFluidContainer) {
-			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(itemIdStack), sourceRouter, item.getJamList());
-			if (bestReply.getValue1() != null && bestReply.getValue1() != 0) {
+			Pair<Integer, FluidSinkReply> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(itemIdStack), sourceRouter, item.getJamList());
+			if (bestReply.getValue1() != null && bestReply.getValue1() != 0 && bestReply.getValue2() != null) {
 				item.setDestination(bestReply.getValue1());
 			}
 		} else {

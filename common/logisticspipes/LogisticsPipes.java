@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
+import logisticspipes.pipes.*;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -112,32 +113,6 @@ import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.PipeFluidBasic;
-import logisticspipes.pipes.PipeFluidExtractor;
-import logisticspipes.pipes.PipeFluidInsertion;
-import logisticspipes.pipes.PipeFluidProvider;
-import logisticspipes.pipes.PipeFluidRequestLogistics;
-import logisticspipes.pipes.PipeFluidSatellite;
-import logisticspipes.pipes.PipeFluidSupplierMk2;
-import logisticspipes.pipes.PipeItemsBasicLogistics;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.pipes.PipeItemsFluidSupplier;
-import logisticspipes.pipes.PipeItemsInvSysConnector;
-import logisticspipes.pipes.PipeItemsProviderLogistics;
-import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
-import logisticspipes.pipes.PipeItemsRequestLogistics;
-import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
-import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
-import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
-import logisticspipes.pipes.PipeLogisticsChassisMk1;
-import logisticspipes.pipes.PipeLogisticsChassisMk2;
-import logisticspipes.pipes.PipeLogisticsChassisMk3;
-import logisticspipes.pipes.PipeLogisticsChassisMk4;
-import logisticspipes.pipes.PipeLogisticsChassisMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
@@ -727,6 +702,7 @@ public class LogisticsPipes {
 		registerPipe(registry, "fluid_extractor", PipeFluidExtractor::new);
 		registerPipe(registry, "fluid_satellite", PipeFluidSatellite::new);
 		registerPipe(registry, "fluid_supplier_mk2", PipeFluidSupplierMk2::new);
+		registerPipe(registry, "fluid_terminus", PipeFluidTerminus::new);
 
 		registerPipe(registry, "request_table", PipeBlockRequestTable::new);
 

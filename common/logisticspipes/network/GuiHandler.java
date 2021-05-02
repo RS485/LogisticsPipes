@@ -1,5 +1,7 @@
 package logisticspipes.network;
 
+import logisticspipes.gui.*;
+import logisticspipes.pipes.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
@@ -9,12 +11,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
 import logisticspipes.LPItems;
-import logisticspipes.gui.GuiFirewall;
-import logisticspipes.gui.GuiFluidBasic;
-import logisticspipes.gui.GuiFluidSupplierMk2Pipe;
-import logisticspipes.gui.GuiFluidSupplierPipe;
-import logisticspipes.gui.GuiFreqCardContent;
-import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.orderer.FluidGuiOrderer;
 import logisticspipes.gui.orderer.GuiRequestTable;
@@ -24,17 +20,6 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
-import logisticspipes.pipes.PipeBlockRequestTable;
-import logisticspipes.pipes.PipeFluidBasic;
-import logisticspipes.pipes.PipeFluidRequestLogistics;
-import logisticspipes.pipes.PipeFluidSatellite;
-import logisticspipes.pipes.PipeFluidSupplierMk2;
-import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.pipes.PipeItemsFluidSupplier;
-import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
-import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
-import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -181,6 +166,28 @@ public class GuiHandler implements IGuiHandler {
 					dummy.addNormalSlotsForPlayerInventory(10, 45);
 					return dummy;
 
+				case GuiIDs.GUI_Fluid_Terminus_ID:
+					if (pipe == null || !((pipe.pipe instanceof PipeFluidTerminus))) {
+						return null;
+					}
+					dummy = new DummyContainer(player, ((PipeFluidTerminus) pipe.pipe).filterInv, new IGuiOpenControler() {
+
+						@Override
+						public void guiOpenedByPlayer(EntityPlayer player) {
+							((PipeFluidTerminus) fpipe.pipe).guiOpenedByPlayer(player);
+						}
+
+						@Override
+						public void guiClosedByPlayer(EntityPlayer player) {
+							((PipeFluidTerminus) fpipe.pipe).guiClosedByPlayer(player);
+						}
+					});
+					for (int i = 0; i < 9; i++) {
+						dummy.addFluidSlot(i, ((PipeFluidTerminus) pipe.pipe).filterInv, 8 + i * 18, 13);
+					}
+					dummy.addNormalSlotsForPlayerInventory(10, 45);
+					return dummy;
+
 				case GuiIDs.GUI_FIREWALL:
 					if (pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) {
 						return null;
@@ -292,6 +299,12 @@ public class GuiHandler implements IGuiHandler {
 						return null;
 					}
 					return new GuiFluidBasic(player, ((PipeFluidBasic) pipe.pipe).filterInv);
+
+				case GuiIDs.GUI_Fluid_Terminus_ID:
+					if (pipe == null || !((pipe.pipe instanceof PipeFluidTerminus))) {
+						return null;
+					}
+					return new GuiFluidTerminus(player, ((PipeFluidTerminus) pipe.pipe).filterInv);
 
 				case GuiIDs.GUI_FIREWALL:
 					if (pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) {

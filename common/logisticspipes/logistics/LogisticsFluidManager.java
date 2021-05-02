@@ -7,6 +7,11 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.FluidSinkReply;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -16,7 +21,6 @@ import logisticspipes.LPItems;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.interfaces.routing.IProvideFluids;
 import logisticspipes.items.LogisticsFluidContainer;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -28,33 +32,41 @@ import logisticspipes.utils.tuples.Pair;
 public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 	@Override
-	public Pair<Integer, Integer> getBestReply(FluidIdentifierStack stack, IRouter sourceRouter, List<Integer> jamList) {
-		for (ExitRoute candidateRouter : sourceRouter.getIRoutersByCost()) {
-			if (!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-				continue;
+	public Pair<Integer, FluidSinkReply> getBestReply(FluidIdentifierStack stack, IRouter sourceRouter, List<Integer> jamList) {
+		final Integer[] resultRouterId = { null };
+		final FluidSinkReply[] result = { null };
+		sourceRouter.getIRoutersByCost().stream()
+				.filter(it -> it.containsFlag(PipeRoutingConnectionType.canRouteTo) &&
+						it.destination.getId() != sourceRouter.getId() &&
+						!jamList.contains(it.destination.getSimpleID()) &&
+						it.destination.getPipe() != null &&
+						it.destination.getPipe().isEnabled() &&
+						!it.destination.getPipe().isOnSameContainer(sourceRouter.getPipe()) &&
+						it.destination.getPipe() instanceof IFluidSink
+		).sorted().forEachOrdered(it -> {
+			FluidSinkReply reply;
+			IFluidSink pipe = (IFluidSink) it.destination.getPipe();
+			if (result[0] == null) {
+				reply = pipe.sinkAmount(stack, -1);
 			}
-			if (candidateRouter.destination.getSimpleID() == sourceRouter.getSimpleID()) {
-				continue;
-			}
-			if (jamList.contains(candidateRouter.destination.getSimpleID())) {
-				continue;
+			else {
+				reply = pipe.sinkAmount(stack, result[0].fixedFluidPriority.ordinal());
 			}
 
-			if (candidateRouter.destination.getPipe() == null || !candidateRouter.destination.getPipe().isEnabled()) {
-				continue;
+			if (reply  != null && reply.sinkAmount != 0 && (result[0] == null || reply.fixedFluidPriority.ordinal() > result[0].fixedFluidPriority.ordinal() || reply.fixedFluidPriority.ordinal() == result[0].fixedFluidPriority.ordinal())) {
+				resultRouterId[0] = it.destination.getSimpleID();
+				result[0] = reply;
 			}
-			CoreRoutedPipe pipe = candidateRouter.destination.getPipe();
+		});
 
-			if (!(pipe instanceof IFluidSink)) {
-				continue;
-			}
-
-			int amount = ((IFluidSink) pipe).sinkAmount(stack);
-			if (amount > 0) {
-				return new Pair<>(candidateRouter.destination.getSimpleID(), amount);
+		if (result[0] != null && result[0].sinkAmount != 0) {
+			if (resultRouterId[0] != null) {
+				CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getServerRouter(resultRouterId[0]).getPipe();
+				pipe.spawnParticle(Particles.BlueParticle, 10);
+				return new Pair<>(resultRouterId[0], result[0]);
 			}
 		}
-		return new Pair<>(0, 0);
+		return new Pair<>(0, null);
 	}
 
 	@Override

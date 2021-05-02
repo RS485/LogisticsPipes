@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import logisticspipes.utils.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,9 +17,6 @@ import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.tuples.Triplet;
 
@@ -26,6 +24,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 
 	public ItemIdentifierInventory filterInv = new ItemIdentifierInventory(1, "Dummy", 1, true);
 	private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
+	private final FluidSinkReply.FixedFluidPriority _priority = FluidSinkReply.FixedFluidPriority.ItemSink;
 
 	public PipeFluidBasic(Item item) {
 		super(item);
@@ -47,16 +46,19 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	}
 
 	@Override
-	public int sinkAmount(FluidIdentifierStack stack) {
+	public FluidSinkReply sinkAmount(FluidIdentifierStack stack, int bestPriority) {
 		if (!guiOpenedBy.isEmpty()) {
-			return 0; //Don't sink when the gui is open
+			return null; //Don't sink when the gui is open
 		}
 		FluidIdentifier ident = stack.getFluid();
 		if (filterInv.getIDStackInSlot(0) == null) {
-			return 0;
+			return null;
 		}
 		if (!ident.equals(FluidIdentifier.get(filterInv.getIDStackInSlot(0).getItem()))) {
-			return 0;
+			return null;
+		}
+		if(bestPriority > _priority.ordinal() || bestPriority == _priority.ordinal()){
+			return null;
 		}
 		int onTheWay = this.countOnRoute(ident);
 		long freeSpace = -onTheWay;
@@ -65,10 +67,10 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 			freeSpace += pair.getValue1().getFreeSpaceInsideTank(ident);
 			freeSpace += ident.getFreeSpaceInsideTank(tank);
 			if (freeSpace >= stack.getAmount()) {
-				return stack.getAmount();
+				return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.ItemSink, stack.getAmount());
 			}
 		}
-		return freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace;
+		return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.ItemSink, freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace);
 	}
 
 	@Override

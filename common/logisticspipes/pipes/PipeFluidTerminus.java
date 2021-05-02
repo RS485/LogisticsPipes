@@ -42,7 +42,7 @@ public class PipeFluidTerminus extends FluidRoutedPipe implements IFluidSink {
     }
 
     @Override
-    public FluidSinkReply sinkAmount(FluidIdentifierStack stack, int bestPriority) {
+    public FluidSinkReply sinkAmount(FluidIdentifierStack stack) {
         if (!guiOpenedBy.isEmpty()) {
             return null; //Don't sink when the gui is open
         }
@@ -53,9 +53,6 @@ public class PipeFluidTerminus extends FluidRoutedPipe implements IFluidSink {
                 continue;
             }
             if (!ident.equals(FluidIdentifier.get(filterInv.getIDStackInSlot(i).getItem()))) {
-                continue;
-            }
-            if( bestPriority > _priority.ordinal() || bestPriority == _priority.ordinal()) {
                 continue;
             }
             int onTheWay = this.countOnRoute(ident);

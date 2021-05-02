@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.FluidTank;
 public class PipeFluidTerminus extends FluidRoutedPipe implements IFluidSink {
     public ItemIdentifierInventory filterInv = new ItemIdentifierInventory(9, "Dummy", 1, true);
     private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
-    private final FluidSinkReply.FixedFluidPriority _priority = FluidSinkReply.FixedFluidPriority.Terminus;
+    private final FluidSinkReply.FixedFluidPriority _priority = FluidSinkReply.FixedFluidPriority.TERMINUS;
 
     public PipeFluidTerminus(Item item) {
         super(item);
@@ -65,10 +65,10 @@ public class PipeFluidTerminus extends FluidRoutedPipe implements IFluidSink {
                 freeSpace += pair.getValue1().getFreeSpaceInsideTank(ident);
                 freeSpace += ident.getFreeSpaceInsideTank(tank);
                 if (freeSpace >= stack.getAmount()) {
-                    return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.Terminus, stack.getAmount());
+                    return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.TERMINUS, stack.getAmount());
                 }
             }
-            return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.Terminus, freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace);
+            return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.TERMINUS, freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace);
         }
         return null;
     }

@@ -2,8 +2,8 @@ package logisticspipes.utils;
 
 public final class FluidSinkReply {
     public enum FixedFluidPriority{
-        Terminus,
-        ItemSink
+        TERMINUS,
+        FLUIDSINK
     }
 
     public final FixedFluidPriority fixedFluidPriority;

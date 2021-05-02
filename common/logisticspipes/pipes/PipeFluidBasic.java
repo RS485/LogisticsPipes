@@ -24,7 +24,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 
 	public ItemIdentifierInventory filterInv = new ItemIdentifierInventory(1, "Dummy", 1, true);
 	private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
-	private final FluidSinkReply.FixedFluidPriority _priority = FluidSinkReply.FixedFluidPriority.ItemSink;
+	private final FluidSinkReply.FixedFluidPriority _priority = FluidSinkReply.FixedFluidPriority.FLUIDSINK;
 
 	public PipeFluidBasic(Item item) {
 		super(item);
@@ -67,10 +67,10 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 			freeSpace += pair.getValue1().getFreeSpaceInsideTank(ident);
 			freeSpace += ident.getFreeSpaceInsideTank(tank);
 			if (freeSpace >= stack.getAmount()) {
-				return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.ItemSink, stack.getAmount());
+				return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.FLUIDSINK, stack.getAmount());
 			}
 		}
-		return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.ItemSink, freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace);
+		return new FluidSinkReply(FluidSinkReply.FixedFluidPriority.FLUIDSINK, freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace);
 	}
 
 	@Override

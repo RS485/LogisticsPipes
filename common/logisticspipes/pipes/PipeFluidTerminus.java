@@ -48,9 +48,7 @@ public class PipeFluidTerminus extends FluidRoutedPipe implements IFluidSink {
         }
         FluidIdentifier ident = stack.getFluid();
 
-
-
-        for(int i = 0; i<9; i++){
+        for (int i = 0; i<9; i++) {
             if (filterInv.getIDStackInSlot(i) == null) {
                 continue;
             }

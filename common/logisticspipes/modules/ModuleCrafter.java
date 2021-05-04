@@ -169,6 +169,7 @@ public class ModuleCrafter extends LogisticsModule
 
 	public ModuleCrafter() {
 		advancedSatelliteUUIDList.ensureSize(9);
+		liquidAmounts.ensureSize(ItemUpgrade.MAX_LIQUID_CRAFTER);
 		liquidSatelliteUUIDList.ensureSize(ItemUpgrade.MAX_LIQUID_CRAFTER);
 	}
 
@@ -797,9 +798,11 @@ public class ModuleCrafter extends LogisticsModule
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return NewGuiHandler.getGui(CraftingModuleSlot.class)
 				.setAdvancedSat(getUpgradeManager().isAdvancedSatelliteCrafter())
-				.setLiquidCrafter(getUpgradeManager().getFluidCrafter()).setAmount(liquidAmounts.getArray())
+				.setLiquidCrafter(getUpgradeManager().getFluidCrafter())
+				.setAmount(liquidAmounts.getArray())
 				.setHasByproductExtractor(getUpgradeManager().hasByproductExtractor())
-				.setFuzzy(getUpgradeManager().isFuzzyUpgrade()).setCleanupSize(getUpgradeManager().getCrafterCleanup())
+				.setFuzzy(getUpgradeManager().isFuzzyUpgrade())
+				.setCleanupSize(getUpgradeManager().getCrafterCleanup())
 				.setCleanupExclude(cleanupModeIsExclude.getValue());
 	}
 

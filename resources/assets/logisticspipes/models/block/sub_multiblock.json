@@ -1,6 +1,6 @@
 {
 	"parent": "block/cube_all",
 	"textures": {
-		"all": "logisticspipes:blocks/sub_multiblock"
+		"all": "minecraft:missingno"
 	}
 }

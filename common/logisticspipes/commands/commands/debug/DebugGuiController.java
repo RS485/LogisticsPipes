@@ -30,6 +30,7 @@ public class DebugGuiController {
 	static {
 		Launch.classLoader.addTransformerExclusion("com.trolltech.qt.");
 		Launch.classLoader.addTransformerExclusion("network.rs485.debuggui.");
+		Launch.classLoader.addTransformerExclusion("network.rs485.debug.");
 	}
 
 	transient private static DebugGuiController instance;
@@ -53,11 +54,11 @@ public class DebugGuiController {
 		serverDebugger.values().forEach(IDebugGuiEntry::exec);
 	}
 
-	private HashMap<EntityPlayer, IDebugGuiEntry> serverDebugger = new HashMap<>();
-	private List<IDataConnection> serverList = new LinkedList<>();
+	private final HashMap<EntityPlayer, IDebugGuiEntry> serverDebugger = new HashMap<>();
+	private final List<IDataConnection> serverList = new LinkedList<>();
 
 	private IDebugGuiEntry clientController = null;
-	private List<Future<IDataConnection>> clientList = new LinkedList<>();
+	private final List<Future<IDataConnection>> clientList = new LinkedList<>();
 
 	public void startWatchingOf(Object object, EntityPlayer player) {
 		if (object == null) {
@@ -70,7 +71,6 @@ public class DebugGuiController {
 				serverDebugger.put(player, entry);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
-				return;
 			}
 		}
 		if (entry == null) {

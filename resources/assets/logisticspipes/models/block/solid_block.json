@@ -1,6 +1,6 @@
 {
-	"parent": "block/cube_all",
-	"textures": {
-		"all": "logisticspipes:blocks/solid_block"
-	}
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "logisticspipes:solid_block/frame"
+  }
 }

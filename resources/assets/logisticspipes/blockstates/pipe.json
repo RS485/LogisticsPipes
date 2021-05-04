@@ -1,5 +1,9 @@
 {
-	"variants": {
-		"normal": { "model": "logisticspipes:pipe" }
-	}
+  "variants": {
+    "normal": [
+      {
+        "model": "logisticspipes:pipe"
+      }
+    ]
+  }
 }

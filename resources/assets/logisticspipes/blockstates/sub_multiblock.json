@@ -1,5 +1,9 @@
 {
-	"variants": {
-		"normal": { "model": "logisticspipes:sub_multiblock" }
-	}
+  "variants": {
+    "normal": [
+      {
+        "model": "logisticspipes:sub_multiblock"
+      }
+    ]
+  }
 }

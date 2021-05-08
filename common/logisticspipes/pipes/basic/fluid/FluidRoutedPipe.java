@@ -111,7 +111,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 		return new WorldCoordinatesWrapper(container).allNeighborTileEntities().stream()
 				.filter(adjacent -> isConnectableTank(adjacent.getTileEntity(), adjacent.getDirection(), flag))
 				.map(adjacent -> new Triplet<>(
-						SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection()),
+						SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(adjacent.getTileEntity(), adjacent.getDirection().getOpposite()),
 						adjacent.getTileEntity(),
 						adjacent.getDirection()))
 				.filter(triplet -> triplet.getValue1() != null)

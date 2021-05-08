@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import com.google.common.collect.ImmutableList;
 import logisticspipes.utils.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -19,12 +20,16 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.tuples.Triplet;
+import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.Property;
 
 public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
-
-	public ItemIdentifierInventory filterInv = new ItemIdentifierInventory(1, "Dummy", 1, true);
+	public final InventoryProperty filterInv = new InventoryProperty(new ItemIdentifierInventory(1, "Fluids to sink", 1, true), "");
 	private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
-	private final FluidSinkReply.FixedFluidPriority _priority = FluidSinkReply.FixedFluidPriority.FLUIDSINK;
+
+	public final ImmutableList<Property<?>> propertyList = ImmutableList.<Property<?>>builder()
+			.add(filterInv)
+			.build();
 
 	public PipeFluidBasic(Item item) {
 		super(item);

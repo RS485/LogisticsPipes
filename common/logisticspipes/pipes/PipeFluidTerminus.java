@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import com.google.common.collect.ImmutableList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IFluidSink;
@@ -16,11 +17,18 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidTank;
+import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.Property;
 
-public class PipeFluidTerminus extends FluidRoutedPipe implements IFluidSink {
-    public ItemIdentifierInventory filterInv = new ItemIdentifierInventory(9, "Dummy", 1, true);
+
+public class PipeFluidTerminus extends FluidRoutedPipe implements IFluidSink{
+    public final InventoryProperty filterInv = new InventoryProperty(new ItemIdentifierInventory(9, "Fluids to terminate", 1, true), "");
+
     private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
-    private final FluidSinkReply.FixedFluidPriority _priority = FluidSinkReply.FixedFluidPriority.TERMINUS;
+
+    public final ImmutableList<Property<?>> propertyList = ImmutableList.<Property<?>>builder()
+            .add(filterInv)
+            .build();
 
     public PipeFluidTerminus(Item item) {
         super(item);

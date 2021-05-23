@@ -8,26 +8,23 @@ buildscript {
     }
     dependencies {
         classpath group: 'network.rs485', name: 'ForgeGradle', version: forgegradle_version
-        classpath group: 'gradle.plugin.com.matthewprenger', name: 'CurseGradle', version: cursegradle_version
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-serialization', version: kotlin_version
-        classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: shadow_version
     }
 }
 
-apply plugin: 'maven'
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'kotlinx-serialization'
-apply plugin: 'eclipse'
-apply plugin: 'signing'
-apply plugin: 'com.matthewprenger.cursegradle'
-apply plugin: 'com.github.johnrengelman.shadow'
+plugins {
+    id 'maven'
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
+    id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
+    id 'signing'
+    id 'com.matthewprenger.cursegradle' version "$cursegradle_version"
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
+}
 apply plugin: 'net.minecraftforge.gradle'
 
 archivesBaseName = "logisticspipes"
 group = "network.rs485"
-version = "0.10.3"
+version = "0.10.4"
 ext.vendor = "unknown"
 ext.target = "Forge $forge_version"
 
@@ -102,9 +99,10 @@ configurations {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {
+        // cannot update to 1.5, because of https://youtrack.jetbrains.com/issue/KT-30102
         languageVersion = "1.4"
         jvmTarget = JavaVersion.VERSION_1_8
-        freeCompilerArgs += "-Xjvm-default=enable"
+        freeCompilerArgs += "-Xjvm-default=all"
     }
 }
 
@@ -196,18 +194,19 @@ shadowJar {
         include(dependency(group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version))
         include(dependency(group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version))
         include(dependency(group: 'org.jetbrains', name: 'annotations', version: kannotations_version))
-        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core-jvm', version: kcoroutines_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version))
-        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json-jvm', version: '1.0.0'))
-        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-core-jvm', version: '1.0.0'))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json-jvm', version: kserialization_version))
+        include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-core-jvm', version: kserialization_version))
         include(dependency(group: 'com.charleskorn.kaml', name: 'kaml', version: kaml_version))
-        include(dependency(group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '2.1'))
+        include(dependency(group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '2.3'))
     }
 
     relocate 'kotlin', 'logisticspipes.kotlin'
     relocate 'kotlinx', 'logisticspipes.kotlinx'
     relocate 'org.intellij', 'logisticspipes.intellij'
     relocate 'org.jetbrains', 'logisticspipes.jetbrains'
+    relocate 'org.snakeyaml', 'logisticspipes.snakeyaml'
 
     exclude 'META-INF/versions/9/*'
     exclude 'DebugProbesKt.bin'
@@ -264,12 +263,12 @@ dependencies {
     apiImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
     dummyImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
 
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: lombok_version
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok_version
 
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
-    implementation group: 'org.jetbrains', name: "annotations", version: kannotations_version
+    implementation group: 'org.jetbrains', name: 'annotations', version: kannotations_version
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version
     implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version
@@ -507,7 +506,7 @@ install.repositories.mavenInstaller.pom.whenConfigured { pom ->
 }
 
 tasks.named('wrapper') {
-    gradleVersion = '5.3.1'
+    gradleVersion = '6.8.3'
     distributionType = Wrapper.DistributionType.ALL
 }
 

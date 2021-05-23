@@ -38,7 +38,7 @@
 package network.rs485.grow
 
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import java.util.function.Supplier
 
 abstract class ChunkedChannel<T, O>(val channel: Channel<T>) : Supplier<Boolean> {
@@ -64,7 +64,9 @@ abstract class ChunkedChannel<T, O>(val channel: Channel<T>) : Supplier<Boolean>
     override fun get(): Boolean {
         try {
             val session = newSession()
-            nextChunk(session).forEach(channel::sendBlocking)
+            val channelResults = nextChunk(session).map(channel::trySendBlocking)
+            channelResults.find { it.isFailure && !it.isClosed }?.getOrThrow()
+            if (channelResults.any { it.isClosed }) return false
             if (hasWork(session)) return true
             channel.close()
         } catch (e: Exception) {

@@ -39,7 +39,6 @@ package network.rs485.logisticspipes.inventory
 
 interface SlotAccess {
 
-    @JvmDefault
     fun compactFirst(size: Int) {
         for (firstSlot in 0 until size) {
             for (secondSlot in firstSlot + 1 until size) {

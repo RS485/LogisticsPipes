@@ -390,7 +390,7 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                     } else {
                         "${prefix}module.advanced_extractor.all"
                     },
-                    items = module.filterInventory,
+                    items = module.getFilterInventory(),
                     isModule = isModule
                 )
                 addSneakyExtractorInfo(module.sneakyDirection, probeInfo)

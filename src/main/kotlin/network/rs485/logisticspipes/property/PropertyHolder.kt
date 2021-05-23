@@ -46,10 +46,8 @@ import net.minecraft.nbt.NBTTagCompound
 interface PropertyHolder : ISaveState {
     val properties: List<Property<*>>
 
-    @JvmDefault
     override fun readFromNBT(tag: NBTTagCompound) = properties.readFromNBT(tag)
 
-    @JvmDefault
     override fun writeToNBT(tag: NBTTagCompound) = properties.writeToNBT(tag)
 
 }

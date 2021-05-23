@@ -4,7 +4,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fluids.FluidTank;
 
@@ -20,7 +19,9 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierInventory;
-import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 
 public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 
@@ -52,23 +53,26 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 			return 0; //Don't sink when the gui is open
 		}
 		FluidIdentifier ident = stack.getFluid();
-		if (filterInv.getIDStackInSlot(0) == null) {
+		final ItemIdentifierStack identStack = filterInv.getIDStackInSlot(0);
+		if (identStack == null) {
 			return 0;
 		}
-		if (!ident.equals(FluidIdentifier.get(filterInv.getIDStackInSlot(0).getItem()))) {
+		if (!ident.equals(FluidIdentifier.get(identStack.getItem()))) {
 			return 0;
 		}
 		int onTheWay = this.countOnRoute(ident);
 		long freeSpace = -onTheWay;
-		for (Triplet<ITankUtil, TileEntity, EnumFacing> pair : getAdjacentTanksAdvanced(true)) {
-			FluidTank tank = ((PipeFluidTransportLogistics) transport).sideTanks[pair.getValue3().ordinal()];
-			freeSpace += pair.getValue1().getFreeSpaceInsideTank(ident);
+		for (Pair<NeighborTileEntity<TileEntity>, ITankUtil> pair : PipeFluidUtil.INSTANCE
+				.getAdjacentTanks(this, true)) {
+			final int dirOrdinal = pair.getValue1().getDirection().ordinal();
+			FluidTank tank = ((PipeFluidTransportLogistics) transport).sideTanks[dirOrdinal];
+			freeSpace += pair.getValue2().getFreeSpaceInsideTank(ident);
 			freeSpace += ident.getFreeSpaceInsideTank(tank);
 			if (freeSpace >= stack.getAmount()) {
 				return stack.getAmount();
 			}
 		}
-		return freeSpace > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) freeSpace;
+		return (int) freeSpace;
 	}
 
 	@Override

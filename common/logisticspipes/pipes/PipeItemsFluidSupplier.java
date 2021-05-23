@@ -172,11 +172,14 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
-			tankUtil.forEachFluid(fluid -> {
-				if (wantFluids.containsKey(fluid.getFluid())) {
-					haveFluids.merge(fluid.getFluid(), fluid.getAmount(), Integer::sum);
-				}
-			});
+			tankUtil.tanks()
+					.map(tank -> FluidIdentifierStack.getFromStack(tank.getContents()))
+					.filter(Objects::nonNull)
+					.forEach(fluid -> {
+						if (wantFluids.containsKey(fluid.getFluid())) {
+							haveFluids.merge(fluid.getFluid(), fluid.getAmount(), Integer::sum);
+						}
+					});
 
 			//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
 			//Reduce what I have and what have been requested already
@@ -199,7 +202,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				}
 			}
 
-			((PipeItemsFluidSupplier) container.pipe).setRequestFailed(false);
+			((PipeItemsFluidSupplier) Objects.requireNonNull(container).pipe).setRequestFailed(false);
 
 			//Make request
 
@@ -282,7 +285,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			}
 		}
 		//we have no idea what this is, log it.
-		debug.log("liquid supplier got unexpected item " + item.toString());
+		debug.log("liquid supplier got unexpected item " + item);
 	}
 
 	@Override

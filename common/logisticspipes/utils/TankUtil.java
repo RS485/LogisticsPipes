@@ -1,6 +1,7 @@
 package logisticspipes.utils;
 
-import java.util.function.Consumer;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -10,7 +11,7 @@ import logisticspipes.interfaces.ITankUtil;
 
 public class TankUtil implements ITankUtil {
 
-	private IFluidHandler fluidhandler;
+	private final IFluidHandler fluidhandler;
 
 	public TankUtil(IFluidHandler fluidhandler) {
 		this.fluidhandler = fluidhandler;
@@ -38,28 +39,16 @@ public class TankUtil implements ITankUtil {
 	}
 
 	@Override
-	public void forEachFluid(Consumer<FluidIdentifierStack> fluidStackConsumer) {
-		IFluidTankProperties[] tanks = fluidhandler.getTankProperties();
-		if (tanks != null) {
-			for (IFluidTankProperties tank : tanks) {
-				if (tank.getContents() != null) {
-					fluidStackConsumer.accept(FluidIdentifierStack.getFromStack(tank.getContents()));
-				}
-			}
-		}
+	public Stream<IFluidTankProperties> tanks() {
+		final IFluidTankProperties[] tanks = fluidhandler.getTankProperties();
+		if (tanks == null) return Stream.empty();
+		return Arrays.stream(tanks).filter(tank -> tank.getContents() != null);
 	}
 
 	@Override
 	public boolean canDrain(FluidIdentifier fluid) {
-		IFluidTankProperties[] tanks = fluidhandler.getTankProperties();
-		if (tanks != null) {
-			for (IFluidTankProperties tank : tanks) {
-				if (tank.canDrainFluidType(fluid.makeFluidStack(1))) {
-					return true;
-				}
-			}
-		}
-		return false;
+		final FluidStack fluidStack = fluid.makeFluidStack(1);
+		return tanks().anyMatch(tank -> tank.canDrainFluidType(fluidStack));
 	}
 
 	public int getFreeSpaceInsideTank(FluidIdentifier type) {

@@ -1,6 +1,8 @@
 package logisticspipes.interfaces;
 
-import java.util.function.Consumer;
+import java.util.stream.Stream;
+
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
@@ -15,7 +17,7 @@ public interface ITankUtil {
 
 	FluidIdentifierStack drain(int amount, boolean doDrain);
 
-	void forEachFluid(Consumer<FluidIdentifierStack> fluidStackConsumer);
+	Stream<IFluidTankProperties> tanks();
 
 	/**
 	 * Type only amount is ignored

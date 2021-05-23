@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -23,7 +24,6 @@ import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.ITankUtil;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.modules.LogisticsModule;
@@ -36,6 +36,7 @@ import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
 import logisticspipes.network.packets.satpipe.SyncSatelliteNamePacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
@@ -57,8 +58,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	private final LinkedList<ItemIdentifierStack> itemList = new LinkedList<>();
-	private final LinkedList<ItemIdentifierStack> oldList = new LinkedList<>();
+	private final List<ItemIdentifierStack> itemList = new LinkedList<>();
+	private final List<ItemIdentifierStack> oldList = new LinkedList<>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<>();
 	private final ModuleSatellite moduleSatellite;
@@ -112,25 +113,10 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		liquidLost(liquid, amount);
 	}
 
-	private void addToList(ItemIdentifierStack stack) {
-		for (ItemIdentifierStack ident : itemList) {
-			if (ident.getItem().equals(stack.getItem())) {
-				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
-				return;
-			}
-		}
-		itemList.addLast(stack);
-	}
-
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for (ITankUtil util : getAdjacentTanks(false)) {
-			util.forEachFluid(liquid -> {
-				if (liquid != null && liquid.getFluid() != null) {
-					addToList(liquid.getFluid().getItemIdentifier().makeStack(liquid.getAmount()));
-				}
-			});
-		}
+		itemList.addAll(PipeFluidUtil.INSTANCE.fluidsToItemList(this));
+
 		if (!itemList.equals(oldList) || force) {
 			oldList.clear();
 			oldList.addAll(itemList);
@@ -206,9 +192,12 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	public void updateWatchers() {
-		CoordinatesPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setTilePos(this.getContainer());
+		final LogisticsTileGenericPipe container = Objects.requireNonNull(getContainer());
+		CoordinatesPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class)
+				.setString(satellitePipeName)
+				.setTilePos(container);
 		MainProxy.sendToPlayerList(packet, localModeWatchers);
-		MainProxy.sendPacketToAllWatchingChunk(this.getContainer(), packet);
+		MainProxy.sendPacketToAllWatchingChunk(container, packet);
 	}
 
 	@Override

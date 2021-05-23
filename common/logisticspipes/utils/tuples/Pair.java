@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
-import logisticspipes.utils.item.ItemIdentifier;
 
 @Data
 public class Pair<T1, T2> implements ILPCCTypeHolder {
@@ -24,6 +23,14 @@ public class Pair<T1, T2> implements ILPCCTypeHolder {
 	public Pair(T1 value1, T2 value2) {
 		this.value1 = value1;
 		this.value2 = value2;
+	}
+
+	public final T1 component1() {
+		return value1;
+	}
+
+	public final T2 component2() {
+		return value2;
 	}
 
 	public Pair<T1, T2> copy() {

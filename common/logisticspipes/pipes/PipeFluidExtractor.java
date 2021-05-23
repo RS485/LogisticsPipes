@@ -29,8 +29,8 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 		if (!isNthTick(10)) {
 			return;
 		}
-
-		getAdjacentTanksAdvanced(false).forEach(tankData -> extractFrom(tankData.getValue1(), tankData.getValue3()));
+		PipeFluidUtil.INSTANCE.getAdjacentTanks(this, false)
+				.forEach(tankData -> extractFrom(tankData.getValue2(), tankData.getValue1().getDirection()));
 	}
 
 	private void extractFrom(ITankUtil container, EnumFacing side) {

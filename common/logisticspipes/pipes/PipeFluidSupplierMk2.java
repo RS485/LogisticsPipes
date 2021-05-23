@@ -3,6 +3,7 @@ package logisticspipes.pipes;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -26,6 +27,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
@@ -105,7 +107,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		if (!isEnabled()) {
 			return;
 		}
-		if (MainProxy.isClient(container.getWorld())) {
+		if (MainProxy.isClient(Objects.requireNonNull(container).getWorld())) {
 			return;
 		}
 		super.throttledUpdateEntity();
@@ -113,8 +115,8 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			return;
 		}
 
-		getAdjacentTanksAdvanced(false).forEach(fluidHandlerDirectionPair -> {
-			if (!fluidHandlerDirectionPair.getValue1().containsTanks()) {
+		PipeFluidUtil.INSTANCE.getAdjacentTanks(this, false).forEach(fluidHandlerDirectionPair -> {
+			if (!fluidHandlerDirectionPair.getValue2().containsTanks()) {
 				return;
 			}
 
@@ -129,11 +131,15 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
 
 			//Check what is inside the connected tank
-			fluidHandlerDirectionPair.getValue1().forEachFluid(fluid -> haveFluids.merge(fluid.getFluid(), fluid.getAmount(), Integer::sum));
+			fluidHandlerDirectionPair.getValue2().tanks()
+					.map(tank -> FluidIdentifierStack.getFromStack(tank.getContents()))
+					.filter(Objects::nonNull)
+					.forEach(fluid -> haveFluids.merge(fluid.getFluid(), fluid.getAmount(), Integer::sum));
 
 			//What does our sided internal tank have
-			if (fluidHandlerDirectionPair.getValue3().ordinal() < ((PipeFluidTransportLogistics) transport).sideTanks.length) {
-				FluidTank sideTank = ((PipeFluidTransportLogistics) transport).sideTanks[fluidHandlerDirectionPair.getValue3().ordinal()];
+			int directionOrdinal = fluidHandlerDirectionPair.getValue1().getDirection().ordinal();
+			if (directionOrdinal < ((PipeFluidTransportLogistics) transport).sideTanks.length) {
+				FluidTank sideTank = ((PipeFluidTransportLogistics) transport).sideTanks[directionOrdinal];
 				if (sideTank != null && sideTank.getFluid() != null && wantFluids.containsKey(FluidIdentifier.get(sideTank.getFluid()))) {
 					haveFluids.merge(FluidIdentifier.get(sideTank.getFluid()), sideTank.getFluid().amount, Integer::sum);
 				}
@@ -288,7 +294,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	}
 
 	public void setAmount(int amount) {
-		if (MainProxy.isClient(container.getWorld())) {
+		if (MainProxy.isClient(Objects.requireNonNull(container).getWorld())) {
 			this.amount = amount;
 		}
 	}

@@ -154,6 +154,10 @@ public class DummyContainer extends Container {
 		transferTop.add(addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe)));
 	}
 
+	public Slot addFluidSlot(int slotId, int xCoord, int yCoord) {
+		return addSlotToContainer(new FluidSlot(_dummyInventory, slotId, xCoord, yCoord));
+	}
+
 	public Slot addFluidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
 		return addSlotToContainer(new FluidSlot(inventory, slotId, xCoord, yCoord));
 	}

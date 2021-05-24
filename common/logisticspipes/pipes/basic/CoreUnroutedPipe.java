@@ -424,4 +424,9 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	 */
 	protected void triggerConnectionCheck() {}
 
+	/**
+	 * Called after reading data from NBT.
+	 */
+	public void finishInit() {}
+
 }

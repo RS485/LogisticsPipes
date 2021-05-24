@@ -260,8 +260,13 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 			IRoutedItem routedItem = SimpleServiceLocator.routedItemHelper.createNewTravelItem(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid));
 			Pair<Integer, FluidSinkReply> replies = SimpleServiceLocator.logisticsFluidManager.getBestReply(liquid, getRouter(), routedItem.getJamList());
-			int dest = replies.getValue1();
-			routedItem.setDestination(dest);
+			if (replies == null) {
+				// clear destination without marking item as lost
+				routedItem.setDestination(0);
+			} else {
+				int dest = replies.getValue1();
+				routedItem.setDestination(dest);
+			}
 			routedItem.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routedItem, arrivingItem.output.getOpposite());
 			return true;

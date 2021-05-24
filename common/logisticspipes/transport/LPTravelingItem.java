@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
@@ -352,9 +353,14 @@ public abstract class LPTravelingItem {
 		@Override
 		public void setDestination(int destination) {
 			info.destinationint = destination;
-			IRouter router = SimpleServiceLocator.routerManager.getRouter(destination);
-			if (router != null) {
-				info.destinationUUID = router.getId();
+			final @Nullable World world = container != null ? container.getWorld() : null;
+			if (MainProxy.isServer(world)) {
+				IRouter router = SimpleServiceLocator.routerManager.getServerRouter(destination);
+				if (router != null) {
+					info.destinationUUID = router.getId();
+				} else {
+					info.destinationUUID = null;
+				}
 			} else {
 				info.destinationUUID = null;
 			}

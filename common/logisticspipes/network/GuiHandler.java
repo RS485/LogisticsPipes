@@ -167,7 +167,7 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) {
 						return null;
 					}
-					dummy = new DummyContainer(player, ((PipeFluidBasic) pipe.pipe).filterInv, new IGuiOpenControler() {
+					dummy = new DummyContainer(player, ((PipeFluidBasic) pipe.pipe).getSinkInv(), new IGuiOpenControler() {
 
 						@Override
 						public void guiOpenedByPlayer(EntityPlayer player) {
@@ -179,7 +179,7 @@ public class GuiHandler implements IGuiHandler {
 							((PipeFluidBasic) fpipe.pipe).guiClosedByPlayer(player);
 						}
 					});
-					dummy.addFluidSlot(0, ((PipeFluidBasic) pipe.pipe).filterInv, 28, 15);
+					dummy.addFluidSlot(0, ((PipeFluidBasic) pipe.pipe).getSinkInv(), 28, 15);
 					dummy.addNormalSlotsForPlayerInventory(10, 45);
 					return dummy;
 
@@ -187,7 +187,7 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !((pipe.pipe instanceof PipeFluidTerminus))) {
 						return null;
 					}
-					dummy = new DummyContainer(player, ((PipeFluidTerminus) pipe.pipe).filterInv, new IGuiOpenControler() {
+					dummy = new DummyContainer(player, ((PipeFluidTerminus) pipe.pipe).getSinkInv(), new IGuiOpenControler() {
 
 						@Override
 						public void guiOpenedByPlayer(EntityPlayer player) {
@@ -200,7 +200,7 @@ public class GuiHandler implements IGuiHandler {
 						}
 					});
 					for (int i = 0; i < 9; i++) {
-						dummy.addFluidSlot(i, ((PipeFluidTerminus) pipe.pipe).filterInv, 8 + i * 18, 13);
+						dummy.addFluidSlot(i, ((PipeFluidTerminus) pipe.pipe).getSinkInv(), 8 + i * 18, 13);
 					}
 					dummy.addNormalSlotsForPlayerInventory(10, 45);
 					return dummy;
@@ -315,13 +315,13 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) {
 						return null;
 					}
-					return new GuiFluidBasic(player, ((PipeFluidBasic) pipe.pipe).filterInv);
+					return new GuiFluidBasic(player, ((PipeFluidBasic) pipe.pipe).getSinkInv());
 
 				case GuiIDs.GUI_Fluid_Terminus_ID:
 					if (pipe == null || !((pipe.pipe instanceof PipeFluidTerminus))) {
 						return null;
 					}
-					return new GuiFluidTerminus(player, ((PipeFluidTerminus) pipe.pipe).filterInv);
+					return new GuiFluidTerminus(player, ((PipeFluidTerminus) pipe.pipe));
 
 				case GuiIDs.GUI_FIREWALL:
 					if (pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) {

@@ -417,8 +417,9 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 
 		if (pipe != null) {
 			pipe.readFromNBT(nbt);
+			pipe.finishInit();
 		} else {
-			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at " + getPos().toString());
+			LogisticsPipes.log.log(Level.WARN, "Pipe failed to load from NBT at " + getPos());
 			deletePipe = true;
 		}
 

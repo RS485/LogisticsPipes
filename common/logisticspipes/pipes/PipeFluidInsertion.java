@@ -2,6 +2,7 @@ package logisticspipes.pipes;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,7 +24,7 @@ import logisticspipes.utils.tuples.Pair;
 
 public class PipeFluidInsertion extends FluidRoutedPipe {
 
-	private List<Pair<Integer, Integer>> localJamList = new ArrayList<>();
+	private final List<Pair<Integer, Integer>> localJamList = new ArrayList<>();
 	private int[] nextSendMax = new int[EnumFacing.VALUES.length];
 	private int[] nextSendMin = new int[EnumFacing.VALUES.length];
 
@@ -67,19 +68,19 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 			}
 
 			Pair<Integer, FluidSinkReply> result = SimpleServiceLocator.logisticsFluidManager.getBestReply(FluidIdentifierStack.getFromStack(stack), getRouter(), tempJamList);
-			if (result == null || result.getValue1() == null || result.getValue1() == 0 || result.getValue2()== null || result.getValue2().sinkAmount == 0) {
+			if (result == null || result.getValue2().sinkAmount <= 0) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;
 				continue;
 			}
 
-			if (!useEnergy((int) (0.01 * result.getValue2().sinkAmount))) {
+			if (!useEnergy((int) (0.01 * result.getValue2().getSinkAmountInt()))) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;
 				continue;
 			}
 
-			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2().sinkAmount, true);
+			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2().getSinkAmountInt(), true);
 			ItemIdentifierStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(FluidIdentifierStack.getFromStack(toSend));
 			IRoutedItem routed = SimpleServiceLocator.routedItemHelper.createNewTravelItem(liquidContainer);
 			routed.setDestination(result.getValue1());
@@ -91,20 +92,20 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		nbttagcompound.setIntArray("nextSendMax", nextSendMax);
-		nbttagcompound.setIntArray("nextSendMin", nextSendMin);
+	public void writeToNBT(@Nonnull NBTTagCompound tag) {
+		super.writeToNBT(tag);
+		tag.setIntArray("nextSendMax", nextSendMax);
+		tag.setIntArray("nextSendMin", nextSendMin);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		nextSendMax = nbttagcompound.getIntArray("nextSendMax");
+	public void readFromNBT(@Nonnull NBTTagCompound tag) {
+		super.readFromNBT(tag);
+		nextSendMax = tag.getIntArray("nextSendMax");
 		if (nextSendMax.length < 6) {
 			nextSendMax = new int[6];
 		}
-		nextSendMin = nbttagcompound.getIntArray("nextSendMin");
+		nextSendMin = tag.getIntArray("nextSendMin");
 		if (nextSendMin.length < 6) {
 			nextSendMin = new int[6];
 		}

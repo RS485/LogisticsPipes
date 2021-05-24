@@ -46,7 +46,7 @@ import network.rs485.logisticspipes.inventory.SlotAccess
 import java.util.concurrent.CopyOnWriteArraySet
 
 class InventoryProperty(private val inv: ItemIdentifierInventory, override val tagKey: String) :
-    Property<ItemIdentifierInventory>, IItemIdentifierInventory by inv {
+    Property<ItemIdentifierInventory>, IItemIdentifierInventory by inv, Collection<ItemIdentifierStack> {
 
     override val slotAccess: SlotAccess = object : SlotAccess by inv.slotAccess {
         override fun mergeSlots(intoSlot: Int, fromSlot: Int) =
@@ -55,6 +55,8 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, override val t
 
     override val propertyObservers: CopyOnWriteArraySet<ObserverCallback<ItemIdentifierInventory>> =
         CopyOnWriteArraySet()
+
+    override val size: Int = sizeInventory
 
     override fun decrStackSize(index: Int, count: Int): ItemStack = inv.decrStackSize(index, count).alsoIChanged()
 
@@ -78,7 +80,8 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, override val t
     override fun clearInventorySlotContents(i: Int) = inv.clearInventorySlotContents(i).alsoIChanged()
 
     override fun readFromNBT(tag: NBTTagCompound) {
-        if (tagKey.isEmpty() || tag.hasKey(tagKey)) inv.readFromNBT(tag, tagKey).alsoIChanged()
+        // FIXME: after 1.12 remove this items appending crap
+        if (tagKey.isEmpty() || tag.hasKey(tagKey + "items")) inv.readFromNBT(tag, tagKey).alsoIChanged()
     }
 
     override fun writeToNBT(tag: NBTTagCompound) = inv.writeToNBT(tag, tagKey)
@@ -86,5 +89,14 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, override val t
     override fun copyValue(): ItemIdentifierInventory = ItemIdentifierInventory(inv)
 
     override fun copyProperty(): InventoryProperty = InventoryProperty(copyValue(), tagKey)
+
+    override fun contains(element: ItemIdentifierStack): Boolean = inv.itemCount(element.item) >= element.stackSize
+
+    override fun containsAll(elements: Collection<ItemIdentifierStack>): Boolean = inv.itemsAndCount.let { items ->
+        elements.all { items[it.item]?.run { compareTo(it.stackSize) >= 0 } ?: false }
+    }
+
+    override fun iterator(): Iterator<ItemIdentifierStack> =
+        inv.itemsAndCount.map { it.key.makeStack(it.value) }.iterator()
 
 }

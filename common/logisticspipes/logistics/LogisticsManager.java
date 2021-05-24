@@ -191,7 +191,7 @@ public class LogisticsManager implements ILogisticsManager {
 		final ItemStack stack = itemIdStack.makeNormalStack();
 		if (stack.getItem() instanceof LogisticsFluidContainer) {
 			Pair<Integer, FluidSinkReply> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(itemIdStack), sourceRouter, item.getJamList());
-			if (bestReply.getValue1() != null && bestReply.getValue1() != 0 && bestReply.getValue2() != null) {
+			if (bestReply != null) {
 				item.setDestination(bestReply.getValue1());
 			}
 		} else {

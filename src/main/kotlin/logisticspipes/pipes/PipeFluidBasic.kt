@@ -37,44 +37,22 @@
 
 package logisticspipes.pipes
 
-import logisticspipes.pipes.basic.fluid.FluidRoutedPipe
-import logisticspipes.proxy.SimpleServiceLocator
-import logisticspipes.utils.FluidIdentifier
-import logisticspipes.utils.FluidIdentifierStack
-import logisticspipes.utils.item.ItemIdentifierStack
-import logisticspipes.utils.tuples.Pair
-import net.minecraft.tileentity.TileEntity
-import net.minecraftforge.fluids.capability.IFluidTankProperties
-import network.rs485.logisticspipes.connection.getTankUtil
-import kotlin.streams.toList
+import logisticspipes.LogisticsPipes
+import logisticspipes.network.GuiIDs
+import logisticspipes.textures.Textures
+import logisticspipes.utils.FluidSinkReply.FixedFluidPriority
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.Item
+import network.rs485.logisticspipes.FluidSinkPipe
 
-object PipeFluidUtil {
+class PipeFluidBasic(item: Item) : FluidSinkPipe(item, "Fluids to sink", 1) {
 
-    fun FluidRoutedPipe.getAdjacentTanks(listNearbyPipes: Boolean) =
-        availableAdjacent.fluidTanks()
-            .filter { isConnectableTank(it.tileEntity, it.direction, listNearbyPipes) }
-            .flatMap { adjacent ->
-                adjacent.getTankUtil()?.let { listOf(Pair(adjacent, it)) } ?: emptyList()
-            }
+    override val priority: FixedFluidPriority = FixedFluidPriority.FLUID_SINK
 
+    override fun getCenterTexture(): Textures.TextureType = Textures.LOGISTICSPIPE_LIQUID_BASIC
 
-    fun FluidRoutedPipe.getAllTankTiles(): List<TileEntity> = getAdjacentTanks(false)
-        .flatMap { pair -> SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.component1().tileEntity) }
-
-    fun PipeFluidSatellite.fluidsToItemList(): List<ItemIdentifierStack> {
-        val fluidIdentStacks = getAdjacentTanks(false)
-            .flatMap { (_, util) -> util.tanks().toList() }
-            .mapNotNull { tank: IFluidTankProperties -> FluidIdentifierStack.getFromStack(tank.contents) }
-        val distinctionSet = HashSet<FluidIdentifier>()
-        val outputList = ArrayList<ItemIdentifierStack>()
-        for (identStack in fluidIdentStacks) {
-            if (distinctionSet.add(identStack.fluid)) {
-                outputList.add(identStack.fluid.itemIdentifier.makeStack(identStack.amount))
-            } else {
-                outputList.find { it.item == identStack.fluid.itemIdentifier }!!.stackSize += identStack.amount
-            }
-        }
-        return outputList
+    override fun onWrenchClicked(entityplayer: EntityPlayer) {
+        entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Fluid_Basic_ID, world, x, y, z)
     }
 
 }

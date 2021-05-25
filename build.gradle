@@ -177,7 +177,7 @@ minecraft {
 
 jar {
     from sourceSets.api.output
-    finalizedBy 'reobfJar'
+    finalizedBy 'shadowJar'
 
     manifest = project.manifest {
         from sharedManifest

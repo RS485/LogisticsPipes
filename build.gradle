@@ -394,27 +394,27 @@ tasks.withType(Sign) {
     // disable signing by default
     enabled = false
     mustRunAfter enableSigningTasks
-    ext.useJarsigner = (name != "signSourceJar") // dont sign source jar, it doesn't have classes
+    // sign all jars, except the source jar – it doesn't have classes
+    ext.useJarsigner = (name.toLowerCase().endsWith("jar") && name != "signSourceJar")
 }
 
 gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     taskGraph.allTasks.each { Task task ->
         if (task instanceof Sign && task.useJarsigner) {
             task.doFirst {
-                inputs.each { TaskInputs taskInputs ->
-                    taskInputs.files.each { File file ->
-                        // see https://ant.apache.org/manual/Tasks/signjar.html for arguments
-                        // ForgeGradle also uses ant.signjar: https://fckaf.de/DCw
-                        ant.signjar(
-                                jar: file,
-                                alias: "1",
-                                storetype: findProperty("LogisticsPipes.storetype"),
-                                keystore: findProperty("LogisticsPipes.keystore"),
-                                storepass: findProperty("LogisticsPipes.storepass"),
-                                verbose: "true",
-                                preservelastmodified: "true"
-                        )
-                    }
+                task.filesToSign.each { File file ->
+                    // see https://ant.apache.org/manual/Tasks/signjar.html for arguments
+                    // ForgeGradle also uses ant.signjar: https://fckaf.de/DCw
+                    println "$task – signing $file with ant.signjar"
+                    task.ant.signjar(
+                            jar: file,
+                            alias: "1",
+                            storetype: findProperty("LogisticsPipes.storetype"),
+                            keystore: findProperty("LogisticsPipes.keystore"),
+                            storepass: findProperty("LogisticsPipes.storepass"),
+                            verbose: "true",
+                            preservelastmodified: "true"
+                    )
                 }
             }
         } else if (task.name.startsWith('prepareRunServerTest')) {

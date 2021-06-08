@@ -220,7 +220,7 @@ public class PipeChippedCraftingRecipes extends CraftingPartRecipes {
 		);
 
 		registerPipeRecipeCategory(LogisticsProgramCompilerTileEntity.ProgrammCategories.FLUID, LPItems.pipeFluidTerminus);
-		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.pipeFluidBasic),
+		RecipeManager.craftingManager.addRecipe(new ItemStack(LPItems.pipeFluidTerminus),
 				new RecipeManager.RecipeLayout(
 						" p ",
 						"wsv",

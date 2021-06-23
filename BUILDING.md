@@ -66,6 +66,8 @@ issue as good as possible and be nice to others.
 If you opened the project in IDEA before running the `./gradlew build` command the run
 configurations will not be visible, simple fix is to reload the project.
 
+If the run configurations are not present still, run `genIntellijRuns` task using IDEA's
+Gradle integration, then the configurations will appear.
 
 ### Running Minecraft from your dev environment
 

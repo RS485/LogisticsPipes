@@ -18,7 +18,7 @@ public class MachineProgressProvider {
 
 	public byte getProgressForTile(TileEntity tile) {
 		if (tile instanceof IProgressProvider) {
-			return ((IProgressProvider) tile).getMachineProgressForLP();
+			return ((IProgressProvider) tile).getProgress();
 		}
 		for (IGenericProgressProvider provider : providers) {
 			if (provider.isType(tile)) {

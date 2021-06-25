@@ -49,10 +49,10 @@ public class TextureMatrix {
 			dirty = true;
 		}
 		textureIndex = pipe.getTextureIndex();
-		if (isRouted != pipe.isRoutedPipe()) {
+		if (isRouted != pipe.isRouted()) {
 			dirty = true;
 		}
-		isRouted = pipe.isRoutedPipe();
+		isRouted = pipe.isRouted();
 		if (isRouted) {
 			CoreRoutedPipe cPipe = (CoreRoutedPipe) pipe;
 			for (int i = 0; i < 6; i++) {

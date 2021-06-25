@@ -92,7 +92,7 @@ public class LPDuctUnitItem extends DuctUnitItem {
 	@Override
 	public int canRouteItem(@Nonnull ItemStack stack, byte directionOrdinal) {
 		if (!stack.isEmpty()) {
-			if (pipe.pipe.isRoutedPipe() && !((CoreRoutedPipe) pipe.pipe).stillNeedReplace()) {
+			if (pipe.pipe.isRouted() && !((CoreRoutedPipe) pipe.pipe).stillNeedReplace()) {
 				final ServerRouter serverRouter = (ServerRouter) ((CoreRoutedPipe) pipe.pipe).getRouter();
 				if (LogisticsManager.INSTANCE.getDestination(stack, ItemIdentifier.get(stack), true, serverRouter, Collections.emptyList()) != null) {
 					return 0;

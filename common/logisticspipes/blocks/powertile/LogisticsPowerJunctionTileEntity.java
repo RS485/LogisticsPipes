@@ -1,5 +1,6 @@
 package logisticspipes.blocks.powertile;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -135,11 +137,16 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
-		if (providersToIgnore != null && providersToIgnore.contains(this)) {
+	public boolean useEnergy(int amount) {
+		return useEnergy(amount, new ArrayList<>());
+	}
+
+	@Override
+	public boolean useEnergy(int amount, @Nonnull List<Object> providersToIgnore) {
+		if (providersToIgnore.contains(this)) {
 			return false;
 		}
-		if (canUseEnergy(amount, null)) {
+		if (canUseEnergy(amount)) {
 			this.markDirty();
 			internalStorage -= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
 			if (internalStorage < LogisticsPowerJunctionTileEntity.MAX_STORAGE / 2) {
@@ -151,16 +158,16 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	}
 
 	@Override
-	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
-		if (providersToIgnore != null && providersToIgnore.contains(this)) {
-			return false;
-		}
-		return internalStorage >= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
+	public boolean canUseEnergy(int amount) {
+		return canUseEnergy(amount, new ArrayList<>());
 	}
 
 	@Override
-	public boolean useEnergy(int amount) {
-		return useEnergy(amount, null);
+	public boolean canUseEnergy(int amount, @Nonnull List<Object> providersToIgnore) {
+		if (providersToIgnore.contains(this)) {
+			return false;
+		}
+		return internalStorage >= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
 	}
 
 	public int freeSpace() {
@@ -171,11 +178,6 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setBlockPos(pos), guiListener);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setBlockPos(pos), watcherList);
 		lastUpdateStorage = internalStorage;
-	}
-
-	@Override
-	public boolean canUseEnergy(int amount) {
-		return canUseEnergy(amount, null);
 	}
 
 	public void addEnergy(float amount) {
@@ -266,13 +268,13 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@CCCommand(description = "Returns the currently stored power")
-	public int getPowerLevel() {
+	public int getAvailablePower() {
 		return internalStorage;
 	}
 
 	@Override
 	public int getDisplayPowerLevel() {
-		return getPowerLevel();
+		return getAvailablePower();
 	}
 
 	@Override
@@ -311,6 +313,12 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
+	}
+
+	@Nonnull
+	@Override
+	public BlockPos getBlockPos() {
+		return pos;
 	}
 
 	@Override

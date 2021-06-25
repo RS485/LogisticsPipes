@@ -34,6 +34,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import lombok.Getter;
@@ -1026,7 +1027,8 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	public void connectionUpdate() {
 		if (container != null && !stillNeedReplace) {
-			if (MainProxy.isClient(getWorld())) throw new IllegalStateException("Wont do connectionUpdate on client-side");
+			if (MainProxy.isClient(getWorld()))
+				throw new IllegalStateException("Wont do connectionUpdate on client-side");
 			container.scheduleNeighborChange();
 			IBlockState state = getWorld().getBlockState(getPos());
 			getWorld().notifyNeighborsOfStateChange(getPos(), state.getBlock(), true);
@@ -1041,12 +1043,25 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		getOriginalUpgradeManager().insetSecurityID(id);
 	}
 
+
+	/**
+	 * Function to obtain all power providers in the network this pipe is in.
+	 *
+	 * <para>
+	 * A typical return value for a network with one
+	 * {@link logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity}
+	 * connected to a {@link logisticspipes.pipes.PipeItemsFirewall} and a {@link CoreRoutedPipe} next to it
+	 * the result will contain the provider as the first value and the second value is a list with the firewall
+	 * pipe.
+	 * </para>
+	 *
+	 * @return a list of tuples where the first element is the {@link ILogisticsPowerProvider} implementation
+	 * the second parameter is the list of all {@link IFilter} on the path to reach it
+	 */
+	@Nonnull
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getRoutedPowerProviders() {
-		if (MainProxy.isClient(getWorld())) {
-			return null;
-		}
-		if (stillNeedReplace) {
-			return null;
+		if (MainProxy.isClient(getWorld()) || stillNeedReplace) {
+			return new ArrayList<>();
 		}
 		return getRouter().getPowerProvider();
 	}
@@ -1055,43 +1070,28 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Override
 	public boolean useEnergy(int amount) {
-		return useEnergy(amount, null, true);
+		return useEnergy(amount, new ArrayList<>(), true);
 	}
 
 	public boolean useEnergy(int amount, boolean sparkles) {
-		return useEnergy(amount, null, sparkles);
+		return useEnergy(amount, new ArrayList<>(), sparkles);
 	}
 
 	@Override
 	public boolean canUseEnergy(int amount) {
-		return canUseEnergy(amount, null);
+		return canUseEnergy(amount, new ArrayList<>());
 	}
 
 	@Override
-	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
+	public boolean canUseEnergy(int amount, @Nonnull List<Object> providersToIgnore) {
+		if (Configs.LOGISTICS_POWER_USAGE_DISABLED || amount == 0) {
+			return true;
+		}
 		if (MainProxy.isClient(getWorld())) {
 			return false;
 		}
-		if (Configs.LOGISTICS_POWER_USAGE_DISABLED) {
-			return true;
-		}
-		if (amount == 0) {
-			return true;
-		}
-		if (providersToIgnore != null && providersToIgnore.contains(this)) {
-			return false;
-		}
-		List<Pair<ILogisticsPowerProvider, List<IFilter>>> list = getRoutedPowerProviders();
-		if (list == null) {
-			return false;
-		}
-		outer:
-		for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : list) {
-			for (IFilter filter : provider.getValue2()) {
-				if (filter.blockPower()) {
-					continue outer;
-				}
-			}
+		for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : getRoutedPowerProviders()) {
+			if (provider.getValue2().stream().anyMatch(IFilter::blockPower)) continue;
 			if (provider.getValue1().canUseEnergy(amount, providersToIgnore)) {
 				return true;
 			}
@@ -1100,52 +1100,38 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
+	public boolean useEnergy(int amount, @Nonnull List<Object> providersToIgnore) {
 		return useEnergy(amount, providersToIgnore, false);
 	}
 
-	private boolean useEnergy(int amount, List<Object> providersToIgnore, boolean sparkles) {
+	private boolean useEnergy(int amount, @Nonnull List<Object> providersToIgnore, boolean sparkles) {
+		if (Configs.LOGISTICS_POWER_USAGE_DISABLED || amount == 0) {
+			return true;
+		}
 		if (MainProxy.isClient(getWorld())) {
 			return false;
 		}
-		if (Configs.LOGISTICS_POWER_USAGE_DISABLED) {
-			return true;
-		}
-		if (amount == 0) {
-			return true;
-		}
-		if (providersToIgnore == null) {
-			providersToIgnore = new ArrayList<>();
-		}
-		if (providersToIgnore.contains(this)) {
-			return false;
-		}
-		providersToIgnore.add(this);
-		List<Pair<ILogisticsPowerProvider, List<IFilter>>> list = getRoutedPowerProviders();
-		if (list == null) {
-			return false;
-		}
-		outer:
-		for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : list) {
-			for (IFilter filter : provider.getValue2()) {
-				if (filter.blockPower()) {
-					continue outer;
-				}
-			}
-			if (provider.getValue1().canUseEnergy(amount, providersToIgnore)) {
-				if (provider.getValue1().useEnergy(amount, providersToIgnore)) {
-					if (sparkles) {
-						int particlecount = amount;
-						if (particlecount > 10) {
-							particlecount = 10;
-						}
-						spawnParticle(Particles.GoldParticle, particlecount);
+		for (Pair<ILogisticsPowerProvider, List<IFilter>> provider : getRoutedPowerProviders()) {
+			if (provider.getValue2().stream().anyMatch(IFilter::blockPower)) continue;
+
+			if (provider.getValue1().useEnergy(amount, providersToIgnore)) {
+				if (sparkles) {
+					int particlecount = amount;
+					if (particlecount > 10) {
+						particlecount = 10;
 					}
-					return true;
+					spawnParticle(Particles.GoldParticle, particlecount);
 				}
+				return true;
 			}
 		}
 		return false;
+	}
+
+	@Nonnull
+	@Override
+	public BlockPos getBlockPos() {
+		return getPos();
 	}
 
 	@Override
@@ -1647,7 +1633,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@Override
-	public boolean isRoutedPipe() {
+	public boolean isRouted() {
 		return true;
 	}
 

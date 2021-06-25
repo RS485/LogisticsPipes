@@ -211,7 +211,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	}
 
 	@Override
-	public boolean isRoutedPipe() {
+	public boolean isRouted() {
 		return false;
 	}
 

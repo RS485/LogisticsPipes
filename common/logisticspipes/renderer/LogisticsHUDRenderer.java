@@ -8,11 +8,13 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
@@ -153,8 +155,13 @@ public class LogisticsHUDRenderer {
 	}
 
 	private boolean playerWearsHUD() {
-		return FMLClientHandler.instance().getClient().player != null && FMLClientHandler.instance().getClient().player.inventory != null && FMLClientHandler.instance().getClient().player.inventory.armorInventory != null && !FMLClientHandler.instance().getClient().player.inventory.armorInventory.get(3).isEmpty()
-				&& checkItemStackForHUD(FMLClientHandler.instance().getClient().player.inventory.armorInventory.get(3));
+		EntityPlayerSP player = FMLClientHandler.instance().getClient().player;
+		if (player == null) return false;
+
+		InventoryPlayer inv = player.inventory;
+        if (inv == null) return false;
+
+        return inv.armorInventory != null && checkItemStackForHUD(inv.armorInventory.get(3));
 	}
 
 	private boolean checkItemStackForHUD(@Nonnull ItemStack stack) {

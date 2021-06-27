@@ -26,7 +26,10 @@ public class AskForOpenTarget extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		RayTraceResult box = FMLClientHandler.instance().getClient().objectMouseOver;
 		if (box.typeOfHit == RayTraceResult.Type.BLOCK) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(box.getBlockPos().getX()).setTagetPosY(box.getBlockPos().getY()).setTagetPosZ(box.getBlockPos().getZ()));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
+					.setTargetPosX(box.getBlockPos().getX())
+					.setTargetPosY(box.getBlockPos().getY())
+					.setTargetPosZ(box.getBlockPos().getZ()));
 		}
 	}
 

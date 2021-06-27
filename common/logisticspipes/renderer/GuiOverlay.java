@@ -2,6 +2,7 @@ package logisticspipes.renderer;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
@@ -19,10 +20,10 @@ import logisticspipes.network.packets.pipe.SlotFinderNumberPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.SimpleGraphics;
 
-public class LogisticsGuiOverrenderer {
+public class GuiOverlay {
 
 	@Getter
-	private static LogisticsGuiOverrenderer instance = new LogisticsGuiOverrenderer();
+	private static final GuiOverlay instance = new GuiOverlay();
 
 	private int oldX;
 	private int oldY;
@@ -30,6 +31,7 @@ public class LogisticsGuiOverrenderer {
 	private boolean clicked;
 	private Field fX;
 	private Field fY;
+
 	@Setter
 	private int targetPosX;
 	@Setter
@@ -51,7 +53,7 @@ public class LogisticsGuiOverrenderer {
 	@Setter
 	private boolean isOverlaySlotActive;
 
-	private LogisticsGuiOverrenderer() {
+	private GuiOverlay() {
 		try {
 			fX = Mouse.class.getDeclaredField("x");
 			fY = Mouse.class.getDeclaredField("y");
@@ -65,23 +67,22 @@ public class LogisticsGuiOverrenderer {
 	}
 
 	public boolean isCompatibleGui() {
-		if (FMLClientHandler.instance() == null) {
-			return false;
-		}
-		if (FMLClientHandler.instance().getClient() == null) {
-			return false;
-		}
-		if (!(FMLClientHandler.instance().getClient().currentScreen instanceof GuiContainer)) {
-			return false;
-		}
-		return true;
+		FMLClientHandler clientHandler = FMLClientHandler.instance();
+		if (clientHandler == null) return false;
+
+		Minecraft client = clientHandler.getClient();
+		if (client == null) return false;
+
+		return client.currentScreen instanceof GuiContainer;
 	}
 
 	public void preRender() {
 		if (isOverlaySlotActive) {
+
 			// Save Mouse Pos
 			oldX = Mouse.getX();
 			oldY = Mouse.getY();
+
 			// Set Pos 0,0
 			try {
 				fX.set(null, 0);
@@ -92,6 +93,7 @@ public class LogisticsGuiOverrenderer {
 					e.printStackTrace();
 				}
 			}
+
 			while (Mouse.next()) {
 				if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
 					clicked = true;
@@ -103,7 +105,8 @@ public class LogisticsGuiOverrenderer {
 	public void renderOverGui() {
 		if (hasBeenSaved) {
 			hasBeenSaved = false;
-			// Resore Mouse Pos
+
+			// Restore Mouse Pos
 			try {
 				fX.set(null, oldX);
 				fY.set(null, oldY);
@@ -114,11 +117,15 @@ public class LogisticsGuiOverrenderer {
 			}
 		}
 		if (isOverlaySlotActive) {
-			GuiContainer gui = (GuiContainer) FMLClientHandler.instance().getClient().currentScreen;
+			Minecraft client = FMLClientHandler.instance().getClient();
+			GuiContainer gui = (GuiContainer) client.currentScreen;
+
 			int guiTop = gui.getGuiTop();
 			int guiLeft = gui.getGuiLeft();
-			int x = oldX * gui.width / FMLClientHandler.instance().getClient().displayWidth;
-			int y = gui.height - oldY * gui.height / FMLClientHandler.instance().getClient().displayHeight - 1;
+
+			int x = oldX * gui.width / client.displayWidth;
+			int y = gui.height - oldY * gui.height / client.displayHeight - 1;
+
 			for (Slot slot : gui.inventorySlots.inventorySlots) {
 				if (isMouseOverSlot(gui, slot, x, y)) {
 					GL11.glDisable(GL11.GL_LIGHTING);
@@ -130,10 +137,19 @@ public class LogisticsGuiOverrenderer {
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
 					if (clicked) {
-						MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderNumberPacket.class).setInventorySlot(slot.slotNumber).setSlot(this.slot).setPipePosX(pipePosX).setPipePosY(pipePosY).setPipePosZ(pipePosZ).setType(positionType).setPositionInt(positionInt).setPosX(targetPosX).setPosY(targetPosY)
+						MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderNumberPacket.class)
+								.setInventorySlot(slot.slotNumber)
+								.setSlot(this.slot)
+								.setPipePosX(pipePosX)
+								.setPipePosY(pipePosY)
+								.setPipePosZ(pipePosZ)
+								.setType(positionType)
+								.setPositionInt(positionInt)
+								.setPosX(targetPosX)
+								.setPosY(targetPosY)
 								.setPosZ(targetPosZ));
 						clicked = false;
-						FMLClientHandler.instance().getClient().player.closeScreen();
+						client.player.closeScreen();
 						isOverlaySlotActive = false;
 					}
 					break;

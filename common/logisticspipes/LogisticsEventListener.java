@@ -58,7 +58,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.renderer.LogisticsGuiOverrenderer;
+import logisticspipes.renderer.GuiOverlay;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.pathfinder.changedetection.TEControl;
@@ -234,7 +234,7 @@ public class LogisticsEventListener {
 				if (part.isActive()) {
 					part = LogisticsEventListener.getGuiPos().poll();
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()));
-					LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
+					GuiOverlay.getInstance().setOverlaySlotActive(false);
 				}
 			} else {
 				GuiEntry part = LogisticsEventListener.getGuiPos().peek();
@@ -242,7 +242,7 @@ public class LogisticsEventListener {
 			}
 		}
 		if (event.getGui() == null) {
-			LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
+			GuiOverlay.getInstance().setOverlaySlotActive(false);
 		}
 		if (event.getGui() instanceof GuiChest || (SimpleServiceLocator.ironChestProxy != null && SimpleServiceLocator.ironChestProxy.isChestGui(event.getGui()))) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiOpened.class));

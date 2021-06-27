@@ -89,13 +89,21 @@ public class SlotFinderOpenGuiPacket extends ModuleCoordinatesPacket {
 							if (SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 								SimpleServiceLocator.enderStorageProxy.openEnderChest(player.world, xCoord, yCoord, zCoord, player);
 								MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
-										.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
+										.setTargetPosX(xCoord)
+										.setTargetPosY(yCoord)
+										.setTargetPosZ(zCoord)
+										.setSlot(getSlot())
+										.setPacketPos(this), player);
 								return true;
 							}
 
 							if (block.onBlockActivated(player.world, blockPos, blockState, player, EnumHand.MAIN_HAND, EnumFacing.UP, 0, 0, 0)) {
 								MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class)
-										.setTagetPosX(xCoord).setTagetPosY(yCoord).setTagetPosZ(zCoord).setSlot(getSlot()).setPacketPos(this), player);
+										.setTargetPosX(xCoord)
+										.setTargetPosY(yCoord)
+										.setTargetPosZ(zCoord)
+										.setSlot(getSlot())
+										.setPacketPos(this), player);
 								return true;
 							}
 						}

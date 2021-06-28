@@ -1061,7 +1061,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Nonnull
 	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getRoutedPowerProviders() {
 		if (MainProxy.isClient(getWorld()) || stillNeedReplace) {
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 		return getRouter().getPowerProvider();
 	}
@@ -1070,16 +1070,16 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 	@Override
 	public boolean useEnergy(int amount) {
-		return useEnergy(amount, new ArrayList<>(), true);
+		return useEnergy(amount, Collections.emptyList(), true);
 	}
 
 	public boolean useEnergy(int amount, boolean sparkles) {
-		return useEnergy(amount, new ArrayList<>(), sparkles);
+		return useEnergy(amount, Collections.emptyList(), sparkles);
 	}
 
 	@Override
 	public boolean canUseEnergy(int amount) {
-		return canUseEnergy(amount, new ArrayList<>());
+		return canUseEnergy(amount, Collections.emptyList());
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package logisticspipes.blocks.powertile;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -138,7 +138,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public boolean useEnergy(int amount) {
-		return useEnergy(amount, new ArrayList<>());
+		return useEnergy(amount, Collections.emptyList());
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	public boolean canUseEnergy(int amount) {
-		return canUseEnergy(amount, new ArrayList<>());
+		return canUseEnergy(amount, Collections.emptyList());
 	}
 
 	@Override

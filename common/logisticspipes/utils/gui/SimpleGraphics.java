@@ -47,7 +47,6 @@ public final class SimpleGraphics {
 	 * @param y         the y-coordinate the line is on
 	 * @param color     the color, which the line will have
 	 * @param thickness the thickness, which the line will have
-	 * @see net.minecraft.client.gui.Gui#drawHorizontalLine(int, int, int, int)
 	 */
 	public static void drawHorizontalLine(int x1, int x2, int y, int color, int thickness) {
 		if (x2 < x1) {
@@ -76,7 +75,6 @@ public final class SimpleGraphics {
 	 * @param y2        the end coordinate
 	 * @param color     the color, which the line will have
 	 * @param thickness the thickness, which the line will have
-	 * @see net.minecraft.client.gui.Gui#drawVerticalLine(int, int, int, int)
 	 */
 	public static void drawVerticalLine(int x, int y1, int y2, int color, int thickness) {
 		if (y2 < y1) {
@@ -161,7 +159,6 @@ public final class SimpleGraphics {
 	 * @param colorA the first color, starting from y1
 	 * @param colorB the second color, ending in y2
 	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui#drawGradientRect(int, int, int, int,
 	 * int, int)
 	 */
 	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) { // TODO
@@ -262,7 +259,7 @@ public final class SimpleGraphics {
 	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, int color, double zLevel) {
 		BufferBuilder buf = tessellator.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		float a = 1.0f;
+		float a = Color.getAlpha(color);
 		float r = Color.getRed(color);
 		float g = Color.getGreen(color);
 		float b = Color.getBlue(color);

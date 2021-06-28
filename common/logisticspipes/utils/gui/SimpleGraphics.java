@@ -262,10 +262,18 @@ public final class SimpleGraphics {
 	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, int color, double zLevel) {
 		BufferBuilder buf = tessellator.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		buf.pos(x, y, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
-		buf.pos(x, y + height, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
-		buf.pos(x + width, y + height, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
-		buf.pos(x + width, y, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+		float a = 1.0f;
+		float r = Color.getRed(color);
+		float g = Color.getGreen(color);
+		float b = Color.getBlue(color);
+		buf.pos(x, y, zLevel)
+				.color(r, g, b, a).endVertex();
+		buf.pos(x, y + height, zLevel)
+				.color(r, g, b, a).endVertex();
+		buf.pos(x + width, y + height, zLevel)
+				.color(r, g, b, a).endVertex();
+		buf.pos(x + width, y, zLevel)
+				.color(r, g, b, a).endVertex();
 		tessellator.draw();
 	}
 }

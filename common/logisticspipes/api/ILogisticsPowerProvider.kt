@@ -10,5 +10,5 @@ interface ILogisticsPowerProvider : IRoutedPowerProvider {
 	/**
 	 * @return the stored amount of energy available in this provider
 	 */
-	fun getAvailablePower(): Int
+	fun getPowerLevel(): Int
 }

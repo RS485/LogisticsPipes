@@ -268,13 +268,13 @@ public class LogisticsPowerJunctionTileEntity extends LogisticsSolidTileEntity i
 
 	@Override
 	@CCCommand(description = "Returns the currently stored power")
-	public int getAvailablePower() {
+	public int getPowerLevel() {
 		return internalStorage;
 	}
 
 	@Override
 	public int getDisplayPowerLevel() {
-		return getAvailablePower();
+		return getPowerLevel();
 	}
 
 	@Override

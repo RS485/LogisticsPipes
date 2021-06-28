@@ -50,7 +50,7 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 		drawTexturedModalRect(j + 10, k + 11 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));
 		mc.fontRenderer.drawString(TextUtil.translate(GuiPowerJunction.PREFIX + "LogisticsPowerJunction"), guiLeft + 30, guiTop + 8, 0x404040);
 		mc.fontRenderer.drawString(TextUtil.translate(GuiPowerJunction.PREFIX + "StoredEnergy") + ":", guiLeft + 40, guiTop + 23, 0x404040);
-		mc.fontRenderer.drawString(TextUtil.formatNumberWithCommas(junction.getAvailablePower()) + " LP", guiLeft + 40, guiTop + 33, 0x404040);
+		mc.fontRenderer.drawString(TextUtil.formatNumberWithCommas(junction.getPowerLevel()) + " LP", guiLeft + 40, guiTop + 33, 0x404040);
 		mc.fontRenderer.drawString("/ " + TextUtil.formatNumberWithCommas(LogisticsPowerJunctionTileEntity.MAX_STORAGE) + " LP", guiLeft + 40, guiTop + 43, 0x404040);
 		mc.fontRenderer.drawString("1 MJ = 5 LP", guiLeft + 30, guiTop + 58, 0x404040);
 		mc.fontRenderer.drawString("1 EU = 2 LP", guiLeft + 100, guiTop + 58, 0x404040);

@@ -43,18 +43,18 @@ interface IRoutedPowerProvider {
 	/**
 	 * @return the provider's X coordinate
 	 */
-    @Deprecated("should")
+    @Deprecated("use the blockPos/getBlockPos function instead")
 	fun getX(): Int
 
 	/**
 	 * @return the provider's Y coordinate
 	 */
-    @Deprecated("should")
+    @Deprecated("use the blockPos/getBlockPos function instead")
 	fun getY(): Int
 
 	/**
 	 * @return the provider's Z coordinate
 	 */
-    @Deprecated("should")
+    @Deprecated("use the blockPos/getBlockPos function instead")
 	fun getZ(): Int
 }

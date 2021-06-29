@@ -171,8 +171,8 @@ public class ModuleItemSink extends LogisticsModule
 				ItemIdentifier ident1 = item;
 				ItemIdentifier ident2 = filter.getValue1().getItem();
 				if (ignoreData.get(filter.getValue2())) {
-					ident1 = ident1.getIgnoringData();
-					ident2 = ident2.getIgnoringData();
+					ident1 = ident1.getIgnoringDamage();
+					ident2 = ident2.getIgnoringDamage();
 				}
 				if (ignoreNBT.get(filter.getValue2())) {
 					ident1 = ident1.getIgnoringNBT();
@@ -280,13 +280,13 @@ public class ModuleItemSink extends LogisticsModule
 				}
 				ItemIdentifier ident = stack.getValue1().getItem();
 				if (ignoreData.get(stack.getValue2())) {
-					itemidCollection.add(ident.getIgnoringData());
+					itemidCollection.add(ident.getIgnoringDamage());
 				}
 				if (ignoreNBT.get(stack.getValue2())) {
 					itemidCollection.add(ident.getIgnoringNBT());
 				}
 				if (ignoreData.get(stack.getValue2()) && ignoreNBT.get(stack.getValue2())) {
-					itemidCollection.add(ident.getIgnoringData().getIgnoringNBT());
+					itemidCollection.add(ident.getIgnoringDamage().getIgnoringNBT());
 				}
 			}
 		}

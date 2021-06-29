@@ -20,23 +20,7 @@ import logisticspipes.commands.commands.WrapperCommand;
 
 public class MainCommandHandler extends SubCommandHandler {
 
-	@Override
-	public String[] getNames() {
-		return new String[] { "logisticspipes", "lp", "logipipes" };
-	}
-
-	@Override
-	public boolean isCommandUsableBy(ICommandSender sender) {
-		return true;
-	}
-
-	@Override
-	public String[] getDescription() {
-		return new String[] { "The main LP command" };
-	}
-
-	@Override
-	public void registerSubCommands() {
+	public MainCommandHandler() {
 		registerSubCommand(new DummyCommand());
 		registerSubCommand(new VersionCommand());
 		registerSubCommand(new ChangelogCommand());
@@ -52,5 +36,20 @@ public class MainCommandHandler extends SubCommandHandler {
 			registerSubCommand(new TestCommand());
 		}
 		registerSubCommand(new ClearCommand());
+	}
+
+	@Override
+	public String[] getNames() {
+		return new String[] { "logisticspipes", "lp", "logipipes" };
+	}
+
+	@Override
+	public boolean isCommandUsableBy(ICommandSender sender) {
+		return true;
+	}
+
+	@Override
+	public String[] getDescription() {
+		return new String[] { "The main LP command" };
 	}
 }

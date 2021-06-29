@@ -62,181 +62,38 @@ import logisticspipes.utils.FinalNBTTagCompound;
 import logisticspipes.utils.ReflectionHelper;
 
 /**
- * @author Krapht I have no bloody clue what different mods use to differate
+ * I have no bloody clue what different mods use to differentiate
  * between items except for itemID, there is metadata, damage, and
  * whatnot. so..... to avoid having to change all my bloody code every
  * time I need to support a new item targeted that would make it a
- * "different" item, I made this cache here A ItemIdentifier is
+ * "different" item, I made this cache here. An ItemIdentifier is
  * immutable, singleton and most importantly UNIQUE!
+ *
+ * @author Krapht
  */
 public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTypeHolder {
 
-	//a key to look up a ItemIdentifier by Item:damage:tag
-	private static class ItemKey {
-
-		public final Item item;
-		public final int itemDamage;
-		public final FinalNBTTagCompound tag;
-
-		public ItemKey(Item i, int d, FinalNBTTagCompound t) {
-			item = i;
-			itemDamage = d;
-			tag = t;
-		}
-
-		@Override
-		public boolean equals(Object that) {
-			if (!(that instanceof ItemKey)) {
-				return false;
-			}
-			ItemKey i = (ItemKey) that;
-			return item == i.item && itemDamage == i.itemDamage && tag.equals(i.tag);
-		}
-
-		@Override
-		public int hashCode() {
-			return item.hashCode() ^ itemDamage ^ tag.hashCode();
-		}
-	}
-
-	//remember itemId/damage/tag so we can find GCed ItemIdentifiers
-	private static class IDReference extends WeakReference<ItemIdentifier> {
-
-		private final ItemKey key;
-		private final int uniqueID;
-
-		IDReference(ItemKey k, int u, ItemIdentifier id) {
-			super(id, ItemIdentifier.keyRefQueue);
-			key = k;
-			uniqueID = u;
-		}
-	}
-
-	private interface IDamagedIdentifierHolder {
-
-		ItemIdentifier get(int damage);
-
-		void set(int damage, ItemIdentifier ret);
-
-		void ensureCapacity(int damage);
-	}
-
-	private static class MapDamagedItentifierHolder implements IDamagedIdentifierHolder {
-
-		private final ConcurrentHashMap<Integer, ItemIdentifier> holder;
-
-		public MapDamagedItentifierHolder() {
-			holder = new ConcurrentHashMap<>(4096, 0.5f, 1);
-		}
-
-		@Override
-		public ItemIdentifier get(int damage) {
-			return holder.get(damage);
-		}
-
-		@Override
-		public void set(int damage, ItemIdentifier item) {
-			holder.put(damage, item);
-		}
-
-		@Override
-		public void ensureCapacity(int damage) {}
-	}
-
-	private static class ArrayDamagedItentifierHolder implements IDamagedIdentifierHolder {
-
-		private AtomicReferenceArray<ItemIdentifier> holder;
-
-		public ArrayDamagedItentifierHolder(int damage) {
-			//round to nearest superior power of 2
-			int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage));
-			holder = new AtomicReferenceArray<>(newlen);
-		}
-
-		@Override
-		public ItemIdentifier get(int damage) {
-			return holder.get(damage);
-		}
-
-		@Override
-		public void set(int damage, ItemIdentifier ident) {
-			holder.set(damage, ident);
-		}
-
-		@Override
-		public void ensureCapacity(int damage) {
-			if (holder.length() <= damage) {
-				int newlen = 1 << (32 - Integer.numberOfLeadingZeros(damage));
-				AtomicReferenceArray<ItemIdentifier> newdamages = new AtomicReferenceArray<>(newlen);
-				for (int i = 0; i < holder.length(); i++) {
-					newdamages.set(i, holder.get(i));
-				}
-				holder = newdamages;
-			}
-		}
-	}
-
 	private final Object[] ccTypeHolder = new Object[1];
 
-	//array of ItemIdentifiers for damage=0,tag=null items
-	private final static ConcurrentHashMap<Item, ItemIdentifier> simpleIdentifiers = new ConcurrentHashMap<>(4096, 0.5f, 1);
+	// Map of ItemIdentifiers for damage = 0 and tag == null Items
+	private static final ConcurrentHashMap<Item, ItemIdentifier> simpleIdentifiers = new ConcurrentHashMap<>(4096, 0.5f, 1);
 
-	//array of arrays for items with damage>0 and tag==null
-	private final static ConcurrentHashMap<Item, IDamagedIdentifierHolder> damageIdentifiers = new ConcurrentHashMap<>(4096, 0.5f, 1);
+	// Map of ItemIdentifiers for damage > 0 and tag == null Items
+	private static final ConcurrentHashMap<Item, IDamagedItemIdentifierHolder> damageIdentifiers = new ConcurrentHashMap<>(4096, 0.5f, 1);
 
-	//map for id+damage+tag -> ItemIdentifier lookup
-	private final static HashMap<ItemKey, IDReference> keyRefMap = new HashMap<>(1024, 0.5f);
-	//for tracking the tagUniqueIDs in use for a given Item
-	private final static HashMap<Item, BitSet> tagIDsets = new HashMap<>(1024, 0.5f);
-	//a referenceQueue to collect GCed identifier refs
-	private final static ReferenceQueue<ItemIdentifier> keyRefQueue = new ReferenceQueue<>();
-	//and locks to protect these
-	private final static ReadWriteLock keyRefLock = new ReentrantReadWriteLock();
-	private final static Lock keyRefRlock = ItemIdentifier.keyRefLock.readLock();
-	private final static Lock keyRefWlock = ItemIdentifier.keyRefLock.writeLock();
+	private static final HashMap<ItemKey, IDReference> keyRefMap = new HashMap<>(1024, 0.5f);
 
-	//helper thread to clean up references to GCed ItemIdentifiers
-	private static final class ItemIdentifierCleanupThread extends Thread {
+	private static final HashMap<Item, BitSet> idSetsMap = new HashMap<>(1024, 0.5f);
 
-		public ItemIdentifierCleanupThread() {
-			setName("LogisticsPipes ItemIdentifier Cleanup Thread");
-			setDaemon(true);
-			start();
-		}
+	// ReferenceQueue for GCed ItemIdentifier references
+	private static final ReferenceQueue<ItemIdentifier> keyRefQueue = new ReferenceQueue<>();
 
-		@Override
-		public void run() {
-			while (true) {
-				IDReference r;
-				try {
-					r = (IDReference) (ItemIdentifier.keyRefQueue.remove());
-				} catch (InterruptedException e) {
-					continue;
-				}
-				ItemIdentifier.keyRefWlock.lock();
-				do {
-					//value in the map might have been replaced in the meantime
-					IDReference current = ItemIdentifier.keyRefMap.get(r.key);
-					if (r == current) {
-						ItemIdentifier.keyRefMap.remove(r.key);
-						ItemIdentifier.tagIDsets.get(r.key.item).clear(r.uniqueID);
-					}
-					r = (IDReference) (ItemIdentifier.keyRefQueue.poll());
-				} while (r != null);
-				ItemIdentifier.keyRefWlock.unlock();
-			}
-		}
-	}
+	private static final ReadWriteLock keyRefLock = new ReentrantReadWriteLock();
+	private static final Lock keyRefRLock = ItemIdentifier.keyRefLock.readLock();
+	private static final Lock keyRefWLock = ItemIdentifier.keyRefLock.writeLock();
 
+	// Thread to clean up internal references by observing the ReferenceQueue
 	private static final ItemIdentifierCleanupThread cleanupThread = new ItemIdentifierCleanupThread();
-
-	//Hide default constructor
-	private ItemIdentifier(Item item, int itemDamage, FinalNBTTagCompound tag, int uniqueID) {
-		this.item = item;
-		this.itemDamage = itemDamage;
-		this.tag = tag;
-		this.uniqueID = uniqueID;
-	}
 
 	public final Item item;
 	public final int itemDamage;
@@ -244,22 +101,31 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	public final int uniqueID;
 
 	private int maxStackSize = 0;
-
-	private ItemIdentifier _IDIgnoringNBT = null;
-	private ItemIdentifier _IDIgnoringDamage = null;
-	private ItemIdentifier _IDIgnoringData = null;
-	private DictItemIdentifier _dict;
-	private boolean canHaveDict = true;
+	private ItemIdentifier identifierIgnoringNBT;
+	private ItemIdentifier identifierUnmanageable;
+	private ItemIdentifier identifierIgnoringDamage;
+	private DictItemIdentifier identifierDictionary;
+	private boolean canHaveDictionary = true;
 	private String modName;
 	private String creativeTabName;
 
+	// Hide default constructor
+	private ItemIdentifier(Item item, int itemDamage, FinalNBTTagCompound tag, int uniqueID) {
+		this.item = item;
+		this.itemDamage = itemDamage;
+		this.tag = tag;
+		this.uniqueID = uniqueID;
+	}
+
 	private static ItemIdentifier getOrCreateSimple(Item item, ItemIdentifier proposal) {
-		if (proposal != null) {
-			if (proposal.item == item && proposal.itemDamage == 0 && proposal.tag == null) {
-				return proposal;
-			}
+		if (proposal != null
+				&& proposal.item == item
+				&& proposal.itemDamage == 0
+				&& proposal.tag == null) {
+			return proposal;
 		}
-		//no locking here. if 2 threads race and create the same ItemIdentifier, they end up .equal() and one of them ends up in the map
+
+		// No locking here. If 2 threads race and create the same ItemIdentifier, they end up .equal()
 		ItemIdentifier ret = ItemIdentifier.simpleIdentifiers.get(item);
 		if (ret != null) {
 			return ret;
@@ -270,165 +136,174 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	private static ItemIdentifier getOrCreateDamage(Item item, int damage, ItemIdentifier proposal) {
-		if (proposal != null) {
-			if (proposal.item == item && proposal.itemDamage == damage && proposal.tag == null) {
-				return proposal;
-			}
+		if (proposal != null
+				&& proposal.item == item
+				&& proposal.itemDamage == damage
+				&& proposal.tag == null) {
+			return proposal;
 		}
-		//again no locking, we can end up removing or overwriting ItemIdentifiers concurrently added by another thread, but that doesn't affect anything.
-		IDamagedIdentifierHolder damages = ItemIdentifier.damageIdentifiers.get(item);
-		if (damages == null) {
-			if (item.getMaxDamage() < 32767) {
-				damages = new ArrayDamagedItentifierHolder(damage);
+
+		// No locking here. We can end up removing or overwriting ItemIdentifiers concurrently added
+		// by other threads, but that doesn't affect anything.
+		IDamagedItemIdentifierHolder damaged = ItemIdentifier.damageIdentifiers.get(item);
+		if (damaged == null) {
+			if (item.getMaxDamage(new ItemStack(item)) < 32767) {
+				damaged = new ArrayDamagedItemIdentifierHolder(damage);
 			} else {
-				damages = new MapDamagedItentifierHolder();
+				damaged = new MapDamagedItemIdentifierHolder();
 			}
-			ItemIdentifier.damageIdentifiers.put(item, damages);
+			ItemIdentifier.damageIdentifiers.put(item, damaged);
 		} else {
-			damages.ensureCapacity(damage);
+			damaged.ensureCapacity(damage);
 		}
-		ItemIdentifier ret = damages.get(damage);
+
+		ItemIdentifier ret = damaged.get(damage);
 		if (ret != null) {
 			return ret;
 		}
 		ret = new ItemIdentifier(item, damage, null, 0);
-		damages.set(damage, ret);
+		damaged.set(damage, ret);
 		return ret;
 	}
 
 	private static ItemIdentifier getOrCreateTag(Item item, int damage, FinalNBTTagCompound tag) {
-		ItemKey k = new ItemKey(item, damage, tag);
-		ItemIdentifier.keyRefRlock.lock();
-		IDReference r = ItemIdentifier.keyRefMap.get(k);
-		if (r != null) {
-			ItemIdentifier ret = r.get();
+		ItemKey key = new ItemKey(item, damage, tag);
+
+		ItemIdentifier.keyRefRLock.lock();
+		IDReference idRef = ItemIdentifier.keyRefMap.get(key);
+		if (idRef != null) {
+			ItemIdentifier ret = idRef.get();
 			if (ret != null) {
-				ItemIdentifier.keyRefRlock.unlock();
+				ItemIdentifier.keyRefRLock.unlock();
 				return ret;
 			}
 		}
-		ItemIdentifier.keyRefRlock.unlock();
-		ItemIdentifier.keyRefWlock.lock();
-		r = ItemIdentifier.keyRefMap.get(k);
-		if (r != null) {
-			ItemIdentifier ret = r.get();
+		ItemIdentifier.keyRefRLock.unlock();
+
+		ItemIdentifier.keyRefWLock.lock();
+		idRef = ItemIdentifier.keyRefMap.get(key);
+		if (idRef != null) {
+			ItemIdentifier ret = idRef.get();
 			if (ret != null) {
-				ItemIdentifier.keyRefWlock.unlock();
+				ItemIdentifier.keyRefWLock.unlock();
 				return ret;
 			}
 		}
-		if (ItemIdentifier.tagIDsets.get(item) == null) {
-			ItemIdentifier.tagIDsets.put(item, new BitSet(16));
+
+		if (ItemIdentifier.idSetsMap.get(item) == null) {
+			ItemIdentifier.idSetsMap.put(item, new BitSet(16));
 		}
 		int nextUniqueID;
-		if (r == null) {
-			nextUniqueID = ItemIdentifier.tagIDsets.get(item).nextClearBit(1);
-			ItemIdentifier.tagIDsets.get(item).set(nextUniqueID);
+		if (idRef == null) {
+			nextUniqueID = ItemIdentifier.idSetsMap.get(item).nextClearBit(1);
+			ItemIdentifier.idSetsMap.get(item).set(nextUniqueID);
 		} else {
-			nextUniqueID = r.uniqueID;
+			nextUniqueID = idRef.uniqueID;
 		}
-		FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag);
-		ItemKey realKey = new ItemKey(item, damage, finaltag);
-		ItemIdentifier ret = new ItemIdentifier(item, damage, finaltag, nextUniqueID);
-		ItemIdentifier.keyRefMap.put(realKey, new IDReference(realKey, nextUniqueID, ret));
-		ItemIdentifier.keyRefWlock.unlock();
+
+		FinalNBTTagCompound finalTag = new FinalNBTTagCompound(tag);
+		ItemKey finalKey = new ItemKey(item, damage, finalTag);
+		ItemIdentifier ret = new ItemIdentifier(item, damage, finalTag, nextUniqueID);
+		ItemIdentifier.keyRefMap.put(finalKey, new IDReference(finalKey, nextUniqueID, ret));
+		ItemIdentifier.keyRefWLock.unlock();
 		return ret;
 	}
 
-	public static ItemIdentifier get(Item item, int itemUndamagableDamage, NBTTagCompound tag) {
-		return get(item, itemUndamagableDamage, tag, null);
+	public static ItemIdentifier get(Item item, int itemDamage, NBTTagCompound tag) {
+		return get(item, itemDamage, tag, null);
 	}
 
-	private static ItemIdentifier get(Item item, int itemUndamagableDamage, NBTTagCompound tag, ItemIdentifier proposal) {
-		if (itemUndamagableDamage < 0) {
-			throw new IllegalArgumentException("Item Damage out of range");
+	private static ItemIdentifier get(Item item, int itemDamage, NBTTagCompound tag, ItemIdentifier proposal) {
+		if (itemDamage < 0) {
+			throw new IllegalArgumentException("Item Damage out of range: " + itemDamage + " <- must be non-negative");
 		}
-		if (tag == null && itemUndamagableDamage == 0) {
-			//no tag, no damage
-			return ItemIdentifier.getOrCreateSimple(item, proposal);
+		if (tag == null && itemDamage == 0) {
+			return getOrCreateSimple(item, proposal);
 		} else if (tag == null) {
-			//no tag, damage
-			return ItemIdentifier.getOrCreateDamage(item, itemUndamagableDamage, proposal);
+			return getOrCreateDamage(item, itemDamage, proposal);
 		} else {
-			//tag
-			return ItemIdentifier.getOrCreateTag(item, itemUndamagableDamage, new FinalNBTTagCompound(tag));
+			return getOrCreateTag(item, itemDamage, new FinalNBTTagCompound(tag));
 		}
 	}
 
-	@AllArgsConstructor
-	public static class ItemStackAddInfo implements IAddInfo {
-
-		private final ItemIdentifier ident;
-	}
-
+	/**
+	 * The cast operation will not throw ClassCastException because of ASM
+	 * byte-code is injected with the interface to persist
+	 * data in {@link ItemStack} outside of LP. This way the item can be
+	 * identified again when it returns to the network.
+	 *
+	 * @param itemStack the item to identify
+	 * @return the transformed {@link ItemStack} possibly with additional data
+	 * obtained from the injected {@link ArrayList} hidden behind the interface
+	 */
 	@SuppressWarnings("ConstantConditions")
 	@Nonnull
 	public static ItemIdentifier get(@Nonnull ItemStack itemStack) {
 		ItemIdentifier proposal = null;
-		IAddInfoProvider prov = null;
-		if (((Object) itemStack) instanceof IAddInfoProvider && !itemStack.hasTagCompound()) {
-			prov = (IAddInfoProvider) (Object) itemStack;
-			ItemStackAddInfo info = prov.getLogisticsPipesAddInfo(ItemStackAddInfo.class);
+		IAddInfoProvider provider = null;
+		if (!itemStack.hasTagCompound()) {
+			provider = (IAddInfoProvider) (Object) itemStack;
+			ItemStackAddInfo info = provider.getLogisticsPipesAddInfo(ItemStackAddInfo.class);
 			if (info != null) {
-				proposal = info.ident;
+				proposal = info.identifier;
 			}
 		}
 		ItemIdentifier ident = ItemIdentifier.get(itemStack.getItem(), itemStack.getItemDamage(), itemStack.getTagCompound(), proposal);
-		if (ident != proposal && prov != null && !itemStack.hasTagCompound()) {
-			prov.setLogisticsPipesAddInfo(new ItemStackAddInfo(ident));
+		if (ident != proposal && provider != null && !itemStack.hasTagCompound()) {
+			provider.setLogisticsPipesAddInfo(new ItemStackAddInfo(ident));
 		}
 		return ident;
 	}
 
 	public static List<ItemIdentifier> getMatchingNBTIdentifier(Item item, int itemData) {
-		//inefficient, we'll have to add another map if this becomes a bottleneck
-		ArrayList<ItemIdentifier> resultlist = new ArrayList<>(16);
-		ItemIdentifier.keyRefRlock.lock();
-		for (IDReference r : ItemIdentifier.keyRefMap.values()) {
-			ItemIdentifier t = r.get();
-			if (t != null && t.item == item && t.itemDamage == itemData) {
-				resultlist.add(t);
+		// TODO inefficient, we'll have to add another map if this becomes a bottleneck
+		ArrayList<ItemIdentifier> ret = new ArrayList<>(16);
+		ItemIdentifier.keyRefRLock.lock();
+		for (IDReference idRef : ItemIdentifier.keyRefMap.values()) {
+			ItemIdentifier identifier = idRef.get();
+			if (identifier != null && identifier.item == item && identifier.itemDamage == itemData) {
+				ret.add(identifier);
 			}
 		}
-		ItemIdentifier.keyRefRlock.unlock();
-		return resultlist;
+		ItemIdentifier.keyRefRLock.unlock();
+		return ret;
 	}
 
 	/* Instance Methods */
 
 	public ItemIdentifier getUndamaged() {
-		if (_IDIgnoringDamage == null) {
+		if (identifierUnmanageable == null) {
 			if (!unsafeMakeNormalStack(1).isItemStackDamageable()) {
-				_IDIgnoringDamage = this;
+				identifierUnmanageable = this;
 			} else {
-				ItemStack tstack = makeNormalStack(1);
-				tstack.setItemDamage(0);
-				_IDIgnoringDamage = ItemIdentifier.get(tstack);
+				ItemStack stack = makeNormalStack(1);
+				stack.setItemDamage(0);
+				identifierUnmanageable = ItemIdentifier.get(stack);
 			}
 		}
-		return _IDIgnoringDamage;
+		return identifierUnmanageable;
 	}
 
 	public ItemIdentifier getIgnoringNBT() {
-		if (_IDIgnoringNBT == null) {
+		if (identifierIgnoringNBT == null) {
 			if (tag == null) {
-				_IDIgnoringNBT = this;
+				identifierIgnoringNBT = this;
 			} else {
-				_IDIgnoringNBT = ItemIdentifier.get(item, itemDamage, null, null);
+				identifierIgnoringNBT = ItemIdentifier.get(item, itemDamage, null, null);
 			}
 		}
-		return _IDIgnoringNBT;
+		return identifierIgnoringNBT;
 	}
 
-	public ItemIdentifier getIgnoringData() {
-		if (_IDIgnoringData == null) {
+	public ItemIdentifier getIgnoringDamage() {
+		if (identifierIgnoringDamage == null) {
 			if (itemDamage == 0) {
-				_IDIgnoringData = this;
+				identifierIgnoringDamage = this;
 			} else {
-				_IDIgnoringData = ItemIdentifier.get(item, 0, tag, null);
+				identifierIgnoringDamage = ItemIdentifier.get(item, 0, tag, null);
 			}
 		}
-		return _IDIgnoringData;
+		return identifierIgnoringDamage;
 	}
 
 	public String getDebugName() {
@@ -451,20 +326,22 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public String getModName() {
 		if (modName == null) {
-			ResourceLocation rl = item.getRegistryName();
-			assert rl != null;
+			ResourceLocation resLocation = item.getRegistryName();
+			assert resLocation != null;
+
 			Map<String, ModContainer> modList = Loader.instance().getIndexedModList();
-			ModContainer mc = modList.get(rl.getResourceDomain());
-			if (mc == null) {
-				// get mod that really registered this item
-				Map<ResourceLocation, String> map = ReflectionHelper.invokePrivateMethod(ForgeRegistry.class, ForgeRegistries.ITEMS, "getOverrideOwners", "getOverrideOwners", new Class[0], new Object[0]);
+			ModContainer modContainer = modList.get(resLocation.getResourceDomain());
+			if (modContainer == null) {
+				// Get mod that really registered this item
+				Map<ResourceLocation, String> map = ReflectionHelper
+						.invokePrivateMethod(ForgeRegistry.class, ForgeRegistries.ITEMS, "getOverrideOwners", "getOverrideOwners", new Class[0], new Object[0]);
 
-				final String key = map.get(rl);
-				if (key != null)
-					mc = modList.get(key);
+				String key = map.get(resLocation);
+				if (key != null) {
+					modContainer = modList.get(key);
+				}
 			}
-
-			modName = mc != null ? mc.getName() : "UNKNOWN";
+			modName = modContainer != null ? modContainer.getName() : "UNKNOWN";
 		}
 		return modName;
 	}
@@ -515,13 +392,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	public int getMaxStackSize() {
 		if (maxStackSize == 0) {
-			ItemStack tstack = unsafeMakeNormalStack(1);
-			int tstacksize = tstack.getMaxStackSize();
-			if (tstack.isItemStackDamageable() && tstack.isItemDamaged()) {
-				tstacksize = 1;
+			ItemStack stack = unsafeMakeNormalStack(1);
+			int stackSize = stack.getMaxStackSize();
+			if (stack.isItemStackDamageable() && stack.isItemDamaged()) {
+				stackSize = 1;
 			}
-			tstacksize = Math.max(1, Math.min(64, tstacksize));
-			maxStackSize = tstacksize;
+			stackSize = Math.max(1, Math.min(64, stackSize));
+			maxStackSize = stackSize;
 		}
 		return maxStackSize;
 	}
@@ -633,17 +510,17 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	@Override
-	public int compareTo(ItemIdentifier o) {
-		int c = Item.getIdFromItem(item) - Item.getIdFromItem(o.item);
-		if (c != 0) {
-			return c;
+	public int compareTo(ItemIdentifier other) {
+		int diff = Item.getIdFromItem(item) - Item.getIdFromItem(other.item);
+		if (diff != 0) {
+			return diff;
 		}
-		c = itemDamage - o.itemDamage;
-		if (c != 0) {
-			return c;
+		diff = itemDamage - other.itemDamage;
+		if (diff != 0) {
+			return diff;
 		}
-		c = uniqueID - o.uniqueID;
-		return c;
+		diff = uniqueID - other.uniqueID;
+		return diff;
 	}
 
 	@Override
@@ -656,21 +533,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		}
 		ItemIdentifier i = (ItemIdentifier) that;
 		return this.equals(i);
-
 	}
 
 	public boolean equals(ItemIdentifier that) {
 		if (that == null) return false;
 		return item == that.item && itemDamage == that.itemDamage && uniqueID == that.uniqueID;
-	}
-
-	@Override
-	public int hashCode() {
-		if (tag == null) {
-			return item.hashCode() + itemDamage;
-		} else {
-			return (item.hashCode() + itemDamage) ^ tag.hashCode();
-		}
 	}
 
 	public boolean equalsForCrafting(ItemIdentifier item) {
@@ -695,13 +562,177 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 
 	@Nullable
 	public DictItemIdentifier getDictIdentifiers() {
-		if (_dict == null && canHaveDict) {
-			_dict = DictItemIdentifier.getDictItemIdentifier(this);
-			canHaveDict = false;
+		if (identifierDictionary == null && canHaveDictionary) {
+			identifierDictionary = DictItemIdentifier.getDictItemIdentifier(this);
+			canHaveDictionary = false;
 		}
-		return _dict;
+		return identifierDictionary;
 	}
 
+	@Override
+	public int hashCode() {
+		if (tag == null) {
+			return item.hashCode() + itemDamage;
+		} else {
+			return (item.hashCode() + itemDamage) ^ tag.hashCode();
+		}
+	}
+
+	/**
+	 * Key to look up an {@link ItemIdentifier} by {@link Item}:Damage:{@link FinalNBTTagCompound}
+	 */
+	private static class ItemKey {
+
+		public final Item item;
+		public final int itemDamage;
+		public final FinalNBTTagCompound tag;
+
+		public ItemKey(Item i, int d, FinalNBTTagCompound t) {
+			item = i;
+			itemDamage = d;
+			tag = t;
+		}
+
+		@Override
+		public boolean equals(Object that) {
+			if (!(that instanceof ItemKey)) {
+				return false;
+			}
+			ItemKey i = (ItemKey) that;
+			return item == i.item && itemDamage == i.itemDamage && tag.equals(i.tag);
+		}
+
+		@Override
+		public int hashCode() {
+			return item.hashCode() ^ itemDamage ^ tag.hashCode();
+		}
+	}
+
+	private static class IDReference extends WeakReference<ItemIdentifier> {
+
+		private final ItemKey key;
+		private final int uniqueID;
+
+		IDReference(ItemKey k, int u, ItemIdentifier id) {
+			super(id, ItemIdentifier.keyRefQueue);
+			key = k;
+			uniqueID = u;
+		}
+	}
+
+	private interface IDamagedItemIdentifierHolder {
+
+		ItemIdentifier get(int damage);
+
+		void set(int damage, ItemIdentifier ret);
+
+		void ensureCapacity(int damage);
+	}
+
+	private static class MapDamagedItemIdentifierHolder implements IDamagedItemIdentifierHolder {
+
+		private final ConcurrentHashMap<Integer, ItemIdentifier> holder;
+
+		public MapDamagedItemIdentifierHolder() {
+			holder = new ConcurrentHashMap<>(4096, 0.5f, 1);
+		}
+
+		@Override
+		public ItemIdentifier get(int damage) {
+			return holder.get(damage);
+		}
+
+		@Override
+		public void set(int damage, ItemIdentifier item) {
+			holder.put(damage, item);
+		}
+
+		@Override
+		public void ensureCapacity(int damage) { }
+	}
+
+	private static class ArrayDamagedItemIdentifierHolder implements IDamagedItemIdentifierHolder {
+
+		private final int INT_SIZE = 32;
+
+		private AtomicReferenceArray<ItemIdentifier> holder;
+
+		public ArrayDamagedItemIdentifierHolder(int damage) {
+			// Ceil to nearest power of 2
+			int length = 1 << (INT_SIZE - Integer.numberOfLeadingZeros(damage));
+			holder = new AtomicReferenceArray<>(length);
+		}
+
+		@Override
+		public ItemIdentifier get(int damage) {
+			return holder.get(damage);
+		}
+
+		@Override
+		public void set(int damage, ItemIdentifier ident) {
+			holder.set(damage, ident);
+		}
+
+		@Override
+		public void ensureCapacity(int damage) {
+			if (holder.length() <= damage) {
+				int newLength = 1 << (INT_SIZE - Integer.numberOfLeadingZeros(damage));
+				AtomicReferenceArray<ItemIdentifier> newDamages = new AtomicReferenceArray<>(newLength);
+				for (int i = 0; i < holder.length(); i++) {
+					newDamages.set(i, holder.get(i));
+				}
+				holder = newDamages;
+			}
+		}
+	}
+
+	/**
+	 * Helper thread to clean up references to GCed {@link ItemIdentifier}s
+	 */
+	private static final class ItemIdentifierCleanupThread extends Thread {
+
+		public ItemIdentifierCleanupThread() {
+			setName("LogisticsPipes ItemIdentifier Cleanup Thread");
+			setDaemon(true);
+			start();
+		}
+
+		@Override
+		public void run() {
+			while (true) {
+				IDReference idRef;
+				try {
+					idRef = (IDReference) ItemIdentifier.keyRefQueue.remove();
+				} catch (InterruptedException ignored) {
+					continue;
+				}
+				ItemIdentifier.keyRefWLock.lock();
+				do {
+					// Value in the map might have been replaced in the meantime
+					IDReference current = ItemIdentifier.keyRefMap.get(idRef.key);
+					if (idRef == current) {
+						ItemIdentifier.keyRefMap.remove(idRef.key);
+						ItemIdentifier.idSetsMap.get(idRef.key.item).clear(idRef.uniqueID);
+					}
+					idRef = (IDReference) (ItemIdentifier.keyRefQueue.poll());
+				} while (idRef != null);
+				ItemIdentifier.keyRefWLock.unlock();
+			}
+		}
+	}
+
+	@AllArgsConstructor
+	private static class ItemStackAddInfo implements IAddInfo {
+
+		private final ItemIdentifier identifier;
+	}
+
+	@Override
+	public Object[] getTypeHolder() {
+		return ccTypeHolder;
+	}
+
+	// TODO should not this be LogisticsPipes.log.*() instead of sout?
 	public void debugDumpData(boolean isClient) {
 		System.out.println((isClient ? "Client" : "Server") + " Item: " + Item.getIdFromItem(item) + ":" + itemDamage + " uniqueID " + uniqueID);
 		StringBuilder sb = new StringBuilder();
@@ -784,10 +815,5 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 		} else {
 			sb.append(nbt.getClass().getName()).append("(?)");
 		}
-	}
-
-	@Override
-	public Object[] getTypeHolder() {
-		return ccTypeHolder;
 	}
 }

@@ -16,6 +16,14 @@ public class DebugCommand extends SubCommandHandler {
 
 	private static final String[] allowedPlayers = new String[] { "davboecki", "theZorro266" };
 
+	public DebugCommand() {
+		registerSubCommand(new MeCommand());
+		registerSubCommand(new TargetCommand());
+		registerSubCommand(new RoutingTableCommand());
+		registerSubCommand(new PipeCommand());
+		registerSubCommand(new HandCommand());
+	}
+
 	@Override
 	public String[] getNames() {
 		return new String[] { "debug" };
@@ -29,14 +37,5 @@ public class DebugCommand extends SubCommandHandler {
 	@Override
 	public String[] getDescription() {
 		return new String[] { "Debug helper commands" };
-	}
-
-	@Override
-	public void registerSubCommands() {
-		registerSubCommand(new MeCommand());
-		registerSubCommand(new TargetCommand());
-		registerSubCommand(new RoutingTableCommand());
-		registerSubCommand(new PipeCommand());
-		registerSubCommand(new HandCommand());
 	}
 }

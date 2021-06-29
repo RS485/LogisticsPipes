@@ -249,7 +249,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			s.set(r.getSimpleID());
 		}
 		if (item != null) {
-			Stream.of(item, item.getUndamaged(), item.getIgnoringNBT(), item.getUndamaged().getIgnoringNBT(), item.getIgnoringData(), item.getIgnoringData().getIgnoringNBT())
+			Stream.of(item, item.getUndamaged(), item.getIgnoringNBT(), item.getUndamaged().getIgnoringNBT(), item.getIgnoringDamage(), item.getIgnoringDamage().getIgnoringNBT())
 					.forEach(itemid -> setBitsForItemInterests(s, itemid));
 		}
 		return s;

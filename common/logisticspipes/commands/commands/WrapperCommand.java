@@ -9,6 +9,12 @@ import logisticspipes.commands.commands.wrapper.ShowCommand;
 
 public class WrapperCommand extends SubCommandHandler {
 
+	public WrapperCommand() {
+		registerSubCommand(new ListCommand());
+		registerSubCommand(new EnableCommand());
+		registerSubCommand(new ShowCommand());
+	}
+
 	@Override
 	public String[] getNames() {
 		return new String[] { "wrapper" };
@@ -22,12 +28,5 @@ public class WrapperCommand extends SubCommandHandler {
 	@Override
 	public String[] getDescription() {
 		return new String[] { "wrapper controll commands" };
-	}
-
-	@Override
-	public void registerSubCommands() {
-		registerSubCommand(new ListCommand());
-		registerSubCommand(new EnableCommand());
-		registerSubCommand(new ShowCommand());
 	}
 }

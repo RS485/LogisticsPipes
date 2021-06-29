@@ -25,6 +25,7 @@ import logisticspipes.utils.Color;
 /**
  * Utils class for simple drawing methods.
  */
+@SuppressWarnings("JavadocReference")
 @SideOnly(Side.CLIENT)
 public final class SimpleGraphics {
 
@@ -161,8 +162,7 @@ public final class SimpleGraphics {
 	 * @param colorA the first color, starting from y1
 	 * @param colorB the second color, ending in y2
 	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui#drawGradientRect(int, int, int, int,
-	 * int, int)
+	 * @see net.minecraft.client.gui.Gui#drawGradientRect(int, int, int, int, int, int)
 	 */
 	public static void drawGradientRect(int x1, int y1, int x2, int y2, int colorA, int colorB, double zLevel) { // TODO
 		GlStateManager.disableTexture2D();
@@ -196,8 +196,7 @@ public final class SimpleGraphics {
 	 * @param width  the width of the rectangle
 	 * @param height the height of the rectangle
 	 * @param zLevel the z-level of the graphic
-	 * @see net.minecraft.client.gui.Gui#drawTexturedModalRect(int, int, int,
-	 * int, int, int)
+	 * @see net.minecraft.client.gui.Gui#drawTexturedModalRect(int, int, int, int, int, int)
 	 */
 	public static void drawTexturedModalRect(int x, int y, int u, int v, int width, int height, double zLevel) {
 		float f = 0.00390625F;
@@ -262,10 +261,22 @@ public final class SimpleGraphics {
 	public static void drawQuad(Tessellator tessellator, int x, int y, int width, int height, int color, double zLevel) {
 		BufferBuilder buf = tessellator.getBuffer();
 		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		buf.pos(x, y, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
-		buf.pos(x, y + height, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
-		buf.pos(x + width, y + height, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
-		buf.pos(x + width, y, zLevel).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+		float a = Color.getAlpha(color);
+		float r = Color.getRed(color);
+		float g = Color.getGreen(color);
+		float b = Color.getBlue(color);
+		buf.pos(x, y, zLevel)
+				.color(r, g, b, a)
+				.endVertex();
+		buf.pos(x, y + height, zLevel)
+				.color(r, g, b, a)
+				.endVertex();
+		buf.pos(x + width, y + height, zLevel)
+				.color(r, g, b, a)
+				.endVertex();
+		buf.pos(x + width, y, zLevel)
+				.color(r, g, b, a)
+				.endVertex();
 		tessellator.draw();
 	}
 }

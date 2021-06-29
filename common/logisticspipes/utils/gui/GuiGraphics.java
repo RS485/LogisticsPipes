@@ -72,11 +72,11 @@ public final class GuiGraphics {
 			int k = (int) Math.round(255.0D - health * 255.0D);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			Tessellator tessellator = Tessellator.getInstance();
-			int l = 255 - k << 16 | k << 8;
-			int i1 = (255 - k) / 4 << 16 | 16128;
-			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, 13, 2, Color.BLACK, zLevel);
-			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, 12, 1, i1, zLevel + 1.0F);
-			SimpleGraphics.drawQuad(tessellator, x + 2, y + 13, j1, 1, l, zLevel + 2.0F);
+			int l = 255 - k << 16 | k << 8 | 255 << 24;
+			int i1 = (255 - k) / 4 << 16 | 16128 | 255 << 24;
+			SimpleGraphics.drawQuad(tessellator, x + 2, y + 15, 13, 2, Color.BLACK, zLevel);
+			SimpleGraphics.drawQuad(tessellator, x + 2, y + 15, 12, 1, i1, zLevel + 1.0F);
+			SimpleGraphics.drawQuad(tessellator, x + 2, y + 15, j1, 1, l, zLevel + 2.0F);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
 	}

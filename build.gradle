@@ -198,7 +198,7 @@ shadowJar {
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json-jvm', version: kserialization_version))
         include(dependency(group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-core-jvm', version: kserialization_version))
-        include(dependency(group: 'com.charleskorn.kaml', name: 'kaml', version: kaml_version))
+        include(dependency(group: 'com.charleskorn.kaml', name: 'kaml-jvm', version: kaml_version))
         include(dependency(group: 'org.snakeyaml', name: 'snakeyaml-engine', version: '2.3'))
     }
 
@@ -207,6 +207,7 @@ shadowJar {
     relocate 'org.intellij', 'logisticspipes.intellij'
     relocate 'org.jetbrains', 'logisticspipes.jetbrains'
     relocate 'org.snakeyaml', 'logisticspipes.snakeyaml'
+    relocate 'com.charleskorn.kaml', 'logisticspipes.kaml'
 
     exclude 'META-INF/versions/9/*'
     exclude 'DebugProbesKt.bin'

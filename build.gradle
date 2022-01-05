@@ -520,11 +520,11 @@ task integrationTests(dependsOn: ['prepareRunServerTest'], type: Exec) {
     workingDir projectDir
 
     commandLine "$projectDir/gradlew"
-    args 'runServerTest'
+    args '--stacktrace', 'runServerTest'
     ignoreExitValue = true
 
     standardOutput = new ByteArrayOutputStream()
-    errorOutput = new ByteArrayOutputStream()
+    errorOutput = standardOutput // redirect stderr to stdout
 
     doLast {
         final output = standardOutput.toString()

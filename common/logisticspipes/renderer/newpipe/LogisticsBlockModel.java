@@ -152,7 +152,13 @@ public class LogisticsBlockModel implements IModel {
 			@Override
 			@Nonnull
 			public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType cameraTransformType) {
-				return PerspectiveMapWrapper.handlePerspective(this, SimpleServiceLocator.cclProxy.getDefaultBlockState(), cameraTransformType);
+				IModelState defaultBlockState = SimpleServiceLocator.cclProxy.getDefaultBlockState();
+				if (defaultBlockState == null) {
+					// no special camera transform is better than crashing
+					return net.minecraftforge.client.ForgeHooksClient.handlePerspective(this, cameraTransformType);
+				} else {
+
+					return PerspectiveMapWrapper.handlePerspective(this, defaultBlockState, cameraTransformType);				}
 			}
 		};
 	}

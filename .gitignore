@@ -27,6 +27,7 @@ run-server-test/*
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/**/vcs.xml
 
 # Generated files
 .idea/**/contentModel.xml
@@ -86,10 +87,12 @@ modules.xml
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+replay_pid*
 
 ### Gradle ###
 .gradle
-build/
+**/build/
+!src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -97,13 +100,20 @@ gradle-app.setting
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties
+
 # Cache of project
 .gradletasknamecache
 
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
+# Eclipse Gradle plugin generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
 
 ### Gradle Patch ###
-**/build/
+# Java heap dump
+*.hprof
 
 # End of https://www.gitignore.io/api/java,gradle,kotlin,forgegradle,intellij+iml

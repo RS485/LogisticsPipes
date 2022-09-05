@@ -80,6 +80,7 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 		patternModeOverlay = propertyLayer
 				.overlay(supplierModule.patternMode);
 		requestModeOverlay = propertyLayer.overlay(supplierModule.requestMode);
+		limitedPropertyOverlay = propertyLayer.overlay(supplierModule.isLimited);
 	}
 
 	@Override

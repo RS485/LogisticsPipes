@@ -130,6 +130,12 @@ public class ItemResource implements IResource {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		// only ItemResources can be equal specifically
+		return obj instanceof ItemResource && matches((IResource) obj, MatchSettings.NORMAL);
+	}
+
+	@Override
 	public String toString() {
 		return String.format("ItemResource(requester=%s, item=%s)", requester, stack);
 	}

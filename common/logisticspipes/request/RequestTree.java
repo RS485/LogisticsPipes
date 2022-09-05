@@ -150,13 +150,12 @@ public class RequestTree extends RequestTreeNode {
 		RequestTree tree = new RequestTree(new ItemResource(new ItemIdentifierStack(ItemIdentifier.get(Item.getItemFromBlock(Blocks.STONE), 0, null), 0), requester), null, requestFlags, info);
 		boolean isDone = true;
 		for (ItemIdentifierStack stack : items) {
-			ItemIdentifier item = stack.getItem();
-			Integer count = messages.get(item);
+			ItemResource req = new ItemResource(stack, requester);
+			Integer count = messages.get(req);
 			if (count == null) {
 				count = 0;
 			}
 			count += stack.getStackSize();
-			ItemResource req = new ItemResource(stack, requester);
 			messages.put(req, count);
 			RequestTree node = new RequestTree(req, tree, requestFlags, info);
 			isDone = isDone && node.isDone();

@@ -37,7 +37,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.routing.order.LogisticsItemOrderManager;
 import logisticspipes.routing.order.LogisticsOrder;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -50,9 +49,6 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	private final HUDProvider HUD = new HUDProvider(this);
 
 	@Nonnull
-	protected LogisticsItemOrderManager orderManager;
-
-	@Nonnull
 	protected final ModuleProvider providerModule = new ModuleProvider();
 
 	public ArrayList<ItemIdentifierStack> getDisplayList() {
@@ -61,7 +57,6 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 	public PipeItemsProviderLogistics(Item item) {
 		super(item);
-		orderManager = new LogisticsItemOrderManager(this);
 		providerModule.registerHandler(this, this);
 		providerModule.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
@@ -169,7 +164,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 	@Override
 	public double getLoadFactor() {
-		return (orderManager.totalAmountCountInAllOrders() + 63) / 64.0;
+		return (_orderItemManager.totalAmountCountInAllOrders() + 63) / 64.0;
 	}
 
 }

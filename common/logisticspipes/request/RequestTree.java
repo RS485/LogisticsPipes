@@ -120,7 +120,7 @@ public class RequestTree extends RequestTreeNode {
 			final CoreRoutedPipe secondExitPipe = o2.destination.getPipe();
 			if (firstExitPipe instanceof IHavePriority) {
 				if (secondExitPipe instanceof IHavePriority) {
-					c = ((IHavePriority) secondExitPipe).getPriority() - ((IHavePriority) firstExitPipe).getPriority();
+					c = Integer.compare(((IHavePriority) secondExitPipe).getPriority(), ((IHavePriority) firstExitPipe).getPriority());
 					if (c != 0) {
 						return c;
 					}
@@ -133,10 +133,12 @@ public class RequestTree extends RequestTreeNode {
 				}
 			}
 
-			//GetLoadFactor*64 should be an integer anyway.
-			c = (int) Math.floor(firstExitPipe.getLoadFactor() * 64) - (int) Math.floor(secondExitPipe.getLoadFactor() * 64);
-			if (distanceWeight != 0) {
-				c += (int) (Math.floor(o1.distanceToDestination * 64) - (int) Math.floor(o2.distanceToDestination * 64)) * distanceWeight;
+			if (distanceWeight < 1/64.0) {
+				c = Double.compare(firstExitPipe.getLoadFactor(), secondExitPipe.getLoadFactor());
+			} else {
+				c = Double.compare(
+						(firstExitPipe.getLoadFactor() * 64) + (o1.distanceToDestination * distanceWeight),
+						(secondExitPipe.getLoadFactor() * 64) + (o2.distanceToDestination * distanceWeight));
 			}
 			return c;
 		}

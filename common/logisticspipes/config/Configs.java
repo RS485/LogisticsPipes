@@ -34,7 +34,11 @@ public class Configs {
 	public static float	pipeDurability = 0.25F; //TODO
 
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
+	public static double POWER_USAGE_MULTIPLIER = 1;
+	public static double COMPILER_SPEED = 1.0;
 	public static boolean ENABLE_RESEARCH_SYSTEM = false;
+
+	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
 	public static boolean TOOLTIP_INFO = LogisticsPipes.isDEBUG();
 	public static boolean ENABLE_PARTICLE_FX = true;
@@ -48,9 +52,6 @@ public class Configs {
 	public static int MULTI_THREAD_NUMBER = 4;
 	public static int MULTI_THREAD_PRIORITY = Thread.NORM_PRIORITY;
 	public static int ASYNC_THRESHOLD = 100;
-
-	public static double POWER_USAGE_MULTIPLIER = 1;
-	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
 	public static boolean CHECK_FOR_UPDATES = true;
 
@@ -119,6 +120,12 @@ public class Configs {
 				Configs.LOGISTICS_POWER_USAGE_DISABLED,
 				"Disable the power usage trough LogisticsPipes").getBoolean(
 						false);
+
+		Configs.COMPILER_SPEED = Configs.CONFIGURATION.get(
+				Configuration.CATEGORY_GENERAL, "compilerSpeed",
+				Configs.COMPILER_SPEED,
+				"Multiplier for the work speed of the compiler").getDouble(
+						1.0);
 
 		Configs.LOGISTICS_HUD_RENDER_DISTANCE = Configs.CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL, "HUDRenderDistance",

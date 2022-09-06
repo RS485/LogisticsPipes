@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 
 import lombok.Getter;
 
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IGuiTileEntity;
 import logisticspipes.items.ItemLogisticsProgrammer;
@@ -141,35 +142,48 @@ public class LogisticsProgramCompilerTileEntity extends LogisticsSolidTileEntity
 					}
 					CoreRoutedPipe pipe = (CoreRoutedPipe) tPipe.pipe;
 					if (pipe.useEnergy(10)) {
-						if (taskType.equals("category")) {
-							taskProgress += 0.0005;
-						} else if (taskType.equals("program")) {
-							taskProgress += 0.0025;
-						} else if (taskType.equals("flash")) {
-							taskProgress += 0.01;
-						} else {
-							taskProgress += 1;
+						switch (taskType) {
+							case "category":
+								taskProgress += 0.0005 * Configs.COMPILER_SPEED;
+								break;
+							case "program":
+								taskProgress += 0.0025 * Configs.COMPILER_SPEED;
+								break;
+							case "flash":
+								taskProgress += 0.01 * Configs.COMPILER_SPEED;
+								break;
+							default:
+								taskProgress = 1;
+								break;
 						}
 						wasAbleToConsumePower = true;
 					}
 				}
 				if (taskProgress >= 1) {
-					if (taskType.equals("category")) {
-						NBTTagList list = getNBTTagListForKey("compilerCategories");
-						list.appendTag(new NBTTagString(currentTask.toString()));
-					} else if (taskType.equals("program")) {
-						NBTTagList list = getNBTTagListForKey("compilerPrograms");
-						list.appendTag(new NBTTagString(currentTask.toString()));
-					} else if (taskType.equals("flash")) {
-						if (!getInventory().getStackInSlot(1).isEmpty()) {
-							ItemStack programmer = getInventory().getStackInSlot(1);
-							if (!programmer.hasTagCompound()) {
-								programmer.setTagCompound(new NBTTagCompound());
-							}
-							programmer.getTagCompound().setString(ItemLogisticsProgrammer.RECIPE_TARGET, currentTask.toString());
+					switch (taskType) {
+						case "category": {
+							NBTTagList list = getNBTTagListForKey("compilerCategories");
+							list.appendTag(new NBTTagString(currentTask.toString()));
+							break;
 						}
-					} else {
-						throw new UnsupportedOperationException(taskType);
+						case "program": {
+							NBTTagList list = getNBTTagListForKey("compilerPrograms");
+							list.appendTag(new NBTTagString(currentTask.toString()));
+							break;
+						}
+						case "flash":
+							if (!getInventory().getStackInSlot(1).isEmpty()) {
+								ItemStack programmer = getInventory().getStackInSlot(1);
+								if (!programmer.hasTagCompound()) {
+									programmer.setTagCompound(new NBTTagCompound());
+								}
+								assert programmer.getTagCompound() != null;
+								programmer.getTagCompound()
+										.setString(ItemLogisticsProgrammer.RECIPE_TARGET, currentTask.toString());
+							}
+							break;
+						default:
+							throw new UnsupportedOperationException(taskType);
 					}
 
 					taskType = "";

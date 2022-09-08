@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.property
 import logisticspipes.LPItems
 import logisticspipes.items.ItemModule
 import logisticspipes.modules.LogisticsModule
+import logisticspipes.modules.LogisticsModule.ModulePositionType
 import net.minecraft.item.Item
 import net.minecraft.nbt.NBTTagCompound
 
@@ -54,14 +55,16 @@ class SlottedModuleListProperty(slots: Int, override val tagKey: String) :
     override fun readSingleFromNBT(tag: NBTTagCompound, key: String): SlottedModule {
         val slottedModuleTag = tag.getCompoundTag(key)
         val slot = slottedModuleTag.getInteger(SLOT_INDEX_KEY)
-        return list.getOrElse(slot) {
-            val moduleName = if (slottedModuleTag.hasKey(MODULE_NAME_KEY)) {
-                slottedModuleTag.getString(MODULE_NAME_KEY)
-            } else null
-            val moduleResource = moduleName?.let { LPItems.modules[it] }
-            val module = moduleResource?.let { Item.REGISTRY.getObject(moduleResource) as? ItemModule }
-            SlottedModule(slot = slot, module = module?.getModule(null, null, null))
-        }.also { it.module?.readFromNBT(slottedModuleTag) }
+        val moduleName = if (slottedModuleTag.hasKey(MODULE_NAME_KEY)) {
+            slottedModuleTag.getString(MODULE_NAME_KEY)
+        } else null
+        val moduleResource = moduleName?.let { LPItems.modules[it] }
+        val itemModule = moduleResource?.let { Item.REGISTRY.getObject(moduleResource) as? ItemModule }
+        val logisticsModule = itemModule?.getModule(null, null, null)
+        return logisticsModule?.let { module ->
+            module.readFromNBT(slottedModuleTag)
+            SlottedModule(slot = slot, module = module).also { list[slot] = it }
+        } ?: list[slot]
     }
 
     override fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: SlottedModule) {
@@ -85,4 +88,6 @@ class SlottedModuleListProperty(slots: Int, override val tagKey: String) :
 
 data class SlottedModule(val slot: Int, val module: LogisticsModule?) {
     fun isEmpty() = module == null
+
+    fun registerPosition() = module?.registerPosition(ModulePositionType.SLOT, slot)
 }

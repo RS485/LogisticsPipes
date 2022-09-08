@@ -124,6 +124,7 @@ import network.rs485.logisticspipes.util.FuzzyUtil;
 public class ModuleCrafter extends LogisticsModule
 		implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver, IGuiOpenControler, Gui {
 
+	// TODO: after 1.12.2 add a tagKey
 	public final InventoryProperty dummyInventory = new InventoryProperty(
 			new ItemIdentifierInventory(11, "Requested items", 127), "");
 	public final InventoryProperty liquidInventory = new InventoryProperty(

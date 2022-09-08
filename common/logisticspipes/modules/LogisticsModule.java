@@ -18,7 +18,6 @@ import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ISaveState;
@@ -185,9 +184,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder, Pr
 
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
 		return new ArrayList<>(0);
-	}
-
-	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {
 	}
 
 	@CCCommand(description = "Returns true if the Pipe has a gui")

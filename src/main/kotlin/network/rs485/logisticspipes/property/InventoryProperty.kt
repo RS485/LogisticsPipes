@@ -45,6 +45,7 @@ import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.inventory.SlotAccess
 import java.util.concurrent.CopyOnWriteArraySet
 
+// TODO: after 1.12.2 check that tagKey is notEmptyOrBlank
 class InventoryProperty(private val inv: ItemIdentifierInventory, override val tagKey: String) :
     Property<ItemIdentifierInventory>, IItemIdentifierInventory by inv, Collection<ItemIdentifierStack> {
 

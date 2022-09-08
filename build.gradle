@@ -123,6 +123,8 @@ minecraft {
             // load LP core mod from classpath
             property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
 
+            jvmArg '-ea'
+
             mods {
                 logisticspipes {
                     sources = [sourceSets.api, sourceSets.main]
@@ -141,6 +143,8 @@ minecraft {
 
             // load LP core mod from classpath
             property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
+
+            jvmArg '-ea'
 
             mods {
                 logisticspipes {

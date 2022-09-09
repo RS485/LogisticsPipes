@@ -355,7 +355,7 @@ curseforge {
     project {
         id = "232838"
         changelog = project.hasProperty('changelog') ? project.findProperty('changelog') : ''
-        releaseType = 'alpha'
+        releaseType = 'beta'
         relations {
             requiredDependency 'codechicken-lib-1-8'
         }

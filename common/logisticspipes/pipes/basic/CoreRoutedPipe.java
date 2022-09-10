@@ -850,7 +850,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	}
 
 	@CCCommand(description = "Returns the Internal LogisticsModule for this pipe")
-	public abstract LogisticsModule getLogisticsModule();
+	public abstract @Nullable LogisticsModule getLogisticsModule();
 
 	@Override
 	public final boolean blockActivated(EntityPlayer entityplayer) {

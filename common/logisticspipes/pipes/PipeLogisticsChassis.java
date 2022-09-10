@@ -485,7 +485,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 	}
 
 	@Override
-	public final LogisticsModule getLogisticsModule() {
+	public final @Nullable LogisticsModule getLogisticsModule() {
 		return _module;
 	}
 

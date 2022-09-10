@@ -8,6 +8,7 @@
 package logisticspipes.pipes;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.modules.ModuleActiveSupplier;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -26,7 +26,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
-	private ModuleActiveSupplier supplierModule;
+	private final ModuleActiveSupplier supplierModule;
 
 	public PipeItemsSupplierLogistics(Item item) {
 		super(item);
@@ -46,7 +46,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	@Override
-	public ModuleActiveSupplier getLogisticsModule() {
+	public @Nonnull ModuleActiveSupplier getLogisticsModule() {
 		return supplierModule;
 	}
 

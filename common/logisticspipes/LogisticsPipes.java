@@ -743,13 +743,13 @@ public class LogisticsPipes {
 
 	protected void registerPipe(IForgeRegistry<Item> registry, String name, Function<Item, ? extends CoreUnroutedPipe> constructor) {
 		final ItemLogisticsPipe res = LogisticsBlockGenericPipe.registerPipe(registry, name, constructor);
-		final CoreUnroutedPipe pipe = Objects.requireNonNull(LogisticsBlockGenericPipe.createPipe(res), "created a null pipe from " + res.toString());
+		final CoreUnroutedPipe pipe = Objects.requireNonNull(LogisticsBlockGenericPipe.createPipe(res), "created a null pipe from " + res);
 		if (pipe instanceof CoreRoutedPipe) {
 			postInitRun.add(() -> res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(null).normal, ((CoreRoutedPipe) pipe).getTextureType(null).newTexture));
 		}
 
 		if (pipe.getClass() != PipeItemsBasicLogistics.class && CoreRoutedPipe.class.isAssignableFrom(pipe.getClass())) {
-			if (pipe.getClass() != PipeFluidBasic.class && PipeFluidBasic.class.isAssignableFrom(pipe.getClass())) {
+			if (pipe.getClass() != PipeFluidBasic.class && FluidRoutedPipe.class.isAssignableFrom(pipe.getClass())) {
 				resetRecipeList.add(() -> new Pair<>(res, LPItems.pipeFluidBasic));
 			} else if (!pipe.isPipeBlock()) {
 				resetRecipeList.add(() -> new Pair<>(res, LPItems.pipeBasic));

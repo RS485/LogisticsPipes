@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         maven {
             url = "https://maven.removeco.de/"
         }
@@ -99,8 +98,7 @@ configurations {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {
-        // cannot update to 1.5, because of https://youtrack.jetbrains.com/issue/KT-30102
-        languageVersion = "1.4"
+        languageVersion = "1.7"
         jvmTarget = JavaVersion.VERSION_1_8
         freeCompilerArgs += "-Xjvm-default=all"
     }
@@ -253,7 +251,6 @@ processResources {
 
 repositories {
     mavenCentral()
-    jcenter()
     maven {
         name = 'JitPack.io'
         url = 'https://jitpack.io'

@@ -429,4 +429,7 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	 */
 	public void finishInit() {}
 
+	public boolean isPipeBlock() {
+		return false;
+	}
 }

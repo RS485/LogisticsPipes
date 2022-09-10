@@ -36,7 +36,6 @@ import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ITubeOrientation;
 import logisticspipes.pipefxhandlers.EntityModelFX;
-import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -588,14 +587,9 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 
 	public void renderTileEntityAt(LogisticsTileGenericPipe pipeTile, double x, double y, double z, float partialTickTime, double distance) {
 		boolean inHand = false;
-		if (pipeTile == null) {
-		}
-		if (pipeTile.pipe instanceof PipeBlockRequestTable) {
-			return;
-		}
-		if (pipeTile.pipe == null) {
-			return;
-		}
+		if (pipeTile == null) return;
+		if (pipeTile.pipe == null) return;
+		if (pipeTile.pipe.isPipeBlock()) return;
 		PipeRenderState renderState = pipeTile.renderState;
 
 		if (renderState.renderLists != null && renderState.renderLists.values().stream().anyMatch(GLRenderList::isInvalid)) {

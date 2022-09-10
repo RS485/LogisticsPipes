@@ -1049,6 +1049,10 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		return nonNull() && pipe.isMultiBlock();
 	}
 
+	public boolean isPipeBlock() {
+		return nonNull() && pipe.isPipeBlock();
+	}
+
 	@Override
 	public Stream<TileEntity> getPartsOfPipe() {
 		return this.subMultiBlock.stream().map(pos -> pos.getTileEntity(world));

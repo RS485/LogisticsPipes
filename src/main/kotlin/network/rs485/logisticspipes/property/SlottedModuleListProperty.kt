@@ -60,6 +60,7 @@ class SlottedModuleListProperty(slots: Int, override val tagKey: String) :
         } else null
         val moduleResource = moduleName?.let { LPItems.modules[it] }
         val itemModule = moduleResource?.let { Item.REGISTRY.getObject(moduleResource) as? ItemModule }
+        // FIXME: move module creation to before readFromNBT
         val logisticsModule = itemModule?.getModule(null, null, null)
         return logisticsModule?.let { module ->
             module.readFromNBT(slottedModuleTag)

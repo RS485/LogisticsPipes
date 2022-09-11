@@ -331,8 +331,9 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 				.filter(slottedModule -> !slottedModule.isEmpty())
 				.forEach(slottedModule -> {
 					LogisticsModule logisticsModule = Objects.requireNonNull(slottedModule.getModule());
-					slottedModule.registerPosition();
+					// FIXME: rely on getModuleForItem instead
 					logisticsModule.registerHandler(this, this);
+					slottedModule.registerPosition();
 				});
 	}
 
@@ -444,8 +445,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 			if (stackItem instanceof ItemModule) {
 				final ItemModule moduleItem = (ItemModule) stackItem;
 				LogisticsModule current = _module.getModule(i);
-				LogisticsModule next = moduleItem.getModuleForItem(stack, _module.getModule(i),
-						this, this);
+				LogisticsModule next = moduleItem.getModuleForItem(stack, current, this, this);
 				Objects.requireNonNull(next, "getModuleForItem returned null for " + stack);
 				next.registerPosition(ModulePositionType.SLOT, i);
 				if (current != next) {
@@ -453,6 +453,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 					if (!MainProxy.isClient(getWorld())) {
 						ItemModuleInformationManager.readInformation(stack, next);
 					}
+					next.finishInit();
 				}
 				inventory.setInventorySlotContents(i, stack);
 			}
@@ -632,6 +633,12 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 	public void playerStopWatching(EntityPlayer player, int mode) {
 		super.playerStopWatching(player, mode);
 		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public void finishInit() {
+		super.finishInit();
+		_module.finishInit();
 	}
 
 	public void handleModuleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {

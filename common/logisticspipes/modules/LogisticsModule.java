@@ -44,6 +44,7 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder, Pr
 	protected IPipeServiceProvider _service;
 	protected ModulePositionType slot;
 	protected int positionInt;
+	protected boolean initialized;
 
 	/**
 	 * Registers the Inventory and ItemSender to the module
@@ -54,15 +55,6 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder, Pr
 	public void registerHandler(IWorldProvider world, IPipeServiceProvider service) {
 		_world = world;
 		_service = service;
-		if (service != null) {
-			final IBlockAccess blockAccess = world == null ? null : world.getWorld();
-			MainProxy.runOnServer(blockAccess, () -> () ->
-					UtilKt.addObserver(getProperties(), (prop) -> {
-						_service.markTileDirty();
-						return Unit.INSTANCE;
-					})
-			);
-		}
 	}
 
 	/**
@@ -218,6 +210,28 @@ public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder, Pr
 	@Override
 	public Object[] getTypeHolder() {
 		return ccTypeHolder;
+	}
+
+	public void finishInit() {
+		if (initialized) {
+			if (LogisticsPipes.isTesting()) {
+				throw new IllegalStateException("finishInit called on initialized " + getClass().getName());
+			} else if (LogisticsPipes.isDEBUG()) {
+				System.err.println("finishInit called on initialized " + getClass().getName());
+				new Exception().printStackTrace();
+			}
+			return;
+		}
+		if (_service != null) {
+			final IBlockAccess blockAccess = _world == null ? null : _world.getWorld();
+			MainProxy.runOnServer(blockAccess, () -> () ->
+					UtilKt.addObserver(getProperties(), (prop) -> {
+						_service.markTileDirty();
+						return Unit.INSTANCE;
+					})
+			);
+		}
+		initialized = true;
 	}
 
 	public enum ModulePositionType {

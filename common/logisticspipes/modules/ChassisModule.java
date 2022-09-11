@@ -152,6 +152,12 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	}
 
 	@Override
+	public void finishInit() {
+		super.finishInit();
+		getModules().forEach(LogisticsModule::finishInit);
+	}
+
+	@Override
 	public boolean hasGenericInterests() {
 		return false;
 	}

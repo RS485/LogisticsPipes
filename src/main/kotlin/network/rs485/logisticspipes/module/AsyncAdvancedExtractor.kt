@@ -62,6 +62,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
+import net.minecraft.world.IBlockAccess
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.property.BooleanProperty
 import network.rs485.logisticspipes.property.InventoryProperty
@@ -104,14 +105,24 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
     override val inHandGuiProvider: ModuleInHandGuiProvider
         get() = NewGuiHandler.getGui(AdvancedExtractorModuleInHand::class.java)
 
-    init {
-        itemsIncluded.addObserver {
-            MainProxy.sendToPlayerList(
-                PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
-                    .setFlag(it.copyValue())
-                    .setModulePos(this),
-                extractor.localModeWatchers,
-            )
+    override fun finishInit() {
+        val isInitialized = super.initialized
+        super.finishInit()
+        if (isInitialized) return
+        if (_service != null) {
+            val blockAccess: IBlockAccess? = _world?.world
+            MainProxy.runOnServer(blockAccess) {
+                Runnable {
+                    itemsIncluded.addObserver {
+                        MainProxy.sendToPlayerList(
+                            PacketHandler.getPacket(AdvancedExtractorInclude::class.java)
+                                .setFlag(it.copyValue())
+                                .setModulePos(this),
+                            extractor.localModeWatchers,
+                        )
+                    }
+                }
+            }
         }
     }
 

@@ -39,6 +39,7 @@ package network.rs485.logisticspipes.connection
 
 import logisticspipes.interfaces.IInventoryUtil
 import logisticspipes.interfaces.ITankUtil
+import logisticspipes.pipes.PipeFluidUtil
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe
 import logisticspipes.proxy.SimpleServiceLocator
 import net.minecraft.tileentity.TileEntity
@@ -53,7 +54,7 @@ fun <T : TileEntity> NeighborTileEntity<T>.getInventoryUtil(): IInventoryUtil? =
 
 @Nullable
 fun <T : TileEntity> NeighborTileEntity<T>.getTankUtil(): ITankUtil? =
-    SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tileEntity, getOurDirection())
+    PipeFluidUtil.getTankUtilForTE(tileEntity, getOurDirection())
 
 @Nonnull
 fun <T : TileEntity> NeighborTileEntity<T>.sneakyInsertion(): LPNeighborTileEntitySneakyInsertion<T> =

@@ -40,7 +40,6 @@ import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
-import logisticspipes.utils.TankUtilFactory;
 import network.rs485.logisticspipes.proxy.mcmp.IMCMPProxy;
 
 public final class SimpleServiceLocator {
@@ -99,12 +98,6 @@ public final class SimpleServiceLocator {
 
 	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory) {
 		SimpleServiceLocator.inventoryUtilFactory = invUtilFactory;
-	}
-
-	public static TankUtilFactory tankUtilFactory;
-
-	public static void setTankUtilFactory(final TankUtilFactory tankUtilFactory) {
-		SimpleServiceLocator.tankUtilFactory = tankUtilFactory;
 	}
 
 	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<>();

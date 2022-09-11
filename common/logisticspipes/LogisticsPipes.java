@@ -198,7 +198,6 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 import logisticspipes.utils.StaticResolverUtil;
-import logisticspipes.utils.TankUtilFactory;
 import logisticspipes.utils.tuples.Pair;
 import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.compat.TheOneProbeIntegration;
@@ -355,7 +354,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSecurityStationManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManager());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
-		SimpleServiceLocator.setTankUtilFactory(new TankUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
 		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());

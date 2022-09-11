@@ -45,6 +45,11 @@ import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
 	private boolean _lastRequestFailed = false;
+	private boolean _requestPartials = false;
+
+	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "Fluids to keep stocked", 127);
+
+	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
 
 	public PipeItemsFluidSupplier(Item item) {
 		super(new PipeTransportLogistics(true) {
@@ -57,16 +62,8 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 					return false;
 				}
-				//TODO: FIXME
-				/*
-				if (tile instanceof IFluidHandler) {
-					IFluidHandler liq = (IFluidHandler) tile;
-					if (liq.getTankInfo(dir.getOpposite()) != null && liq.getTankInfo(dir.getOpposite()).length > 0) {
-						return true;
-					}
-				}
-				*/
-				return false;
+				ITankUtil tank = PipeFluidUtil.INSTANCE.getTankUtilForTE(tile, dir.getOpposite());
+				return tank != null && tank.containsTanks();
 			}
 		}, item);
 
@@ -105,25 +102,26 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		if (getOriginalUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getOriginalUpgradeManager().getSneakyOrientation();
 		}
-		ITankUtil util = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tile, orientation);
+		ITankUtil util = PipeFluidUtil.INSTANCE.getTankUtilForTE(tile, orientation);
 		if (util == null) {
 			return;
 		}
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile)) {
 			return;
 		}
-		if (data.getItemIdentifierStack() == null) {
+		final ItemIdentifierStack idStack = data.getItemIdentifierStack();
+		if (idStack == null) {
 			return;
 		}
-		FluidIdentifierStack liquidId = FluidIdentifierStack.getFromStack(data.getItemIdentifierStack());
+		FluidIdentifierStack liquidId = FluidIdentifierStack.getFromStack(FluidUtil.getFluidContained(idStack.makeNormalStack()));
 		if (liquidId == null) {
 			return;
 		}
-		while (data.getItemIdentifierStack().getStackSize() > 0 && util.fill(liquidId, false) == liquidId.getAmount() && this.useEnergy(5)) {
+		while (idStack.getStackSize() > 0 && util.fill(liquidId, false) == liquidId.getAmount() && this.useEnergy(5)) {
 			util.fill(liquidId, true);
-			data.getItemIdentifierStack().lowerStackSize(1);
-			Item item = data.getItemIdentifierStack().getItem().item;
-			if (item.hasContainerItem(data.getItemIdentifierStack().makeNormalStack())) {
+			idStack.lowerStackSize(1);
+			Item item = idStack.getItem().item;
+			if (item.hasContainerItem(idStack.makeNormalStack())) {
 				Item containerItem = Objects.requireNonNull(item.getContainerItem());
 				transport.sendItem(new ItemStack(containerItem, 1));
 			}
@@ -134,13 +132,6 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	public boolean hasGenericInterests() {
 		return true;
 	}
-
-	// from PipeItemsFluidSupplier
-	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "Fluids to keep stocked", 127);
-
-	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
-
-	private boolean _requestPartials = false;
 
 	@Override
 	public void throttledUpdateEntity() {

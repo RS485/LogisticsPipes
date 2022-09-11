@@ -37,18 +37,45 @@
 
 package logisticspipes.pipes
 
+import logisticspipes.interfaces.ISpecialTankAccessHandler
+import logisticspipes.interfaces.ITankUtil
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe
 import logisticspipes.proxy.SimpleServiceLocator
 import logisticspipes.utils.FluidIdentifier
 import logisticspipes.utils.FluidIdentifierStack
+import logisticspipes.utils.SpecialTankUtil
+import logisticspipes.utils.TankUtil
 import logisticspipes.utils.item.ItemIdentifierStack
 import logisticspipes.utils.tuples.Pair
 import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import net.minecraftforge.fluids.capability.IFluidTankProperties
 import network.rs485.logisticspipes.connection.getTankUtil
 import kotlin.streams.toList
 
 object PipeFluidUtil {
+
+    fun getTankUtilForTE(tile: TileEntity?, dirOnEntity: EnumFacing?): ITankUtil? {
+        if (SimpleServiceLocator.specialTankHandler.hasHandlerFor(tile)) {
+            val handler = SimpleServiceLocator.specialTankHandler.getTankHandlerFor(tile)
+            if (handler is ISpecialTankAccessHandler) {
+                if (tile!!.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dirOnEntity)) {
+                    val fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dirOnEntity)
+                    if (fluidHandler != null) {
+                        return SpecialTankUtil(fluidHandler, tile, handler)
+                    }
+                }
+            }
+        }
+        if (tile != null && tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dirOnEntity)) {
+            val fluidHandler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dirOnEntity)
+            if (fluidHandler != null) {
+                return TankUtil(fluidHandler)
+            }
+        }
+        return null
+    }
 
     fun FluidRoutedPipe.getAdjacentTanks(listNearbyPipes: Boolean) =
         availableAdjacent.fluidTanks()

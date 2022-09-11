@@ -8,11 +8,11 @@ public class FluidIdentifierStack implements Comparable<FluidIdentifierStack> {
 
 	private Object ccType;
 	private final FluidIdentifier _fluid;
-	private int amount;
+	private int milliBuckets;
 
-	public FluidIdentifierStack(FluidIdentifier fluid, int stackSize) {
+	public FluidIdentifierStack(FluidIdentifier fluid, int milliBuckets) {
 		_fluid = fluid;
-		setAmount(stackSize);
+		setAmount(milliBuckets);
 	}
 
 	public static FluidIdentifierStack getFromStack(FluidStack stack) {
@@ -35,33 +35,30 @@ public class FluidIdentifierStack implements Comparable<FluidIdentifierStack> {
 	 * @return the stackSize
 	 */
 	public int getAmount() {
-		return amount;
+		return milliBuckets;
 	}
 
-	/**
-	 * @param stackSize the stackSize to set
-	 */
-	public void setAmount(int stackSize) {
-		this.amount = stackSize;
+	public void setAmount(int milliBuckets) {
+		this.milliBuckets = milliBuckets;
 	}
 
-	public void lowerAmount(int stackSize) {
-		this.amount -= stackSize;
+	public void lowerAmount(int milliBuckets) {
+		this.milliBuckets -= milliBuckets;
 	}
 
-	public void raiseAmount(int stackSize) {
-		this.amount += stackSize;
+	public void raiseAmount(int milliBuckets) {
+		this.milliBuckets += milliBuckets;
 	}
 
 	public FluidStack makeFluidStack() {
-		return _fluid.makeFluidStack(amount);
+		return _fluid.makeFluidStack(milliBuckets);
 	}
 
 	@Override
 	public int compareTo(FluidIdentifierStack o) {
 		int c = _fluid.compareTo(o._fluid);
 		if (c == 0) {
-			return getAmount() - o.getAmount();
+			return Integer.compare(getAmount(), o.getAmount());
 		}
 		return c;
 	}

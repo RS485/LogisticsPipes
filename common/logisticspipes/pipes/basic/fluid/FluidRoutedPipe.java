@@ -59,8 +59,8 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 			return SimpleServiceLocator.enderIOProxy.isFluidConduit(tile, dir.getOpposite());
 		}
 
-		ITankUtil liq = SimpleServiceLocator.tankUtilFactory.getTankUtilForTE(tile, dir.getOpposite());
-		return (liq != null && liq.containsTanks()) || tile instanceof LogisticsTileGenericPipe;
+		ITankUtil tank = PipeFluidUtil.INSTANCE.getTankUtilForTE(tile, dir.getOpposite());
+		return (tank != null && tank.containsTanks()) || tile instanceof LogisticsTileGenericPipe;
 	}
 
 	@Override

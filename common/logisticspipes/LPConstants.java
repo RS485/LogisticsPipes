@@ -20,9 +20,7 @@ public class LPConstants {
 	public static final String bcTransportModID = "buildcrafttransport";
 	public static final String thermalExpansionModID = "thermalexpansion";
 	public static final String enderCoreModID = "endercore";
-	public static final String betterStorageModID = "betterstorage";
 	public static final String neiModID = "notenoughitems";
-	public static final String factorizationModID = "factorization";
 	public static final String enderioModID = "enderio";
 	public static final String thermalDynamicsModID = "thermaldynamics";
 	public static final String cclrenderModID = "cclrender";

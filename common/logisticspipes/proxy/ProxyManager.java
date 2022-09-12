@@ -47,24 +47,19 @@ import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.bs.BetterStorageProxy;
-import logisticspipes.proxy.bs.ICrateStorageProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.buildcraft.subproxies.IBCPipeCapabilityProvider;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.ccl.CCLProxy;
 import logisticspipes.proxy.enderchest.EnderStorageProxy;
-import logisticspipes.proxy.factorization.FactorizationProxy;
 import logisticspipes.proxy.ic.IronChestProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.IBCProxy;
-import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
-import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
 import logisticspipes.proxy.interfaces.INEIProxy;
@@ -160,28 +155,12 @@ public class ProxyManager {
 			@Override public void toolUsed(@Nonnull ItemStack stack, EntityPlayer entityplayer, BlockPos pos) {}
 		}));
 
-		SimpleServiceLocator.setBetterStorageProxy(ProxyManager.getWrappedProxy(LPConstants.betterStorageModID, IBetterStorageProxy.class, BetterStorageProxy.class, new IBetterStorageProxy() {
-			@Override public boolean isBetterStorageCrate(TileEntity tile) {return false;}
-			@Override public ICrateStorageProxy getCrateStorageProxy(TileEntity tile) {
-				return new ICrateStorageProxy() {
-					@Override public Iterable<ItemStack> getContents() {return null;}
-					@Override public int getUniqueItems() {return 0;}
-					@Override public int getItemCount(@Nonnull ItemStack stack) {return 0;}
-					@Override public@Nonnull  ItemStack extractItems(@Nonnull ItemStack stack, int count) {return null;}
-					@Override public int getSpaceForItem(@Nonnull ItemStack stack) {return 0;}
-					@Override public@Nonnull  ItemStack insertItems(@Nonnull ItemStack stack) {return stack;}
-				};
-			}
-		}, ICrateStorageProxy.class));
-
 		SimpleServiceLocator.setNEIProxy(ProxyManager.getWrappedProxy(LPConstants.neiModID, INEIProxy.class, null /*NEIProxy.class*/, new INEIProxy() {
 			@Override public List<String> getInfoForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {return new ArrayList<>(0);}
 			@Override @SideOnly(Side.CLIENT) public boolean renderItemToolTip(int posX, int posY, List<String> msg, TextFormatting rarityColor, @Nonnull ItemStack stack) {return false;}
 			@Override @SideOnly(Side.CLIENT) public List<String> getItemToolTip(@Nonnull ItemStack stack, EntityPlayer thePlayer, ITooltipFlag advancedItemTooltips, GuiContainer screen) {return stack.getTooltip(thePlayer, advancedItemTooltips);}
 			@Override public@Nonnull  ItemStack getItemForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {return null;}
 		}));
-
-		SimpleServiceLocator.setFactorizationProxy(ProxyManager.getWrappedProxy(LPConstants.factorizationModID, IFactorizationProxy.class, FactorizationProxy.class, tile-> false));
 
 		SimpleServiceLocator.setEnderIOProxy(ProxyManager.getWrappedProxy(LPConstants.enderioModID, IEnderIOProxy.class, null/*EnderIOProxy.class*/, new IEnderIOProxy() {
 			@Override public boolean isSendAndReceive(TileEntity tile) {return false;}

@@ -48,6 +48,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
+import network.rs485.logisticspipes.gui.font.LPFontRenderer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants
 import network.rs485.logisticspipes.util.math.BorderedRectangle
 import network.rs485.logisticspipes.util.math.Rectangle

@@ -289,11 +289,14 @@ public class ItemStackRenderer {
 	}
 
 	public void renderItemInGui(float x, float y, Item item, float zLevel, float scale) {
+		// TODO check if I can set position and the scale here
 		this.setPosX(0);
 		this.setPosY(0);
 		this.setScaleX(1f);
 		this.setScaleY(1f);
+		this.setScaleZ(1f);
 		this.itemstack = new ItemStack(item);
+		this.displayAmount = DisplayAmount.NEVER;
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(x, y, -100.0);
 		GlStateManager.scale(scale, scale, 1f);

@@ -40,8 +40,8 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
-import network.rs485.logisticspipes.gui.Label;
-import network.rs485.logisticspipes.gui.VerticalLabel;
+import network.rs485.logisticspipes.gui.widget.module.Label;
+import network.rs485.logisticspipes.gui.widget.VerticalLabel;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.IntListProperty;
@@ -189,7 +189,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		} else {
 			for (int i = 0; i < 9; i++) {
 				addButton(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width - xSize) / 2 + 9 + 18 * i, (height - ySize) / 2 + 75, 17, 10, TextUtil.translate(PREFIX + "Sel")));
-				satellitePipeLabels[i] = new VerticalLabel(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i], 11 + (i * 18), 35, 40, 0x404040, 0xffc6c6c6);
+				satellitePipeLabels[i] = new VerticalLabel(craftingModule.clientSideSatelliteNames.advancedSatelliteNameArray[i], 11 + (i * 18), 37, 36, 0x404040, 0xffc6c6c6);
 			}
 			addButton(normalButtonArray[1] = new SmallGuiButton(3, (width - xSize) / 2 + 39, (height - ySize) / 2 + 100, 37, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + "Import")));
 			addButton(normalButtonArray[2] = new SmallGuiButton(4, (width - xSize) / 2 + 6, (height - ySize) / 2 + 100, 28, 10, TextUtil

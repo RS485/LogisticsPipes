@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,13 +35,16 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.gui.widget.module
 
 import logisticspipes.modules.ModuleProvider
 import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
+import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.LPBaseGuiContainer
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.widget.*
 import network.rs485.logisticspipes.property.PropertyLayer
 import network.rs485.logisticspipes.util.TextUtil
@@ -66,7 +69,7 @@ class ProviderGui(
         xPosition = Center,
         yPosition = Top(6),
         xSize = FullSize(6),
-        textColor = helper.TEXT_DARK,
+        textColor = LPGuiDrawer.TEXT_DARK,
         textGetter = {
             providerModule.filterInventory.name
         })
@@ -76,11 +79,11 @@ class ProviderGui(
         xPosition = Left(6),
         yPosition = Top(80),
         xSize = FullSize(6),
-        textColor = helper.TEXT_DARK,
+        textColor = LPGuiDrawer.TEXT_DARK,
         textGetter = {
-            "${TextUtil.translate("${prefix}ExcessInventory")} ${providerMode.get().extractionModeString}"
+            "${TextUtil.translate("${prefix}ExcessInventory")} ${TextUtil.translate(providerMode.get().extractionModeTranslationKey)}"
         })
-        .setExtendable(true, helper.BACKGROUND_LIGHT)
+        .setExtendable(true, LPGuiDrawer.BACKGROUND_LIGHT)
     private val extractionModeButton: TextButton = TextButton(
         parent = this,
         xPosition = Left(6),

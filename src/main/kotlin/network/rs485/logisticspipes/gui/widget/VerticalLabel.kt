@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,66 +35,47 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.gui.widget
 
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.gui.widget.module.Label
 import network.rs485.logisticspipes.util.TextUtil
-import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.logisticspipes.util.opaque
 
-open class Label(fullText: String, internal val x: Int, internal val y: Int, internal val maxLength: Int, internal val textColor: Int, internal val backgroundColor: Int) : Gui() {
+class VerticalLabel(fullText: String, x: Int, y: Int, maxLength: Int, textColor: Int, backgroundColor: Int) : Label(fullText, x, y, maxLength, textColor, backgroundColor) {
 
-    open val overflows: Boolean get() = fullRect.width > maxLength
+    override val overflows: Boolean get() = fullRect.height > maxLength
 
-    internal val fontRenderer = Minecraft.getMinecraft().fontRenderer
-
-    internal val fullRect = Rectangle().setPos(x, y)
-    internal val trimmedRect = Rectangle().setPos(x, y)
-
-    internal var fullText: String = ""
-    internal var trimmedText: String = ""
-    internal var hovered = false
-
-    init {
-        setText(fullText)
-    }
-
-    open fun draw(mouseX: Int, mouseY: Int) {
+    override fun draw(mouseX: Int, mouseY: Int) {
         hovered = hovered(mouseX, mouseY)
         GlStateManager.pushMatrix()
-        GlStateManager.translate(fullRect.x0, fullRect.y0, 0.0f)
+        GlStateManager.translate(fullRect.x1.toDouble(), fullRect.y0.toDouble(), 500.0)
+        GlStateManager.rotate(90f, 0f, 0f, 1f)
         if (overflows && hovered) {
-            drawGradientRect(0, -1, fullRect.roundedWidth, fullRect.roundedHeight + 1, backgroundColor, backgroundColor)
+            drawGradientRect(0, -1, fullRect.roundedHeight, fullRect.roundedWidth + 1, backgroundColor, backgroundColor)
             // Outlines
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(fullRect.roundedWidth, -2, fullRect.roundedWidth + 1, fullRect.roundedHeight + 1, 0, textColor.opaque(), textColor.opaque())
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, -2, fullRect.roundedWidth, -1, 0, 0x0, textColor.opaque())
-            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, fullRect.roundedHeight, fullRect.roundedWidth, fullRect.roundedHeight + 1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(fullRect.roundedHeight, -2, fullRect.roundedHeight + 1, fullRect.roundedWidth + 1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, -2, fullRect.roundedHeight, -1, 0, 0x0, textColor.opaque())
+            LogisticsBaseGuiScreen.drawHorizontalGradientRect(0, fullRect.roundedWidth, fullRect.roundedHeight, fullRect.roundedWidth + 1, 0, 0x0, textColor.opaque())
             fullText
         } else {
             trimmedText
         }.also {
             fontRenderer.drawString(it, 0, 0, textColor)
         }
-        GlStateManager.translate(-fullRect.x0, -fullRect.y0, 0.0f)
         GlStateManager.popMatrix()
     }
 
-    open fun setText(newFullText: String) {
+    override fun setText(newFullText: String) {
         fullText = newFullText
-        fullRect.setSize(fontRenderer.getStringWidth(fullText), fontRenderer.FONT_HEIGHT)
+        fullRect.setSize(fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(fullText))
 
         trimmedText = TextUtil.getTrimmedString(fullText, maxLength, fontRenderer)
-        trimmedRect.setSize(fontRenderer.getStringWidth(trimmedText), fontRenderer.FONT_HEIGHT)
+        trimmedRect.setSize(fontRenderer.FONT_HEIGHT, fontRenderer.getStringWidth(trimmedText))
 
-        val offset = (maxLength - trimmedRect.roundedWidth) / 2
-        fullRect.setPos(x + offset, y)
-        trimmedRect.setPos(x + offset, y)
+        val offset = (maxLength - trimmedRect.roundedHeight) / 2
+        fullRect.setPos(x, y + offset)
+        trimmedRect.setPos(x, y + offset)
     }
-
-    fun isTextEqual(text: String): Boolean = fullText === text
-
-    internal fun hovered(mouseX: Int, mouseY: Int): Boolean = (if (hovered) fullRect else trimmedRect).contains(mouseX, mouseY)
 }

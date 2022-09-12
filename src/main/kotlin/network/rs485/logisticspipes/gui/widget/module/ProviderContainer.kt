@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,16 +35,20 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.gui.widget.module
 
 import logisticspipes.modules.ModuleProvider
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
+import network.rs485.logisticspipes.gui.LPBaseContainer
 import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
 
-class ProviderContainer(playerInventoryIn: IInventory, providerModule: ModuleProvider, moduleInHand: ItemStack) : LPBaseContainer() {
+class ProviderContainer(
+    playerInventoryIn: IInventory,
+    providerModule: ModuleProvider,
+    moduleInHand: ItemStack) : LPBaseContainer() {
 
     val playerSlots = addPlayerSlotsToContainer(playerInventoryIn, 0, 0, moduleInHand)
     val filterSlots = addDummySlotsToContainer(providerModule.filterInventory, 0, 0)

@@ -1,11 +1,12 @@
 package logisticspipes.proxy;
 
-import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import net.minecraftforge.fml.common.Loader;
-import network.rs485.logisticspipes.compat.CharsetImplementation;
-import network.rs485.logisticspipes.proxy.StorageDrawersProxy;
 
-import static logisticspipes.LPConstants.*;
+import static logisticspipes.LPConstants.appliedenergisticsModID;
+
+import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
+import network.rs485.logisticspipes.compat.CharsetImplementationFactory;
+import network.rs485.logisticspipes.proxy.StorageDrawersProxy;
 
 public class SpecialInventoryHandlerManager {
 
@@ -18,6 +19,8 @@ public class SpecialInventoryHandlerManager {
 		SimpleServiceLocator.buildCraftProxy.registerInventoryHandler();
 
 		StorageDrawersProxy.INSTANCE.registerInventoryHandler();
+
+		SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CharsetImplementationFactory());
 	}
 
 }

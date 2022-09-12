@@ -294,6 +294,7 @@ dependencies {
     compileOnly group: 'cofh', name: 'ThermalExpansion', version: '1.12.2-5.5.4.43', classifier: 'deobf', transitive: false
     compileOnly group: 'org.squiddev', name: 'cc-tweaked-1.12.2', version: '1.89.2', transitive: false
     compileOnly group: 'com.jaquadro.minecraft.storagedrawers', name: 'StorageDrawers', version: '1.12.2-5.4.2', transitive: false
+    compileOnly group: 'pl.asie.charset', name: 'Charset', version: '0.5.6.6', classifier: 'api', transitive: false
 
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'

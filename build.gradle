@@ -15,6 +15,8 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
     id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
+    id 'org.jetbrains.kotlin.plugin.lombok' version "$kotlin_version"
+    id 'io.freefair.lombok' version "$lombok_plugin_version"
     id 'signing'
     id 'com.matthewprenger.cursegradle' version "$cursegradle_version"
     id 'com.github.johnrengelman.shadow' version "$shadow_version"
@@ -102,6 +104,10 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         jvmTarget = JavaVersion.VERSION_1_8
         freeCompilerArgs += "-Xjvm-default=all"
     }
+}
+
+kotlinLombok {
+    lombokConfigurationFile file("lombok.config")
 }
 
 minecraft {
@@ -264,9 +270,6 @@ dependencies {
     minecraft group: 'net.minecraftforge', name: 'forge', version: forge_version
     apiImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
     dummyImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
-
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: lombok_version
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok_version
 
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version

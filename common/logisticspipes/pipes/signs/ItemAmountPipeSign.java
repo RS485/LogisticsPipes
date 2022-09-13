@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -15,6 +16,8 @@ import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.lwjgl.opengl.GL11;
 
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
@@ -42,6 +45,9 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	public CoreRoutedPipe pipe;
 	public EnumFacing dir;
 	private boolean hasUpdated = false;
+
+	@SideOnly(Side.CLIENT)
+	private Framebuffer fbo;
 
 	public ItemAmountPipeSign() {
 		itemTypeInv.addListener(this);
@@ -152,19 +158,21 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(CoreRoutedPipe pipe, LogisticsRenderPipe renderer) {
+		//TODO !!!
 		FontRenderer var17 = renderer.getFontRenderer();
 		if (pipe != null) {
 			String name = "";
 			if (itemTypeInv != null && itemTypeInv.getIDStackInSlot(0) != null) {
 				ItemStack itemstack = itemTypeInv.getIDStackInSlot(0).unsafeMakeNormalStack();
 
+//				GL11.glDepthMask(true);
 				renderer.renderItemStackOnSign(itemstack);
 				Item item = itemstack.getItem();
 
-				GlStateManager.depthMask(false);
-				GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.translate(0.5F, +0.08F, 0.0F);
-				GlStateManager.scale(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
+				GL11.glDepthMask(false);
+				//GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
+				//GlStateManager.translate(0.5F, +0.08F, 0.0F);
+				GL11.glScalef(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
 
 				try {
 					name = item.getItemStackDisplayName(itemstack);
@@ -179,9 +187,9 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 				var17.drawString("Amount:", -var17.getStringWidth("Amount:") / 2, 1 * 10 - 4 * 5, 0);
 				var17.drawString(displayAmount, -var17.getStringWidth(displayAmount) / 2, 2 * 10 - 4 * 5, 0);
 			} else {
-				GlStateManager.rotate(-180.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.translate(0.5F, +0.08F, 0.0F);
-				GlStateManager.scale(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
+				GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
+				GL11.glTranslatef(0.5F, +0.08F, 0.0F);
+				GL11.glScalef(1.0F / 90.0F, 1.0F / 90.0F, 1.0F / 90.0F);
 				name = "Empty";
 			}
 
@@ -189,9 +197,27 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 
 			var17.drawString(name, -var17.getStringWidth(name) / 2 - 15, 3 * 10 - 4 * 5, 0);
 
-			GlStateManager.depthMask(true);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glDepthMask(true);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Framebuffer getMCFrameBufferForSign() {
+		if(!OpenGlHelper.isFramebufferEnabled()) {
+			return null;
+		}
+		if(fbo == null) {
+			fbo = new Framebuffer(256, 256, true);
+		}
+		return fbo;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean doesFrameBufferNeedUpdating(CoreRoutedPipe pipe, LogisticsRenderPipe renderer) {
+		return fbo == null;
 	}
 
 	@Override

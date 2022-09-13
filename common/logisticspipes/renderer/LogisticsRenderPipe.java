@@ -1,20 +1,29 @@
 package logisticspipes.renderer;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -23,9 +32,15 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.client.ForgeHooksClient;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import java.awt.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import logisticspipes.LPConstants;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreUnroutedPipe;
@@ -45,6 +60,7 @@ import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTileGenericPipe> {
 
+	private static ExecutorService pool = Executors.newFixedThreadPool(1);
 	private static final int LIQUID_STAGES = 40;
 	private static final int MAX_ITEMS_TO_RENDER = 10;
 	private static final ResourceLocation SIGN = new ResourceLocation("textures/entity/sign.png");
@@ -324,9 +340,80 @@ public class LogisticsRenderPipe extends TileEntitySpecialRenderer<LogisticsTile
 		modelSign.renderSign();
 		GL11.glPopMatrix();
 
-		GL11.glTranslatef(-0.32F, 0.5F * signScale + 0.08F, 0.07F * signScale);
 
-		type.render(pipe, this);
+		boolean needsUpdating = type.doesFrameBufferNeedUpdating(pipe, this);
+		Framebuffer fbo = type.getMCFrameBufferForSign();
+
+		if(fbo != null) {
+			if(needsUpdating) {
+				pool.submit(() -> {
+					Minecraft.getMinecraft().addScheduledTask(() -> {
+						fbo.framebufferClear();
+						GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
+						GL11.glMatrixMode(GL11.GL_MODELVIEW);
+						GL11.glPushMatrix();
+						GL11.glMatrixMode(GL11.GL_PROJECTION);
+						GL11.glPushMatrix();
+
+						// setup modelview matrix
+						GlStateManager.clearColor(1.0f, 1.0f, 1.0f, 0.5f);
+						GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+						GL11.glMatrixMode(GL11.GL_MODELVIEW);
+						GL11.glLoadIdentity();
+						GL11.glMatrixMode(GL11.GL_PROJECTION);
+						GL11.glLoadIdentity();
+						GL11.glDepthFunc(GL11.GL_LESS);
+
+						GL11.glOrtho(0.0D, 1.0, 1.0, 0.0, -1, 1);
+						GL11.glDisable(GL11.GL_DEPTH);
+						GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+						fbo.bindFramebuffer(true);
+						resetStateManager();
+
+						GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
+						GL11.glTranslatef(0.16F, -0.41F, 0.0F);
+						GL11.glScalef(1.0F, 1.0F, -1/0.001F);
+
+						type.render(pipe, LogisticsRenderPipe.this);
+						fbo.unbindFramebuffer();
+
+						GL11.glMatrixMode(GL11.GL_PROJECTION);
+						GL11.glPopMatrix();
+						GL11.glMatrixMode(GL11.GL_MODELVIEW);
+						GL11.glPopMatrix();
+						GL11.glPopAttrib();
+
+						resetStateManager();
+						GL11.glDepthFunc(GL11.GL_LEQUAL);
+					});
+				});
+			}
+			GL11.glTranslatef(-0.5F, -0.19F, 0.07F * signScale);
+			Tessellator tessellator = Tessellator.getInstance();
+			BufferBuilder bufferbuilder = tessellator.getBuffer();
+			GlStateManager.enableTexture2D();
+			fbo.bindFramebufferTexture();
+			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+			bufferbuilder.pos(0, 0, 0.001).tex(0, 0).endVertex();
+			bufferbuilder.pos(1, 0, 0.001).tex(1, 0).endVertex();
+			bufferbuilder.pos(1, 1, 0.001).tex(1, 1).endVertex();
+			bufferbuilder.pos(0, 1, 0.001).tex(0, 1).endVertex();
+			tessellator.draw();
+			fbo.unbindFramebufferTexture();
+		} else {
+			GL11.glTranslatef(-0.32F, 0.5F * signScale + 0.08F, 0.07F * signScale);
+			type.render(pipe, this);
+		}
+	}
+
+	private void resetStateManager() {
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(0.0F, 0.0F, 0.0F, 1.0F);
+		GlStateManager.depthMask(false);
+		GlStateManager.depthMask(true);
+		GlStateManager.disableDepth();
+		GlStateManager.enableDepth();
 	}
 
 	public void renderItemStackOnSign(@Nonnull ItemStack itemstack) {

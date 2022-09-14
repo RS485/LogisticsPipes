@@ -46,6 +46,8 @@ public class EntityModelFX extends Particle {
 		SimpleServiceLocator.cclProxy.getRenderState().draw();
 
 		GL11.glPopMatrix();
+		// Set texture back to particles
+		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/particle/particles.png"));
 		BufferBuilder buffer = Tessellator.getInstance().getBuffer();
 		buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 	}

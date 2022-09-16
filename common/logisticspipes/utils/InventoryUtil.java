@@ -150,7 +150,9 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 		int totalRoom = 0;
 		for (int i = 0; i < inventory.getSlots() && stack.getCount() > totalRoom; i++) {
-			ItemStack leftover = inventory.insertItem(i, stack, true);
+			// stack.copy() because other TileEntities might modify stack.
+			// "This must not be modified by the item handler." lol
+			ItemStack leftover = inventory.insertItem(i, stack.copy(), true);
 			totalRoom += stack.getCount() - leftover.getCount();
 		}
 		return totalRoom;
@@ -176,7 +178,7 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 	@Override
 	public int addToSlot(@Nonnull ItemStack stack, int slot) {
 		int wanted = stack.getCount();
-		ItemStack rest = inventory.insertItem(slot, stack, false);
+		ItemStack rest = inventory.insertItem(slot, stack.copy(), false);
 		return wanted - rest.getCount();
 	}
 }

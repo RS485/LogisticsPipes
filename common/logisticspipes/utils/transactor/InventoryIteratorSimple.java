@@ -37,7 +37,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 
 	private class InvSlot implements IInvSlot {
 
-		private int slot;
+		private final int slot;
 
 		public InvSlot(int slot) {
 			this.slot = slot;
@@ -52,7 +52,7 @@ class InventoryIteratorSimple implements Iterable<IInvSlot> {
 		@Nonnull
 		@Override
 		public ItemStack insertItem(@Nonnull ItemStack stack, boolean simulate) {
-			return inv.insertItem(slot, stack, simulate);
+			return inv.insertItem(slot, stack.copy(), simulate);
 		}
 
 		@Nonnull

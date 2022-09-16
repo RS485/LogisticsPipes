@@ -196,12 +196,6 @@ object LPGuiDrawer {
         val borderedSlider = BorderedRectangle(slider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
         val borderedSliderTexQuads = BorderedRectangle(guiGuidebookSlider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
 
-        z = GuideBookConstants.Z_BACKGROUND
-        setTexture(guiNormalPatternTexture)
-        start()
-        putScaledTexturedQuad(borderedGui.inner.translate(-8).grow(16), 0f to 0f, -1)
-        finish()
-
         z = GuideBookConstants.Z_FRAME
         setTexture(guiAtlas)
         start()
@@ -211,6 +205,15 @@ object LPGuiDrawer {
         finish()
 
         GlStateManager.disableBlend()
+    }
+
+    fun drawGuideBookBackground(rect: Rectangle) {
+        val borderedGui = BorderedRectangle(rect, 24)
+        z = GuideBookConstants.Z_BACKGROUND
+        setTexture(guiNormalPatternTexture)
+        start()
+        putScaledTexturedQuad(borderedGui.inner.translate(-8).grow(16), 0f to 0f, -1)
+        finish()
     }
 
     // Text specific draw code

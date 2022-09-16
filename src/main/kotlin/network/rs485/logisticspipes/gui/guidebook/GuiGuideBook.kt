@@ -40,7 +40,9 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.LPConstants
 import logisticspipes.LPItems
 import logisticspipes.LogisticsPipes
+import logisticspipes.utils.Color
 import logisticspipes.utils.MinecraftColor
+import logisticspipes.utils.gui.SimpleGraphics
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiConfirmOpenLink
@@ -51,9 +53,9 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.HorizontalAlignment
-import network.rs485.logisticspipes.gui.font.LPFontRenderer
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
+import network.rs485.logisticspipes.gui.font.LPFontRenderer
 import network.rs485.logisticspipes.guidebook.BookContents
 import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import network.rs485.logisticspipes.guidebook.DebugPage
@@ -283,14 +285,23 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
+        GlStateManager.enableDepth()
+        GlStateManager.depthFunc(GL11.GL_ALWAYS)
+        SimpleGraphics.drawGradientRect(0, 0, width, height, Color.BLANK, Color.BLANK, 100.0)
+
+        LPGuiDrawer.drawGuideBookBackground(outerGui)
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
+
+        GlStateManager.depthFunc(GL11.GL_LEQUAL)
         state.currentPage.run {
             updateScrollPosition(visibleArea, currentProgress)
             draw(visibleArea, mouseX.toFloat(), mouseY.toFloat(), partialTicks)
         }
+        GlStateManager.depthFunc(GL11.GL_ALWAYS)
         LPGuiDrawer.drawGuideBookFrame(outerGui, sliderSeparator)
         if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         drawTitle()
+        GlStateManager.depthFunc(GL11.GL_LEQUAL)
     }
 
     override fun doesGuiPauseGame() = false

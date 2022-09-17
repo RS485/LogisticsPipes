@@ -1,6 +1,9 @@
 <!---
 title: Logistics Pipes Quick Start
 --->
+
+[marth's guide](page://dev_zero_guides/index.md)
+
 *"It's been a long time. How have you been?"*
 
 First off, thanks for playing Logistics Pipes.<br>

@@ -102,7 +102,13 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     - Crafting recipes?
     - Use translatable names or block/item identifiers as text?
     - DrawableListParagraph
-    - Scroll Wheel functionality
+    - Fix missing image rendering, it needs to be more obvious an image was supposed to be there.
+    - Add configurability to images
+    - Create tooltip object and render it independently of the Drawable it's attached to
+    - Create a variety of tooltips with configurable style and information.
+    - Improve font renderer to allow for more fonts.
+    - Add config screen for the book to change font/font size.
+    - Add option to enable or disable text justification.
      */
 
     // Gui Frame Constants

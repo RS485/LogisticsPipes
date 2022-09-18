@@ -77,6 +77,10 @@ public class Model3D implements IModel3D {
 		model.render(CCRenderState.instance(), list.toArray(new IVertexOperation[0]));
 	}
 
+	private String atlasString(TextureAtlasSprite sprite) {
+		return "name='" + sprite.getIconName() + "', x=" + sprite.getOriginX() + ", y=" + sprite.getOriginY() + ", height=" + sprite.getIconHeight() + ", width=" + sprite.getIconWidth() + ", u0=" + sprite.getMinU() + ", u1=" + sprite.getMaxU() + ", v0=" + sprite.getMinV() + ", v1=" + sprite.getMaxV() + "}";
+	}
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SneakyThrows({ IllegalAccessException.class })
@@ -90,7 +94,7 @@ public class Model3D implements IModel3D {
 			IVertexOperation iVertexOperation = (IVertexOperation) op.getOriginal();
 			list.add(iVertexOperation);
 			if (iVertexOperation instanceof IconTransformation) {
-				hash.add(((IconTransformation) iVertexOperation).icon.toString());
+				hash.add(atlasString(((IconTransformation) iVertexOperation).icon));
 			} else if (iVertexOperation instanceof Rotation) {
 				hash.add(iVertexOperation.toString());
 			} else if (iVertexOperation instanceof Scale) {

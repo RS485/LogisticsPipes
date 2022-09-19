@@ -94,8 +94,6 @@ interface Drawable {
 
     var parent: Drawable?
 
-    var z: Float
-
     // Relative positions/size accessors.
     val x: Float get() = relativeBody.x0
     val y: Float get() = relativeBody.y0
@@ -124,7 +122,7 @@ interface Drawable {
     fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         if (DRAW_BODY_WIREFRAME) {
             val visibleAbsoluteBody = visibleArea.translated(0, -5).grow(0, 10).overlap(absoluteBody)
-            LPGuiDrawer.drawOutlineRect(visibleAbsoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
+            LPGuiDrawer.drawOutlineRect(visibleAbsoluteBody, MinecraftColor.WHITE.colorCode)
         }
     }
 
@@ -153,7 +151,6 @@ interface Drawable {
 object Screen : Drawable {
     override var relativeBody: Rectangle = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = 0.0f
 
     val xCenter: Int
         get() = relativeBody.roundedWidth / 2

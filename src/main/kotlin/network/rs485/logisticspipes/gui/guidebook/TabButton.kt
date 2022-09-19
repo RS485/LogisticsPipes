@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2020  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2020  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -39,54 +39,84 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
-import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 
-private val homeButtonTexture = Rectangle(16, 64, 24, 32)
-private val homeIconTexture = Rectangle(128, 0, 16, 16)
+interface TabButtonReturn {
+    fun onLeftClick(): Boolean
+    fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean
+    fun getColor(): Int
+    fun isPageActive(): Boolean
+}
 
-/*
-* Position on the button is set based on it's rightmost and where it needs to connect at the bottom.
-*/
-class HomeButton2(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton2(1, x - 24, y - 24, homeButtonTexture.roundedWidth, homeButtonTexture.roundedHeight) {
-    private val homeIconBody: Rectangle
+private val buttonTextureArea = Rectangle(40, 64, 24, 32)
+private val circleAreaTexture = Rectangle(32, 96, 16, 16)
+
+class TabButton(
+        internal val tabPage: Page,
+        x: Int,
+        y: Int,
+        private val whisky: TabButtonReturn,
+) : LPGuiButton(99, x, y - 24, 24, 32) {
+
     override val bodyTrigger = Rectangle(1, 1, 22, 22)
+    private val circleArea = Rectangle(4, 4, 16, 16)
+    val isActive: Boolean
+        get() = whisky.isPageActive()
+    val isInactive: Boolean
+        get() = !isActive
 
-    init {
-        this.setOnClickAction(onClickAction)
-        zLevel = GuideBookConstants.Z_TITLE_BUTTONS
-        val offset = (body.width - homeIconTexture.width) / 2
-        homeIconBody = Rectangle(offset, offset, homeIconTexture.width, homeIconTexture.height)
-    }
 
-    override fun setPos(newX: Int, newY: Int) {
-        body.setPos(newX - 24, newY + 8)
-    }
+    fun onLeftClick() = whisky.onLeftClick()
+
+    fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean) = whisky.onRightClick(shiftClick, ctrlClick)
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (this.visible) {
-            hovered = isHovered(mouseX, mouseY)
-            if (hovered) {
-                drawTooltip(
+        hovered = isHovered(mouseX, mouseY)
+        if (!visible) return
+        mc.textureManager.bindTexture(GuideBookConstants.guiBookTexture)
+        val yOffset = if (whisky.isPageActive()) 0 else 3
+        val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
+        if (hovered) {
+            drawTooltip(
                     x = body.roundedRight,
                     y = body.roundedTop,
                     horizontalAlign = HorizontalAlignment.RIGHT,
                     verticalAlign = VerticalAlignment.BOTTOM
-                )
-            }
-            GuiGuideBook.drawStretchingRectangle(body, zLevel, homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
-            drawButtonForegroundLayer(mouseX, mouseY)
+            )
         }
+        GuiGuideBook.drawStretchingRectangle(
+                rectangle = body.translated(0, yOffset),
+                z = 0.0f,
+                texture = buttonTextureArea,
+                blend = true,
+                color = if (whisky.isPageActive()) 0xFFFFFFFF.toInt() else color
+        )
+        drawButtonForegroundLayer(mouseX, mouseY)
     }
 
     override fun getTooltipText(): String {
-        return TextUtil.translate("misc.guide_book.home_button")
+        return tabPage.title
     }
 
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
-        val hoverStateOffset = getHoverState(hovered) * homeIconTexture.roundedHeight
-        GuiGuideBook.drawStretchingRectangle(homeIconBody.translated(body), zLevel, homeIconTexture.translated(0, hoverStateOffset), false, MinecraftColor.WHITE.colorCode)
+        if (whisky.isPageActive()) {
+            val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
+            GuiGuideBook.drawStretchingRectangle(
+                    rectangle = circleArea.translated(body),
+                    z = zLevel,
+                    texture = circleAreaTexture,
+                    blend = true,
+                    color = color
+            )
+        }
     }
+
+    override fun setPos(newX: Int, newY: Int) {
+        body.setPos(newX, newY - 24)
+    }
+
+    override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean =
+            bodyTrigger.translated(body).translated(0, if (whisky.isPageActive()) -3 else 0).contains(mouseX, mouseY)
 }

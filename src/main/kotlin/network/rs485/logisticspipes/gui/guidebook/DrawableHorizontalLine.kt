@@ -49,7 +49,6 @@ private const val horizontalPadding: Int = 3
 class DrawableHorizontalLine(private val thickness: Int, private val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : DrawableParagraph() {
     override var relativeBody: Rectangle = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y + padding)
@@ -59,6 +58,6 @@ class DrawableHorizontalLine(private val thickness: Int, private val padding: In
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
-        GuiGuideBook.drawHorizontalLine(left, right, top, GuideBookConstants.Z_TEXT, thickness, color)
+        GuiGuideBook.drawHorizontalLine(left, right, top, 0.0f, thickness, color)
     }
 }    

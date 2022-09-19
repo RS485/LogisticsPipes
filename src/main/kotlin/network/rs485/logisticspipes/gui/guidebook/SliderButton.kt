@@ -39,13 +39,12 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.util.math.Rectangle
-import kotlin.math.floor
 import kotlin.math.roundToInt
 
 private const val minimumHeight = 16
 private val texture = Rectangle(96, 0, 12, 16)
 
-class SliderButton2(x: Int, y: Int, width: Int, railHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : LPGuiButton2(0, x, y, width, railHeight) {
+class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : LPGuiButton(0, x, y, width, railHeight) {
     private val sliderButton: Rectangle = Rectangle()
     private val movementDistance: Int get() = body.roundedHeight - sliderButton.roundedHeight
     private var dragging: Boolean = false
@@ -53,7 +52,7 @@ class SliderButton2(x: Int, y: Int, width: Int, railHeight: Int, private var pro
     private var hoveredBar: Boolean = false
 
     init {
-        zLevel = GuideBookConstants.Z_TITLE_BUTTONS
+        // zLevel = GuideBookConstants.Z_TITLE_BUTTONS
     }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -102,7 +101,7 @@ class SliderButton2(x: Int, y: Int, width: Int, railHeight: Int, private var pro
         sliderButton.setPos(sliderButton.roundedX, y)
     }
 
-    fun updateSlider(extraHeight: Int, newProgress: Float): SliderButton2 {
+    fun updateSlider(extraHeight: Int, newProgress: Float): SliderButton {
         if (extraHeight > 0) {
             enabled = true
             sliderButton.setPos(0, calculateProgressI())

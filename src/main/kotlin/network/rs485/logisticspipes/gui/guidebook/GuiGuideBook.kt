@@ -84,11 +84,7 @@ object GuideBookConstants {
     const val ATLAS_HEIGHT_SCALE = 1 / ATLAS_HEIGHT
 
     // Z Levels
-    const val Z_TOOLTIP = 32.0f // Tooltip z
-    const val Z_TITLE_BUTTONS = 31.0f // Title and Buttons Z
-    const val Z_FRAME = 30.0f // Frame Z
-    const val Z_TEXT = 5.0f // Text/Information Z
-    const val Z_BACKGROUND = 0.0f // Background Z
+    const val Z_TOOLTIP = 100.0f // Tooltip z
 
     // Debug constant
     const val DRAW_BODY_WIREFRAME = false
@@ -147,10 +143,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private var guiSliderY1 = 0
 
     // Buttons
-    private lateinit var slider: SliderButton2
-    private lateinit var home: HomeButton2
+    private lateinit var slider: SliderButton
+    private lateinit var home: HomeButton
 
-    private lateinit var addOrRemoveTabButton: BookmarkManagingButton2
+    private lateinit var addOrRemoveTabButton: BookmarkManagingButton
 
     // initialize tabs from the stack NBT
     private val tabButtons = state.bookmarks.map(::createGuiTabButton).toMutableList()
@@ -218,7 +214,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             slider.updateSlider(state.currentPage.getExtraHeight(visibleArea), state.currentPage.progress)
         }
         var xOffset = 0
-        for (button: TabButton2 in tabButtons) {
+        for (button: TabButton in tabButtons) {
             button.setPos(outerGui.roundedRight - 2 - 2 * guiTabWidth - xOffset, outerGui.roundedTop)
             xOffset += guiTabWidth
         }
@@ -233,7 +229,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     override fun initGui() {
         calculateGuiConstraints()
         slider = addButton(
-                SliderButton2(
+                SliderButton(
                         x = innerGui.roundedRight - guiSliderWidth,
                         y = innerGui.roundedTop,
                         railHeight = innerGui.roundedHeight,
@@ -243,32 +239,32 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                 )
         )
         home = addButton(
-                HomeButton2(
+                HomeButton(
                         x = outerGui.roundedRight,
                         y = outerGui.roundedTop
                 ) { mouseButton ->
                     if (mouseButton == 0) {
                         changePage(MAIN_MENU_FILE)
                     }
-                    return@HomeButton2 true
+                    return@HomeButton true
                 }
         )
         addOrRemoveTabButton = addButton(
-                BookmarkManagingButton2(
+                BookmarkManagingButton(
                         x = outerGui.roundedRight - 18 - guiTabWidth + 4,
                         y = outerGui.roundedTop - 2,
                         onClickAction = { buttonState ->
                             when (buttonState) {
-                                BookmarkManagingButton2.ButtonState.ADD -> addBookmark().let { true }
-                                BookmarkManagingButton2.ButtonState.REMOVE -> removeBookmark(state.currentPage)
-                                BookmarkManagingButton2.ButtonState.DISABLED -> false
+                                BookmarkManagingButton.ButtonState.ADD -> addBookmark().let { true }
+                                BookmarkManagingButton.ButtonState.REMOVE -> removeBookmark(state.currentPage)
+                                BookmarkManagingButton.ButtonState.DISABLED -> false
                             }
                         },
                         additionStateUpdater = {
                             when {
-                                state.currentPage.isBookmarkable() && isTabAbsent(state.currentPage) -> BookmarkManagingButton2.ButtonState.ADD
-                                !isTabAbsent(state.currentPage) -> BookmarkManagingButton2.ButtonState.REMOVE
-                                else -> BookmarkManagingButton2.ButtonState.DISABLED
+                                state.currentPage.isBookmarkable() && isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.ADD
+                                !isTabAbsent(state.currentPage) -> BookmarkManagingButton.ButtonState.REMOVE
+                                else -> BookmarkManagingButton.ButtonState.DISABLED
                             }
                         }
                 )
@@ -296,7 +292,6 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         SimpleGraphics.drawGradientRect(0, 0, width, height, Color.BLANK, Color.BLANK, 100.0)
 
         LPGuiDrawer.drawGuideBookBackground(outerGui)
-        buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
 
         GlStateManager.depthFunc(GL11.GL_LEQUAL)
         state.currentPage.run {
@@ -304,8 +299,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             draw(visibleArea, mouseX.toFloat(), mouseY.toFloat(), partialTicks)
         }
         GlStateManager.depthFunc(GL11.GL_ALWAYS)
+        tabButtons.filter { it.isInactive }.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         LPGuiDrawer.drawGuideBookFrame(outerGui, sliderSeparator)
-        if (tabButtons.isNotEmpty()) tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
+        buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
+        tabButtons.firstOrNull { it.isActive }?.drawButton(mc, mouseX, mouseY, partialTicks)
         drawTitle()
         GlStateManager.depthFunc(GL11.GL_LEQUAL)
     }
@@ -322,6 +319,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                         actionPerformed(button)
                         return
                     }
+
                     1 -> {
                         rightClick(button)
                         return
@@ -344,12 +342,15 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             progressDiff < 0.0025f && progressDiff > -0.0025f -> {
                 state.currentPage.progress
             }
+
             progressDiff < 0.0025f -> {
                 min(currentProgress - (progressDiff * speedModifier), state.currentPage.progress)
             }
+
             progressDiff > -0.0025f -> {
                 max(currentProgress - (progressDiff * speedModifier), state.currentPage.progress)
             }
+
             else -> currentProgress
         }
     }
@@ -369,10 +370,12 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             home -> if (home.click(0)) {
                 button.playPressSound(mc.soundHandler)
             }
+
             addOrRemoveTabButton -> if (addOrRemoveTabButton.click(0)) {
                 button.playPressSound(mc.soundHandler)
             }
-            is TabButton2 -> if (button.onLeftClick()) {
+
+            is TabButton -> if (button.onLeftClick()) {
                 button.playPressSound(mc.soundHandler)
             }
         }
@@ -381,7 +384,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
 
     private fun rightClick(button: GuiButton) {
         when (button) {
-            is TabButton2 -> {
+            is TabButton -> {
                 if (button.onRightClick(shiftClick = isShiftKeyDown(), ctrlClick = isCtrlKeyDown())) {
                     button.playPressSound(mc.soundHandler)
                 }
@@ -393,15 +396,15 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private fun addBookmark() = state.currentPage.takeIf { isTabAbsent(it) && tabButtons.size < maxTabs }
             ?.also { state.bookmarks.add(it); tabButtons.add(createGuiTabButton(it)) }
 
-    private fun createGuiTabButton(tabPage: Page): TabButton2 =
-        TabButton2(tabPage, outerGui.roundedRight - 2 - 2 * guiTabWidth, outerGui.roundedTop, object : TabButtonReturn {
-            override fun onLeftClick(): Boolean {
-                if (!isPageActive()) {
-                    changePage(tabPage.page)
-                    return true
+    private fun createGuiTabButton(tabPage: Page): TabButton =
+            TabButton(tabPage, outerGui.roundedRight - 2 - 2 * guiTabWidth, outerGui.roundedTop, object : TabButtonReturn {
+                override fun onLeftClick(): Boolean {
+                    if (!isPageActive()) {
+                        changePage(tabPage.page)
+                        return true
+                    }
+                    return false
                 }
-                return false
-            }
 
                 override fun onRightClick(shiftClick: Boolean, ctrlClick: Boolean): Boolean {
                     if (!isPageActive()) return false
@@ -426,21 +429,19 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     }
 
     private fun drawTitle() {
-        lpFontRenderer.zLevel = GuideBookConstants.Z_TITLE_BUTTONS
         lpFontRenderer.drawCenteredString(state.currentPage.title,
                 floor(width / 2.0f),
                 outerGui.y0 + (innerGui.y0 - outerGui.y0 - lpFontRenderer.getFontHeight()) / 2.0f,
                 MinecraftColor.WHITE.colorCode,
                 EnumSet.of(TextFormat.Shadow),
                 1.0f)
-        lpFontRenderer.zLevel = GuideBookConstants.Z_TEXT
     }
 
     companion object {
         val lpFontRenderer = LPFontRenderer.get("ter-u12n")
 
         fun drawSliderButton(body: Rectangle, texture: Rectangle) {
-            val z = GuideBookConstants.Z_TITLE_BUTTONS
+            val z = 0f
             val bufferBuilder = startBuffer()
             putTexturedRectangle(
                     bufferBuilder,
@@ -523,7 +524,11 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         ) {
             Minecraft.getMinecraft().renderEngine.bindTexture(GuideBookConstants.guiBookTexture)
             // Four vertices of square following order: TopLeft, TopRight, BottomLeft, BottomRight
-            if (blend) GlStateManager.enableBlend()
+            if (blend) {
+                GlStateManager.enableBlend()
+            } else {
+                GlStateManager.disableBlend()
+            }
             if (blend) GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             val tessellator = Tessellator.getInstance()
             val bufferBuilder = tessellator.buffer
@@ -590,7 +595,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                 y0: Float,
                 x1: Float,
                 y1: Float,
-                z: Float,
+                z: Float = 0.0f,
                 u0: Int,
                 v0: Int,
                 u1: Int,
@@ -874,7 +879,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
                     y0 = visibleImageBody.y0,
                     x1 = visibleImageBody.x1,
                     y1 = visibleImageBody.y1,
-                    z = GuideBookConstants.Z_TEXT,
+                    z = 0f,
                     uw = imageBody.roundedWidth,
                     vh = imageBody.roundedHeight,
                     u0 = visibleImageTexture.roundedLeft,

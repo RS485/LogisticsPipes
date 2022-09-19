@@ -49,7 +49,6 @@ import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.font.LPFontRenderer
-import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants
 import network.rs485.logisticspipes.util.math.BorderedRectangle
 import network.rs485.logisticspipes.util.math.Rectangle
 import org.lwjgl.opengl.GL11
@@ -96,7 +95,6 @@ object LPGuiDrawer {
     private val buffer: BufferBuilder get() = tessellator.buffer
     private var isDrawing: Boolean = false
     private val textureManager = Minecraft.getMinecraft().renderEngine
-    private var z: Float = 0.0f
 
     val lpFontRenderer: LPFontRenderer by lazy {
         LPFontRenderer.get("ter-u12n")
@@ -107,8 +105,7 @@ object LPGuiDrawer {
 
     // Container specific draw code
 
-    fun drawGuiBackground(guiArea: Rectangle, z: Float, container: Container) {
-        this.z = z
+    fun drawGuiBackground(guiArea: Rectangle, container: Container) {
         setTexture(guiAtlas)
         start()
         putGuiBackgroundBase(guiArea)
@@ -143,37 +140,38 @@ object LPGuiDrawer {
 
     // Button specific draw code
 
-    fun drawBorderedTile(rect: Rectangle, z: Float, hovered: Boolean, enabled: Boolean, light: Boolean, thickerBottomBorder: Boolean) {
+    fun drawBorderedTile(rect: Rectangle, hovered: Boolean, enabled: Boolean, light: Boolean, thickerBottomBorder: Boolean) {
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
 
         val border = 2
 
-        val bottomBorder = if(thickerBottomBorder) border + 1 else border
+        val bottomBorder = if (thickerBottomBorder) border + 1 else border
 
         val (buttonBackgroundTexture, buttonBorderTexture) = when {
             !enabled -> {
                 guiDarkPatternTexture to buttonBorderTextureDark
             }
+
             hovered -> {
                 guiHoveredPatternTexture to buttonBorderTextureHovered
             }
+
             light -> {
                 guiLightPattern to buttonBorderTextureLight
             }
+
             else -> {
                 guiNormalPatternTexture to buttonBorderTextureNormal
             }
         }
 
-        this.z = z
         setTexture(buttonBackgroundTexture)
         start()
         putScaledTexturedQuad(rect, 0f to 0f, -1)
         finish()
 
-        this.z += 0.1f
         setTexture(guiAtlas)
         start()
         val borderedGuiQuads = BorderedRectangle(rect, border, border, bottomBorder, border).borderQuads
@@ -196,7 +194,6 @@ object LPGuiDrawer {
         val borderedSlider = BorderedRectangle(slider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
         val borderedSliderTexQuads = BorderedRectangle(guiGuidebookSlider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
 
-        z = GuideBookConstants.Z_FRAME
         setTexture(guiAtlas)
         start()
         for ((i, quad) in (borderedGui.borderQuads + borderedSlider).withIndex()) {
@@ -209,7 +206,6 @@ object LPGuiDrawer {
 
     fun drawGuideBookBackground(rect: Rectangle) {
         val borderedGui = BorderedRectangle(rect, 24)
-        z = GuideBookConstants.Z_BACKGROUND
         setTexture(guiNormalPatternTexture)
         start()
         putScaledTexturedQuad(borderedGui.inner.translate(-8).grow(16), 0f to 0f, -1)
@@ -225,8 +221,8 @@ object LPGuiDrawer {
 
     // Untextured draw code
 
-    fun drawInteractionIndicator(mouseX: Float, mouseY: Float, z: Float) {
-        this.z = z
+    @Deprecated(message = "Change this completely")
+    fun drawInteractionIndicator(mouseX: Float, mouseY: Float) {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
@@ -243,8 +239,7 @@ object LPGuiDrawer {
         GlStateManager.enableTexture2D()
     }
 
-    fun drawRect(area: Rectangle, z: Float, color: Int) {
-        this.z = z
+    fun drawRect(area: Rectangle, color: Int) {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
@@ -254,16 +249,15 @@ object LPGuiDrawer {
         GlStateManager.enableTexture2D()
     }
 
-    fun drawHorizontalGradientRect(area: Rectangle, z: Float, colorLeft: Int, colorRight: Int) {
-        drawGradientQuad(area, z, colorRight, colorLeft, colorLeft, colorRight)
+    fun drawHorizontalGradientRect(area: Rectangle, colorLeft: Int, colorRight: Int) {
+        drawGradientQuad(area, colorRight, colorLeft, colorLeft, colorRight)
     }
 
-    fun drawVerticalGradientRect(area: Rectangle, z: Float, colorTop: Int, colorBottom: Int) {
-        drawGradientQuad(area, z, colorTop, colorTop, colorBottom, colorBottom)
+    fun drawVerticalGradientRect(area: Rectangle, colorTop: Int, colorBottom: Int) {
+        drawGradientQuad(area, colorTop, colorTop, colorBottom, colorBottom)
     }
 
-    fun drawOutlineRect(rect: Rectangle, z: Float, color: Int) {
-        this.z = z
+    fun drawOutlineRect(rect: Rectangle, color: Int) {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
@@ -273,8 +267,7 @@ object LPGuiDrawer {
         GlStateManager.enableTexture2D()
     }
 
-    fun drawGradientQuad(area: Rectangle, z: Float, colorTopRight: Int, colorTopLeft: Int, colorBottomLeft: Int, colorBottomRight: Int) {
-        this.z = z
+    fun drawGradientQuad(area: Rectangle, colorTopRight: Int, colorTopLeft: Int, colorBottomLeft: Int, colorBottomRight: Int) {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.disableAlpha()
@@ -385,7 +378,7 @@ object LPGuiDrawer {
      * @param point coordinate to be inserted in the buffer.
      * @return the buffer itself.
      */
-    private fun BufferBuilder.pos(point: Pair<Float, Float>): BufferBuilder = pos(point.first.toDouble(), point.second.toDouble(), z.toDouble())
+    private fun BufferBuilder.pos(point: Pair<Float, Float>): BufferBuilder = pos(point.first.toDouble(), point.second.toDouble(), 0.0)
 }
 
 private class Texture(val resource: ResourceLocation, val size: Int) {

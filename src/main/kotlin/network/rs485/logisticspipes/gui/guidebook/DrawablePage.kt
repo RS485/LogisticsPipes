@@ -44,7 +44,6 @@ private const val PAGE_VERTICAL_PADDING = 5
 class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : DrawableParagraph() {
     override var relativeBody: Rectangle = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     fun setWidth(width: Int) =
             relativeBody.setSize(width, relativeBody.roundedHeight)

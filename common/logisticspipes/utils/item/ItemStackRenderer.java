@@ -298,7 +298,7 @@ public class ItemStackRenderer {
 		this.itemstack = new ItemStack(item);
 		this.displayAmount = DisplayAmount.NEVER;
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(x, y, -100.0);
+		GlStateManager.translate(x, y, 0);
 		GlStateManager.scale(scale, scale, 1f);
 		GlStateManager.disableDepth();
 		float previousZ = renderItem.zLevel;
@@ -307,7 +307,7 @@ public class ItemStackRenderer {
 		renderItem.zLevel = previousZ;
 		GlStateManager.enableDepth();
 		GlStateManager.scale(1 / scale, 1 / scale, 1f);
-		GlStateManager.translate(-x, -y, 100.0);
+		GlStateManager.translate(-x, -y, 0);
 		GlStateManager.popMatrix();
 	}
 

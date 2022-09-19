@@ -57,7 +57,6 @@ abstract class LPGuiButton(parent: Drawable, xPosition: HorizontalPosition, yPos
         if (visible) {
             helper.drawBorderedTile(
                     rect = relativeBody,
-                    z = z,
                     hovered = isMouseHovering(mouseX, mouseY),
                     enabled = enabled,
                     light = false,

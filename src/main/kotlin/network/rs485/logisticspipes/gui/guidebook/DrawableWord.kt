@@ -58,7 +58,6 @@ open class DrawableWord(
             field = value
             (value as? DrawableParagraph)?.run(::setupParent)
         }
-    override var z: Float = GuideBookConstants.Z_TEXT
     val format: Set<TextFormat> = state.format
     val color: Int = state.color
 
@@ -81,7 +80,7 @@ open class DrawableWord(
         val updatedColor = linkInteractable?.updateColor(color) ?: color
         val updatedFormat = linkInteractable?.updateFormat(format) ?: format
         if (hovering) {
-            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY, 25f)
+            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
         LPGuiDrawer.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
     }

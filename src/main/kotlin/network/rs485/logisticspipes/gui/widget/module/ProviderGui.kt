@@ -55,7 +55,6 @@ class ProviderGui(
     private val providerModule: ModuleProvider,
     lockedStack: ItemStack
 ) : LPBaseGuiContainer(ProviderContainer(playerInventory, providerModule, lockedStack), 174, 177) {
-    override var z = 1.0f
 
     private val prefix: String = "gui.providerpipe."
 

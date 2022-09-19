@@ -61,7 +61,6 @@ private const val tileSpacing = 5
 class DrawableMenuParagraph<T>(private val menuTitle: List<DrawableWord>, private val menuGroups: List<DrawableMenuGroup<T>>) : DrawableParagraph() where T : Drawable, T : MouseInteractable {
     override var relativeBody = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
@@ -91,7 +90,6 @@ class DrawableMenuParagraph<T>(private val menuTitle: List<DrawableWord>, privat
 class DrawableMenuGroup<T>(private val groupTitle: List<DrawableWord>, private val groupTiles: List<T>) : DrawableParagraph() where T : Drawable, T : MouseInteractable {
     override var relativeBody = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         drawChildren(mouseX, mouseY, delta, visibleArea)
@@ -128,7 +126,6 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
 
     override var relativeBody = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     companion object {
         val itemStackRenderer by lazy {
@@ -151,7 +148,6 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         val hovered = isMouseHovering(mouseX, mouseY)
         LPGuiDrawer.drawBorderedTile(
                 rect = absoluteBody,
-                z = GuideBookConstants.Z_TEXT,
                 hovered = hovered,
                 enabled = true,
                 light = true,
@@ -160,10 +156,10 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         val itemRect = Rectangle.fromRectangle(iconBody.translated(absoluteBody))
         if (visibleArea.intersects(iconBody.translated(absoluteBody))) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
-            itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, GuideBookConstants.Z_TEXT, iconScale)
+            itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, 0.0f, iconScale)
         }
         if (hovered) {
-            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY, 25f)
+            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
             GuiGuideBook.drawBoxedString(pageName, mid(), min(bottom, visibleArea.bottom).roundToInt(), GuideBookConstants.Z_TOOLTIP, HorizontalAlignment.CENTER, VerticalAlignment.TOP)
         }
     }
@@ -184,7 +180,6 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
 
     override var relativeBody = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     companion object {
         val itemStackRenderer by lazy {
@@ -206,7 +201,6 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
         val hovered = isMouseHovering(mouseX, mouseY)
         LPGuiDrawer.drawBorderedTile(
                 rect = absoluteBody,
-                z = GuideBookConstants.Z_TEXT,
                 hovered = hovered,
                 enabled = true,
                 light = true,
@@ -225,10 +219,10 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
                     scale = 1.0f
             )
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
-            DrawableMenuTile.itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, GuideBookConstants.Z_TEXT, iconScale)
+            itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, 0.0f, iconScale)
         }
         if (hovered) {
-            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY, 25f)
+            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
     }
 

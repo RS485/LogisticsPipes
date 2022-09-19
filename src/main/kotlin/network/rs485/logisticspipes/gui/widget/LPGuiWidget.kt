@@ -50,7 +50,6 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
     override var parent: Drawable? = parent
 
     final override var relativeBody: Rectangle = Rectangle()
-    final override var z: Float = 0.0f
 
     val drawer = LPGuiDrawer
 

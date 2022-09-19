@@ -49,7 +49,6 @@ import java.io.IOException
 class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, val image: DrawableImage) : DrawableParagraph() {
     override var relativeBody = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)
@@ -85,7 +84,6 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
 
     override var relativeBody: Rectangle = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     private var imageSize: PngSizeInfo? = try {
         val resource = Minecraft.getMinecraft().resourceManager.getResource(imageResource)
@@ -101,7 +99,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         if (imageSize != null) {
             GuiGuideBook.drawImage(absoluteBody, visibleArea, imageResource)
         } else {
-            LPGuiDrawer.drawOutlineRect(absoluteBody, GuideBookConstants.Z_TEXT, MinecraftColor.WHITE.colorCode)
+            LPGuiDrawer.drawOutlineRect(absoluteBody, MinecraftColor.WHITE.colorCode)
         }
     }
 

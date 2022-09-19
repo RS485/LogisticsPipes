@@ -45,7 +45,6 @@ import network.rs485.logisticspipes.util.math.Rectangle
 class DrawableRegularParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
     override var relativeBody: Rectangle = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     override fun setPos(x: Int, y: Int): Int {
         relativeBody.setPos(x, y)

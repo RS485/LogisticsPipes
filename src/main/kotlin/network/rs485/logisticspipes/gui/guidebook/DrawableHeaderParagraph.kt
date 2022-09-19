@@ -45,7 +45,6 @@ import network.rs485.logisticspipes.util.math.Rectangle
 class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
     override var relativeBody: Rectangle = Rectangle()
     override var parent: Drawable? = null
-    override var z: Float = GuideBookConstants.Z_TEXT
 
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 

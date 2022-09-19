@@ -59,7 +59,7 @@ class LPGuiLabel(
         yPosition = yPosition,
         xSize = xSize,
         ySize = AbsoluteSize(helper.mcFontRenderer.FONT_HEIGHT)
-) , MouseHoverable {
+), MouseHoverable {
 
     private var text: String = textGetter()
     private val textArea = Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
@@ -72,12 +72,10 @@ class LPGuiLabel(
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         val hovering = isMouseHovering(mouseX, mouseY)
         GlStateManager.pushMatrix()
-        GlStateManager.translate(0f, 0f, z)
         GlStateManager.enableDepth()
-        if (hovering) helper.drawRect(textArea.translated(drawXOffset, 0), -5f, backgroundColor)
+        if (hovering) helper.drawRect(textArea.translated(drawXOffset, 0), backgroundColor)
         helper.mcFontRenderer.drawString(if (hovering) text else trimmedText, relativeBody.roundedX + drawXOffset, relativeBody.roundedY, textColor)
         GlStateManager.disableDepth()
-        GlStateManager.translate(0f, 0f, -z)
         GlStateManager.popMatrix()
     }
 

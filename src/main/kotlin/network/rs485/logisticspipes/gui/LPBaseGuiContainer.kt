@@ -83,7 +83,6 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
 
     fun addWidget(widget: LPGuiWidget): Drawable {
         widgetList.add(widget)
-        widgetList.sortBy { it.z }
         return widget
     }
 
@@ -96,7 +95,7 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
      */
     open fun drawBackgroundLayer(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-        helper.drawGuiBackground(absoluteBody, 0f, inventorySlots)
+        helper.drawGuiBackground(absoluteBody, inventorySlots)
     }
 
     /**

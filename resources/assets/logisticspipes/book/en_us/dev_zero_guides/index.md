@@ -9,7 +9,6 @@ menu:
       - crafting.md
       - consolidating_pipes.md
       - managing_items_with_pipes.md
-      - advanced_crafting.md
 --->
 
 This is a series of guides gracefully provided by [marth](https://www.devzero.com/about/), you can find the original [here](https://www.devzero.com/gaming/lp-tutorial/).

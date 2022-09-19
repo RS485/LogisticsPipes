@@ -8,6 +8,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import lombok.Getter;
 
+@IFMLLoadingPlugin.MCVersion("1.12.2")
 //@IFMLLoadingPlugin.SortingIndex(1001) TODO: For next MC update. Changing this now, will change ASM check sums as well.
 public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 

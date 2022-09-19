@@ -9,19 +9,17 @@ But we have some required steps that you need to follow to make things work.
 
 1. Having [git](http://git-scm.com/) and git-lfs installed
 2. Having an IDE (we do use [IntelliJ IDEA](https://www.jetbrains.com/idea/))
-3. Having [Lombok](http://projectlombok.org/) installed with your IDE (in
-IntelliJ IDEA there is a plugin for Lombok which requires annotation processing
-to be enabled)
-4. Having Java JDK 8, newer versions are not supported.
-5. [Discord](https://discord.gg/6vPP3A8) wouldn't be bad if you want to communicate with other
+3. Having Java Development Kit 8; newer versions are not supported by this
+   Minecraft or Minecraft Forge version.
+4. Matrix/Discord wouldn't be bad if you want to communicate with other
    contributors and us.
 
 
 ## Matrix
 
-[Dev Channel](https://matrix.to/#/#logisticspipes+dev:rs485.network)
+[Logistics Pipes Space](https://matrix.to/#/#logisticspipes+space:rs485.network)
 
-[LP Community](https://matrix.to/#/+logisticspipes:rs485.network)
+- [Dev Channel](https://matrix.to/#/#logisticspipes+dev:rs485.network)
 
 The channels are all linked to Discord and some even to IRC.
 
@@ -54,27 +52,37 @@ $ git lfs checkout
 
 ### Gradle
 
-After cloning, you can build LP with `./gradlew build` and find the output in
-`build/libs`. If the task fails there may be something wrong with maven
-repositories or [a Java update broke ForgeGradle 2](https://github.com/MinecraftForge/ForgeGradle/issues/652)
+Make sure you are running Gradle with Java 8: You can check the default
+java version with `java -version` and control the version Gradle uses with
+the `JAVA_HOME` environment variable. LP can be built with `./gradlew build`
+and the output found in the directory `build/libs`.
+If the task fails there may be something wrong with maven repositories or
+[a Java update broke ForgeGradle 2](https://github.com/MinecraftForge/ForgeGradle/issues/652)
 or something may be wrong with your setup. You may definitely ask for help on
 the mentioned communication channels above, but please be sure to state your
 issue as good as possible and be nice to others.
 
 ### IDEA Quirks
 
-If you opened the project in IDEA before running the `./gradlew build` command the run
-configurations will not be visible, simple fix is to reload the project.
-
-If the run configurations are not present still, run `genIntellijRuns` task using IDEA's
-Gradle integration, then the configurations will appear.
+For IDEA to use the correct Java SDK, you might have to select the correct
+JDK (Java JDK 8, OpenJDK build preferred) in `File > Project Structure` in the
+project part of the project settings under SDK.
 
 ### Running Minecraft from your dev environment
 
 After you successfully built LP you can probably run Minecraft directly from
-your IDE. There may be a ton of missing texture errors and missing language
-files though and this problem even happens when using a new clean mod template,
-but don't be sad! The solution is to copy your `build/resources/main/*` into
+your IDE after running the correct ForgeGradle generate run configuration task.
+Please look at ForgeGradle documentation for more information.
+
+If you are not using IntelliJ IDEA, there may be a ton of missing texture
+errors and missing language files. The cause is newer ForgeGradle versions.
+Our ForgeGradle version and our build script contain fixes for IntelliJ IDEA
+only; sorry if you are not using IDEA. The solution is to remove
+`build/classes/*/*` and `build/resources/*` from the run configuration
+classpath and add the custom `build/run_classes` path to the classpath.
+We are open for any contributions for a better solution or wider support.
+
+The workaround is to copy your `build/resources/main/*` into 
 `build/classes/java/main` before launching the game, or you may link those two
  together (Linux or WSL):
 

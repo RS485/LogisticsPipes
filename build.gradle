@@ -6,13 +6,13 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'network.rs485', name: 'ForgeGradle', version: forgegradle_version
+        classpath group: 'network.rs485.forge', name: 'ForgeGradle', version: forgegradle_version
     }
 }
 
 plugins {
-    id 'maven'
     id 'java'
+    id 'maven-publish'
     id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
     id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
     id 'org.jetbrains.kotlin.plugin.lombok' version "$kotlin_version"
@@ -21,7 +21,7 @@ plugins {
     id 'com.matthewprenger.cursegradle' version "$cursegradle_version"
     id 'com.github.johnrengelman.shadow' version "$shadow_version"
 }
-apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'network.rs485.forge'
 
 archivesBaseName = "logisticspipes"
 group = "network.rs485"
@@ -29,8 +29,9 @@ version = "0.10.4"
 ext.vendor = "unknown"
 ext.target = "Forge $forge_version"
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 def ENV = System.getenv()
 
@@ -110,6 +111,18 @@ kotlinLombok {
     lombokConfigurationFile file("lombok.config")
 }
 
+project.afterEvaluate {
+    tasks.register('copyRunClasses', Copy.class) {
+        dependsOn ['classes']
+        from sourceSets.main.output.classesDirs, sourceSets.main.output.resourcesDir, sourceSets.api.output.classesDirs
+        into "${project.buildDir}/run_classes/"
+
+        includeEmptyDirs false
+    }
+
+    tasks['prepareRuns'].dependsOn('copyRunClasses')
+}
+
 minecraft {
     mappings channel: 'snapshot', version: "$mappings_version"
     accessTransformer = file("$rootDir/resources/META-INF/lp_at.cfg")
@@ -127,7 +140,22 @@ minecraft {
             // load LP core mod from classpath
             property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
 
-            jvmArg '-ea'
+            jvmArgs '-ea'
+            environment 'MC_VERSION', mcversion
+
+            lazyToken 'classpathExclude', {
+                def paths = [
+                        sourceSets.main.output.classesDirs.asPath,
+                        sourceSets.api.output.classesDirs.asPath,
+                        sourceSets.main.output.resourcesDir.path,
+                        sourceSets.api.output.resourcesDir.path,
+                ]
+                String.join(File.pathSeparator, paths)
+            }
+            lazyToken 'classpathInclude', {
+                def paths = ["${project.buildDir}/run_classes/"]
+                String.join(File.pathSeparator, paths)
+            }
 
             mods {
                 logisticspipes {
@@ -148,7 +176,22 @@ minecraft {
             // load LP core mod from classpath
             property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
 
-            jvmArg '-ea'
+            jvmArgs '-ea'
+            environment 'MC_VERSION', mcversion
+
+            lazyToken 'classpathExclude', {
+                def paths = [
+                        sourceSets.main.output.classesDirs.asPath,
+                        sourceSets.api.output.classesDirs.asPath,
+                        sourceSets.main.output.resourcesDir.path,
+                        sourceSets.api.output.resourcesDir.path,
+                ]
+                String.join(File.pathSeparator, paths)
+            }
+            lazyToken 'classpathInclude', {
+                def paths = ["${project.buildDir}/run_classes/"]
+                String.join(File.pathSeparator, paths)
+            }
 
             mods {
                 logisticspipes {
@@ -162,6 +205,7 @@ minecraft {
             // mimic the runServer task
             environment 'mainClass', 'net.minecraft.launchwrapper.Launch'
             environment 'MCP_TO_SRG', "$buildDir/createSrgToMcp/output.srg"
+            environment 'MC_VERSION', mcversion
             main 'net.minecraftforge.legacydev.MainServer'
             args '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
             arg 'nogui' // without GUI
@@ -186,6 +230,7 @@ minecraft {
 jar {
     from sourceSets.api.output
     finalizedBy 'shadowJar'
+    duplicatesStrategy = DuplicatesStrategy.WARN
 
     manifest = project.manifest {
         from sharedManifest
@@ -241,26 +286,19 @@ processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
 
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
 
         // replace version and mcversion
-        expand 'version': project.version
-    }
-
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+        expand 'version': project.version, 'mcversion': mcversion
     }
 }
 
 repositories {
     mavenCentral()
-    maven {
-        name = 'JitPack.io'
-        url = 'https://jitpack.io'
-    }
     maven {
         url = "https://maven.removeco.de/"
     }
@@ -312,10 +350,17 @@ import java.nio.file.Files
 final nonMinecraftConfigurations = configurations.findAll { conf -> conf != configurations.minecraft }
 if (!nonMinecraftConfigurations.empty) {
     final fgextension = project.getExtensions().findByName("minecraft")
-    final mcrepo = new MinecraftUserRepo(project, 'net.minecraftforge', 'forge', "$forge_version", fgextension.getAccessTransformers(), fgextension.getMappings())
+    final mcrepo = new MinecraftUserRepo(
+        /* project = */ project,
+        /* group = */ 'net.minecraftforge',
+        /* name = */ 'forge',
+        /* version = */ "$forge_version",
+        /* ats = */ fgextension.getAccessTransformers().getFrom().toList(),
+        /* mapping = */ fgextension.getMappings().get(),
+    )
     nonMinecraftConfigurations.each {
         it.resolutionStrategy.dependencySubstitution {
-            substitute module('net.minecraftforge:forge') with module(mcrepo.getDependencyString())
+            substitute module('net.minecraftforge:forge') using module(mcrepo.getDependencyString())
         }
     }
 }
@@ -339,6 +384,7 @@ task deobfJar(type: Jar) {
     from sourceSets.main.output
     from sourceSets.api.output
     archiveClassifier.set('deobf')
+    duplicatesStrategy = DuplicatesStrategy.WARN
 
     manifest = project.manifest {
         from sharedManifest
@@ -349,6 +395,7 @@ task apiJar(type: Jar, dependsOn: apiClasses) {
     from sourceSets.api.output
     from sourceSets.api.allSource
     archiveClassifier.set('api')
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 curseforge {
@@ -464,7 +511,8 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     }
 }
 
-class DownloadTask extends DefaultTask {
+abstract class DownloadTask extends DefaultTask {
+    @Input
     String url
 
     @OutputFile
@@ -507,12 +555,8 @@ task language(dependsOn: [languageMain, languageBook], type: Copy) {
     processResources.dependsOn language
 }
 
-install.repositories.mavenInstaller.pom.whenConfigured { pom ->
-    pom.dependencies.clear()
-}
-
 tasks.named('wrapper') {
-    gradleVersion = '6.8.3'
+    gradleVersion = '7.5'
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -544,4 +588,21 @@ task integrationTests(dependsOn: ['prepareRunServerTest'], type: Exec) {
             }
         }
     }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }

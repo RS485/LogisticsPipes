@@ -39,10 +39,7 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.util.math.Rectangle
-import network.rs485.markdown.Link
-import network.rs485.markdown.PageLink
-import network.rs485.markdown.TextFormat
-import network.rs485.markdown.WebLink
+import network.rs485.markdown.*
 
 interface LinkInteractable : MouseInteractable {
     /**
@@ -82,6 +79,11 @@ class LinkGroup(private val link: Link) : LinkInteractable {
             when (link) {
                 is PageLink -> guideActionListener.onPageLinkClick(link.page)
                 is WebLink -> guideActionListener.onWebLinkClick(link.url)
+                is ItemLink -> {
+                    guideActionListener.onItemLinkClick(link.stack)
+                /* TODO When clicked should show the item on the NEI gui,
+                if possible when pressed "A" while hovering it should add item
+                to NEI bookmarks. Otherwise this should display an item tooltip */ }
             }
             return true
         }

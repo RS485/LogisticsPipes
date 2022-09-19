@@ -14,6 +14,7 @@ import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemLogisticsChips;
 import logisticspipes.items.ItemLogisticsProgrammer;
 import logisticspipes.items.ItemPipeController;
+import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.RemoteOrderer;
@@ -153,5 +154,8 @@ public class LPItems {
 
 	@ObjectHolder("logisticspipes:chip_fpga_raw")
 	public static ItemLogisticsChips chipFPGARaw;
+
+	@ObjectHolder("logisticspipes:broken_item")
+	public static LogisticsBrokenItem brokenItem;
 
 }

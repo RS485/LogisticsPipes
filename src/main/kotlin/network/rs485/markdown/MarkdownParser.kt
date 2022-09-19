@@ -310,6 +310,7 @@ object MarkdownParser {
                     when {
                         link.isPageLink() -> PageLink(link.path!!)
                         link.isWebLink() -> WebLink(link.link!!)
+                        link.isItemLink() -> ItemLink(link.path!!)
                         else -> null
                     }?.let { linkRef ->
                         listOf(

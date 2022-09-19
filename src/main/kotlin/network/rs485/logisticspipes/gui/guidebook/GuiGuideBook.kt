@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.LPConstants
 import logisticspipes.LPItems
 import logisticspipes.LogisticsPipes
+import logisticspipes.modplugins.jei.JEIPluginLoader
 import logisticspipes.utils.Color
 import logisticspipes.utils.MinecraftColor
 import logisticspipes.utils.gui.SimpleGraphics
@@ -51,6 +52,7 @@ import net.minecraft.client.renderer.BufferBuilder
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPGuiDrawer
@@ -169,6 +171,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             } catch (error: URISyntaxException) {
                 LogisticsPipes.log.warn("Could not parse link $webLink in GuiGuideBook", error)
             }
+        }
+
+        fun onItemLinkClick(stack: ItemStack) {
+            JEIPluginLoader.showRecipe(stack)
         }
     }
 

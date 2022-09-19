@@ -38,7 +38,11 @@
 package network.rs485.markdown
 
 import com.google.common.collect.ImmutableSet
+import logisticspipes.LPItems
 import logisticspipes.utils.MinecraftColor
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
+import net.minecraft.util.ResourceLocation
 import java.util.*
 
 data class InlineDrawableState(var format: Set<TextFormat>, var color: Int, var link: Link?)
@@ -54,6 +58,28 @@ data class WebLink(val url: String) : Link() {
 data class PageLink(val page: String) : Link() {
     init {
         assert(page.isNotEmpty())
+    }
+}
+
+class ItemLink(unlocalizedName: String) : Link() {
+
+    val stack: ItemStack
+
+    init {
+        assert(unlocalizedName.isNotEmpty() && unlocalizedName.contains(":"))
+        stack = if (unlocalizedName.isNotEmpty() && unlocalizedName.contains(":")) {
+            val resourceLocation = unlocalizedName.split(":").let { it ->
+                ResourceLocation(
+                        it.getOrElse(0) { "logisticspipes" },
+                        it.getOrElse(1) { "broken_item" }
+                )
+            }
+            val item: Item? = Item.REGISTRY.getObject(resourceLocation)
+            assert(item != null)
+            ItemStack(item ?: LPItems.brokenItem)
+        } else {
+            ItemStack(LPItems.brokenItem)
+        }
     }
 }
 
@@ -124,7 +150,7 @@ fun Set<TextFormat>.underline() = this.contains(TextFormat.Underline)
 fun Set<TextFormat>.shadow() = this.contains(TextFormat.Shadow)
 
 val defaultDrawableState = InlineDrawableState(
-    format = ImmutableSet.of(),
-    color = MinecraftColor.WHITE.colorCode,
-    link = null,
+        format = ImmutableSet.of(),
+        color = MinecraftColor.WHITE.colorCode,
+        link = null,
 )

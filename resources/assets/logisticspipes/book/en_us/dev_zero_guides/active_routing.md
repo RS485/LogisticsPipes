@@ -96,7 +96,7 @@ while the Provider pipes provide items to the network and cannot sink items them
 The generator that powers our stuff needs a continuous source of coal to keep running. 
 We can automate this with a Supplier pipe, an automated version of the Request 
 pipe that monitors an inventory and tries to keep items in stock by requesting 
-more when eeded. Go back to the Compiler, compile and flash the “Supplier 
+more when needed. Go back to the Compiler, compile and flash the “Supplier 
 Logistics Pipe” program, and use it to craft a Supplier pipe.
 
 Now let’s attach the Supplier pipe to the generator and right-click it with 
@@ -116,7 +116,7 @@ to refill
  - Bulk100: wait until none of the desired item remains, then order enough to refill
  - Full: same as Bulk100, but do not request anything unless the entire order can 
 be fulfilled
- - Infinite: ignore the requested number of items and contine requesting more until 
+ - Infinite: ignore the requested number of items and continue requesting more until 
 the inventory is full
 
 I prefer to use Bulk50 for most things. It reduces the number of requests in 

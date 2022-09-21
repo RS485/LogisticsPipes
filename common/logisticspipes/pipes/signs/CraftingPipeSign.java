@@ -89,8 +89,6 @@ public class CraftingPipeSign implements IPipeSign {
 				ItemIdentifierStack itemstack = craftables.get(0);
 				oldRenderedStack = itemstack;
 
-				GlStateManager.depthMask(false);
-				GlStateManager.depthMask(true);
 				renderer.renderItemStackOnSign(itemstack.unsafeMakeNormalStack());
 				Item item = itemstack.getItem().item;
 

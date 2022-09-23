@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
+import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.math.Rectangle
@@ -51,7 +52,7 @@ interface MouseHoverable {
     fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = false
 }
 
-interface MouseInteractable : MouseHoverable{
+interface MouseInteractable : MouseHoverable {
 
     /**
      * A mouse click event should run this and the implementation checks if
@@ -149,7 +150,15 @@ interface Drawable {
 }
 
 object Screen : Drawable {
-    override var relativeBody: Rectangle = Rectangle()
+    val screen : Rectangle
+        get() = Rectangle(
+                Minecraft.getMinecraft().currentScreen?.width ?: Minecraft.getMinecraft().displayWidth,
+                Minecraft.getMinecraft().currentScreen?.height ?: Minecraft.getMinecraft().displayHeight
+        )
+
+    override var relativeBody: Rectangle = screen
+        get() = screen
+
     override var parent: Drawable? = null
 
     val xCenter: Int

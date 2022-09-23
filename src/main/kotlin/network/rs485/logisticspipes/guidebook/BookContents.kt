@@ -43,6 +43,7 @@ import kotlinx.serialization.Serializable
 import logisticspipes.LPConstants
 import logisticspipes.LogisticsPipes
 import net.minecraft.client.Minecraft
+import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.guidebook.DrawablePage
 import network.rs485.logisticspipes.gui.guidebook.DrawablePageFactory
@@ -58,7 +59,7 @@ import java.nio.file.Paths
 import java.text.MessageFormat
 
 
-val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon = "logisticspipes:unrouted_pipe")
+val MISSING_META = YamlPageMetadata("[404] the metadata was not found :P", icon = "logisticspipes:pipe_transport_basic")
 
 object BookContents {
 
@@ -117,7 +118,7 @@ fun loadPage(path: String, lang: String): PageInfoProvider {
                 override val fileLocation: String = ""
                 override val metadata: YamlPageMetadata = YamlPageMetadata(
                     title = TextUtil.translate("misc.guide_book.missing_page_title"),
-                    icon = "logisticspipes:itemcard",
+                    icon = "logisticspipes:broken_item",
                     menu = emptyMap()
                 )
                 override val paragraphs: List<Paragraph> = listOf(
@@ -155,7 +156,7 @@ private fun parseMetadata(metadataString: String, markdownFile: String): YamlPag
 @Serializable
 data class YamlPageMetadata(
     val title: String,
-    val icon: String = "logisticspipes:itemcard",
+    val icon: String = "logisticspipes:item_card",
     val menu: Map<String, Map<String, List<String>>> = emptyMap()
 )
 
@@ -165,13 +166,30 @@ class LoadedPage(override val fileLocation: String, override val language: Strin
 
     init {
         // Splits the input string into the metadata and the markdown parts of the page.
-        val result = metadataRegex.matchEntire(unformattedText) ?: throw RuntimeException("Could not load page, regex failed in $fileLocation:\n$unformattedText")
+        val result =
+            metadataRegex.matchEntire(unformattedText) ?: throw RuntimeException("Could not load page, regex failed in $fileLocation:\n$unformattedText")
         metadataString = result.groups[1]?.value?.trim() ?: ""
         markdownString = result.groups[2]?.value?.trim() ?: ""
     }
 
     override val metadata: YamlPageMetadata by lazy {
-        parseMetadata(metadataString, fileLocation)
+        parseMetadata(metadataString, fileLocation).also {
+            if (LogisticsPipes.isDEBUG()) {
+                try {
+                    it.icon.split(":").apply {
+                        val item = Item.REGISTRY.getObject(
+                            ResourceLocation(
+                                this@apply[0],
+                                this@apply[1],
+                            )
+                        )
+                        if (item == null) LogisticsPipes.log.error("Item does not exist! ${it.icon}")
+                    }
+                } catch (e: Exception) {
+                    LogisticsPipes.log.warn("Problem while checking if \\\"${it.icon}\\\" exists.")
+                }
+            }
+        }
     }
 
     override val paragraphs: List<Paragraph> by lazy {

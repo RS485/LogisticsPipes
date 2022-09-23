@@ -52,7 +52,7 @@ object TextUtil {
     private val formattingState: EnumSet<TextFormatting> = EnumSet.noneOf(TextFormatting::class.java)
     private val baseFormattingState: EnumSet<TextFormatting> = EnumSet.noneOf(TextFormatting::class.java)
     private val regexPattern =
-            TextFormatting.values().joinToString("|", prefix = "(\\$)(", postfix = ")") { it.friendlyName.toUpperCase() }
+            TextFormatting.values().joinToString("|", prefix = "(\\$)(", postfix = ")") { it.friendlyName.uppercase() }
                     .toRegex()
 
     @JvmStatic
@@ -171,7 +171,7 @@ object TextUtil {
         return formattingState.getColorTag() + formattingState.getFormattingTags()
     }
 
-    private fun MatchResult.getTextFormatting(): TextFormatting = TextFormatting.getValueByName(value.toLowerCase())!!
+    private fun MatchResult.getTextFormatting(): TextFormatting = TextFormatting.getValueByName(value.lowercase())!!
 
     private fun EnumSet<TextFormatting>.getColorTag(): String =
             this.firstOrNull { it.isColor }?.toString() ?: baseFormattingState.firstOrNull { it.isColor }?.toString()

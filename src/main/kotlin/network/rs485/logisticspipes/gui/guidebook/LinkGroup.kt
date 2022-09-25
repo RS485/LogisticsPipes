@@ -81,16 +81,15 @@ class LinkGroup(private val link: Link) : LinkInteractable {
                 is WebLink -> guideActionListener.onWebLinkClick(link.url)
                 is ItemLink -> {
                     guideActionListener.onItemLinkClick(link.stack)
-                /* TODO When clicked should show the item on the NEI gui,
-                if possible when pressed "A" while hovering it should add item
-                to NEI bookmarks. Otherwise this should display an item tooltip */ }
+                    /* TODO Display item tooltip on hover */
+                }
             }
             return true
         }
         return false
     }
 
-    override fun updateColor(baseColor: Int): Int = MinecraftColor.BLUE.colorCode
+    override fun updateColor(baseColor: Int): Int = MinecraftColor.LIGHT_BLUE.colorCode
 
     override fun updateFormat(baseFormat: Set<TextFormat>): Set<TextFormat> =
             (if (hovered) baseFormat::minusElement else baseFormat::plusElement).invoke(TextFormat.Underline)

@@ -1,6 +1,6 @@
 <!---
-title: ConsolidatingPipes
-icon: logisticspipes:pipe_basic
+title: Consolidating Pipes
+icon: logisticspipes:pipe_chassis_mk1
 --->
 ## Logistics Pipes Tutorial Part 4 - Consolidating Pipes
 
@@ -11,19 +11,19 @@ LP network, which is becoming a bit of a mess at this point.
 
 A Logistics Chassis is a pipe that can do several things at once. 
 We can use this to simplify our LP network by consolidating the 
-functions of the pipes we already have. Let’s open up the Compiler 
+functions of the pipes we already have. Let’s open up the [Compiler](item://logisticspipes:program_compiler) 
 and tell it to start unlocking Chassis.
 
-A Chassis does nothing by itself. Instead, we add modules to it 
-that give it different things to do. There are five type of 
+A [Chassis](item://logisticspipes:pipe_chassis_mk1) does nothing 
+by itself. Instead, we add modules to it that give it different things to do. There are five type of 
 Chassis, but the only functional difference between them is how 
 many modules they can have at once. Once the Compiler has finished, 
-let’s build the program for a Chassis Mk2, which can fit two modules, 
+let’s build the program for a [Chassis Mk2](item://logisticspipes:pipe_chassis_mk2), which can fit two modules, 
 and craft some of those.
 
-Next, we’ll remove one of the Basic pipes we have attached to a 
-storage chest, replace it with the Chassis, then use the Pipe 
-Manager on it to have a look inside.
+Next, we’ll remove one of the [Basic pipes](item://logisticspipes:pipe_basic) we have attached to a 
+storage chest, replace it with the Chassis, then use the [Pipe 
+Manager](item://logisticspipes:pipe_manager) on it to have a look inside.
 
 ![Chassis GUI](image://04-01-chassis-gui.png)
 
@@ -41,10 +41,10 @@ settings and then set it up just like we did with the pipe that
 it replaced.
 
 Next, let’s replace the Basic pipe that has the default route 
-with another Mk2 Chassis, add an ItemSink Module, and tell that 
+with another Mk2 Chassis, add an [ItemSink Module](item://logisticspipes:module_item_sink), and tell that 
 module to act as a default route.
 
-A variant of the ItemSink Module is the Polymorphic ItemSink Module, 
+A variant of the ItemSink Module is the [Polymorphic ItemSink Module](item://logisticspipes:module_item_sink_polymorphic), 
 which cannot be programmed with a list of items.
 
 ![Polymorphic ItemSink Module](image://04-03-polysink.png)
@@ -52,14 +52,14 @@ which cannot be programmed with a list of items.
 Instead of waiting for us to tell it what items it should sink, 
 the Polymorphic version automatically sinks anything that is 
 already in the chest to which it is attached. Liberal use of these 
-modules makes chest storage fast and easy. Let’s replace all of 
-the remaining Basic pipes that we are using for storage with Mk2 
+modules makes chest storage fast and easy. Let’s replace 
+all the remaining Basic pipes that we are using for storage with Mk2 
 Chassis and Polymorphic ItemSink Modules.
 
 ### Provider Modules
 
 Next, we can consolidate the pipes on our storage chests by 
-crafting some Provider Modules and adding them to the Chassis 
+crafting some [Provider Modules](item://logisticspipes:module_provider) and adding them to the Chassis 
 on our storage chests. Let’s install one in a Chassis that has 
 a Polymorphic ItemSink Module and look at its settings.
 
@@ -80,7 +80,7 @@ options:
 
 Since this Chassis uses a Polymorphic sink it needs to reserve at 
 least one of each item for itself – if it were to give up all of 
-an item then it would stop sinking them and they would start going 
+an item then it would stop sinking them, and they would start going 
 somewhere else. For this reason a setting like “Leave 1 item per 
 type” is ideal. The “Normal” setting is good for machines’ output 
 buffers or chests with regular ItemSink modules. The “Leave 1 item 
@@ -92,7 +92,7 @@ them in the air. Be careful – once they have been installed, modules
 with settings no longer stack.
 
 Now that the Provider Modules are installed and set up we can remove 
-the Provider Pipes since they are no longer necessary. At the moment, 
+the [Provider Pipes](item://logisticspipes:pipe_provider) since they are no longer necessary. At the moment, 
 removing them is even more important because the Provider Pipes and 
 modules both provide the same items to the network, leading to 
 double-counting. With those cleaned up, things are looking better already.
@@ -157,7 +157,7 @@ differ in that they can work in many different types of pipes, not just
 Chassis. To manage upgrades we need to craft a Pipe Controller. It looks 
 like a red Pipe Manager.
 
-The most uesful upgrade to us right now is the Sneaky Upgrade. Adding 
+The most useful upgrade to us right now is the [Sneaky Upgrade](item://logisticspipes:upgrade_sneaky). Adding 
 a Sneaky Upgrade to a pipe causes it to pretend as if it was on a different 
 side of the thing to which it is attached when it tries to add something 
 to its inventory. This is best illustrated by example: the reason we used 
@@ -167,7 +167,7 @@ the bottom. If we use a Sneaky Upgrade on the Chassis with the Crafting
 Modules then we can make it insert ore into the top of the furnace by itself.
 
 Let’s craft a Sneaky Upgrade and right-click the Chassis with the Crafting 
-Modules with the Pipe Controller so we can install the upgrade.
+Modules with the Pipe Controller, so we can install the upgrade.
 
 ![Upgrade list](image://04-08-upgrade-list.png)
 

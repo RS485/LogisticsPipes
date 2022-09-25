@@ -320,7 +320,7 @@ dependencies {
 
     compileOnly group: 'mcjty.theoneprobe', name: 'TheOneProbe-1.12', version: '1.12-1.4.28-17', classifier: 'api'
     compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.293'
-    compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.3', classifier: 'deobf'
+    compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.4', classifier: 'deobf'
     compileOnly group: 'com.mod-buildcraft', name: 'buildcraft-all', version: '7.99.24.6', transitive: false
     compileOnly group: 'net.industrial-craft', name: 'industrialcraft-2', version: '2.8.170-ex112', classifier: 'api'
     compileOnly group: 'codechicken', name: 'NotEnoughItems', version: '1.12.2-2.4.3.245', classifier: 'deobf', transitive: false

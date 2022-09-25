@@ -1,5 +1,7 @@
 package logisticspipes.asm.mcmp;
 
+import net.minecraft.launchwrapper.Launch;
+
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import org.objectweb.asm.ClassReader;
@@ -13,6 +15,12 @@ import logisticspipes.asm.util.ASMHelper;
 public class ClassBlockMultipartContainerHandler {
 
 	public static byte[] handleClass(byte[] bytes) {
+		try {
+			Launch.classLoader.findClass("mcmultipart.api.multipart.ITileMultipartContainerProvider");
+			return bytes;
+		} catch (ClassNotFoundException ignored) {
+		}
+
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);

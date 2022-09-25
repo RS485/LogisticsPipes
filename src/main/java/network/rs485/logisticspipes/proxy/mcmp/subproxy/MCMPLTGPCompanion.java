@@ -20,6 +20,7 @@
 
 package network.rs485.logisticspipes.proxy.mcmp.subproxy;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,22 +28,37 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 
+import mcmultipart.api.multipart.ITileMultipartContainerProvider;
 import mcmultipart.api.ref.MCMPCapabilities;
+import mcmultipart.block.TileMultipartContainer;
 
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 
 public class MCMPLTGPCompanion implements IMCMPLTGPCompanion {
 
 	private final LPTileMultipartContainer lpTileMultipartContainer;
+	private final MCMPMultipartContainerProvider lpTileMultipartContainerProvider;
+
+	@CapabilityInject(ITileMultipartContainerProvider.class)
+	private static Capability<ITileMultipartContainerProvider> TILE_MULTIPART_CONTAINER_PROVIDER_CAPABILITY;
 
 	public MCMPLTGPCompanion(LogisticsTileGenericPipe pipe) {
 		lpTileMultipartContainer = new LPTileMultipartContainer(pipe);
+		if (TILE_MULTIPART_CONTAINER_PROVIDER_CAPABILITY == null) {
+			lpTileMultipartContainerProvider = null;
+		} else {
+			lpTileMultipartContainerProvider = new MCMPMultipartContainerProvider(lpTileMultipartContainer);
+		}
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
 		if (capability == MCMPCapabilities.MULTIPART_CONTAINER) {
+			return true;
+		}
+		if (capability == TILE_MULTIPART_CONTAINER_PROVIDER_CAPABILITY) {
 			return true;
 		}
 		return lpTileMultipartContainer.hasCapability(capability, facing);
@@ -50,9 +66,12 @@ public class MCMPLTGPCompanion implements IMCMPLTGPCompanion {
 
 	@Nullable
 	@Override
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
 		if (capability == MCMPCapabilities.MULTIPART_CONTAINER) {
 			return (T) lpTileMultipartContainer;
+		}
+		if (capability == TILE_MULTIPART_CONTAINER_PROVIDER_CAPABILITY) {
+			return (T) lpTileMultipartContainerProvider;
 		}
 		return lpTileMultipartContainer.getCapability(capability, facing);
 	}

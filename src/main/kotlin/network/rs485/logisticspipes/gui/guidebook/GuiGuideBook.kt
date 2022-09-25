@@ -73,7 +73,7 @@ import kotlin.math.roundToInt
 
 object GuideBookConstants {
     // Z Levels
-    const val Z_TOOLTIP = 100.0f // Tooltip z
+    const val Z_TOOLTIP = 500.0f // Tooltip z
 
     // Debug constant
     const val DRAW_BODY_WIREFRAME = false
@@ -87,7 +87,6 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     - Crafting recipes?
     - Use translatable names or block/item identifiers as text?
     - DrawableListParagraph
-    - Fix missing image rendering, it needs to be more obvious an image was supposed to be there.
     - Add configurability to images
     - Create tooltip object and render it independently of the Drawable it's attached to
     - Create a variety of tooltips with configurable style and information.
@@ -270,7 +269,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         drawDefaultBackground()
         GlStateManager.enableDepth()
         GlStateManager.depthFunc(GL11.GL_ALWAYS)
-        SimpleGraphics.drawGradientRect(0, 0, width, height, Color.BLANK, Color.BLANK, 100.0)
+        SimpleGraphics.drawGradientRect(0, 0, width, height, Color.BLANK, Color.BLANK, 450.0)
 
         LPGuiDrawer.drawGuideBookBackground(outerGui)
 
@@ -280,7 +279,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             draw(visibleArea, mouseX.toFloat(), mouseY.toFloat(), partialTicks)
         }
         GlStateManager.depthFunc(GL11.GL_ALWAYS)
-        tabButtons.filter { it.isInactive }.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
+        tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
         LPGuiDrawer.drawGuideBookFrame(outerGui, sliderSeparator)
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
 

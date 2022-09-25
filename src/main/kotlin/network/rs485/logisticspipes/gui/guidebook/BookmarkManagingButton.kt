@@ -57,7 +57,7 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
     var onClickActionStated: (ButtonState) -> Boolean = onClickAction
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if(buttonState != ButtonState.DISABLED) {
+        if (visible) {
             hovered = isHovered(mouseX, mouseY)
             val yOffset = getHoverState(hovered) * additionTexture.roundedHeight
             LPGuiDrawer.drawGuiTexturedRect(body, (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), true, MinecraftColor.WHITE.colorCode)
@@ -68,26 +68,20 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
         if (hovered && visible) {
             drawTooltip(
                     x = body.roundedLeft + body.roundedHeight / 2,
-                    y = body.roundedTop,
+                    y = body.roundedTop - 6,
                     horizontalAlign = HorizontalAlignment.CENTER,
                     verticalAlign = VerticalAlignment.BOTTOM
-                )
-            }
-            drawButtonForegroundLayer(mouseX, mouseY)
+            )
         }
-    }
-
-    override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
-        val yOffset = getHoverState(hovered) * additionTexture.roundedHeight
-        GuiGuideBook.drawStretchingRectangle(body, zLevel, (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), true, MinecraftColor.WHITE.colorCode)
-    }
+   }
 
     fun setX(newX: Int){
         body.setPos(newX.toFloat(), body.y0)
     }
 
-    fun updateState(){
+    fun updateState() {
         buttonState = additionStateUpdater()
+        visible = buttonState != ButtonState.DISABLED
     }
 
     override fun getTooltipText(): String = when(buttonState){

@@ -52,7 +52,7 @@ object DebugPage : PageInfoProvider {
     override val language = "en_us"
     override val metadata = YamlPageMetadata(
         title = "Debug Page",
-        icon = "logisticspipes:itemcard",
+        icon = "logisticspipes:item_card",
         menu = mapOf(
             "listed" to mapOf(
                 "Guides:" to listOf(

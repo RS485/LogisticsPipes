@@ -22,7 +22,6 @@ import lombok.Setter;
 import logisticspipes.commands.commands.debug.DebugGuiController;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.pathfinder.changedetection.LPWorldAccess;
 import logisticspipes.utils.FluidIdentifier;
 import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -72,7 +71,6 @@ public class LPTickHandler {
 		if (info == null) {
 			info = new LPWorldInfo();
 			LPTickHandler.worldInfo.put(world, info);
-			world.addEventListener(new LPWorldAccess(world, info));
 		}
 		return info;
 	}

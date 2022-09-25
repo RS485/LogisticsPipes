@@ -10,5 +10,4 @@ public interface ITileEntityChangeListener {
 
 	void pipeAdded(DoubleCoordinates pos, EnumFacing side);
 
-	void pipeModified(DoubleCoordinates pos);
 }

@@ -623,10 +623,6 @@ public class PipeTransportLogistics {
 					return !((tile instanceof LogisticsPowerJunctionTileEntity || tile instanceof ISubSystemPowerProvider) && ori.getAxis() == EnumFacing.Axis.Y);
 				}
 			}
-			if (SimpleServiceLocator.enderIOProxy.isItemConduit(tile, side.getOpposite())
-					|| (getPipe().getUpgradeManager().hasRFPowerSupplierUpgrade() && SimpleServiceLocator.powerProxy.isEnergyReceiver(tile, side.getOpposite())) || (getPipe().getUpgradeManager().getIC2PowerLevel() > 0 && SimpleServiceLocator.IC2Proxy.isEnergySink(tile))) {
-				return true;
-			}
 			IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(tile, side.getOpposite());
 			if (util != null) {
 				return util.getSizeInventory() > 0;

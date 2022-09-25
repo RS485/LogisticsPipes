@@ -743,9 +743,6 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 							AxisAlignedBB bb = block.getCollisionBoundingBox(coords.getBlockState(pipeTile.getWorld()), pipeTile.getWorld(), coords.getBlockPos());
 							if (bb == null) bb = Block.FULL_BLOCK_AABB;
 							bounds = new double[] { bb.minY, bb.minZ, bb.minX, bb.maxY, bb.maxZ, bb.maxX };
-							if (SimpleServiceLocator.enderIOProxy.isItemConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite()) || SimpleServiceLocator.enderIOProxy.isFluidConduit(coords.getTileEntity(pipeTile.getWorld()), dir.getOpposite())) {
-								bounds = new double[] { 0.0249D, 0.0249D, 0.0249D, 0.9751D, 0.9751D, 0.9751D };
-							}
 						}
 						double bound = bounds[dir.ordinal() / 2 + (dir.ordinal() % 2 == 0 ? 3 : 0)];
 						ScaleObject key = new ScaleObject(model, bound);

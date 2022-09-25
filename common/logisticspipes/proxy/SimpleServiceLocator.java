@@ -18,7 +18,6 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
@@ -150,12 +149,6 @@ public final class SimpleServiceLocator {
 
 	public static void setPipeInformationManager(PipeInformationManager manager) {
 		SimpleServiceLocator.pipeInformationManager = manager;
-	}
-
-	public static IEnderIOProxy enderIOProxy;
-
-	public static void setEnderIOProxy(IEnderIOProxy proxy) {
-		SimpleServiceLocator.enderIOProxy = proxy;
 	}
 
 	public static IIronChestProxy ironChestProxy;

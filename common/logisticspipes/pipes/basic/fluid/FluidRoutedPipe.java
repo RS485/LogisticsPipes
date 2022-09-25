@@ -55,10 +55,6 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe {
 
 	@Override
 	public boolean logisitcsIsPipeConnected(TileEntity tile, EnumFacing dir) {
-		if (SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
-			return SimpleServiceLocator.enderIOProxy.isFluidConduit(tile, dir.getOpposite());
-		}
-
 		ITankUtil tank = PipeFluidUtil.INSTANCE.getTankUtilForTE(tile, dir.getOpposite());
 		return (tank != null && tank.containsTanks()) || tile instanceof LogisticsTileGenericPipe;
 	}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import logisticspipes.asm.te.ILPTEInformation;
@@ -14,7 +13,6 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.LPTickHandler;
-import logisticspipes.ticks.LPTickHandler.LPWorldInfo;
 import logisticspipes.ticks.QueuedTasks;
 import network.rs485.logisticspipes.connection.ConnectionType;
 import network.rs485.logisticspipes.world.CoordinateUtils;
@@ -96,63 +94,6 @@ public class TEControl {
 				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getLPTileEntityObject().changeListeners)) {
 					listener.pipeRemoved(pos);
 				}
-				return null;
-			});
-		}
-	}
-
-	public static void handleBlockUpdate(final World world, final LPWorldInfo info, BlockPos blockPos) {
-		if (info.isSkipBlockUpdateForWorld()) {
-			return;
-		}
-		if (info.getWorldTick() < 5) {
-			return;
-		}
-		final DoubleCoordinates pos = new DoubleCoordinates(blockPos);
-		if (info.getUpdateQueued().contains(pos)) {
-			return;
-		}
-		if (!pos.blockExists(world)) {
-			return;
-		}
-		final TileEntity tile = pos.getTileEntity(world);
-		if (SimpleServiceLocator.enderIOProxy.isBundledPipe(tile)) {
-			QueuedTasks.queueTask(() -> {
-				for (EnumFacing dir : EnumFacing.VALUES) {
-					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
-					if (!newPos.blockExists(world)) {
-						continue;
-					}
-					TileEntity nextTile = newPos.getTileEntity(world);
-					if (nextTile instanceof LogisticsTileGenericPipe) {
-						((LogisticsTileGenericPipe) nextTile).scheduleNeighborChange();
-					}
-				}
-				return null;
-			});
-		}
-		if (!(tile instanceof ILPTEInformation) || ((ILPTEInformation) tile).getLPTileEntityObject() == null) {
-			return;
-		}
-		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
-			info.getUpdateQueued().add(pos);
-			QueuedTasks.queueTask(() -> {
-				for (EnumFacing dir : EnumFacing.VALUES) {
-					DoubleCoordinates newPos = CoordinateUtils.sum(pos, dir);
-					if (!newPos.blockExists(world)) {
-						continue;
-					}
-					TileEntity nextTile = newPos.getTileEntity(world);
-					if (nextTile != null && ((ILPTEInformation) nextTile).getLPTileEntityObject() != null) {
-						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getLPTileEntityObject().changeListeners)) {
-							listener.pipeModified(pos);
-						}
-					}
-				}
-				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getLPTileEntityObject().changeListeners)) {
-					listener.pipeModified(pos);
-				}
-				info.getUpdateQueued().remove(pos);
 				return null;
 			});
 		}

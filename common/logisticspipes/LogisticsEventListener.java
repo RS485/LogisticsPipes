@@ -296,11 +296,6 @@ public class LogisticsEventListener {
 	}
 
 	@SubscribeEvent
-	public void onBlockUpdate(BlockEvent.NeighborNotifyEvent event) {
-		TEControl.handleBlockUpdate(event.getWorld(), LPTickHandler.getWorldInfo(event.getWorld()), event.getPos());
-	}
-
-	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onItemStackToolTip(ItemTooltipEvent event) {
 		if (event.getItemStack().hasTagCompound()) {

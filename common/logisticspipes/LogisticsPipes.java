@@ -162,7 +162,6 @@ import logisticspipes.proxy.endercore.EnderCoreProgressProvider;
 import logisticspipes.proxy.ic2.IC2ProgressProvider;
 import logisticspipes.proxy.progressprovider.MachineProgressProvider;
 import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
-import logisticspipes.proxy.specialconnection.EnderIOTransceiverConnection;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
@@ -486,8 +485,6 @@ public class LogisticsPipes {
 
 		//SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		//SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
-		//SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
-		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOTransceiverConnection());
 
 		//SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Factory", "AutoWorkbench", AutoWorkbench.class));
 		//SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("BuildCraft|Silicon", "AssemblyAdvancedWorkbench", AssemblyAdvancedWorkbench.class));

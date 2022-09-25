@@ -21,7 +21,6 @@ public class LPConstants {
 	public static final String thermalExpansionModID = "thermalexpansion";
 	public static final String enderCoreModID = "endercore";
 	public static final String neiModID = "notenoughitems";
-	public static final String enderioModID = "enderio";
 	public static final String thermalDynamicsModID = "thermaldynamics";
 	public static final String cclrenderModID = "cclrender";
 	public static final String ironChestModID = "ironchest";

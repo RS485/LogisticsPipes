@@ -58,7 +58,6 @@ import logisticspipes.proxy.interfaces.IBCProxy;
 import logisticspipes.proxy.interfaces.ICCLProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IEnderIOProxy;
 import logisticspipes.proxy.interfaces.IEnderStorageProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IIronChestProxy;
@@ -160,16 +159,6 @@ public class ProxyManager {
 			@Override @SideOnly(Side.CLIENT) public boolean renderItemToolTip(int posX, int posY, List<String> msg, TextFormatting rarityColor, @Nonnull ItemStack stack) {return false;}
 			@Override @SideOnly(Side.CLIENT) public List<String> getItemToolTip(@Nonnull ItemStack stack, EntityPlayer thePlayer, ITooltipFlag advancedItemTooltips, GuiContainer screen) {return stack.getTooltip(thePlayer, advancedItemTooltips);}
 			@Override public@Nonnull  ItemStack getItemForPosition(World world, EntityPlayer player, RayTraceResult objectMouseOver) {return null;}
-		}));
-
-		SimpleServiceLocator.setEnderIOProxy(ProxyManager.getWrappedProxy(LPConstants.enderioModID, IEnderIOProxy.class, null/*EnderIOProxy.class*/, new IEnderIOProxy() {
-			@Override public boolean isSendAndReceive(TileEntity tile) {return false;}
-			@Override public boolean isTransceiver(TileEntity tile) {return false;}
-			@Override public List<TileEntity> getConnectedTransceivers(TileEntity tile) {return null;}
-			@Override public boolean isEnderIO() {return false;}
-			@Override public boolean isItemConduit(TileEntity tile, EnumFacing dir) {return false;}
-			@Override public boolean isFluidConduit(TileEntity tile, EnumFacing dir) {return false;}
-			@Override public boolean isBundledPipe(TileEntity tile) {return false;}
 		}));
 
 		SimpleServiceLocator.setIronChestProxy(ProxyManager.getWrappedProxy(LPConstants.ironChestModID, IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {

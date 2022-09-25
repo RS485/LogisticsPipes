@@ -161,15 +161,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			}
 		}
 
-		@Override
-		public void pipeModified(DoubleCoordinates pos) {
-			if (connectionNeedsChecking == 0) {
-				connectionNeedsChecking = 1;
-			}
-			if (LogisticsPipes.isDEBUG()) {
-				causedBy.add(pos);
-			}
-		}
 	};
 	private Set<List<ITileEntityChangeListener>> listenedPipes = new HashSet<>();
 	private Set<LPTileEntityObject> oldTouchedPipes = new HashSet<>();

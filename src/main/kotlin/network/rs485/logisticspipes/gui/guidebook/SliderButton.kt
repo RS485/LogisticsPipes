@@ -56,7 +56,7 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
         if (!visible) return
         hoveredBar = sliderButton.translated(body).contains(mouseX, mouseY)
         hovered = body.contains(mouseX, mouseY)
-        GuiGuideBook.drawSliderButton(sliderButton.translated(body), texture.translated(0, getHoverState(hoveredBar) * texture.roundedHeight))
+        LPGuiDrawer.drawSliderButton(sliderButton.translated(body), texture.translated(0, getHoverState(hoveredBar) * texture.roundedHeight))
         mouseDragged(mc, mouseX, mouseY)
     }
 

@@ -221,11 +221,116 @@ object LPGuiDrawer {
         GlStateManager.disableBlend()
     }
 
+    /**
+     * Draws a stylized tooltip at the specified position, and clamps to the edges (to be tested).
+     * @param text  text to be displayed in the tooltip;
+     * @param x     x position at the center of the tooltip, in case no clamping needs to be done;
+     * @param y     y position of the top of the tooltip;
+     * @param z     z position of the tooltip.
+     */
+    fun drawTextTooltip(
+        text: List<String>,
+        x: Int,
+        y: Int,
+        z: Float,
+        horizontalAlign: HorizontalAlignment,
+        verticalAlign: VerticalAlignment,
+    ) {
+        if (text.isEmpty() || text.all { it.isBlank() }) return
+
+        val border = 4
+        val horizontalPadding = 2
+        val verticalPadding = 1
+
+        // Calculate tooltip size
+        val outerArea = Rectangle(
+            (text.maxOfOrNull { lpFontRenderer.getStringWidth(it) } ?: 0) + 2 * (border + horizontalPadding),
+            (text.size * lpFontRenderer.getFontHeight()) + 2 * (verticalPadding + border)
+        )
+
+        // Align tooltip accordingly
+        outerArea.setPos(
+            when (horizontalAlign) {
+                HorizontalAlignment.CENTER -> x - outerArea.roundedWidth / 2
+                HorizontalAlignment.LEFT -> x
+                HorizontalAlignment.RIGHT -> x - outerArea.roundedWidth
+            },
+            when (verticalAlign) {
+                VerticalAlignment.CENTER -> y - outerArea.roundedHeight / 2
+                VerticalAlignment.TOP -> y
+                VerticalAlignment.BOTTOM -> y - outerArea.roundedHeight
+            }
+        )
+
+        // Constrain position to available screen space
+        if (outerArea.x0 < 0) outerArea.translate(translateX = -outerArea.x0)
+        if (outerArea.x1 > Screen.absoluteBody.roundedWidth) outerArea.translate(translateX = Screen.absoluteBody.roundedWidth - outerArea.x1)
+        if (outerArea.y0 < 0) outerArea.translate(translateY = -outerArea.y0)
+        if (outerArea.y1 > Screen.absoluteBody.roundedHeight) outerArea.translate(translateY = Screen.absoluteBody.roundedHeight - outerArea.y1)
+
+
+        // Define required quads and texture quads.
+        val borderedTooltipQuads = BorderedRectangle(
+            outerArea,
+            border
+        ).quads
+        val borderedTexQuads = BorderedRectangle(
+            Rectangle(112, 32, 16, 16),
+            border
+        ).quads
+
+        GlStateManager.translate(0.0f, 0.0f, z)
+        GlStateManager.enableAlpha()
+
+        // Draw background
+        setTexture(guiAtlas)
+        start()
+        for ((i, quad) in borderedTooltipQuads.withIndex()) {
+            putTexturedQuad(quad, borderedTexQuads[i], -1)
+        }
+        finish()
+
+        val textX = outerArea.roundedX + border + horizontalPadding
+        val textY = outerArea.roundedY + border + verticalPadding
+
+        // Draw text
+        text.fold(textY) { yOffset, line ->
+            lpFontRenderer.drawString(
+                line,
+                textX.toFloat(),
+                yOffset.toFloat(),
+                defaultDrawableState.color,
+                defaultDrawableState.format,
+                1.0f
+            )
+        }
+        GlStateManager.translate(0.0f, 0.0f, -z)
+    }
+
     fun drawGuideBookBackground(rect: Rectangle) {
         val borderedGui = BorderedRectangle(rect, 24)
-        setTexture(guiNormalPatternTexture)
+        setTexture(guiDarkPatternTexture)
         start()
         putScaledTexturedQuad(borderedGui.inner.translate(-8).grow(16), 0f to 0f, -1)
+        finish()
+    }
+
+    fun drawSliderButton(body: Rectangle, texture: Rectangle) {
+        setTexture(guiAtlas)
+
+        val quads = BorderedRectangle(body.copy().apply {
+            grow(4, 0)
+            translate(-2, 0)
+        }, 2)
+        val textures = BorderedRectangle(texture.copy().apply {
+            grow(4, 0)
+            translate(-2, 0)
+        }, 2)
+
+        start()
+        putTexturedQuad(quads.top, textures.top, -1)
+        putRepeatingTexturedQuad(quads.inner, textures.inner, -1)
+        putTexturedQuad(quads.bottom, textures.bottom, -1)
         finish()
     }
 
@@ -241,7 +346,7 @@ object LPGuiDrawer {
 
     fun drawInteractionIndicator(mouseX: Float, mouseY: Float) {
         GlStateManager.disableTexture2D()
-        GlStateManager.disableAlpha()
+        GlStateManager.translate(0.0f, 0.0f, 100f)
         start(DefaultVertexFormats.POSITION_COLOR)
         putQuad(
             Rectangle(mouseX + 4f to mouseY - 5f, mouseX + 5f to mouseY - 2f),
@@ -252,8 +357,8 @@ object LPGuiDrawer {
             MinecraftColor.WHITE.colorCode
         )
         finish()
-        GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
+        GlStateManager.translate(0.0f, 0.0f, -100f)
     }
 
     fun drawRect(area: Rectangle, color: Int) {
@@ -318,6 +423,32 @@ object LPGuiDrawer {
     }
 
     // Buffer specific code
+
+    private fun putRepeatingTexturedQuad(rect: Rectangle, texture: Rectangle, color: Int) {
+        val tile = Rectangle().apply {
+            setPos(rect.left, rect.top)
+            setSize(
+                min(rect.width, texture.width),
+                min(rect.height, texture.height)
+            )
+        }
+        for (x in 0 until rect.roundedWidth step tile.roundedWidth) {
+            for (y in 0 until rect.roundedHeight step tile.roundedHeight) {
+                putScaledTexturedQuad(
+                    rect = if (rect.contains(tile)) {
+                        tile
+                    } else {
+                        rect.overlap(tile)
+                    },
+                    texture = texture.topLeft,
+                    color = color
+                )
+                tile.translate(0f, tile.height)
+            }
+            tile.setPos(newX = tile.left, newY = rect.top)
+            tile.translate(tile.width, 0f)
+        }
+    }
 
     private fun putScaledTexturedQuad(rect: Rectangle, texture: Pair<Float, Float>, color: Int) {
         putTexturedQuad(rect, Rectangle(texture.first, texture.second, rect.width, rect.height), color)

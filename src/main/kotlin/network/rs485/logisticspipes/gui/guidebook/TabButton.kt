@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 
@@ -75,25 +76,16 @@ class TabButton(
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         hovered = isHovered(mouseX, mouseY)
         if (!visible) return
-        mc.textureManager.bindTexture(GuideBookConstants.guiBookTexture)
-        val yOffset = if (whisky.isPageActive()) 0 else 3
-        val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
-        if (hovered) {
-            drawTooltip(
-                    x = body.roundedRight,
-                    y = body.roundedTop,
-                    horizontalAlign = HorizontalAlignment.RIGHT,
-                    verticalAlign = VerticalAlignment.BOTTOM
-            )
-        }
-        GuiGuideBook.drawStretchingRectangle(
-                rectangle = body.translated(0, yOffset),
-                z = 0.0f,
-                texture = buttonTextureArea,
+        if (isInactive) {
+            val yOffset = if (whisky.isPageActive()) 0 else 3
+            val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
+            LPGuiDrawer.drawGuiTexturedRect(
+                rect = body.translated(0, yOffset),
+                text = buttonTextureArea,
                 blend = true,
                 color = if (whisky.isPageActive()) 0xFFFFFFFF.toInt() else color
-        )
-        drawButtonForegroundLayer(mouseX, mouseY)
+            )
+        }
     }
 
     override fun getTooltipText(): String {
@@ -101,14 +93,27 @@ class TabButton(
     }
 
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
-        if (whisky.isPageActive()) {
+        if (isActive) {
             val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
-            GuiGuideBook.drawStretchingRectangle(
-                    rectangle = circleArea.translated(body),
-                    z = zLevel,
-                    texture = circleAreaTexture,
-                    blend = true,
-                    color = color
+            LPGuiDrawer.drawGuiTexturedRect(
+                rect = body,
+                text = buttonTextureArea,
+                blend = true,
+                color = -1
+            )
+            LPGuiDrawer.drawGuiTexturedRect(
+                rect = circleArea.translated(body),
+                text = circleAreaTexture,
+                blend = true,
+                color = color
+            )
+        }
+        if (hovered && visible) {
+            drawTooltip(
+                x = body.roundedRight,
+                y = body.roundedTop,
+                horizontalAlign = HorizontalAlignment.RIGHT,
+                verticalAlign = VerticalAlignment.BOTTOM
             )
         }
     }
@@ -118,5 +123,5 @@ class TabButton(
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean =
-            bodyTrigger.translated(body).translated(0, if (whisky.isPageActive()) -3 else 0).contains(mouseX, mouseY)
+        bodyTrigger.translated(body).translated(0, if (whisky.isPageActive()) -3 else 0).contains(mouseX, mouseY)
 }

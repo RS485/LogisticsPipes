@@ -82,4 +82,6 @@ abstract class DrawableParagraph : Drawable, MouseInteractable {
             function.invoke(mouseX, mouseY, visibleArea)
         }
 
+    abstract fun getHovered(mouseX: Float, mouseY: Float): Drawable?
+
 }

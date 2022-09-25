@@ -49,9 +49,12 @@ import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.font.LPFontRenderer
+import network.rs485.logisticspipes.gui.guidebook.Screen
 import network.rs485.logisticspipes.util.math.BorderedRectangle
 import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.markdown.defaultDrawableState
 import org.lwjgl.opengl.GL11
+import java.lang.Float.min
 
 /**
  * Drawing methods to help with Guis
@@ -132,13 +135,27 @@ object LPGuiDrawer {
     private fun putNormalSlot(x: Int, y: Int) {
         val normalSlotSize = 18
         putTexturedQuad(
-                Rectangle(x, y, normalSlotSize, normalSlotSize).translate(-1),
-                slotNormalTexture,
-                MinecraftColor.WHITE.colorCode
+            Rectangle(x, y, normalSlotSize, normalSlotSize).translate(-1),
+            slotNormalTexture,
+            MinecraftColor.WHITE.colorCode
         )
     }
 
     // Button specific draw code
+
+    fun drawGuiTexturedRect(rect: Rectangle, text: Rectangle, blend: Boolean, color: Int) {
+        if (blend) {
+            GlStateManager.enableBlend()
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        } else {
+            GlStateManager.disableBlend()
+        }
+        setTexture(guiAtlas)
+        start()
+        putTexturedQuad(rect, text, color)
+        finish()
+        if (blend) GlStateManager.disableBlend()
+    }
 
     fun drawBorderedTile(rect: Rectangle, hovered: Boolean, enabled: Boolean, light: Boolean, thickerBottomBorder: Boolean) {
         GlStateManager.enableBlend()
@@ -221,18 +238,18 @@ object LPGuiDrawer {
 
     // Untextured draw code
 
-    @Deprecated(message = "Change this completely")
+
     fun drawInteractionIndicator(mouseX: Float, mouseY: Float) {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
         putQuad(
-                Rectangle(mouseX + 4f to mouseY - 5f, mouseX + 5f to mouseY - 2f),
-                MinecraftColor.WHITE.colorCode
+            Rectangle(mouseX + 4f to mouseY - 5f, mouseX + 5f to mouseY - 2f),
+            MinecraftColor.WHITE.colorCode
         )
         putQuad(
-                Rectangle(mouseX + 3f to mouseY - 4f, mouseX + 6f to mouseY - 3f),
-                MinecraftColor.WHITE.colorCode
+            Rectangle(mouseX + 3f to mouseY - 4f, mouseX + 6f to mouseY - 3f),
+            MinecraftColor.WHITE.colorCode
         )
         finish()
         GlStateManager.enableAlpha()
@@ -257,6 +274,16 @@ object LPGuiDrawer {
         drawGradientQuad(area, colorTop, colorTop, colorBottom, colorBottom)
     }
 
+    fun drawLine(start: Pair<Float, Float>, finish: Pair<Float, Float>, color: Int, thickness: Float) {
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableAlpha()
+        start(DefaultVertexFormats.POSITION_COLOR)
+        putLine(start, finish, color, thickness)
+        finish()
+        GlStateManager.enableAlpha()
+        GlStateManager.enableTexture2D()
+    }
+
     fun drawOutlineRect(rect: Rectangle, color: Int) {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
@@ -271,7 +298,12 @@ object LPGuiDrawer {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO)
+        GlStateManager.tryBlendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ZERO
+        )
         GlStateManager.shadeModel(GL11.GL_SMOOTH)
         start(DefaultVertexFormats.POSITION_COLOR)
         buffer.pos(area.topRight).rgba(colorTopRight).endVertex()
@@ -301,12 +333,22 @@ object LPGuiDrawer {
         }
     }
 
+    private fun putLine(from: Pair<Float, Float>, to: Pair<Float, Float>, color: Int, thickness: Float = 1.0f, vertical: Boolean = false) {
+        if (buffer.vertexFormat == DefaultVertexFormats.POSITION_COLOR) {
+            if (!vertical) {
+                putQuad(Rectangle(from, to.first to to.second + thickness), color)
+            } else {
+                putQuad(Rectangle(from, to.first + thickness to to.second), color)
+            }
+        }
+    }
+
     private fun putOutlineQuad(rect: Rectangle, color: Int, thickness: Float = 1.0f) {
         rect.run {
-            putQuad(Rectangle(left to top, right to top + thickness), color)
-            putQuad(Rectangle(left to bottom - thickness, right to bottom), color)
-            putQuad(Rectangle(left to top, left + thickness to bottom), color)
-            putQuad(Rectangle(right - thickness to top, right to bottom), color)
+            putLine(rect.topLeft, rect.topRight, color, thickness)
+            putLine(rect.bottomLeft, rect.bottomRight, color, thickness)
+            putLine(rect.topLeft, rect.bottomLeft, color, thickness, vertical = true)
+            putLine(rect.topRight, rect.bottomRight, color, thickness, vertical = true)
         }
     }
 
@@ -381,6 +423,6 @@ object LPGuiDrawer {
     private fun BufferBuilder.pos(point: Pair<Float, Float>): BufferBuilder = pos(point.first.toDouble(), point.second.toDouble(), 0.0)
 }
 
-private class Texture(val resource: ResourceLocation, val size: Int) {
+private class Texture(val resource: ResourceLocation, size: Int) {
     val factor: Float = 1.0f / size
 }

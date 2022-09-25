@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.client.Minecraft
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.roundToInt
 
@@ -50,10 +51,6 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
     private var dragging: Boolean = false
     private var initialMouseYOffset: Int = 0
     private var hoveredBar: Boolean = false
-
-    init {
-        // zLevel = GuideBookConstants.Z_TITLE_BUTTONS
-    }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (!visible) return

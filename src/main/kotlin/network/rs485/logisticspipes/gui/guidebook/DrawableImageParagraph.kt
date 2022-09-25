@@ -40,11 +40,16 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.BufferBuilder
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.PngSizeInfo
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.util.math.Rectangle
 import java.io.IOException
+import kotlin.math.min
 
 class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, val image: DrawableImage) : DrawableParagraph() {
     override var relativeBody = Rectangle()
@@ -68,11 +73,18 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
         return currentY
     }
 
+    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? = if (image.broken) {
+        alternativeText.firstOrNull { it.isMouseHovering(mouseX, mouseY) }
+    } else {
+        null
+    }
+
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         if (image.broken) {
             super.draw(mouseX, mouseY, delta, visibleArea)
             for (drawableWord in alternativeText.filter { it.visible(visibleArea) }) {
                 drawableWord.draw(mouseX, mouseY, delta, visibleArea)
+                LPGuiDrawer.drawOutlineRect(absoluteBody, MinecraftColor.WHITE.colorCode)
             }
         } else {
             image.draw(mouseX, mouseY, delta, visibleArea)
@@ -97,10 +109,65 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         if (imageSize != null) {
-            GuiGuideBook.drawImage(absoluteBody, visibleArea, imageResource)
+            drawImage(absoluteBody, visibleArea, imageResource)
         } else {
             LPGuiDrawer.drawOutlineRect(absoluteBody, MinecraftColor.WHITE.colorCode)
         }
+    }
+
+    private fun putTexturedImage(
+        bufferBuilder: BufferBuilder,
+        x0: Float,
+        y0: Float,
+        x1: Float,
+        y1: Float,
+        uw: Int,
+        vh: Int,
+        u0: Int,
+        v0: Int,
+        u1: Int,
+        v1: Int,
+    ) {
+        val atlasWidthScale = 1 / uw.toDouble()
+        val atlasHeightScale = 1 / vh.toDouble()
+        val u0S = u0 * atlasWidthScale
+        val v0S = v0 * atlasHeightScale
+        val u1S = u1 * atlasWidthScale
+        val v1S = v1 * atlasHeightScale
+        bufferBuilder.pos(x0, y1, 0f).tex(u0S, v1S).endVertex()
+        bufferBuilder.pos(x1, y1, 0f).tex(u1S, v1S).endVertex()
+        bufferBuilder.pos(x1, y0, 0f).tex(u1S, v0S).endVertex()
+        bufferBuilder.pos(x0, y0, 0f).tex(u0S, v0S).endVertex()
+    }
+
+    fun drawImage(imageBody: Rectangle, visibleArea: Rectangle, image: ResourceLocation) {
+        val visibleImageBody = imageBody.overlap(visibleArea)
+        val xOffset = min(imageBody.x0 - visibleArea.x0, 0f)
+        val yOffset = min(imageBody.y0 - visibleArea.y0, 0f)
+        val visibleImageTexture = Rectangle.fromRectangle(visibleImageBody)
+            .resetPos()
+            .translate(xOffset, -yOffset)
+        GlStateManager.pushMatrix()
+        Minecraft.getMinecraft().textureManager.bindTexture(image)
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        val tessellator = Tessellator.getInstance()
+        val bufferBuilder = tessellator.buffer
+        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX)
+        putTexturedImage(
+            bufferBuilder = bufferBuilder,
+            x0 = visibleImageBody.x0,
+            y0 = visibleImageBody.y0,
+            x1 = visibleImageBody.x1,
+            y1 = visibleImageBody.y1,
+            uw = imageBody.roundedWidth,
+            vh = imageBody.roundedHeight,
+            u0 = visibleImageTexture.roundedLeft,
+            v0 = visibleImageTexture.roundedTop,
+            u1 = visibleImageTexture.roundedRight,
+            v1 = visibleImageTexture.roundedBottom,
+        )
+        tessellator.draw()
+        GlStateManager.popMatrix()
     }
 
     override fun setPos(x: Int, y: Int): Int {
@@ -116,4 +183,9 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         }
         return super.setPos(x, y)
     }
+
 }
+
+fun BufferBuilder.pos(x: Float, y: Float, z: Float): BufferBuilder = pos(x.toDouble(), y.toDouble(), z.toDouble())
+
+fun BufferBuilder.tex(u: Float, v: Float): BufferBuilder = tex(u.toDouble(), v.toDouble())

@@ -42,6 +42,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.math.Rectangle
 
@@ -66,19 +67,13 @@ class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(
     }
 
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (this.visible) {
-            hovered = isHovered(mouseX, mouseY)
-            if (hovered) {
-                drawTooltip(
-                    x = body.roundedRight,
-                    y = body.roundedTop,
-                    horizontalAlign = HorizontalAlignment.RIGHT,
-                    verticalAlign = VerticalAlignment.BOTTOM
-                )
-            }
+        hovered = isHovered(mouseX, mouseY)
+        if (visible) {
             GlStateManager.enableAlpha()
-            GuiGuideBook.drawStretchingRectangle(body, zLevel, homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
-            drawButtonForegroundLayer(mouseX, mouseY)
+            GlStateManager.enableBlend()
+            LPGuiDrawer.drawGuiTexturedRect(body, homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
+            val hoverStateOffset = getHoverState(hovered) * homeIconTexture.roundedHeight
+            LPGuiDrawer.drawGuiTexturedRect(homeIconBody.translated(body), homeIconTexture.translated(0, hoverStateOffset), false, MinecraftColor.WHITE.colorCode)
         }
     }
 
@@ -87,7 +82,13 @@ class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(
     }
 
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
-        val hoverStateOffset = getHoverState(hovered) * homeIconTexture.roundedHeight
-        GuiGuideBook.drawStretchingRectangle(homeIconBody.translated(body), zLevel, homeIconTexture.translated(0, hoverStateOffset), false, MinecraftColor.WHITE.colorCode)
+        if (hovered && visible) {
+            drawTooltip(
+                    x = body.roundedRight,
+                    y = body.roundedTop,
+                    horizontalAlign = HorizontalAlignment.RIGHT,
+                    verticalAlign = VerticalAlignment.BOTTOM
+            )
+        }
     }
 }

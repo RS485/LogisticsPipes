@@ -42,14 +42,11 @@ import logisticspipes.utils.MinecraftColor
 import logisticspipes.utils.item.ItemStackRenderer
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPGuiDrawer
-import network.rs485.logisticspipes.gui.VerticalAlignment
+import network.rs485.logisticspipes.gui.widget.Tooltipped
 import network.rs485.logisticspipes.util.math.Rectangle
 import network.rs485.markdown.TextFormat
 import java.util.*
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 private const val listEntryHeight = 24
 private const val tileSize = 40
@@ -85,6 +82,16 @@ class DrawableMenuParagraph<T>(private val menuTitle: List<DrawableWord>, privat
     override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         (menuTitle + horizontalLine + menuGroups).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
+
+    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
+            (menuTitle + horizontalLine + menuGroups).firstOrNull { it.isMouseHovering(mouseX, mouseY) }?.let {
+                if(it is DrawableParagraph) {
+                    return it.getHovered(mouseX, mouseY)
+                }
+                else {
+                    it
+                }
+            }
 }
 
 class DrawableMenuGroup<T>(private val groupTitle: List<DrawableWord>, private val groupTiles: List<T>) : DrawableParagraph() where T : Drawable, T : MouseInteractable {
@@ -118,9 +125,12 @@ class DrawableMenuGroup<T>(private val groupTitle: List<DrawableWord>, private v
     override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         (groupTitle + groupTiles).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
+
+    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
+            (groupTitle + groupTiles).firstOrNull { it.isMouseHovering(mouseX, mouseY) }
 }
 
-class DrawableMenuTile(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable, MouseInteractable {
+class DrawableMenuTile(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable, MouseInteractable, Tooltipped {
     private val iconScale = 1.5f
     private val iconBody = Rectangle()
 
@@ -139,6 +149,8 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         iconBody.setPos((tileSize - iconBody.width) / 2, (tileSize - iconBody.height) / 2)
     }
 
+    override fun getTooltipText(): List<String> = listOf(pageName)
+
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = absoluteBody.contains(mouseX, mouseY)
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
@@ -153,14 +165,13 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
                 light = true,
                 thickerBottomBorder = false
         )
-        val itemRect = Rectangle.fromRectangle(iconBody.translated(absoluteBody))
-        if (visibleArea.intersects(iconBody.translated(absoluteBody))) {
-            val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
-            itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, 0.0f, iconScale)
-        }
         if (hovered) {
             LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
-            GuiGuideBook.drawBoxedString(pageName, mid(), min(bottom, visibleArea.bottom).roundToInt(), GuideBookConstants.Z_TOOLTIP, HorizontalAlignment.CENTER, VerticalAlignment.TOP)
+        }
+        val itemRect = Rectangle.fromRectangle(iconBody.translated(absoluteBody))
+        if (visibleArea.intersects(iconBody.translated(absoluteBody))) {
+            val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.brokenItem
+            itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, 0.0f, iconScale)
         }
     }
 
@@ -168,8 +179,6 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         relativeBody.setPos(x, y)
         return super.setPos(x, y)
     }
-
-    fun mid(): Int = left.toInt() + (width / 2)
 }
 
 class DrawableMenuListEntry(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable, MouseInteractable {
@@ -188,7 +197,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
     }
 
     init {
-        relativeBody.setSize(4 * itemOffset + iconSize + GuiGuideBook.lpFontRenderer.getStringWidth(pageName), listEntryHeight)
+        relativeBody.setSize(4 * itemOffset + iconSize + LPGuiDrawer.lpFontRenderer.getStringWidth(pageName), listEntryHeight)
         itemRect.setSize(iconSize, iconSize)
     }
 
@@ -198,7 +207,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
             guideActionListener?.onMenuButtonClick(linkedPage) != null
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
-        val hovered = isMouseHovering(mouseX, mouseY)
+        val hovered = visibleArea.contains(mouseX, mouseY) && isMouseHovering(mouseX, mouseY)
         LPGuiDrawer.drawBorderedTile(
                 rect = absoluteBody,
                 hovered = hovered,
@@ -209,7 +218,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
             val textColor: Int = if (!hovered) MinecraftColor.WHITE.colorCode else 0xffffffa0.toInt()
-            val textVerticalOffset = (height - GuiGuideBook.lpFontRenderer.getFontHeight(1.0f)) / 2
+            val textVerticalOffset = (height - LPGuiDrawer.lpFontRenderer.getFontHeight(1.0f)) / 2
             LPGuiDrawer.lpFontRenderer.drawString(
                     string = pageName,
                     x = itemRect.right + itemOffset,
@@ -218,7 +227,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
                     format = EnumSet.of(TextFormat.Shadow),
                     scale = 1.0f
             )
-            val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.blankModule
+            val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.brokenItem
             itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, 0.0f, iconScale)
         }
         if (hovered) {

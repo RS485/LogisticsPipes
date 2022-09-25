@@ -79,4 +79,7 @@ class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : Dr
     fun getVisibleParagraphs(visibleArea: Rectangle) =
             drawableParagraphs.filter { it.visible(visibleArea) }
 
+    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
+        drawableParagraphs.firstOrNull { it.isMouseHovering(mouseX, mouseY) }?.getHovered(mouseX, mouseY)
+
 }

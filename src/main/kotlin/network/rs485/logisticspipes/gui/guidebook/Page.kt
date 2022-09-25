@@ -148,4 +148,5 @@ class Page(data: PageData) : IPageData by data {
         drawable.draw(mouseX, mouseY, partialTicks, visibleArea)
     }
 
+    fun getHovered(mouseX: Float, mouseY: Float) = drawable.getHovered(mouseX, mouseY)
 }

@@ -77,4 +77,9 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
             }
         }
     }
+
+    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
+            words.firstOrNull {
+                it.isMouseHovering(mouseX, mouseY)
+            }
 }

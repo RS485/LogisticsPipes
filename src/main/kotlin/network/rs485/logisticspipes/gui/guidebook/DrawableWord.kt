@@ -62,7 +62,7 @@ open class DrawableWord(
     val color: Int = state.color
 
     init {
-        relativeBody.setSize(GuiGuideBook.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), GuiGuideBook.lpFontRenderer.getFontHeight(scale))
+        relativeBody.setSize(LPGuiDrawer.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale), LPGuiDrawer.lpFontRenderer.getFontHeight(scale))
     }
 
     private fun setupParent(drawableParagraph: DrawableParagraph) {
@@ -109,7 +109,7 @@ class DrawableSpace(
             linkInteractable?.isMouseHovering(mouseX, mouseY)
             val updatedColor = linkInteractable?.updateColor(color) ?: color
             val updatedFormat = linkInteractable?.updateFormat(format) ?: format
-            GuiGuideBook.lpFontRenderer.drawSpace(
+            LPGuiDrawer.lpFontRenderer.drawSpace(
                 x = left,
                 y = top,
                 width = width,
@@ -128,7 +128,7 @@ class DrawableSpace(
     }
 
     fun resetWidth() {
-        setWidth(newWidth = GuiGuideBook.lpFontRenderer.getStringWidth(" ", format.italic(), format.bold(), scale))
+        setWidth(newWidth = LPGuiDrawer.lpFontRenderer.getStringWidth(" ", format.italic(), format.bold(), scale))
     }
 
     override fun toString(): String {

@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
@@ -58,8 +59,14 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
     override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int, partialTicks: Float) {
         if(buttonState != ButtonState.DISABLED) {
             hovered = isHovered(mouseX, mouseY)
-            if (hovered) {
-                drawTooltip(
+            val yOffset = getHoverState(hovered) * additionTexture.roundedHeight
+            LPGuiDrawer.drawGuiTexturedRect(body, (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), true, MinecraftColor.WHITE.colorCode)
+        }
+    }
+
+    override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
+        if (hovered && visible) {
+            drawTooltip(
                     x = body.roundedLeft + body.roundedHeight / 2,
                     y = body.roundedTop,
                     horizontalAlign = HorizontalAlignment.CENTER,

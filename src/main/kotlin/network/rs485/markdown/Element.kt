@@ -39,6 +39,7 @@ package network.rs485.markdown
 
 import com.google.common.collect.ImmutableSet
 import logisticspipes.LPItems
+import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -66,7 +67,6 @@ class ItemLink(unlocalizedName: String) : Link() {
     val stack: ItemStack
 
     init {
-        assert(unlocalizedName.isNotEmpty() && unlocalizedName.contains(":"))
         stack = if (unlocalizedName.isNotEmpty() && unlocalizedName.contains(":")) {
             val resourceLocation = unlocalizedName.split(":").let { it ->
                 ResourceLocation(
@@ -75,7 +75,9 @@ class ItemLink(unlocalizedName: String) : Link() {
                 )
             }
             val item: Item? = Item.REGISTRY.getObject(resourceLocation)
-            assert(item != null)
+            if(item == null) {
+                LogisticsPipes.log.error("Item doesn't exist: $unlocalizedName")
+            }
             ItemStack(item ?: LPItems.brokenItem)
         } else {
             ItemStack(LPItems.brokenItem)

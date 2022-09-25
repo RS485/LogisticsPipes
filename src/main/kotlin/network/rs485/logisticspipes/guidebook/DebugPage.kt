@@ -123,10 +123,47 @@ object DebugPage : PageInfoProvider {
         ),
         RegularParagraph(
             listOf(
-                listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow))),
+                listOf(TextFormatting(EnumSet.noneOf(TextFormat::class.java))),
                 listOf(ColorFormatting(randomColor())),
                 MarkdownParser.splitSpacesAndWords(
                     "Cras sit amet nisi velit. Etiam vitae elit quis ipsum rhoncus facilisis et ac ante."
+                ),
+            ).flatten(),
+        ),
+        RegularParagraph(
+            listOf(
+                listOf(TextFormatting(EnumSet.noneOf(TextFormat::class.java))),
+                listOf(ColorFormatting(randomColor())),
+                MarkdownParser.splitSpacesAndWords(
+                    "Лорем ипсум долор сит амет, видит лаборес ест еи, мунере цомпрехенсам вим ех. " +
+                            "Делецтус сенсибус антиопам те сед, но мел яуидам денияуе делицатиссими, ин мелиоре " +
+                            "хонестатис иус. Дицта елецтрам волуптатибус но сед, вертерем праесент реферрентур " +
+                            "яуи еу, ад нам алияуид оффендит вулпутате. Не мел саепе еффициантур."
+                ),
+            ).flatten(),
+        ),
+        RegularParagraph(
+            listOf(
+                listOf(TextFormatting(EnumSet.noneOf(TextFormat::class.java))),
+                listOf(ColorFormatting(randomColor())),
+                MarkdownParser.splitSpacesAndWords(
+                    "就ら展総ま内長ミルロム水万くし競顔北参ラテキ物36由らいおね割心社イ距公ワヱトネ労固服推野ぱお。" +
+                            "合ナ体2業みさイぴ米案にゆろ花内ラシカケ千自どでレま走9式オユヲ完味るょけ事養べ必選ケ最感湖わ" +
+                            "スろ啓際コト属健めぞ山歩マ白太苦体丘ぜ。活示よへッえ上誤歳むひぱフ報塚コタイ進左じなふ録氷隠は暮" +
+                            "的お音安まる自質編メシハ掲79文ユヌ演言フドろぐ事岡ホヤ小行済テサフ主挙助検引ぞー。"
+                ),
+            ).flatten(),
+        ),
+        RegularParagraph(
+            listOf(
+                listOf(TextFormatting(EnumSet.of(TextFormat.Underline, TextFormat.Shadow))),
+                listOf(ColorFormatting(randomColor())),
+                MarkdownParser.splitSpacesAndWords(
+                    "並城容打性様権続料左速水戸離。績相質三活活気堀防塩関遅。" +
+                            "版受指遠本意日念日録来能筆確文秋医含関山。法嗅瑞催東原小能調見還房。" +
+                            "繊軽夫開江質聖米棋河意立給研。模更辞級催京百陽審稿治年。" +
+                            "交呼語天値葉定表暮紙進当。掲治覧確見年造直経和挑禁在果。" +
+                            "介図後禁情洗崎平古伝援参天史飛権米。丈大勲社判福性書持者社方覧掲助浅。"
                 ),
             ).flatten(),
         ),

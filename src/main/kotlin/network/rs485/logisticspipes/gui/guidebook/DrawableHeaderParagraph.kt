@@ -49,8 +49,8 @@ class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableP
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-            words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
-                    ?: false
+        words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+            ?: false
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
@@ -60,6 +60,9 @@ class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableP
     override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
         (this.words + horizontalLine).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
+
+    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
+        (words + horizontalLine).firstOrNull { it.isMouseHovering(mouseX, mouseY) }
 
     override fun setChildrenPos(): Int {
         var currentY = splitAndInitialize(words, 0, 0, width, true)

@@ -37,9 +37,9 @@ public class TEControl {
 		}
 
 		if (SimpleServiceLocator.pipeInformationManager.isPipe(tile, false, ConnectionType.UNDEFINED) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
-			((ILPTEInformation) tile).setObject(new LPTileEntityObject());
-			((ILPTEInformation) tile).getObject().initialised = LPTickHandler.getWorldInfo(world).getWorldTick();
-			if (((ILPTEInformation) tile).getObject().initialised < 5) {
+			((ILPTEInformation) tile).setLPTileEntityObject(new LPTileEntityObject());
+			((ILPTEInformation) tile).getLPTileEntityObject().initialised = LPTickHandler.getWorldInfo(world).getWorldTick();
+			if (((ILPTEInformation) tile).getLPTileEntityObject().initialised < 5) {
 				return;
 			}
 			QueuedTasks.queueTask(() -> {
@@ -52,7 +52,7 @@ public class TEControl {
 						continue;
 					}
 					TileEntity nextTile = newPos.getTileEntity(world);
-					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
+					if (nextTile != null && ((ILPTEInformation) nextTile).getLPTileEntityObject() != null) {
 						if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
 							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
 						}
@@ -60,7 +60,7 @@ public class TEControl {
 							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir);
 							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(tile).refreshTileCacheOnSide(dir.getOpposite());
 						}
-						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
+						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getLPTileEntityObject().changeListeners)) {
 							listener.pipeAdded(pos, dir.getOpposite());
 						}
 					}
@@ -78,7 +78,7 @@ public class TEControl {
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).isRoutingPipe()) {
 			return;
 		}
-		if (((ILPTEInformation) tile).getObject() != null) {
+		if (((ILPTEInformation) tile).getLPTileEntityObject() != null) {
 			QueuedTasks.queueTask(() -> {
 				DoubleCoordinates pos = new DoubleCoordinates(tile);
 				for (EnumFacing dir : EnumFacing.VALUES) {
@@ -87,13 +87,13 @@ public class TEControl {
 						continue;
 					}
 					TileEntity nextTile = newPos.getTileEntity(world);
-					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
+					if (nextTile != null && ((ILPTEInformation) nextTile).getLPTileEntityObject() != null) {
 						if (SimpleServiceLocator.pipeInformationManager.isItemPipe(nextTile)) {
 							SimpleServiceLocator.pipeInformationManager.getInformationProviderFor(nextTile).refreshTileCacheOnSide(dir.getOpposite());
 						}
 					}
 				}
-				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getObject().changeListeners)) {
+				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getLPTileEntityObject().changeListeners)) {
 					listener.pipeRemoved(pos);
 				}
 				return null;
@@ -131,7 +131,7 @@ public class TEControl {
 				return null;
 			});
 		}
-		if (tile == null || ((ILPTEInformation) tile).getObject() == null) {
+		if (!(tile instanceof ILPTEInformation) || ((ILPTEInformation) tile).getLPTileEntityObject() == null) {
 			return;
 		}
 		if (SimpleServiceLocator.pipeInformationManager.isItemPipe(tile) || SimpleServiceLocator.specialtileconnection.isType(tile)) {
@@ -143,13 +143,13 @@ public class TEControl {
 						continue;
 					}
 					TileEntity nextTile = newPos.getTileEntity(world);
-					if (nextTile != null && ((ILPTEInformation) nextTile).getObject() != null) {
-						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getObject().changeListeners)) {
+					if (nextTile != null && ((ILPTEInformation) nextTile).getLPTileEntityObject() != null) {
+						for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) nextTile).getLPTileEntityObject().changeListeners)) {
 							listener.pipeModified(pos);
 						}
 					}
 				}
-				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getObject().changeListeners)) {
+				for (ITileEntityChangeListener listener : new ArrayList<>(((ILPTEInformation) tile).getLPTileEntityObject().changeListeners)) {
 					listener.pipeModified(pos);
 				}
 				info.getUpdateQueued().remove(pos);

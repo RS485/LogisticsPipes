@@ -378,12 +378,12 @@ public class PathFinder {
 	}
 
 	private void listTileEntity(TileEntity tile) {
-		if (changeListener != null && tile instanceof ILPTEInformation && ((ILPTEInformation) tile).getObject() != null) {
-			if (!((ILPTEInformation) tile).getObject().changeListeners.contains(changeListener)) {
-				((ILPTEInformation) tile).getObject().changeListeners.add(changeListener);
+		if (changeListener != null && tile instanceof ILPTEInformation && ((ILPTEInformation) tile).getLPTileEntityObject() != null) {
+			if (!((ILPTEInformation) tile).getLPTileEntityObject().changeListeners.contains(changeListener)) {
+				((ILPTEInformation) tile).getLPTileEntityObject().changeListeners.add(changeListener);
 			}
-			listenedPipes.add(((ILPTEInformation) tile).getObject().changeListeners);
-			touchedPipes.add(((ILPTEInformation) tile).getObject());
+			listenedPipes.add(((ILPTEInformation) tile).getLPTileEntityObject().changeListeners);
+			touchedPipes.add(((ILPTEInformation) tile).getLPTileEntityObject());
 		}
 	}
 

@@ -237,8 +237,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			Object cache = null;
 			Triplet<Integer, ItemIdentifier, Boolean> key = new Triplet<>(id, item.getItemIdentifierStack()
 					.getItem(), serverItem.getInfo()._transportMode == TransportMode.Active);
-			if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getObject() != null) {
-				cache = ((ILPTEInformation) duct).getObject().getCacheHolder().getCacheFor(CacheTypes.Routing, key);
+			if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getLPTileEntityObject() != null) {
+				cache = ((ILPTEInformation) duct).getLPTileEntityObject().getCacheHolder().getCacheFor(CacheTypes.Routing, key);
 			}
 			if (cache instanceof Route) {
 				//noinspection unchecked
@@ -285,8 +285,8 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				}
 			}
 			if (route != null) {
-				if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getObject() != null) {
-					((ILPTEInformation) duct).getObject().getCacheHolder().setCache(CacheTypes.Routing, key, route);
+				if (duct instanceof ILPTEInformation && ((ILPTEInformation) duct).getLPTileEntityObject() != null) {
+					((ILPTEInformation) duct).getLPTileEntityObject().getCacheHolder().setCache(CacheTypes.Routing, key, route);
 				}
 				TravelingItem travelItem = new TravelingItem(item.getItemIdentifierStack().makeNormalStack(), getDuct(), route.copy(), (byte) serverItem.output.ordinal(), (byte) 1 /* Speed */);
 				//noinspection ConstantConditions

@@ -4,9 +4,9 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import logisticspipes.interfaces.routing.ISaveState;
+import network.rs485.logisticspipes.IStore;
 
-public class SecuritySettings implements ISaveState {
+public class SecuritySettings implements IStore {
 
 	public String name;
 	public boolean openGui = false;

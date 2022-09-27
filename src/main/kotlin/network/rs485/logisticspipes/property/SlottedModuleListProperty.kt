@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -40,12 +40,8 @@ package network.rs485.logisticspipes.property
 import logisticspipes.LPItems
 import logisticspipes.items.ItemModule
 import logisticspipes.modules.LogisticsModule
-import logisticspipes.modules.LogisticsModule.ModulePositionType
 import net.minecraft.item.Item
 import net.minecraft.nbt.NBTTagCompound
-
-const val SLOT_INDEX_KEY = "slotted_module.slot"
-const val MODULE_NAME_KEY = "slotted_module.name"
 
 class SlottedModuleListProperty(slots: Int, override val tagKey: String) :
     ListProperty<SlottedModule>(MutableList(slots) { SlottedModule(it, null) }) {
@@ -85,10 +81,4 @@ class SlottedModuleListProperty(slots: Int, override val tagKey: String) :
     fun set(slot: Int, module: LogisticsModule) = set(slot, SlottedModule(slot, module))
     fun clear(slot: Int) = set(slot, SlottedModule(slot, null))
 
-}
-
-data class SlottedModule(val slot: Int, val module: LogisticsModule?) {
-    fun isEmpty() = module == null
-
-    fun registerPosition() = module?.registerPosition(ModulePositionType.SLOT, slot)
 }

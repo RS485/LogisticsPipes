@@ -37,16 +37,14 @@
 
 package network.rs485.logisticspipes.property
 
-import logisticspipes.interfaces.routing.ISaveState
-import java.util.concurrent.CopyOnWriteArraySet
+import logisticspipes.modules.LogisticsModule
+import logisticspipes.modules.LogisticsModule.ModulePositionType
 
-interface Property<V> : ISaveState {
-    val tagKey: String
-    val propertyObservers: CopyOnWriteArraySet<ObserverCallback<V>>
+const val SLOT_INDEX_KEY = "slotted_module.slot"
+const val MODULE_NAME_KEY = "slotted_module.name"
 
-    fun iChanged() = propertyObservers.forEach { observer -> observer.invoke(this) }
-    fun <T> T.alsoIChanged() = this.also { iChanged() }
-    fun addObserver(callback: ObserverCallback<V>) = propertyObservers.add(callback)
-    fun copyValue(): V
-    fun copyProperty(): Property<V>
+data class SlottedModule(val slot: Int, val module: LogisticsModule?) {
+    fun isEmpty() = module == null
+
+    fun registerPosition() = module?.registerPosition(ModulePositionType.SLOT, slot)
 }

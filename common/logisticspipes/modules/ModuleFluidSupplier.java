@@ -8,8 +8,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-import org.jetbrains.annotations.Contract;
-
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.network.NewGuiHandler;

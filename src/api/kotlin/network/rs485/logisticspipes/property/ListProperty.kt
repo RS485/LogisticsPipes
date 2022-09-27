@@ -41,9 +41,19 @@ import net.minecraft.nbt.NBTTagCompound
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.UnaryOperator
 
+interface IListProperty<T> : MutableList<T>, Property<MutableList<T>> {
+    fun ensureSize(size: Int, fillWith: (Int) -> T): Unit?
+    fun ensureSize(size: Int): Unit?
+    fun replaceContent(col: Collection<T>): Boolean?
+    fun replaceContent(arr: Array<T>): Boolean?
+    fun readSingleFromNBT(tag: NBTTagCompound, key: String): T
+    fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: T)
+    fun copyValue(obj: T): T
+}
+
 abstract class ListProperty<T>(
     protected val list: MutableList<T>,
-) : MutableList<T> by list, Property<MutableList<T>> {
+) : MutableList<T> by list, IListProperty<T> {
 
     companion object {
         private const val SIZE_NAME = "listSize"
@@ -56,17 +66,17 @@ abstract class ListProperty<T>(
 
     override val propertyObservers: CopyOnWriteArraySet<ObserverCallback<MutableList<T>>> = CopyOnWriteArraySet()
 
-    fun ensureSize(size: Int, fillWith: (Int) -> T) =
+    override fun ensureSize(size: Int, fillWith: (Int) -> T) =
         (size - list.size).takeIf { it > 0 }?.let { repeat(it) { list.add(fillWith(list.size)) } }?.alsoIChanged()
 
-    fun ensureSize(size: Int) = ensureSize(size) { defaultValue(it) }
+    override fun ensureSize(size: Int) = ensureSize(size) { defaultValue(it) }
 
-    fun replaceContent(col: Collection<T>) =
+    override fun replaceContent(col: Collection<T>) =
         list.takeUnless { it == col.toMutableList() }
             ?.run { clear(); addAll(col) }
             ?.alsoIChanged()
 
-    fun replaceContent(arr: Array<T>) = replaceContent(arr.asList())
+    override fun replaceContent(arr: Array<T>) = replaceContent(arr.asList())
 
     abstract fun defaultValue(idx: Int): T
 
@@ -82,16 +92,10 @@ abstract class ListProperty<T>(
         }
     }
 
-    abstract fun readSingleFromNBT(tag: NBTTagCompound, key: String): T
-
     override fun writeToNBT(tag: NBTTagCompound) {
         tag.setInteger(sizeTagKey(tagKey), list.size)
         list.withIndex().forEach { writeSingleToNBT(tag, itemTagKey(tagKey, it.index), it.value) }
     }
-
-    abstract fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: T)
-
-    abstract fun copyValue(obj: T): T
 
     override fun copyValue(): MutableList<T> = MutableList(list.size) { idx -> copyValue(list[idx]) }
 

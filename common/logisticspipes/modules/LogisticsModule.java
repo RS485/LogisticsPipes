@@ -20,7 +20,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.ISaveState;
+import network.rs485.logisticspipes.IStore;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
@@ -35,7 +35,7 @@ import network.rs485.logisticspipes.property.PropertyHolder;
 import network.rs485.logisticspipes.property.UtilKt;
 
 @CCType(name = "LogisticsModule")
-public abstract class LogisticsModule implements ISaveState, ILPCCTypeHolder, PropertyHolder {
+public abstract class LogisticsModule implements IStore, ILPCCTypeHolder, PropertyHolder {
 
 	private final Object[] ccTypeHolder = new Object[1];
 	@Nullable

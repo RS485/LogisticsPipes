@@ -32,7 +32,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.routing.ISaveState;
+import network.rs485.logisticspipes.IStore;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -42,7 +42,7 @@ import network.rs485.logisticspipes.inventory.SlotAccess;
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class ItemIdentifierInventory
-		implements ISaveState, Iterable<Pair<ItemIdentifierStack, Integer>>, IItemIdentifierInventory {
+		implements IStore, Iterable<Pair<ItemIdentifierStack, Integer>>, IItemIdentifierInventory {
 
 	private final Object[] ccTypeHolder = new Object[1];
 	private final ItemIdentifierStack[] _contents;

@@ -38,57 +38,16 @@
 package network.rs485.logisticspipes.property
 
 import net.minecraft.nbt.NBTTagCompound
-import java.util.*
+import network.rs485.logisticspipes.IStore
 
-private val zero = UUID(0L, 0L)
+/**
+ * Holds a [properties] list and can read and write [NBT][NBTTagCompound] via [IStore].
+ */
+interface PropertyHolder : IStore {
+    val properties: List<Property<*>>
 
-fun isZero(uuid: UUID) = uuid == zero
+    override fun readFromNBT(tag: NBTTagCompound) = properties.readFromNBT(tag)
 
-class UUIDProperty(initialValue: UUID?, override val tagKey: String) : ValueProperty<UUID>(initialValue ?: zero) {
-
-    override fun readFromNBT(tag: NBTTagCompound) {
-        // FIXME after 1.12: remove support for empty string
-        if (tag.hasKey(tagKey)) tag.getString(tagKey).takeUnless(String::isEmpty)?.also { value = UUID.fromString(it) }
-    }
-
-    override fun writeToNBT(tag: NBTTagCompound) = tag.setString(tagKey, value.toString())
-
-    override fun copyValue(): UUID = value
-
-    override fun copyProperty(): Property<UUID> = UUIDProperty(copyValue(), tagKey)
-
-    fun isZero() = isZero(value)
-
-    fun zero() {
-        value = zero
-    }
-
-}
-
-class UUIDListProperty : ListProperty<UUID> {
-
-    override val tagKey: String
-
-    constructor(tagKey: String) : super(mutableListOf()) {
-        this.tagKey = tagKey
-    }
-
-    private constructor(tagKey: String, list: MutableList<UUID>) : super(list) {
-        this.tagKey = tagKey
-    }
-
-    override fun defaultValue(idx: Int): UUID = zero
-
-    override fun readSingleFromNBT(tag: NBTTagCompound, key: String): UUID = UUID.fromString(tag.getString(key))
-
-    override fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: UUID) = tag.setString(key, value.toString())
-
-    override fun copyValue(obj: UUID): UUID = obj
-
-    override fun copyProperty(): Property<MutableList<UUID>> = UUIDListProperty(tagKey, list)
-
-    fun isZero(idx: Int) = isZero(get(idx))
-
-    fun zero(idx: Int) = set(idx, zero)
+    override fun writeToNBT(tag: NBTTagCompound) = properties.writeToNBT(tag)
 
 }

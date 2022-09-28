@@ -45,11 +45,6 @@ annotation class GuiComponentMarker
 
 @GuiComponentMarker
 sealed class GuiComponent {
-    enum class UndefinedId {
-        UNDEFINED
-    }
-
-    var id: Enum<*> = UndefinedId.UNDEFINED
     val children = arrayListOf<GuiComponent>()
 
     protected fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
@@ -74,7 +69,7 @@ class PropertyLabel<V : Any, P : Property<V>> : Label() {
     var propertyToText: (V) -> String = Any::toString
 
     fun onPropertyUpdate(callback: (String) -> Unit) {
-        property.addObserver {
+        propertyLayer.addObserver(property) {
             callback.invoke(propertyToText.invoke(it.copyValue()))
         }
     }

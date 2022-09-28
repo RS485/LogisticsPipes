@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.gui
 
-import network.rs485.logisticspipes.property.Property
 import java.awt.Container
 import javax.swing.*
 
@@ -51,9 +50,8 @@ object SwingRenderer : WidgetRenderer<JPanel> {
             when (child) {
                 is PropertyLabel<*, *> -> JLabel().apply {
                     text = child.text
-                    child.propertyLayer.addObserver(child.property) {
-                        val value = (it as Property<Any>).copyValue()
-                        text = (child.propertyToText as Function1<Any, String>).invoke(value)
+                    child.onPropertyUpdate { newText ->
+                        text = newText
                     }
                 }
                 is Label -> JLabel().apply {

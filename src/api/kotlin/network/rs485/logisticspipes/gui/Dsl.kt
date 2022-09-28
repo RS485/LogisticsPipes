@@ -72,6 +72,12 @@ class PropertyLabel<V : Any, P : Property<V>> : Label() {
     lateinit var propertyLayer: PropertyLayer
     lateinit var property: P
     var propertyToText: (V) -> String = Any::toString
+
+    fun onPropertyUpdate(callback: (String) -> Unit) {
+        property.addObserver {
+            callback.invoke(propertyToText.invoke(it.copyValue()))
+        }
+    }
 }
 
 open class Button : GuiComponent() {

@@ -30,8 +30,10 @@ public final class TileBuffer {
 	}
 
 	public void refresh() {
+		BlockPos pos = new BlockPos(x, y, z);
+		IBlockState blockState = world.getBlockState(pos);
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.preventRemove()) {
-			if (world.getBlockState(new BlockPos(x, y, z)) == null) {
+			if (blockState.getBlock().isAir(blockState, world, pos)) {
 				return;
 			}
 		}
@@ -42,11 +44,10 @@ public final class TileBuffer {
 			return;
 		}
 
-		IBlockState blockState = world.getBlockState(new BlockPos(x, y, z));
-		block = blockState != null ? blockState.getBlock() : null;
+		block = blockState.getBlock();
 
-		if (block != null && block.hasTileEntity(world.getBlockState(new BlockPos(x, y, z)))) {
-			tile = world.getTileEntity(new BlockPos(x, y, z));
+		if (block.hasTileEntity(blockState)) {
+			tile = world.getTileEntity(pos);
 		}
 	}
 
@@ -86,14 +87,6 @@ public final class TileBuffer {
 		}
 
 		return null;
-	}
-
-	public boolean exists() {
-		if (tile != null && !tile.isInvalid()) {
-			return true;
-		}
-		IBlockState blockState = world.getBlockState(new BlockPos(x, y, z));
-		return blockState != null && blockState.getBlock() != null;
 	}
 
 	public static TileBuffer[] makeBuffer(World world, BlockPos pos, boolean loadUnloaded) {

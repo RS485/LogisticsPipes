@@ -68,7 +68,7 @@ public class PipeRenderState implements IClientState {
 		for (EnumFacing dir : EnumFacing.VALUES) {
 			DoubleCoordinates pos = CoordinateUtils.add(new DoubleCoordinates(blockPos), dir);
 			IBlockState blockSide = pos.getBlockState(worldIn);
-			if (blockSide != null && blockSide.isSideSolid(worldIn, pos.getBlockPos(), dir.getOpposite()) && !pipeConnectionMatrix.isConnected(dir)) {
+			if (blockSide.isSideSolid(worldIn, pos.getBlockPos(), dir.getOpposite()) && !pipeConnectionMatrix.isConnected(dir)) {
 				solidSides[dir.ordinal()] = true;
 			}
 		}

@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -47,7 +46,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import logisticspipes.LPBlocks;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.textures.Textures;
@@ -219,17 +217,10 @@ public abstract class SideConfigDisplay {
 
 		LogisticsBlockGenericPipe.ignoreSideRayTrace = true;
 		for (DoubleCoordinates bc : configurables) {
-			IBlockState bs = bc.getBlockState(world);
-			Block block = bs.getBlock();
-			if (block != null) {
-				LogisticsBlockGenericPipe.InternalRayTraceResult cachedLPBlockTrace;
-				if (block instanceof LogisticsBlockGenericPipe) {
-					cachedLPBlockTrace = LPBlocks.pipe.doRayTrace(world, bc.getBlockPos(), start.toVec3d(), end.toVec3d());
-				} else {
-					cachedLPBlockTrace = null;
-				}
-				RayTraceResult hit = block.collisionRayTrace(bc.getBlockState(world), world, bc.getBlockPos(), start.toVec3d(), end.toVec3d());
-				if (hit != null) {
+			IBlockState blockState = bc.getBlockState(world);
+			if (!blockState.getBlock().isAir(blockState, world, bc.getBlockPos())) {
+				RayTraceResult hit = blockState.collisionRayTrace(world, bc.getBlockPos(), start.toVec3d(), end.toVec3d());
+				if (hit.typeOfHit != RayTraceResult.Type.MISS) {
 					hits.add(hit);
 				}
 			}
@@ -404,12 +395,9 @@ public abstract class SideConfigDisplay {
 		Tessellator.getInstance().getBuffer().setTranslation(trans.x, trans.y, trans.z);
 
 		for (DoubleCoordinates bc : blocks) {
-
-			IBlockState bs = world.getBlockState(bc.getBlockPos());
-			Block block = bs.getBlock();
-			bs = bs.getActualState(world, bc.getBlockPos());
-			if (block.canRenderInLayer(bs, layer)) {
-				renderBlock(bs, bc.getBlockPos(), world, Tessellator.getInstance().getBuffer());
+			IBlockState blockState = world.getBlockState(bc.getBlockPos()).getActualState(world, bc.getBlockPos());
+			if (blockState.getBlock().canRenderInLayer(blockState, layer)) {
+				renderBlock(blockState, bc.getBlockPos(), world, Tessellator.getInstance().getBuffer());
 			}
 		}
 

@@ -285,7 +285,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 				return null;
 			}
 			boolean changed = false;
-			if (worldCache.getBlockState(posCache) != null || worldCache.getBlockState(posCache).getBlock() != LPBlocks.pipe) {
+			if (worldCache.getBlockState(posCache).getBlock() != LPBlocks.pipe) {
 				worldCache.setBlockState(posCache, LPBlocks.pipe.getDefaultState());
 				changed = true;
 			}
@@ -341,7 +341,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 	}
 
 	@Override
-	public void addCollisionBoxToList(IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
+	public void addCollisionBoxToList(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
 		TileEntity te = world.getTileEntity(pos);
 		if (te instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe tile = (LogisticsTileGenericPipe) te;

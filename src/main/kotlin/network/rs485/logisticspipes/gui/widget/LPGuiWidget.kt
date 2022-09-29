@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.gui.widget
 
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
 import network.rs485.logisticspipes.util.math.Rectangle
@@ -46,7 +46,14 @@ interface Tooltipped : MouseHoverable {
     fun getTooltipText(): List<String>
 }
 
-open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPosition: VerticalPosition, xSize: HorizontalSize, ySize: VerticalSize) : Drawable {
+open class LPGuiWidget(
+    parent: Drawable,
+    xPosition: HorizontalPosition,
+    yPosition: VerticalPosition,
+    xSize: HorizontalSize,
+    ySize: VerticalSize,
+    var margin: Margin,
+) : Drawable {
     override var parent: Drawable? = parent
 
     final override var relativeBody: Rectangle = Rectangle()
@@ -55,12 +62,12 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
 
     init {
         relativeBody.setSize(
-                handleHorizontalSize(xSize),
-                handleVerticalSize(ySize)
+            handleHorizontalSize(xSize),
+            handleVerticalSize(ySize)
         )
         relativeBody.setPos(
-                handleHorizontalPosition(xPosition),
-                handleVerticalPosition(yPosition)
+            handleHorizontalPosition(xPosition),
+            handleVerticalPosition(yPosition)
         )
     }
 
@@ -68,12 +75,15 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
         Center -> {
             (parent!!.width / 2) - (width / 2)
         }
+
         is Left -> {
-            pos.margin
+            margin.left
         }
+
         is Right -> {
-            parent!!.width - width - pos.margin
+            parent!!.width - width - margin.right
         }
+
         else -> {
             error("This should never happen the devs forgot to implement something!")
         }
@@ -83,12 +93,15 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
         Center -> {
             (parent!!.height / 2) - (height / 2)
         }
+
         is Top -> {
-            pos.margin
+            margin.top
         }
+
         is Bottom -> {
-            parent!!.height - height - pos.margin
+            parent!!.height - height - margin.bottom
         }
+
         else -> {
             error("This should never happen the devs forgot to implement something!")
         }
@@ -96,11 +109,13 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
 
     private fun handleHorizontalSize(size: HorizontalSize): Int = when (size) {
         is FullSize -> {
-            parent!!.width - (2 * size.margin)
+            parent!!.width - (margin.left + margin.right)
         }
+
         is AbsoluteSize -> {
             size.size
         }
+
         else -> {
             error("This should never happen the devs forgot to implement something!")
         }
@@ -108,31 +123,15 @@ open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPositio
 
     private fun handleVerticalSize(size: VerticalSize): Int = when (size) {
         is FullSize -> {
-            parent!!.height - (2 * size.margin)
+            parent!!.height - (margin.top + margin.bottom)
         }
+
         is AbsoluteSize -> {
             size.size
         }
+
         else -> {
             error("This should never happen the devs forgot to implement something!")
         }
     }
 }
-
-// TODO positions and sizes relative to siblings.
-
-interface HorizontalPosition
-data class Left(val margin: Int = 0) : HorizontalPosition
-data class Right(val margin: Int = 0) : HorizontalPosition
-
-interface VerticalPosition
-data class Top(val margin: Int = 0) : VerticalPosition
-data class Bottom(val margin: Int = 0) : VerticalPosition
-
-object Center : HorizontalPosition, VerticalPosition
-
-interface HorizontalSize
-interface VerticalSize
-
-data class FullSize(val margin: Int) : HorizontalSize, VerticalSize
-data class AbsoluteSize(val size: Int) : HorizontalSize, VerticalSize

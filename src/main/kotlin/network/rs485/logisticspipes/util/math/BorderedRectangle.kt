@@ -37,29 +37,40 @@
 
 package network.rs485.logisticspipes.util.math
 
-class BorderedRectangle(outer: Rectangle, borderTop: Int, borderLeft: Int, borderBottom: Int, borderRight: Int) {
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.Rectangle
 
-    constructor(outer: Rectangle, border: Int) : this(outer, border, border, border, border)
+class BorderedRectangle<R : IRectangle>(
+    outer: R,
+    borderTop: Int,
+    borderLeft: Int,
+    borderBottom: Int,
+    borderRight: Int,
+) {
 
-    val inner = outer.copy().translate(borderLeft, borderTop).grow(-borderLeft - borderRight, -borderTop - borderBottom)
+    constructor(outer: R, border: Int) : this(outer, border, border, border, border)
+
+    val inner = MutableRectangle.fromRectangle(outer)
+        .translate(borderLeft, borderTop)
+        .grow(-borderLeft - borderRight, -borderTop - borderBottom)
 
     // Corners
-    val topRight: Rectangle = Rectangle(inner.right to outer.top, outer.right to inner.top)
-    val topLeft: Rectangle = Rectangle(outer.left to outer.top, inner.left to inner.top)
-    val bottomLeft: Rectangle = Rectangle(outer.left to inner.bottom, inner.left to outer.bottom)
-    val bottomRight: Rectangle = Rectangle(inner.right to inner.bottom, outer.right to outer.bottom)
+    val topRight: IRectangle = Rectangle(inner.right to outer.top, outer.right to inner.top)
+    val topLeft: IRectangle = Rectangle(outer.left to outer.top, inner.left to inner.top)
+    val bottomLeft: IRectangle = Rectangle(outer.left to inner.bottom, inner.left to outer.bottom)
+    val bottomRight: IRectangle = Rectangle(inner.right to inner.bottom, outer.right to outer.bottom)
 
     // Sides
-    val top: Rectangle = Rectangle(inner.left to outer.top, inner.right to inner.top)
-    val left: Rectangle = Rectangle(outer.left to inner.top, inner.left to inner.bottom)
-    val bottom: Rectangle = Rectangle(inner.left to inner.bottom, inner.right to outer.bottom)
-    val right: Rectangle = Rectangle(inner.right to inner.top, outer.right to inner.bottom)
+    val top: IRectangle = Rectangle(inner.left to outer.top, inner.right to inner.top)
+    val left: IRectangle = Rectangle(outer.left to inner.top, inner.left to inner.bottom)
+    val bottom: IRectangle = Rectangle(inner.left to inner.bottom, inner.right to outer.bottom)
+    val right: IRectangle = Rectangle(inner.right to inner.top, outer.right to inner.bottom)
 
-    val corners: List<Rectangle> = listOf(topRight, topLeft, bottomLeft, bottomRight)
+    val corners: List<IRectangle> = listOf(topRight, topLeft, bottomLeft, bottomRight)
 
-    val sides: List<Rectangle> = listOf(top, left, bottom, right)
+    val sides: List<IRectangle> = listOf(top, left, bottom, right)
 
-    val borderQuads: List<Rectangle> = listOf(topRight, top, topLeft, left, bottomLeft, bottom, bottomRight, right)
+    val borderQuads: List<IRectangle> = listOf(topRight, top, topLeft, left, bottomLeft, bottom, bottomRight, right)
 
-    val quads: List<Rectangle> = borderQuads + inner
+    val quads: List<IRectangle> = borderQuads + inner
 }

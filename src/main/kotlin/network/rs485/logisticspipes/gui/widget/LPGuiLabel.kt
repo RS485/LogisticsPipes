@@ -43,8 +43,9 @@ import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.LPBaseGuiContainer.Companion.helper
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
+import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 class LPGuiLabel(
     parent: Drawable,
@@ -64,15 +65,19 @@ class LPGuiLabel(
 ), MouseHoverable {
 
     private var text: String = textGetter()
-    private val textArea =
-        Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
+    private val textArea = MutableRectangle(
+        x = relativeBody.roundedX,
+        y = relativeBody.roundedY - 1,
+        width = helper.mcFontRenderer.getStringWidth(text) + 1,
+        height = helper.mcFontRenderer.FONT_HEIGHT + 1,
+    )
     private var drawXOffset = 0
     private var extendable = false
     private var trimmedText = TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)
     private var alignment = HorizontalAlignment.LEFT
     private var backgroundColor = helper.BACKGROUND_LIGHT
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovering = isMouseHovering(mouseX, mouseY)
         GlStateManager.pushMatrix()
         GlStateManager.enableDepth()

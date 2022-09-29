@@ -44,7 +44,8 @@ import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.widget.Tooltipped
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import network.rs485.markdown.TextFormat
 import java.util.*
 
@@ -56,12 +57,12 @@ private const val tileSpacing = 5
  * Menu token, stores the key and the type of menu in a page.
  */
 class DrawableMenuParagraph<T>(private val menuTitle: List<DrawableWord>, private val menuGroups: List<DrawableMenuGroup<T>>) : DrawableParagraph() where T : Drawable, T : MouseInteractable {
-    override var relativeBody = Rectangle()
+    override val relativeBody = MutableRectangle()
     override var parent: Drawable? = null
 
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
@@ -79,7 +80,7 @@ class DrawableMenuParagraph<T>(private val menuTitle: List<DrawableWord>, privat
         return currentY
     }
 
-    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         (menuTitle + horizontalLine + menuGroups).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
 
@@ -95,10 +96,10 @@ class DrawableMenuParagraph<T>(private val menuTitle: List<DrawableWord>, privat
 }
 
 class DrawableMenuGroup<T>(private val groupTitle: List<DrawableWord>, private val groupTiles: List<T>) : DrawableParagraph() where T : Drawable, T : MouseInteractable {
-    override var relativeBody = Rectangle()
+    override val relativeBody = MutableRectangle()
     override var parent: Drawable? = null
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
@@ -122,7 +123,7 @@ class DrawableMenuGroup<T>(private val groupTitle: List<DrawableWord>, private v
         return currentY
     }
 
-    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         (groupTitle + groupTiles).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
 
@@ -132,9 +133,9 @@ class DrawableMenuGroup<T>(private val groupTitle: List<DrawableWord>, private v
 
 class DrawableMenuTile(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable, MouseInteractable, Tooltipped {
     private val iconScale = 1.5f
-    private val iconBody = Rectangle()
+    private val iconBody = MutableRectangle()
 
-    override var relativeBody = Rectangle()
+    override val relativeBody = MutableRectangle()
     override var parent: Drawable? = null
 
     companion object {
@@ -156,7 +157,7 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
             guideActionListener?.onMenuButtonClick(linkedPage) != null
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovered = isMouseHovering(mouseX, mouseY)
         LPGuiDrawer.drawBorderedTile(
                 rect = absoluteBody,
@@ -168,8 +169,8 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
         if (hovered) {
             LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
-        val itemRect = Rectangle.fromRectangle(iconBody.translated(absoluteBody))
-        if (visibleArea.intersects(iconBody.translated(absoluteBody))) {
+        val itemRect = iconBody.translated(absoluteBody)
+        if (visibleArea.intersects(itemRect)) {
             val item = Item.REGISTRY.getObject(ResourceLocation(icon)) ?: LPItems.brokenItem
             itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, 0.0f, iconScale)
         }
@@ -184,10 +185,10 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
 class DrawableMenuListEntry(private val linkedPage: String, private val pageName: String, private val icon: String) : Drawable, MouseInteractable {
     private val iconScale = 1.0f
     private val iconSize = (16 * iconScale).toInt()
-    private val itemRect = Rectangle()
+    private val itemRect = MutableRectangle()
     private val itemOffset = (listEntryHeight - iconSize) / 2
 
-    override var relativeBody = Rectangle()
+    override val relativeBody = MutableRectangle()
     override var parent: Drawable? = null
 
     companion object {
@@ -206,7 +207,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
             guideActionListener?.onMenuButtonClick(linkedPage) != null
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovered = visibleArea.contains(mouseX, mouseY) && isMouseHovering(mouseX, mouseY)
         LPGuiDrawer.drawBorderedTile(
                 rect = absoluteBody,

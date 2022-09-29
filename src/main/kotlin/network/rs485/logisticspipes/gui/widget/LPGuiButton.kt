@@ -41,7 +41,8 @@ import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 abstract class LPGuiButton(
     parent: Drawable,
@@ -65,9 +66,9 @@ abstract class LPGuiButton(
 
     val helper = LPGuiDrawer
 
-    val bodyTrigger: Rectangle = relativeBody
+    val bodyTrigger: MutableRectangle = relativeBody
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         if (visible) {
             helper.drawBorderedTile(

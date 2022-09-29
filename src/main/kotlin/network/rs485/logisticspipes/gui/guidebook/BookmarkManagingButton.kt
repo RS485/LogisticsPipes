@@ -42,12 +42,12 @@ import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
+import network.rs485.logisticspipes.util.Rectangle
 import network.rs485.logisticspipes.util.TextUtil
-import network.rs485.logisticspipes.util.math.Rectangle
 import java.util.*
 
 val additionTexture = Rectangle(192, 0, 16, 16)
-val subtractionTexture = Rectangle.fromRectangle(additionTexture).translate(additionTexture.width, 0.0f)
+val subtractionTexture = additionTexture.translated(additionTexture.width, 0.0f)
 
 /*
 * This button's position is set based on the right and bottom constraints

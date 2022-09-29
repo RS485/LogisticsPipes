@@ -49,14 +49,15 @@ import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.gui.guidebook.Screen
 import network.rs485.logisticspipes.gui.widget.LPGuiWidget
 import network.rs485.logisticspipes.gui.widget.Tooltipped
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import kotlin.math.roundToInt
 
 @ModDependentInterface(modId = [LPConstants.neiModID], interfacePath = ["codechicken.nei.api.INEIGuiHandler"])
 abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, heightIn: Int, private val xOffset: Int = 0, private val yOffset: Int = 0) : GuiContainer(inventorySlotsIn), Drawable {
 
     override var parent: Drawable? = Screen
-    override var relativeBody = Rectangle((width - widthIn) / 2, (height - heightIn) / 2, widthIn, heightIn)
+    override val relativeBody = MutableRectangle((width - widthIn) / 2, (height - heightIn) / 2, widthIn, heightIn)
     private var hoveredWidget: Tooltipped? = null
 
     val widgetList: MutableList<LPGuiWidget> = mutableListOf()
@@ -170,7 +171,8 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
         val helper = LPGuiDrawer
     }
 
-    // TODO add NEI impl
-
-    fun List<Drawable>.draw(mouseX: Float, mouseY: Float, partialTicks: Float, visibleArea: Rectangle) = forEach { it.draw(mouseX, mouseY, partialTicks, visibleArea) }
+    fun List<Drawable>.draw(mouseX: Float, mouseY: Float, partialTicks: Float, visibleArea: IRectangle) =
+        forEach {
+            it.draw(mouseX, mouseY, partialTicks, visibleArea)
+        }
 }

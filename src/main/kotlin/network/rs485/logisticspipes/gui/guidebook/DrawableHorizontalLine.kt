@@ -39,7 +39,8 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.gui.LPGuiDrawer
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 /**
  * This draws a line with a given thickness that will span the entire width of the page, minus padding.
@@ -48,7 +49,7 @@ import network.rs485.logisticspipes.util.math.Rectangle
 private const val horizontalPadding: Int = 3
 
 class DrawableHorizontalLine(private val thickness: Int, private val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : DrawableParagraph() {
-    override var relativeBody: Rectangle = Rectangle()
+    override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
 
     override fun setPos(x: Int, y: Int): Int {
@@ -59,7 +60,7 @@ class DrawableHorizontalLine(private val thickness: Int, private val padding: In
 
     override fun getHovered(mouseX: Float, mouseY: Float): Drawable? = null
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         LPGuiDrawer.drawLine(absoluteBody.topLeft, absoluteBody.topRight, color, thickness.toFloat())
     }

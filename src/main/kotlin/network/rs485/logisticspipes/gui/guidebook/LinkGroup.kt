@@ -38,7 +38,7 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.markdown.*
 
 interface LinkInteractable : MouseInteractable {
@@ -55,7 +55,7 @@ interface LinkInteractable : MouseInteractable {
     /**
      * Update mouse state for any state changes.
      */
-    fun updateState(mouseX: Float, mouseY: Float, visibleArea: Rectangle)
+    fun updateState(mouseX: Float, mouseY: Float, visibleArea: IRectangle)
 
 }
 
@@ -71,7 +71,7 @@ class LinkGroup(private val link: Link) : LinkInteractable {
                 it.isMouseHovering(mouseX, mouseY)
             }
 
-    override fun updateState(mouseX: Float, mouseY: Float, visibleArea: Rectangle) =
+    override fun updateState(mouseX: Float, mouseY: Float, visibleArea: IRectangle) =
             isMouseHovering(mouseX, mouseY).let { hovered = it }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean {

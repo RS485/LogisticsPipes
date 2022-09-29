@@ -41,8 +41,8 @@ import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
+import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
-import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.roundToInt
 
 open class TextButton(
@@ -76,7 +76,7 @@ open class TextButton(
         updateText()
     }
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         val color = if (isMouseHovering(mouseX, mouseY)) {
             helper.TEXT_HOVERED

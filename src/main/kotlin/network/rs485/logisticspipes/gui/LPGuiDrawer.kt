@@ -50,8 +50,10 @@ import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.font.LPFontRenderer
 import network.rs485.logisticspipes.gui.guidebook.Screen
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.Rectangle
 import network.rs485.logisticspipes.util.math.BorderedRectangle
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import network.rs485.markdown.defaultDrawableState
 import org.lwjgl.opengl.GL11
 import java.lang.Float.min
@@ -108,7 +110,7 @@ object LPGuiDrawer {
 
     // Container specific draw code
 
-    fun drawGuiBackground(guiArea: Rectangle, container: Container) {
+    fun drawGuiBackground(guiArea: IRectangle, container: Container) {
         setTexture(guiAtlas)
         start()
         putGuiBackgroundBase(guiArea)
@@ -118,7 +120,7 @@ object LPGuiDrawer {
 
     // Container specific buffer code
 
-    private fun putGuiBackgroundBase(guiArea: Rectangle) {
+    private fun putGuiBackgroundBase(guiArea: IRectangle) {
         val borderedGuiQuads = BorderedRectangle(guiArea, border).quads
         val borderedTexQuads = BorderedRectangle(guiBackgroundTexture, border).quads
         for ((i, quad) in borderedGuiQuads.withIndex()) {
@@ -126,7 +128,7 @@ object LPGuiDrawer {
         }
     }
 
-    private fun putContainerSlots(guiArea: Rectangle, container: Container) {
+    private fun putContainerSlots(guiArea: IRectangle, container: Container) {
         for (slot in container.inventorySlots) {
             putNormalSlot(guiArea.roundedLeft + slot.xPos, guiArea.roundedTop + slot.yPos)
         }
@@ -135,7 +137,7 @@ object LPGuiDrawer {
     private fun putNormalSlot(x: Int, y: Int) {
         val normalSlotSize = 18
         putTexturedQuad(
-            Rectangle(x, y, normalSlotSize, normalSlotSize).translate(-1),
+            MutableRectangle(x, y, normalSlotSize, normalSlotSize).translate(-1),
             slotNormalTexture,
             MinecraftColor.WHITE.colorCode
         )
@@ -143,7 +145,7 @@ object LPGuiDrawer {
 
     // Button specific draw code
 
-    fun drawGuiTexturedRect(rect: Rectangle, text: Rectangle, blend: Boolean, color: Int) {
+    fun drawGuiTexturedRect(rect: IRectangle, text: IRectangle, blend: Boolean, color: Int) {
         if (blend) {
             GlStateManager.enableBlend()
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
@@ -157,7 +159,7 @@ object LPGuiDrawer {
         if (blend) GlStateManager.disableBlend()
     }
 
-    fun drawBorderedTile(rect: Rectangle, hovered: Boolean, enabled: Boolean, light: Boolean, thickerBottomBorder: Boolean) {
+    fun drawBorderedTile(rect: IRectangle, hovered: Boolean, enabled: Boolean, light: Boolean, thickerBottomBorder: Boolean) {
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -201,7 +203,7 @@ object LPGuiDrawer {
         GlStateManager.disableBlend()
     }
 
-    fun drawGuideBookFrame(rect: Rectangle, slider: Rectangle) {
+    fun drawGuideBookFrame(rect: IRectangle, slider: IRectangle) {
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -243,9 +245,9 @@ object LPGuiDrawer {
         val verticalPadding = 1
 
         // Calculate tooltip size
-        val outerArea = Rectangle(
-            (text.maxOfOrNull { lpFontRenderer.getStringWidth(it) } ?: 0) + 2 * (border + horizontalPadding),
-            (text.size * lpFontRenderer.getFontHeight()) + 2 * (verticalPadding + border)
+        val outerArea = MutableRectangle(
+            width = (text.maxOfOrNull { lpFontRenderer.getStringWidth(it) } ?: 0) + 2 * (border + horizontalPadding),
+            height = (text.size * lpFontRenderer.getFontHeight()) + 2 * (verticalPadding + border),
         )
 
         // Align tooltip accordingly
@@ -307,7 +309,7 @@ object LPGuiDrawer {
         GlStateManager.translate(0.0f, 0.0f, -z)
     }
 
-    fun drawGuideBookBackground(rect: Rectangle) {
+    fun drawGuideBookBackground(rect: IRectangle) {
         val borderedGui = BorderedRectangle(rect, 24)
         setTexture(guiDarkPatternTexture)
         start()
@@ -315,14 +317,14 @@ object LPGuiDrawer {
         finish()
     }
 
-    fun drawSliderButton(body: Rectangle, texture: Rectangle) {
+    fun drawSliderButton(body: IRectangle, texture: IRectangle) {
         setTexture(guiAtlas)
 
-        val quads = BorderedRectangle(body.copy().apply {
+        val quads = BorderedRectangle(MutableRectangle.fromRectangle(body).apply {
             grow(4, 0)
             translate(-2, 0)
         }, 2)
-        val textures = BorderedRectangle(texture.copy().apply {
+        val textures = BorderedRectangle(MutableRectangle.fromRectangle(texture).apply {
             grow(4, 0)
             translate(-2, 0)
         }, 2)
@@ -361,7 +363,7 @@ object LPGuiDrawer {
         GlStateManager.translate(0.0f, 0.0f, -100f)
     }
 
-    fun drawRect(area: Rectangle, color: Int) {
+    fun drawRect(area: IRectangle, color: Int) {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
@@ -371,11 +373,11 @@ object LPGuiDrawer {
         GlStateManager.enableTexture2D()
     }
 
-    fun drawHorizontalGradientRect(area: Rectangle, colorLeft: Int, colorRight: Int) {
+    fun drawHorizontalGradientRect(area: IRectangle, colorLeft: Int, colorRight: Int) {
         drawGradientQuad(area, colorRight, colorLeft, colorLeft, colorRight)
     }
 
-    fun drawVerticalGradientRect(area: Rectangle, colorTop: Int, colorBottom: Int) {
+    fun drawVerticalGradientRect(area: IRectangle, colorTop: Int, colorBottom: Int) {
         drawGradientQuad(area, colorTop, colorTop, colorBottom, colorBottom)
     }
 
@@ -389,7 +391,7 @@ object LPGuiDrawer {
         GlStateManager.enableTexture2D()
     }
 
-    fun drawOutlineRect(rect: Rectangle, color: Int) {
+    fun drawOutlineRect(rect: IRectangle, color: Int) {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         start(DefaultVertexFormats.POSITION_COLOR)
@@ -399,7 +401,7 @@ object LPGuiDrawer {
         GlStateManager.enableTexture2D()
     }
 
-    fun drawGradientQuad(area: Rectangle, colorTopRight: Int, colorTopLeft: Int, colorBottomLeft: Int, colorBottomRight: Int) {
+    fun drawGradientQuad(area: IRectangle, colorTopRight: Int, colorTopLeft: Int, colorBottomLeft: Int, colorBottomRight: Int) {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.disableAlpha()
@@ -424,14 +426,13 @@ object LPGuiDrawer {
 
     // Buffer specific code
 
-    private fun putRepeatingTexturedQuad(rect: Rectangle, texture: Rectangle, color: Int) {
-        val tile = Rectangle().apply {
-            setPos(rect.left, rect.top)
-            setSize(
-                min(rect.width, texture.width),
-                min(rect.height, texture.height)
-            )
-        }
+    private fun putRepeatingTexturedQuad(rect: IRectangle, texture: IRectangle, color: Int) {
+        val tile = MutableRectangle(
+            x = rect.left,
+            y = rect.top,
+            _width = min(rect.width, texture.width),
+            _height = min(rect.height, texture.height),
+        )
         for (x in 0 until rect.roundedWidth step tile.roundedWidth) {
             for (y in 0 until rect.roundedHeight step tile.roundedHeight) {
                 putScaledTexturedQuad(
@@ -450,11 +451,11 @@ object LPGuiDrawer {
         }
     }
 
-    private fun putScaledTexturedQuad(rect: Rectangle, texture: Pair<Float, Float>, color: Int) {
+    private fun putScaledTexturedQuad(rect: IRectangle, texture: Pair<Float, Float>, color: Int) {
         putTexturedQuad(rect, Rectangle(texture.first, texture.second, rect.width, rect.height), color)
     }
 
-    private fun putTexturedQuad(rect: Rectangle, texture: Rectangle, color: Int) {
+    private fun putTexturedQuad(rect: IRectangle, texture: IRectangle, color: Int) {
         if (buffer.vertexFormat == DefaultVertexFormats.POSITION_TEX_COLOR) {
             val scaledUV = texture.scaled(currentTexture.factor)
             buffer.pos(rect.topRight).tex(scaledUV.topRight).rgba(color).endVertex()
@@ -474,16 +475,14 @@ object LPGuiDrawer {
         }
     }
 
-    private fun putOutlineQuad(rect: Rectangle, color: Int, thickness: Float = 1.0f) {
-        rect.run {
-            putLine(rect.topLeft, rect.topRight, color, thickness)
-            putLine(rect.bottomLeft, rect.bottomRight, color, thickness)
-            putLine(rect.topLeft, rect.bottomLeft, color, thickness, vertical = true)
-            putLine(rect.topRight, rect.bottomRight, color, thickness, vertical = true)
-        }
+    private fun putOutlineQuad(rect: IRectangle, color: Int, thickness: Float = 1.0f) {
+        putLine(rect.topLeft, rect.topRight, color, thickness)
+        putLine(rect.bottomLeft, rect.bottomRight, color, thickness)
+        putLine(rect.topLeft, rect.bottomLeft, color, thickness, vertical = true)
+        putLine(rect.topRight, rect.bottomRight, color, thickness, vertical = true)
     }
 
-    private fun putQuad(rect: Rectangle, color: Int) {
+    private fun putQuad(rect: IRectangle, color: Int) {
         if (buffer.vertexFormat == DefaultVertexFormats.POSITION_TEX_COLOR) {
             putTexturedQuad(rect, guiBlankTexture, color)
         } else if (buffer.vertexFormat == DefaultVertexFormats.POSITION_COLOR) {

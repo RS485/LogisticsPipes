@@ -39,14 +39,15 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.LPGuiDrawer
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import kotlin.math.roundToInt
 
 private const val minimumHeight = 16
 private val texture = Rectangle(96, 0, 12, 16)
 
 class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var progress: Float, val setProgressCallback: (progress: Float) -> Unit) : LPGuiButton(0, x, y, width, railHeight) {
-    private val sliderButton: Rectangle = Rectangle()
+    private val sliderButton: MutableRectangle = MutableRectangle()
     private val movementDistance: Int get() = body.roundedHeight - sliderButton.roundedHeight
     private var dragging: Boolean = false
     private var initialMouseYOffset: Int = 0
@@ -56,7 +57,10 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
         if (!visible) return
         hoveredBar = sliderButton.translated(body).contains(mouseX, mouseY)
         hovered = body.contains(mouseX, mouseY)
-        LPGuiDrawer.drawSliderButton(sliderButton.translated(body), texture.translated(0, getHoverState(hoveredBar) * texture.roundedHeight))
+        LPGuiDrawer.drawSliderButton(
+            body = sliderButton.translated(body),
+            texture = texture.translated(0, getHoverState(hoveredBar) * texture.roundedHeight),
+        )
         mouseDragged(mc, mouseX, mouseY)
     }
 

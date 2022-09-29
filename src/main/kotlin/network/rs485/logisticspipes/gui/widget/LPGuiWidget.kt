@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.gui.widget
 import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 interface Tooltipped : MouseHoverable {
     fun getTooltipText(): List<String>
@@ -56,7 +56,7 @@ open class LPGuiWidget(
 ) : Drawable {
     override var parent: Drawable? = parent
 
-    final override var relativeBody: Rectangle = Rectangle()
+    final override val relativeBody: MutableRectangle = MutableRectangle()
 
     val drawer = LPGuiDrawer
 

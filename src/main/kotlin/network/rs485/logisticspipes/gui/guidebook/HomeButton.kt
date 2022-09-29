@@ -40,26 +40,27 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.Rectangle
+import network.rs485.logisticspipes.util.TextUtil
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 private val homeButtonTexture = Rectangle(16, 64, 24, 32)
 private val homeIconTexture = Rectangle(128, 0, 16, 16)
 
 /*
-* Position on the button is set based on it's rightmost and where it needs to connect at the bottom.
+* Position on the button is set based on its rightmost and where it needs to connect at the bottom.
 */
 class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(1, x - 24, y - 24, homeButtonTexture.roundedWidth, homeButtonTexture.roundedHeight) {
-    private val homeIconBody: Rectangle
+    private val homeIconBody: MutableRectangle
     override val bodyTrigger = Rectangle(1, 1, 22, 22)
 
     init {
         this.setOnClickAction(onClickAction)
         val offset = (body.width - homeIconTexture.width) / 2
-        homeIconBody = Rectangle(offset, offset, homeIconTexture.width, homeIconTexture.height)
+        homeIconBody = MutableRectangle(offset, offset, homeIconTexture.width, homeIconTexture.height)
     }
 
     override fun setPos(newX: Int, newY: Int) {

@@ -41,7 +41,9 @@ import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 interface MouseHoverable {
     /**
@@ -91,7 +93,7 @@ interface Drawable {
                 parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
     }
 
-    var relativeBody: Rectangle
+    val relativeBody: MutableRectangle
 
     var parent: Drawable?
 
@@ -106,7 +108,8 @@ interface Drawable {
     val right: Float get() = left + width
     val top: Float get() = (parent?.top ?: 0.0f) + y
     val bottom: Float get() = top + height
-    val absoluteBody: Rectangle get() = Rectangle(left to top, right to bottom)
+    val absoluteBody: Rectangle
+        get() = Rectangle(left to top, right to bottom)
 
     /**
      * Assigns a new child's parent to this.
@@ -120,9 +123,12 @@ interface Drawable {
      * @param delta         Timing floating value
      * @param visibleArea   used to avoid draw calls on non-visible children
      */
-    fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         if (DRAW_BODY_WIREFRAME) {
-            val visibleAbsoluteBody = visibleArea.translated(0, -5).grow(0, 10).overlap(absoluteBody)
+            val visibleAbsoluteBody = MutableRectangle.fromRectangle(visibleArea)
+                .translate(0, -5)
+                .grow(0, 10)
+                .overlap(absoluteBody)
             LPGuiDrawer.drawOutlineRect(visibleAbsoluteBody, MinecraftColor.WHITE.colorCode)
         }
     }
@@ -144,19 +150,19 @@ interface Drawable {
      * @param visibleArea   Desired visible area to check
      * @return true if within constraints false otherwise.
      */
-    fun visible(visibleArea: Rectangle): Boolean {
+    fun visible(visibleArea: IRectangle): Boolean {
         return visibleArea.intersects(absoluteBody)
     }
 }
 
 object Screen : Drawable {
-    val screen : Rectangle
-        get() = Rectangle(
-                Minecraft.getMinecraft().currentScreen?.width ?: Minecraft.getMinecraft().displayWidth,
-                Minecraft.getMinecraft().currentScreen?.height ?: Minecraft.getMinecraft().displayHeight
+    val screen : MutableRectangle
+        get() = MutableRectangle(
+            width = Minecraft.getMinecraft().currentScreen?.width ?: Minecraft.getMinecraft().displayWidth,
+            height = Minecraft.getMinecraft().currentScreen?.height ?: Minecraft.getMinecraft().displayHeight,
         )
 
-    override var relativeBody: Rectangle = screen
+    override val relativeBody: MutableRectangle
         get() = screen
 
     override var parent: Drawable? = null

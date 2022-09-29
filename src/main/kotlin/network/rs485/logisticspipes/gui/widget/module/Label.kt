@@ -42,7 +42,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import network.rs485.logisticspipes.util.TextUtil
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import network.rs485.logisticspipes.util.opaque
 
 open class Label(fullText: String, internal val x: Int, internal val y: Int, internal val maxLength: Int, internal val textColor: Int, internal val backgroundColor: Int) : Gui() {
@@ -51,8 +51,8 @@ open class Label(fullText: String, internal val x: Int, internal val y: Int, int
 
     internal val fontRenderer = Minecraft.getMinecraft().fontRenderer
 
-    internal val fullRect = Rectangle().setPos(x, y)
-    internal val trimmedRect = Rectangle().setPos(x, y)
+    internal val fullRect = MutableRectangle().setPos(x, y)
+    internal val trimmedRect = MutableRectangle().setPos(x, y)
 
     internal var fullText: String = ""
     internal var trimmedText: String = ""

@@ -37,40 +37,42 @@
 
 package network.rs485.logisticspipes.gui
 
-// FIXME: Replace with HorizontalAlignment
-interface HorizontalPosition
-object Left : HorizontalPosition
-object Right : HorizontalPosition
+import logisticspipes.LogisticsPipes
+import network.rs485.logisticspipes.gui.guidebook.Drawable
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
-// FIXME: Replace with VerticalAlignment
-interface VerticalPosition
-object Top : VerticalPosition
-object Bottom : VerticalPosition
+abstract class WidgetContainer(
+    children: List<Drawable>,
+    override val relativeBody: MutableRectangle,
+    override var parent: Drawable? = null,
+) : List<Drawable> by children, Drawable {
+    override fun <T : Drawable> createChild(childGetter: () -> T): T {
+        if (LogisticsPipes.isDEBUG()) {
+            LogisticsPipes.log.warn("createChild called on WidgetContainer, but WidgetContainer does not support lazy child creation")
+            Throwable().printStackTrace()
+        }
+        return childGetter()
+    }
 
-object Center : HorizontalPosition, VerticalPosition
-
-interface HorizontalSize
-interface VerticalSize
-
-object FullSize : HorizontalSize, VerticalSize
-data class AbsoluteSize(val size: Int) : HorizontalSize, VerticalSize
-
-data class Margin(val top: Int = 0, val left: Int = 0, val bottom: Int = 0, val right: Int = 0) {
-    companion object {
-        val DEFAULT = Margin()
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
+        super.draw(mouseX, mouseY, delta, visibleArea)
+        this.forEach {
+            it.draw(mouseX = mouseX, mouseY = mouseY, delta = delta, visibleArea = visibleArea)
+        }
     }
 }
 
-data class Padding(val top: Int = 0, val left: Int = 0, val bottom: Int = 0, val right: Int = 0)
+class HorizontalWidgetContainer(
+    children: List<Drawable>,
+    val horizontalAlignment: HorizontalAlignment,
+    relativeBody: MutableRectangle,
+    parent: Drawable? = null,
+) : WidgetContainer(children = children, relativeBody = relativeBody, parent = parent)
 
-enum class HorizontalAlignment {
-    LEFT,
-    CENTER,
-    RIGHT;
-}
-
-enum class VerticalAlignment {
-    TOP,
-    CENTER,
-    BOTTOM;
-}
+class VerticalWidgetContainer(
+    children: List<Drawable>,
+    val verticalAlignment: VerticalAlignment,
+    relativeBody: MutableRectangle,
+    parent: Drawable? = null,
+) : WidgetContainer(children = children, relativeBody = relativeBody, parent = parent)

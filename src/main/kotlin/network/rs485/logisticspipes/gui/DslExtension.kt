@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -37,14 +37,19 @@
 
 package network.rs485.logisticspipes.gui
 
-enum class HorizontalAlignment {
-    CENTER,
-    LEFT,
-    RIGHT;
+import net.minecraft.inventory.Slot
+
+abstract class InventorySlotsBase : GuiComponent() {
+    var slots: List<Slot> = emptyList()
 }
 
-enum class VerticalAlignment {
-    CENTER,
-    TOP,
-    BOTTOM;
+class CustomSlots : InventorySlotsBase() {
+    var columns: Int = 1
+    var rows: Int = 1
 }
+
+fun ComponentContainer.customSlots(init: CustomSlots.() -> Unit) = initComponent(CustomSlots(), init)
+
+class PlayerSlots : InventorySlotsBase()
+
+fun ComponentContainer.playerSlots(init: PlayerSlots.() -> Unit) = initComponent(PlayerSlots(), init)

@@ -50,7 +50,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		module.providerMode.setValue(ProviderMode.modeFromIntSafe(extractorMode));
 		module.setSneakyDirection(sneakyOrientation);
 		module.isActive.setValue(isActive);
-		return new ProviderGui(player.inventory, module, ItemStack.EMPTY);
+		return ProviderGui.create(player.inventory, module, ItemStack.EMPTY);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		return new ProviderContainer(player.inventory, module, ItemStack.EMPTY);
+		return new ProviderContainer(player.inventory, module.filterInventory, ItemStack.EMPTY);
 	}
 
 	@Override

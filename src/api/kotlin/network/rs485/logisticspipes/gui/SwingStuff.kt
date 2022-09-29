@@ -37,15 +37,16 @@
 
 package network.rs485.logisticspipes.gui
 
+import network.rs485.logisticspipes.util.IRectangle
 import java.awt.Container
 import javax.swing.*
 
 interface WidgetRenderer<T : Any> {
-    fun render(widgetContainer: WidgetContainer): T
+    fun render(componentContainer: ComponentContainer, body: IRectangle): T
 }
 
 object SwingRenderer : WidgetRenderer<JPanel> {
-    fun Container.addContainer(container: WidgetContainer) {
+    fun Container.addContainer(container: ComponentContainer) {
         container.children.forEach { child ->
             when (child) {
                 is PropertyLabel<*, *> -> JLabel().apply {
@@ -72,25 +73,28 @@ object SwingRenderer : WidgetRenderer<JPanel> {
                     addActionListener { child.action.invoke() }
                 }
 
-                is WidgetContainer -> JPanel().apply {
+                is ComponentContainer -> JPanel().apply {
                     addContainer(child)
                 }
-            }.also(::add)
+
+                else -> null
+            }?.also(::add)
         }
     }
 
-    override fun render(widgetContainer: WidgetContainer): JPanel {
+    override fun render(componentContainer: ComponentContainer, body: IRectangle): JPanel {
         return JPanel().apply {
-            addContainer(widgetContainer)
+            addContainer(componentContainer)
         }
     }
 }
 
-fun main() {
-    SwingUtilities.invokeAndWait {
-        val frame = JFrame()
-        frame.add(GuiProvider.panel)
-        frame.pack()
-        frame.isVisible = true
-    }
-}
+//fun main() {
+//    SwingUtilities.invokeAndWait {
+//        val frame = JFrame()
+//        val gui = ProviderGui()
+//        frame.add(SwingRenderer.render(gui.widgets))
+//        frame.pack()
+//        frame.isVisible = true
+//    }
+//}

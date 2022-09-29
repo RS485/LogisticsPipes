@@ -47,7 +47,6 @@ import net.minecraft.inventory.Container
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.gui.guidebook.Screen
-import network.rs485.logisticspipes.gui.widget.LPGuiWidget
 import network.rs485.logisticspipes.gui.widget.Tooltipped
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
@@ -56,11 +55,12 @@ import kotlin.math.roundToInt
 @ModDependentInterface(modId = [LPConstants.neiModID], interfacePath = ["codechicken.nei.api.INEIGuiHandler"])
 abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, heightIn: Int, private val xOffset: Int = 0, private val yOffset: Int = 0) : GuiContainer(inventorySlotsIn), Drawable {
 
-    override var parent: Drawable? = Screen
-    override val relativeBody = MutableRectangle((width - widthIn) / 2, (height - heightIn) / 2, widthIn, heightIn)
+    final override var parent: Drawable? = Screen
+    final override val relativeBody = MutableRectangle((width - widthIn) / 2, (height - heightIn) / 2, widthIn, heightIn)
     private var hoveredWidget: Tooltipped? = null
 
-    val widgetList: MutableList<LPGuiWidget> = mutableListOf()
+    protected abstract val widgets: ComponentContainer
+    protected var widgetContainer: WidgetContainer = VerticalWidgetContainer(emptyList(), VerticalAlignment.TOP, relativeBody, parent)
 
     val guiWidth: Int get() = relativeBody.roundedWidth
     val guiHeight: Int get() = relativeBody.roundedHeight
@@ -78,13 +78,10 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
         guiTop = relativeBody.roundedTop
         // Clear button and widget lists
         buttonList.clear()
-        widgetList.clear()
+        widgetContainer = GuiRenderer.render(widgets, relativeBody).also {
+            it.parent = this@LPBaseGuiContainer
+        }
         mc.player.openContainer = inventorySlots
-    }
-
-    fun addWidget(widget: LPGuiWidget): Drawable {
-        widgetList.add(widget)
-        return widget
     }
 
     /**
@@ -116,13 +113,15 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
      * @param partialTicks time so animations don't have to depend on game ticks which can be unstable.
      */
     open fun drawForegroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {
-        widgetList.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
+        widgetContainer.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
         hoveredWidget?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
             drawHoveringText(it, mouseX.roundToInt(), mouseY.roundToInt())
         } ?: renderHoveredToolTip(mouseX.roundToInt(), mouseY.roundToInt())
     }
 
-    private fun getHovered(mouseX: Float, mouseY: Float): MouseInteractable? = widgetList.filterIsInstance<MouseInteractable>().firstOrNull { it.isMouseHovering(mouseX, mouseY) }
+    // FIXME: filter is instance on tree instead of list
+    private fun getHovered(mouseX: Float, mouseY: Float): MouseInteractable? =
+        widgetContainer.filterIsInstance<MouseInteractable>().firstOrNull { it.isMouseHovering(mouseX, mouseY) }
 
     // Call super and call all the normally used methods.
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -138,7 +137,8 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
         drawFocalgroundLayer(currentMouseX, currentMouseY, partialTicks)
         GlStateManager.translate(0.0f, 0.0f, 10.0f)
         RenderHelper.disableStandardItemLighting()
-        hoveredWidget = widgetList.filterIsInstance<Tooltipped>().firstOrNull { it.isMouseHovering(currentMouseX, currentMouseY) }
+        // FIXME: filter is instance on tree instead of list
+        hoveredWidget = widgetContainer.filterIsInstance<Tooltipped>().firstOrNull { it.isMouseHovering(currentMouseX, currentMouseY) }
         drawForegroundLayer(currentMouseX, currentMouseY, partialTicks)
         GlStateManager.translate(-absoluteBody.left, -absoluteBody.top, -10.0f)
         RenderHelper.enableStandardItemLighting()

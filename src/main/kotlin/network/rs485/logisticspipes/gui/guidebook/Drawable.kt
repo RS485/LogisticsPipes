@@ -63,6 +63,7 @@ interface MouseInteractable : MouseHoverable {
      * @param mouseY Y position of the mouse (absolute, screen)
      * @param mouseButton button of the mouse that was pressed.
      * @param guideActionListener actions to run from outside of this scope? (ben knows it best)
+     * @return true, if click was handled
      */
     fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean = false
 

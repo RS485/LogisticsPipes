@@ -44,44 +44,71 @@ import network.rs485.logisticspipes.property.PropertyLayer
 annotation class GuiComponentMarker
 
 @GuiComponentMarker
-sealed class GuiComponent {
+abstract class GuiComponent {
+    var width: Int? = null
+    var height: Int? = null
     val children = arrayListOf<GuiComponent>()
+    var margin: Margin = Margin.DEFAULT
 
-    protected fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
+    fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
         component.apply(init)
         children.add(component)
         return component
     }
 }
 
-/**
- * Base container component
- */
-abstract class WidgetContainer : GuiComponent() {
+abstract class ComponentContainer : GuiComponent() {
 
-    fun row(init: Row.() -> Unit) = initComponent(Row(), init)
-    fun col(init: Col.() -> Unit) = initComponent(Col(), init)
+    /**
+     * Arranges contained widgets left-to-right horizontally
+     */
+    fun horizontal(init: HContainer.() -> Unit) = initComponent(HContainer(), init)
+
+    /**
+     * Arranges contained widgets top-to-bottom vertically
+     */
+    fun vertical(init: VContainer.() -> Unit) = initComponent(VContainer(), init)
+
+    /**
+     * Represents a label with the text value based on a property.
+     */
     fun <V : Any, P : Property<V>> label(init: PropertyLabel<V, P>.() -> Unit) = initComponent(PropertyLabel(), init)
-    fun <V : Any, P : Property<V>> button(init: PropertyButton<V, P>.() -> Unit) = initComponent(PropertyButton(), init)
+
+    /**
+     * Represents a button with the text value based on a property.
+     */
+    fun <V : Any, P : Property<V>> propertyButton(init: PropertyButton<V, P>.() -> Unit) = initComponent(PropertyButton(), init)
+
+    /**
+     * Represents a static button.
+     */
     fun button(init: Button.() -> Unit) = initComponent(Button(), init)
 
+    /**
+     * Represents a static piece of text.
+     */
+    fun staticLabel(init: Label.() -> Unit) = initComponent(Label(), init)
 }
 
 /**
- * Arranges contained widgets side-by-side horizontally
+ * Used to construct a base container component.
  */
-class Row : WidgetContainer()
+fun widgetContainer(init: VContainer.() -> Unit): VContainer =
+    VContainer().apply(init)
 
-/**
- * Arranges contained widgets side-by-side vertically
- */
-class Col : WidgetContainer()
+class HContainer : ComponentContainer() {
+    var alignment: HorizontalAlignment = HorizontalAlignment.LEFT
+}
 
-/**
- * Represents a static piece of text
- */
+class VContainer : ComponentContainer() {
+    var alignment: VerticalAlignment = VerticalAlignment.TOP
+}
+
 open class Label : GuiComponent() {
     var text: String = ""
+    var textAlignment: HorizontalAlignment = HorizontalAlignment.LEFT
+    var textColor: Int = 0
+    var extendable: Int = 0
 }
 
 interface PropertyAware {
@@ -109,12 +136,10 @@ class PropertyButton<V : Any, P : Property<V>> : Button(), PropertyAware {
     lateinit var propertyLayer: PropertyLayer
     lateinit var property: P
     var propertyToText: (V) -> String = Any::toString
+
     override fun onPropertyUpdate(callback: (String) -> Unit) {
         propertyLayer.addObserver(property) {
             callback.invoke(propertyToText.invoke(it.copyValue()))
         }
     }
 }
-
-fun widgetContainer(init: WidgetContainer.() -> Unit): WidgetContainer =
-    object : WidgetContainer() {}.apply(init)

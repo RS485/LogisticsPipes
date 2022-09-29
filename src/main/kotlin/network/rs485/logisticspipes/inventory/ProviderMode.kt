@@ -52,7 +52,7 @@ enum class ProviderMode(
     LEAVE_ONE_PER_STACK("Leave1PerStack", true, false, 0, 0),
     LEAVE_ONE_PER_TYPE("Leave1PerType", false, true, 0, 0);
 
-    val extractionModeTranslationKey = "misc.extractionmode.$translationName"
+    val modeTranslationKey = "misc.extractionmode.$translationName"
 
     companion object {
         @JvmStatic

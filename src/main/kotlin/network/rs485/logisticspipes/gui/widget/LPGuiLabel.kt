@@ -53,7 +53,7 @@ class LPGuiLabel(
     yPosition: VerticalPosition,
     xSize: HorizontalSize,
     margin: Margin,
-    private val textGetter: () -> String,
+    text: String,
     private val textColor: Int = MinecraftColor.WHITE.colorCode
 ) : LPGuiWidget(
     parent = parent,
@@ -64,16 +64,24 @@ class LPGuiLabel(
     margin = margin,
 ), MouseHoverable {
 
-    private var text: String = textGetter()
+    private var _text: String = text
+    var text: String
+        get() = _text
+        set(value) {
+            _text = value
+            textArea.setSize(helper.mcFontRenderer.getStringWidth(value), helper.mcFontRenderer.FONT_HEIGHT + 1)
+            setTextAlignment(alignment)
+            trimmedText = trimText(value)
+        }
     private val textArea = MutableRectangle(
         x = relativeBody.roundedX,
         y = relativeBody.roundedY - 1,
-        width = helper.mcFontRenderer.getStringWidth(text) + 1,
+        width = helper.mcFontRenderer.getStringWidth(_text) + 1,
         height = helper.mcFontRenderer.FONT_HEIGHT + 1,
     )
     private var drawXOffset = 0
     private var extendable = false
-    private var trimmedText = TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)
+    private var trimmedText = trimText(_text)
     private var alignment = HorizontalAlignment.LEFT
     private var backgroundColor = helper.BACKGROUND_LIGHT
 
@@ -87,11 +95,8 @@ class LPGuiLabel(
         GlStateManager.popMatrix()
     }
 
-    fun updateText(): LPGuiLabel {
-        text = textGetter()
-        trimmedText = TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)
-        textArea.setSize(helper.mcFontRenderer.getStringWidth(text), helper.mcFontRenderer.FONT_HEIGHT + 1)
-        return setAlignment(alignment)
+    private fun trimText(text: String): String {
+        return TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)
     }
 
     fun setExtendable(newExtendable: Boolean, newBackgroundColor: Int): LPGuiLabel {
@@ -100,7 +105,8 @@ class LPGuiLabel(
         return this
     }
 
-    fun setAlignment(newAlignment: HorizontalAlignment): LPGuiLabel {
+    fun setTextAlignment(newAlignment: HorizontalAlignment) {
+        // FIXME: does not remember original alignment and always overrides it when text width is > width
         alignment = if (text.width() > width) {
             HorizontalAlignment.LEFT
         } else {
@@ -111,7 +117,6 @@ class LPGuiLabel(
             HorizontalAlignment.LEFT -> 0
             HorizontalAlignment.RIGHT -> width - text.width()
         }
-        return this
     }
 
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = relativeBody.contains(mouseX, mouseY)

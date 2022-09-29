@@ -52,7 +52,7 @@ open class TextButton(
     xSize: HorizontalSize,
     ySize: VerticalSize,
     margin: Margin,
-    private val textGetter: () -> String,
+    text: String,
     onClickAction: (Int) -> Boolean
 ) : LPGuiButton(
     parent = parent,
@@ -64,16 +64,18 @@ open class TextButton(
     onClickAction = onClickAction
 ), Tooltipped {
 
-    var text: String = ""
+    var text: String = text
         set(value) {
-            field = TextUtil.getTrimmedString(value, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
+            field = value
+            trimmedText = trimText(value)
         }
+    var trimmedText: String = trimText(text)
     val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
     private val centerX: Float
         get() = relativeBody.width / 2
 
-    init {
-        updateText()
+    private fun trimText(text: String): String {
+        return TextUtil.getTrimmedString(text, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
     }
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
@@ -85,18 +87,12 @@ open class TextButton(
         }
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-        helper.drawCenteredString(text, (relativeBody.left + centerX).roundToInt(), relativeBody.roundedY + yOffset, color, true)
+        helper.drawCenteredString(trimmedText, (relativeBody.left + centerX).roundToInt(), relativeBody.roundedY + yOffset, color, true)
         GlStateManager.disableBlend()
     }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-        onClickAction.invoke(mouseButton).also {
-            text = textGetter()
-        }
+        onClickAction.invoke(mouseButton)
 
-    override fun getTooltipText(): List<String> = if (text != textGetter()) listOf(textGetter()) else emptyList()
-
-    fun updateText() {
-        text = textGetter()
-    }
+    override fun getTooltipText(): List<String> = if (trimmedText != text) listOf(text) else emptyList()
 }

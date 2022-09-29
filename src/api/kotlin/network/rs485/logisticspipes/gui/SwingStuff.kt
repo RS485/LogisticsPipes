@@ -54,13 +54,24 @@ object SwingRenderer : WidgetRenderer<JPanel> {
                         text = newText
                     }
                 }
+
+                is PropertyButton<*, *> -> JButton().apply {
+                    text = child.text
+                    addActionListener { child.action.invoke() }
+                    child.onPropertyUpdate { newText ->
+                        text = newText
+                    }
+                }
+
                 is Label -> JLabel().apply {
                     text = child.text
                 }
+
                 is Button -> JButton().apply {
                     text = child.text
                     addActionListener { child.action.invoke() }
                 }
+
                 is WidgetContainer -> JPanel().apply {
                     addContainer(child)
                 }

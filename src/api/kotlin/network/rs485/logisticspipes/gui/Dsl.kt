@@ -54,21 +54,46 @@ sealed class GuiComponent {
     }
 }
 
-class WidgetContainer : GuiComponent() {
+/**
+ * Base container component
+ */
+abstract class WidgetContainer : GuiComponent() {
+
+    fun row(init: Row.() -> Unit) = initComponent(Row(), init)
+    fun col(init: Col.() -> Unit) = initComponent(Col(), init)
     fun <V : Any, P : Property<V>> label(init: PropertyLabel<V, P>.() -> Unit) = initComponent(PropertyLabel(), init)
+    fun <V : Any, P : Property<V>> button(init: PropertyButton<V, P>.() -> Unit) = initComponent(PropertyButton(), init)
     fun button(init: Button.() -> Unit) = initComponent(Button(), init)
+
 }
 
+/**
+ * Arranges contained widgets side-by-side horizontally
+ */
+class Row : WidgetContainer()
+
+/**
+ * Arranges contained widgets side-by-side vertically
+ */
+class Col : WidgetContainer()
+
+/**
+ * Represents a static piece of text
+ */
 open class Label : GuiComponent() {
     var text: String = ""
 }
 
-class PropertyLabel<V : Any, P : Property<V>> : Label() {
+interface PropertyAware {
+    fun onPropertyUpdate(callback: (String) -> Unit)
+}
+
+class PropertyLabel<V : Any, P : Property<V>> : Label(), PropertyAware {
     lateinit var propertyLayer: PropertyLayer
     lateinit var property: P
     var propertyToText: (V) -> String = Any::toString
 
-    fun onPropertyUpdate(callback: (String) -> Unit) {
+    override fun onPropertyUpdate(callback: (String) -> Unit) {
         propertyLayer.addObserver(property) {
             callback.invoke(propertyToText.invoke(it.copyValue()))
         }
@@ -80,5 +105,16 @@ open class Button : GuiComponent() {
     var action: () -> Unit = {}
 }
 
+class PropertyButton<V : Any, P : Property<V>> : Button(), PropertyAware {
+    lateinit var propertyLayer: PropertyLayer
+    lateinit var property: P
+    var propertyToText: (V) -> String = Any::toString
+    override fun onPropertyUpdate(callback: (String) -> Unit) {
+        propertyLayer.addObserver(property) {
+            callback.invoke(propertyToText.invoke(it.copyValue()))
+        }
+    }
+}
+
 fun widgetContainer(init: WidgetContainer.() -> Unit): WidgetContainer =
-    WidgetContainer().apply(init)
+    object : WidgetContainer() {}.apply(init)

@@ -37,9 +37,9 @@
 
 package network.rs485.logisticspipes.gui
 
+import network.rs485.logisticspipes.property.BooleanProperty
 import network.rs485.logisticspipes.property.EnumProperty
 import network.rs485.logisticspipes.property.PropertyLayer
-import javax.swing.JPanel
 
 enum class ProviderMode(
     val translationName: String,
@@ -58,16 +58,25 @@ enum class ProviderMode(
 
 object GuiProvider {
     val providerModeProperty = EnumProperty(ProviderMode.DEFAULT, "extractionMode", ProviderMode.values())
-    val propertyLayer = PropertyLayer(listOf(providerModeProperty))
+    val excludeBooleanProperty = BooleanProperty(true, "include")
+    val propertyLayer = PropertyLayer(listOf(providerModeProperty, excludeBooleanProperty))
     val providerModePropOverlay = propertyLayer.overlay(providerModeProperty)
+    val excludeBooleanOverlay = propertyLayer.overlay(excludeBooleanProperty)
 
     val panel = SwingRenderer.render(
         widgetContainer {
             label<ProviderMode, EnumProperty<ProviderMode>> {
-                text = "No no. Don't click me! I am a Label"
-                property = providerModeProperty
-                propertyLayer = this@GuiProvider.propertyLayer
                 propertyToText = { it.translationName }
+                property = providerModeProperty
+                text = propertyToText.invoke(property.value)
+                propertyLayer = this@GuiProvider.propertyLayer
+            }
+            button<Boolean, BooleanProperty> {
+                propertyToText = { if (it) "Include" else "Exclude" }
+                property = excludeBooleanProperty
+                text = propertyToText.invoke(property.value)
+                propertyLayer = this@GuiProvider.propertyLayer
+                action = { excludeBooleanOverlay.write { it.toggle() } }
             }
             button {
                 text = "Click me!"

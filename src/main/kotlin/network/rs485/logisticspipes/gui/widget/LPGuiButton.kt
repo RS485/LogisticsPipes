@@ -37,13 +37,28 @@
 
 package network.rs485.logisticspipes.gui.widget
 
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.util.math.Rectangle
 
-abstract class LPGuiButton(parent: Drawable, xPosition: HorizontalPosition, yPosition: VerticalPosition, xSize: HorizontalSize, ySize: VerticalSize, val onClickAction: ((Int) -> Boolean)) : LPGuiWidget(parent, xPosition, yPosition, xSize, ySize), MouseInteractable {
+abstract class LPGuiButton(
+    parent: Drawable,
+    xPosition: HorizontalPosition,
+    yPosition: VerticalPosition,
+    xSize: HorizontalSize,
+    ySize: VerticalSize,
+    margin: Margin,
+    val onClickAction: ((Int) -> Boolean)
+) : LPGuiWidget(
+    parent = parent,
+    xPosition = xPosition,
+    yPosition = yPosition,
+    xSize = xSize,
+    ySize = ySize,
+    margin = margin
+), MouseInteractable {
 
     var visible: Boolean = true
     var enabled: Boolean = true
@@ -56,11 +71,11 @@ abstract class LPGuiButton(parent: Drawable, xPosition: HorizontalPosition, yPos
         super.draw(mouseX, mouseY, delta, visibleArea)
         if (visible) {
             helper.drawBorderedTile(
-                    rect = relativeBody,
-                    hovered = isMouseHovering(mouseX, mouseY),
-                    enabled = enabled,
-                    light = false,
-                    thickerBottomBorder = true
+                rect = relativeBody,
+                hovered = isMouseHovering(mouseX, mouseY),
+                enabled = enabled,
+                light = false,
+                thickerBottomBorder = true
             )
         }
     }
@@ -68,5 +83,5 @@ abstract class LPGuiButton(parent: Drawable, xPosition: HorizontalPosition, yPos
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = bodyTrigger.contains(mouseX, mouseY)
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-            onClickAction.invoke(mouseButton)
+        onClickAction.invoke(mouseButton)
 }

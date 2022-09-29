@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.gui.widget
 
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.LPBaseGuiContainer.Companion.helper
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
@@ -47,22 +47,25 @@ import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.Rectangle
 
 class LPGuiLabel(
-        parent: Drawable,
-        xPosition: HorizontalPosition,
-        yPosition: VerticalPosition,
-        xSize: HorizontalSize,
-        private val textGetter: () -> String,
-        private val textColor: Int = MinecraftColor.WHITE.colorCode) : LPGuiWidget
-(
-        parent = parent,
-        xPosition = xPosition,
-        yPosition = yPosition,
-        xSize = xSize,
-        ySize = AbsoluteSize(helper.mcFontRenderer.FONT_HEIGHT)
+    parent: Drawable,
+    xPosition: HorizontalPosition,
+    yPosition: VerticalPosition,
+    xSize: HorizontalSize,
+    margin: Margin,
+    private val textGetter: () -> String,
+    private val textColor: Int = MinecraftColor.WHITE.colorCode
+) : LPGuiWidget(
+    parent = parent,
+    xPosition = xPosition,
+    yPosition = yPosition,
+    xSize = xSize,
+    ySize = AbsoluteSize(helper.mcFontRenderer.FONT_HEIGHT),
+    margin = margin,
 ), MouseHoverable {
 
     private var text: String = textGetter()
-    private val textArea = Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
+    private val textArea =
+        Rectangle(relativeBody.roundedX, relativeBody.roundedY - 1, helper.mcFontRenderer.getStringWidth(text) + 1, helper.mcFontRenderer.FONT_HEIGHT + 1)
     private var drawXOffset = 0
     private var extendable = false
     private var trimmedText = TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)

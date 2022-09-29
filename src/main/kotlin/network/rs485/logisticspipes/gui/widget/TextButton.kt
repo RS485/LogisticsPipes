@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.gui.widget
 
 import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.util.TextUtil
@@ -45,17 +46,26 @@ import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.roundToInt
 
 open class TextButton(
-        parent: Drawable,
-        xPosition: HorizontalPosition,
-        yPosition: VerticalPosition,
-        xSize: HorizontalSize,
-        ySize: VerticalSize,
-        private val textGetter: () -> String,
-        onClickAction: (Int) -> Boolean
-) : LPGuiButton(parent, xPosition, yPosition, xSize, ySize, onClickAction), Tooltipped {
+    parent: Drawable,
+    xPosition: HorizontalPosition,
+    yPosition: VerticalPosition,
+    xSize: HorizontalSize,
+    ySize: VerticalSize,
+    margin: Margin,
+    private val textGetter: () -> String,
+    onClickAction: (Int) -> Boolean
+) : LPGuiButton(
+    parent = parent,
+    xPosition = xPosition,
+    yPosition = yPosition,
+    xSize = xSize,
+    ySize = ySize,
+    margin = margin,
+    onClickAction = onClickAction
+), Tooltipped {
 
     var text: String = ""
-        set(value){
+        set(value) {
             field = TextUtil.getTrimmedString(value, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
         }
     val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
@@ -80,11 +90,11 @@ open class TextButton(
     }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-            onClickAction.invoke(mouseButton).also {
-                text = textGetter()
-            }
+        onClickAction.invoke(mouseButton).also {
+            text = textGetter()
+        }
 
-    override fun getTooltipText(): List<String> = if(text != textGetter()) listOf(textGetter()) else emptyList()
+    override fun getTooltipText(): List<String> = if (text != textGetter()) listOf(textGetter()) else emptyList()
 
     fun updateText() {
         text = textGetter()

@@ -38,21 +38,27 @@
 package network.rs485.logisticspipes.gui.widget
 
 import net.minecraft.inventory.Slot
+import network.rs485.logisticspipes.gui.AbsoluteSize
+import network.rs485.logisticspipes.gui.HorizontalPosition
+import network.rs485.logisticspipes.gui.Margin
+import network.rs485.logisticspipes.gui.VerticalPosition
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 
 class SlotGroup(
-        parent: Drawable,
-        xPosition: HorizontalPosition,
-        yPosition: VerticalPosition,
-        slots: List<Slot>,
-        columns: Int,
-        rows: Int) : LPGuiWidget
-(
-        parent,
-        xPosition,
-        yPosition,
-        AbsoluteSize(18 * columns),
-        AbsoluteSize(18 * rows)
+    parent: Drawable,
+    xPosition: HorizontalPosition,
+    yPosition: VerticalPosition,
+    margin: Margin,
+    slots: List<Slot>,
+    columns: Int,
+    rows: Int
+) : LPGuiWidget(
+    parent = parent,
+    xPosition = xPosition,
+    yPosition = yPosition,
+    xSize = AbsoluteSize(18 * columns),
+    ySize = AbsoluteSize(18 * rows),
+    margin = margin
 ) {
     init {
         assert(slots.size == columns * rows)

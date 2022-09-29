@@ -42,10 +42,11 @@ import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.HorizontalAlignment
-import network.rs485.logisticspipes.gui.LPBaseGuiContainer
-import network.rs485.logisticspipes.gui.LPGuiDrawer
-import network.rs485.logisticspipes.gui.widget.*
+import network.rs485.logisticspipes.gui.*
+import network.rs485.logisticspipes.gui.widget.LPGuiLabel
+import network.rs485.logisticspipes.gui.widget.PlayerInventorySlotGroup
+import network.rs485.logisticspipes.gui.widget.SlotGroup
+import network.rs485.logisticspipes.gui.widget.TextButton
 import network.rs485.logisticspipes.property.PropertyLayer
 import network.rs485.logisticspipes.util.TextUtil
 
@@ -66,8 +67,9 @@ class ProviderGui(
     private val title: LPGuiLabel = LPGuiLabel(
         parent = this,
         xPosition = Center,
-        yPosition = Top(6),
-        xSize = FullSize(6),
+        yPosition = Top,
+        xSize = FullSize,
+        margin = Margin(top = 6, left = 6, right = 6),
         textColor = LPGuiDrawer.TEXT_DARK,
         textGetter = {
             providerModule.filterInventory.name
@@ -75,9 +77,10 @@ class ProviderGui(
         .setAlignment(HorizontalAlignment.CENTER)
     private val extractionModeLabel: LPGuiLabel = LPGuiLabel(
         parent = this,
-        xPosition = Left(6),
-        yPosition = Top(80),
-        xSize = FullSize(6),
+        xPosition = Left,
+        yPosition = Top,
+        xSize = FullSize,
+        margin = Margin(left = 6, top = 80, right = 6),
         textColor = LPGuiDrawer.TEXT_DARK,
         textGetter = {
             "${TextUtil.translate("${prefix}ExcessInventory")} ${TextUtil.translate(providerMode.get().extractionModeTranslationKey)}"
@@ -85,10 +88,11 @@ class ProviderGui(
         .setExtendable(true, LPGuiDrawer.BACKGROUND_LIGHT)
     private val extractionModeButton: TextButton = TextButton(
         parent = this,
-        xPosition = Left(6),
-        yPosition = Top(35),
+        xPosition = Left,
+        yPosition = Top,
         xSize = AbsoluteSize(50),
         ySize = AbsoluteSize(20),
+        margin = Margin(left = 6, top = 35),
         textGetter = {
             TextUtil.translate("${prefix}Switch")
         },
@@ -102,10 +106,11 @@ class ProviderGui(
         })
     private val providerModeButton: TextButton = TextButton(
         parent = this,
-        xPosition = Right(6),
-        yPosition = Top(35),
+        xPosition = Right,
+        yPosition = Top,
         xSize = AbsoluteSize(50),
         ySize = AbsoluteSize(20),
+        margin = Margin(right = 6, top = 35),
         textGetter = {
             if (isExclusionFilter.get()) {
                 TextUtil.translate("${prefix}Exclude")
@@ -124,16 +129,18 @@ class ProviderGui(
     private val filterSlots: SlotGroup = SlotGroup(
         parent = this,
         xPosition = Center,
-        yPosition = Top(18),
+        yPosition = Top,
+        margin = Margin(top = 18),
         slots = (inventorySlots as ProviderContainer).filterSlots,
         columns = 3,
         rows = 3
     )
     private val playerSlots: PlayerInventorySlotGroup = PlayerInventorySlotGroup(
-        this,
-        Center,
-        Bottom(6),
-        (inventorySlots as ProviderContainer).playerSlots
+        parent = this,
+        xPosition = Center,
+        yPosition = Bottom,
+        margin = Margin(bottom = 6),
+        slots = (inventorySlots as ProviderContainer).playerSlots
     )
 
     init {

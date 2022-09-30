@@ -98,17 +98,24 @@ interface Drawable {
 
     var parent: Drawable?
 
-    // Relative positions/size accessors.
+    /** Relative x position. */
     val x: Float get() = relativeBody.x0
+    /** Relative y position. */
     val y: Float get() = relativeBody.y0
+    /** Drawable's width. */
     val width: Int get() = relativeBody.roundedWidth
+    /** Drawable's height */
     val height: Int get() = relativeBody.roundedHeight
 
-    // Absolute positions accessors.
+    /** Absolute left position. */
     val left: Float get() = (parent?.left ?: 0.0f) + x
+    /** Absolute right position. */
     val right: Float get() = left + width
+    /** Absolute top position. */
     val top: Float get() = (parent?.top ?: 0.0f) + y
+    /** Absolute bottom position. */
     val bottom: Float get() = top + height
+    /** Absolute drawable body. */
     val absoluteBody: Rectangle
         get() = Rectangle(left to top, right to bottom)
 

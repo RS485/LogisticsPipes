@@ -48,7 +48,9 @@ abstract class GuiComponent {
     var width: Int? = null
     var height: Int? = null
     val children = arrayListOf<GuiComponent>()
-    var margin: Margin = Margin.DEFAULT
+    var margin: Margin = Margin.NONE
+    var horizontalAlignment: HorizontalAlignment = HorizontalAlignment.LEFT
+    var verticalAlignment: VerticalAlignment = VerticalAlignment.TOP
 
     fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
         component.apply(init)

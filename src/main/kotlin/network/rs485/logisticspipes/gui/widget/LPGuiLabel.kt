@@ -49,8 +49,8 @@ import network.rs485.logisticspipes.util.math.MutableRectangle
 
 class LPGuiLabel(
     parent: Drawable,
-    xPosition: HorizontalPosition,
-    yPosition: VerticalPosition,
+    xPosition: HorizontalAlignment,
+    yPosition: VerticalAlignment,
     xSize: HorizontalSize,
     margin: Margin,
     text: String,
@@ -82,7 +82,7 @@ class LPGuiLabel(
     private var drawXOffset = 0
     private var extendable = false
     private var trimmedText = trimText(_text)
-    private var alignment = HorizontalAlignment.LEFT
+    private var alignment: HorizontalAlignment = HorizontalAlignment.LEFT
     private var backgroundColor = helper.BACKGROUND_LIGHT
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {

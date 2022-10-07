@@ -37,28 +37,25 @@
 
 package network.rs485.logisticspipes.gui
 
-// FIXME: Replace with HorizontalAlignment
-interface HorizontalPosition
-object Left : HorizontalPosition
-object Right : HorizontalPosition
-
-// FIXME: Replace with VerticalAlignment
-interface VerticalPosition
-object Top : VerticalPosition
-object Bottom : VerticalPosition
-
-object Center : HorizontalPosition, VerticalPosition
-
 interface HorizontalSize
 interface VerticalSize
-
-object FullSize : HorizontalSize, VerticalSize
-data class AbsoluteSize(val size: Int) : HorizontalSize, VerticalSize
-
+object Fixed : HorizontalSize, VerticalSize
+object Grow : HorizontalSize, VerticalSize
 data class Margin(val top: Int = 0, val left: Int = 0, val bottom: Int = 0, val right: Int = 0) {
     companion object {
-        val DEFAULT = Margin()
+        val NONE = Margin()
+        val DEFAULT = Margin(6)
     }
+
+    constructor(margin: Int) : this(
+        top = margin,
+        bottom = margin,
+        left = margin,
+        right = margin
+    )
+
+    val horizontal = left + right
+    val vertical = top + bottom
 }
 
 data class Padding(val top: Int = 0, val left: Int = 0, val bottom: Int = 0, val right: Int = 0)

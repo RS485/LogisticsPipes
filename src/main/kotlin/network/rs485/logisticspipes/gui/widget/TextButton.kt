@@ -47,8 +47,8 @@ import kotlin.math.roundToInt
 
 open class TextButton(
     parent: Drawable,
-    xPosition: HorizontalPosition,
-    yPosition: VerticalPosition,
+    xPosition: HorizontalAlignment,
+    yPosition: VerticalAlignment,
     xSize: HorizontalSize,
     ySize: VerticalSize,
     margin: Margin,

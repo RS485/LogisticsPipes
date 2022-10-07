@@ -46,8 +46,8 @@ import network.rs485.logisticspipes.gui.guidebook.Drawable
 
 class PlayerInventorySlotGroup(
     parent: Drawable,
-    xPosition: HorizontalPosition,
-    yPosition: VerticalPosition,
+    xPosition: HorizontalAlignment,
+    yPosition: VerticalAlignment,
     margin: Margin,
     slots: List<Slot>
 ) : LPGuiWidget(

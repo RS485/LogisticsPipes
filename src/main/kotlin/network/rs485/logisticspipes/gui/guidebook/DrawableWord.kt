@@ -77,7 +77,7 @@ open class DrawableWord(
         linkInteractable?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
 
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean =
-            absoluteBody.contains(mouseX, mouseY)
+        absoluteBody.contains(mouseX, mouseY)
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovering = linkInteractable?.isMouseHovering(mouseX, mouseY) ?: false
@@ -89,7 +89,7 @@ open class DrawableWord(
         LPGuiDrawer.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
     }
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
         return super.setPos(x, y)
     }

@@ -54,7 +54,7 @@ class ProviderGui private constructor(
     private val providerModule: ModuleProvider,
     private val providerContainer: ProviderContainer,
     private val propertyLayer: PropertyLayer,
-) : LPBaseGuiContainer(providerContainer, 174, 177) {
+) : LPBaseGuiContainer(providerContainer) {
 
     companion object {
         @JvmStatic
@@ -83,8 +83,8 @@ class ProviderGui private constructor(
     private val isExclusionFilter = propertyLayer.overlay(providerModule.isExclusionFilter)
 
     override val widgets = widgetContainer {
+        margin = Margin(top = 6, left = 6, right = 6, bottom = 6)
         staticLabel {
-            margin = Margin(top = 6, left = 6, right = 6)
             text = providerModule.filterInventory.name
             textAlignment = HorizontalAlignment.CENTER
             textColor = LPGuiDrawer.TEXT_DARK
@@ -92,22 +92,18 @@ class ProviderGui private constructor(
         }
         horizontal {
             button {
-                width = 50
-                height = 20
-                margin = Margin(left = 6, top = 35)
                 text = TextUtil.translate("${prefix}Switch")
                 action = { providerMode.write { it.next() } }
+                verticalAlignment = VerticalAlignment.CENTER
             }
             customSlots {
-                margin = Margin(top = 18)
                 slots = providerContainer.filterSlots
                 columns = 3
                 rows = 3
+                margin = Margin(left = 6, right = 6)
+                verticalAlignment = VerticalAlignment.CENTER
             }
             propertyButton<Boolean, BooleanProperty> {
-                width = 50
-                height = 20
-                margin = Margin(right = 6, top = 35)
                 property = providerModule.isExclusionFilter
                 propertyLayer = this@ProviderGui.propertyLayer
                 propertyToText = { isExclude ->
@@ -119,20 +115,27 @@ class ProviderGui private constructor(
                 }
                 text = propertyToText(isExclusionFilter.get())
                 action = { isExclusionFilter.write { it.toggle() } }
+                verticalAlignment = VerticalAlignment.CENTER
             }
         }
+        staticLabel {
+            text = TextUtil.translate("${prefix}ExcessInventory")
+            textAlignment = HorizontalAlignment.LEFT
+            textColor = LPGuiDrawer.TEXT_DARK
+            extendable = LPGuiDrawer.BACKGROUND_LIGHT
+        }
         label<ProviderMode, EnumProperty<ProviderMode>> {
-            margin = Margin(left = 6, top = 80, right = 6)
             property = providerModule.providerMode
             propertyLayer = this@ProviderGui.propertyLayer
+            textAlignment = HorizontalAlignment.LEFT
             propertyToText = { providerMode ->
-                TextUtil.translate("${prefix}ExcessInventory") + " " +
-                        TextUtil.translate(providerMode.modeTranslationKey)
+                TextUtil.translate(providerMode.modeTranslationKey)
             }
+            textColor = LPGuiDrawer.TEXT_DARK
+            extendable = LPGuiDrawer.BACKGROUND_LIGHT
             text = propertyToText(providerMode.get())
         }
         playerSlots {
-            margin = Margin(bottom = 6)
             slots = providerContainer.playerSlots
         }
     }

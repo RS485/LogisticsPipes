@@ -38,10 +38,10 @@
 package network.rs485.logisticspipes.gui.widget
 
 import net.minecraft.inventory.Slot
-import network.rs485.logisticspipes.gui.AbsoluteSize
-import network.rs485.logisticspipes.gui.HorizontalPosition
+import network.rs485.logisticspipes.gui.Fixed
+import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.Margin
-import network.rs485.logisticspipes.gui.VerticalPosition
+import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 
 class PlayerInventorySlotGroup(
@@ -49,23 +49,34 @@ class PlayerInventorySlotGroup(
     xPosition: HorizontalAlignment,
     yPosition: VerticalAlignment,
     margin: Margin,
-    slots: List<Slot>
+    val slots: List<Slot>
 ) : LPGuiWidget(
     parent = parent,
     xPosition = xPosition,
     yPosition = yPosition,
-    xSize = AbsoluteSize(9 * 18),
-    ySize = AbsoluteSize(4 * 18 + 4),
-    margin = margin
+    xSize = Fixed,
+    ySize = Fixed,
+    margin = margin,
 ) {
-    init {
+    override val minWidth: Int = 9 * 18
+    override val minHeight: Int = 4 * 18 + 4
+
+    override val maxWidth: Int = minWidth
+    override val maxHeight: Int = minHeight
+
+    override fun initWidget() {
         assert(slots.size == 4 * 9)
-        val startX = relativeBody.roundedX + 1
-        val startY = relativeBody.roundedY + 1
+        setSize(minWidth, minHeight)
+    }
+
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+        super.setPos(x, y)
+        val startX = absoluteBody.roundedX + 1
+        val startY = absoluteBody.roundedY + 1
         val slotSize = 18
         var index = 0
-        for (row in 0..2) {
-            for (column in 0..8) {
+        for (row in 0 until 3) {
+            for (column in 0 until 9) {
                 slots[index].apply {
                     xPos = startX + column * slotSize
                     yPos = startY + row * slotSize
@@ -75,12 +86,13 @@ class PlayerInventorySlotGroup(
         }
 
         // Add the hotbar inventory slots
-        for (column in 0..8) {
+        for (column in 0 until 9) {
             slots[index].apply {
                 xPos = startX + column * slotSize
                 yPos = startY + 3 * slotSize + 4
             }
             index++
         }
+        return width to height
     }
 }

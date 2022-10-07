@@ -52,16 +52,16 @@ class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : Dr
         relativeBody.setPos(relativeBody.x0, visibleArea.y0 - ((height - visibleArea.height) * progress))
     }
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
         relativeBody.setSize(relativeBody.roundedWidth, setChildrenPos())
-        return relativeBody.roundedHeight
+        return relativeBody.roundedWidth to relativeBody.roundedHeight
     }
 
     override fun setChildrenPos(): Int {
         var currentY = PAGE_VERTICAL_PADDING
         for (paragraph in drawableParagraphs) {
-            currentY += paragraph.setPos(0, currentY) + PAGE_VERTICAL_PADDING
+            currentY += paragraph.setPos(0, currentY).y + PAGE_VERTICAL_PADDING
         }
         return currentY
     }

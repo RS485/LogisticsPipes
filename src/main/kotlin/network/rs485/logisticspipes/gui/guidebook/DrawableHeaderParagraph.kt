@@ -67,7 +67,7 @@ class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableP
 
     override fun setChildrenPos(): Int {
         var currentY = splitAndInitialize(words, 0, 0, width, true)
-        currentY += horizontalLine.setPos(0, currentY)
+        currentY += horizontalLine.setPos(0, currentY).y
         return currentY
     }
 }

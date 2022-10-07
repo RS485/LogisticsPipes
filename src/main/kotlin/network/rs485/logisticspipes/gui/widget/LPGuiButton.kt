@@ -57,7 +57,7 @@ abstract class LPGuiButton(
     yPosition = yPosition,
     xSize = xSize,
     ySize = ySize,
-    margin = margin
+    margin = margin,
 ), MouseInteractable {
 
     var visible: Boolean = true
@@ -65,13 +65,21 @@ abstract class LPGuiButton(
 
     val helper = LPGuiDrawer
 
-    val bodyTrigger: MutableRectangle = relativeBody
+    final override val minWidth: Int = 20
+    override val minHeight: Int = 20
+
+    override val maxHeight: Int = 20
+    override val maxWidth: Int = 100
+
+    override fun initWidget() {
+        setSize(minWidth, minHeight)
+    }
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         if (visible) {
             helper.drawBorderedTile(
-                rect = relativeBody,
+                rect = absoluteBody,
                 hovered = isMouseHovering(mouseX, mouseY),
                 enabled = enabled,
                 light = false,
@@ -80,7 +88,7 @@ abstract class LPGuiButton(
         }
     }
 
-    override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = bodyTrigger.contains(mouseX, mouseY)
+    override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = absoluteBody.contains(mouseX, mouseY)
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
         onClickAction.invoke(mouseButton)

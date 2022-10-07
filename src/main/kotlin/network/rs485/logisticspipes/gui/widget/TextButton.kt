@@ -64,15 +64,22 @@ open class TextButton(
     onClickAction = onClickAction
 ), Tooltipped {
 
+    override val minHeight: Int = 20
+
     var text: String = text
         set(value) {
             field = value
             trimmedText = trimText(value)
         }
-    var trimmedText: String = trimText(text)
+    private var trimmedText: String = trimText(text)
     val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
     private val centerX: Float
         get() = relativeBody.width / 2
+
+    override fun setSize(newWidth: Int, newHeight: Int) {
+        super.setSize(newWidth, newHeight)
+        text = text
+    }
 
     private fun trimText(text: String): String {
         return TextUtil.getTrimmedString(text, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
@@ -85,9 +92,10 @@ open class TextButton(
         } else {
             helper.TEXT_WHITE
         }
+        val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-        helper.drawCenteredString(trimmedText, (relativeBody.left + centerX).roundToInt(), relativeBody.roundedY + yOffset, color, true)
+        helper.drawCenteredString(trimmedText, (absoluteBody.left + centerX).roundToInt(), absoluteBody.roundedY + yOffset, color, true)
         GlStateManager.disableBlend()
     }
 

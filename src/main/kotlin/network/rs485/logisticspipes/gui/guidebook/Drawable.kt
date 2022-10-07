@@ -103,7 +103,7 @@ interface Drawable {
          * Assigns the parent of all children to this.
          */
         fun <T : Drawable> List<Drawable>.createParent(parentGetter: () -> T) =
-                parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
+            parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
     }
 
     val relativeBody: MutableRectangle
@@ -112,21 +112,28 @@ interface Drawable {
 
     /** Relative x position. */
     val x: Float get() = relativeBody.x0
+
     /** Relative y position. */
     val y: Float get() = relativeBody.y0
+
     /** Drawable's width. */
     val width: Int get() = relativeBody.roundedWidth
+
     /** Drawable's height */
     val height: Int get() = relativeBody.roundedHeight
 
     /** Absolute left position. */
     val left: Float get() = (parent?.left ?: 0.0f) + x
+
     /** Absolute right position. */
     val right: Float get() = left + width
+
     /** Absolute top position. */
     val top: Float get() = (parent?.top ?: 0.0f) + y
+
     /** Absolute bottom position. */
     val bottom: Float get() = top + height
+
     /** Absolute drawable body. */
     val absoluteBody: Rectangle
         get() = Rectangle(left to top, right to bottom)
@@ -155,14 +162,14 @@ interface Drawable {
 
     /**
      * This function is responsible for updating the Drawable's position by giving it the exact X and Y where it
-     * should start and returning it's height as an offset for the next element.
+     * should start and returning the offset for the next element.
      * @param x         the X position of the Drawable.
      * @param y         the Y position of the Drawable.
-     * @return the input Y level plus the current element's height and a preset vertical spacer height.
+     * @return returns width and height of the drawable.
      */
-    fun setPos(x: Int, y: Int): Int {
+    fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
-        return relativeBody.roundedHeight
+        return relativeBody.roundedWidth to relativeBody.roundedHeight
     }
 
     /**
@@ -176,7 +183,7 @@ interface Drawable {
 }
 
 object Screen : Drawable {
-    val screen : MutableRectangle
+    val screen: MutableRectangle
         get() = MutableRectangle(
             width = Minecraft.getMinecraft().currentScreen?.width ?: Minecraft.getMinecraft().displayWidth,
             height = Minecraft.getMinecraft().currentScreen?.height ?: Minecraft.getMinecraft().displayHeight,
@@ -192,3 +199,13 @@ object Screen : Drawable {
     val yCenter: Int
         get() = relativeBody.roundedHeight / 2
 }
+
+val <T> Pair<T, T>.x: T
+    get() = first
+
+val <T> Pair<T, T>.y: T
+    get() = second
+
+fun Pair<Int, Int>.plus() = Pair(this.x + x, this.y + y)
+
+fun Pair<Int, Int>.minus() = Pair(this.x - x, this.y - y)

@@ -46,92 +46,27 @@ interface Tooltipped : MouseHoverable {
     fun getTooltipText(): List<String>
 }
 
-open class LPGuiWidget(
+abstract class LPGuiWidget(
     parent: Drawable,
-    xPosition: HorizontalPosition,
-    yPosition: VerticalPosition,
-    xSize: HorizontalSize,
-    ySize: VerticalSize,
+    val xPosition: HorizontalAlignment,
+    val yPosition: VerticalAlignment,
+    val xSize: HorizontalSize,
+    val ySize: VerticalSize,
     var margin: Margin,
 ) : Drawable {
     override var parent: Drawable? = parent
 
     final override val relativeBody: MutableRectangle = MutableRectangle()
 
-    val drawer = LPGuiDrawer
+    abstract val minWidth: Int
+    abstract val minHeight: Int
 
-    init {
-        relativeBody.setSize(
-            handleHorizontalSize(xSize),
-            handleVerticalSize(ySize)
-        )
-        relativeBody.setPos(
-            handleHorizontalPosition(xPosition),
-            handleVerticalPosition(yPosition)
-        )
-    }
+    abstract val maxWidth: Int
+    abstract val maxHeight: Int
 
-    private fun handleHorizontalPosition(pos: HorizontalPosition): Int = when (pos) {
-        Center -> {
-            (parent!!.width / 2) - (width / 2)
-        }
+    abstract fun initWidget()
 
-        is Left -> {
-            margin.left
-        }
-
-        is Right -> {
-            parent!!.width - width - margin.right
-        }
-
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
-    }
-
-    private fun handleVerticalPosition(pos: VerticalPosition): Int = when (pos) {
-        Center -> {
-            (parent!!.height / 2) - (height / 2)
-        }
-
-        is Top -> {
-            margin.top
-        }
-
-        is Bottom -> {
-            parent!!.height - height - margin.bottom
-        }
-
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
-    }
-
-    private fun handleHorizontalSize(size: HorizontalSize): Int = when (size) {
-        is FullSize -> {
-            parent!!.width - (margin.left + margin.right)
-        }
-
-        is AbsoluteSize -> {
-            size.size
-        }
-
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
-    }
-
-    private fun handleVerticalSize(size: VerticalSize): Int = when (size) {
-        is FullSize -> {
-            parent!!.height - (margin.top + margin.bottom)
-        }
-
-        is AbsoluteSize -> {
-            size.size
-        }
-
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
+    open fun setSize(newWidth: Int = relativeBody.roundedWidth, newHeight: Int = relativeBody.roundedHeight) {
+        relativeBody.setSize(newWidth, newHeight)
     }
 }

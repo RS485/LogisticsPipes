@@ -52,7 +52,7 @@ class DrawableHorizontalLine(private val thickness: Int, private val padding: In
     override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y + padding)
         relativeBody.setSize(parent!!.width - 2 * horizontalPadding, padding + thickness)
         return super.setPos(x, y)

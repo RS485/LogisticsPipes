@@ -38,21 +38,18 @@
 package network.rs485.logisticspipes.gui
 
 import network.rs485.logisticspipes.gui.guidebook.Drawable
-import network.rs485.logisticspipes.gui.widget.LPGuiLabel
-import network.rs485.logisticspipes.gui.widget.PlayerInventorySlotGroup
-import network.rs485.logisticspipes.gui.widget.SlotGroup
-import network.rs485.logisticspipes.gui.widget.TextButton
+import network.rs485.logisticspipes.gui.widget.*
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
 
 object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
-    private fun createWidget(container: WidgetContainer, component: GuiComponent): Drawable? = when (component) {
+    private fun createWidget(container: WidgetContainer, component: GuiComponent): LPGuiWidget? = when (component) {
         is PropertyLabel<*, *> -> LPGuiLabel(
             parent = container,
-            xPosition = Left,
-            yPosition = Top,
-            xSize = component.width?.let { AbsoluteSize(it) } ?: FullSize,
+            xPosition = component.horizontalAlignment,
+            yPosition = component.verticalAlignment,
+            xSize = component.width?.let { Fixed } ?: Grow,
             margin = component.margin,
             textColor = component.textColor,
             text = component.text,
@@ -68,10 +65,10 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
         is PropertyButton<*, *> -> TextButton(
             parent = container,
-            xPosition = Left,
-            yPosition = Top,
-            xSize = component.width?.let { AbsoluteSize(it) } ?: FullSize,
-            ySize = component.height?.let { AbsoluteSize(it) } ?: FullSize,
+            xPosition = component.horizontalAlignment,
+            yPosition = component.verticalAlignment,
+            xSize = component.width?.let { Fixed } ?: Grow,
+            ySize = component.height?.let { Fixed } ?: Grow,
             margin = component.margin,
             text = component.text,
             onClickAction = {
@@ -86,9 +83,9 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
         is Label -> LPGuiLabel(
             parent = container,
-            xPosition = Left,
-            yPosition = Top,
-            xSize = component.width?.let { AbsoluteSize(it) } ?: FullSize,
+            xPosition = component.horizontalAlignment,
+            yPosition = component.verticalAlignment,
+            xSize = component.width?.let { Fixed } ?: Grow,
             margin = component.margin,
             textColor = LPGuiDrawer.TEXT_DARK,
             text = component.text,
@@ -98,10 +95,10 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
         is Button -> TextButton(
             parent = container,
-            xPosition = Left,
-            yPosition = Top,
-            xSize = component.width?.let { AbsoluteSize(it) } ?: FullSize,
-            ySize = component.height?.let { AbsoluteSize(it) } ?: FullSize,
+            xPosition = component.horizontalAlignment,
+            yPosition = component.verticalAlignment,
+            xSize = component.width?.let { Fixed } ?: Grow,
+            ySize = component.height?.let { Fixed } ?: Grow,
             margin = component.margin,
             text = component.text,
             onClickAction = {
@@ -113,8 +110,8 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
         is CustomSlots -> SlotGroup(
             parent = container,
-            xPosition = Left,
-            yPosition = Top,
+            xPosition = component.horizontalAlignment,
+            yPosition = component.verticalAlignment,
             margin = component.margin,
             slots = component.slots,
             columns = component.columns,
@@ -123,8 +120,8 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
         is PlayerSlots -> PlayerInventorySlotGroup(
             parent = container,
-            xPosition = Left,
-            yPosition = Top,
+            xPosition = component.horizontalAlignment,
+            yPosition = component.verticalAlignment,
             margin = component.margin,
             slots = component.slots,
         )
@@ -146,11 +143,11 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
         body: IRectangle,
         parent: Drawable? = null,
     ): WidgetContainer {
-        val list = mutableListOf<Drawable>()
+        val list = mutableListOf<LPGuiWidget>()
         val containerBody = MutableRectangle.fromRectangle(body)
         val result = when (container) {
-            is HContainer -> HorizontalWidgetContainer(list, container.alignment, containerBody, parent)
-            is VContainer -> VerticalWidgetContainer(list, container.alignment, containerBody, parent)
+            is HContainer -> HorizontalWidgetContainer(list, parent, container.margin)
+            is VContainer -> VerticalWidgetContainer(list, parent, container.margin)
             else -> throw IllegalArgumentException("")
         }
         container.children.forEach { child ->

@@ -56,12 +56,12 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
     override val relativeBody = MutableRectangle()
     override var parent: Drawable? = null
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
         // This has to be done in two steps because setChildrenPos() depends on the width already being set.
         relativeBody.setSize(parent!!.width, 0)
         relativeBody.setSize(relativeBody.roundedWidth, setChildrenPos())
-        return relativeBody.roundedHeight
+        return relativeBody.roundedWidth to relativeBody.roundedHeight
     }
 
     override fun setChildrenPos(): Int {
@@ -69,7 +69,7 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
         currentY += if (image.broken) {
             splitAndInitialize(alternativeText, 5, currentY, width - 10, false)
         } else {
-            image.setPos(0, currentY)
+            image.setPos(0, currentY).y
         }
         return currentY
     }
@@ -169,7 +169,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         GlStateManager.popMatrix()
     }
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         if (imageSize != null) {
             // Checks width of image to scale down to a size that fits on the page
             relativeBody.setSize(imageSize!!.pngWidth, imageSize!!.pngHeight)

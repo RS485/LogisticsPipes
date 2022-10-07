@@ -47,7 +47,7 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
     override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
         relativeBody.setSize(parent!!.width, setChildrenPos())
         return super.setPos(x, y)
@@ -58,8 +58,8 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
     }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-            words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
-                    ?: false
+        words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+            ?: false
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
@@ -80,7 +80,7 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
     }
 
     override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
-            words.firstOrNull {
-                it.isMouseHovering(mouseX, mouseY)
-            }
+        words.firstOrNull {
+            it.isMouseHovering(mouseX, mouseY)
+        }
 }

@@ -60,22 +60,29 @@ class LPGuiLabel(
     xPosition = xPosition,
     yPosition = yPosition,
     xSize = xSize,
-    ySize = AbsoluteSize(helper.mcFontRenderer.FONT_HEIGHT),
+    ySize = Fixed,
     margin = margin,
 ), MouseHoverable {
-
     private var _text: String = text
+
+    override val minWidth: Int = 50
+    override val minHeight: Int = helper.mcFontRenderer.FONT_HEIGHT + 1
+
+    override val maxWidth: Int = Int.MAX_VALUE
+    override val maxHeight: Int = minHeight
+
     var text: String
         get() = _text
         set(value) {
             _text = value
-            textArea.setSize(helper.mcFontRenderer.getStringWidth(value), helper.mcFontRenderer.FONT_HEIGHT + 1)
+            extendedBody.setSize(helper.mcFontRenderer.getStringWidth(value), minHeight)
             setTextAlignment(alignment)
             trimmedText = trimText(value)
         }
-    private val textArea = MutableRectangle(
-        x = relativeBody.roundedX,
-        y = relativeBody.roundedY - 1,
+
+    private val extendedBody = MutableRectangle(
+        x = absoluteBody.roundedX,
+        y = absoluteBody.roundedY - 1,
         width = helper.mcFontRenderer.getStringWidth(_text) + 1,
         height = helper.mcFontRenderer.FONT_HEIGHT + 1,
     )
@@ -85,12 +92,16 @@ class LPGuiLabel(
     private var alignment: HorizontalAlignment = HorizontalAlignment.LEFT
     private var backgroundColor = helper.BACKGROUND_LIGHT
 
+    override fun initWidget() {
+        setSize(minWidth, minHeight)
+    }
+
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovering = isMouseHovering(mouseX, mouseY)
         GlStateManager.pushMatrix()
         GlStateManager.enableDepth()
-        if (hovering) helper.drawRect(textArea.translated(drawXOffset, 0), backgroundColor)
-        helper.mcFontRenderer.drawString(if (hovering) text else trimmedText, relativeBody.roundedX + drawXOffset, relativeBody.roundedY, textColor)
+        if (hovering) helper.drawRect(extendedBody.translated(absoluteBody), backgroundColor)
+        helper.mcFontRenderer.drawString(if (hovering) text else trimmedText, absoluteBody.roundedX + drawXOffset, absoluteBody.roundedY, textColor)
         GlStateManager.disableDepth()
         GlStateManager.popMatrix()
     }
@@ -103,6 +114,11 @@ class LPGuiLabel(
         extendable = newExtendable
         backgroundColor = newBackgroundColor
         return this
+    }
+
+    override fun setSize(newWidth: Int, newHeight: Int) {
+        relativeBody.setSize(newWidth, newHeight)
+        text = _text
     }
 
     fun setTextAlignment(newAlignment: HorizontalAlignment) {
@@ -119,7 +135,7 @@ class LPGuiLabel(
         }
     }
 
-    override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = relativeBody.contains(mouseX, mouseY)
+    override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = absoluteBody.contains(mouseX, mouseY)
 
     private fun String.width() = helper.mcFontRenderer.getStringWidth(this)
 }

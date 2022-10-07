@@ -50,6 +50,8 @@ import net.minecraft.inventory.Container
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.font.LPFontRenderer
 import network.rs485.logisticspipes.gui.guidebook.Screen
+import network.rs485.logisticspipes.gui.guidebook.x
+import network.rs485.logisticspipes.gui.guidebook.y
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.Rectangle
 import network.rs485.logisticspipes.util.math.BorderedRectangle
@@ -108,13 +110,18 @@ object LPGuiDrawer {
         Minecraft.getMinecraft().fontRenderer
     }
 
-    // Container specific draw code
+    /**
+     * Draws the default minecraft gui look matching the given rectangle and renders the
+     * inventory slots based on the point to match minecraft's guiTop and guiLeft variables
+     * which might not match the rectangle's position.
+     *
+     */
 
-    fun drawGuiBackground(guiArea: IRectangle, container: Container) {
+    fun drawGuiBackground(guiArea: IRectangle, topLeft: Pair<Int, Int>, container: Container) {
         setTexture(guiAtlas)
         start()
         putGuiBackgroundBase(guiArea)
-        putContainerSlots(guiArea, container)
+        putContainerSlots(topLeft, container)
         finish()
     }
 
@@ -128,9 +135,9 @@ object LPGuiDrawer {
         }
     }
 
-    private fun putContainerSlots(guiArea: IRectangle, container: Container) {
+    private fun putContainerSlots(topLeft: Pair<Int, Int>, container: Container) {
         for (slot in container.inventorySlots) {
-            putNormalSlot(guiArea.roundedLeft + slot.xPos, guiArea.roundedTop + slot.yPos)
+            putNormalSlot(topLeft.x + slot.xPos, topLeft.y + slot.yPos)
         }
     }
 

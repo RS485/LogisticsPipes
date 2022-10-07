@@ -148,11 +148,17 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val currentMouseX: Float = mouseX - absoluteBody.left
-        val currentMouseY: Float = mouseY - absoluteBody.top
-        if (getHovered(currentMouseX, currentMouseY)?.mouseClicked(mouseX.toFloat(), mouseY.toFloat(), mouseButton, null) == true) {
-            // Todo button sound if applicable
-            return
+        val currentHovered = hoveredWidget
+        if(currentHovered is MouseInteractable) {
+            if (currentHovered.mouseClicked(
+                        mouseX = mouseX.toFloat(),
+                        mouseY = mouseY.toFloat(),
+                        mouseButton = mouseButton,
+                        guideActionListener = null
+                    )
+            ) {
+                currentHovered.playPressedSound(mc.soundHandler)
+            }
         }
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }

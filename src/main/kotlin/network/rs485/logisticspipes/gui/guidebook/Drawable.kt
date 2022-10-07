@@ -39,6 +39,10 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.client.audio.SoundHandler
+import net.minecraft.init.SoundEvents
+import net.minecraft.util.SoundEvent
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.IRectangle
@@ -82,6 +86,14 @@ interface MouseInteractable : MouseHoverable {
      * @param mouseButton button of the mouse that was pressed.
      */
     fun mouseReleased(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean = false
+
+    /**
+     * Always call this method when mouse clicked is successful.
+     * @param soundHandler minecraft's sound handler
+     */
+    fun playPressedSound(soundHandler: SoundHandler, sound: SoundEvent = SoundEvents.UI_BUTTON_CLICK) {
+        soundHandler.playSound(PositionedSoundRecord.getMasterRecord(sound, 1.0f))
+    }
 
 }
 

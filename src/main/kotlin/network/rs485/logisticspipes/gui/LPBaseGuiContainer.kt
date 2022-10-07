@@ -114,14 +114,13 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
      */
     open fun drawForegroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {
         widgetContainer.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
-        hoveredWidget?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
+        (hoveredWidget as? Tooltipped)?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
             drawHoveringText(it, mouseX.roundToInt(), mouseY.roundToInt())
         } ?: renderHoveredToolTip(mouseX.roundToInt(), mouseY.roundToInt())
     }
 
-    // FIXME: filter is instance on tree instead of list
-    private fun getHovered(mouseX: Float, mouseY: Float): MouseInteractable? =
-        widgetContainer.filterIsInstance<MouseInteractable>().firstOrNull { it.isMouseHovering(mouseX, mouseY) }
+    private fun getHovered(mouseX: Float, mouseY: Float): MouseHoverable? =
+        widgetContainer.getHovered(mouseX, mouseY)
 
     // Call super and call all the normally used methods.
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -137,10 +136,8 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
         drawFocalgroundLayer(currentMouseX, currentMouseY, partialTicks)
         GlStateManager.translate(0.0f, 0.0f, 10.0f)
         RenderHelper.disableStandardItemLighting()
-        // FIXME: filter is instance on tree instead of list
-        hoveredWidget = widgetContainer.filterIsInstance<Tooltipped>().firstOrNull { it.isMouseHovering(currentMouseX, currentMouseY) }
-        drawForegroundLayer(currentMouseX, currentMouseY, partialTicks)
-        GlStateManager.translate(-absoluteBody.left, -absoluteBody.top, -10.0f)
+        hoveredWidget = getHovered(floatMouseX, floatMouseY)
+        drawForegroundLayer(floatMouseX, floatMouseY, partialTicks)
         RenderHelper.enableStandardItemLighting()
         GlStateManager.enableLighting()
         GlStateManager.enableDepth()

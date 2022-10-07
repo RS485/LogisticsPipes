@@ -79,8 +79,9 @@ abstract class LPBaseGuiContainer(
 
         // Set position back to 0 before placing children to respect minecraft's gui translation.
         widgetContainer.relativeBody.resetPos()
+        relativeBody.resetPos()
 
-        // Initialize every widget and place it relative to it's parent.
+        // Initialize every widget and place it relative to its parent.
         widgetContainer.apply {
             initWidget()
             placeChildren()

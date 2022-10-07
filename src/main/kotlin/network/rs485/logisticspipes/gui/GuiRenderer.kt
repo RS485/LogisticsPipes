@@ -67,8 +67,8 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             parent = container,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
-            xSize = component.width?.let { Fixed } ?: Grow,
-            ySize = component.height?.let { Fixed } ?: Grow,
+            xSize = Grow,
+            ySize = Fixed,
             margin = component.margin,
             text = component.text,
             onClickAction = {
@@ -97,8 +97,8 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             parent = container,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
-            xSize = component.width?.let { Fixed } ?: Grow,
-            ySize = component.height?.let { Fixed } ?: Grow,
+            xSize = Grow,
+            ySize = Fixed,
             margin = component.margin,
             text = component.text,
             onClickAction = {

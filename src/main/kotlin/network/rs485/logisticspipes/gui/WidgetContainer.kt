@@ -38,11 +38,9 @@
 package network.rs485.logisticspipes.gui
 
 import logisticspipes.LogisticsPipes
-import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.gui.guidebook.*
 import network.rs485.logisticspipes.gui.widget.LPGuiWidget
 import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
 
 abstract class WidgetContainer(
     val children: List<LPGuiWidget>,
@@ -67,7 +65,7 @@ abstract class WidgetContainer(
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
-        LPGuiDrawer.drawOutlineRect(MutableRectangle.fromRectangle(absoluteBody).grow(-1), MinecraftColor.CYAN.colorCode)
+        //LPGuiDrawer.drawOutlineRect(MutableRectangle.fromRectangle(absoluteBody).grow(-1), MinecraftColor.CYAN.colorCode)
         children.forEach {
             it.draw(mouseX = mouseX, mouseY = mouseY, delta = delta, visibleArea = visibleArea)
         }

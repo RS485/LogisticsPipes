@@ -83,12 +83,13 @@ class ProviderGui private constructor(
     private val isExclusionFilter = propertyLayer.overlay(providerModule.isExclusionFilter)
 
     override val widgets = widgetContainer {
-        margin = Margin(top = 6, left = 6, right = 6, bottom = 6)
+        margin = Margin.DEFAULT
         staticLabel {
             text = providerModule.filterInventory.name
             textAlignment = HorizontalAlignment.CENTER
             textColor = LPGuiDrawer.TEXT_DARK
             extendable = LPGuiDrawer.BACKGROUND_LIGHT
+            horizontalSize = Size.GROW
         }
         horizontal {
             gap = 6

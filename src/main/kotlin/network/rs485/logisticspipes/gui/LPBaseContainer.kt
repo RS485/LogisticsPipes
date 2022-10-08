@@ -174,7 +174,8 @@ abstract class LPBaseContainer : Container() {
     }
 
     /**
-     * Add player 9 + 27 slots to the Container's slot list.
+     * Add player 9 + 27 slots to the Container's slot list. This method currently places
+     * the slots in a grid so they work on old guis.
      * @param playerInventoryIn player's inventory from which the slots will be grabbed.
      * @param startX starting leftmost position.
      * @param startY starting topmost position.

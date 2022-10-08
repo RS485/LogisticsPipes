@@ -75,7 +75,7 @@ class LPGuiLabel(
         get() = _text
         set(value) {
             _text = value
-            extendedBody.setSize(helper.mcFontRenderer.getStringWidth(value), minHeight)
+            extendedBody.setSize(value.width(), minHeight)
             setTextAlignment(alignment)
             trimmedText = trimText(value)
         }
@@ -83,7 +83,7 @@ class LPGuiLabel(
     private val extendedBody = MutableRectangle(
         x = absoluteBody.roundedX,
         y = absoluteBody.roundedY - 1,
-        width = helper.mcFontRenderer.getStringWidth(_text) + 1,
+        width = _text.width() + 1,
         height = helper.mcFontRenderer.FONT_HEIGHT + 1,
     )
     private var drawXOffset = 0
@@ -138,4 +138,8 @@ class LPGuiLabel(
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = absoluteBody.contains(mouseX, mouseY)
 
     private fun String.width() = helper.mcFontRenderer.getStringWidth(this)
+
+    override fun toString(): String {
+        return "LabelWidget: $_text, $absoluteBody"
+    }
 }

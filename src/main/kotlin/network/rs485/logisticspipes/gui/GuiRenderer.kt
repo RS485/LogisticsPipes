@@ -146,8 +146,8 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
         val list = mutableListOf<LPGuiWidget>()
         val containerBody = MutableRectangle.fromRectangle(body)
         val result = when (container) {
-            is HContainer -> HorizontalWidgetContainer(list, parent, container.margin)
-            is VContainer -> VerticalWidgetContainer(list, parent, container.margin)
+            is HContainer -> HorizontalWidgetContainer(list, parent, container.margin, container.gap)
+            is VContainer -> VerticalWidgetContainer(list, parent, container.margin, container.gap)
             else -> throw IllegalArgumentException("")
         }
         container.children.forEach { child ->

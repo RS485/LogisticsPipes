@@ -91,6 +91,7 @@ class ProviderGui private constructor(
             extendable = LPGuiDrawer.BACKGROUND_LIGHT
         }
         horizontal {
+            gap = 6
             button {
                 text = TextUtil.translate("${prefix}Switch")
                 action = { providerMode.write { it.next() } }
@@ -100,7 +101,6 @@ class ProviderGui private constructor(
                 slots = providerContainer.filterSlots
                 columns = 3
                 rows = 3
-                margin = Margin(left = 6, right = 6)
                 verticalAlignment = VerticalAlignment.CENTER
             }
             propertyButton<Boolean, BooleanProperty> {

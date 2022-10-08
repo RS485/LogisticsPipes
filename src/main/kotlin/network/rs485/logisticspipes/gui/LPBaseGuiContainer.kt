@@ -65,7 +65,7 @@ abstract class LPBaseGuiContainer(
     private var hoveredWidget: MouseHoverable? = null
 
     protected abstract val widgets: ComponentContainer
-    private var widgetContainer: WidgetContainer = VerticalWidgetContainer(emptyList(), parent, Margin.DEFAULT)
+    private var widgetContainer: WidgetContainer = VerticalWidgetContainer(emptyList(), parent, Margin.DEFAULT, 0)
 
 
     override fun initGui() {

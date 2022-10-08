@@ -45,7 +45,8 @@ import network.rs485.logisticspipes.util.IRectangle
 abstract class WidgetContainer(
     val children: List<LPGuiWidget>,
     override var parent: Drawable? = null,
-    margin: Margin? = null
+    margin: Margin? = null,
+    var gap: Int,
 ) : MouseHoverable, LPGuiWidget(
     parent = parent ?: Screen,
     xPosition = HorizontalAlignment.LEFT,
@@ -97,7 +98,13 @@ class HorizontalWidgetContainer(
     children: List<LPGuiWidget>,
     parent: Drawable? = null,
     margin: Margin? = null,
-) : WidgetContainer(children = children, parent = parent, margin = margin) {
+    gap: Int,
+) : WidgetContainer(
+    children = children,
+    parent = parent,
+    margin = margin,
+    gap = gap
+) {
 
     override val maxWidth: Int = Int.MAX_VALUE
     override val maxHeight: Int = Int.MAX_VALUE
@@ -124,8 +131,8 @@ class HorizontalWidgetContainer(
         var xOffset = 0
         for (child in children) {
             xOffset += if (child is WidgetContainer) {
-                child.setPos(xOffset, 0)
-                child.placeChildren().x
+                child.setPos(xOffset + child.margin.left, 0)
+                child.placeChildren().x + margin.horizontal + gap
             } else {
                 child.setPos(
                     xOffset + child.margin.left,
@@ -134,7 +141,7 @@ class HorizontalWidgetContainer(
                         VerticalAlignment.BOTTOM -> height - child.height
                         VerticalAlignment.CENTER -> (height - child.height) / 2
                     }
-                ).x + child.margin.horizontal
+                ).x + child.margin.horizontal + gap
             }
         }
         return width to height
@@ -142,8 +149,8 @@ class HorizontalWidgetContainer(
 
     override val minWidth: Int
         get() = children.sumOf { drawable ->
-            drawable.minWidth + drawable.margin.horizontal
-        }
+            drawable.minWidth + drawable.margin.horizontal + gap
+        } - gap
 
     override val minHeight: Int
         get() = (children.maxOfOrNull { drawable ->
@@ -155,7 +162,13 @@ class VerticalWidgetContainer(
     children: List<LPGuiWidget>,
     parent: Drawable? = null,
     margin: Margin? = null,
-) : WidgetContainer(children = children, parent = parent, margin = margin) {
+    gap: Int,
+) : WidgetContainer(
+    children = children,
+    parent = parent,
+    margin = margin,
+    gap = gap
+) {
 
     override val maxWidth: Int = Int.MAX_VALUE
     override val maxHeight: Int = Int.MAX_VALUE
@@ -182,8 +195,8 @@ class VerticalWidgetContainer(
         var yOffset = 0
         for (child in children) {
             yOffset += if (child is WidgetContainer) {
-                child.setPos(0, yOffset)
-                child.placeChildren().y
+                child.setPos(0, yOffset + child.margin.top)
+                child.placeChildren().y + child.margin.vertical + gap
             } else {
                 child.setPos(
                     when (child.xPosition) {
@@ -191,8 +204,8 @@ class VerticalWidgetContainer(
                         HorizontalAlignment.RIGHT -> width - child.width
                         HorizontalAlignment.CENTER -> (width - child.width) / 2
                     },
-                    yOffset
-                ).y
+                    yOffset + child.margin.top
+                ).y + child.margin.vertical + gap
             }
         }
         return width to height
@@ -204,6 +217,6 @@ class VerticalWidgetContainer(
         } ?: 0)
     override val minHeight: Int
         get() = children.sumOf { drawable ->
-            drawable.minHeight + drawable.margin.vertical
-        }
+            drawable.minHeight + drawable.margin.vertical + gap
+        } - gap
 }

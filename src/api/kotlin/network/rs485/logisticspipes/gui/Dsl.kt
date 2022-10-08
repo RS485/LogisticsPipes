@@ -59,7 +59,10 @@ abstract class GuiComponent {
     }
 }
 
+
 abstract class ComponentContainer : GuiComponent() {
+
+    var gap: Int = 1
 
     /**
      * Arranges contained widgets left-to-right horizontally

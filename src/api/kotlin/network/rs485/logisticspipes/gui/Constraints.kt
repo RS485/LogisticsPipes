@@ -36,11 +36,6 @@
  */
 
 package network.rs485.logisticspipes.gui
-
-interface HorizontalSize
-interface VerticalSize
-object Fixed : HorizontalSize, VerticalSize
-object Grow : HorizontalSize, VerticalSize
 data class Margin(val top: Int = 0, val left: Int = 0, val bottom: Int = 0, val right: Int = 0) {
     companion object {
         val NONE = Margin()
@@ -58,8 +53,6 @@ data class Margin(val top: Int = 0, val left: Int = 0, val bottom: Int = 0, val 
     val vertical = top + bottom
 }
 
-data class Padding(val top: Int = 0, val left: Int = 0, val bottom: Int = 0, val right: Int = 0)
-
 enum class HorizontalAlignment {
     LEFT,
     CENTER,
@@ -70,4 +63,10 @@ enum class VerticalAlignment {
     TOP,
     CENTER,
     BOTTOM;
+}
+
+enum class Size {
+    FIXED,
+    GROW,
+    MIN
 }

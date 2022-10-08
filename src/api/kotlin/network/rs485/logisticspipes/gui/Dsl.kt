@@ -45,12 +45,14 @@ annotation class GuiComponentMarker
 
 @GuiComponentMarker
 abstract class GuiComponent {
-    var width: Int? = null
-    var height: Int? = null
+    var width: Int = -1
+    var height: Int = -1
     val children = arrayListOf<GuiComponent>()
     var margin: Margin = Margin.NONE
     var horizontalAlignment: HorizontalAlignment = HorizontalAlignment.LEFT
     var verticalAlignment: VerticalAlignment = VerticalAlignment.TOP
+    var horizontalSize: Size = Size.GROW
+    var verticalSize: Size = Size.GROW
 
     fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
         component.apply(init)

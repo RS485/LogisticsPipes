@@ -40,7 +40,6 @@ package network.rs485.logisticspipes.gui
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.widget.*
 import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
 
 object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
@@ -49,7 +48,7 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             parent = container,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
-            xSize = component.width?.let { Fixed } ?: Grow,
+            xSize = component.horizontalSize,
             margin = component.margin,
             textColor = component.textColor,
             text = component.text,
@@ -67,8 +66,8 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             parent = container,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
-            xSize = Grow,
-            ySize = Fixed,
+            xSize = Size.GROW,
+            ySize = Size.FIXED,
             margin = component.margin,
             text = component.text,
             onClickAction = {
@@ -85,7 +84,7 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             parent = container,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
-            xSize = component.width?.let { Fixed } ?: Grow,
+            xSize = component.horizontalSize,
             margin = component.margin,
             textColor = LPGuiDrawer.TEXT_DARK,
             text = component.text,
@@ -97,8 +96,8 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             parent = container,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
-            xSize = Grow,
-            ySize = Fixed,
+            xSize = Size.GROW,
+            ySize = Size.FIXED,
             margin = component.margin,
             text = component.text,
             onClickAction = {
@@ -128,10 +127,6 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
         is ComponentContainer -> createContainer(
             container = component,
-            body = container.relativeBody.copy().setSize(
-                newWidth = component.width?.toFloat() ?: container.relativeBody.width,
-                newHeight = component.height?.toFloat() ?: container.relativeBody.height,
-            ),
             parent = container,
         )
 
@@ -140,11 +135,9 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
     private fun createContainer(
         container: ComponentContainer,
-        body: IRectangle,
         parent: Drawable? = null,
     ): WidgetContainer {
         val list = mutableListOf<LPGuiWidget>()
-        val containerBody = MutableRectangle.fromRectangle(body)
         val result = when (container) {
             is HContainer -> HorizontalWidgetContainer(list, parent, container.margin, container.gap)
             is VContainer -> VerticalWidgetContainer(list, parent, container.margin, container.gap)
@@ -157,5 +150,5 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
     }
 
     override fun render(componentContainer: ComponentContainer, body: IRectangle): WidgetContainer =
-        createContainer(componentContainer, body)
+        createContainer(componentContainer)
 }

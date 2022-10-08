@@ -49,8 +49,8 @@ open class TextButton(
     parent: Drawable,
     xPosition: HorizontalAlignment,
     yPosition: VerticalAlignment,
-    xSize: HorizontalSize,
-    ySize: VerticalSize,
+    xSize: Size,
+    ySize: Size,
     margin: Margin,
     text: String,
     onClickAction: (Int) -> Boolean

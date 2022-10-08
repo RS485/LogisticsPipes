@@ -38,10 +38,7 @@
 package network.rs485.logisticspipes.gui.widget
 
 import net.minecraft.inventory.Slot
-import network.rs485.logisticspipes.gui.Fixed
-import network.rs485.logisticspipes.gui.HorizontalAlignment
-import network.rs485.logisticspipes.gui.Margin
-import network.rs485.logisticspipes.gui.VerticalAlignment
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 
 class SlotGroup(
@@ -56,8 +53,8 @@ class SlotGroup(
     parent = parent,
     xPosition = xPosition,
     yPosition = yPosition,
-    xSize = Fixed,
-    ySize = Fixed,
+    xSize = Size.FIXED,
+    ySize = Size.FIXED,
     margin = margin,
 ) {
     override val minWidth: Int = columns * 18

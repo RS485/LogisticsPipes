@@ -50,8 +50,8 @@ abstract class LPGuiWidget(
     parent: Drawable,
     val xPosition: HorizontalAlignment,
     val yPosition: VerticalAlignment,
-    val xSize: HorizontalSize,
-    val ySize: VerticalSize,
+    val xSize: Size,
+    val ySize: Size,
     var margin: Margin,
 ) : Drawable {
     override var parent: Drawable? = parent

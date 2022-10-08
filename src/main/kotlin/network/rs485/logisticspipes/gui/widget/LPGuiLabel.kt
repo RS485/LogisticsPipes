@@ -51,7 +51,7 @@ class LPGuiLabel(
     parent: Drawable,
     xPosition: HorizontalAlignment,
     yPosition: VerticalAlignment,
-    xSize: HorizontalSize,
+    xSize: Size,
     margin: Margin,
     text: String,
     private val textColor: Int = MinecraftColor.WHITE.colorCode
@@ -60,7 +60,7 @@ class LPGuiLabel(
     xPosition = xPosition,
     yPosition = yPosition,
     xSize = xSize,
-    ySize = Fixed,
+    ySize = Size.FIXED,
     margin = margin,
 ), MouseHoverable {
     private var _text: String = text

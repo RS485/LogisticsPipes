@@ -51,8 +51,8 @@ abstract class WidgetContainer(
     parent = parent ?: Screen,
     xPosition = HorizontalAlignment.LEFT,
     yPosition = VerticalAlignment.TOP,
-    xSize = Grow,
-    ySize = Grow,
+    xSize = Size.GROW,
+    ySize = Size.GROW,
     margin = margin ?: Margin.NONE,
 ) {
 
@@ -115,12 +115,12 @@ class HorizontalWidgetContainer(
     }
 
     private fun growChildren() {
-        val canGrow = children.filter { it.xSize == Grow || it.ySize == Grow }
+        val canGrow = children.filter { it.xSize == Size.GROW || it.ySize == Size.GROW }
         canGrow.forEach {
-            if (it.xSize == Grow) {
+            if (it.xSize == Size.GROW) {
                 it.setSize(it.width + (width - minWidth) / canGrow.count(), it.height)
             }
-            if (it.ySize == Grow) {
+            if (it.ySize == Size.GROW) {
                 it.setSize(newHeight = height - it.margin.vertical)
             }
         }
@@ -179,12 +179,12 @@ class VerticalWidgetContainer(
     }
 
     private fun growChildren() {
-        val canGrow = children.filter { it.xSize == Grow || it.ySize == Grow }
+        val canGrow = children.filter { it.xSize == Size.GROW || it.ySize == Size.GROW }
         canGrow.forEach {
-            if (it.xSize == Grow) {
+            if (it.xSize == Size.GROW) {
                 it.setSize(newWidth = width)
             }
-            if (it.ySize == Grow) {
+            if (it.ySize == Size.GROW) {
                 it.setSize(newHeight = it.height + (height - minHeight) / canGrow.count())
             }
         }

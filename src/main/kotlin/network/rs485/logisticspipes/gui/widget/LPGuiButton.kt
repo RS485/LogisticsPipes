@@ -47,8 +47,8 @@ abstract class LPGuiButton(
     parent: Drawable,
     xPosition: HorizontalAlignment,
     yPosition: VerticalAlignment,
-    xSize: HorizontalSize,
-    ySize: VerticalSize,
+    xSize: Size,
+    ySize: Size,
     margin: Margin,
     val onClickAction: ((Int) -> Boolean)
 ) : LPGuiWidget(

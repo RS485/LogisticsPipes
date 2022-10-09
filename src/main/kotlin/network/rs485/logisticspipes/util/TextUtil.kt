@@ -80,7 +80,7 @@ object TextUtil {
         if (fontRenderer.getStringWidth(text) < maxWidth) return text
         var result = ""
         text.takeWhile { char ->
-            (fontRenderer.getStringWidth(result + postfix) < maxWidth).also { fitsInWidth ->
+            (fontRenderer.getStringWidth(result + char + postfix) < maxWidth).also { fitsInWidth ->
                 if (fitsInWidth) {
                     result += char
                 }

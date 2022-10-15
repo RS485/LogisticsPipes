@@ -229,6 +229,7 @@ public class ItemIdentifierInventory
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items", nbttagcompound.getId());
 
+		Arrays.fill(_contents, null);
 		for (int j = 0; j < nbttaglist.tagCount(); ++j) {
 			NBTTagCompound nbttagcompound2 = nbttaglist.getCompoundTagAt(j);
 			int index = nbttagcompound2.getInteger("index");
@@ -466,7 +467,10 @@ public class ItemIdentifierInventory
 	}
 
 	@Override
-	public void clear() {}
+	public void clear() {
+		Arrays.fill(_contents, null);
+		updateContents();
+	}
 
 	@Override
 	public void clearInventorySlotContents(int i) {

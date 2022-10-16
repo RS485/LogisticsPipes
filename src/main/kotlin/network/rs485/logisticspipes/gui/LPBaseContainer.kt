@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.gui
 
 import logisticspipes.LogisticsPipes
+import logisticspipes.modules.LogisticsModule
 import logisticspipes.utils.gui.ModuleSlot
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.ClickType
@@ -51,7 +52,7 @@ import network.rs485.logisticspipes.gui.widget.GhostSlot
 import network.rs485.logisticspipes.gui.widget.LockedSlot
 import kotlin.math.min
 
-abstract class LPBaseContainer : Container() {
+abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
 
     val slotSize = 18
 

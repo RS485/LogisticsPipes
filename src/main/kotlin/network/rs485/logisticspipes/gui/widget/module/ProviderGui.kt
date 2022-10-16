@@ -66,6 +66,7 @@ class ProviderGui private constructor(
                 ProviderGui(
                     providerModule = providerModule,
                     providerContainer = ProviderContainer(
+                        providerModule = providerModule,
                         playerInventoryIn = playerInventory,
                         filterInventoryIn = filterInventory,
                         moduleInHand = lockedStack,

@@ -59,7 +59,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		return new ProviderContainer(player.inventory, module.filterInventory, ItemStack.EMPTY);
+		return new ProviderContainer(module, player.inventory, module.filterInventory, ItemStack.EMPTY);
 	}
 
 	@Override

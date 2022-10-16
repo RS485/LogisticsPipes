@@ -46,19 +46,18 @@ object PropertyUpdaterEventListener {
 
     @SubscribeEvent
     fun openContainer(event: PlayerContainerEvent.Open) {
-        // FIXME: disabled server-side property update until there is a common Container class with getModule
-//        val player = event.entityPlayer ?: return
-//        MainProxy.runOnServer(player.world) {
-//            Runnable {
-//                val guiContainer = event.container
-//                if (guiContainer is ProviderPipeContainer) {
-//                    val module = guiContainer.module
-//                    propertyUpdaters.add(
-//                        PropertyUpdater(player, module, module.properties)
-//                    )
-//                }
-//            }
-//        }
+        val player = event.entityPlayer ?: return
+        MainProxy.runOnServer(player.world) {
+            Runnable {
+                val guiContainer = event.container
+                if (guiContainer is LPBaseContainer) {
+                    val module = guiContainer.module
+                    propertyUpdaters.add(
+                        PropertyUpdater(player, module, module.properties)
+                    )
+                }
+            }
+        }
     }
 
     @SubscribeEvent

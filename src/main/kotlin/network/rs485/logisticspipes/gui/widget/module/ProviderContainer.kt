@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.gui.widget.module
 
+import logisticspipes.modules.ModuleProvider
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -45,9 +46,11 @@ import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
 
 class ProviderContainer(
+    providerModule: ModuleProvider,
     playerInventoryIn: IInventory,
     filterInventoryIn: IInventory,
-    moduleInHand: ItemStack) : LPBaseContainer() {
+    moduleInHand: ItemStack,
+) : LPBaseContainer(providerModule) {
 
     val playerSlots = addPlayerSlotsToContainer(playerInventoryIn, 0, 0, moduleInHand)
     val filterSlots = addDummySlotsToContainer(filterInventoryIn, 0, 0)

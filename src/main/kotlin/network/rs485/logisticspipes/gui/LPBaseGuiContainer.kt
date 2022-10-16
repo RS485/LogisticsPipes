@@ -39,15 +39,18 @@ package network.rs485.logisticspipes.gui
 
 import logisticspipes.LPConstants
 import logisticspipes.asm.ModDependentInterface
+import logisticspipes.utils.gui.DummySlot
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.inventory.Container
+import net.minecraft.inventory.ClickType
+import net.minecraft.inventory.Slot
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.gui.guidebook.Screen
+import network.rs485.logisticspipes.gui.widget.GhostSlot
 import network.rs485.logisticspipes.gui.widget.Tooltipped
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
@@ -55,10 +58,10 @@ import kotlin.math.roundToInt
 
 @ModDependentInterface(modId = [LPConstants.neiModID], interfacePath = ["codechicken.nei.api.INEIGuiHandler"])
 abstract class LPBaseGuiContainer(
-    inventorySlotsIn: Container,
+    private val baseContainer: LPBaseContainer,
     private val xOffset: Int = 0,
-    private val yOffset: Int = 0
-) : GuiContainer(inventorySlotsIn), Drawable {
+    private val yOffset: Int = 0,
+) : GuiContainer(baseContainer), Drawable {
 
     final override var parent: Drawable? = Screen
     final override val relativeBody = MutableRectangle()
@@ -66,7 +69,6 @@ abstract class LPBaseGuiContainer(
 
     protected abstract val widgets: ComponentContainer
     private var widgetContainer: WidgetContainer = VerticalWidgetContainer(emptyList(), parent, Margin.DEFAULT, 0)
-
 
     override fun initGui() {
         // In case the screen size has changed.
@@ -193,6 +195,16 @@ abstract class LPBaseGuiContainer(
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
+    override fun handleMouseClick(slotIn: Slot?, slotId: Int, mouseButton: Int, type: ClickType) {
+        if (slotIn is DummySlot || slotIn is GhostSlot) {
+            inventorySlots.slotClick(slotId, mouseButton, type, mc.player)
+        } else if (type == ClickType.QUICK_MOVE && baseContainer.tryTransferSlotToGhostSlot(slotId)) {
+            // transfer to ghost slot succeeded
+        } else {
+            super.handleMouseClick(slotIn, slotId, mouseButton, type)
+        }
+    }
+
     // Update screen size square when resolution changes.
     override fun setWorldAndResolution(mc: Minecraft, width: Int, height: Int) {
         super.setWorldAndResolution(mc, width, height)
@@ -211,6 +223,5 @@ abstract class LPBaseGuiContainer(
         forEach {
             it.draw(mouseX, mouseY, partialTicks, visibleArea)
         }
-
 
 }

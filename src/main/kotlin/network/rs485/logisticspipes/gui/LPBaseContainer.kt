@@ -121,6 +121,13 @@ abstract class LPBaseContainer : Container() {
     }
 
     /**
+     * Runs the code to check and add any item that would normally be added by running [transferStackInSlot].
+     * This is useful to bring client-side shift-clicking functionality to property-based GUIs.
+     * @return true, if a ghost slot did take the item and false if the transfer should be handled elsewhere.
+     */
+    open fun tryTransferSlotToGhostSlot(slotIdx: Int): Boolean = false
+
+    /**
      * Attempts to transfer the stack to one or more slots in the list.
      * @param from slot sending stack
      * @param toList slots possibly receiving stack

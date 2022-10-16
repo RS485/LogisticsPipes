@@ -72,18 +72,27 @@ class ProviderContainer(
         return filterSlots
     }
 
-    override fun transferStackInSlot(player: EntityPlayer, index: Int): ItemStack {
-
-        // Try to add to filter inventory
-        val slot = inventorySlots[index]
-        if(playerSlots.contains(slot) && filterSlots.none { it.stack.isItemEqual(slot.stack) } && filterSlots.any { !it.hasStack } ){
-            filterSlots.firstOrNull { targetSlot -> !targetSlot.hasStack }?.also { ghostSlot ->
-                applyItemStackToGhostItemSlot(slot.stack, ghostSlot as GhostItemSlot)
-                return ItemStack.EMPTY
+    override fun tryTransferSlotToGhostSlot(slotIdx: Int): Boolean {
+        val playerInvSlot = inventorySlots.getOrNull(slotIdx)?.takeIf { playerSlots.contains(it) } ?: return false
+        var firstFreeSlotId = Int.MAX_VALUE
+        for (filterSlot in filterSlots.withIndex()) {
+            if (filterSlot.value.hasStack) {
+                if (filterSlot.value.stack.isItemEqual(playerInvSlot.stack)) {
+                    // item already in filter slots
+                    return false
+                }
+            } else {
+                firstFreeSlotId = minOf(firstFreeSlotId, filterSlot.index)
             }
         }
 
-        return super.transferStackInSlot(player, index)
+        return firstFreeSlotId.takeIf { it in filterSlots.indices }
+            ?.let { filterSlots[it] as? GhostItemSlot }
+            ?.let { firstFreeSlot ->
+                applyItemStackToGhostItemSlot(playerInvSlot.stack, firstFreeSlot)
+                true
+            }
+            ?: false
     }
 
     override fun canInteractWith(playerIn: EntityPlayer): Boolean = true

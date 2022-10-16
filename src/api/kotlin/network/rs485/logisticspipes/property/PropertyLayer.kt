@@ -53,14 +53,14 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
         get() = changedIndices.stream().mapToObj { upperLayer[it]!! }.toList()
 
     private fun prepareWrite(idx: Int) {
-        upperLayer[idx] = lowerLayer[idx].copyProperty().also {
-            it.addObserver {
+        upperLayer[idx] = lowerLayer[idx].copyProperty().also { upperLayerProperty ->
+            upperLayerProperty.addObserver {
                 // set to changed once the copied property is actually changed
                 changedIndices.set(idx)
                 observersToRemove.remove(idx)?.also { obs ->
                     lowerLayer[idx].propertyObservers.remove(obs)
-                    it.addObserver(obs)
-                    obs(it)
+                    upperLayerProperty.addObserver(obs)
+                    obs(upperLayerProperty)
                 }
             }
         }

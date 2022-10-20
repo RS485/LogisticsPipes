@@ -70,6 +70,7 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             ySize = Size.FIXED,
             margin = component.margin,
             text = component.text,
+            enabled = component.enabled,
             onClickAction = {
                 component.action.invoke()
                 return@TextButton true
@@ -100,6 +101,7 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             ySize = Size.FIXED,
             margin = component.margin,
             text = component.text,
+            enabled = component.enabled,
             onClickAction = {
                 // FIXME: filter mouse button
                 component.action.invoke()

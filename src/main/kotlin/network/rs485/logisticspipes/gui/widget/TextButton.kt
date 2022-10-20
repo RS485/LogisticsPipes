@@ -53,6 +53,7 @@ open class TextButton(
     ySize: Size,
     margin: Margin,
     text: String,
+    enabled: Boolean,
     onClickAction: (Int) -> Boolean
 ) : LPGuiButton(
     parent = parent,
@@ -65,6 +66,10 @@ open class TextButton(
 ), Tooltipped {
 
     override val minHeight: Int = 20
+
+    init {
+        this.enabled = enabled
+    }
 
     var text: String = text
         set(value) {
@@ -87,7 +92,9 @@ open class TextButton(
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
-        val color = if (isMouseHovering(mouseX, mouseY)) {
+        val color = if (!enabled) {
+            helper.TEXT_DISABLED
+        } else if (isMouseHovering(mouseX, mouseY)) {
             helper.TEXT_HOVERED
         } else {
             helper.TEXT_WHITE
@@ -99,8 +106,11 @@ open class TextButton(
         GlStateManager.disableBlend()
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean = if (enabled) {
         onClickAction.invoke(mouseButton)
+    } else {
+        false
+    }
 
     override fun getTooltipText(): List<String> = if (trimmedText != text) listOf(text) else emptyList()
 }

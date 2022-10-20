@@ -53,6 +53,7 @@ abstract class GuiComponent {
     var verticalAlignment: VerticalAlignment = VerticalAlignment.TOP
     var horizontalSize: Size = Size.GROW
     var verticalSize: Size = Size.GROW
+    var enabled: Boolean = true
 
     fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
         component.apply(init)
@@ -115,7 +116,8 @@ open class Label : GuiComponent() {
     var text: String = ""
     var textAlignment: HorizontalAlignment = HorizontalAlignment.LEFT
     var textColor: Int = 0
-    var extendable: Int = 0
+    var extendable: Boolean = false
+    var backgroundColor: Int = 0
 }
 
 interface PropertyAware {

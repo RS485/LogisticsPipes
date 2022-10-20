@@ -37,10 +37,12 @@
 
 package network.rs485.logisticspipes.gui.widget
 
-import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.*
+import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPBaseGuiContainer.Companion.helper
+import network.rs485.logisticspipes.gui.Margin
+import network.rs485.logisticspipes.gui.Size
+import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
 import network.rs485.logisticspipes.util.IRectangle

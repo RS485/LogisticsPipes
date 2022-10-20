@@ -15,6 +15,7 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.gui.widget.module.ItemSinkGui;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -66,6 +67,9 @@ public class ItemSinkImportPacket extends ModuleCoordinatesPacket {
 			if (importedItems == null) return;
 			if (Minecraft.getMinecraft().currentScreen instanceof GuiItemSink) {
 				((GuiItemSink) Minecraft.getMinecraft().currentScreen).importFromInventory(importedItems.stream());
+			}
+			if (Minecraft.getMinecraft().currentScreen instanceof ItemSinkGui) {
+				((ItemSinkGui) Minecraft.getMinecraft().currentScreen).importFromInventory(importedItems);
 			}
 		}
 	}

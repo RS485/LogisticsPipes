@@ -67,6 +67,7 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 		module.setIgnoreData(ignoreData);
 		module.setIgnoreNBT(ignoreNBT);
 		return new GuiItemSink(player.inventory, module, hasFuzzyUpgrade);
+		//return ItemSinkGui.create(player.inventory, module, ItemStack.EMPTY, hasFuzzyUpgrade, false);
 	}
 
 	@Override

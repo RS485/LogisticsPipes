@@ -89,7 +89,8 @@ class ProviderGui private constructor(
             text = providerModule.filterInventory.name
             textAlignment = HorizontalAlignment.CENTER
             textColor = LPGuiDrawer.TEXT_DARK
-            extendable = LPGuiDrawer.BACKGROUND_LIGHT
+            extendable = true
+            backgroundColor = LPGuiDrawer.BACKGROUND_LIGHT
             horizontalSize = Size.GROW
         }
         horizontal {
@@ -124,7 +125,6 @@ class ProviderGui private constructor(
             text = TextUtil.translate("${prefix}ExcessInventory")
             textAlignment = HorizontalAlignment.LEFT
             textColor = LPGuiDrawer.TEXT_DARK
-            extendable = LPGuiDrawer.BACKGROUND_LIGHT
         }
         label<ProviderMode, EnumProperty<ProviderMode>> {
             property = providerModule.providerMode
@@ -134,7 +134,6 @@ class ProviderGui private constructor(
                 TextUtil.translate(providerMode.modeTranslationKey)
             }
             textColor = LPGuiDrawer.TEXT_DARK
-            extendable = LPGuiDrawer.BACKGROUND_LIGHT
             text = propertyToText(providerMode.get())
         }
         playerSlots {

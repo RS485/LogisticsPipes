@@ -47,14 +47,18 @@ import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.math.MutableRectangle
 
-class LPGuiLabel(
+class LabelWidget(
     parent: Drawable,
+    width: Int,
     xPosition: HorizontalAlignment,
     yPosition: VerticalAlignment,
     xSize: Size,
     margin: Margin,
-    text: String,
-    private val textColor: Int = MinecraftColor.WHITE.colorCode
+    private var text: String,
+    private val textColor: Int,
+    private val textAlignment: HorizontalAlignment,
+    private var extendable: Boolean,
+    private var backgroundColor: Int,
 ) : LPGuiWidget(
     parent = parent,
     xPosition = xPosition,
@@ -62,46 +66,71 @@ class LPGuiLabel(
     xSize = xSize,
     ySize = Size.FIXED,
     margin = margin,
-), MouseHoverable {
-    private var _text: String = text
+), MouseHoverable, Tooltipped {
 
-    override val minWidth: Int = 50
-    override val minHeight: Int = helper.mcFontRenderer.FONT_HEIGHT + 1
+    private var overflowing: Boolean = false
 
-    override val maxWidth: Int = Int.MAX_VALUE
-    override val maxHeight: Int = minHeight
-
-    var text: String
-        get() = _text
-        set(value) {
-            _text = value
-            extendedBody.setSize(value.width(), minHeight)
-            setTextAlignment(alignment)
-            trimmedText = trimText(value)
+    override val minWidth: Int = when (xSize) {
+        Size.FIXED -> {
+            width
         }
 
-    private val extendedBody = MutableRectangle(
-        x = absoluteBody.roundedX,
-        y = absoluteBody.roundedY - 1,
-        width = _text.width() + 1,
-        height = helper.mcFontRenderer.FONT_HEIGHT + 1,
-    )
-    private var drawXOffset = 0
-    private var extendable = false
-    private var trimmedText = trimText(_text)
-    private var alignment: HorizontalAlignment = HorizontalAlignment.LEFT
-    private var backgroundColor = helper.BACKGROUND_LIGHT
+        Size.MIN -> {
+            text.width() + 2
+        }
+
+        Size.GROW -> {
+            30
+        }
+    }
+
+    override val minHeight: Int = helper.mcFontRenderer.FONT_HEIGHT + 1
+
+    override val maxWidth: Int = parent.height
+    override val maxHeight: Int = parent.height
+
+    private var trimmedText = trimText(text)
+    private val fullBody = MutableRectangle()
 
     override fun initWidget() {
         setSize(minWidth, minHeight)
+        updateConstraints()
+    }
+
+    fun updateText(newText: String) {
+        text = newText
+        updateConstraints()
+    }
+
+    private fun updateConstraints() {
+        trimmedText = trimText(text)
+        fullBody.setPosFromRectangle(absoluteBody).translate(translateY = -2).grow(1)
+        fullBody.setSize(text.width(), minHeight)
+        overflowing = text != trimmedText
     }
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovering = isMouseHovering(mouseX, mouseY)
         GlStateManager.pushMatrix()
         GlStateManager.enableDepth()
-        if (hovering) helper.drawRect(extendedBody.translated(absoluteBody), backgroundColor)
-        helper.mcFontRenderer.drawString(if (hovering) text else trimmedText, absoluteBody.roundedX + drawXOffset, absoluteBody.roundedY, textColor)
+        if (hovering && overflowing && extendable) {
+            helper.drawRect(fullBody.translated(absoluteBody), backgroundColor)
+        }
+        val (effectiveAlignment, effectiveText) = if (overflowing) {
+            HorizontalAlignment.LEFT to if (hovering && extendable) text else trimmedText
+        } else {
+            textAlignment to text
+        }
+        helper.mcFontRenderer.drawString(
+            effectiveText,
+            when (effectiveAlignment) {
+                HorizontalAlignment.LEFT -> absoluteBody.roundedLeft
+                HorizontalAlignment.CENTER -> absoluteBody.roundedLeft + (width - effectiveText.width()) / 2
+                HorizontalAlignment.RIGHT -> absoluteBody.roundedRight - effectiveText.width()
+            },
+            absoluteBody.roundedY,
+            textColor
+        )
         GlStateManager.disableDepth()
         GlStateManager.popMatrix()
     }
@@ -110,29 +139,15 @@ class LPGuiLabel(
         return TextUtil.getTrimmedString(text, width, helper.mcFontRenderer)
     }
 
-    fun setExtendable(newExtendable: Boolean, newBackgroundColor: Int): LPGuiLabel {
-        extendable = newExtendable
-        backgroundColor = newBackgroundColor
-        return this
-    }
-
     override fun setSize(newWidth: Int, newHeight: Int) {
         relativeBody.setSize(newWidth, newHeight)
-        text = _text
+        updateConstraints()
     }
 
-    fun setTextAlignment(newAlignment: HorizontalAlignment) {
-        // FIXME: does not remember original alignment and always overrides it when text width is > width
-        alignment = if (text.width() > width) {
-            HorizontalAlignment.LEFT
-        } else {
-            newAlignment
-        }
-        drawXOffset = when (alignment) {
-            HorizontalAlignment.CENTER -> (width - text.width()) / 2
-            HorizontalAlignment.LEFT -> 0
-            HorizontalAlignment.RIGHT -> width - text.width()
-        }
+    override fun getTooltipText(): List<String> = if (overflowing && !extendable) {
+        listOf(text)
+    } else {
+        emptyList()
     }
 
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = absoluteBody.contains(mouseX, mouseY)
@@ -140,6 +155,6 @@ class LPGuiLabel(
     private fun String.width() = helper.mcFontRenderer.getStringWidth(this)
 
     override fun toString(): String {
-        return "LabelWidget: $_text, $absoluteBody"
+        return "LabelWidget: $text, $absoluteBody"
     }
 }

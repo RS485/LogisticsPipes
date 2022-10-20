@@ -68,6 +68,7 @@ object LPGuiDrawer {
     const val TEXT_DARK: Int = 0xff404040.toInt()
     const val TEXT_WHITE: Int = 0xffffffff.toInt()
     const val TEXT_HOVERED: Int = 0xffffffa0.toInt()
+    const val TEXT_DISABLED: Int = 0xffA0A0A0.toInt()
     const val BACKGROUND_LIGHT: Int = 0xffc6c6c6.toInt()
     const val BACKGROUND_DARK: Int = 0xff8b8b8b.toInt()
 

@@ -44,21 +44,21 @@ import network.rs485.logisticspipes.util.IRectangle
 object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
     private fun createWidget(container: WidgetContainer, component: GuiComponent): LPGuiWidget? = when (component) {
-        is PropertyLabel<*, *> -> LPGuiLabel(
+        is PropertyLabel<*, *> -> LabelWidget(
             parent = container,
+            width = component.width,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
             xSize = component.horizontalSize,
             margin = component.margin,
-            textColor = component.textColor,
             text = component.text,
+            textColor = component.textColor,
+            textAlignment = component.textAlignment,
+            extendable = component.extendable,
+            backgroundColor = component.backgroundColor,
         ).apply {
-            setTextAlignment(component.textAlignment)
-            if (component.extendable != 0) {
-                setExtendable(true, component.extendable)
-            }
             component.onPropertyUpdate { newText ->
-                text = newText
+                updateText(newText)
             }
         }
 
@@ -81,17 +81,19 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             }
         }
 
-        is Label -> LPGuiLabel(
+        is Label -> LabelWidget(
             parent = container,
+            width = component.width,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
             xSize = component.horizontalSize,
             margin = component.margin,
-            textColor = LPGuiDrawer.TEXT_DARK,
             text = component.text,
-        ).apply {
-            setTextAlignment(component.textAlignment)
-        }
+            textColor = component.textColor,
+            textAlignment = component.textAlignment,
+            extendable = component.extendable,
+            backgroundColor = component.backgroundColor,
+        )
 
         is Button -> TextButton(
             parent = container,

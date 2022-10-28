@@ -145,15 +145,19 @@ minecraft {
 
             lazyToken 'classpathExclude', {
                 def paths = [
-                        sourceSets.main.output.classesDirs.asPath,
-                        sourceSets.api.output.classesDirs.asPath,
-                        sourceSets.main.output.resourcesDir.path,
-                        sourceSets.api.output.resourcesDir.path,
+                    sourceSets.main.output.resourcesDir.toPath().toString(),
+                    sourceSets.api.output.resourcesDir.toPath().toString(),
                 ]
+                for (final def file in sourceSets.main.output.classesDirs.getFiles()) {
+                    paths.add(file.toPath().toString())
+                }
+                for (final def file in sourceSets.api.output.classesDirs.getFiles()) {
+                    paths.add(file.toPath().toString())
+                }
                 String.join(File.pathSeparator, paths)
             }
             lazyToken 'classpathInclude', {
-                def paths = ["${project.buildDir}/run_classes/"]
+                def paths = [project.buildDir.toPath().resolve("run_classes").toString()]
                 String.join(File.pathSeparator, paths)
             }
 

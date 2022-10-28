@@ -575,6 +575,12 @@ task integrationTests(dependsOn: ['prepareRunServerTest'], type: Exec) {
     standardOutput = new ByteArrayOutputStream()
     errorOutput = standardOutput // redirect stderr to stdout
 
+	doFirst {
+		if (System.properties['os.name'].toLowerCase().contains('windows')) {
+			commandLine = ["cmd", "/c", "$projectDir/gradlew.bat"] + args
+		}
+	}
+
     doLast {
         final output = standardOutput.toString()
         final start = output.indexOf('[STARTING LOGISTICSPIPES TESTS]')

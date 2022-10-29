@@ -1,0 +1,21 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.gradle]
+indent_size = 4
+indent_style = space
+
+[*.yml]
+indent_size = 2
+indent_style = space
+
+[common/**.java]
+indent_size = 4
+indent_style = tab
+
+[src/**.{java,kt}]
+indent_size = 4
+indent_style = space

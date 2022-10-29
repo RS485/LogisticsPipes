@@ -15,7 +15,22 @@ indent_style = space
 [common/**.java]
 indent_size = 4
 indent_style = tab
+ij_java_imports_layout = java.**,javax.**,|,net.minecraft.**,|,net.minecraftforge.**,|,*,|,logisticspipes.**,network.rs485.**
 
-[src/**.{java,kt}]
+[src/**.java]
 indent_size = 4
 indent_style = space
+ij_java_imports_layout = java.**,javax.**,|,net.minecraft.**,|,net.minecraftforge.**,|,*,|,logisticspipes.**,network.rs485.**
+
+[*.{kt,kts}]
+indent_size = 4
+indent_style = space
+max_line_length = 120
+ktlint_code_style = official
+ktlint_disabled_rules = no-wildcard-imports
+ij_kotlin_name_count_to_use_star_import = 5
+ij_kotlin_name_count_to_use_star_import_for_members = 3
+ij_kotlin_packages_to_use_import_on_demand = java.util.*,kotlinx.android.synthetic.**,io.ktor.**
+ij_kotlin_imports_layout = network.rs485.**,logisticspipes.**,*,net.minecraftforge.**,net.minecraft.**,java.**,javax.**,kotlin.**,kotlinx.**,^
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true

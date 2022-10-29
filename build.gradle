@@ -97,6 +97,7 @@ sourceSets {
 
 configurations {
     testCompileOnly.extendsFrom compileOnly
+    ktlint
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
@@ -341,6 +342,12 @@ dependencies {
     compileOnly group: 'com.jaquadro.minecraft.storagedrawers', name: 'StorageDrawers', version: '1.12.2-5.4.2', transitive: false
     compileOnly group: 'pl.asie.charset', name: 'Charset', version: '0.5.6.6', classifier: 'api', transitive: false
 
+    ktlint("com.pinterest:ktlint:0.47.1") {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
+        }
+    }
+
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
@@ -368,6 +375,14 @@ if (!nonMinecraftConfigurations.empty) {
         }
     }
 }
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    mainClass.set("com.pinterest.ktlint.Main")
+    args "**/*.kt"
+}
+//check.dependsOn ktlint // not enforced, ktlint is in trial mode
 
 clean {
     // this folder is created by dependency resolution and will be created before 'clean' runs,

@@ -106,7 +106,7 @@ open class TextButton(
         GlStateManager.disableBlend()
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean = if (enabled) {
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean = if (enabled) {
         onClickAction.invoke(mouseButton)
     } else {
         false

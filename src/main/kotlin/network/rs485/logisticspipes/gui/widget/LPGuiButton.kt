@@ -39,7 +39,6 @@ package network.rs485.logisticspipes.gui.widget
 
 import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.util.IRectangle
 
@@ -50,7 +49,7 @@ abstract class LPGuiButton(
     xSize: Size,
     ySize: Size,
     margin: Margin,
-    val onClickAction: ((Int) -> Boolean)
+    val onClickAction: ((Int) -> Boolean),
 ) : LPGuiWidget(
     parent = parent,
     xPosition = xPosition,
@@ -83,13 +82,13 @@ abstract class LPGuiButton(
                 hovered = isMouseHovering(mouseX, mouseY),
                 enabled = enabled,
                 light = false,
-                thickerBottomBorder = true
+                thickerBottomBorder = true,
             )
         }
     }
 
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = absoluteBody.contains(mouseX, mouseY)
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean =
         onClickAction.invoke(mouseButton)
 }

@@ -51,7 +51,7 @@ open class DrawableWord(
     private val scale: Float,
     state: InlineDrawableState,
     protected val linkInteractable: LinkInteractable?,
-) : Drawable, MouseInteractable {
+) : Drawable, GuideBookMouseInteractable {
 
     final override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
@@ -73,8 +73,8 @@ open class DrawableWord(
         if (linkInteractable != null) drawableParagraph.registerPreRenderCallback(linkInteractable::updateState)
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?) =
-        linkInteractable?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+    override fun inBookMouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?) =
+        linkInteractable?.inBookMouseClicked(mouseX, mouseY, mouseButton, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, mouseButton)
 
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean =
         absoluteBody.contains(mouseX, mouseY)

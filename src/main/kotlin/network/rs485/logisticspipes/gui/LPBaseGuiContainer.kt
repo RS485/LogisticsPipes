@@ -186,7 +186,6 @@ abstract class LPBaseGuiContainer(
                     mouseX = mouseX.toFloat(),
                     mouseY = mouseY.toFloat(),
                     mouseButton = mouseButton,
-                    guideActionListener = null
                 )
             ) {
                 currentHovered.playPressedSound(mc.soundHandler)

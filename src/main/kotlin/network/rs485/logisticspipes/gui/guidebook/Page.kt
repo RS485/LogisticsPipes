@@ -124,7 +124,7 @@ class Page(data: PageData) : IPageData by data {
     ) {
         drawable.getVisibleParagraphs(visibleArea)
             .firstOrNull { it.absoluteBody.contains(mouseX, mouseY) }
-            ?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+            ?.inBookMouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
     }
 
     fun setDrawablesPosition(area: IRectangle) {

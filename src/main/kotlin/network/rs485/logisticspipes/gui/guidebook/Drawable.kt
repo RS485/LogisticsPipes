@@ -61,15 +61,13 @@ interface MouseHoverable {
 interface MouseInteractable : MouseHoverable {
 
     /**
-     * A mouse click event should run this and the implementation checks if
-     * any actions on guideActionListener should be run.
+     * A mouse click event should run this.
      * @param mouseX X position of the mouse (absolute, screen)
      * @param mouseY Y position of the mouse (absolute, screen)
      * @param mouseButton button of the mouse that was pressed.
-     * @param guideActionListener actions to run from outside of this scope? (ben knows it best)
      * @return true, if click was handled
      */
-    fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean = false
+    fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean = false
 
     /**
      * Mouse scroll event, run this.

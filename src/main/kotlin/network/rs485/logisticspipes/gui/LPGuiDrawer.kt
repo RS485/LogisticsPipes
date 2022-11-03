@@ -65,17 +65,14 @@ import java.lang.Float.min
  */
 object LPGuiDrawer {
 
-    const val TEXT_DARK: Int = 0xff404040.toInt()
-    const val TEXT_WHITE: Int = 0xffffffff.toInt()
-    const val TEXT_HOVERED: Int = 0xffffffa0.toInt()
-    const val TEXT_DISABLED: Int = 0xffA0A0A0.toInt()
-    const val BACKGROUND_LIGHT: Int = 0xffc6c6c6.toInt()
-    const val BACKGROUND_DARK: Int = 0xff8b8b8b.toInt()
+    private const val BORDER: Int = 4
+    private const val NORMAL_SLOT_SIZE = 18
 
     private val guiAtlas = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/gui.png"), 256)
     private val guiNormalPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/normal.png"), 64)
     private val guiLightPattern = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/light.png"), 64)
     private val guiHoveredPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/blue.png"), 64)
+
     private val guiDarkPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/dark.png"), 64)
 
     private var currentTexture: Texture = guiAtlas

@@ -42,6 +42,7 @@ import logisticspipes.network.PacketHandler
 import logisticspipes.network.packets.module.ItemSinkImportPacket
 import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
+import logisticspipes.utils.Color
 import logisticspipes.utils.item.ItemIdentifier
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -90,7 +91,7 @@ class ItemSinkGui private constructor(
         staticLabel {
             text = itemSinkModule.filterInventory.name
             textAlignment = HorizontalAlignment.CENTER
-            textColor = LPGuiDrawer.TEXT_DARK
+            textColor = Color.TEXT_DARK.value
         }
         customSlots {
             slots = itemSinkContainer.filterSlots
@@ -110,7 +111,7 @@ class ItemSinkGui private constructor(
             }
             staticLabel {
                 text = "${TextUtil.translate("${prefix}Defaultroute")}:"
-                textColor = LPGuiDrawer.TEXT_DARK
+                textColor = Color.TEXT_DARK.value
                 textAlignment = HorizontalAlignment.RIGHT
                 verticalAlignment = VerticalAlignment.CENTER
                 horizontalSize = Size.MIN

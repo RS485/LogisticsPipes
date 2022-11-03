@@ -40,6 +40,7 @@ package network.rs485.logisticspipes.gui.widget.module
 import logisticspipes.modules.ModuleProvider
 import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
+import logisticspipes.utils.Color
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import network.rs485.logisticspipes.gui.*
@@ -88,9 +89,9 @@ class ProviderGui private constructor(
         staticLabel {
             text = providerModule.filterInventory.name
             textAlignment = HorizontalAlignment.CENTER
-            textColor = LPGuiDrawer.TEXT_DARK
+            textColor = Color.TEXT_DARK.value
             extendable = true
-            backgroundColor = LPGuiDrawer.BACKGROUND_LIGHT
+            backgroundColor = Color.BACKGROUND_LIGHT.value
             horizontalSize = Size.GROW
         }
         horizontal {
@@ -124,7 +125,7 @@ class ProviderGui private constructor(
         staticLabel {
             text = TextUtil.translate("${prefix}ExcessInventory")
             textAlignment = HorizontalAlignment.LEFT
-            textColor = LPGuiDrawer.TEXT_DARK
+            textColor = Color.TEXT_DARK.value
         }
         label<ProviderMode, EnumProperty<ProviderMode>> {
             property = providerModule.providerMode
@@ -133,7 +134,7 @@ class ProviderGui private constructor(
             propertyToText = { providerMode ->
                 TextUtil.translate(providerMode.modeTranslationKey)
             }
-            textColor = LPGuiDrawer.TEXT_DARK
+            textColor = Color.TEXT_DARK.value
             text = propertyToText(providerMode.get())
         }
         playerSlots {

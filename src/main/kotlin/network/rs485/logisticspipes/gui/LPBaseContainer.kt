@@ -37,6 +37,9 @@
 
 package network.rs485.logisticspipes.gui
 
+import network.rs485.logisticspipes.gui.widget.*
+import network.rs485.logisticspipes.property.IBitSet
+import network.rs485.logisticspipes.util.FuzzyFlag
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.LogisticsModule
 import logisticspipes.utils.gui.ModuleSlot
@@ -46,10 +49,7 @@ import net.minecraft.inventory.Container
 import net.minecraft.inventory.IInventory
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
-import network.rs485.logisticspipes.gui.widget.GhostItemSlot
-import network.rs485.logisticspipes.gui.widget.GhostSlot
-import network.rs485.logisticspipes.gui.widget.LockedSlot
+import java.util.*
 import kotlin.math.min
 
 abstract class LPBaseContainer(val module: LogisticsModule) : Container() {

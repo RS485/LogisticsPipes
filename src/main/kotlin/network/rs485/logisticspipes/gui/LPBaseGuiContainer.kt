@@ -37,26 +37,26 @@
 
 package network.rs485.logisticspipes.gui
 
-import logisticspipes.LPConstants
-import logisticspipes.asm.ModDependentInterface
+import network.rs485.logisticspipes.gui.guidebook.Drawable
+import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
+import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
+import network.rs485.logisticspipes.gui.guidebook.Screen
+import network.rs485.logisticspipes.gui.widget.FuzzyItemSlot
+import network.rs485.logisticspipes.gui.widget.FuzzySelectionWidget
+import network.rs485.logisticspipes.gui.widget.GhostSlot
+import network.rs485.logisticspipes.gui.widget.Tooltipped
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import logisticspipes.utils.gui.DummySlot
+import mezz.jei.api.gui.IGhostIngredientHandler
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Slot
-import network.rs485.logisticspipes.gui.guidebook.Drawable
-import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
-import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
-import network.rs485.logisticspipes.gui.guidebook.Screen
-import network.rs485.logisticspipes.gui.widget.GhostSlot
-import network.rs485.logisticspipes.gui.widget.Tooltipped
-import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
 import kotlin.math.roundToInt
 
-@ModDependentInterface(modId = [LPConstants.neiModID], interfacePath = ["codechicken.nei.api.INEIGuiHandler"])
 abstract class LPBaseGuiContainer(
     private val baseContainer: LPBaseContainer,
     private val xOffset: Int = 0,
@@ -104,13 +104,13 @@ abstract class LPBaseGuiContainer(
             widgetContainer.relativeBody.copy().grow(
                 widgetContainer.margin.horizontal,
                 widgetContainer.margin.vertical,
-            )
+            ),
         )
 
         // Center gui with possible offsets
         relativeBody.setPos(
             newX = (Screen.xCenter - relativeBody.width / 2) + xOffset,
-            newY = (Screen.yCenter - relativeBody.height / 2) + yOffset
+            newY = (Screen.yCenter - relativeBody.height / 2) + yOffset,
         )
 
         // To use minecraft's slot and item rendering. Might remove later.
@@ -223,4 +223,13 @@ abstract class LPBaseGuiContainer(
             it.draw(mouseX, mouseY, partialTicks, visibleArea)
         }
 
+    /**
+     * Returns of JEI targets for ghost items and fluids to be placed on.
+     */
+    abstract fun <I> getFilterSlots(): MutableList<IGhostIngredientHandler.Target<I>>
+
+    /**
+     * Returns a list of rectangles that overflow from the main gui area, so that JEI can avoid it.
+     */
+    abstract fun getExtraGuiAreas(): List<IRectangle>
 }

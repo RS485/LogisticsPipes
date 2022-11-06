@@ -37,18 +37,21 @@
 
 package network.rs485.logisticspipes.gui.widget.module
 
-import logisticspipes.modules.ModuleProvider
-import logisticspipes.network.packets.module.ModulePropertiesUpdate
-import logisticspipes.proxy.MainProxy
-import logisticspipes.utils.Color
-import net.minecraft.inventory.IInventory
-import net.minecraft.item.ItemStack
 import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.inventory.ProviderMode
 import network.rs485.logisticspipes.property.BooleanProperty
 import network.rs485.logisticspipes.property.EnumProperty
 import network.rs485.logisticspipes.property.PropertyLayer
+import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
+import logisticspipes.modules.ModuleProvider
+import logisticspipes.network.packets.module.ModulePropertiesUpdate
+import logisticspipes.proxy.MainProxy
+import logisticspipes.utils.Color
+import mezz.jei.api.gui.IGhostIngredientHandler
+import net.minecraft.inventory.IInventory
+import net.minecraft.item.ItemStack
+import java.awt.Rectangle
 
 // TODO create different buttons.
 class ProviderGui private constructor(
@@ -148,13 +151,29 @@ class ProviderGui private constructor(
         }
     }
 
+    override fun <I> getFilterSlots(): MutableList<IGhostIngredientHandler.Target<I>> {
+        return (inventorySlots as ProviderContainer).filterSlots.map { slot ->
+            object : IGhostIngredientHandler.Target<I> {
+                override fun accept(ingredient: I) {
+                    if (ingredient is ItemStack) {
+                        slot.putStack(ingredient)
+                    }
+                }
+
+                override fun getArea(): Rectangle = Rectangle(guiLeft + slot.xPos, guiTop + slot.yPos, 17, 17)
+            }
+        }.toMutableList()
+    }
+
+    override fun getExtraGuiAreas(): List<IRectangle> = emptyList()
+
     override fun onGuiClosed() {
         super.onGuiClosed()
         propertyLayer.unregister()
         if (mc.player != null && propertyLayer.properties.isNotEmpty()) {
             // send update to server, when there are changed properties
             MainProxy.sendPacketToServer(
-                ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(providerModule)
+                ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(providerModule),
             )
         }
     }

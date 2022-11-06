@@ -13,6 +13,9 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import network.rs485.logisticspipes.compat.JEIAdvancedGuiHandler;
+import network.rs485.logisticspipes.compat.JEIGhostIngredientHandler;
+import network.rs485.logisticspipes.gui.LPBaseGuiContainer;
 
 @JEIPlugin
 public class JEIPluginLoader implements IModPlugin {
@@ -24,7 +27,8 @@ public class JEIPluginLoader implements IModPlugin {
 		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
 		recipeTransferRegistry.addUniversalRecipeTransferHandler(new RecipeTransferHandler(registry.getJeiHelpers().recipeTransferHandlerHelper()));
 		registry.addGhostIngredientHandler(LogisticsBaseGuiScreen.class, new GhostIngredientHandler());
-		registry.addAdvancedGuiHandlers(new AdvancedGuiHandler());
+		registry.addGhostIngredientHandler(LPBaseGuiContainer.class, new JEIGhostIngredientHandler());
+		registry.addAdvancedGuiHandlers(new AdvancedGuiHandler(), new JEIAdvancedGuiHandler());
 	}
 
 	@Override

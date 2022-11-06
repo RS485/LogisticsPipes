@@ -65,9 +65,6 @@ public class ItemSinkImportPacket extends ModuleCoordinatesPacket {
 					.setPacketPos(this), player);
 		} else if (MainProxy.isClient(player.world)) {
 			if (importedItems == null) return;
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiItemSink) {
-				((GuiItemSink) Minecraft.getMinecraft().currentScreen).importFromInventory(importedItems.stream());
-			}
 			if (Minecraft.getMinecraft().currentScreen instanceof ItemSinkGui) {
 				((ItemSinkGui) Minecraft.getMinecraft().currentScreen).importFromInventory(importedItems);
 			}

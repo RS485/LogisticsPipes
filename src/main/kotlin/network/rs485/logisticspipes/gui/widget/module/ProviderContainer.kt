@@ -67,7 +67,7 @@ class ProviderContainer(
                         slotId = column + row * 3,
                         posX = startX + column * slotSize,
                         posY = startY + row * slotSize
-                    )
+                    ) as GhostItemSlot
                 )
             }
         }
@@ -100,7 +100,7 @@ class ProviderContainer(
 
     override fun canInteractWith(playerIn: EntityPlayer): Boolean = true
 
-    override fun applyItemStackToGhostItemSlot(itemStack: ItemStack, slot: GhostItemSlot) {
+    override fun applyItemStackToGhostItemSlot(itemStack: ItemStack, slot: GhostSlot) {
         val copiedStack = itemStack.copy().apply { count = 1 }
         slot.putStack(copiedStack)
     }

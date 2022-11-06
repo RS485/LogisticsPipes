@@ -63,12 +63,17 @@ abstract class LPBaseGuiContainer(
     private val yOffset: Int = 0,
 ) : GuiContainer(baseContainer), Drawable {
 
+    // TODO
+    // Make it so only the highest "z" widget can be drawn as hovered - hovered state should be managed by gui class.
+
     final override var parent: Drawable? = Screen
     final override val relativeBody = MutableRectangle()
     private var hoveredWidget: MouseHoverable? = null
 
     protected abstract val widgets: ComponentContainer
     private var widgetContainer: WidgetContainer = VerticalWidgetContainer(emptyList(), parent, Margin.DEFAULT, 0)
+
+    open val fuzzySelector: FuzzySelectionWidget? = null
 
     override fun initGui() {
         // In case the screen size has changed.
@@ -131,7 +136,7 @@ abstract class LPBaseGuiContainer(
      */
     open fun drawBackgroundLayer(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-        helper.drawGuiBackground(absoluteBody, guiLeft to guiTop, inventorySlots)
+        helper.drawGuiContainerBackground(absoluteBody, guiLeft to guiTop, inventorySlots)
     }
 
     /**
@@ -173,6 +178,23 @@ abstract class LPBaseGuiContainer(
         RenderHelper.disableStandardItemLighting()
         hoveredWidget = getHovered(floatMouseX, floatMouseY)
         drawForegroundLayer(floatMouseX, floatMouseY, partialTicks)
+        RenderHelper.disableStandardItemLighting()
+        fuzzySelector?.let { fuzzySelector ->
+            if (hoveredSlot == null && fuzzySelector.active && !fuzzySelector.isMouseHovering(
+                    floatMouseX,
+                    floatMouseY,
+                )
+            ) {
+                fuzzySelector.active = false
+                fuzzySelector.currentSlot = null
+            } else if (hoveredSlot != null && hoveredSlot != fuzzySelector.currentSlot && hoveredSlot is FuzzyItemSlot) {
+                val slot = hoveredSlot as FuzzyItemSlot
+                fuzzySelector.active = true
+                fuzzySelector.currentSlot = slot
+                fuzzySelector.setPos(guiLeft + slot.xPos, guiTop + slot.yPos + 17)
+            }
+            fuzzySelector.draw(floatMouseX, floatMouseY, partialTicks, Screen.screen)
+        }
         RenderHelper.enableStandardItemLighting()
         GlStateManager.enableLighting()
         GlStateManager.enableDepth()
@@ -180,6 +202,14 @@ abstract class LPBaseGuiContainer(
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (fuzzySelector?.mouseClicked(
+                mouseX = mouseX.toFloat(),
+                mouseY = mouseY.toFloat(),
+                mouseButton = mouseButton,
+            ) == true
+        ) {
+            return
+        }
         val currentHovered = hoveredWidget
         if (currentHovered is MouseInteractable) {
             if (currentHovered.mouseClicked(

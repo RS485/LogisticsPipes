@@ -59,8 +59,6 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
     val playerHotbarSlots: MutableList<Slot> = mutableListOf()
     val playerBackpackSlots: MutableList<Slot> = mutableListOf()
 
-    var selectedChild: MouseInteractable? = null
-
     /**
      * Add container-specific's DummySlots to the Container's slot list.
      * This should be implemented in a per-container basis.
@@ -76,9 +74,35 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
      * @param dummyInventoryIn slot's inventory.
      * @param slotId id to be given to the slot
      */
-    open fun addGhostItemSlotToContainer(dummyInventoryIn: IInventory, slotId: Int, posX: Int, posY: Int): GhostSlot {
-        return addSlotToContainer(GhostItemSlot(dummyInventoryIn, slotId, posX, posY)) as GhostItemSlot
-    }
+    fun addGhostItemSlotToContainer(dummyInventoryIn: IInventory, slotId: Int, posX: Int, posY: Int): Slot =
+        addSlotToContainer(
+            GhostItemSlot(
+                inventoryIn = dummyInventoryIn,
+                index = slotId,
+                xPosition = posX,
+                yPosition = posY,
+            ),
+        )
+
+
+    fun addFuzzyItemSlotToContainer(
+        dummyInventoryIn: IInventory,
+        slotId: Int,
+        posX: Int,
+        posY: Int,
+        usedFlags: EnumSet<FuzzyFlag>,
+        flagGetter: () -> IBitSet,
+    ): Slot = addSlotToContainer(
+        FuzzyItemSlot(
+            inventoryIn = dummyInventoryIn,
+            index = slotId,
+            xPosition = posX,
+            yPosition = posY,
+            usedFlags = usedFlags,
+            flagGetter = flagGetter,
+        ),
+    )
+
 
     override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType, player: EntityPlayer): ItemStack {
 
@@ -139,8 +163,10 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
         if (!from.hasStack) return true
         val slots = toList.partition { it.hasStack }
         // Iterate through all non-empty slots and then through all empty slots until the initial slot is depleted or it fails.
-        slots.first.takeIf { it.isNotEmpty() }?.forEach { to -> if(handleShiftClickFromSlotToSlot(from, to, player)) return true }
-        slots.second.takeIf { it.isNotEmpty() }?.forEach { to -> if(handleShiftClickFromSlotToSlot(from, to, player)) return true }
+        slots.first.takeIf { it.isNotEmpty() }
+            ?.forEach { to -> if (handleShiftClickFromSlotToSlot(from, to, player)) return true }
+        slots.second.takeIf { it.isNotEmpty() }
+            ?.forEach { to -> if (handleShiftClickFromSlotToSlot(from, to, player)) return true }
         return false
     }
 
@@ -154,27 +180,27 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
     open fun handleShiftClickFromSlotToSlot(from: Slot, to: Slot, player: EntityPlayer): Boolean {
         if (!from.hasStack) return true
         if (to is GhostSlot || to is ModuleSlot) return false
-        if(to.hasStack && from.stack.isItemEqual(to.stack)){
+        if (to.hasStack && from.stack.isItemEqual(to.stack)) {
             // Calculate how many items can be added to stack until it is full, can be limited by the ItemStack(Item) or the Slot.
             val freeAmount = min(to.slotStackLimit, to.stack.maxStackSize) - to.stack.count
             if (freeAmount > 0) {
                 // Reduce original from stack and do the same on the slot to sync.
                 var shiftedStack = from.decrStackSize(freeAmount)
                 shiftedStack = from.onTake(player, shiftedStack)
-                if(!shiftedStack.isEmpty && !to.stack.isEmpty){
+                if (!shiftedStack.isEmpty && !to.stack.isEmpty) {
                     // Increase count on the receiving stack and also slot to sync.
                     to.stack.grow(shiftedStack.count)
                     to.putStack(to.stack)
                     return !from.hasStack
                 }
             }
-        } else if(!to.hasStack) {
+        } else if (!to.hasStack) {
             // Calculate how much can be added to empty slot
             val maxAmount = min(from.stack.count, to.slotStackLimit)
-            if(maxAmount > 0){
+            if (maxAmount > 0) {
                 val shiftedStack = from.decrStackSize(maxAmount)
                 to.putStack(shiftedStack)
-                if(from.stack.isEmpty) from.putStack(ItemStack.EMPTY)
+                if (from.stack.isEmpty) from.putStack(ItemStack.EMPTY)
             }
             return !from.hasStack
         }
@@ -189,7 +215,12 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
      * @param startY starting topmost position.
      * @return  return all the slots in the player's inventory.
      */
-    open fun addPlayerSlotsToContainer(playerInventoryIn: IInventory, startX: Int, startY: Int, lockedStack: ItemStack): List<Slot> {
+    open fun addPlayerSlotsToContainer(
+        playerInventoryIn: IInventory,
+        startX: Int,
+        startY: Int,
+        lockedStack: ItemStack,
+    ): List<Slot> {
 
         // Minecraft expects the 27 backpack slots to be index in 0-26 on the container list, and the hotbar
         // corresponds to 27-35.
@@ -199,8 +230,13 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
             for (column in 0..8) {
                 playerBackpackSlots.add(
                     addSlotToContainer(
-                        Slot(playerInventoryIn, column + row * 9 + 9, startX + column * slotSize, startY + row * slotSize)
-                    )
+                        Slot(
+                            playerInventoryIn,
+                            column + row * 9 + 9,
+                            startX + column * slotSize,
+                            startY + row * slotSize,
+                        ),
+                    ),
                 )
             }
         }
@@ -208,9 +244,27 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
         // Add the hotbar inventory slots
         for (index in 0..8) {
             if (!lockedStack.isEmpty && playerInventoryIn.getStackInSlot(index) == lockedStack) {
-                playerHotbarSlots.add(addSlotToContainer(LockedSlot(playerInventoryIn, index, startX + index * slotSize, startY + 3 * slotSize + 4)))
+                playerHotbarSlots.add(
+                    addSlotToContainer(
+                        LockedSlot(
+                            playerInventoryIn,
+                            index,
+                            startX + index * slotSize,
+                            startY + 3 * slotSize + 4,
+                        ),
+                    ),
+                )
             } else {
-                playerHotbarSlots.add(addSlotToContainer(Slot(playerInventoryIn, index, startX + index * slotSize, startY + 3 * slotSize + 4)))
+                playerHotbarSlots.add(
+                    addSlotToContainer(
+                        Slot(
+                            playerInventoryIn,
+                            index,
+                            startX + index * slotSize,
+                            startY + 3 * slotSize + 4,
+                        ),
+                    ),
+                )
             }
         }
 
@@ -218,8 +272,17 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
     }
 
     // Handle click on GhostSlot
-    private fun handleGhostSlotClick(slot: GhostSlot, grabbedItemStack: ItemStack, dragType: Int, clickTypeIn: ClickType, player: EntityPlayer) = when (slot) {
-        is GhostItemSlot -> handleGhostItemSlotClick(slot, grabbedItemStack, dragType, clickTypeIn, player)
+    private fun handleGhostSlotClick(
+        slot: GhostSlot,
+        grabbedItemStack: ItemStack,
+        dragType: Int,
+        clickTypeIn: ClickType,
+        player: EntityPlayer,
+    ) = when (slot) {
+        is Item -> handleGhostItemSlotClick(slot, grabbedItemStack, dragType, clickTypeIn, player)
+        else -> {
+            TODO("When did I add fluid slots?")
+        }
     }
 
     /**
@@ -230,10 +293,18 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
      * @param clickTypeIn type of action being performed @see ClickType
      * @param player interacting with the container
      */
-    open fun handleGhostItemSlotClick(slot: GhostItemSlot, grabbedItemStack: ItemStack, dragType: Int, clickTypeIn: ClickType, player: EntityPlayer) {
+    open fun handleGhostItemSlotClick(
+        slot: GhostSlot,
+        grabbedItemStack: ItemStack,
+        dragType: Int,
+        clickTypeIn: ClickType,
+        player: EntityPlayer,
+    ) {
         LogisticsPipes.log.info("DragType $dragType, ClickType: $clickTypeIn")
         // Copy the grabbedStack and insert it into the GhostItemSlot
-        applyItemStackToGhostItemSlot(grabbedItemStack, slot)
+        if (slot !is Unmodifiable) {
+            applyItemStackToGhostItemSlot(grabbedItemStack, slot)
+        }
     }
 
     /**
@@ -241,7 +312,7 @@ abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
      * @param itemStack ItemStack to be copied
      * @param slot target GhostItemSlot
      */
-    open fun applyItemStackToGhostItemSlot(itemStack: ItemStack, slot: GhostItemSlot) {
+    open fun applyItemStackToGhostItemSlot(itemStack: ItemStack, slot: GhostSlot) {
         val copiedItemStack = itemStack.copy()
         slot.putStack(copiedItemStack)
     }

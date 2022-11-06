@@ -3,6 +3,7 @@ package logisticspipes.network.guis.module.inpipe;
 import java.util.BitSet;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,9 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.StaticResolve;
-import logisticspipes.utils.gui.DummyContainer;
+import network.rs485.logisticspipes.gui.widget.module.ItemSinkContainer;
+import network.rs485.logisticspipes.gui.widget.module.ItemSinkGui;
+import network.rs485.logisticspipes.property.PropertyLayer;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -63,15 +66,25 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 			return null;
 		}
 		module.setDefaultRoute(isDefaultRoute);
-		module.setIgnoreData(ignoreData);
-		module.setIgnoreNBT(ignoreNBT);
-		return new GuiItemSink(player.inventory, module, hasFuzzyUpgrade);
-		//return ItemSinkGui.create(player.inventory, module, ItemStack.EMPTY, hasFuzzyUpgrade, false);
+		module.setFuzzyFlags(fuzzyFlags);
+
+		return ItemSinkGui.create(player.inventory, module, ItemStack.EMPTY, hasFuzzyUpgrade, false);
 	}
 
 	@Override
-	public DummyContainer getContainer(EntityPlayer player) {
-		return SimpleFilterInventorySlot.getContainerFromFilterModule(this, player);
+	public ItemSinkContainer getContainer(EntityPlayer player) {
+		ModuleItemSink module = this.getLogisticsModule(player.getEntityWorld(), ModuleItemSink.class);
+		if (module == null) {
+			return null;
+		}
+		return new ItemSinkContainer(
+			player.inventory,
+			module.filterInventory,
+			module,
+			new PropertyLayer(module.getProperties()),
+			hasFuzzyUpgrade,
+			ItemStack.EMPTY
+		);
 	}
 
 	@Override

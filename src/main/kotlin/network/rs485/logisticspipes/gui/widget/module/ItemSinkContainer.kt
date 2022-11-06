@@ -37,36 +37,42 @@
 
 package network.rs485.logisticspipes.gui.widget.module
 
+import network.rs485.logisticspipes.gui.LPBaseContainer
+import network.rs485.logisticspipes.gui.widget.FuzzyItemSlot
+import network.rs485.logisticspipes.gui.widget.GhostItemSlot
+import network.rs485.logisticspipes.gui.widget.GhostSlot
+import network.rs485.logisticspipes.property.PropertyLayer
+import network.rs485.logisticspipes.util.FuzzyFlag
 import logisticspipes.modules.ModuleItemSink
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.LPBaseContainer
-import network.rs485.logisticspipes.gui.widget.GhostSlot
-import network.rs485.logisticspipes.util.FuzzyFlag
-import java.util.EnumSet
+import java.util.*
 
 class ItemSinkContainer(
     playerInventory: IInventory,
     filterInventory: IInventory,
     itemSinkModule: ModuleItemSink,
+    propertyLayer: PropertyLayer,
     val isFuzzy: Boolean,
     val moduleInHand: ItemStack,
 ) : LPBaseContainer(itemSinkModule) {
 
     private val flags = EnumSet.of(FuzzyFlag.IGNORE_NBT, FuzzyFlag.IGNORE_DAMAGE)
 
+    val fuzzyFlagOverlay = propertyLayer.overlay(itemSinkModule.fuzzyFlags)
+
     val playerSlots = addPlayerSlotsToContainer(
         playerInventoryIn = playerInventory,
         startX = 0,
         startY = 0,
-        lockedStack = moduleInHand
+        lockedStack = moduleInHand,
     )
 
     val filterSlots = addDummySlotsToContainer(
         dummyInventoryIn = filterInventory,
         startX = 0,
-        startY = 0
+        startY = 0,
     )
 
     override fun addDummySlotsToContainer(dummyInventoryIn: IInventory, startX: Int, startY: Int): List<GhostSlot> {
@@ -76,12 +82,26 @@ class ItemSinkContainer(
 
         for (column in 0 until 9) {
             filterSlots.add(
-                addGhostItemSlotToContainer(
-                    dummyInventoryIn = dummyInventoryIn,
-                    slotId = column,
-                    posX = startX + column * slotSize,
-                    posY = startY
-                )
+                if (isFuzzy) {
+                    addFuzzyItemSlotToContainer(
+                        dummyInventoryIn = dummyInventoryIn,
+                        slotId = column,
+                        posX = startX + column * slotSize,
+                        posY = startY,
+                        usedFlags = flags,
+                    ) {
+                        fuzzyFlagOverlay.read { p ->
+                            p.get(column * 4, column * 4 + 3)
+                        }
+                    } as FuzzyItemSlot
+                } else {
+                    addGhostItemSlotToContainer(
+                        dummyInventoryIn = dummyInventoryIn,
+                        slotId = column,
+                        posX = startX + column * slotSize,
+                        posY = startY,
+                    ) as GhostItemSlot
+                },
             )
         }
 

@@ -37,6 +37,13 @@
 
 package network.rs485.logisticspipes.gui.widget.module
 
+import network.rs485.logisticspipes.gui.*
+import network.rs485.logisticspipes.gui.widget.FuzzySelectionWidget
+import network.rs485.logisticspipes.property.BooleanProperty
+import network.rs485.logisticspipes.property.InventoryProperty
+import network.rs485.logisticspipes.property.PropertyLayer
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.TextUtil
 import logisticspipes.modules.ModuleItemSink
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.packets.module.ItemSinkImportPacket
@@ -44,12 +51,10 @@ import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
 import logisticspipes.utils.Color
 import logisticspipes.utils.item.ItemIdentifier
+import mezz.jei.api.gui.IGhostIngredientHandler
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.*
-import network.rs485.logisticspipes.property.BooleanProperty
-import network.rs485.logisticspipes.property.PropertyLayer
-import network.rs485.logisticspipes.util.TextUtil
+import java.awt.Rectangle
 
 class ItemSinkGui private constructor(
     private val itemSinkModule: ModuleItemSink,
@@ -60,7 +65,13 @@ class ItemSinkGui private constructor(
 
     companion object {
         @JvmStatic
-        fun create(playerInventory: IInventory, itemSinkModule: ModuleItemSink, lockedStack: ItemStack, isFuzzy: Boolean, inHand: Boolean): ItemSinkGui {
+        fun create(
+            playerInventory: IInventory,
+            itemSinkModule: ModuleItemSink,
+            lockedStack: ItemStack,
+            isFuzzy: Boolean,
+            inHand: Boolean,
+        ): ItemSinkGui {
             val propertyLayer = PropertyLayer(itemSinkModule.properties)
             val filterInventoryOverlay = propertyLayer.overlay(itemSinkModule.filterInventory)
             // FIXME: we don't know if read or write, so write is the fallback -- overlay needs IInventory compatibility. Ben will work on this
@@ -71,11 +82,12 @@ class ItemSinkGui private constructor(
                         playerInventory = playerInventory,
                         filterInventory = filterInventory,
                         itemSinkModule = itemSinkModule,
+                        propertyLayer = propertyLayer,
                         isFuzzy = isFuzzy,
                         moduleInHand = lockedStack,
                     ),
                     propertyLayer = propertyLayer,
-                    inHand = inHand
+                    inHand = inHand,
                 )
             }
             return gui
@@ -84,7 +96,11 @@ class ItemSinkGui private constructor(
 
     private val prefix: String = "gui.itemsink."
 
-    private val defaultRoute = propertyLayer.overlay(itemSinkModule.defaultRoute)
+    private val defaultRouteOverlay = propertyLayer.overlay(itemSinkModule.defaultRoute)
+    private val fuzzyFlagsOverlay = itemSinkContainer.fuzzyFlagOverlay
+    private val filterInventoryOverlay = propertyLayer.overlay(itemSinkModule.filterInventory)
+
+    override val fuzzySelector = FuzzySelectionWidget(this, fuzzyFlagsOverlay)
 
     override val widgets = widgetContainer {
         margin = Margin.DEFAULT
@@ -104,7 +120,9 @@ class ItemSinkGui private constructor(
                 text = TextUtil.translate("${prefix}import")
                 action = {
                     if (!inHand) {
-                        MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkImportPacket::class.java).setModulePos(itemSinkModule))
+                        MainProxy.sendPacketToServer(
+                            PacketHandler.getPacket(ItemSinkImportPacket::class.java).setModulePos(itemSinkModule),
+                        )
                     }
                 }
                 enabled = !inHand
@@ -126,8 +144,8 @@ class ItemSinkGui private constructor(
                         TextUtil.translate("${prefix}No")
                     }
                 }
-                text = propertyToText(defaultRoute.get())
-                action = { defaultRoute.write { it.toggle() } }
+                text = propertyToText(defaultRouteOverlay.get())
+                action = { defaultRouteOverlay.write { it.toggle() } }
             }
         }
         playerSlots {
@@ -137,10 +155,15 @@ class ItemSinkGui private constructor(
 
     fun importFromInventory(importedItems: List<ItemIdentifier>) {
         if (importedItems.isEmpty()) return
-        // Todo: implement after ben's fix
-        //itemSinkModule.importFromInventory(importedItems.distinctBy {
-        //    it.item
-        //}.take(9))
+        filterInventoryOverlay.write { filterInventory: InventoryProperty ->
+            for (i in filterInventory.indices) {
+                if (i < importedItems.size) {
+                    filterInventory.setInventorySlotContents(i, importedItems[i].makeStack(1))
+                } else {
+                    filterInventory.setInventorySlotContents(i, ItemStack.EMPTY)
+                }
+            }
+        }
     }
 
     override fun onGuiClosed() {
@@ -149,8 +172,30 @@ class ItemSinkGui private constructor(
         if (mc.player != null && propertyLayer.properties.isNotEmpty()) {
             // send update to server, when there are changed properties
             MainProxy.sendPacketToServer(
-                ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(itemSinkModule)
+                ModulePropertiesUpdate.fromPropertyHolder(propertyLayer).setModulePos(itemSinkModule),
             )
+        }
+    }
+
+    override fun <I : Any?> getFilterSlots(): MutableList<IGhostIngredientHandler.Target<I>> {
+        return (inventorySlots as ItemSinkContainer).filterSlots.map { slot ->
+            object : IGhostIngredientHandler.Target<I> {
+                override fun accept(ingredient: I) {
+                    if (ingredient is ItemStack) {
+                        slot.putStack(ingredient)
+                    }
+                }
+
+                override fun getArea(): Rectangle = Rectangle(guiLeft + slot.xPos, guiTop + slot.yPos, 17, 17)
+            }
+        }.toMutableList()
+    }
+
+    override fun getExtraGuiAreas(): List<IRectangle> {
+        return if (fuzzySelector.active) {
+            listOf(fuzzySelector.relativeBody)
+        } else {
+            emptyList()
         }
     }
 

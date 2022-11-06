@@ -31,11 +31,7 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 
 	@Getter
 	@Setter
-	private BitSet ignoreData;
-
-	@Getter
-	@Setter
-	private BitSet ignoreNBT;
+	private BitSet fuzzyFlags;
 
 	public ItemSinkSlot(int id) {
 		super(id);
@@ -46,8 +42,7 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 		super.writeData(output);
 		output.writeBoolean(isDefaultRoute);
 		output.writeBoolean(hasFuzzyUpgrade);
-		output.writeBitSet(ignoreData);
-		output.writeBitSet(ignoreNBT);
+		output.writeBitSet(fuzzyFlags);
 	}
 
 	@Override
@@ -55,8 +50,7 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 		super.readData(input);
 		isDefaultRoute = input.readBoolean();
 		hasFuzzyUpgrade = input.readBoolean();
-		ignoreData = input.readBitSet();
-		ignoreNBT = input.readBitSet();
+		fuzzyFlags = input.readBitSet();
 	}
 
 	@Override

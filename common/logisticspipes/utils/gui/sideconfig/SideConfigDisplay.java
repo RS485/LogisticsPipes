@@ -220,7 +220,7 @@ public abstract class SideConfigDisplay {
 			IBlockState blockState = bc.getBlockState(world);
 			if (!blockState.getBlock().isAir(blockState, world, bc.getBlockPos())) {
 				RayTraceResult hit = blockState.collisionRayTrace(world, bc.getBlockPos(), start.toVec3d(), end.toVec3d());
-				if (hit.typeOfHit != RayTraceResult.Type.MISS) {
+				if (hit != null && hit.typeOfHit != RayTraceResult.Type.MISS) {
 					hits.add(hit);
 				}
 			}

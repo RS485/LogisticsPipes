@@ -1,0 +1,5 @@
+<root>
+    <item name='net.minecraft.block.state.IBlockProperties net.minecraft.util.math.RayTraceResult collisionRayTrace(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.util.math.Vec3d, net.minecraft.util.math.Vec3d)'>
+        <annotation name='javax.annotation.Nullable'/>
+    </item>
+</root>

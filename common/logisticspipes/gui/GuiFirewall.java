@@ -3,7 +3,10 @@ package logisticspipes.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.GuiClosePacket;
 import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -63,6 +66,12 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 			default:
 				break;
 		}
+	}
+
+	@Override
+	public void onGuiClosed() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(pipe.container));
+		super.onGuiClosed();
 	}
 
 	@Override

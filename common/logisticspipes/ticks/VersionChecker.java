@@ -157,8 +157,7 @@ public final class VersionChecker implements Callable<VersionChecker.VersionInfo
 	}
 
 	/**
-	 * Integration with Version Checker
-	 * (http://www.minecraftforum.net/topic/2721902-/)
+	 * Integration with <a href="http://www.minecraftforum.net/topic/2721902-/">Version Checker</a>
 	 */
 	private void sendIMCOutdatedMessage(VersionInfo versionInfo) {
 		if (Loader.isModLoaded("VersionChecker")) {

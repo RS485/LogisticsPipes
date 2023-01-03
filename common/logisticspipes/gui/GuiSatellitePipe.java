@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.input.Keyboard;
 
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.GuiClosePacket;
 import logisticspipes.network.packets.satpipe.SatelliteSetNamePacket;
 import logisticspipes.pipes.SatelliteNamingResult;
 import logisticspipes.proxy.MainProxy;
@@ -62,6 +63,7 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void closeGui() throws IOException {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(satellitePipe.getContainer()));
 		super.closeGui();
 		Keyboard.enableRepeatEvents(false);
 	}

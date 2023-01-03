@@ -15,6 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 import logisticspipes.interfaces.IGUIChannelInformationReceiver;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.GuiClosePacket;
 import logisticspipes.network.packets.pipe.InvSysConContentRequest;
 import logisticspipes.network.packets.pipe.InvSysConOpenSelectChannelPopupPacket;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
@@ -183,6 +184,12 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		} else if (button.id == 6) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConOpenSelectChannelPopupPacket.class).setTilePos(pipe.container));
 		}
+	}
+
+	@Override
+	public void onGuiClosed() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(pipe.container));
+		super.onGuiClosed();
 	}
 
 	@Override

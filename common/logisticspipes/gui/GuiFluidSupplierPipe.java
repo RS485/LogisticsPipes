@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.GuiClosePacket;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
@@ -88,6 +89,7 @@ public class GuiFluidSupplierPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void onGuiClosed() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(logic.container));
 		super.onGuiClosed();
 	}
 }

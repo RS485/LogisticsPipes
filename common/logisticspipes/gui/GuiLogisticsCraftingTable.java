@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CraftingCycleRecipe;
+import logisticspipes.network.packets.gui.GuiClosePacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -107,6 +108,12 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 		if (button.id == 0 || button.id == 1) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingCycleRecipe.class).setDown(button.id == 1).setTilePos(_crafter));
 		}
+	}
+
+	@Override
+	public void onGuiClosed() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(_crafter));
+		super.onGuiClosed();
 	}
 
 	private boolean isMouseInFuzzyPanel(int mx, int my) {

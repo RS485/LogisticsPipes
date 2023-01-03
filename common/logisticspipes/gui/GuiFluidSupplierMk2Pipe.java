@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
 
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.GuiClosePacket;
 import logisticspipes.network.packets.pipe.FluidSupplierAmount;
 import logisticspipes.network.packets.pipe.FluidSupplierMinMode;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
@@ -114,6 +115,7 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void onGuiClosed() {
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(logic.container));
 		super.onGuiClosed();
 	}
 }

@@ -246,7 +246,7 @@ public class ModuleActiveSupplier extends LogisticsModule
 				haveCount = have.getStackSize();
 			}
 			if ((patternMode.getValue() == PatternMode.Bulk50 && haveCount > needed.getStackSize() / 2) || (
-					patternMode.getValue() == PatternMode.Bulk100 && haveCount >= needed.getStackSize())) {
+					patternMode.getValue() == PatternMode.Bulk100 && haveCount > 0)) {
 				continue;
 			}
 
@@ -337,7 +337,7 @@ public class ModuleActiveSupplier extends LogisticsModule
 			}
 			if (spaceAvailable < 1
 					|| (requestMode.getValue() == SupplyMode.Bulk50 && haveCount > item.getValue() / 2)
-					|| (requestMode.getValue() == SupplyMode.Bulk100 && haveCount >= item.getValue())) {
+					|| (requestMode.getValue() == SupplyMode.Bulk100 && haveCount > 1)) {
 				item.setValue(0);
 				continue;
 			}

@@ -1,5 +1,6 @@
 package logisticspipes.interfaces;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -40,6 +41,16 @@ public interface IInventoryUtil {
 	 * @param stack
 	 */
 	int roomForItem(@Nonnull ItemStack stack);
+
+	/**
+	 * Inventory space count which terminates when space for max items are
+	 * found.
+	 *
+	 * @return spaces found. If this is less than max, then there are no
+	 * spaces for that amount.
+	 * @param stacks
+	 */
+	boolean roomForItem(@Nonnull Iterator<ItemStack> stacks);
 
 	@Nonnull
 	Set<ItemIdentifier> getItems();

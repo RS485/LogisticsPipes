@@ -1,6 +1,7 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -15,6 +16,8 @@ import buildcraft.lib.misc.CapUtil;
 
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.inventory.ProviderMode;
+
+import org.jetbrains.annotations.NotNull;
 
 public class BuildCraftTransactorHandler extends SpecialInventoryHandler implements SpecialInventoryHandler.Factory {
 
@@ -66,6 +69,15 @@ public class BuildCraftTransactorHandler extends SpecialInventoryHandler impleme
 	@Override
 	public int roomForItem(@Nonnull ItemStack stack) {
 		return stack.getCount() - cap.insert(stack, false, true).getCount();
+	}
+
+	@Override
+	public boolean roomForItem(@NotNull Iterator<ItemStack> stacks) {
+		while (stacks.hasNext()) {
+			ItemStack stack = stacks.next();
+			if (cap.insert(stack, false, true).getCount() != 0) return false;
+		}
+		return true;
 	}
 
 	@Override

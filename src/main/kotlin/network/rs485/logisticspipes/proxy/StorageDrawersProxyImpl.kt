@@ -185,6 +185,17 @@ class StorageDrawersInventoryHandler(
             .let { if (it.isEnabled && it.canItemBeStored(stack)) it.acceptingRemainingCapacity else 0 }
     }.sum()
 
+    override fun roomForItem(stacks: MutableIterator<ItemStack>): Boolean {
+        while (stacks.hasNext()) {
+            val stack = stacks.next()
+            if (accessibleDrawerSlots().map { slot ->
+                    drawerGroup.getDrawer(slot)
+                        .let { if (it.isEnabled && it.canItemBeStored(stack)) it.acceptingRemainingCapacity else 0 }
+                }.sum() != stack.count) return false
+        }
+        return true
+    }
+
     override fun getSingleItem(item: ItemIdentifier?): ItemStack = throw NotImplementedError("Unused operation")
 
 }

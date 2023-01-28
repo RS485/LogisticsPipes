@@ -7,10 +7,7 @@
 
 package logisticspipes.utils;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
@@ -156,6 +153,31 @@ public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 			totalRoom += stack.getCount() - leftover.getCount();
 		}
 		return totalRoom;
+	}
+
+	@Override
+	public boolean roomForItem(@Nonnull Iterator<ItemStack> iterator) {
+		int slot = 0;
+		while (iterator.hasNext()) {
+			ItemStack toBeSimulated = iterator.next();
+			if (!toBeSimulated.isEmpty()) {
+				while (slot < this.inventory.getSlots()) {
+					toBeSimulated = this.inventory.insertItem(slot, toBeSimulated, true);
+					if (slot == this.inventory.getSlots() - 1) {
+						return !iterator.hasNext() && toBeSimulated.isEmpty();
+					}
+
+					// Always increase slot by default
+					slot++;
+
+					if (toBeSimulated.isEmpty()) {
+						break;
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 
 	@Override

@@ -1,7 +1,13 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -176,27 +182,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler impleme
 			stack.decStackSize(1);
 		}
 		return 0;
-	}
-
-	@Override
-	public boolean roomForItem(@Nonnull Iterator<ItemStack> iterator) {
-		while (iterator.hasNext()){
-			ItemStack itemStack = iterator.next();
-			IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
-			IStorageMonitorable tmp = acc.getInventory(source);
-			if (tmp == null || tmp.getInventory(channel) == null) {
-				return false;
-			}
-			IAEItemStack stack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(itemStack);
-			if (stack == null) return false;
-			while (stack.getStackSize() > 0) {
-				if (tmp.getInventory(channel).canAccept(stack)) {
-					return true;
-				}
-				stack.decStackSize(1);
-			}
-		}
-		return false;
 	}
 
 	@Override

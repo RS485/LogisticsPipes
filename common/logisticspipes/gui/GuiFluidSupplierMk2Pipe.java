@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiClosePacket;
@@ -115,7 +116,10 @@ public class GuiFluidSupplierMk2Pipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(logic.container));
+		final TileEntity container = logic.getContainer();
+		if (container != null) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(container));
+		}
 		super.onGuiClosed();
 	}
 }

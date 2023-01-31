@@ -63,7 +63,10 @@ public class GuiSatellitePipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void closeGui() throws IOException {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(satellitePipe.getContainer()));
+		final TileEntity container = satellitePipe.getContainer();
+		if (container != null) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(container));
+		}
 		super.closeGui();
 		Keyboard.enableRepeatEvents(false);
 	}

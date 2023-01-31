@@ -8,6 +8,7 @@ import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -188,8 +189,10 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 
 	@Override
 	public void onGuiClosed() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(pipe.container));
-		super.onGuiClosed();
+		final TileEntity container = pipe.getContainer();
+		if (container != null) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(container));
+		}		super.onGuiClosed();
 	}
 
 	@Override

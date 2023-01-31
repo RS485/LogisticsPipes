@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
@@ -117,7 +118,10 @@ public class GuiChassisPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(_chassiPipe.container));
+		final TileEntity container = _chassiPipe.getContainer();
+		if (container != null) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(container));
+		}
 		super.onGuiClosed();
 	}
 

@@ -123,19 +123,6 @@ class BarrelInventoryHandler(val tile: IBarrel, val mode: ProviderMode) : Specia
         } else 0
     }
 
-    /**
-     * This function isn't required!!!
-     */
-    override fun roomForItem(stacks: MutableIterator<ItemStack>): Boolean {
-        while (stacks.hasNext()) {
-            val identifier = ItemIdentifier.get(stacks.next())
-            return if (isValidItem(identifier)) {
-                tile.maxItemCount >= itemCount(identifier)
-            } else false
-        }
-        return false
-    }
-
     override fun itemCount(itemIdent: ItemIdentifier): Int {
         return if (!isEmpty() && isValidItem(itemIdent)) tile.itemCount.providerMode()
         else 0

@@ -2,6 +2,7 @@ package logisticspipes.gui;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiClosePacket;
@@ -70,7 +71,10 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(pipe.container));
+		final TileEntity container = pipe.getContainer();
+		if (container != null) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(container));
+		}
 		super.onGuiClosed();
 	}
 

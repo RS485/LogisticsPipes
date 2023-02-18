@@ -117,6 +117,7 @@ project.afterEvaluate {
         dependsOn ['classes']
         from sourceSets.main.output.classesDirs, sourceSets.main.output.resourcesDir, sourceSets.api.output.classesDirs
         into "${project.buildDir}/run_classes/"
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
         includeEmptyDirs false
     }
@@ -291,7 +292,7 @@ processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
 
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {

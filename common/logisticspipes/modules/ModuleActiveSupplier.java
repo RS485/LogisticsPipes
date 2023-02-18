@@ -246,7 +246,7 @@ public class ModuleActiveSupplier extends LogisticsModule
 				haveCount = have.getStackSize();
 			}
 			if ((patternMode.getValue() == PatternMode.Bulk50 && haveCount > needed.getStackSize() / 2) || (
-					patternMode.getValue() == PatternMode.Bulk100 && haveCount >= needed.getStackSize())) {
+					patternMode.getValue() == PatternMode.Bulk100 && haveCount > 0)) {
 				continue;
 			}
 
@@ -322,10 +322,7 @@ public class ModuleActiveSupplier extends LogisticsModule
 
 		//Reduce what I have and what have been requested already
 		for (Entry<ItemIdentifier, Integer> item : needed.entrySet()) {
-			Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
-			if (haveCount == null) {
-				haveCount = 0;
-			}
+			int haveCount = haveUndamaged.getOrDefault(item.getKey().getUndamaged(), 0);
 			int spaceAvailable = invUtil.roomForItem(item.getKey().unsafeMakeNormalStack(Integer.MAX_VALUE));
 			if (requestMode.getValue() == SupplyMode.Infinite) {
 				Integer requestedCount = _requestedItems.get(item.getKey());
@@ -337,7 +334,7 @@ public class ModuleActiveSupplier extends LogisticsModule
 			}
 			if (spaceAvailable < 1
 					|| (requestMode.getValue() == SupplyMode.Bulk50 && haveCount > item.getValue() / 2)
-					|| (requestMode.getValue() == SupplyMode.Bulk100 && haveCount >= item.getValue())) {
+					|| (requestMode.getValue() == SupplyMode.Bulk100 && haveCount > 0)) {
 				item.setValue(0);
 				continue;
 			}

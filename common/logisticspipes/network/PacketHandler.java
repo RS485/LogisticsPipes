@@ -1,5 +1,6 @@
 package logisticspipes.network;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,7 +25,6 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.util.AttributeKey;
-import org.apache.logging.log4j.Level;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -43,8 +42,7 @@ import network.rs485.logisticspipes.util.LPDataInput;
 public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernPacket> {
 
 	public static final Map<Integer, StackTraceElement[]> debugMap = new HashMap<>();
-	//TODO correct to work with WeakReference (See FML original)
-	protected static final AttributeKey<ThreadLocal<FMLProxyPacket>> INBOUNDPACKETTRACKER = AttributeKey.newInstance("lp:inboundpacket");
+	protected static final AttributeKey<ThreadLocal<WeakReference<FMLProxyPacket>>> INBOUNDPACKETTRACKER = AttributeKey.valueOf("lp:inboundpacket");
 	public static List<ModernPacket> packetlist;
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 	private static int packetDebugID = 1;
@@ -98,8 +96,8 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	}
 
 	//Used to provide the Description packet
-	public static FMLProxyPacket toFMLPacket(ModernPacket msg) throws Exception {
-		return PacketHandler.toFMLPacket(msg, MainProxy.networkChannelName);
+	public static FMLProxyPacket toFMLPacket(ModernPacket msg) {
+		return toFMLPacket(msg, MainProxy.networkChannelName);
 	}
 
 	private static FMLProxyPacket toFMLPacket(ModernPacket msg, String channel) {
@@ -177,13 +175,14 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		super.handlerAdded(ctx);
-		ctx.attr(PacketHandler.INBOUNDPACKETTRACKER).set(new ThreadLocal<>());
+		ctx.channel().attr(INBOUNDPACKETTRACKER).set(new ThreadLocal<>());
 	}
 
 	@Override
-	protected final void encode(ChannelHandlerContext ctx, ModernPacket msg, List<Object> out) throws Exception {
+	protected final void encode(ChannelHandlerContext ctx, ModernPacket msg, List<Object> out) {
 		FMLProxyPacket proxy = PacketHandler.toFMLPacket(msg, ctx.channel().attr(NetworkRegistry.FML_CHANNEL).get());
-		FMLProxyPacket old = ctx.attr(PacketHandler.INBOUNDPACKETTRACKER).get().get();
+		WeakReference<FMLProxyPacket> ref = ctx.channel().attr(INBOUNDPACKETTRACKER).get().get();
+		FMLProxyPacket old = ref == null ? null : ref.get();
 		if (old != null) {
 			proxy.setDispatcher(old.getDispatcher());
 		}
@@ -196,7 +195,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		int packetID = payload.readShort();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
 		packet.setDebugId(payload.readInt());
-		ctx.attr(PacketHandler.INBOUNDPACKETTRACKER).get().set(msg);
+		ctx.channel().attr(INBOUNDPACKETTRACKER).get().set(new WeakReference<>(msg));
 
 		LPDataIOWrapper.provideData(payload.slice(), packet::readData);
 
@@ -209,7 +208,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		FMLLog.log(Level.ERROR, cause, "LogisticsPipes PacketHandler exception caught");
+		LogisticsPipes.log.error("LogisticsPipes PacketHandler exception caught", cause);
 		super.exceptionCaught(ctx, cause);
 	}
 

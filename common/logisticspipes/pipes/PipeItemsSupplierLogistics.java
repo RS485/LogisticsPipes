@@ -82,4 +82,10 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		super.addStatusInformation(status);
 		supplierModule.addStatusInformation(status);
 	}
+
+	@Override
+	public void finishInit() {
+		super.finishInit();
+		supplierModule.finishInit();
+	}
 }

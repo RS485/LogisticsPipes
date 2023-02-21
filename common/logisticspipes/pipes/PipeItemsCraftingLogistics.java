@@ -266,4 +266,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return false;
 	}
 
+	@Override
+	public void finishInit() {
+		super.finishInit();
+		craftingModule.finishInit();
+	}
 }

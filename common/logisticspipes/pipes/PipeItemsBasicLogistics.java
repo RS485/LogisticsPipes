@@ -119,4 +119,10 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	public boolean hasGenericInterests() {
 		return itemSinkModule.isDefaultRoute();
 	}
+
+	@Override
+	public void finishInit() {
+		super.finishInit();
+		itemSinkModule.finishInit();
+	}
 }

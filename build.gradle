@@ -223,6 +223,30 @@ minecraft {
 
             // put LP in test mode
             property 'logisticspipes.test', 'true'
+            property 'logisticspipes.test.debug', 'false' // set this to true in the generated run configuration
+
+            lazyToken 'classpathExclude', {
+                def paths = [
+                    sourceSets.main.output.classesDirs.asPath,
+                    sourceSets.api.output.classesDirs.asPath,
+                    sourceSets.main.output.resourcesDir.path,
+                    sourceSets.api.output.resourcesDir.path,
+                ]
+                String.join(File.pathSeparator, paths)
+            }
+            lazyToken 'classpathInclude', {
+                def paths = [
+                    "${project.buildDir}/run_classes/",
+                    sourceSets.test.output.classesDirs.asPath,
+                    sourceSets.test.output.resourcesDir.path,
+                ]
+                // sorry for the mess in the run configuration's classpath,
+                // but using the test classpath included the dependencies from the provided scope
+                for (final def file in configurations.testRuntimeClasspath.resolvedConfiguration.files) {
+                    paths.add(file.toPath().toString())
+                }
+                String.join(File.pathSeparator, paths)
+            }
 
             mods {
                 logisticspipes {
@@ -284,7 +308,7 @@ task sourceJar(type: Jar) {
 
 test {
     reports {
-        html.enabled = true
+        html.required.set(true)
     }
 }
 
@@ -515,7 +539,7 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
                 properties.setProperty('online-mode', 'false')
                 properties.setProperty('gamemode', '1')
                 properties.setProperty('level-type', 'FLAT')
-                properties.setProperty('generator-settings', 'minecraft:bedrock,3*minecraft:stone,52*minecraft:sandstone;minecraft:desert;')
+                properties.setProperty('generator-settings', '3;minecraft:bedrock,3*minecraft:stone,96*minecraft:sandstone;2;')
                 properties.setProperty('motd', 'Logistics Pipes Test Server')
                 //properties.setProperty('max-tick-time', '0') // for debugging the server
                 try {

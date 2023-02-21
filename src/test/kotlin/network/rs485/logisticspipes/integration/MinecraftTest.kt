@@ -37,17 +37,18 @@
 
 package network.rs485.logisticspipes.integration
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.time.withTimeout
+import network.rs485.grow.Coroutines
 import logisticspipes.LogisticsPipes
-import net.minecraft.server.dedicated.DedicatedServer
-import net.minecraft.world.WorldServer
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent
-import network.rs485.grow.Coroutines
+import net.minecraft.server.dedicated.DedicatedServer
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.WorldServer
 import java.lang.management.ManagementFactory
 import java.time.Duration
 import kotlin.test.assertTrue
+import kotlinx.coroutines.*
+import kotlinx.coroutines.time.withTimeout
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object MinecraftTest {
@@ -55,8 +56,12 @@ object MinecraftTest {
     /**
      * If not debugging, the server watch dog is not disabled and the server is shut down after running the tests.
      */
-    private const val DEBUGGING = false
+    private val DEBUGGING = System.getProperties().getProperty("logisticspipes.test.debug").let { prop ->
+        prop?.equals("true", ignoreCase = true) == true
+    }
+
     private lateinit var world: WorldServer
+    private lateinit var firstBlockPos: BlockPos
     private lateinit var testBlockBuilder: TestWorldBuilder
 
     const val TIMEOUT_MODIFIER: Long = 1L
@@ -73,6 +78,9 @@ object MinecraftTest {
             if (watchdog != null) error("Watchdog already running! Set max-tick-time to 0, please restart the server!")
         }
         world = serverInstance.worlds[0]
+        firstBlockPos = BlockPos(0, LEVEL, 0)
+        world.spawnPoint = firstBlockPos
+        world.gameRules.setOrCreateGameRule("spawnRadius", "0")
         val task = startTests(LogisticsPipes.log::info)
         task.invokeOnCompletion {
             if (it != null) throw it
@@ -88,7 +96,8 @@ object MinecraftTest {
             delay(Duration.ofSeconds(1 * TIMEOUT_MODIFIER).toMillis())
             println("[STARTING LOGISTICSPIPES TESTS]")
             withTimeout(Duration.ofMinutes(3)) {
-                testBlockBuilder = TestWorldBuilder(world)
+                testBlockBuilder = TestWorldBuilder(world, firstBlockPos)
+                world.spawnPoint = testBlockBuilder.buildSpawnPlatform()
                 listOf(
                     async {
                         CraftingTest.`test fuzzy-input crafting succeeds multi-request with mixed input OreDict`(

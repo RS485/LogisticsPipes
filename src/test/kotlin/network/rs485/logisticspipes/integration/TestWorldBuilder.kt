@@ -53,12 +53,12 @@ import kotlin.math.min
 const val LEVEL = 100
 val ONE_VECTOR = Vec3i(1, 1, 1)
 
-class TestWorldBuilder(override val world: WorldServer) : WorldBuilder {
+class TestWorldBuilder(override val world: WorldServer, val firstBlockPos: BlockPos) : WorldBuilder {
 
     private val selectors = ArrayList<Pair<BlockPosSelector, BlockPos>>()
 
     // TODO: grouping and expanding groups in z needs collecting all selectors/builds before configuration
-    private var nextPos = BlockPos(0, LEVEL, 0)
+    private var nextPos = firstBlockPos
     private var lowest = LEVEL
 
     private val tickets: HashSet<ForgeChunkManager.Ticket> = HashSet()
@@ -111,6 +111,16 @@ class TestWorldBuilder(override val world: WorldServer) : WorldBuilder {
 
     override fun loadChunk(pos: ChunkPos) {
         if (chunksToLoad.add(pos)) ForgeChunkManager.forceChunk(tickets.first(), pos)
+    }
+
+    fun buildSpawnPlatform(): BlockPos {
+        val start = firstBlockPos.subtract(ONE_VECTOR)
+        world.setBlocks(
+            start = BlockPos(start.x - 5, start.y, start.z),
+            end = BlockPos(start.x - 1, start.y, start.z + 4),
+            state = Blocks.OBSIDIAN.defaultState,
+        )
+        return BlockPos(start.x - 3, firstBlockPos.y, start.z + 2)
     }
 
 }

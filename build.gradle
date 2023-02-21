@@ -7,6 +7,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'network.rs485.forge', name: 'ForgeGradle', version: forgegradle_version
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: mixingradle_version
     }
 }
 
@@ -22,6 +23,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version "$shadow_version"
 }
 apply plugin: 'network.rs485.forge'
+apply plugin: 'org.spongepowered.mixin'
 
 archivesBaseName = "logisticspipes"
 group = "network.rs485"
@@ -55,6 +57,8 @@ ext.sharedManifest = manifest {
             'FMLCorePlugin': 'logisticspipes.asm.LogisticsPipesCoreLoader',
             'FMLCorePluginContainsFMLMod': 'true',
             'FMLAT': 'lp_at.cfg',
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'ForceLoadAsMod': 'true',
             'Specification-Title': 'LogisticsPipes',
             'Specification-Vendor': 'RS485',
             'Specification-Version': '1',
@@ -339,6 +343,15 @@ dependencies {
     apiImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
     dummyImplementation group: 'net.minecraftforge', name: 'forge', version: forge_version
 
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    testAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation ('org.spongepowered:mixin:0.8.5') {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
     implementation group: 'org.jetbrains', name: 'annotations', version: kannotations_version
@@ -408,6 +421,13 @@ task ktlint(type: JavaExec, group: "verification") {
     args "**/*.kt"
 }
 //check.dependsOn ktlint // not enforced, ktlint is in trial mode
+
+mixin {
+    config 'mixins.logisticspipes.json'
+    debug.verbose = true
+    debug.export = true
+    dumpTargetOnFailure = true
+}
 
 clean {
     // this folder is created by dependency resolution and will be created before 'clean' runs,

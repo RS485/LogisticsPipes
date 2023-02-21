@@ -1,5 +1,7 @@
 package logisticspipes.asm;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.launchwrapper.Launch;
@@ -7,6 +9,7 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import lombok.Getter;
+import org.spongepowered.asm.mixin.Mixins;
 
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 //@IFMLLoadingPlugin.SortingIndex(1001) TODO: For next MC update. Changing this now, will change ASM check sums as well.
@@ -18,6 +21,7 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 
 	public LogisticsPipesCoreLoader() throws Exception {
 		Launch.classLoader.addTransformerExclusion("logisticspipes.asm.");
+		getMixinConfigs().forEach(Mixins::addConfiguration);
 		coremodLoaded = true;
 	}
 
@@ -50,5 +54,9 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 
 	public static boolean isDevelopmentEnvironment() {
 		return developmentEnvironment;
+	}
+
+	public List<String> getMixinConfigs() {
+		return Collections.singletonList("mixins.logisticspipes.json");
 	}
 }

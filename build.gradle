@@ -146,6 +146,7 @@ minecraft {
             // load LP core mod from classpath
             property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
 
+            args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker'
             jvmArgs '-ea'
             environment 'MC_VERSION', mcversion
 
@@ -186,6 +187,7 @@ minecraft {
             // load LP core mod from classpath
             property 'fml.coreMods.load', 'logisticspipes.asm.LogisticsPipesCoreLoader'
 
+            args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker'
             jvmArgs '-ea'
             environment 'MC_VERSION', mcversion
 
@@ -218,6 +220,7 @@ minecraft {
             environment 'MC_VERSION', mcversion
             main 'net.minecraftforge.legacydev.MainServer'
             args '--tweakClass', 'net.minecraftforge.fml.common.launcher.FMLServerTweaker'
+            args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker'
             arg 'nogui' // without GUI
             jvmArg '-ea'
             workingDirectory project.file('run-server-test')

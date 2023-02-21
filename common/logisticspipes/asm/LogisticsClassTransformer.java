@@ -181,9 +181,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if (name.equals("net.minecraftforge.fluids.FluidStack")) {
 				return handleFluidStackClass(bytes);
 			}
-			if (name.equals("net.minecraftforge.fluids.Fluid")) {
-				return handleFluidClass(bytes);
-			}
 			if (name.equals("mcmultipart.block.BlockMultipartContainer")) {
 				return ClassBlockMultipartContainerHandler.handleClass(bytes);
 			}
@@ -564,10 +561,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 	private byte[] handleFluidStackClass(byte[] bytes) {
 		return addAddInfoPart(bytes, "net/minecraftforge/fluids/FluidStack");
-	}
-
-	private byte[] handleFluidClass(byte[] bytes) {
-		return addAddInfoPart(bytes, "net/minecraftforge/fluids/Fluid");
 	}
 
 	private byte[] addAddInfoPart(byte[] bytes, String className) {

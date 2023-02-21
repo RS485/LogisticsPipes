@@ -11,6 +11,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,6 +33,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.computers.interfaces.ILPCCTypeHolder;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.fluid.ILPFluid;
 
 public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHolder {
 
@@ -70,12 +72,6 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 		private final FluidIdentifier fluid;
 	}
 
-	@AllArgsConstructor
-	private static class FluidAddInfo implements IAddInfo {
-
-		private final FluidIdentifier fluid;
-	}
-
 	private FluidIdentifier(String fluidID, String name, FinalNBTTagCompound tag, int uniqueID) {
 		this.fluidID = fluidID;
 		this.name = name;
@@ -92,17 +88,13 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 				}
 			}
 			proposal = null;
-			IAddInfoProvider prov = null;
-			if (fluid instanceof IAddInfoProvider) {
-				prov = (IAddInfoProvider) fluid;
-				FluidAddInfo info = prov.getLogisticsPipesAddInfo(FluidAddInfo.class);
-				if (info != null) {
-					proposal = info.fluid;
-				}
+			boolean isMixinFluid = fluid instanceof ILPFluid;
+			if (isMixinFluid) {
+				proposal = ((ILPFluid) fluid).getLpFluidIdentifier();
 			}
 			FluidIdentifier ident = getFluidIdentifierWithoutTag(fluid, fluidID, proposal);
-			if (proposal != ident && prov != null) {
-				prov.setLogisticsPipesAddInfo(new FluidAddInfo(ident));
+			if (proposal != ident && isMixinFluid) {
+				((ILPFluid) fluid).setLpFluidIdentifier(ident);
 			}
 			return ident;
 		} else {
@@ -143,7 +135,7 @@ public class FluidIdentifier implements Comparable<FluidIdentifier>, ILPCCTypeHo
 		}
 	}
 
-	private static FluidIdentifier getFluidIdentifierWithoutTag(Fluid fluid, String fluidID, FluidIdentifier proposal) {
+	private static FluidIdentifier getFluidIdentifierWithoutTag(Fluid fluid, String fluidID, @Nullable FluidIdentifier proposal) {
 		if (proposal != null) {
 			if (proposal.fluidID.equals(fluidID) && proposal.tag == null) {
 				return proposal;
